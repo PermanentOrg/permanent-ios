@@ -24,9 +24,9 @@ let profileImageView: UIImageView = {
 let descriptionTextView: UITextView = {
    let textView = UITextView()
     
-    let attributedText = NSMutableAttributedString(string: "Join us today in our fun lunch!", attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 18)])
+    let attributedText = NSMutableAttributedString(string: "text 1", attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 18)])
     
-    attributedText.append(NSAttributedString(string: "\n\n\nAre you ready for loads and loads for fun? Don't wait any longer! We hope to see you in our event today.", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 13), NSAttributedString.Key.foregroundColor: UIColor.gray]))
+    attributedText.append(NSAttributedString(string: "\n\n\nText 2.", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 13), NSAttributedString.Key.foregroundColor: UIColor.gray]))
     
     textView.attributedText = attributedText
     

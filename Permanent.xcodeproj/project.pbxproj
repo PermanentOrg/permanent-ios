@@ -125,9 +125,9 @@
 		5ED0856624E3E5DE00CDB4D3 /* Content */ = {
 			isa = PBXGroup;
 			children = (
+				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
 				5ED0856724E3E5FC00CDB4D3 /* ColorStyle.swift */,
 				5ED0856924E3EBBB00CDB4D3 /* FontManager.swift */,
-				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
 			);
 			path = Content;
 			sourceTree = "<group>";
