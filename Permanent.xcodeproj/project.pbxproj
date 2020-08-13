@@ -22,6 +22,7 @@
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
 		5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
 		5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
+		5ED0857124E5787B00CDB4D3 /* TextContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED0857024E5787B00CDB4D3 /* TextContent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		5ED0856724E3E5FC00CDB4D3 /* ColorStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorStyle.swift; sourceTree = "<group>"; };
 		5ED0856924E3EBBB00CDB4D3 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontManager.swift; sourceTree = "<group>"; };
+		5ED0857024E5787B00CDB4D3 /* TextContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,9 +127,10 @@
 		5ED0856624E3E5DE00CDB4D3 /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
 				5ED0856724E3E5FC00CDB4D3 /* ColorStyle.swift */,
 				5ED0856924E3EBBB00CDB4D3 /* FontManager.swift */,
+				5ED0857024E5787B00CDB4D3 /* TextContent.swift */,
+				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -207,6 +210,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ED0857124E5787B00CDB4D3 /* TextContent.swift in Sources */,
 				5E2C5D1F24D98EE100E2B95F /* ViewController.swift in Sources */,
 				5E1DCA7924E17B78008F515B /* OnboardingViewModel.swift in Sources */,
 				5ED0855924E2E06300CDB4D3 /* OnboardingModel.swift in Sources */,

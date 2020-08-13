@@ -7,6 +7,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="OpenSans-Bold.ttf">
+            <string>OpenSans-Bold</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
@@ -16,24 +21,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lauch Screen" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jmU-ZE-cLf">
-                                <rect key="frame" x="154.5" y="442.5" width="105" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Permanent.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jmU-ZE-cLf">
+                                <rect key="frame" x="108" y="410.5" width="198.5" height="35"/>
+                                <fontDescription key="fontDescription" name="OpenSans-Bold" family="Open Sans" pointSize="30"/>
+                                <color key="textColor" red="0.99973243469999995" green="0.58137738699999997" blue="0.0012349749449999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_preview" translatesAutoresizingMaskIntoConstraints="NO" id="BQH-U4-Csg">
+                                <rect key="frame" x="82" y="290.5" width="250" height="110"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="250" id="cdz-XN-zKk"/>
+                                    <constraint firstAttribute="height" constant="110" id="iCo-mo-dXi"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" red="0.073621921239999999" green="0.1067599133" blue="0.29004743700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="jmU-ZE-cLf" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="0lP-FC-KfO"/>
-                            <constraint firstItem="jmU-ZE-cLf" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="xD3-jY-uOQ"/>
+                            <constraint firstItem="BQH-U4-Csg" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5d4-od-1eK"/>
+                            <constraint firstItem="jmU-ZE-cLf" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-20" id="IaB-qF-rtC"/>
+                            <constraint firstItem="jmU-ZE-cLf" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Y0I-jy-qje"/>
+                            <constraint firstItem="jmU-ZE-cLf" firstAttribute="top" secondItem="BQH-U4-Csg" secondAttribute="bottom" constant="10" id="zfw-WH-AoR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-574" y="377"/>
+            <point key="canvasLocation" x="-575.36231884057975" y="376.33928571428572"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="logo_preview" width="249.5" height="192.5"/>
+    </resources>
 </document>
