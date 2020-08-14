@@ -43,7 +43,7 @@ class OnboardingView: UIViewController {
       let button = UIButton(frame: CGRect(x: 10, y: pageView.frame.size.height-60, width: pageView.frame.size.width-20, height: 50))
       
       label.textAlignment = .center
-      label.font = textStyle.font
+      label.font = Constants.textStyle.font
       label.textColor = .white
       pageView.addSubview(label)
       pageView.addSubview(label)

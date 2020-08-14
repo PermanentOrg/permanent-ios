@@ -1,5 +1,5 @@
 //
-//  Style.swift
+//  UIColor.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 20/07/2020.
