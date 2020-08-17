@@ -6,20 +6,12 @@
 //  Copyright © 2020 Lucian Cerbu. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-class LoginViewModel {
+class LoginViewModel: ViewModelInterface {
   weak var delegate: LoginViewModelDelegate?
-
-  func processText(text: String?) {
-    guard let text = text else { return }
-    let modifiedText = text + " modified"
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: { [weak self] in
-      self?.delegate?.updateTitle(with: modifiedText)
-    })
-  }
 }
 
-protocol LoginViewModelDelegate: class {
+protocol LoginViewModelDelegate: ViewModelDelegateInterface {
   func updateTitle(with text: String?)
 }

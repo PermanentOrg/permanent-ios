@@ -8,19 +8,18 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: BaseViewController<LoginViewModel> {
   @IBOutlet weak var titleLabel: UILabel!
   @IBOutlet weak var fullNameTextField: UITextField!
-  var viewModel: LoginViewModel?
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    navigationController?.setNavigationBarHidden(true, animated: false)
     viewModel = LoginViewModel()
     viewModel?.delegate = self
   }
 
   @IBAction func onButtonClicked(_ sender: UIButton) {
-    viewModel?.processText(text: fullNameTextField.text)
   }
 }
 

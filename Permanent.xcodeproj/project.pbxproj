@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */; };
+		06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7F24EA6F47003CD359 /* BaseViewController.swift */; };
+		06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8424EA7156003CD359 /* RoundedButton.swift */; };
+		06644A8724EA772D003CD359 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8624EA772D003CD359 /* CustomButton.swift */; };
+		06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */; };
 		06B0EB2324E6788F003D90C6 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06B0EB2224E6788F003D90C6 /* LoginViewController.xib */; };
 		06B0EB2524E67B6A003D90C6 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* LoginViewController.swift */; };
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
@@ -27,6 +32,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelInterface.swift; sourceTree = "<group>"; };
+		06644A7F24EA6F47003CD359 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		06644A8424EA7156003CD359 /* RoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		06644A8624EA772D003CD359 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelDelegateInterface.swift; sourceTree = "<group>"; };
 		06B0EB2224E6788F003D90C6 /* LoginViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
 		06B0EB2424E67B6A003D90C6 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		06B0EB2724E67E6A003D90C6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
@@ -65,11 +75,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06644A7C24EA6E35003CD359 /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */,
+				06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */,
+			);
+			name = Interfaces;
+			sourceTree = "<group>";
+		};
+		06644A8124EA70D5003CD359 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				06644A8424EA7156003CD359 /* RoundedButton.swift */,
+				06644A8624EA772D003CD359 /* CustomButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		06B0EB2124E6786F003D90C6 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
 				06B0EB2224E6788F003D90C6 /* LoginViewController.xib */,
 				06B0EB2424E67B6A003D90C6 /* LoginViewController.swift */,
+				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -119,6 +148,8 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				06644A8124EA70D5003CD359 /* Views */,
+				06644A7C24EA6E35003CD359 /* Interfaces */,
 				06B0EB2C24E68289003D90C6 /* ViewModels */,
 				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
 				06B0EB2B24E67FBC003D90C6 /* Models */,
@@ -240,13 +271,18 @@
 				06B0EB2524E67B6A003D90C6 /* LoginViewController.swift in Sources */,
 				5E2C5D1F24D98EE100E2B95F /* ViewController.swift in Sources */,
 				5E1DCA7924E17B78008F515B /* OnboardingViewModel.swift in Sources */,
+				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				5ED0855924E2E06300CDB4D3 /* OnboardingModel.swift in Sources */,
+				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
+				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
+				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				5ED0855724E2E04400CDB4D3 /* OnBoardingView.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* LoginViewModel.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
+				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

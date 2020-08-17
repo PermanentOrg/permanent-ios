@@ -46,15 +46,15 @@
                         </textField>
                     </subviews>
                 </stackView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONN-U3-paR">
-                    <rect key="frame" x="184" y="516" width="46" height="30"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONN-U3-paR" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                    <rect key="frame" x="8" y="507" width="398" height="30"/>
                     <state key="normal" title="Button"/>
                     <connections>
                         <action selector="onButtonClicked:" destination="-1" eventType="touchUpInside" id="sa6-D5-9Vr"/>
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fa7-tB-Ny3">
-                    <rect key="frame" x="8" y="574" width="398" height="20.5"/>
+                    <rect key="frame" x="8" y="557" width="398" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -62,18 +62,19 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <constraints>
-                <constraint firstItem="Fa7-tB-Ny3" firstAttribute="top" secondItem="ONN-U3-paR" secondAttribute="bottom" constant="28" id="5um-w5-uKu"/>
-                <constraint firstItem="ONN-U3-paR" firstAttribute="top" secondItem="MFo-dj-hEY" secondAttribute="bottom" constant="29" id="79J-vZ-gBY"/>
                 <constraint firstItem="kQ3-uA-F8P" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="225" id="Fse-ur-VoC"/>
                 <constraint firstItem="kQ3-uA-F8P" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="Gs4-WX-OXO"/>
                 <constraint firstItem="MFo-dj-hEY" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="I36-8j-u0w"/>
-                <constraint firstItem="ONN-U3-paR" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="OEb-pz-TDx"/>
                 <constraint firstItem="MFo-dj-hEY" firstAttribute="top" secondItem="kQ3-uA-F8P" secondAttribute="bottom" constant="45.5" id="RUn-DV-q9C"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="MFo-dj-hEY" secondAttribute="trailing" constant="8" id="T2R-Fv-6da"/>
+                <constraint firstItem="ONN-U3-paR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="Ulw-ug-9mK"/>
                 <constraint firstItem="Fa7-tB-Ny3" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="Yaa-KE-PCr"/>
                 <constraint firstItem="MFo-dj-hEY" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="8" id="gKN-ci-h5c"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="kQ3-uA-F8P" secondAttribute="trailing" constant="8" id="hkn-t1-5md"/>
+                <constraint firstItem="Fa7-tB-Ny3" firstAttribute="top" secondItem="ONN-U3-paR" secondAttribute="bottom" constant="20" id="mpS-HP-Ejz"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Fa7-tB-Ny3" secondAttribute="trailing" constant="8" id="rTU-fG-xW5"/>
+                <constraint firstItem="ONN-U3-paR" firstAttribute="top" secondItem="MFo-dj-hEY" secondAttribute="bottom" constant="20" id="sVy-iR-qpe"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="ONN-U3-paR" secondAttribute="trailing" constant="8" id="xNd-Ws-2sm"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <point key="canvasLocation" x="139" y="134"/>
