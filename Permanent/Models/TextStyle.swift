@@ -23,7 +23,7 @@ struct TextStyle {
   //MARK: - Calculate line spacing
 
   static func calculateSpacing(fontSize: CGFloat, lineHeight: CGFloat) -> CGFloat {
-    (lineHeight - fontSize) / 2
+    return (lineHeight - fontSize) / 2
   }
   // Usage: setTextWithLineSpacing(myUILabel,text:"Hello",lineSpacing:20)
   static func setTextWithLineSpacing(label:UILabel,text:String,lineSpacing:CGFloat)
