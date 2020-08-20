@@ -25,15 +25,14 @@ struct TextStyle {
   static func calculateSpacing(fontSize: CGFloat, lineHeight: CGFloat) -> CGFloat {
     return (lineHeight - fontSize) / 2
   }
-  // Usage: setTextWithLineSpacing(myUILabel,text:"Hello",lineSpacing:20)
-  static func setTextWithLineSpacing(label:UILabel,text:String,lineSpacing:CGFloat)
+  //Usage label.attributtedText =  setTextWithLineSpacing(text:String)
+  mutating func setTextWithLineSpacing(text:String) -> NSMutableAttributedString
   {
-      let paragraphStyle = NSMutableParagraphStyle()
-      paragraphStyle.lineSpacing = lineSpacing
-
-      let attrString = NSMutableAttributedString(string: text)
-      attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
-
-      label.attributedText = attrString
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.lineSpacing = self.lineHeight
+    
+    let attrString = NSMutableAttributedString(string: text)
+    attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+    return attrString
   }
 }

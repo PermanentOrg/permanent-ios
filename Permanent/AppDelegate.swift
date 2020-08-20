@@ -17,7 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow(frame: UIScreen.main.bounds)
     let mainNavicationController = UINavigationController()
     let loginViewController = LoginViewController.init(nibName: "LoginViewController", bundle: .main)
-    mainNavicationController.viewControllers = [loginViewController]
+    let onboardingViewController = OnboardingViewController.init(nibName: "OnboardingViewController", bundle: .main)
+    
+    if Core.shared.isNewUser(){
+      mainNavicationController.viewControllers = [onboardingViewController]
+    } else {
+      mainNavicationController.viewControllers = [loginViewController]
+    }
 
     window?.rootViewController = mainNavicationController
     window?.makeKeyAndVisible()
