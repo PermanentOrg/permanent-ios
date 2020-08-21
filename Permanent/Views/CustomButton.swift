@@ -9,17 +9,17 @@
 import UIKit
 
 class CustomButton: UIButton {
-  override init(frame: CGRect) {
-    super.init(frame: frame)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        setup()
+    }
     
-    setup()
-  }
-  
-  required init?(coder: NSCoder) {
-    super.init(coder: coder)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        setup()
+    }
     
-    setup()
-  }
-  
-  func setup() {}
+    func setup() {}
 }

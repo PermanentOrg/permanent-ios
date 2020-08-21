@@ -9,10 +9,10 @@
 import UIKit
 
 class BaseViewController<T: ViewModelInterface>: UIViewController {
-
-  var viewModel: T?
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-  }
+    
+    var viewModel: T?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
 }

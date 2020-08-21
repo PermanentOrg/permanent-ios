@@ -9,22 +9,22 @@
 import UIKit
 
 class LoginViewController: BaseViewController<LoginViewModel> {
-  @IBOutlet weak var titleLabel: UILabel!
-  @IBOutlet weak var fullNameTextField: UITextField!
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    navigationController?.setNavigationBarHidden(true, animated: false)
-    viewModel = LoginViewModel()
-    viewModel?.delegate = self
-  }
-
-  @IBAction func onButtonClicked(_ sender: UIButton) {
-  }
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var fullNameTextField: UITextField!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // navigationController?.setNavigationBarHidden(true, animated: false)
+        viewModel = LoginViewModel()
+        viewModel?.delegate = self
+    }
+    
+    @IBAction func onButtonClicked(_ sender: UIButton) {
+    }
 }
 
 extension LoginViewController: LoginViewModelDelegate {
-  func updateTitle(with text: String?) {
-    titleLabel.text = text
-  }
+    func updateTitle(with text: String?) {
+        titleLabel.text = text
+    }
 }

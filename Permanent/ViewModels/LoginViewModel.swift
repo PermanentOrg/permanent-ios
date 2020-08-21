@@ -9,9 +9,9 @@
 import UIKit
 
 class LoginViewModel: ViewModelInterface {
-  weak var delegate: LoginViewModelDelegate?
+    weak var delegate: LoginViewModelDelegate?
 }
 
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
-  func updateTitle(with text: String?)
+    func updateTitle(with text: String?)
 }
