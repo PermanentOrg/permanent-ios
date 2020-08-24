@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OnboadingViewStoryboard: BaseViewController<OnboardingViewModel> {
+class OnboadingViewController: BaseViewController<OnboardingViewModel> {
     
     override var prefersStatusBarHidden: Bool{
         return true
@@ -22,16 +22,15 @@ class OnboadingViewStoryboard: BaseViewController<OnboardingViewModel> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .darkBlue
         skipButtonLabel.setTitleColor(.white, for: .normal)
         nextButtonLabel.setTitle("Next", for: .normal)
-        
-        
     }
     
     @IBAction func nextButton(_ sender: RoundedButton) {
-        if pageViewController?.moveToNextPage() == false {
+        if pageViewController?.viewModel?.moveToNextPage() == false {
             goToLogin()
         }
     }
@@ -43,14 +42,16 @@ class OnboadingViewStoryboard: BaseViewController<OnboardingViewModel> {
             
             pageViewController = segue.destination as? PageViewController
             
-            pageViewController?.onCurrentPageChange = { [weak self] (currentPageIndex, numberOfPages) in
+            pageViewController?.viewModel = PageViewModel()
+            pageViewController?.viewModel?.delegate = pageViewController
+            
+            pageViewController?.viewModel?.onCurrentPageChange = { [weak self] (currentPageIndex, numberOfPages) in
                 self?.nextButtonLabel.setTitle("\(Constants.onboardingBottomButtonText[currentPageIndex])", for: .normal)
             }
         }
     }
-    
 }
-extension OnboadingViewStoryboard: OnboardingViewModelDelegate,UIScrollViewDelegate {
+extension OnboadingViewController: OnboardingViewModelDelegate,UIScrollViewDelegate {
     func configureHolderView() {
         
     }

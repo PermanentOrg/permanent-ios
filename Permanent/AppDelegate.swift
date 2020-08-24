@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if UserDefaultsService.shared.isNewUser(){
             
-            let onboardingView = UIStoryboard(name: "OnboardingView", bundle: .main).instantiateViewController(withIdentifier: "Onboarding")
+            let onboardingView = UIStoryboard(name: "Onboarding", bundle: .main).instantiateViewController(withIdentifier: "Onboarding")
             
             mainNavicationController.viewControllers = [onboardingView]
         } else {

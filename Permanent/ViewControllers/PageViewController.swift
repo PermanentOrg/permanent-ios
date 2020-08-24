@@ -8,70 +8,40 @@
 
 import UIKit
 
-class PageViewController: UIPageViewController {
-    var currentViewControllers = [UIViewController]()
-    var pageControl = UIPageControl.appearance(whenContainedInInstancesOf: [PageViewController.self])
-    var currentPage = 0 {
-        didSet {
-            onCurrentPageChange?(currentPage,currentViewControllers.count)
-        }
-    }
-    var onCurrentPageChange: ((Int, Int)->Void)?
+class PageViewController: BasePageViewController<PageViewModel> {
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         dataSource = self
         delegate = self
+
         navigationController?.setNavigationBarHidden(true, animated: false)
-        super.viewDidLoad()
-        currentViewControllers.append(UIStoryboard(name: "OnboardingView", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageOne"))
-        currentViewControllers.append(UIStoryboard(name: "OnboardingView", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageTwo"))
-        currentViewControllers.append(UIStoryboard(name: "OnboardingView", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageThree"))
-        
-        if let firstVC = currentViewControllers.first {
-            setViewControllers([firstVC], direction: .forward, animated: true, completion: nil)
-        }
-        
         pageControl.currentPageIndicatorTintColor = .tangerine
         pageControl.pageIndicatorTintColor = .white
-        
-    }
-    
-    func moveToNextPage () -> Bool {
-        if currentPage < currentViewControllers.count - 1 {
-            let viewController = self.currentViewControllers[self.currentPage + 1]
-            self.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
-            self.currentPage += 1
-            return true
-        } else {
-            return false
-        }
     }
 }
+
 extension PageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         guard let nextViewController = pendingViewControllers.first else {
             return
         }
-        if let index = currentViewControllers.firstIndex(of: nextViewController)  {
-            
-            currentPage = index
+        if let index = currentViewControllers.firstIndex(of: nextViewController) {
+            viewModel?.currentPage = index
         }
     }
 }
+
 extension PageViewController: UIPageViewControllerDataSource {
-    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = currentViewControllers.firstIndex(of: viewController) else {
             print("Failed to find view controller")
             return nil
         }
-        if index == 0 {
-            // currentPage = 0
+        if let beforePageIndex = viewModel?.beforePageIndex(before: index) {
+            return currentViewControllers[beforePageIndex]
+        } else {
             return nil
-        }
-        else {
-            let viewController = currentViewControllers[index - 1]
-            return viewController
         }
     }
     
@@ -80,12 +50,10 @@ extension PageViewController: UIPageViewControllerDataSource {
             print("Failed to find view controller")
             return nil
         }
-        if index == currentViewControllers.count - 1 {
+        if let nextPageIndex = viewModel?.nextPageIndex(after: index) {
+            return currentViewControllers[nextPageIndex]
+        } else {
             return nil
-        }
-        else {
-            let viewController = currentViewControllers[index + 1]
-            return viewController
         }
     }
     
@@ -100,5 +68,25 @@ extension PageViewController: UIPageViewControllerDataSource {
             return NSNotFound
         }
         return index
+    }
+}
+
+extension PageViewController: PageViewModelDelegate {
+    func numberOfViewControllers() -> Int {
+        return currentViewControllers.count
+    }
+    
+    func setViewController(of index: Int) {
+        if !(0..<currentViewControllers.count ~= index)  {
+            return
+        }
+        let viewController = currentViewControllers[index]
+        setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
+    }
+    
+    func createViewControllers() {
+        currentViewControllers.append(UIStoryboard(name: "Onboarding", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageOne"))
+        currentViewControllers.append(UIStoryboard(name: "Onboarding", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageTwo"))
+        currentViewControllers.append(UIStoryboard(name: "Onboarding", bundle: .main).instantiateViewController(withIdentifier: "OnboardingPageThree"))
     }
 }
