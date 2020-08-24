@@ -9,20 +9,10 @@
 import UIKit
 
 @IBDesignable
-class BottomLineTextField: CustomTextField {
+class TextField: CustomTextField {
   var contentEdgeInsets: UIEdgeInsets = .zero
-  var bottomLine = CALayer()
 
   override func setup() {
-    bottomLine.frame = CGRect(x: 0.0, y: frame.height - 1, width: frame.width, height: 1.0)
-    bottomLine.backgroundColor = UIColor.white.cgColor
-    borderStyle = UITextField.BorderStyle.none
-    layer.addSublayer(bottomLine)
-    layer.masksToBounds = true
-    textColor = .white
-
-    attributedPlaceholder = NSAttributedString(string: attributedPlaceholder?.string ?? "",
-                                               attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
 
     contentEdgeInsets = UIEdgeInsets(top: 8,
                                      left: 10,
@@ -32,7 +22,6 @@ class BottomLineTextField: CustomTextField {
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    bottomLine.frame = CGRect(x: 0.0, y: frame.height  - 1, width: frame.width, height: 1)
   }
 
   override func textRect(forBounds bounds: CGRect) -> CGRect {

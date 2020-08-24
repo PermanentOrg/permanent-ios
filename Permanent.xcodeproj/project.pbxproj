@@ -16,7 +16,7 @@
 		06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06644A8C24EBF51A003CD359 /* BigLogoView.xib */; };
 		06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8E24EBF72C003CD359 /* BigLogoView.swift */; };
 		06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA524EC208F003D0EB0 /* CustomTextField.swift */; };
-		06819AA824EC20CB003D0EB0 /* BottomLineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA724EC20CB003D0EB0 /* BottomLineTextField.swift */; };
+		06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA724EC20CB003D0EB0 /* TextField.swift */; };
 		06B0EB2324E6788F003D90C6 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */; };
 		06B0EB2524E67B6A003D90C6 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
@@ -46,7 +46,7 @@
 		06644A8C24EBF51A003CD359 /* BigLogoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BigLogoView.xib; sourceTree = "<group>"; };
 		06644A8E24EBF72C003CD359 /* BigLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigLogoView.swift; sourceTree = "<group>"; };
 		06819AA524EC208F003D0EB0 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
-		06819AA724EC20CB003D0EB0 /* BottomLineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomLineTextField.swift; sourceTree = "<group>"; };
+		06819AA724EC20CB003D0EB0 /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		06B0EB2724E67E6A003D90C6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
@@ -100,7 +100,7 @@
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 				06644A8E24EBF72C003CD359 /* BigLogoView.swift */,
-				06819AA724EC20CB003D0EB0 /* BottomLineTextField.swift */,
+				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				06644A8624EA772D003CD359 /* CustomButton.swift */,
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
@@ -294,7 +294,7 @@
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
-				06819AA824EC20CB003D0EB0 /* BottomLineTextField.swift in Sources */,
+				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
