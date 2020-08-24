@@ -8,6 +8,7 @@
 
 import UIKit
 
+@IBDesignable
 class RoundedButton: CustomButton {
 
   override func setup() {

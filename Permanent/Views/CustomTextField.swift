@@ -1,19 +1,19 @@
 //
-//  CustomButton.swift
+//  CustomTextField.swift
 //  Permanent
 //
-//  Created by Gabi Tiplea on 17/08/2020.
+//  Created by Gabi Tiplea on 18/08/2020.
 //  Copyright © 2020 Lucian Cerbu. All rights reserved.
 //
 
 import UIKit
 
-class CustomButton: UIButton {
+class CustomTextField: UITextField {
   override init(frame: CGRect) {
     super.init(frame: frame)
     setup()
   }
-  
+
   required init?(coder: NSCoder) {
     super.init(coder: coder)
     setup()
@@ -23,6 +23,6 @@ class CustomButton: UIButton {
     super.prepareForInterfaceBuilder()
     setup()
   }
-  
+
   func setup() {}
 }

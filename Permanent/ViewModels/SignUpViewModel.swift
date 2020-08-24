@@ -8,10 +8,10 @@
 
 import UIKit
 
-class LoginViewModel: ViewModelInterface {
-  weak var delegate: LoginViewModelDelegate?
+class SignUpViewModel: ViewModelInterface {
+  weak var delegate: SignUpViewModelDelegate?
 }
 
-protocol LoginViewModelDelegate: ViewModelDelegateInterface {
+protocol SignUpViewModelDelegate: ViewModelDelegateInterface {
   func updateTitle(with text: String?)
 }
