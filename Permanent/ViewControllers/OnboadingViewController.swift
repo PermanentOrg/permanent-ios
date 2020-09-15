@@ -62,7 +62,7 @@ extension OnboadingViewController: OnboardingViewModelDelegate,UIScrollViewDeleg
     
     func goToLogin() {
         
-        UserDefaultsService.shared.setIsNotNewUser()
+        UserDefaultsService.shared.setIsNewUser()
         navigationController?.setViewControllers([LoginViewController.init(nibName: "LoginViewController", bundle: .main)], animated: true)
     }
     

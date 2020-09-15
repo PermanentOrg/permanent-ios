@@ -14,7 +14,7 @@ class UserDefaultsService {
     func isNewUser() -> Bool {
         return UserDefaults.standard.optionalBool(forKey: "isNewUser") ?? true
     }
-    func setIsNotNewUser() {
+    func setIsNewUser() {
         UserDefaults.standard.set(false, forKey: "isNewUser")
     }
 }
