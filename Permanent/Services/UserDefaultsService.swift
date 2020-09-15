@@ -12,10 +12,9 @@ import Foundation
 class UserDefaultsService {
     static let shared = UserDefaultsService()
     func isNewUser() -> Bool {
-        return !UserDefaults.standard.bool(forKey: "isNewUser")
+        return UserDefaults.standard.optionalBool(forKey: "isNewUser") ?? true
     }
     func setIsNotNewUser() {
-        UserDefaults.standard.set(true, forKey: "isNewUser")
+        UserDefaults.standard.set(false, forKey: "isNewUser")
     }
 }
-
