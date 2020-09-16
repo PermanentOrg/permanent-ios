@@ -10,13 +10,13 @@ import UIKit
 
 @IBDesignable
 class RoundedButton: CustomButton {
-
-  override func setup() {
-    backgroundColor = UIColor.tangerine
-    titleLabel?.font = Text.style.font
-    titleLabel?.textAlignment = Text.style.alignment
-    setTitleColor(UIColor.white, for: .normal)
-    layer.cornerRadius = Constants.customButtonCornerRadius
-    heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.customButtonHeight).isActive = true
-  }
+    
+    override func setup() {
+        backgroundColor = UIColor.tangerine
+        titleLabel?.font = Text.style.font
+        titleLabel?.textAlignment = Text.style.alignment
+        setTitleColor(UIColor.white, for: .normal)
+        layer.cornerRadius = Constants.customButtonCornerRadius
+        heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.customButtonHeight).isActive = true
+    }
 }

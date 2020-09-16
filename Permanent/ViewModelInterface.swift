@@ -9,13 +9,13 @@
 import Foundation
 
 protocol ViewModelInterface {
-  func viewDidLoad()
-  func viewWillAppear()
-  func viewWillDisappear()
+    func viewDidLoad()
+    func viewWillAppear()
+    func viewWillDisappear()
 }
 
 extension ViewModelInterface {
-  func viewDidLoad() {}
-  func viewWillAppear() {}
-  func viewWillDisappear() {}
+    func viewDidLoad() {}
+    func viewWillAppear() {}
+    func viewWillDisappear() {}
 }
