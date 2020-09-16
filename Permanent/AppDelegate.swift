@@ -23,10 +23,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window?.rootViewController = mainNavicationController
     window?.makeKeyAndVisible()
     
-    FirebaseApp.configure()
+    initFirebase()
 
     return true
   }
-
+  
+  fileprivate func initFirebase() {
+      guard
+        let infoDict = Bundle.main.infoDictionary,
+        let fileName = infoDict["GOOGLE_PLIST_NAME"] as? String,
+        let filePath = Bundle.main.path(forResource: fileName, ofType: "plist"),
+        let fileOpts = FirebaseOptions(contentsOfFile: filePath) else {
+          assert(false, "Cannot load config file")
+      }
+    
+      FirebaseApp.configure(options: fileOpts)
+  }
 }
 
