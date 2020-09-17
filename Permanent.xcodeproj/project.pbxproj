@@ -37,15 +37,15 @@
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
 		5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
 		5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
-		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
-		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
-		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
 		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
 		5EE1800124EEC47100496AF7 /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */; };
 		5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */; };
 		5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */; };
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
+		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
+		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,7 +67,6 @@
 		548D706A1AF31B9CECE03A4F /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		5A2BA2B5BA83E0C9E01CE8D0 /* Pods-Permanent.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-release.xcconfig"; sourceTree = "<group>"; };
 		5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E1DCA7824E17B78008F515B /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5E2C5D2324D98EE300E2B95F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -91,16 +90,16 @@
 		5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Italic.ttf"; sourceTree = "<group>"; };
 		5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
-		628A94E96CD91F0A955E033A /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
-		638FB579479242C67D418F05 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
-		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
 		5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 		5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageOne.swift; sourceTree = "<group>"; };
 		5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageTwo.swift; sourceTree = "<group>"; };
 		5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageThree.swift; sourceTree = "<group>"; };
+		628A94E96CD91F0A955E033A /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
+		638FB579479242C67D418F05 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
+		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,10 +117,10 @@
 		06644A7C24EA6E35003CD359 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */,
-				06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */,
-				5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */,
 				5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */,
+				5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */,
+				06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */,
+				06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";
@@ -129,13 +128,13 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				06644A8424EA7156003CD359 /* RoundedButton.swift */,
-				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
+				BC1BDF1A2513567B00F2D239 /* XIBs */,
 				06644A8E24EBF72C003CD359 /* BigLogoView.swift */,
-				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				06644A8624EA772D003CD359 /* CustomButton.swift */,
-				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
+				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
+				06644A8424EA7156003CD359 /* RoundedButton.swift */,
+				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -143,16 +142,14 @@
 		06B0EB2124E6786F003D90C6 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
-				5EE17FF524EE94DA00496AF7 /* PageViewController.swift */,
-				06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */,
-				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
-				5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */,
+				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */,
 				5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */,
-				5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */,
 				5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */,
+				5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */,
+				5EE17FF524EE94DA00496AF7 /* PageViewController.swift */,
+				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -178,8 +175,8 @@
 			isa = PBXGroup;
 			children = (
 				5E60451C251206F9002E47CB /* OnboardingViewModel.swift */,
-				06B0EB2D24E68298003D90C6 /* SignUpViewModel.swift */,
 				5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */,
+				06B0EB2D24E68298003D90C6 /* SignUpViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -216,20 +213,18 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
-				BC0108802510E009002F9FD6 /* Support Files */,
-				06644A8124EA70D5003CD359 /* Views */,
-				06644A7C24EA6E35003CD359 /* Interfaces */,
-				06B0EB2C24E68289003D90C6 /* ViewModels */,
-				5ED0856524E3E5CA00CDB4D3 /* AddedFonts */,
-				5EE17FFF24EEC44700496AF7 /* Services */,
-				06B0EB2B24E67FBC003D90C6 /* Models */,
-				06B0EB2624E67E52003D90C6 /* Extensions */,
-				06B0EB2124E6786F003D90C6 /* ViewControllers */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
-				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
-				5E2C5D2524D98EE300E2B95F /* LaunchScreen.storyboard */,
-				5E2C5D2824D98EE300E2B95F /* Info.plist */,
-				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
+				BC1BDF162513558800F2D239 /* Assets */,
+				BC1BDF192513561800F2D239 /* Constants */,
+				06B0EB2624E67E52003D90C6 /* Extensions */,
+				06644A7C24EA6E35003CD359 /* Interfaces */,
+				06B0EB2B24E67FBC003D90C6 /* Models */,
+				BC1BDF18251355ED00F2D239 /* Network */,
+				5EE17FFF24EEC44700496AF7 /* Services */,
+				BC1BDF17251355E100F2D239 /* Storyboards */,
+				06B0EB2124E6786F003D90C6 /* ViewControllers */,
+				06B0EB2C24E68289003D90C6 /* ViewModels */,
+				06644A8124EA70D5003CD359 /* Views */,
 			);
 			path = Permanent;
 			sourceTree = "<group>";
@@ -241,7 +236,7 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-		5ED0856524E3E5CA00CDB4D3 /* AddedFonts */ = {
+		5ED0856524E3E5CA00CDB4D3 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
 				5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */,
@@ -255,16 +250,60 @@
 				5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */,
 				5ED0856024E3E5C300CDB4D3 /* OpenSans-SemiBoldItalic.ttf */,
 			);
-			path = AddedFonts;
+			path = Fonts;
 			sourceTree = "<group>";
 		};
-		BC0108802510E009002F9FD6 /* Support Files */ = {
+		5EE17FFF24EEC44700496AF7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		BC1BDF162513558800F2D239 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				5ED0856524E3E5CA00CDB4D3 /* Fonts */,
+				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
+				5E2C5D2824D98EE300E2B95F /* Info.plist */,
 				BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */,
 				BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */,
 			);
-			path = "Support Files";
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		BC1BDF17251355E100F2D239 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				5E2C5D2524D98EE300E2B95F /* LaunchScreen.storyboard */,
+				5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */,
+				06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		BC1BDF18251355ED00F2D239 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		BC1BDF192513561800F2D239 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		BC1BDF1A2513567B00F2D239 /* XIBs */ = {
+			isa = PBXGroup;
+			children = (
+				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
+			);
+			path = XIBs;
 			sourceTree = "<group>";
 		};
 		D01BC0154B74CFCC3532CF7E /* Pods */ = {
@@ -276,14 +315,7 @@
 				5A2BA2B5BA83E0C9E01CE8D0 /* Pods-Permanent.dev-release.xcconfig */,
 			);
 			path = Pods;
-		};
-		5EE17FFF24EEC44700496AF7 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
+			sourceTree = "<unknown>";
 		};
 /* End PBXGroup section */
 
@@ -575,7 +607,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 78FDB4XPKP;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
-				INFOPLIST_FILE = Permanent/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -598,7 +630,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 78FDB4XPKP;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
-				INFOPLIST_FILE = Permanent/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -681,7 +713,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 78FDB4XPKP;
 				GOOGLE_PLIST_NAME = "DEV-GoogleService-Info";
-				INFOPLIST_FILE = Permanent/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -758,7 +790,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 78FDB4XPKP;
 				GOOGLE_PLIST_NAME = "DEV-GoogleService-Info";
-				INFOPLIST_FILE = Permanent/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
