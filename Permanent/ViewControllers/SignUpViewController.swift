@@ -9,34 +9,51 @@
 import UIKit
 
 class SignUpViewController: BaseViewController<SignUpViewModel> {
-  @IBOutlet weak var titleLabel: UILabel!
-  @IBOutlet weak var existingAccountLabel: UILabel!
-  @IBOutlet weak var footerLabel: UILabel!
+    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var existingAccountLabel: UILabel!
+    @IBOutlet var footerLabel: UILabel!
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    view.backgroundColor = .darkBlue
-    navigationController?.setNavigationBarHidden(true, animated: false)
-    viewModel = SignUpViewModel()
-    viewModel?.delegate = self
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .darkBlue
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        viewModel = SignUpViewModel()
+        viewModel?.delegate = self
 
-    titleLabel.text = "Sign Up"
-    titleLabel.textColor = .white
-    titleLabel.font = Text.style.font
-    existingAccountLabel.text = "Already have an account?"
-    existingAccountLabel.textColor = .white
-    existingAccountLabel.font = Text.style7.font
-    footerLabel.text = "© The Permanent Legacy Foundation 2020"
-    footerLabel.textColor = .white
-    footerLabel.font = Text.style12.font
-  }
+        titleLabel.text = "Sign Up"
+        titleLabel.textColor = .white
+        titleLabel.font = Text.style.font
+        existingAccountLabel.text = "Already have an account?"
+        existingAccountLabel.textColor = .white
+        existingAccountLabel.font = Text.style7.font
+        existingAccountLabel.isUserInteractionEnabled = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(alreadyMemberAction(_:)))
+        existingAccountLabel.addGestureRecognizer(tapGesture)
+        
+        footerLabel.text = "© The Permanent Legacy Foundation 2020"
+        footerLabel.textColor = .white
+        footerLabel.font = Text.style12.font
+    }
 
-  @IBAction func onButtonClicked(_ sender: UIButton) {
-  }
+    @IBAction func onButtonClicked(_ sender: UIButton) {
+        print("Login pressed")
+    }
+    
+    @objc
+    func alreadyMemberAction(_ sender: UILabel) {
+        print("Loginnnnn")
+        
+        let storyboard = UIStoryboard(name: "Authentication", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "Login")
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
 }
 
 extension SignUpViewController: SignUpViewModelDelegate {
-  func updateTitle(with text: String?) {
-    titleLabel.text = text
-  }
+    func updateTitle(with text: String?) {
+        titleLabel.text = text
+    }
 }

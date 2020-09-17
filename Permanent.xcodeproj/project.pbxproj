@@ -45,6 +45,9 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
+		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
+		BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* LoginViewModel.swift */; };
 		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -100,6 +103,9 @@
 		638FB579479242C67D418F05 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
+		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		BC6D3B422513664C00390927 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +148,7 @@
 		06B0EB2124E6786F003D90C6 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				BC6D3B3F251363D600390927 /* Authentication */,
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
 				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */,
@@ -177,6 +184,7 @@
 				5E60451C251206F9002E47CB /* OnboardingViewModel.swift */,
 				5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */,
 				06B0EB2D24E68298003D90C6 /* SignUpViewModel.swift */,
+				BC6D3B422513664C00390927 /* LoginViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -279,6 +287,7 @@
 				5E2C5D2524D98EE300E2B95F /* LaunchScreen.storyboard */,
 				5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */,
 				06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */,
+				BC6D3B3D251363A900390927 /* Authentication.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -304,6 +313,14 @@
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 			);
 			path = XIBs;
+			sourceTree = "<group>";
+		};
+		BC6D3B3F251363D600390927 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				BC6D3B40251363E800390927 /* LoginViewController.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 		D01BC0154B74CFCC3532CF7E /* Pods */ = {
@@ -377,6 +394,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */,
@@ -440,6 +458,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
@@ -460,6 +479,7 @@
 				5E2C64C12510B3F50060BF5D /* UserDefaults.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
+				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
