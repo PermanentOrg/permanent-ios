@@ -48,6 +48,7 @@
 		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
 		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* LoginViewModel.swift */; };
+		BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -106,6 +107,7 @@
 		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
 		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 			children = (
 				06B0EB2724E67E6A003D90C6 /* UIColor.swift */,
 				5E2C64C02510B3F50060BF5D /* UserDefaults.swift */,
+				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -469,6 +472,7 @@
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
+				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,

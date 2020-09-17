@@ -12,6 +12,10 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var existingAccountLabel: UILabel!
     @IBOutlet var footerLabel: UILabel!
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +29,7 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         titleLabel.font = Text.style.font
         existingAccountLabel.text = "Already have an account?"
         existingAccountLabel.textColor = .white
-        existingAccountLabel.font = Text.style7.font
+        existingAccountLabel.font = Text.style5.font
         existingAccountLabel.isUserInteractionEnabled = true
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(alreadyMemberAction(_:)))

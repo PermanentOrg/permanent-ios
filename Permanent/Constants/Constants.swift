@@ -27,7 +27,7 @@ struct Text {
 }
 
 struct Constants {
-    static let customButtonHeight: CGFloat = 50
+    static let customButtonHeight: CGFloat = 40
     static let customButtonCornerRadius: CGFloat = 20
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",
