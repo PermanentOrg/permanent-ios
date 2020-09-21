@@ -49,6 +49,16 @@
 		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* LoginViewModel.swift */; };
 		BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
+		BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B462514E2D100390927 /* RequestProtocol.swift */; };
+		BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B482514E45F00390927 /* EnvironmentProtocol.swift */; };
+		BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4A2514E46D00390927 /* APIEnvironment.swift */; };
+		BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4C2514E57500390927 /* NetworkSessionProtocol.swift */; };
+		BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4E2514E60800390927 /* APINetworkSession.swift */; };
+		BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B502514EF3300390927 /* OperationProtocol.swift */; };
+		BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B522514F0C100390927 /* APIOperation.swift */; };
+		BC6D3B552514F26F00390927 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B542514F26F00390927 /* APIError.swift */; };
+		BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */; };
+		BC6D3B5A2514F62400390927 /* LoginEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B592514F62400390927 /* LoginEndpoint.swift */; };
 		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -108,6 +118,16 @@
 		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
+		BC6D3B462514E2D100390927 /* RequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProtocol.swift; sourceTree = "<group>"; };
+		BC6D3B482514E45F00390927 /* EnvironmentProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentProtocol.swift; sourceTree = "<group>"; };
+		BC6D3B4A2514E46D00390927 /* APIEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEnvironment.swift; sourceTree = "<group>"; };
+		BC6D3B4C2514E57500390927 /* NetworkSessionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSessionProtocol.swift; sourceTree = "<group>"; };
+		BC6D3B4E2514E60800390927 /* APINetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APINetworkSession.swift; sourceTree = "<group>"; };
+		BC6D3B502514EF3300390927 /* OperationProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationProtocol.swift; sourceTree = "<group>"; };
+		BC6D3B522514F0C100390927 /* APIOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIOperation.swift; sourceTree = "<group>"; };
+		BC6D3B542514F26F00390927 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestDispatcher.swift; sourceTree = "<group>"; };
+		BC6D3B592514F62400390927 /* LoginEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginEndpoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -298,6 +318,8 @@
 		BC1BDF18251355ED00F2D239 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				BC6D3B582514F61400390927 /* Layer */,
+				BC6D3B592514F62400390927 /* LoginEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -324,6 +346,22 @@
 				BC6D3B40251363E800390927 /* LoginViewController.swift */,
 			);
 			path = Authentication;
+			sourceTree = "<group>";
+		};
+		BC6D3B582514F61400390927 /* Layer */ = {
+			isa = PBXGroup;
+			children = (
+				BC6D3B462514E2D100390927 /* RequestProtocol.swift */,
+				BC6D3B482514E45F00390927 /* EnvironmentProtocol.swift */,
+				BC6D3B4A2514E46D00390927 /* APIEnvironment.swift */,
+				BC6D3B4C2514E57500390927 /* NetworkSessionProtocol.swift */,
+				BC6D3B4E2514E60800390927 /* APINetworkSession.swift */,
+				BC6D3B502514EF3300390927 /* OperationProtocol.swift */,
+				BC6D3B522514F0C100390927 /* APIOperation.swift */,
+				BC6D3B542514F26F00390927 /* APIError.swift */,
+				BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */,
+			);
+			path = Layer;
 			sourceTree = "<group>";
 		};
 		D01BC0154B74CFCC3532CF7E /* Pods */ = {
@@ -464,6 +502,7 @@
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
+				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
@@ -471,6 +510,7 @@
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
+				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
@@ -478,16 +518,24 @@
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
+				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				5EE1800124EEC47100496AF7 /* UserDefaultsService.swift in Sources */,
+				BC6D3B5A2514F62400390927 /* LoginEndpoint.swift in Sources */,
 				5E2C64C12510B3F50060BF5D /* UserDefaults.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
+				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
+				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
+				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
+				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,

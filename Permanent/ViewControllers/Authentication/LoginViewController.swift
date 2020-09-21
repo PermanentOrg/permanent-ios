@@ -53,13 +53,39 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     
     // MARK: - Actions
     
-    @IBAction func loginAction(_ sender: RoundedButton) {}
+    @IBAction
+    func loginAction(_ sender: RoundedButton) {
+        verifyUserAuthenticated()
+    }
     
-    @IBAction func signUpAction(_ sender: UIButton) {
+    @IBAction
+    func signUpAction(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func forgotPasswordAction(_ sender: UIButton) {}
+    @IBAction
+    func forgotPasswordAction(_ sender: UIButton) {}
+    
+    private func verifyUserAuthenticated() {
+        let requestDispatcher = APIRequestDispatcher(environment: APIEnvironment.production, networkSession: APINetworkSession())
+        let loginOperation = APIOperation(LoginEndpoint.verifyAuth)
+        
+        loginOperation.execute(in: requestDispatcher) { (result) in
+            //print(result)
+            
+            switch result {
+            case .json(let resp, _):
+                
+                print("Resp", resp)
+                
+                break
+                
+            default: break
+            }
+            
+        }
+    }
+    
 }
 
 extension LoginViewController: UITextFieldDelegate {
