@@ -30,6 +30,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     fileprivate func initUI() {
         view.backgroundColor = .darkBlue
         
+        viewModel = LoginViewModel()
+        
         loginLabel.text = "Log In"
         loginLabel.textColor = .white
         loginLabel.font = Text.style.font
@@ -55,7 +57,21 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     
     @IBAction
     func loginAction(_ sender: RoundedButton) {
-        verifyUserAuthenticated()
+        guard
+            let email = emailField.text,
+            let password = passwordField.text,
+            email.isNotEmpty, password.isNotEmpty else { return }
+        
+        let credentials = LoginCredentials(email, password)
+        
+        viewModel?.login(with: credentials, then: { success in
+            if success {
+                print("Succ")
+            } else {
+                // Display alert error
+                print("Error")
+            }
+        })
     }
     
     @IBAction
@@ -65,27 +81,6 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     
     @IBAction
     func forgotPasswordAction(_ sender: UIButton) {}
-    
-    private func verifyUserAuthenticated() {
-        let requestDispatcher = APIRequestDispatcher(environment: APIEnvironment.production, networkSession: APINetworkSession())
-        let loginOperation = APIOperation(LoginEndpoint.verifyAuth)
-        
-        loginOperation.execute(in: requestDispatcher) { (result) in
-            //print(result)
-            
-            switch result {
-            case .json(let resp, _):
-                
-                print("Resp", resp)
-                
-                break
-                
-            default: break
-            }
-            
-        }
-    }
-    
 }
 
 extension LoginViewController: UITextFieldDelegate {

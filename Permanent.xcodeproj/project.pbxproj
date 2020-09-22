@@ -59,6 +59,7 @@
 		BC6D3B552514F26F00390927 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B542514F26F00390927 /* APIError.swift */; };
 		BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */; };
 		BC6D3B5A2514F62400390927 /* LoginEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B592514F62400390927 /* LoginEndpoint.swift */; };
+		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		F3FE0AC0AF7A76A68F4E1357 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE3D471E11C88E9E3F4FD2A /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -128,6 +129,7 @@
 		BC6D3B542514F26F00390927 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestDispatcher.swift; sourceTree = "<group>"; };
 		BC6D3B592514F62400390927 /* LoginEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginEndpoint.swift; sourceTree = "<group>"; };
+		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +191,7 @@
 				06B0EB2724E67E6A003D90C6 /* UIColor.swift */,
 				5E2C64C02510B3F50060BF5D /* UserDefaults.swift */,
 				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
+				BC97A4682518E73300E43205 /* StringExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -536,6 +539,7 @@
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
+				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,

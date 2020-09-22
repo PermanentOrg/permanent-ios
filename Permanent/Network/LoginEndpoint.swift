@@ -25,8 +25,21 @@ extension LoginEndpoint: RequestProtocol {
     
     var parameters: RequestParameters? {
         switch self {
-        case .login:
-            return [:]
+        case .login(let credentials):
+            return [
+                "RequestVO": [
+                    "data": [[
+                        "AccountVO": [
+                            "primaryEmail": credentials.email
+                        ],
+                        "AccountPasswordVO": [
+                            "password": credentials.password
+                        ]
+                    ]],
+                    "apiKey": "5aef7dd1f32e0d9ca57290e3c82b59db"
+                ]
+            ]
+            
         default:
             return nil
         }
