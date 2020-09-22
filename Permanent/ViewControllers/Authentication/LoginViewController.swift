@@ -80,7 +80,11 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     }
     
     @IBAction
-    func forgotPasswordAction(_ sender: UIButton) {}
+    func forgotPasswordAction(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Authentication", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "VerificationCode")
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 extension LoginViewController: UITextFieldDelegate {
