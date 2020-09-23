@@ -28,7 +28,7 @@ extension LoginViewModel: LoginViewModelDelegate {
                 let status = self.extractLoginStatus(response)
                 handler(status)
 
-            case .error(let error, _):
+            case .error:
                 handler(.error)
 
             default:

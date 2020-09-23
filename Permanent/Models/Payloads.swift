@@ -24,4 +24,22 @@ struct Payloads {
             ]
         ]
     }
+    
+    static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "primaryEmail": credentials.email,
+                    ],
+                    "AuthVO": [
+                        "type": "type.auth.mfaValidation",
+                        "token": credentials.code
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": credentials.csrf
+            ]
+        ]
+    }
 }

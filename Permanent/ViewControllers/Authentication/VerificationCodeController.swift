@@ -23,6 +23,8 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     fileprivate func initUI() {
         view.backgroundColor = .darkBlue
         
+        viewModel = VerificationCodeViewModel()
+        
         titleLabel.text = "Enter verification code"
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
@@ -38,7 +40,23 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     
     // MARK: - Actions
     
-    @IBAction func confirmAction(_ sender: UIButton) {}
+    @IBAction func confirmAction(_ sender: UIButton) {
+        guard let code = codeField.text, code.isNotEmpty else { return }
+        
+        let credentials = VerifyCodeCredentials(
+            "adrian.creteanu@vspartners.us",
+            code,
+            "14fe5807f9158543d7440c1046b74852"
+        )
+        
+        viewModel?.verify(for: credentials, then: { success in
+            if success {
+                print("Success")
+            } else {
+                print("Error")
+            }
+        })
+    }
 }
 
 extension VerificationCodeController: UITextFieldDelegate {
