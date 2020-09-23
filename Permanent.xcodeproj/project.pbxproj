@@ -45,6 +45,8 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
+		BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */; };
 		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
 		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* LoginViewModel.swift */; };
@@ -115,6 +117,8 @@
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
+		BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardNames.swift; sourceTree = "<group>"; };
 		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
 		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -204,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
+				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 				06644A7C24EA6E35003CD359 /* Interfaces */,
 				06B0EB2B24E67FBC003D90C6 /* Models */,
 				BC1BDF18251355ED00F2D239 /* Network */,
+				BC64877C251B442C009D7DE1 /* Payloads */,
 				5EE17FFF24EEC44700496AF7 /* Services */,
 				BC1BDF17251355E100F2D239 /* Storyboards */,
 				06B0EB2124E6786F003D90C6 /* ViewControllers */,
@@ -328,6 +334,7 @@
 			isa = PBXGroup;
 			children = (
 				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
+				BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -338,6 +345,13 @@
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 			);
 			path = XIBs;
+			sourceTree = "<group>";
+		};
+		BC64877C251B442C009D7DE1 /* Payloads */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Payloads;
 			sourceTree = "<group>";
 		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
@@ -536,11 +550,13 @@
 				5EE1800124EEC47100496AF7 /* UserDefaultsService.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* LoginEndpoint.swift in Sources */,
 				5E2C64C12510B3F50060BF5D /* UserDefaults.swift in Sources */,
+				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
+				BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,

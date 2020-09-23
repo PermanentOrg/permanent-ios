@@ -22,37 +22,24 @@ extension LoginEndpoint: RequestProtocol {
     var headers: RequestHeaders? {
         return nil
     }
-    
+
     var parameters: RequestParameters? {
         switch self {
         case .login(let credentials):
-            return [
-                "RequestVO": [
-                    "data": [[
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AccountPasswordVO": [
-                            "password": credentials.password
-                        ]
-                    ]],
-                    "apiKey": "5aef7dd1f32e0d9ca57290e3c82b59db"
-                ]
-            ]
-            
+            return Payloads.loginPayload(credentials: credentials)
         default:
             return nil
         }
     }
-    
+
     var requestType: RequestType {
         .data
     }
-    
+
     var responseType: ResponseType {
         .json
     }
-    
+
     var path: String {
         switch self {
         case .verifyAuth:
@@ -61,7 +48,7 @@ extension LoginEndpoint: RequestProtocol {
             return "/auth/login"
         }
     }
-    
+
     var method: RequestMethod {
         return .post
     }

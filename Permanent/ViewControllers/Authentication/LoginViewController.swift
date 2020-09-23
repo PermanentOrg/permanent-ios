@@ -64,13 +64,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         let credentials = LoginCredentials(email, password)
         
-        viewModel?.login(with: credentials, then: { success in
-            if success {
-                print("Succ")
-            } else {
-                // Display alert error
-                print("Error")
-            }
+        viewModel?.login(with: credentials, then: { status in
+            self.handleLoginStatus(status)
         })
     }
     
@@ -80,9 +75,28 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     }
     
     @IBAction
-    func forgotPasswordAction(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "Authentication", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "VerificationCode")
+    func forgotPasswordAction(_ sender: UIButton) {}
+    
+    fileprivate func handleLoginStatus(_ status: LoginStatus) {
+        switch status {
+        case .success:
+            // TODO: Nav to main page
+            break
+            
+        case .mfaToken:
+            DispatchQueue.main.async {
+                self.openVerificationPage()
+            }
+            
+        case .error:
+            // TODO: Display error alert
+            break
+        }
+    }
+    
+    fileprivate func openVerificationPage() {
+        let storyboard = UIStoryboard(name: StoryboardNames.authentication.name, bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifiers.verificationCode.identifier)
         navigationController?.pushViewController(vc, animated: true)
     }
 }
