@@ -31,12 +31,6 @@ struct Constants {
     struct Design {}
     struct Keys {}
     
-    
-    
-    
-    
-    
-    
     // TODO: Move these to Translations
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",
@@ -58,4 +52,7 @@ extension Constants.Design {
     static let customButtonCornerRadius: CGFloat = 20
 }
 
+extension Constants.API {
+    static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
+}
 

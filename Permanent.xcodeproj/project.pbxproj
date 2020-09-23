@@ -47,6 +47,7 @@
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */; };
+		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
 		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
 		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* LoginViewModel.swift */; };
@@ -119,6 +120,7 @@
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardNames.swift; sourceTree = "<group>"; };
+		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
 		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
 		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 			children = (
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
+				BC648783251BA24C009D7DE1 /* Payloads.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -256,7 +259,6 @@
 				06644A7C24EA6E35003CD359 /* Interfaces */,
 				06B0EB2B24E67FBC003D90C6 /* Models */,
 				BC1BDF18251355ED00F2D239 /* Network */,
-				BC64877C251B442C009D7DE1 /* Payloads */,
 				5EE17FFF24EEC44700496AF7 /* Services */,
 				BC1BDF17251355E100F2D239 /* Storyboards */,
 				06B0EB2124E6786F003D90C6 /* ViewControllers */,
@@ -345,13 +347,6 @@
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 			);
 			path = XIBs;
-			sourceTree = "<group>";
-		};
-		BC64877C251B442C009D7DE1 /* Payloads */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Payloads;
 			sourceTree = "<group>";
 		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
@@ -536,6 +531,7 @@
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
+				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,

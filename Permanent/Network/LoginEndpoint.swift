@@ -26,7 +26,7 @@ extension LoginEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
         case .login(let credentials):
-            return Payloads.loginPayload(credentials: credentials)
+            return Payloads.loginPayload(for: credentials)
         default:
             return nil
         }
