@@ -14,6 +14,10 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: CustomTextField!
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
