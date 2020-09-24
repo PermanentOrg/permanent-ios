@@ -12,4 +12,8 @@ extension String {
     var isNotEmpty: Bool {
         return !self.isEmpty
     }
+    
+    func localized(withComment comment: String = "") -> String {
+        return NSLocalizedString(self, comment: comment)
+    }
 }

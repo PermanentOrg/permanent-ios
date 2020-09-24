@@ -32,12 +32,12 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         viewModel = LoginViewModel()
         
-        loginLabel.text = "Log In"
+        loginLabel.text = Translations.login
         loginLabel.textColor = .white
         loginLabel.font = Text.style.font
         
-        emailField.placeholder = "Email"
-        passwordField.placeholder = "Password"
+        emailField.placeholder = Translations.email
+        passwordField.placeholder = Translations.password
         
         signUpButton.setFont(Text.style5.font)
         signUpButton.setTitleColor(.white, for: [])
@@ -45,7 +45,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         forgotPasswordButton.setFont(Text.style5.font)
         forgotPasswordButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = "© The Permanent Legacy Foundation 2020"
+        copyrightLabel.text = Translations.copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         

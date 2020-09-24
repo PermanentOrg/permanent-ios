@@ -45,6 +45,8 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
+		BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DD251C8C4200E24A51 /* Translations.swift */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
@@ -118,6 +120,8 @@
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		BC4526DD251C8C4200E24A51 /* Translations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translations.swift; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardNames.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
@@ -303,6 +307,7 @@
 		BC1BDF162513558800F2D239 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				BC4526D7251BE50E00E24A51 /* Localization */,
 				5ED0856524E3E5CA00CDB4D3 /* Fonts */,
 				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
 				5E2C5D2824D98EE300E2B95F /* Info.plist */,
@@ -337,6 +342,7 @@
 			children = (
 				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
 				BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */,
+				BC4526DD251C8C4200E24A51 /* Translations.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -347,6 +353,14 @@
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 			);
 			path = XIBs;
+			sourceTree = "<group>";
+		};
+		BC4526D7251BE50E00E24A51 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				BC4526DC251BE53900E24A51 /* Localizable.strings */,
+			);
+			path = Localization;
 			sourceTree = "<group>";
 		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
@@ -462,6 +476,7 @@
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				5E2C5D2724D98EE300E2B95F /* LaunchScreen.storyboard in Resources */,
+				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				06B0EB2324E6788F003D90C6 /* SignUpViewController.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
@@ -550,6 +565,7 @@
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
+				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */,
@@ -575,6 +591,14 @@
 				5E2C5D2624D98EE300E2B95F /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		BC4526DC251BE53900E24A51 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BC4526DB251BE53900E24A51 /* en */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

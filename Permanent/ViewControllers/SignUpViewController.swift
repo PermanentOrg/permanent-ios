@@ -24,10 +24,10 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         viewModel = SignUpViewModel()
         viewModel?.delegate = self
 
-        titleLabel.text = "Sign Up"
+        titleLabel.text = Translations.signup
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
-        existingAccountLabel.text = "Already have an account?"
+        existingAccountLabel.text = Translations.alreadyMember
         existingAccountLabel.textColor = .white
         existingAccountLabel.font = Text.style5.font
         existingAccountLabel.isUserInteractionEnabled = true
@@ -35,7 +35,7 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(alreadyMemberAction(_:)))
         existingAccountLabel.addGestureRecognizer(tapGesture)
         
-        footerLabel.text = "© The Permanent Legacy Foundation 2020"
+        footerLabel.text = Translations.copyrightText
         footerLabel.textColor = .white
         footerLabel.font = Text.style12.font
     }
