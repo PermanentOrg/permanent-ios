@@ -47,6 +47,10 @@
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DD251C8C4200E24A51 /* Translations.swift */; };
+		BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */; };
+		BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E4251CACB300E24A51 /* AccountVO.swift */; };
+		BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E7251CACDF00E24A51 /* CodableHelper.swift */; };
+		BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E9251CADF600E24A51 /* ArchiveVO.swift */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
@@ -122,6 +126,10 @@
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BC4526DD251C8C4200E24A51 /* Translations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translations.swift; sourceTree = "<group>"; };
+		BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeResponse.swift; sourceTree = "<group>"; };
+		BC4526E4251CACB300E24A51 /* AccountVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVO.swift; sourceTree = "<group>"; };
+		BC4526E7251CACDF00E24A51 /* CodableHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableHelper.swift; sourceTree = "<group>"; };
+		BC4526E9251CADF600E24A51 /* ArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveVO.swift; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardNames.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
@@ -213,9 +221,11 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
+				BC4526E3251CACAB00E24A51 /* Data */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
 				BC648783251BA24C009D7DE1 /* Payloads.swift */,
+				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
+				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -256,6 +266,7 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				BC4526E6251CACD500E24A51 /* Helpers */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
 				BC1BDF162513558800F2D239 /* Assets */,
 				BC1BDF192513561800F2D239 /* Constants */,
@@ -361,6 +372,23 @@
 				BC4526DC251BE53900E24A51 /* Localizable.strings */,
 			);
 			path = Localization;
+			sourceTree = "<group>";
+		};
+		BC4526E3251CACAB00E24A51 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				BC4526E4251CACB300E24A51 /* AccountVO.swift */,
+				BC4526E9251CADF600E24A51 /* ArchiveVO.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		BC4526E6251CACD500E24A51 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
@@ -533,10 +561,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
+				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
+				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
+				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
@@ -575,6 +606,7 @@
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
+				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,

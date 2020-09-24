@@ -29,15 +29,15 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
         
         viewModel = VerificationCodeViewModel()
         
-        titleLabel.text = "Enter verification code"
+        titleLabel.text = Translations.enterVerificationCode
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        copyrightLabel.text = "© The Permanent Legacy Foundation 2020"
+        copyrightLabel.text = Translations.copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
-        codeField.placeholder = "Enter the 4-digit code"
+        codeField.placeholder = Translations.enterCode
         codeField.delegate = self
         codeField.smartInsertDeleteType = .no
     }
@@ -53,11 +53,13 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
             "14fe5807f9158543d7440c1046b74852"
         )
         
-        viewModel?.verify(for: credentials, then: { success in
-            if success {
+        viewModel?.verify(for: credentials, then: { status in
+            if status == .success {
                 print("Success")
             } else {
-                print("Error")
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                }
             }
         })
     }

@@ -16,4 +16,9 @@ struct Translations {
     static var copyrightText: String { return "CopyrightText".localized() }
     static var alreadyMember: String { return "AlreadyMember".localized() }
     static var next: String { return "Next".localized() }
+    static var enterVerificationCode: String { return "EnterVerificationCode".localized() }
+    static var enterCode: String { return "EnterCode".localized() }
+    static var error: String { return "Error".localized() }
+    static var errorMessage: String { return "ErrorMessage".localized() }
+    static var ok: String { return "Ok".localized() }
 }
