@@ -22,11 +22,14 @@ enum StoryboardName: String {
 enum ViewControllerIdentifier: String {
     case main
     case login
+    case signUp
     case onboarding
     case verificationCode
 
     var identifier: String {
         switch self {
+        case .signUp:
+            return "SignUp"
         case .verificationCode:
             return "VerificationCode"
         default:

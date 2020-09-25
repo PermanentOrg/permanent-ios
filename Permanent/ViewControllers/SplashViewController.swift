@@ -43,7 +43,11 @@ class SplashViewController: BaseViewController<SplashViewModel> {
         case .loggedIn:
             AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
         default:
-            AppDelegate.shared.rootViewController.setRoot(named: .login, from: .authentication)
+            if UserDefaultsService.shared.isNewUser() {
+                AppDelegate.shared.rootViewController.setRoot(named: .onboarding, from: .onboarding)
+            } else {
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+            }
         }
     }
 }

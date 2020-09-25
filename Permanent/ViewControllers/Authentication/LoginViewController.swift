@@ -39,9 +39,11 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         emailField.placeholder = Translations.email
         passwordField.placeholder = Translations.password
         
+        signUpButton.setTitle(Translations.signup, for: [])
         signUpButton.setFont(Text.style5.font)
         signUpButton.setTitleColor(.white, for: [])
         
+        forgotPasswordButton.setTitle(Translations.forgotPassword, for: [])
         forgotPasswordButton.setFont(Text.style5.font)
         forgotPasswordButton.setTitleColor(.white, for: [])
         

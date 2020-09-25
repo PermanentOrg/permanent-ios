@@ -47,15 +47,6 @@ class RootViewController: UIViewController {
         current = navController
     }
     
-    func setLoginAsRoot() {
-        // ONBOARDING???
-        let navController = UINavigationController(rootViewController: LoginViewController())
-        
-        setupChild(navController)
-        removeChild(current)
-        current = navController
-    }
-    
     fileprivate func setupChild(_ viewController: UIViewController) {
         addChild(viewController)
         viewController.view.frame = view.bounds
