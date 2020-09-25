@@ -8,36 +8,29 @@
 
 import Foundation
 
-enum StoryboardNames {
+enum StoryboardName: String {
+    case main
     case authentication
     case launch
     case onboarding
-    
+
     var name: String {
-        switch self {
-        case .authentication:
-            return "Authentication"
-        case .launch:
-            return "LaunchScreen"
-        case .onboarding:
-            return "Onboarding"
-        }
+        return self.rawValue.capitalized
     }
 }
 
-enum ViewControllerIdentifiers {
+enum ViewControllerIdentifier: String {
+    case main
     case login
     case onboarding
     case verificationCode
-    
+
     var identifier: String {
         switch self {
-        case .login:
-            return "Login"
-        case .onboarding:
-            return "Onboarding"
         case .verificationCode:
             return "VerificationCode"
+        default:
+            return self.rawValue.capitalized
         }
     }
 }

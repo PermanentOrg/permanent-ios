@@ -8,7 +8,6 @@
 
 import UIKit
 class BaseViewController<T: ViewModelInterface>: UIViewController {
-    
     var viewModel: T?
     
     override func viewDidLoad() {
@@ -30,6 +29,15 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: Translations.ok, style: .default, handler: nil))
 
-        self.present(alert, animated: true)
+        present(alert, animated: true)
+    }
+    
+    func styleNavBar() {
+        navigationController?.navigationBar.barTintColor = .darkBlue
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: Text.style14.font
+        ]
     }
 }

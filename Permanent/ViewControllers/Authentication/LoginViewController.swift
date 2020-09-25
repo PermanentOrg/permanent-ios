@@ -51,6 +51,11 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         emailField.delegate = self
         passwordField.delegate = self
+        
+        #if DEBUG
+        emailField.text = "adrian.creteanu@vspartners.us"
+        passwordField.text = "Test1234"
+        #endif
     }
     
     // MARK: - Actions
@@ -65,7 +70,10 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         let credentials = LoginCredentials(email, password)
         
         viewModel?.login(with: credentials, then: { status in
-            self.handleLoginStatus(status)
+            DispatchQueue.main.async {
+                self.handleLoginStatus(status)
+            }
+            
         })
     }
     
@@ -80,24 +88,12 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     fileprivate func handleLoginStatus(_ status: LoginStatus) {
         switch status {
         case .success:
-            // TODO: Nav to main page
-            break
-            
+            navigationController?.navigate(to: .main, from: .main)
         case .mfaToken:
-            DispatchQueue.main.async {
-                self.openVerificationPage()
-            }
-            
+            navigationController?.navigate(to: .verificationCode, from: .authentication)
         case .error:
-            // TODO: Display error alert
-            break
+            showAlert(title: Translations.error, message: Translations.errorMessage)
         }
-    }
-    
-    fileprivate func openVerificationPage() {
-        let storyboard = UIStoryboard(name: StoryboardNames.authentication.name, bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifiers.verificationCode.identifier)
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

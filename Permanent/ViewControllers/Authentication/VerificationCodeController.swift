@@ -54,14 +54,19 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
         )
         
         viewModel?.verify(for: credentials, then: { status in
-            if status == .success {
-                print("Success")
-            } else {
-                DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
-                }
+            DispatchQueue.main.async {
+                self.handleVerifyStatus(status)
             }
         })
+    }
+    
+    fileprivate func handleVerifyStatus(_ status: CodeVerificationStatus) {
+        switch status {
+        case .success:
+            navigationController?.navigate(to: .main, from: .main)
+        case .error:
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+        }
     }
 }
 

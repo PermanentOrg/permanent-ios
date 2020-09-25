@@ -46,8 +46,8 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     
     @objc
     func alreadyMemberAction(_ sender: UILabel) {
-        let storyboard = UIStoryboard(name: StoryboardNames.authentication.name, bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifiers.login.identifier)
+        let storyboard = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
