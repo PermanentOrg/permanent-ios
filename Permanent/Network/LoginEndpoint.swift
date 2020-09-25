@@ -10,58 +10,52 @@ import Foundation
 
 // TODO: See if this type is appropiate.
 typealias LoginCredentials = (email: String, password: String)
+typealias VerifyCodeCredentials = (email: String, code: String, csrf: String)
 
 enum LoginEndpoint {
     /// Verifies if user is authenticated.
     case verifyAuth
     /// Performs a login with an email & password credentials.
     case login(credentials: LoginCredentials)
+    /// Verifies the code received on mail or sms.
+    case verify(credentials: VerifyCodeCredentials)
 }
 
 extension LoginEndpoint: RequestProtocol {
     var headers: RequestHeaders? {
         return nil
     }
-    
+
     var parameters: RequestParameters? {
         switch self {
         case .login(let credentials):
-            return [
-                "RequestVO": [
-                    "data": [[
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AccountPasswordVO": [
-                            "password": credentials.password
-                        ]
-                    ]],
-                    "apiKey": "5aef7dd1f32e0d9ca57290e3c82b59db"
-                ]
-            ]
-            
+            return Payloads.loginPayload(for: credentials)
+        case .verify(let credentials):
+            return Payloads.verifyPayload(for: credentials)
         default:
             return nil
         }
     }
-    
+
     var requestType: RequestType {
         .data
     }
-    
+
     var responseType: ResponseType {
         .json
     }
-    
+
     var path: String {
         switch self {
         case .verifyAuth:
             return "/auth/loggedin"
         case .login:
             return "/auth/login"
+        case .verify:
+            return "/auth/verify"
         }
     }
-    
+
     var method: RequestMethod {
         return .post
     }

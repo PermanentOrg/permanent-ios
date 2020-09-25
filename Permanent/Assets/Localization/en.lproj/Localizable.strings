@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  Permanent
+
+  Created by Adrian Creteanu on 23/09/2020.
+  Copyright © 2020 Victory Square Partners. All rights reserved.
+*/
+
+"Signup" = "Sign Up";
+"Login" = "Log in";
+"Email" = "Email";
+"Password" = "Password";
+"CopyrightText" = "© The Permanent Legacy Foundation 2020";
+"AlreadyMember" = "Already have an account?";
+"Next" = "Next";
+"EnterVerificationCode" = "Enter verification code";
+"EnterCode" = "Enter the 4-digit code";
+"Error" = "Error";
+"ErrorMessage" = "Something went wrong. Please try again later.";
+"Ok" = "Ok";

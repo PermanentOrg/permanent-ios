@@ -27,8 +27,11 @@ struct Text {
 }
 
 struct Constants {
-    static let customButtonHeight: CGFloat = 40
-    static let customButtonCornerRadius: CGFloat = 20
+    struct API {}
+    struct Design {}
+    struct Keys {}
+    
+    // TODO: Move these to Translations
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",
         "Preserve your most important \ndocuments with peace of mind.",
@@ -43,3 +46,13 @@ struct Constants {
         "Get Started"]
     static let onboardingPageImage = ["1","2","3"]
 }
+
+extension Constants.Design {
+    static let customButtonHeight: CGFloat = 40
+    static let customButtonCornerRadius: CGFloat = 20
+}
+
+extension Constants.API {
+    static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
+}
+

@@ -32,12 +32,12 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         viewModel = LoginViewModel()
         
-        loginLabel.text = "Log In"
+        loginLabel.text = Translations.login
         loginLabel.textColor = .white
         loginLabel.font = Text.style.font
         
-        emailField.placeholder = "Email"
-        passwordField.placeholder = "Password"
+        emailField.placeholder = Translations.email
+        passwordField.placeholder = Translations.password
         
         signUpButton.setFont(Text.style5.font)
         signUpButton.setTitleColor(.white, for: [])
@@ -45,12 +45,17 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         forgotPasswordButton.setFont(Text.style5.font)
         forgotPasswordButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = "© The Permanent Legacy Foundation 2020"
+        copyrightLabel.text = Translations.copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
         emailField.delegate = self
         passwordField.delegate = self
+        
+        #if DEBUG
+        emailField.text = "adrian.creteanu@vspartners.us"
+        passwordField.text = "Test1234"
+        #endif
     }
     
     // MARK: - Actions
@@ -64,13 +69,11 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         let credentials = LoginCredentials(email, password)
         
-        viewModel?.login(with: credentials, then: { success in
-            if success {
-                print("Succ")
-            } else {
-                // Display alert error
-                print("Error")
+        viewModel?.login(with: credentials, then: { status in
+            DispatchQueue.main.async {
+                self.handleLoginStatus(status)
             }
+            
         })
     }
     
@@ -81,6 +84,17 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     
     @IBAction
     func forgotPasswordAction(_ sender: UIButton) {}
+    
+    fileprivate func handleLoginStatus(_ status: LoginStatus) {
+        switch status {
+        case .success:
+            navigationController?.navigate(to: .main, from: .main)
+        case .mfaToken:
+            navigationController?.navigate(to: .verificationCode, from: .authentication)
+        case .error:
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+        }
+    }
 }
 
 extension LoginViewController: UITextFieldDelegate {

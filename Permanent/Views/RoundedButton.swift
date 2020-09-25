@@ -16,7 +16,7 @@ class RoundedButton: CustomButton {
         titleLabel?.font = Text.style.font
         titleLabel?.textAlignment = Text.style.alignment
         setTitleColor(UIColor.white, for: .normal)
-        layer.cornerRadius = Constants.customButtonCornerRadius
-        heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.customButtonHeight).isActive = true
+        layer.cornerRadius = Constants.Design.customButtonCornerRadius
+        heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.Design.customButtonHeight).isActive = true
     }
 }
