@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BigLogoView" customModule="Permanent" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="Nzl-nX-3xO" id="qgn-Zm-IR5"/>
+                <outlet property="logoLabel" destination="y79-bb-Z8T" id="T1F-UT-w2t"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Nzl-nX-3xO">
+            <rect key="frame" x="0.0" y="0.0" width="415" height="385"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="logo_preview" translatesAutoresizingMaskIntoConstraints="NO" id="9rZ-9G-aVD" userLabel="Logo Image View">
+                    <rect key="frame" x="0.0" y="44" width="415" height="286"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="9rZ-9G-aVD" secondAttribute="height" multiplier="415:286" id="Sfh-X8-fpS"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Permanent.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y79-bb-Z8T" userLabel="App Name Label">
+                    <rect key="frame" x="151" y="330" width="113.5" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="9rZ-9G-aVD" firstAttribute="top" secondItem="Tf8-zn-hba" secondAttribute="top" id="4NM-MK-RhK"/>
+                <constraint firstItem="Tf8-zn-hba" firstAttribute="bottom" secondItem="y79-bb-Z8T" secondAttribute="bottom" id="78z-cx-COZ"/>
+                <constraint firstItem="9rZ-9G-aVD" firstAttribute="leading" secondItem="Tf8-zn-hba" secondAttribute="leading" id="C78-UD-1lE"/>
+                <constraint firstItem="Tf8-zn-hba" firstAttribute="trailing" secondItem="9rZ-9G-aVD" secondAttribute="trailing" id="Hh9-5f-DrP"/>
+                <constraint firstItem="y79-bb-Z8T" firstAttribute="centerX" secondItem="Tf8-zn-hba" secondAttribute="centerX" id="SrQ-2A-BCe"/>
+                <constraint firstItem="y79-bb-Z8T" firstAttribute="top" secondItem="9rZ-9G-aVD" secondAttribute="bottom" id="jDy-HY-OnG"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="Tf8-zn-hba"/>
+            <point key="canvasLocation" x="139.85507246376812" y="-106.13839285714285"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="logo_preview" width="249.5" height="192.5"/>
+    </resources>
+</document>
