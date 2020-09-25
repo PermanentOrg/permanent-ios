@@ -6,7 +6,9 @@
 //  Copyright © 2020 Lucian Cerbu. All rights reserved.
 //
 import UIKit
-//MARK: - Color Parts
+
+// MARK: - Color Parts
+
 extension UIColor {
     static var mainPink = UIColor(red: 232/255, green: 68/255, blue: 133/255, alpha: 1)
     static var darkBlue = UIColor(red: 19/255, green: 27/255, blue: 74/255, alpha: 1)
@@ -23,4 +25,8 @@ extension UIColor {
     static var lightGray = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1)
     static var middleGrey = UIColor(red: 96/255, green: 96/255, blue: 96/255, alpha: 1)
     static var black = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
+}
+
+extension UIColor {
+    static var primary = UIColor.darkBlue
 }

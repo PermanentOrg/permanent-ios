@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             mainNavicationController.viewControllers = [loginViewController]
         }
 
-        window?.rootViewController = mainNavicationController
+        window?.rootViewController = RootViewController()
         window?.makeKeyAndVisible()
 
         initFirebase()
@@ -45,5 +45,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         FirebaseApp.configure(options: fileOpts)
+    }
+}
+
+extension AppDelegate {
+    static var shared: AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+
+    // TODO: Maybe make these optional?
+    var rootViewController: RootViewController {
+        return window!.rootViewController as! RootViewController
     }
 }
