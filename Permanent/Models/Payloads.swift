@@ -9,6 +9,19 @@
 import Foundation
 
 struct Payloads {
+    static func forgotPasswordPayload(for email: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "primaryEmail": email
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey
+            ]
+        ]
+    }
+    
     static func loginPayload(for credentials: LoginCredentials) -> RequestParameters {
         return [
             "RequestVO": [

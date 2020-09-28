@@ -14,14 +14,14 @@ class LoginViewModel: ViewModelInterface {
 
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
+    func forgotPassword(email: String, then handler: @escaping (RequestStatus) -> Void)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
-        let requestDispatcher = APIRequestDispatcher()
         let loginOperation = APIOperation(LoginEndpoint.login(credentials: credentials))
 
-        loginOperation.execute(in: requestDispatcher) { result in
+        loginOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
 
@@ -34,6 +34,41 @@ extension LoginViewModel: LoginViewModelDelegate {
             default:
                 break
             }
+        }
+    }
+
+    func forgotPassword(email: String, then handler: @escaping (RequestStatus) -> Void) {
+        let forgotPasswordOperation = APIOperation(LoginEndpoint.forgotPassword(email: email))
+
+        forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                let modelTuple: (model: LoginResponse?, status: RequestStatus) = self.convertToModel(from: response)
+                if modelTuple.model?.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error)
+                }
+
+            case .error:
+                handler(.error)
+
+            default:
+                break
+            }
+        }
+    }
+
+    // TODO: Convert to typealias
+    func convertToModel<T: Decodable>(from object: Any?) -> (model: T?, status: RequestStatus) {
+        guard let json = object else { return (nil, .error) }
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            let decodedModel = try JSONDecoder().decode(T.self, from: data)
+            return (decodedModel, .success)
+        } catch {
+            return (nil, .error)
         }
     }
 
@@ -62,4 +97,9 @@ enum LoginStatus {
     case success
     case error
     case mfaToken
+}
+
+enum RequestStatus {
+    case success
+    case error
 }
