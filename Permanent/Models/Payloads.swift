@@ -50,8 +50,7 @@ struct Payloads {
                         "token": credentials.code
                     ]
                 ]],
-                "apiKey": Constants.API.apiKey,
-                "csrf": credentials.csrf
+                "apiKey": Constants.API.apiKey
             ]
         ]
     }

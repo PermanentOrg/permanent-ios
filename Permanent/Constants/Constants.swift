@@ -29,7 +29,9 @@ struct Text {
 struct Constants {
     struct API {}
     struct Design {}
-    struct Keys {}
+    struct Keys {
+        struct StorageKeys {}
+    }
     
     // TODO: Move these to Translations
     static let onboardingTextBold = [
@@ -56,3 +58,6 @@ extension Constants.API {
     static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
 }
 
+extension Constants.Keys.StorageKeys {
+    static let emailStorageKey = "emailStorageKey"
+}

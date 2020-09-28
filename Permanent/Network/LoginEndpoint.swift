@@ -10,7 +10,7 @@ import Foundation
 
 // TODO: See if this type is appropiate.
 typealias LoginCredentials = (email: String, password: String)
-typealias VerifyCodeCredentials = (email: String, code: String, csrf: String)
+typealias VerifyCodeCredentials = (email: String, code: String)
 
 enum LoginEndpoint {
     /// Verifies if user is authenticated.

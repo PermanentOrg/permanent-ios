@@ -25,7 +25,6 @@ extension LoginViewModel: LoginViewModelDelegate {
         loginOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-
                 let status = self.extractLoginStatus(response)
                 handler(status)
 
