@@ -22,3 +22,5 @@
 "ForgotPassword" = "Forgot Password?";
 "Success" = "Success";
 "EmailSent" = "An email with instructions to change your password has been sent at %@.";
+"Cancel" = "Cancel";
+"ResetPassword" = "Reset your password";

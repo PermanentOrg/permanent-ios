@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit.UIAlertController
 
 class LoginViewModel: ViewModelInterface {
     weak var delegate: LoginViewModelDelegate?
@@ -14,7 +15,7 @@ class LoginViewModel: ViewModelInterface {
 
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
-    func forgotPassword(email: String, then handler: @escaping (RequestStatus) -> Void)
+    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
@@ -37,7 +38,7 @@ extension LoginViewModel: LoginViewModelDelegate {
         }
     }
 
-    func forgotPassword(email: String, then handler: @escaping (RequestStatus) -> Void) {
+    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void) {
         let forgotPasswordOperation = APIOperation(LoginEndpoint.forgotPassword(email: email))
 
         forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
@@ -45,18 +46,34 @@ extension LoginViewModel: LoginViewModelDelegate {
             case .json(let response, _):
                 let modelTuple: (model: LoginResponse?, status: RequestStatus) = self.convertToModel(from: response)
                 if modelTuple.model?.isSuccessful == true {
-                    handler(.success)
+                    handler(email, .success)
                 } else {
-                    handler(.error)
+                    handler(nil, .error)
                 }
 
             case .error:
-                handler(.error)
+                handler(nil, .error)
 
             default:
                 break
             }
         }
+    }
+
+    func createEmailInputAlert(then handler: @escaping (String?, RequestStatus) -> Void) -> UIAlertController {
+        let alert = UIAlertController(title: Translations.resetPassword, message: nil, preferredStyle: .alert)
+
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Enter your email here"
+        })
+
+        alert.addAction(UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: Translations.ok, style: .default, handler: { _ in
+            guard let email: String = alert.textFields?.first?.text else { return }
+            self.forgotPassword(email: email, then: handler)
+        }))
+
+        return alert
     }
 
     // TODO: Convert to typealias

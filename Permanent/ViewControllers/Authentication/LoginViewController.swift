@@ -86,22 +86,22 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     
     @IBAction
     func forgotPasswordAction(_ sender: UIButton) {
-        guard
-            let email = emailField.text,
-            email.isNotEmpty else { return }
-            
-        viewModel?.forgotPassword(email: email, then: { status in
+        let alertController = viewModel?.createEmailInputAlert(then: { email, status in
             DispatchQueue.main.async {
                 self.handleForgotPasswordStatus(status, email: email)
             }
         })
+        
+        guard let alert = alertController else { return }
+        
+        present(alert, animated: true)
     }
     
-    fileprivate func handleForgotPasswordStatus(_ status: RequestStatus, email: String) {
+    fileprivate func handleForgotPasswordStatus(_ status: RequestStatus, email: String?) {
         switch status {
         case .success:
             showAlert(title: Translations.success,
-                      message: String.init(format: Translations.emailSent, email))
+                      message: String(format: Translations.emailSent, email!))
         case .error:
             showAlert(title: Translations.error, message: Translations.errorMessage)
         }

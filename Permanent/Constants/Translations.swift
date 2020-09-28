@@ -25,4 +25,6 @@ struct Translations {
     static var ok: String { return "Ok".localized() }
     static var success: String { return "Success".localized() }
     static var emailSent: String { return "EmailSent".localized() }
+    static var cancel: String { return "Cancel".localized() }
+    static var resetPassword: String { return "ResetPassword".localized() }
 }
