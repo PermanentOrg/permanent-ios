@@ -9,13 +9,12 @@
 import UIKit
 
 class OnboadingViewController: BaseViewController<OnboardingViewModel> {
-    
-    override var prefersStatusBarHidden: Bool{
+    override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    @IBOutlet weak var nextButtonLabel: RoundedButton!
-    @IBOutlet weak var skipButtonLabel: UIButton!
+    @IBOutlet var nextButtonLabel: RoundedButton!
+    @IBOutlet var skipButtonLabel: UIButton!
     
     var delegate: OnboardingViewModelDelegate?
     weak var pageViewController: PageViewController?
@@ -26,7 +25,7 @@ class OnboadingViewController: BaseViewController<OnboardingViewModel> {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .darkBlue
         skipButtonLabel.setTitleColor(.white, for: .normal)
-        nextButtonLabel.setTitle("Next", for: .normal)
+        nextButtonLabel.setTitle(Translations.next, for: .normal)
     }
     
     @IBAction func nextButton(_ sender: RoundedButton) {
@@ -34,36 +33,36 @@ class OnboadingViewController: BaseViewController<OnboardingViewModel> {
             goToLogin()
         }
     }
+
     @IBAction func skipButton(_ sender: UIButton) {
         goToLogin()
     }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if  segue.identifier == "showPageViewControllerSegue" {
-            
+        if segue.identifier == "showPageViewControllerSegue" {
             pageViewController = segue.destination as? PageViewController
             
             pageViewController?.viewModel = PageViewModel()
             pageViewController?.viewModel?.delegate = pageViewController
             
-            pageViewController?.viewModel?.onCurrentPageChange = { [weak self] (currentPageIndex, numberOfPages) in
+            pageViewController?.viewModel?.onCurrentPageChange = { [weak self] currentPageIndex, _ in
                 self?.nextButtonLabel.setTitle("\(Constants.onboardingBottomButtonText[currentPageIndex])", for: .normal)
             }
         }
     }
 }
-extension OnboadingViewController: OnboardingViewModelDelegate,UIScrollViewDelegate {
-    func configureHolderView() {
-        
-    }
+
+extension OnboadingViewController: OnboardingViewModelDelegate, UIScrollViewDelegate {
+    func configureHolderView() {}
     
-    func nextButtonPressed(page: Int, scrollView: UIScrollView) {
-        
-    }
+    func nextButtonPressed(page: Int, scrollView: UIScrollView) {}
     
     func goToLogin() {
-        
         UserDefaultsService.shared.setIsNewUser()
-        navigationController?.setViewControllers([SignUpViewController.init(nibName: "SignUpViewController", bundle: .main)], animated: true)
+        
+        let signUpController = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
+            .instantiateViewController(withIdentifier: ViewControllerIdentifier.signUp.identifier)
+        
+        navigationController?.setViewControllers([signUpController], animated: true)
     }
-    
 }

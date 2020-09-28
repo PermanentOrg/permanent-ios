@@ -15,17 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let mainNavicationController = UINavigationController()
-        let loginViewController = SignUpViewController(nibName: "SignUpViewController", bundle: .main)
-
-        if UserDefaultsService.shared.isNewUser() {
-            let onboardingView = UIStoryboard(name: "Onboarding", bundle: .main).instantiateViewController(withIdentifier: "Onboarding")
-            mainNavicationController.viewControllers = [onboardingView]
-        } else {
-            mainNavicationController.viewControllers = [loginViewController]
-        }
-
-        window?.rootViewController = mainNavicationController
+        window?.rootViewController = RootViewController()
         window?.makeKeyAndVisible()
 
         initFirebase()
@@ -45,5 +35,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         FirebaseApp.configure(options: fileOpts)
+    }
+}
+
+extension AppDelegate {
+    static var shared: AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+
+    // TODO: Maybe make these optional?
+    var rootViewController: RootViewController {
+        return window!.rootViewController as! RootViewController
     }
 }

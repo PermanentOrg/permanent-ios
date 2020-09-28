@@ -9,9 +9,13 @@
 import UIKit
 
 class SignUpViewController: BaseViewController<SignUpViewModel> {
-    @IBOutlet var titleLabel: UILabel!
-    @IBOutlet var existingAccountLabel: UILabel!
-    @IBOutlet var footerLabel: UILabel!
+    @IBOutlet private var titleLabel: UILabel!
+    @IBOutlet private var copyrightLabel: UILabel!
+    @IBOutlet private var loginButton: UIButton!
+    @IBOutlet private var signUpButton: RoundedButton!
+    @IBOutlet private var nameField: CustomTextField!
+    @IBOutlet private var emailField: CustomTextField!
+    @IBOutlet private var passwordField: CustomTextField!
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -19,43 +23,57 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .darkBlue
+        view.backgroundColor = .primary
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
         viewModel = SignUpViewModel()
         viewModel?.delegate = self
 
         titleLabel.text = Translations.signup
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
-        existingAccountLabel.text = Translations.alreadyMember
-        existingAccountLabel.textColor = .white
-        existingAccountLabel.font = Text.style5.font
-        existingAccountLabel.isUserInteractionEnabled = true
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(alreadyMemberAction(_:)))
-        existingAccountLabel.addGestureRecognizer(tapGesture)
+        nameField.placeholder = Translations.fullName
+        emailField.placeholder = Translations.email
+        passwordField.placeholder = Translations.password
         
-        footerLabel.text = Translations.copyrightText
-        footerLabel.textColor = .white
-        footerLabel.font = Text.style12.font
+        loginButton.setTitle(Translations.alreadyMember, for: [])
+        loginButton.setFont(Text.style5.font)
+        loginButton.setTitleColor(.white, for: [])
+        
+        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.textColor = .white
+        copyrightLabel.font = Text.style12.font
+        
+        nameField.delegate = self
+        emailField.delegate = self
+        passwordField.delegate = self
     }
 
-    @IBAction func onButtonClicked(_ sender: UIButton) {
-        print("Login pressed")
+    @IBAction func signUpAction(_ sender: RoundedButton) {
+        print("Sign up pressed")
     }
     
-    @objc
-    func alreadyMemberAction(_ sender: UILabel) {
+    @IBAction
+    func alreadyMemberAction(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    
-    
 }
 
 extension SignUpViewController: SignUpViewModelDelegate {
     func updateTitle(with text: String?) {
         titleLabel.text = text
+    }
+}
+
+extension SignUpViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        (textField as? TextField)?.toggleBorder(active: true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        (textField as? TextField)?.toggleBorder(active: false)
     }
 }

@@ -17,7 +17,6 @@
 		06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8E24EBF72C003CD359 /* BigLogoView.swift */; };
 		06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA524EC208F003D0EB0 /* CustomTextField.swift */; };
 		06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA724EC20CB003D0EB0 /* TextField.swift */; };
-		06B0EB2324E6788F003D90C6 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */; };
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
 		06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2D24E68298003D90C6 /* SignUpViewModel.swift */; };
@@ -55,6 +54,10 @@
 		BC4526EF251CD65100E24A51 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EE251CD65100E24A51 /* MainViewModel.swift */; };
 		BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC4526F0251CD6B600E24A51 /* Main.storyboard */; };
 		BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */; };
+		BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F4251DF5AE00E24A51 /* RootViewController.swift */; };
+		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
+		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
+		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardName.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
@@ -89,7 +92,6 @@
 		06644A8E24EBF72C003CD359 /* BigLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigLogoView.swift; sourceTree = "<group>"; };
 		06819AA524EC208F003D0EB0 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		06819AA724EC20CB003D0EB0 /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
-		06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		06B0EB2724E67E6A003D90C6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		06B0EB2924E67EC4003D90C6 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -138,6 +140,10 @@
 		BC4526EE251CD65100E24A51 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		BC4526F0251CD6B600E24A51 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
+		BC4526F4251DF5AE00E24A51 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
+		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardName.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
@@ -207,6 +213,8 @@
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
 				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				BC4526EC251CD62C00E24A51 /* MainViewController.swift */,
+				BC4526F4251DF5AE00E24A51 /* RootViewController.swift */,
+				BC4526F6251DF5E900E24A51 /* SplashViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -231,6 +239,7 @@
 				BC648783251BA24C009D7DE1 /* Payloads.swift */,
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
+				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -244,6 +253,7 @@
 				BC6D3B422513664C00390927 /* LoginViewModel.swift */,
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
 				BC4526EE251CD65100E24A51 /* MainViewModel.swift */,
+				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -339,7 +349,6 @@
 			children = (
 				5E2C5D2524D98EE300E2B95F /* Launch.storyboard */,
 				5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */,
-				06B0EB2224E6788F003D90C6 /* SignUpViewController.xib */,
 				BC6D3B3D251363A900390927 /* Authentication.storyboard */,
 				BC4526F0251CD6B600E24A51 /* Main.storyboard */,
 			);
@@ -526,7 +535,6 @@
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
-				06B0EB2324E6788F003D90C6 /* SignUpViewController.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 			);
@@ -595,6 +603,7 @@
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
+				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BC4526EF251CD65100E24A51 /* MainViewModel.swift in Sources */,
@@ -606,6 +615,7 @@
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
@@ -619,6 +629,7 @@
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
+				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
 				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
@@ -627,6 +638,7 @@
 				06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
+				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,

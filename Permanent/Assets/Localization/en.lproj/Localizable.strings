@@ -18,3 +18,5 @@
 "Error" = "Error";
 "ErrorMessage" = "Something went wrong. Please try again later.";
 "Ok" = "Ok";
+"FullName" = "Full Name";
+"ForgotPassword" = "Forgot Password?";
