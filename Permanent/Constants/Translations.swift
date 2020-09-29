@@ -23,4 +23,7 @@ struct Translations {
     static var error: String { return "Error".localized() }
     static var errorMessage: String { return "ErrorMessage".localized() }
     static var ok: String { return "Ok".localized() }
+    static var accept: String { return "Accept".localized() }
+    static var decline: String { return "Decline".localized() }
+    static var termsConditions: String { return "TermsConditions".localized() }
 }
