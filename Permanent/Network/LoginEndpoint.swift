@@ -21,6 +21,8 @@ enum LoginEndpoint {
     case verify(credentials: VerifyCodeCredentials)
     /// Sends an email in order to change the password.
     case forgotPassword(email: String)
+    /// Creates an new user account.
+    case signUp
 }
 
 extension LoginEndpoint: RequestProtocol {
@@ -59,6 +61,8 @@ extension LoginEndpoint: RequestProtocol {
             return "/auth/verify"
         case .forgotPassword:
             return "/auth/sendEmailForgotPassword"
+        case .signUp:
+            return "/auth/post"
         }
     }
 

@@ -17,6 +17,17 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
     
+    fileprivate var areFieldsValid: Bool {
+        guard
+            nameField.text?.isNotEmpty == true,
+            let emailAddress = emailField.text, emailAddress.isNotEmpty, emailAddress.isValidEmail,
+            let password = passwordField.text, password.count > 8 else {
+            return false
+        }
+             
+        return true
+    }
+    
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -51,14 +62,17 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
-        print("Sign up pressed")
+        guard areFieldsValid else {
+            showAlert(title: Translations.error, message: "Fields are invalid!")
+            return
+        }
     }
     
     @IBAction
     func alreadyMemberAction(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
