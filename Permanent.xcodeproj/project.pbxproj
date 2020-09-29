@@ -78,10 +78,7 @@
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */; };
 		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
-		BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */; };
-		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
-		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
-		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
+		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -168,10 +165,7 @@
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeController.swift; sourceTree = "<group>"; };
 		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
-		BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsConditionsPopup.swift; sourceTree = "<group>"; };
-		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
-		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -181,7 +175,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */,
 				D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -210,7 +203,6 @@
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
-				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -218,7 +210,6 @@
 		06B0EB2124E6786F003D90C6 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				BCB0725A2523497B003E2F66 /* Popups */,
 				BC4526EB251CD61500E24A51 /* Onboarding */,
 				BC6D3B3F251363D600390927 /* Authentication */,
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
@@ -338,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */,
+				BCB0725825221494003E2F66 /* PreferencesManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -389,7 +381,6 @@
 			isa = PBXGroup;
 			children = (
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
-				BCB0725F25235C59003E2F66 /* NavigationBarView.xib */,
 			);
 			path = XIBs;
 			sourceTree = "<group>";
@@ -457,18 +448,9 @@
 			path = Layer;
 			sourceTree = "<group>";
 		};
-		BCB0725A2523497B003E2F66 /* Popups */ = {
-			isa = PBXGroup;
-			children = (
-				BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */,
-			);
-			path = Popups;
-			sourceTree = "<group>";
-		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BCB0725D2523565A003E2F66 /* WebKit.framework */,
 				864293632D1F8008599F3A97 /* Pods_Permanent.framework */,
 			);
 			name = Frameworks;
@@ -558,7 +540,6 @@
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
-				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,11 +606,9 @@
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
-				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
-				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
 				BC4526EF251CD65100E24A51 /* MainViewModel.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
@@ -642,6 +621,7 @@
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */,
+				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
