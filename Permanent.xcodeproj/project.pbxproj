@@ -78,6 +78,7 @@
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */; };
 		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
+		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -164,6 +165,7 @@
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeController.swift; sourceTree = "<group>"; };
 		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
+		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -327,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				5EE1800024EEC47000496AF7 /* UserDefaultsService.swift */,
+				BCB0725825221494003E2F66 /* PreferencesManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -618,6 +621,7 @@
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */,
+				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,

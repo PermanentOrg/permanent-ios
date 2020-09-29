@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit.UIAlertController
 
 class LoginViewModel: ViewModelInterface {
     weak var delegate: LoginViewModelDelegate?
@@ -14,17 +15,16 @@ class LoginViewModel: ViewModelInterface {
 
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
+    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
-        let requestDispatcher = APIRequestDispatcher()
         let loginOperation = APIOperation(LoginEndpoint.login(credentials: credentials))
 
-        loginOperation.execute(in: requestDispatcher) { result in
+        loginOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-
                 let status = self.extractLoginStatus(response)
                 handler(status)
 
@@ -34,6 +34,57 @@ extension LoginViewModel: LoginViewModelDelegate {
             default:
                 break
             }
+        }
+    }
+
+    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void) {
+        let forgotPasswordOperation = APIOperation(LoginEndpoint.forgotPassword(email: email))
+
+        forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                let modelTuple: (model: LoginResponse?, status: RequestStatus) = self.convertToModel(from: response)
+                if modelTuple.model?.isSuccessful == true {
+                    handler(email, .success)
+                } else {
+                    handler(nil, .error)
+                }
+
+            case .error:
+                handler(nil, .error)
+
+            default:
+                break
+            }
+        }
+    }
+
+    func createEmailInputAlert(then handler: @escaping (String?, RequestStatus) -> Void) -> UIAlertController {
+        let alert = UIAlertController(title: Translations.resetPassword, message: nil, preferredStyle: .alert)
+
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Enter your email here"
+        })
+
+        alert.addAction(UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: Translations.ok, style: .default, handler: { _ in
+            guard let email: String = alert.textFields?.first?.text else { return }
+            self.forgotPassword(email: email, then: handler)
+        }))
+
+        return alert
+    }
+
+    // TODO: Convert to typealias
+    func convertToModel<T: Decodable>(from object: Any?) -> (model: T?, status: RequestStatus) {
+        guard let json = object else { return (nil, .error) }
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            let decodedModel = try JSONDecoder().decode(T.self, from: data)
+            return (decodedModel, .success)
+        } catch {
+            return (nil, .error)
         }
     }
 
@@ -62,4 +113,9 @@ enum LoginStatus {
     case success
     case error
     case mfaToken
+}
+
+enum RequestStatus {
+    case success
+    case error
 }
