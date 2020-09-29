@@ -45,13 +45,12 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     // MARK: - Actions
     
     @IBAction func confirmAction(_ sender: UIButton) {
-        guard let code = codeField.text, code.isNotEmpty else { return }
+        guard
+            let email: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey),
+            let code = codeField.text,
+            code.isNotEmpty else { return }
         
-        let credentials = VerifyCodeCredentials(
-            "adrian.creteanu@vspartners.us",
-            code,
-            "14fe5807f9158543d7440c1046b74852"
-        )
+        let credentials = VerifyCodeCredentials(email, code)
         
         viewModel?.verify(for: credentials, then: { status in
             DispatchQueue.main.async {

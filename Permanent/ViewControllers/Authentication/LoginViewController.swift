@@ -73,7 +73,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         viewModel?.login(with: credentials, then: { status in
             DispatchQueue.main.async {
-                self.handleLoginStatus(status)
+                self.handleLoginStatus(status, credentials: credentials)
             }
             
         })
@@ -85,13 +85,34 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     }
     
     @IBAction
-    func forgotPasswordAction(_ sender: UIButton) {}
+    func forgotPasswordAction(_ sender: UIButton) {
+        let alertController = viewModel?.createEmailInputAlert(then: { email, status in
+            DispatchQueue.main.async {
+                self.handleForgotPasswordStatus(status, email: email)
+            }
+        })
+        
+        guard let alert = alertController else { return }
+        
+        present(alert, animated: true)
+    }
     
-    fileprivate func handleLoginStatus(_ status: LoginStatus) {
+    fileprivate func handleForgotPasswordStatus(_ status: RequestStatus, email: String?) {
+        switch status {
+        case .success:
+            showAlert(title: Translations.success,
+                      message: String(format: Translations.emailSent, email!))
+        case .error:
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+        }
+    }
+    
+    fileprivate func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
         switch status {
         case .success:
             navigationController?.navigate(to: .main, from: .main)
         case .mfaToken:
+            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
             navigationController?.navigate(to: .verificationCode, from: .authentication)
         case .error:
             showAlert(title: Translations.error, message: Translations.errorMessage)
