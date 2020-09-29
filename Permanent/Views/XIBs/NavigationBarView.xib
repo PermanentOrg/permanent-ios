@@ -10,7 +10,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NavigationBarView" customModule="Permanent" customModuleProvider="target">
             <connections>
                 <outlet property="contentView" destination="iN0-l3-epB" id="uMO-Ld-zAx"/>
-                <outlet property="leftIconView" destination="Qm2-0H-yju" id="XV4-Yo-Z7H"/>
+                <outlet property="leftButton" destination="nIj-Py-vWq" id="AHK-kr-UhE"/>
                 <outlet property="titleLabel" destination="f2H-T5-nqu" id="8zz-Jr-WRU"/>
             </connections>
         </placeholder>
@@ -25,18 +25,17 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Qm2-0H-yju" userLabel="Left Icon View">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nIj-Py-vWq" userLabel="Left Button">
                     <rect key="frame" x="20" y="37" width="30" height="30"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="30" id="T9T-h6-acN"/>
-                        <constraint firstAttribute="width" constant="30" id="i5i-FK-MRn"/>
-                    </constraints>
-                </imageView>
+                    <connections>
+                        <action selector="leftButtonAction:" destination="-1" eventType="touchUpInside" id="Oac-AB-QOO"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <constraints>
-                <constraint firstItem="Qm2-0H-yju" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="Dft-DT-ec4"/>
-                <constraint firstItem="Qm2-0H-yju" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="cqj-mq-ZNJ"/>
+                <constraint firstItem="nIj-Py-vWq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="1Nw-Fj-eCR"/>
+                <constraint firstItem="nIj-Py-vWq" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="9a4-LJ-6u6"/>
                 <constraint firstItem="f2H-T5-nqu" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="itp-RO-baa"/>
                 <constraint firstItem="f2H-T5-nqu" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="mBn-hF-0dx"/>
             </constraints>

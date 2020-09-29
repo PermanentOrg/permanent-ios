@@ -27,13 +27,9 @@ class TermsConditionsPopup: UIViewController {
         contentView.backgroundColor = .backgroundPrimary
         webView.backgroundColor = .backgroundPrimary
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(close))
-        view.addGestureRecognizer(tap)
-        
-        let link = URL(string:"https://www.permanent.org/privacy-policy/")!
-        let request = URLRequest(url: link)
+        let link = URL(string: Constants.URL.termsConditionsURL)
+        let request = URLRequest(url: link!)
         webView.load(request)
-        
         
         declineButton.backgroundColor = .lightGray
         declineButton.setTitle(Translations.decline, for: [])
@@ -42,13 +38,27 @@ class TermsConditionsPopup: UIViewController {
         acceptButton.setTitle(Translations.accept, for: [])
         
         navBarView.title = Translations.termsConditions
-        if #available(iOS 13.0, *) {
-            navBarView.icon = UIImage(systemName: "xmark")
-        }
+        navBarView.icon = UIImage(named: "close")
+        navBarView.delegate = self
     }
     
-    @objc
+    // MARK: - Actions
+    
+    @IBAction func acceptAction(_ sender: RoundedButton) {
+        // TODO - Open phone number screen
+    }
+    
+    @IBAction func declineAction(_ sender: RoundedButton) {
+        close()
+    }
+    
     func close() {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+extension TermsConditionsPopup: NavigationBarViewDelegate {
+    func didTapLeftButton() {
+        close()
     }
 }

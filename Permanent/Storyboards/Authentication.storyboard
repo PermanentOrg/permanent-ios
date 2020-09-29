@@ -213,10 +213,16 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OaK-kf-z91" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="124.5" height="40"/>
                                                 <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="declineAction:" destination="K5X-4i-JV7" eventType="touchUpInside" id="WAi-qL-IJ6"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SHM-i5-eFY" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="149.5" y="0.0" width="124.5" height="40"/>
                                                 <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="acceptAction:" destination="K5X-4i-JV7" eventType="touchUpInside" id="xtJ-Uk-hhK"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>

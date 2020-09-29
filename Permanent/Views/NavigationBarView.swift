@@ -8,10 +8,16 @@
 
 import UIKit
 
+protocol NavigationBarViewDelegate: class {
+    func didTapLeftButton()
+}
+
 class NavigationBarView: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var titleLabel: UILabel!
-    @IBOutlet var leftIconView: UIImageView!
+    @IBOutlet var leftButton: UIButton!
+    
+    weak var delegate: NavigationBarViewDelegate?
     
     var title: String? {
         didSet {
@@ -21,7 +27,7 @@ class NavigationBarView: UIView {
     
     var icon: UIImage? {
         didSet {
-            leftIconView.image = icon
+            leftButton.setImage(icon, for: [])
         }
     }
     
@@ -46,6 +52,13 @@ class NavigationBarView: UIView {
         titleLabel.textColor = .white
         titleLabel.font = Text.style9.font
         
-        leftIconView.tintColor = .white
+        leftButton.tintColor = .white
     }
+    
+    // MARK: - Actions
+    
+    @IBAction func leftButtonAction(_ sender: UIButton) {
+        delegate?.didTapLeftButton()
+    }
+    
 }
