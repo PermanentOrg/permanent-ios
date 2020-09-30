@@ -20,6 +20,9 @@
 "Ok" = "Ok";
 "FullName" = "Full Name";
 "ForgotPassword" = "Forgot Password?";
+"Accept" = "Accept";
+"Decline" = "Decline";
+"TermsConditions" = "Terms and Conditions";
 "Success" = "Success";
 "EmailSent" = "An email with instructions to change your password has been sent at %@.";
 "Cancel" = "Cancel";

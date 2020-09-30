@@ -26,29 +26,29 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="V6g-bM-pBz">
-                                <rect key="frame" x="30" y="385" width="354" height="100.5"/>
+                                <rect key="frame" x="30" y="385" width="354" height="93"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Qht-TS-1xP" userLabel="Email Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="354" height="38.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="354" height="34"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="u5U-Gg-4ER" userLabel="Password Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="63.5" width="354" height="37"/>
+                                        <rect key="frame" x="0.0" y="59" width="354" height="34"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                     </textField>
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aVZ-og-PaL" userLabel="Login Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="30" y="505.5" width="354" height="40"/>
+                                <rect key="frame" x="30" y="498" width="354" height="30"/>
                                 <state key="normal" title="Log In"/>
                                 <connections>
                                     <action selector="loginAction:" destination="bK2-eO-6zl" eventType="touchUpInside" id="KZs-Fw-6mF"/>
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="CuG-Wi-Hat">
-                                <rect key="frame" x="30" y="575.5" width="354" height="65"/>
+                                <rect key="frame" x="30" y="558" width="354" height="65"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p8i-6H-xL7" userLabel="Sign Up Button">
                                         <rect key="frame" x="150" y="0.0" width="54" height="30"/>
@@ -181,6 +181,88 @@
             </objects>
             <point key="canvasLocation" x="-1391" y="-1617"/>
         </scene>
+        <!--Terms Conditions Popup-->
+        <scene sceneID="8F2-76-mGI">
+            <objects>
+                <viewController storyboardIdentifier="TermsConditions" id="K5X-4i-JV7" customClass="TermsConditionsPopup" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="pSd-oo-797">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y2O-jY-wca" userLabel="Content View">
+                                <rect key="frame" x="20" y="59" width="374" height="788"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="12a-AK-N4y" userLabel="Navigation Bar View" customClass="NavigationBarView" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="55"/>
+                                        <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="55" id="LfT-L8-0fP"/>
+                                        </constraints>
+                                    </view>
+                                    <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJt-fn-z04">
+                                        <rect key="frame" x="0.0" y="55" width="374" height="653"/>
+                                        <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <wkWebViewConfiguration key="configuration">
+                                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                            <wkPreferences key="preferences"/>
+                                        </wkWebViewConfiguration>
+                                    </wkWebView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="sWz-Og-kE4">
+                                        <rect key="frame" x="50" y="728" width="274" height="40"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OaK-kf-z91" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="124.5" height="40"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="declineAction:" destination="K5X-4i-JV7" eventType="touchUpInside" id="WAi-qL-IJ6"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SHM-i5-eFY" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="149.5" y="0.0" width="124.5" height="40"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="acceptAction:" destination="K5X-4i-JV7" eventType="touchUpInside" id="xtJ-Uk-hhK"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="sWz-Og-kE4" secondAttribute="trailing" constant="50" id="BFi-bL-SCt"/>
+                                    <constraint firstItem="12a-AK-N4y" firstAttribute="top" secondItem="Y2O-jY-wca" secondAttribute="top" id="TL3-nO-7qo"/>
+                                    <constraint firstAttribute="bottom" secondItem="sWz-Og-kE4" secondAttribute="bottom" constant="20" id="ZRO-Pe-1Gc"/>
+                                    <constraint firstItem="12a-AK-N4y" firstAttribute="leading" secondItem="Y2O-jY-wca" secondAttribute="leading" id="Zdk-X2-kAF"/>
+                                    <constraint firstItem="sWz-Og-kE4" firstAttribute="top" secondItem="dJt-fn-z04" secondAttribute="bottom" constant="20" id="cdC-Zh-A97"/>
+                                    <constraint firstAttribute="trailing" secondItem="12a-AK-N4y" secondAttribute="trailing" id="eA6-qQ-K5P"/>
+                                    <constraint firstItem="dJt-fn-z04" firstAttribute="leading" secondItem="Y2O-jY-wca" secondAttribute="leading" id="exG-0s-shc"/>
+                                    <constraint firstItem="sWz-Og-kE4" firstAttribute="leading" secondItem="Y2O-jY-wca" secondAttribute="leading" constant="50" id="f5C-85-3XM"/>
+                                    <constraint firstItem="dJt-fn-z04" firstAttribute="top" secondItem="12a-AK-N4y" secondAttribute="bottom" id="gDs-IA-VQL"/>
+                                    <constraint firstAttribute="trailing" secondItem="dJt-fn-z04" secondAttribute="trailing" id="vj7-q2-7R9"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Y2O-jY-wca" firstAttribute="leading" secondItem="mxx-4i-dE5" secondAttribute="leading" constant="20" id="6hJ-gS-m0A"/>
+                            <constraint firstItem="Y2O-jY-wca" firstAttribute="top" secondItem="mxx-4i-dE5" secondAttribute="top" constant="15" id="YE2-iW-sOe"/>
+                            <constraint firstItem="mxx-4i-dE5" firstAttribute="bottom" secondItem="Y2O-jY-wca" secondAttribute="bottom" constant="15" id="i8C-Dm-Ogq"/>
+                            <constraint firstItem="mxx-4i-dE5" firstAttribute="trailing" secondItem="Y2O-jY-wca" secondAttribute="trailing" constant="20" id="pkQ-jV-5kZ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mxx-4i-dE5"/>
+                    </view>
+                    <connections>
+                        <outlet property="acceptButton" destination="SHM-i5-eFY" id="PQf-2N-Icv"/>
+                        <outlet property="contentView" destination="Y2O-jY-wca" id="6xQ-f2-1PA"/>
+                        <outlet property="declineButton" destination="OaK-kf-z91" id="ZAs-eV-npe"/>
+                        <outlet property="navBarView" destination="12a-AK-N4y" id="Sy6-0j-adl"/>
+                        <outlet property="webView" destination="dJt-fn-z04" id="V5q-c2-VLq"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8JS-Sa-5DY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-386" y="-1617"/>
+        </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="nNj-Rs-6Tg">
             <objects>
@@ -199,34 +281,34 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="bxt-QA-yQd">
-                                <rect key="frame" x="30" y="385" width="354" height="164"/>
+                                <rect key="frame" x="30" y="385" width="354" height="152"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="J0q-9P-Urs" userLabel="Name Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="354" height="38.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="354" height="34"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DRF-B7-pJi" userLabel="Email Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="63.5" width="354" height="38.5"/>
+                                        <rect key="frame" x="0.0" y="59" width="354" height="34"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xdm-Yz-NSI" userLabel="Password Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="127" width="354" height="37"/>
+                                        <rect key="frame" x="0.0" y="118" width="354" height="34"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                     </textField>
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KGx-6Y-vKV" userLabel="Signup Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="30" y="569" width="354" height="40"/>
+                                <rect key="frame" x="30" y="557" width="354" height="30"/>
                                 <state key="normal" title="Sign Up"/>
                                 <connections>
                                     <action selector="signUpAction:" destination="2Ht-bW-0lp" eventType="touchUpInside" id="oUw-ql-cpJ"/>
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="L2V-T1-HUK">
-                                <rect key="frame" x="30" y="639" width="354" height="30"/>
+                                <rect key="frame" x="30" y="617" width="354" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ctD-JF-wVe" userLabel="Login Button">
                                         <rect key="frame" x="116.5" y="0.0" width="121" height="30"/>

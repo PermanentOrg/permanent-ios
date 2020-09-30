@@ -66,6 +66,8 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
             showAlert(title: Translations.error, message: "Fields are invalid!")
             return
         }
+        
+        self.navigationController?.display(.termsConditions, from: .authentication, modally: true)
     }
     
     @IBAction

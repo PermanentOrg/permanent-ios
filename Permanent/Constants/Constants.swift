@@ -29,6 +29,7 @@ struct Text {
 struct Constants {
     struct API {}
     struct Design {}
+    struct URL {}
     struct Keys {
         struct StorageKeys {}
     }
@@ -56,6 +57,10 @@ extension Constants.Design {
 
 extension Constants.API {
     static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
+}
+
+extension Constants.URL {
+    static let termsConditionsURL = "https://www.permanent.org/privacy-policy/"
 }
 
 extension Constants.Keys.StorageKeys {
