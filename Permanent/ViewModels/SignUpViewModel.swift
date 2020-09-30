@@ -9,9 +9,35 @@
 import UIKit
 
 class SignUpViewModel: ViewModelInterface {
-  weak var delegate: SignUpViewModelDelegate?
+    weak var delegate: SignUpViewModelDelegate?
 }
 
 protocol SignUpViewModelDelegate: ViewModelDelegateInterface {
-  func updateTitle(with text: String?)
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void)
+}
+
+extension SignUpViewModel: SignUpViewModelDelegate {
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        let signUpOperation = APIOperation(AuthenticationEndpoint.signUp(credentials: credentials))
+
+        signUpOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+
+                let modelTuple: (model: SignUpResponse?, status: RequestStatus) = JSONHelper.convertToModel(from: response)
+
+                if modelTuple.model?.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error)
+                }
+
+            case .error:
+                handler(.error)
+
+            default:
+                break
+            }
+        }
+    }
 }

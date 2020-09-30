@@ -38,6 +38,26 @@ struct Payloads {
         ]
     }
     
+    static func signUpPayload(for credentials: SignUpCredentials) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "primaryEmail": credentials.loginCredentials.email,
+                        "fullName": credentials.name,
+                        "agreed": true,
+                        "optIn": false
+                    ],
+                    "AccountPasswordVO": [
+                        "password": credentials.loginCredentials.password,
+                        "passwordVerify": credentials.loginCredentials.password,
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey
+            ]
+        ]
+    }
+    
     static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
         return [
             "RequestVO": [

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TwoStepVerificationViewController: UIViewController {
+class TwoStepVerificationViewController: BaseViewController<SignUpViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
     @IBOutlet private var extraInfoLabel: UILabel!
@@ -16,6 +16,8 @@ class TwoStepVerificationViewController: UIViewController {
     @IBOutlet private var skipButton: UIButton!
     @IBOutlet private var phoneField: CustomTextField!
     @IBOutlet private var copyrightLabel: UILabel!
+    
+    var signUpCredentials: SignUpCredentials?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +28,8 @@ class TwoStepVerificationViewController: UIViewController {
     
     fileprivate func initUI() {
         view.backgroundColor = .primary
+        
+        viewModel = SignUpViewModel()
         
         titleLabel.text = Translations.twoStepTitle
         titleLabel.textColor = .white
@@ -55,9 +59,21 @@ class TwoStepVerificationViewController: UIViewController {
     
     // MARK: - Actions
     
-    @IBAction func confirmAction(_ sender: RoundedButton) {}
+    @IBAction func confirmAction(_ sender: RoundedButton) {
+        guard let phone = phoneField.text, phone.isNotEmpty else {
+            showAlert(title: "Error", message: "Invalid phone no.")
+            return
+        }
+        
+    }
     
-    @IBAction func skipAction(_ sender: UIButton) {}
+    @IBAction func skipAction(_ sender: UIButton) {
+       
+    }
+    
+    func addPhoneNumber() {
+        guard let credentials = signUpCredentials else { return }
+    }
 }
 
 extension TwoStepVerificationViewController: UITextFieldDelegate {

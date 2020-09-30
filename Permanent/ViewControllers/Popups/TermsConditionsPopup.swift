@@ -9,12 +9,18 @@
 import UIKit
 import WebKit
 
+protocol TermsConditionsPopupDelegate: class {
+    func didAccept()
+}
+
 class TermsConditionsPopup: UIViewController {
     @IBOutlet private var contentView: UIView!
     @IBOutlet var navBarView: NavigationBarView!
     @IBOutlet private var webView: WKWebView!
     @IBOutlet var declineButton: RoundedButton!
     @IBOutlet var acceptButton: RoundedButton!
+    
+    weak var delegate: TermsConditionsPopupDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +51,8 @@ class TermsConditionsPopup: UIViewController {
     // MARK: - Actions
     
     @IBAction func acceptAction(_ sender: RoundedButton) {
-        // TODO - Open phone number screen
+        delegate?.didAccept()
+        close()
     }
     
     @IBAction func declineAction(_ sender: RoundedButton) {

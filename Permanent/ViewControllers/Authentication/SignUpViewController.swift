@@ -21,7 +21,8 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         guard
             nameField.text?.isNotEmpty == true,
             let emailAddress = emailField.text, emailAddress.isNotEmpty, emailAddress.isValidEmail,
-            let password = passwordField.text, password.count > 8 else {
+            let password = passwordField.text, password.count > 8
+        else {
             return false
         }
              
@@ -38,7 +39,6 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         viewModel = SignUpViewModel()
-        viewModel?.delegate = self
 
         titleLabel.text = Translations.signup
         titleLabel.textColor = .white
@@ -59,15 +59,28 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         nameField.delegate = self
         emailField.delegate = self
         passwordField.delegate = self
+        
+        #if DEBUG
+        nameField.text = "Adrian Crt"
+        emailField.text = "adrian.creteanu+2@vspartners.us"
+        passwordField.text = "Test1234"
+        #endif
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
-        guard areFieldsValid else {
+        guard
+            // areFieldsValid,
+            let termsConditionsVC = navigationController?.create(
+                viewController: .termsConditions,
+                from: .authentication
+            ) as? TermsConditionsPopup
+        else {
             showAlert(title: Translations.error, message: "Fields are invalid!")
             return
         }
-        
-        self.navigationController?.display(.termsConditions, from: .authentication, modally: true)
+    
+        termsConditionsVC.delegate = self
+        navigationController?.present(termsConditionsVC, animated: true)
     }
     
     @IBAction
@@ -76,12 +89,30 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
         navigationController?.pushViewController(vc, animated: true)
     }
-}
-
-extension SignUpViewController: SignUpViewModelDelegate {
-    func updateTitle(with text: String?) {
-        titleLabel.text = text
+    
+    
+    func signUp() {
+        let loginCredentials = LoginCredentials(emailField.text!, passwordField.text!)
+        
+        let signUpCredentials = SignUpCredentials(
+            nameField.text!,
+            loginCredentials
+        )
+        
+        viewModel?.signUp(with: signUpCredentials, then: { (status) in
+            if status == .success {
+                DispatchQueue.main.async {
+                    self.navigationController?.display(.twoStepVerification, from: .authentication)
+                }
+            } else {
+                // TODO: Pass also the error message along
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                }
+            }
+        })
     }
+    
 }
 
 extension SignUpViewController: UITextFieldDelegate {
@@ -91,5 +122,11 @@ extension SignUpViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: false)
+    }
+}
+
+extension SignUpViewController: TermsConditionsPopupDelegate {
+    func didAccept() {
+        signUp()
     }
 }

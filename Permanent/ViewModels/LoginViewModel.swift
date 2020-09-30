@@ -20,7 +20,7 @@ protocol LoginViewModelDelegate: ViewModelDelegateInterface {
 
 extension LoginViewModel: LoginViewModelDelegate {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(LoginEndpoint.login(credentials: credentials))
+        let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
 
         loginOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -38,7 +38,7 @@ extension LoginViewModel: LoginViewModelDelegate {
     }
 
     func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void) {
-        let forgotPasswordOperation = APIOperation(LoginEndpoint.forgotPassword(email: email))
+        let forgotPasswordOperation = APIOperation(AuthenticationEndpoint.forgotPassword(email: email))
 
         forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

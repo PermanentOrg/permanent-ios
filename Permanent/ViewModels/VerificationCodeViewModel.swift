@@ -19,7 +19,7 @@ protocol VerificationCodeViewModelDelegate: ViewModelDelegateInterface {
 extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
     func verify(for credentials: VerifyCodeCredentials, then handler: @escaping (CodeVerificationStatus) -> Void) {
         let requestDispatcher = APIRequestDispatcher()
-        let verifyOperation = APIOperation(LoginEndpoint.verify(credentials: credentials))
+        let verifyOperation = APIOperation(AuthenticationEndpoint.verify(credentials: credentials))
 
         verifyOperation.execute(in: requestDispatcher) { result in
             switch result {
