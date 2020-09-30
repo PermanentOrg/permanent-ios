@@ -27,3 +27,8 @@
 "EmailSent" = "An email with instructions to change your password has been sent at %@.";
 "Cancel" = "Cancel";
 "ResetPassword" = "Reset your password";
+"TwoStepTitle" = "Protect your account with 2-Step Verification";
+"TwoStepSubtitle" = "Add an extra layer of security by entering a verification code we send to your phone.";
+"AddLater" = "You can always add this later.";
+"Skip" = "Skip";
+"Submit" = "Submit";

@@ -78,11 +78,12 @@
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* VerificationCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */; };
 		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
+		BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */; };
+		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */; };
 		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
 		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
-		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
 
@@ -169,11 +170,12 @@
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeController.swift; sourceTree = "<group>"; };
 		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
+		BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewController.swift; sourceTree = "<group>"; };
+		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsConditionsPopup.swift; sourceTree = "<group>"; };
 		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
-		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -440,6 +442,7 @@
 				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
 				BC6D3B40251363E800390927 /* LoginViewController.swift */,
 				BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */,
+				BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -666,6 +669,7 @@
 				06B0EB2E24E68298003D90C6 /* SignUpViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
+				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
