@@ -25,6 +25,8 @@ enum ViewControllerIdentifier: String {
     case signUp
     case onboarding
     case verificationCode
+    case termsConditions
+    case twoStepVerification
 
     var identifier: String {
         switch self {
@@ -32,6 +34,10 @@ enum ViewControllerIdentifier: String {
             return "SignUp"
         case .verificationCode:
             return "VerificationCode"
+        case .termsConditions:
+            return "TermsConditions"
+        case .twoStepVerification:
+            return "TwoStepVerification"
         default:
             return self.rawValue.capitalized
         }

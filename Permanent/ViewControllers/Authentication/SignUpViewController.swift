@@ -51,7 +51,10 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
-        print("Sign up pressed")
+        
+        self.navigationController?.display(.termsConditions, from: .authentication, modally: true)
+        
+        
     }
     
     @IBAction
