@@ -58,18 +58,18 @@ struct Payloads {
         ]
     }
     
-    static func update(accountId: String) -> RequestParameters {
+    static func update(accountId: String, updateData: UpdateData, csrf: String) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
                     "AccountVO": [
                         "accountId": accountId,
-                        //"primaryPhone": "5551124411",
-                        //"primaryEmail": "",
-                        //"fullName": ""
+                        "primaryPhone": updateData.phone,
+                        "primaryEmail": updateData.email,
                     ]
                 ]],
-                "apiKey": Constants.API.apiKey
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
             ]
         ]
     }

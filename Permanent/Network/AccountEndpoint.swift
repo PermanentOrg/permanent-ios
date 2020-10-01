@@ -14,7 +14,7 @@ enum AccountEndpoint {
     /// Creates an new user account.
     case signUp(credentials: SignUpCredentials)
     /// Updates user account.
-    case update(accountId: String)
+    case update(accountId: String, updateData: UpdateData, csrf: String)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -31,8 +31,8 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp(let credentials):
             return Payloads.signUpPayload(for: credentials)
-        case .update(let id):
-            return Payloads.update(accountId: id)
+        case .update(let id, let data, let csrf):
+            return Payloads.update(accountId: id, updateData: data, csrf: csrf)
         }
     }
     

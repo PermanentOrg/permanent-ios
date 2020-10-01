@@ -48,6 +48,23 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
             if let message = verifyResponse.results?.first?.message?.first, message.starts(with: "warning.auth") {
                 return .error
             } else {
+                
+                if let email = verifyResponse.results?.first?.data?.first?.accountVO?.primaryEmail {
+                    PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
+                }
+                
+                
+                if let accountId = verifyResponse.results?.first?.data?.first?.accountVO?.accountID {
+                    PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+                }
+                
+                
+                if let csrf = verifyResponse.csrf {
+                    PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+                }
+                
+                
+                
                 return .success
             }
 

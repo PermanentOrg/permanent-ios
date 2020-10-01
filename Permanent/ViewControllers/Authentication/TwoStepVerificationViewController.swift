@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TwoStepVerificationViewController: BaseViewController<SignUpViewModel> {
+class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
     @IBOutlet private var extraInfoLabel: UILabel!
@@ -29,7 +29,7 @@ class TwoStepVerificationViewController: BaseViewController<SignUpViewModel> {
     fileprivate func initUI() {
         view.backgroundColor = .primary
         
-        viewModel = SignUpViewModel()
+        viewModel = AccountViewModel()
         
         titleLabel.text = Translations.twoStepTitle
         titleLabel.textColor = .white
@@ -60,19 +60,47 @@ class TwoStepVerificationViewController: BaseViewController<SignUpViewModel> {
     // MARK: - Actions
     
     @IBAction func confirmAction(_ sender: RoundedButton) {
-        guard let phone = phoneField.text, phone.isNotEmpty else {
-            showAlert(title: "Error", message: "Invalid phone no.")
+        guard
+            let phone = phoneField.text,
+            phone.isNotEmpty, phone.isPhoneNumber
+        else {
+            showAlert(title: "Error", message: "Invalid phone number")
             return
         }
         
+        updatePhone()
     }
     
     @IBAction func skipAction(_ sender: UIButton) {
-       
+        openMainScreen()
     }
     
-    func addPhoneNumber() {
-        guard let credentials = signUpCredentials else { return }
+    private func openMainScreen() {
+        navigationController?.navigate(to: .main, from: .main)
+    }
+    
+    func updatePhone() {
+        guard
+            let email: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey),
+            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
+            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return }
+        
+        let updateData = UpdateData(email, phoneField.text!)
+        
+        viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { (status) in
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.openMainScreen()
+                }
+                
+            case .error:
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "ERRROR")
+                }
+            }
+        })
+        
     }
 }
 

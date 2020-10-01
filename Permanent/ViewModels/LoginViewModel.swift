@@ -121,9 +121,26 @@ extension LoginViewModel: LoginViewModelDelegate {
             let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
             let loginResponse = try decoder.decode(LoginResponse.self, from: data)
 
+            // treat unknown error
             if let message = loginResponse.results?.first?.message?.first, message == "warning.auth.mfaToken" {
                 return .mfaToken
             } else {
+                // TODO: Move this saving elsewhere.
+                
+                if let email = loginResponse.results?.first?.data?.first?.accountVO?.primaryEmail {
+                    PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
+                }
+                
+                
+                if let accountId = loginResponse.results?.first?.data?.first?.accountVO?.accountID {
+                    PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+                }
+                
+                
+                if let csrf = loginResponse.csrf {
+                    PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+                }
+                
                 return .success
             }
 

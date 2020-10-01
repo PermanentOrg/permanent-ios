@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewModel: ViewModelInterface {
+class AccountViewModel: ViewModelInterface {
     weak var delegate: SignUpViewModelDelegate?
 }
 
@@ -16,7 +16,7 @@ protocol SignUpViewModelDelegate: ViewModelDelegateInterface {
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void)
 }
 
-extension SignUpViewModel: SignUpViewModelDelegate {
+extension AccountViewModel: SignUpViewModelDelegate {
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
 

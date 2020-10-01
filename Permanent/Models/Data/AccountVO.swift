@@ -11,8 +11,9 @@ import Foundation
 struct AccountVO: Codable {
     let accountID: Int?
     let primaryEmail, fullName: String?
-    let address, address2, country, city: JSONNull?
-    let state, zip, primaryPhone: JSONNull?
+    let address, address2, country, city: String?
+    let state, zip: String?
+    let primaryPhone: String?
     let defaultArchiveID: Int?
     let level, apiToken: JSONNull?
     let betaParticipant: Int?
