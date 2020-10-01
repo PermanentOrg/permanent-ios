@@ -16,6 +16,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     @IBOutlet private var signUpButton: UIButton!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -71,6 +72,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         let credentials = LoginCredentials(email, password)
         
+        activityIndicator.startAnimating()
+        
         viewModel?.login(with: credentials, then: { status in
             DispatchQueue.main.async {
                 self.handleLoginStatus(status, credentials: credentials)
@@ -108,6 +111,9 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     }
     
     fileprivate func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
+        
+        activityIndicator.stopAnimating()
+        
         switch status {
         case .success:
             navigationController?.navigate(to: .main, from: .main)

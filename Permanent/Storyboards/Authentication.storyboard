@@ -66,6 +66,10 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="G5A-dv-pdU">
+                                <rect key="frame" x="197" y="620.5" width="20" height="20"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bAV-Uk-X9k" userLabel="Copyright Label">
                                 <rect key="frame" x="20" y="842" width="374" height="0.0"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -80,8 +84,10 @@
                             <constraint firstItem="LYr-YQ-5xE" firstAttribute="trailing" secondItem="bAV-Uk-X9k" secondAttribute="trailing" constant="20" id="6ZK-zv-TjH"/>
                             <constraint firstItem="XUT-T8-V8x" firstAttribute="centerX" secondItem="LYr-YQ-5xE" secondAttribute="centerX" id="BWh-j9-Rz0"/>
                             <constraint firstItem="LYr-YQ-5xE" firstAttribute="trailing" secondItem="V6g-bM-pBz" secondAttribute="trailing" constant="45" id="HO4-PN-UCy"/>
+                            <constraint firstItem="G5A-dv-pdU" firstAttribute="top" secondItem="CuG-Wi-Hat" secondAttribute="bottom" constant="30" id="IfS-bF-GOF"/>
                             <constraint firstItem="LYr-YQ-5xE" firstAttribute="bottom" secondItem="bAV-Uk-X9k" secondAttribute="bottom" constant="20" id="JAZ-YC-sAu"/>
                             <constraint firstItem="XUT-T8-V8x" firstAttribute="top" secondItem="cv3-Z7-WhN" secondAttribute="bottom" constant="20" id="Sad-Iy-C6q"/>
+                            <constraint firstItem="G5A-dv-pdU" firstAttribute="centerX" secondItem="LYr-YQ-5xE" secondAttribute="centerX" id="URc-hH-ZjG"/>
                             <constraint firstItem="CuG-Wi-Hat" firstAttribute="leading" secondItem="V6g-bM-pBz" secondAttribute="leading" id="Zc6-Tm-1X6"/>
                             <constraint firstItem="bAV-Uk-X9k" firstAttribute="leading" secondItem="LYr-YQ-5xE" secondAttribute="leading" constant="20" id="aba-ih-CDw"/>
                             <constraint firstItem="aVZ-og-PaL" firstAttribute="trailing" secondItem="V6g-bM-pBz" secondAttribute="trailing" id="aew-Vs-9du"/>
@@ -96,6 +102,7 @@
                         <viewLayoutGuide key="safeArea" id="LYr-YQ-5xE"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="G5A-dv-pdU" id="2LF-G6-DRD"/>
                         <outlet property="copyrightLabel" destination="bAV-Uk-X9k" id="dXq-Z1-WzO"/>
                         <outlet property="emailField" destination="Qht-TS-1xP" id="Pue-J7-ZXp"/>
                         <outlet property="forgotPasswordButton" destination="E14-bb-gVq" id="XCA-uS-ezT"/>
@@ -148,6 +155,10 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="eUF-0O-luy">
+                                <rect key="frame" x="197" y="585.5" width="20" height="20"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -160,6 +171,7 @@
                             <constraint firstItem="4Fa-Um-u9Z" firstAttribute="trailing" secondItem="ugx-0G-7Ww" secondAttribute="trailing" constant="60" id="Oe8-jm-gEF"/>
                             <constraint firstItem="a1z-PM-87f" firstAttribute="leading" secondItem="wIt-7C-qTC" secondAttribute="leading" id="fGM-Hv-g4z"/>
                             <constraint firstItem="wIt-7C-qTC" firstAttribute="top" secondItem="pGs-zH-Of9" secondAttribute="bottom" constant="40" id="hMS-UN-Aur"/>
+                            <constraint firstItem="eUF-0O-luy" firstAttribute="top" secondItem="a1z-PM-87f" secondAttribute="bottom" constant="30" id="mRX-gu-Lsj"/>
                             <constraint firstItem="a1z-PM-87f" firstAttribute="trailing" secondItem="wIt-7C-qTC" secondAttribute="trailing" id="nEO-h8-tfg"/>
                             <constraint firstItem="4Fa-Um-u9Z" firstAttribute="trailing" secondItem="wIt-7C-qTC" secondAttribute="trailing" constant="45" id="pax-cN-B1V"/>
                             <constraint firstItem="a1z-PM-87f" firstAttribute="top" secondItem="wIt-7C-qTC" secondAttribute="bottom" constant="30" id="q1A-jR-ZsZ"/>
@@ -167,10 +179,12 @@
                             <constraint firstItem="ugx-0G-7Ww" firstAttribute="leading" secondItem="4Fa-Um-u9Z" secondAttribute="leading" constant="60" id="rrZ-Mr-hlw"/>
                             <constraint firstItem="ugx-0G-7Ww" firstAttribute="top" secondItem="lSS-FH-VIF" secondAttribute="bottom" constant="35" id="vrw-fa-diL"/>
                             <constraint firstItem="4Fa-Um-u9Z" firstAttribute="trailing" secondItem="oxp-6g-3Ds" secondAttribute="trailing" constant="40" id="xLK-LS-ccD"/>
+                            <constraint firstItem="eUF-0O-luy" firstAttribute="centerX" secondItem="4Fa-Um-u9Z" secondAttribute="centerX" id="zIS-hb-Z58"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="4Fa-Um-u9Z"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="eUF-0O-luy" id="Onx-NL-hDJ"/>
                         <outlet property="codeField" destination="wIt-7C-qTC" id="FID-8f-khA"/>
                         <outlet property="confirmButton" destination="a1z-PM-87f" id="JLY-H1-TPd"/>
                         <outlet property="copyrightLabel" destination="oxp-6g-3Ds" id="K3p-Us-TDq"/>
@@ -337,6 +351,10 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="TbX-tR-dhN">
+                                <rect key="frame" x="197" y="649" width="20" height="20"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -344,10 +362,12 @@
                             <constraint firstItem="KGx-6Y-vKV" firstAttribute="trailing" secondItem="bxt-QA-yQd" secondAttribute="trailing" id="8dZ-Ao-VK5"/>
                             <constraint firstItem="goc-ga-mBd" firstAttribute="leading" secondItem="lph-G3-tHf" secondAttribute="leading" constant="20" id="9uG-Mj-dVp"/>
                             <constraint firstItem="KGx-6Y-vKV" firstAttribute="top" secondItem="bxt-QA-yQd" secondAttribute="bottom" constant="20" id="ChJ-f4-ypw"/>
+                            <constraint firstItem="TbX-tR-dhN" firstAttribute="centerX" secondItem="lph-G3-tHf" secondAttribute="centerX" id="GTr-fe-6qf"/>
                             <constraint firstItem="lph-G3-tHf" firstAttribute="trailing" secondItem="goc-ga-mBd" secondAttribute="trailing" constant="20" id="HEB-in-WLw"/>
                             <constraint firstItem="QE7-Yc-fVe" firstAttribute="top" secondItem="mF7-ky-yTz" secondAttribute="bottom" constant="20" id="HVp-iM-JeC"/>
                             <constraint firstItem="L2V-T1-HUK" firstAttribute="leading" secondItem="bxt-QA-yQd" secondAttribute="leading" id="JKe-ch-cS2"/>
                             <constraint firstItem="L2V-T1-HUK" firstAttribute="top" secondItem="KGx-6Y-vKV" secondAttribute="bottom" constant="30" id="K6O-0y-mFm"/>
+                            <constraint firstItem="TbX-tR-dhN" firstAttribute="top" secondItem="L2V-T1-HUK" secondAttribute="bottom" constant="30" id="LUi-bq-gWr"/>
                             <constraint firstItem="bxt-QA-yQd" firstAttribute="leading" secondItem="lph-G3-tHf" secondAttribute="leading" constant="45" id="SDa-bG-wzN"/>
                             <constraint firstItem="KGx-6Y-vKV" firstAttribute="leading" secondItem="bxt-QA-yQd" secondAttribute="leading" id="XgH-KE-rgl"/>
                             <constraint firstItem="lph-G3-tHf" firstAttribute="bottom" secondItem="goc-ga-mBd" secondAttribute="bottom" constant="20" id="ddA-Ma-zRV"/>
@@ -361,6 +381,7 @@
                         <viewLayoutGuide key="safeArea" id="lph-G3-tHf"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="TbX-tR-dhN" id="YOh-bZ-0Gl"/>
                         <outlet property="copyrightLabel" destination="goc-ga-mBd" id="LyZ-JS-gWm"/>
                         <outlet property="emailField" destination="DRF-B7-pJi" id="2UQ-yb-65X"/>
                         <outlet property="loginButton" destination="ctD-JF-wVe" id="2vs-C3-DBU"/>
