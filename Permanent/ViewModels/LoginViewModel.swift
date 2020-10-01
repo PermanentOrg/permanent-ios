@@ -16,6 +16,7 @@ class LoginViewModel: ViewModelInterface {
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
     func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
@@ -52,6 +53,29 @@ extension LoginViewModel: LoginViewModelDelegate {
 
             case .error:
                 handler(nil, .error)
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
+
+        signUpOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                let modelTuple: (model: SignUpResponse?, status: RequestStatus) = JSONHelper.convertToModel(from: response)
+               
+                if modelTuple.model?.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error)
+                }
+
+            case .error:
+                handler(.error)
 
             default:
                 break

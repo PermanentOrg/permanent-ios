@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewController: BaseViewController<SignUpViewModel> {
+class SignUpViewController: BaseViewController<LoginViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: UIButton!
@@ -38,7 +38,7 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         view.backgroundColor = .primary
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        viewModel = SignUpViewModel()
+        viewModel = LoginViewModel()
 
         titleLabel.text = Translations.signup
         titleLabel.textColor = .white
@@ -90,8 +90,8 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    
     func signUp() {
+        // TODO: Modify SignUpCredentials to use codable protocol
         let loginCredentials = LoginCredentials(emailField.text!, passwordField.text!)
         
         let signUpCredentials = SignUpCredentials(
@@ -99,20 +99,52 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
             loginCredentials
         )
         
-        viewModel?.signUp(with: signUpCredentials, then: { (status) in
-            if status == .success {
-                DispatchQueue.main.async {
-                    self.navigationController?.display(.twoStepVerification, from: .authentication)
-                }
-            } else {
-                // TODO: Pass also the error message along
-                DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
-                }
+        viewModel?.signUp(with: signUpCredentials, then: { status in
+            DispatchQueue.main.async {
+                self.handleSignUpStatus(status)
             }
         })
     }
     
+    
+    
+    func performBackgroundLogin() {
+        // TODO: Change name
+        
+        let email = emailField.text!
+        let pass = passwordField.text!
+        let c = LoginCredentials(email, pass)
+        
+        viewModel?.login(with: c, then: { status in
+            DispatchQueue.main.async {
+                self.handleLoginStatus(status, credentials: c)
+            }
+        })
+    }
+    
+    private func handleSignUpStatus(_ status: RequestStatus) {
+        switch status {
+        case .success:
+            performBackgroundLogin()
+        case .error:
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+        }
+    }
+    
+    private func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
+        switch status {
+        case .success:
+            navigationController?.navigate(to: .twoStepVerification, from: .authentication)
+//        case .mfaToken:
+//            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
+//            navigationController?.navigate(to: .verificationCode, from: .authentication)
+        case .error:
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+            
+        default:
+            break
+        }
+    }
 }
 
 extension SignUpViewController: UITextFieldDelegate {
