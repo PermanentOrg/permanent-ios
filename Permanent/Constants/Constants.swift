@@ -64,5 +64,7 @@ extension Constants.URL {
 }
 
 extension Constants.Keys.StorageKeys {
+    static let nameStorageKey = "nameStorageKey"
+    static let accountStorageKey = "accountStorageKey"
     static let emailStorageKey = "emailStorageKey"
 }

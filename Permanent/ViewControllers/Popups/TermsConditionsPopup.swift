@@ -19,6 +19,7 @@ class TermsConditionsPopup: UIViewController {
     @IBOutlet private var webView: WKWebView!
     @IBOutlet var declineButton: RoundedButton!
     @IBOutlet var acceptButton: RoundedButton!
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     
     weak var delegate: TermsConditionsPopupDelegate?
     
@@ -26,6 +27,12 @@ class TermsConditionsPopup: UIViewController {
         super.viewDidLoad()
         
         initUI()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        declineButton.backgroundColor = .lightGray
     }
     
     fileprivate func initUI() {
@@ -36,11 +43,9 @@ class TermsConditionsPopup: UIViewController {
         let link = URL(string: Constants.URL.termsConditionsURL)
         let request = URLRequest(url: link!)
         webView.load(request)
+        webView.navigationDelegate = self
         
-        declineButton.backgroundColor = .lightGray
         declineButton.setTitle(Translations.decline, for: [])
-        
-        declineButton.backgroundColor = .secondary
         acceptButton.setTitle(Translations.accept, for: [])
         
         navBarView.title = Translations.termsConditions
@@ -67,5 +72,15 @@ class TermsConditionsPopup: UIViewController {
 extension TermsConditionsPopup: NavigationBarViewDelegate {
     func didTapLeftButton() {
         close()
+    }
+}
+
+extension TermsConditionsPopup: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        activityIndicator.startAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        activityIndicator.stopAnimating()
     }
 }

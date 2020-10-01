@@ -58,6 +58,23 @@ struct Payloads {
         ]
     }
     
+    static func update(accountId: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId,
+                        //"primaryPhone": "5551124411",
+                        //"primaryEmail": "",
+                        //"fullName": ""
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey
+            ]
+        ]
+    }
+    
+    
     static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
         return [
             "RequestVO": [

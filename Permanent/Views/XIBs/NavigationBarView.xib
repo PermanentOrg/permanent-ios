@@ -25,8 +25,9 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nIj-Py-vWq" userLabel="Left Button">
-                    <rect key="frame" x="20" y="37" width="30" height="30"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nIj-Py-vWq" userLabel="Left Button">
+                    <rect key="frame" x="20" y="35" width="30" height="34"/>
+                    <inset key="imageEdgeInsets" minX="3" minY="3" maxX="3" maxY="3"/>
                     <connections>
                         <action selector="leftButtonAction:" destination="-1" eventType="touchUpInside" id="Oac-AB-QOO"/>
                     </connections>

@@ -18,12 +18,11 @@ protocol SignUpViewModelDelegate: ViewModelDelegateInterface {
 
 extension SignUpViewModel: SignUpViewModelDelegate {
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        let signUpOperation = APIOperation(AuthenticationEndpoint.signUp(credentials: credentials))
+        let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
 
         signUpOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-
                 let modelTuple: (model: SignUpResponse?, status: RequestStatus) = JSONHelper.convertToModel(from: response)
 
                 if modelTuple.model?.isSuccessful == true {
