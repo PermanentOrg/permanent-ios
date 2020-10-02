@@ -8,6 +8,20 @@
 
 import Foundation
 
+class JSONHelper {
+    static func convertToModel<T: Decodable>(from object: Any?) -> T? {
+        guard let json = object else { return nil }
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+            let decodedModel = try JSONDecoder().decode(T.self, from: data)
+            return (decodedModel)
+        } catch {
+            return nil
+        }
+    }
+}
+
 class JSONNull: Codable, Hashable {
 
     public static func == (lhs: JSONNull, rhs: JSONNull) -> Bool {

@@ -15,9 +15,13 @@ extension UINavigationController {
 
         self.pushViewController(vc, animated: true)
     }
+    
+    func navigate(to viewController: UIViewController) {
+        self.pushViewController(viewController, animated: true)
+    }
 
     func display(_ viewController: ViewControllerIdentifier, from storyboard: StoryboardName, modally: Bool = false) {
-        let viewController = self.createViewController(withIdentifier: viewController.identifier, from: storyboard.name)
+        let viewController = self.create(viewController: viewController, from: storyboard)
         
         if modally {
             viewController.modalPresentationStyle = .overFullScreen
@@ -27,9 +31,9 @@ extension UINavigationController {
         }
     }
 
-    fileprivate func createViewController(withIdentifier id: String, from storyboard: String) -> UIViewController {
-        let storyboard = UIStoryboard(name: storyboard, bundle: nil)
-        return storyboard.instantiateViewController(withIdentifier: id)
+    func create(viewController: ViewControllerIdentifier, from storyboard: StoryboardName) -> UIViewController {
+        let storyboard = UIStoryboard(name: storyboard.name, bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: viewController.identifier)
     }
 }
 

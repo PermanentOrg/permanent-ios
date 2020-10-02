@@ -35,4 +35,12 @@ struct Translations {
     static var addLater: String { return "AddLater".localized() }
     static var skip: String { return "Skip".localized() }
     static var submit: String { return "Submit".localized() }
+    static var enterEmail: String { return "EnterEmail".localized() }
+    static var invalidPhone: String { return "InvalidPhone".localized() }
+    static var MFARequired: String { return "MFARequired".localized() }
+    static var incorrectCredentials: String { return "IncorrectCredentials".localized() }
+    static var tokenExpired: String { return "TokenExpired".localized() }
+    static var tokenIncorrect: String { return "TokenIncorrect".localized() }
+    static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
+    static var invalidFields: String { return "InvalidFields".localized() }
 }

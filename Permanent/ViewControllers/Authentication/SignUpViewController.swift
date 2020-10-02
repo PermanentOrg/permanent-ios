@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SignUpViewController: BaseViewController<SignUpViewModel> {
+class SignUpViewController: BaseViewController<LoginViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: UIButton!
@@ -16,6 +16,19 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
     @IBOutlet private var nameField: CustomTextField!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
+    
+    fileprivate var areFieldsValid: Bool {
+        guard
+            nameField.text?.isNotEmpty == true,
+            let emailAddress = emailField.text, emailAddress.isNotEmpty, emailAddress.isValidEmail,
+            let password = passwordField.text, password.count >= 8
+        else {
+            return false
+        }
+             
+        return true
+    }
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -26,8 +39,7 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         view.backgroundColor = .primary
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        viewModel = SignUpViewModel()
-        viewModel?.delegate = self
+        viewModel = LoginViewModel()
 
         titleLabel.text = Translations.signup
         titleLabel.textColor = .white
@@ -48,26 +60,91 @@ class SignUpViewController: BaseViewController<SignUpViewModel> {
         nameField.delegate = self
         emailField.delegate = self
         passwordField.delegate = self
+        
+        #if DEBUG
+        nameField.text = "Adrian Creteanu"
+        emailField.text = "adrian.creteanu+2@vspartners.us"
+        passwordField.text = "Test1234"
+        #endif
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
-        
-        self.navigationController?.display(.termsConditions, from: .authentication, modally: true)
-        
-        
+        guard
+            areFieldsValid,
+            let termsConditionsVC = navigationController?.create(
+                viewController: .termsConditions,
+                from: .authentication
+            ) as? TermsConditionsPopup
+        else {
+            showAlert(title: Translations.error, message: Translations.invalidFields)
+            return
+        }
+    
+        termsConditionsVC.delegate = self
+        navigationController?.present(termsConditionsVC, animated: true)
     }
     
     @IBAction
     func alreadyMemberAction(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
-}
-
-extension SignUpViewController: SignUpViewModelDelegate {
-    func updateTitle(with text: String?) {
-        titleLabel.text = text
+    
+    func signUp() {
+        // TODO: Modify SignUpCredentials to use codable protocol
+        let loginCredentials = LoginCredentials(emailField.text!, passwordField.text!)
+        
+        let signUpCredentials = SignUpCredentials(
+            nameField.text!,
+            loginCredentials
+        )
+        
+        activityIndicator.startAnimating()
+        
+        viewModel?.signUp(with: signUpCredentials, then: { status in
+            DispatchQueue.main.async {
+                self.handleSignUpStatus(status)
+            }
+        })
+    }
+    
+    func performBackgroundLogin() {
+        guard
+            let email = emailField.text,
+            let password = passwordField.text else { return }
+        
+        let credentials = LoginCredentials(email, password)
+        
+        viewModel?.login(with: credentials, then: { status in
+            DispatchQueue.main.async {
+                self.handleLoginStatus(status, credentials: credentials)
+            }
+        })
+    }
+    
+    private func handleSignUpStatus(_ status: RequestStatus) {
+        switch status {
+        case .success:
+            performBackgroundLogin()
+        case .error(let message):
+            activityIndicator.stopAnimating()
+            showAlert(title: Translations.error, message: message)
+        }
+    }
+    
+    private func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
+        activityIndicator.stopAnimating()
+        
+        switch status {
+        case .success:
+            navigationController?.navigate(to: .twoStepVerification, from: .authentication)
+        case .mfaToken:
+            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
+            navigationController?.navigate(to: .verificationCode, from: .authentication)
+        case .error(let message):
+            showAlert(title: Translations.error, message: message)
+        }
     }
 }
 
@@ -78,5 +155,11 @@ extension SignUpViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: false)
+    }
+}
+
+extension SignUpViewController: TermsConditionsPopupDelegate {
+    func didAccept() {
+        signUp()
     }
 }

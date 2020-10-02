@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct AccountVO: Codable {
-    let accountID: Int?
+struct AccountUpdateVO: Codable {
+    let accountID: String?
     let primaryEmail, fullName: String?
     let address, address2, country, city: String?
     let state, zip: String?

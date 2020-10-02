@@ -19,7 +19,7 @@ protocol SplashViewModelDelegate: ViewModelDelegateInterface {
 extension SplashViewModel: SplashViewModelDelegate {
     func verifyLoggedIn(then handler: @escaping (AuthStatus) -> Void) {
         let requestDispatcher = APIRequestDispatcher()
-        let verifyOperation = APIOperation(LoginEndpoint.verifyAuth)
+        let verifyOperation = APIOperation(AuthenticationEndpoint.verifyAuth)
 
         verifyOperation.execute(in: requestDispatcher) { result in
             switch result {

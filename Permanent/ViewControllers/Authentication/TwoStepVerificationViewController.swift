@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TwoStepVerificationViewController: UIViewController {
+class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
     @IBOutlet private var extraInfoLabel: UILabel!
@@ -16,6 +16,8 @@ class TwoStepVerificationViewController: UIViewController {
     @IBOutlet private var skipButton: UIButton!
     @IBOutlet private var phoneField: CustomTextField!
     @IBOutlet private var copyrightLabel: UILabel!
+    
+    var signUpCredentials: SignUpCredentials?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +28,8 @@ class TwoStepVerificationViewController: UIViewController {
     
     fileprivate func initUI() {
         view.backgroundColor = .primary
+        
+        viewModel = AccountViewModel()
         
         titleLabel.text = Translations.twoStepTitle
         titleLabel.textColor = .white
@@ -55,9 +59,48 @@ class TwoStepVerificationViewController: UIViewController {
     
     // MARK: - Actions
     
-    @IBAction func confirmAction(_ sender: RoundedButton) {}
+    @IBAction func confirmAction(_ sender: RoundedButton) {
+        guard
+            let phone = phoneField.text,
+            phone.isNotEmpty, phone.isPhoneNumber
+        else {
+            showAlert(title: Translations.error, message: Translations.invalidPhone)
+            return
+        }
+        
+        updatePhone()
+    }
     
-    @IBAction func skipAction(_ sender: UIButton) {}
+    @IBAction func skipAction(_ sender: UIButton) {
+        openMainScreen()
+    }
+    
+    private func openMainScreen() {
+        navigationController?.navigate(to: .main, from: .main)
+    }
+    
+    func updatePhone() {
+        guard
+            let email: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey),
+            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
+            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return }
+        
+        let updateData = UpdateData(email, phoneField.text!)
+        
+        viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.openMainScreen()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
+            }
+        })
+    }
 }
 
 extension TwoStepVerificationViewController: UITextFieldDelegate {

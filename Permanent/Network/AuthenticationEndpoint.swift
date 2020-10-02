@@ -12,7 +12,7 @@ import Foundation
 typealias LoginCredentials = (email: String, password: String)
 typealias VerifyCodeCredentials = (email: String, code: String)
 
-enum LoginEndpoint {
+enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
     case verifyAuth
     /// Performs a login with an email & password credentials.
@@ -23,7 +23,7 @@ enum LoginEndpoint {
     case forgotPassword(email: String)
 }
 
-extension LoginEndpoint: RequestProtocol {
+extension AuthenticationEndpoint: RequestProtocol {
     var headers: RequestHeaders? {
         return nil
     }
