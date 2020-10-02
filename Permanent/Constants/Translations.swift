@@ -23,8 +23,16 @@ struct Translations {
     static var error: String { return "Error".localized() }
     static var errorMessage: String { return "ErrorMessage".localized() }
     static var ok: String { return "Ok".localized() }
+    static var accept: String { return "Accept".localized() }
+    static var decline: String { return "Decline".localized() }
+    static var termsConditions: String { return "TermsConditions".localized() }
     static var success: String { return "Success".localized() }
     static var emailSent: String { return "EmailSent".localized() }
     static var cancel: String { return "Cancel".localized() }
     static var resetPassword: String { return "ResetPassword".localized() }
+    static var twoStepTitle: String { return "TwoStepTitle".localized() }
+    static var twoStepSubtitle: String { return "TwoStepSubtitle".localized() }
+    static var addLater: String { return "AddLater".localized() }
+    static var skip: String { return "Skip".localized() }
+    static var submit: String { return "Submit".localized() }
 }

@@ -29,4 +29,6 @@ extension UIColor {
 
 extension UIColor {
     static var primary = UIColor.darkBlue
+    static var secondary = UIColor.tangerine
+    static var backgroundPrimary = UIColor.white
 }
