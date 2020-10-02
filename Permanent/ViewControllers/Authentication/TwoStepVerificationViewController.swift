@@ -64,7 +64,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
             let phone = phoneField.text,
             phone.isNotEmpty, phone.isPhoneNumber
         else {
-            showAlert(title: "Error", message: "Invalid phone number")
+            showAlert(title: Translations.error, message: Translations.invalidPhone)
             return
         }
         
@@ -87,20 +87,19 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         
         let updateData = UpdateData(email, phoneField.text!)
         
-        viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { (status) in
+        viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
             switch status {
             case .success:
                 DispatchQueue.main.async {
                     self.openMainScreen()
                 }
                 
-            case .error:
+            case .error(let message):
                 DispatchQueue.main.async {
-                    self.showAlert(title: "Error", message: "ERRROR")
+                    self.showAlert(title: Translations.error, message: message)
                 }
             }
         })
-        
     }
 }
 

@@ -63,14 +63,14 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
         })
     }
     
-    fileprivate func handleVerifyStatus(_ status: CodeVerificationStatus) {
+    fileprivate func handleVerifyStatus(_ status: RequestStatus) {
         activityIndicator.stopAnimating()
         
         switch status {
         case .success:
             navigationController?.navigate(to: .main, from: .main)
-        case .error:
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+        case .error(let message):
+            showAlert(title: Translations.error, message: message)
         }
     }
 }

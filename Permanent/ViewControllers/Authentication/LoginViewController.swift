@@ -105,8 +105,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         case .success:
             showAlert(title: Translations.success,
                       message: String(format: Translations.emailSent, email!))
-        case .error:
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+        case .error(let message):
+            showAlert(title: Translations.error, message: message)
         }
     }
     
@@ -120,8 +120,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         case .mfaToken:
             PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
             navigationController?.navigate(to: .verificationCode, from: .authentication)
-        case .error:
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+        case .error(let message):
+            showAlert(title: Translations.error, message: message)
         }
     }
 }

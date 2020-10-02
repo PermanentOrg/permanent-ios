@@ -22,7 +22,7 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         guard
             nameField.text?.isNotEmpty == true,
             let emailAddress = emailField.text, emailAddress.isNotEmpty, emailAddress.isValidEmail,
-            let password = passwordField.text, password.count > 8
+            let password = passwordField.text, password.count >= 8
         else {
             return false
         }
@@ -62,7 +62,7 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         passwordField.delegate = self
         
         #if DEBUG
-        nameField.text = "Adrian Crt"
+        nameField.text = "Adrian Creteanu"
         emailField.text = "adrian.creteanu+2@vspartners.us"
         passwordField.text = "Test1234"
         #endif
@@ -70,13 +70,13 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
         guard
-            // areFieldsValid,
+            areFieldsValid,
             let termsConditionsVC = navigationController?.create(
                 viewController: .termsConditions,
                 from: .authentication
             ) as? TermsConditionsPopup
         else {
-            showAlert(title: Translations.error, message: "Fields are invalid!")
+            showAlert(title: Translations.error, message: Translations.invalidFields)
             return
         }
     
@@ -110,15 +110,15 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
     }
     
     func performBackgroundLogin() {
-        // TODO: Change name
+        guard
+            let email = emailField.text,
+            let password = passwordField.text else { return }
         
-        let email = emailField.text!
-        let pass = passwordField.text!
-        let c = LoginCredentials(email, pass)
+        let credentials = LoginCredentials(email, password)
         
-        viewModel?.login(with: c, then: { status in
+        viewModel?.login(with: credentials, then: { status in
             DispatchQueue.main.async {
-                self.handleLoginStatus(status, credentials: c)
+                self.handleLoginStatus(status, credentials: credentials)
             }
         })
     }
@@ -127,9 +127,9 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         switch status {
         case .success:
             performBackgroundLogin()
-        case .error:
+        case .error(let message):
             activityIndicator.stopAnimating()
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+            showAlert(title: Translations.error, message: message)
         }
     }
     
@@ -139,15 +139,11 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         switch status {
         case .success:
             navigationController?.navigate(to: .twoStepVerification, from: .authentication)
-//        case .mfaToken:
-//            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-//            navigationController?.navigate(to: .verificationCode, from: .authentication)
-        case .error:
-            
-            showAlert(title: Translations.error, message: Translations.errorMessage)
-            
-        default:
-            break
+        case .mfaToken:
+            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
+            navigationController?.navigate(to: .verificationCode, from: .authentication)
+        case .error(let message):
+            showAlert(title: Translations.error, message: message)
         }
     }
 }

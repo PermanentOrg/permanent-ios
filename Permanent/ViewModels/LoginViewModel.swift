@@ -9,6 +9,8 @@
 import Foundation
 import UIKit.UIAlertController
 
+typealias ServerResponse = (RequestStatus) -> Void
+
 class LoginViewModel: ViewModelInterface {
     weak var delegate: LoginViewModelDelegate?
 }
@@ -16,7 +18,7 @@ class LoginViewModel: ViewModelInterface {
 protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
     func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
-    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void)
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping ServerResponse)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
@@ -26,11 +28,32 @@ extension LoginViewModel: LoginViewModelDelegate {
         loginOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-                let status = self.extractLoginStatus(response)
-                handler(status)
+                guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: Translations.errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    self.saveStorageData(model)
+                    handler(.success)
+                } else {
+                    guard
+                        let message = model.results?.first?.message?.first,
+                        let loginError = LoginError(rawValue: message)
+                    else {
+                        handler(.error(message: Translations.errorMessage))
+                        return
+                    }
+
+                    if loginError == .mfaToken {
+                        handler(.mfaToken)
+                    } else {
+                        handler(.error(message: loginError.description))
+                    }
+                }
 
             case .error:
-                handler(.error)
+                handler(.error(message: Translations.errorMessage))
 
             default:
                 break
@@ -44,38 +67,47 @@ extension LoginViewModel: LoginViewModelDelegate {
         forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-                let modelTuple: (model: LoginResponse?, status: RequestStatus) = self.convertToModel(from: response)
-                if modelTuple.model?.isSuccessful == true {
+                // TODO: Change LoginResponse and see the appropiate errors.
+                let model: LoginResponse? = JSONHelper.convertToModel(from: response)
+                if model?.isSuccessful == true {
                     handler(email, .success)
                 } else {
-                    handler(nil, .error)
+                    handler(nil, .error(message: Translations.errorMessage))
                 }
 
             case .error:
-                handler(nil, .error)
+                handler(nil, .error(message: Translations.errorMessage))
 
             default:
                 break
             }
         }
     }
-    
+
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
 
         signUpOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-                let modelTuple: (model: SignUpResponse?, status: RequestStatus) = JSONHelper.convertToModel(from: response)
-               
-                if modelTuple.model?.isSuccessful == true {
+                let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
+
+                if model?.isSuccessful == true {
                     handler(.success)
                 } else {
-                    handler(.error)
+                    guard
+                        let message = model?.results?.first?.message?.first,
+                        let signUpError = SignUpError(rawValue: message)
+                    else {
+                        handler(.error(message: Translations.errorMessage))
+                        return
+                    }
+
+                    handler(.error(message: signUpError.description))
                 }
 
             case .error:
-                handler(.error)
+                handler(.error(message: Translations.errorMessage))
 
             default:
                 break
@@ -87,7 +119,7 @@ extension LoginViewModel: LoginViewModelDelegate {
         let alert = UIAlertController(title: Translations.resetPassword, message: nil, preferredStyle: .alert)
 
         alert.addTextField(configurationHandler: { textField in
-            textField.placeholder = "Enter your email here"
+            textField.placeholder = Translations.enterEmail
         })
 
         alert.addAction(UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil))
@@ -99,64 +131,28 @@ extension LoginViewModel: LoginViewModelDelegate {
         return alert
     }
 
-    // TODO: Convert to typealias
-    func convertToModel<T: Decodable>(from object: Any?) -> (model: T?, status: RequestStatus) {
-        guard let json = object else { return (nil, .error) }
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
-            let decodedModel = try JSONDecoder().decode(T.self, from: data)
-            return (decodedModel, .success)
-        } catch {
-            return (nil, .error)
+    fileprivate func saveStorageData(_ response: LoginResponse) {
+        if let email = response.results?.first?.data?.first?.accountVO?.primaryEmail {
+            PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
         }
-    }
 
-    fileprivate func extractLoginStatus(_ jsonObject: Any?) -> LoginStatus {
-        guard let json = jsonObject else { return .error }
+        if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
+            PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        }
 
-        let decoder = JSONDecoder()
-
-        do {
-            let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
-            let loginResponse = try decoder.decode(LoginResponse.self, from: data)
-
-            // treat unknown error
-            if let message = loginResponse.results?.first?.message?.first, message == "warning.auth.mfaToken" {
-                return .mfaToken
-            } else {
-                // TODO: Move this saving elsewhere.
-                
-                if let email = loginResponse.results?.first?.data?.first?.accountVO?.primaryEmail {
-                    PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-                }
-                
-                
-                if let accountId = loginResponse.results?.first?.data?.first?.accountVO?.accountID {
-                    PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-                }
-                
-                
-                if let csrf = loginResponse.csrf {
-                    PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
-                }
-                
-                return .success
-            }
-
-        } catch {
-            return .error
+        if let csrf = response.csrf {
+            PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
         }
     }
 }
 
 enum LoginStatus {
     case success
-    case error
     case mfaToken
+    case error(message: String?)
 }
 
 enum RequestStatus {
     case success
-    case error
+    case error(message: String?)
 }
