@@ -111,4 +111,9 @@ extension TwoStepVerificationViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: false)
     }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        view.endEditing(true)
+        return false
+    }
 }

@@ -137,12 +137,12 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wIt-7C-qTC" userLabel="Code Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="45" y="447" width="324" height="34"/>
+                                <rect key="frame" x="45" y="447" width="324" height="38.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a1z-PM-87f" userLabel="Confirm Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="45" y="511" width="324" height="30"/>
+                                <rect key="frame" x="45" y="515.5" width="324" height="40"/>
                                 <state key="normal" title="Done"/>
                                 <connections>
                                     <action selector="confirmAction:" destination="edW-9P-CQc" eventType="touchUpInside" id="Wu3-tD-xsf"/>
@@ -156,7 +156,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="eUF-0O-luy">
-                                <rect key="frame" x="197" y="571" width="20" height="20"/>
+                                <rect key="frame" x="197" y="585.5" width="20" height="20"/>
                                 <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                         </subviews>
@@ -424,7 +424,7 @@
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tle-gw-J1C" userLabel="Phone Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="324" height="38.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                        <textInputTraits key="textInputTraits"/>
                                     </textField>
                                 </subviews>
                             </stackView>

@@ -92,7 +92,7 @@ extension VerificationCodeController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+        view.endEditing(true)
+        return false
     }
 }
