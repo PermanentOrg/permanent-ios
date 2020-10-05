@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,16 +16,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNameLarge" translatesAutoresizingMaskIntoConstraints="NO" id="EOs-Ty-QhS" userLabel="Logo Image View">
-                                <rect key="frame" x="103.5" y="270" width="207" height="226"/>
+                                <rect key="frame" x="103.5" y="265" width="207" height="226"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.073621921239999999" green="0.1067599133" blue="0.29004743700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="centerY" secondItem="EOs-Ty-QhS" secondAttribute="centerY" constant="70" id="cG0-UW-QAf"/>
+                            <constraint firstAttribute="centerY" secondItem="EOs-Ty-QhS" secondAttribute="centerY" constant="70" id="A8c-i3-RKC"/>
+                            <constraint firstItem="EOs-Ty-QhS" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="F7g-cP-tND"/>
                             <constraint firstItem="EOs-Ty-QhS" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.5" id="egf-RU-lIV"/>
-                            <constraint firstItem="EOs-Ty-QhS" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="oCB-vx-cEi"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
