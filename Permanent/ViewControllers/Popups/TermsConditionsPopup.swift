@@ -39,6 +39,7 @@ class TermsConditionsPopup: UIViewController {
         view.backgroundColor = .primary
         contentView.backgroundColor = .backgroundPrimary
         webView.backgroundColor = .backgroundPrimary
+        activityIndicator.color = .secondary
         
         let link = URL(string: Constants.URL.termsConditionsURL)
         let request = URLRequest(url: link!)

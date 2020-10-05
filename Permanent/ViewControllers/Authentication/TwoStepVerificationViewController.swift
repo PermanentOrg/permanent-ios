@@ -87,7 +87,11 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         
         let updateData = UpdateData(email, phoneField.text!)
         
+        showSpinner()
+        
         viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
+            self.hideSpinner()
+            
             switch status {
             case .success:
                 DispatchQueue.main.async {
