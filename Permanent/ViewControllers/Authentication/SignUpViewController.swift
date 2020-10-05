@@ -101,6 +101,7 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         )
         
         activityIndicator.startAnimating()
+        closeKeyboard()
         
         viewModel?.signUp(with: signUpCredentials, then: { status in
             DispatchQueue.main.async {

@@ -73,6 +73,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         let credentials = LoginCredentials(email, password)
         
         activityIndicator.startAnimating()
+        closeKeyboard()
         
         viewModel?.login(with: credentials, then: { status in
             DispatchQueue.main.async {
