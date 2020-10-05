@@ -159,8 +159,16 @@ extension SignUpViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        view.endEditing(true)
-        return false
+        if textField == nameField {
+            emailField.becomeFirstResponder()
+            return true
+        } else if textField == emailField {
+            passwordField.becomeFirstResponder()
+            return true
+        } else {
+            view.endEditing(true)
+            return false
+        }
     }
 }
 

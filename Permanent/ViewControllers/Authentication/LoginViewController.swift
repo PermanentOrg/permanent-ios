@@ -137,7 +137,12 @@ extension LoginViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        view.endEditing(true)
-        return false
+        if textField == emailField {
+            passwordField.becomeFirstResponder()
+            return true
+        } else {
+            view.endEditing(true)
+            return false
+        }
     }
 }
