@@ -42,3 +42,6 @@
 "EmailAlreadyUsed" = "This email is already in use.";
 "InvalidFields" = "The entered data is invalid";
 "UsePasscode" = "Use passcode";
+"WelcomeMessage" = "Nice to see you again";
+"UnlockWithBiometrics" = "Unlock with %@";
+"UseLoginCredentials" = "Use login credentials instead";

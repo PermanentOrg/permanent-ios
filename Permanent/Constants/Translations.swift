@@ -44,4 +44,7 @@ struct Translations {
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
     static var usePasscode: String { return "UsePasscode".localized() }
+    static var welcomeMessage: String { return "WelcomeMessage".localized() }
+    static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
+    static var useLoginCredentials: String { return "UseLoginCredentials".localized() }
 }

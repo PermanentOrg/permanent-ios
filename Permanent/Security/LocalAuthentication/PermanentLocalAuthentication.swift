@@ -11,26 +11,26 @@ import LocalAuthentication
 
 class PermanentLocalAuthentication: NSObject {
     static let instance = PermanentLocalAuthentication(policy: .deviceOwnerAuthentication)
-    var currentContext: LAContext?
+    var currentContext: LAContext
     var policy: LAPolicy
 
     private init(policy: LAPolicy) {
         self.policy = policy
+        self.currentContext = LAContext()
         super.init()
     }
 }
 
 extension PermanentLocalAuthentication: ILocalAuthentication {
     func authenticate(onSuccess: LocalAuthSuccessCallback?, onFailure: LocalAuthFailureCallback?) {
-        currentContext = LAContext()
-        currentContext?.localizedReason = "We need your faceid"
-        currentContext?.localizedCancelTitle = Translations.cancel
-        currentContext?.localizedFallbackTitle = Translations.usePasscode
+        currentContext.localizedReason = "We need your faceid"
+        currentContext.localizedCancelTitle = Translations.cancel
+        currentContext.localizedFallbackTitle = Translations.usePasscode
 
         let authStatus = canAuthenticate()
 
         if authStatus.canAuthenticate {
-            currentContext?.evaluatePolicy(policy, localizedReason: "no reason", reply: { success, error in
+            currentContext.evaluatePolicy(policy, localizedReason: "no reason", reply: { success, error in
                 if success {
                     onSuccess?()
                 } else {
@@ -54,13 +54,13 @@ extension PermanentLocalAuthentication: ILocalAuthentication {
         currentContext = LAContext()
 
         var evalError: NSError?
-        let canEvaluatePolicy = currentContext?.canEvaluatePolicy(policy, error: &evalError) ?? false
+        let canEvaluatePolicy = currentContext.canEvaluatePolicy(policy, error: &evalError)
         let error = LocalAuthErrors.extractAuthError(errorCode: evalError?.code)
 
         return (canEvaluatePolicy, error)
     }
 
     func cancelAuthentication() {
-        currentContext?.invalidate()
+        currentContext.invalidate()
     }
 }

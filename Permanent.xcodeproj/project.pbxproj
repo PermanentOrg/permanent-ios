@@ -48,6 +48,8 @@
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
 		BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB22527393400A69597 /* AccountUpdateVO.swift */; };
 		BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */; };
+		BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */; };
+		BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF867252DE642003D3829 /* BiometryUtils.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DD251C8C4200E24A51 /* Translations.swift */; };
 		BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */; };
@@ -151,6 +153,8 @@
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
 		BC326AB22527393400A69597 /* AccountUpdateVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateVO.swift; sourceTree = "<group>"; };
 		BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthErrors.swift; sourceTree = "<group>"; };
+		BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsViewController.swift; sourceTree = "<group>"; };
+		BC3DF867252DE642003D3829 /* BiometryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryUtils.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BC4526DD251C8C4200E24A51 /* Translations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translations.swift; sourceTree = "<group>"; };
 		BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeResponse.swift; sourceTree = "<group>"; };
@@ -416,7 +420,6 @@
 				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
 				BC648781251B9FC7009D7DE1 /* StoryboardName.swift */,
 				BC4526DD251C8C4200E24A51 /* Translations.swift */,
-				BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 				BC6D3B40251363E800390927 /* LoginViewController.swift */,
 				BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */,
 				BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */,
+				BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -508,6 +512,8 @@
 			children = (
 				BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */,
 				BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */,
+				BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */,
+				BC3DF867252DE642003D3829 /* BiometryUtils.swift */,
 			);
 			path = LocalAuthentication;
 			sourceTree = "<group>";
@@ -681,6 +687,7 @@
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
+				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
@@ -738,6 +745,7 @@
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

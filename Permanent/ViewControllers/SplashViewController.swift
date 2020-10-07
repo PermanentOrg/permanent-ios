@@ -41,7 +41,7 @@ class SplashViewController: BaseViewController<SplashViewModel> {
     fileprivate func handleAuthStatus(_ status: AuthStatus) {
         switch status {
         case .loggedIn:
-            AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
+            AppDelegate.shared.rootViewController.setRoot(named: .biometrics, from: .authentication)
         default:
             if UserDefaultsService.shared.isNewUser() {
                 AppDelegate.shared.rootViewController.setRoot(named: .onboarding, from: .onboarding)
