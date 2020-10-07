@@ -43,4 +43,5 @@ struct Translations {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
+    static var usePasscode: String { return "UsePasscode".localized() }
 }

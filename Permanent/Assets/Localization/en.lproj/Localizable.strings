@@ -41,3 +41,4 @@
 "TokenIncorrect" = "The code is incorrect.";
 "EmailAlreadyUsed" = "This email is already in use.";
 "InvalidFields" = "The entered data is invalid";
+"UsePasscode" = "Use passcode";
