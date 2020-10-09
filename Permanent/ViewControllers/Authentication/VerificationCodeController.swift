@@ -13,7 +13,6 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     @IBOutlet private var confirmButton: RoundedButton!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: CustomTextField!
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -53,9 +52,7 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
         
         let credentials = VerifyCodeCredentials(email, code)
         
-        activityIndicator.startAnimating()
-        
-        
+        showSpinner()
         viewModel?.verify(for: credentials, then: { status in
             DispatchQueue.main.async {
                 self.handleVerifyStatus(status)
@@ -64,7 +61,7 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     }
     
     fileprivate func handleVerifyStatus(_ status: RequestStatus) {
-        activityIndicator.stopAnimating()
+        hideSpinner()
         
         switch status {
         case .success:

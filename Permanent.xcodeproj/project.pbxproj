@@ -89,6 +89,7 @@
 		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
 		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
+		BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
 		BD2403B02524978C00AE45B3 /* STAGING-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
 /* End PBXBuildFile section */
@@ -187,6 +188,7 @@
 		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "STAGING-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
 				BC97A4682518E73300E43205 /* StringExtension.swift */,
 				BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */,
+				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -640,6 +643,7 @@
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
+				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,

@@ -40,4 +40,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .font: Text.style14.font
         ]
     }
+    
+    func closeKeyboard() {
+        view.endEditing(true)
+    }
 }

@@ -16,7 +16,6 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     @IBOutlet private var signUpButton: UIButton!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -72,7 +71,8 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         let credentials = LoginCredentials(email, password)
         
-        activityIndicator.startAnimating()
+        showSpinner()
+        closeKeyboard()
         
         viewModel?.login(with: credentials, then: { status in
             DispatchQueue.main.async {
@@ -111,8 +111,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     }
     
     fileprivate func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
-        
-        activityIndicator.stopAnimating()
+        hideSpinner()
         
         switch status {
         case .success:
@@ -136,7 +135,12 @@ extension LoginViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        view.endEditing(true)
-        return false
+        if textField == emailField {
+            passwordField.becomeFirstResponder()
+            return true
+        } else {
+            view.endEditing(true)
+            return false
+        }
     }
 }

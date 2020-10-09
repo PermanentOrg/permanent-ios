@@ -16,7 +16,6 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
     @IBOutlet private var nameField: CustomTextField!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     
     fileprivate var areFieldsValid: Bool {
         guard
@@ -100,7 +99,8 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
             loginCredentials
         )
         
-        activityIndicator.startAnimating()
+        showSpinner()
+        closeKeyboard()
         
         viewModel?.signUp(with: signUpCredentials, then: { status in
             DispatchQueue.main.async {
@@ -128,13 +128,13 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         case .success:
             performBackgroundLogin()
         case .error(let message):
-            activityIndicator.stopAnimating()
+            hideSpinner()
             showAlert(title: Translations.error, message: message)
         }
     }
     
     private func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
-        activityIndicator.stopAnimating()
+        hideSpinner()
         
         switch status {
         case .success:
@@ -158,8 +158,16 @@ extension SignUpViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        view.endEditing(true)
-        return false
+        if textField == nameField {
+            emailField.becomeFirstResponder()
+            return true
+        } else if textField == emailField {
+            passwordField.becomeFirstResponder()
+            return true
+        } else {
+            view.endEditing(true)
+            return false
+        }
     }
 }
 

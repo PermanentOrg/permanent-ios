@@ -32,8 +32,8 @@ class SplashViewController: BaseViewController<SplashViewModel> {
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            logoImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            logoImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -70),
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -70),
             logoImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5)
         ])
     }
