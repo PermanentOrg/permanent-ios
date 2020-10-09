@@ -63,25 +63,20 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
         viewModel?.logout(then: { logoutStatus in
             self.hideSpinner()
             switch logoutStatus {
-                case .success:
-                    DispatchQueue.main.async {
-                        self.navigationController?.display(.login, from: .authentication)
-                    }
+            case .success:
+                DispatchQueue.main.async {
+                    self.navigationController?.display(.login, from: .authentication)
+                }
                     
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.showAlert(title: Translations.error, message: message)
-                    }
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
             }
         })
     }
     
-    private func openSecuritySettings() {
-        // TODO
-    }
-    
     private func handleBiometricsFailure(_ error: PermanentError) {
-        
         switch error.statusCode {
         // Too many attempts, log out the user.
         case LocalAuthErrors.biometryLockoutError.statusCode:
@@ -89,11 +84,13 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
             
         // User does not have biometrics & pincode enrolled.
         case LocalAuthErrors.notEnroledError.statusCode:
-            openSecuritySettings()
+            DispatchQueue.main.async {
+                self.showAlert(title: Translations.error,
+                               message: String(format: Translations.biometricsSetup, BiometryUtils.biometryInfo.name))
+            }
             
         // Nothing to do here. Case treated by `loggedin` API call.
         case LocalAuthErrors.localHardwareUnavailableError.statusCode:
-            // TODO
             break
             
         default:
@@ -101,7 +98,5 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
                 self.showAlert(title: Translations.error, message: error.errorDescription)
             }
         }
-        
-        
     }
 }

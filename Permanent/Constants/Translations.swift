@@ -56,4 +56,5 @@ struct Translations {
     static var authenticationCancelled: String { return "AuthenticationCancelled".localized() }
     static var authenticationInteractionFailed: String { return "AuthenticationInteractionFailed".localized() }
     static var authenticationLocked: String { return "AuthenticationLocked".localized() }
+    static var biometricsSetup: String { return "AuthenticationLocked".localized() }
 }

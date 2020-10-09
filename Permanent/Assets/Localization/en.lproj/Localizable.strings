@@ -14,7 +14,7 @@
 "AuthenticationFailed" = "Authentication failed.";
 "AuthenticationInteractionFailed" = "Authentication failed because interaction is disabled.";
 "AuthenticationLocked" = "Biometry is now locked because of too many failed attempts. Passcode is required to unlock biometry.";
-"AuthenticationNotEnrolled" = "Local authentication not enroled.";
+"AuthenticationNotEnrolled" = "Local authentication not enrolled.";
 "AuthenticationTimedOut" = "Local authentication timed out.";
 "BiometricsReason" = "Authenticate to log into your Permanent account.";
 "Cancel" = "Cancel";
@@ -53,3 +53,4 @@
 "UseLoginCredentials" = "Use login credentials instead";
 "UsePasscode" = "Use passcode";
 "WelcomeMessage" = "Nice to see you again";
+"BiometricsSetup" = "Permanent works best with %@ and requires a passcode.";
