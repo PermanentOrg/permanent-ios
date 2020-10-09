@@ -49,14 +49,16 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
                 self.navigationController?.display(.main, from: .main)
             }
         }, onFailure: { error in
-            DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: error.errorDescription)
-            }
+            self.handleBiometricsFailure(error)
         })
     }
     
     @IBAction
     func loginButtonAction(_ sender: UIButton) {
+        logout()
+    }
+    
+    private func logout() {
         showSpinner()
         viewModel?.logout(then: { logoutStatus in
             self.hideSpinner()
@@ -72,5 +74,34 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
                     }
             }
         })
+    }
+    
+    private func openSecuritySettings() {
+        // TODO
+    }
+    
+    private func handleBiometricsFailure(_ error: PermanentError) {
+        
+        switch error.statusCode {
+        // Too many attempts, log out the user.
+        case LocalAuthErrors.biometryLockoutError.statusCode:
+            logout()
+            
+        // User does not have biometrics & pincode enrolled.
+        case LocalAuthErrors.notEnroledError.statusCode:
+            openSecuritySettings()
+            
+        // Nothing to do here. Case treated by `loggedin` API call.
+        case LocalAuthErrors.localHardwareUnavailableError.statusCode:
+            // TODO
+            break
+            
+        default:
+            DispatchQueue.main.async {
+                self.showAlert(title: Translations.error, message: error.errorDescription)
+            }
+        }
+        
+        
     }
 }

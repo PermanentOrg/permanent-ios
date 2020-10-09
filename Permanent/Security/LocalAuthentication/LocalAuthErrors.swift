@@ -9,16 +9,15 @@
 import LocalAuthentication.LAError
 
 struct LocalAuthErrors {
-    static let unknownError = PermanentError(statusCode: -4000, errorDescription: "Local authentication failed.")
-    static let localHardwareUnavailableError = PermanentError(statusCode: -4001, errorDescription: "Hardware unavailable for local authentication")
-    static let timeOutError = PermanentError(statusCode: -4002, errorDescription: "Local authentication timed out.")
-    static let localHardwareNotPresentError = PermanentError(statusCode: -4003, errorDescription: "Hardware doesn't exist for local authentication")
-    static let notEnroledError = PermanentError(statusCode: -4004, errorDescription: "Local authentication not enroled")
-    static let contextNotSetError = PermanentError(statusCode: -4005, errorDescription: "Context not set for local authentication")
-    static let applicationCanceledError = PermanentError(statusCode: -4006, errorDescription: "Authentication was cancelled by application")
-    static let notInteractiveError = PermanentError(statusCode: -4007, errorDescription: "Authentication failed because interaction is disabled")
-    static let biometryLockoutError = PermanentError(statusCode: -4008, errorDescription: "Biometry is now locked because of too many failed attempts. Passcode is required to unlock biometry")
-    
+    static let unknownError = PermanentError(statusCode: -4000, errorDescription: Translations.authenticationFailed)
+    static let localHardwareUnavailableError = PermanentError(statusCode: -4001, errorDescription: Translations.hardwareUnavailable)
+    static let timeOutError = PermanentError(statusCode: -4002, errorDescription: Translations.authenticationTimedOut)
+    static let notEnroledError = PermanentError(statusCode: -4003, errorDescription: Translations.authenticationNotEnrolled)
+    static let contextNotSetError = PermanentError(statusCode: -4004, errorDescription: Translations.authenticationContextNotSet)
+    static let applicationCanceledError = PermanentError(statusCode: -4005, errorDescription: Translations.authenticationCancelled)
+    static let notInteractiveError = PermanentError(statusCode: -4005, errorDescription: Translations.authenticationInteractionFailed)
+    static let biometryLockoutError = PermanentError(statusCode: -4006, errorDescription: Translations.authenticationLocked)
+
     static func extractAuthError(errorCode: Int?) -> PermanentError? {
         guard let errorCode = errorCode else {
             return nil
@@ -55,6 +54,4 @@ struct LocalAuthErrors {
 
         return error
     }
-    
-    
 }

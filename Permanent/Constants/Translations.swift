@@ -48,4 +48,12 @@ struct Translations {
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
     static var useLoginCredentials: String { return "UseLoginCredentials".localized() }
     static var biometricsReason: String { return "BiometricsReason".localized() }
+    static var authenticationFailed: String { return "AuthenticationFailed".localized() }
+    static var hardwareUnavailable: String { return "HardwareUnavailable".localized() }
+    static var authenticationTimedOut: String { return "AuthenticationTimedOut".localized() }
+    static var authenticationNotEnrolled: String { return "AuthenticationNotEnrolled".localized() }
+    static var authenticationContextNotSet: String { return "AuthenticationContextNotSet".localized() }
+    static var authenticationCancelled: String { return "AuthenticationCancelled".localized() }
+    static var authenticationInteractionFailed: String { return "AuthenticationInteractionFailed".localized() }
+    static var authenticationLocked: String { return "AuthenticationLocked".localized() }
 }
