@@ -68,4 +68,5 @@ extension Constants.Keys.StorageKeys {
     static let accountIdStorageKey = "accountIdStorageKey"
     static let emailStorageKey = "emailStorageKey"
     static let csrfStorageKey = "csrfStorageKey"
+    static let isNewUserStorageKey = "isNewUser"
 }

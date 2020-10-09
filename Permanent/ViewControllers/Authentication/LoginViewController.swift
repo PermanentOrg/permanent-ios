@@ -53,11 +53,6 @@ class LoginViewController: BaseViewController<LoginViewModel> {
         
         emailField.delegate = self
         passwordField.delegate = self
-        
-        #if DEBUG
-        emailField.text = "adrian.creteanu@vspartners.us"
-        passwordField.text = "Test1234"
-        #endif
     }
     
     // MARK: - Actions
