@@ -45,3 +45,4 @@
 "WelcomeMessage" = "Nice to see you again";
 "UnlockWithBiometrics" = "Unlock with %@";
 "UseLoginCredentials" = "Use login credentials instead";
+"BiometricsReason" = "Authenticate to log into your Permanent account.";

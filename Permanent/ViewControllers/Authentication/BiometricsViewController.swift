@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BiometricsViewController: UIViewController {
+class BiometricsViewController: BaseViewController<LoginViewModel> {
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var biometricsImageView: UIImageView!
     @IBOutlet var biometricsButton: RoundedButton!
@@ -19,6 +19,7 @@ class BiometricsViewController: UIViewController {
         super.viewDidLoad()
         
         initUI()
+        viewModel = LoginViewModel()
     }
     
     fileprivate func initUI() {
@@ -29,7 +30,8 @@ class BiometricsViewController: UIViewController {
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        biometricsButton.setTitle(String(format: Translations.unlockWithBiometrics, BiometryUtils.biometryName), for: [])
+        biometricsButton.setTitle(String(format: Translations.unlockWithBiometrics, BiometryUtils.biometryInfo.name), for: [])
+        biometricsImageView.image = UIImage(named: BiometryUtils.biometryInfo.iconName)
             
         loginButton.setTitle(Translations.useLoginCredentials, for: [])
         loginButton.setFont(Text.style5.font)
@@ -40,15 +42,35 @@ class BiometricsViewController: UIViewController {
         copyrightLabel.font = Text.style12.font
     }
     
-    @IBAction func biometricsCheckAction(_ sender: RoundedButton) {
-        PermanentLocalAuthentication.instance.authenticate {
-            print("Succ")
-        } onFailure: { error in
-            print(error)
-        }
+    @IBAction
+    func biometricsCheckAction(_ sender: RoundedButton) {
+        PermanentLocalAuthentication.instance.authenticate(onSuccess: {
+            DispatchQueue.main.async {
+                self.navigationController?.display(.main, from: .main)
+            }
+        }, onFailure: { error in
+            DispatchQueue.main.async {
+                self.showAlert(title: Translations.error, message: error.errorDescription)
+            }
+        })
     }
     
-    @IBAction func loginButtonAction(_ sender: UIButton) {
-        navigationController?.display(.login, from: .authentication)
+    @IBAction
+    func loginButtonAction(_ sender: UIButton) {
+        showSpinner()
+        viewModel?.logout(then: { logoutStatus in
+            self.hideSpinner()
+            switch logoutStatus {
+                case .success:
+                    DispatchQueue.main.async {
+                        self.navigationController?.display(.login, from: .authentication)
+                    }
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.showAlert(title: Translations.error, message: message)
+                    }
+            }
+        })
     }
 }

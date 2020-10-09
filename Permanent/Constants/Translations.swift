@@ -47,4 +47,5 @@ struct Translations {
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
     static var useLoginCredentials: String { return "UseLoginCredentials".localized() }
+    static var biometricsReason: String { return "BiometricsReason".localized() }
 }

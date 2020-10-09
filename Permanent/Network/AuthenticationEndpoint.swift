@@ -21,6 +21,8 @@ enum AuthenticationEndpoint {
     case verify(credentials: VerifyCodeCredentials)
     /// Sends an email in order to change the password.
     case forgotPassword(email: String)
+    /// Logs out the user.
+    case logout
 }
 
 extension AuthenticationEndpoint: RequestProtocol {
@@ -59,6 +61,8 @@ extension AuthenticationEndpoint: RequestProtocol {
             return "/auth/verify"
         case .forgotPassword:
             return "/auth/sendEmailForgotPassword"
+        case .logout:
+            return "/auth/logout"
         }
     }
 

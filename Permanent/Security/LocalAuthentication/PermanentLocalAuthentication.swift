@@ -23,14 +23,13 @@ class PermanentLocalAuthentication: NSObject {
 
 extension PermanentLocalAuthentication: ILocalAuthentication {
     func authenticate(onSuccess: LocalAuthSuccessCallback?, onFailure: LocalAuthFailureCallback?) {
-        currentContext.localizedReason = "We need your faceid"
         currentContext.localizedCancelTitle = Translations.cancel
         currentContext.localizedFallbackTitle = Translations.usePasscode
 
         let authStatus = canAuthenticate()
 
         if authStatus.canAuthenticate {
-            currentContext.evaluatePolicy(policy, localizedReason: "no reason", reply: { success, error in
+            currentContext.evaluatePolicy(policy, localizedReason: Translations.biometricsReason, reply: { success, error in
                 if success {
                     onSuccess?()
                 } else {
