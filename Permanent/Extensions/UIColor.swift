@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 20/07/2020.
-//  Copyright © 2020 Lucian Cerbu. All rights reserved.
 //
 import UIKit
 
