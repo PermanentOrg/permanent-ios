@@ -18,7 +18,7 @@ class SplashViewController: BaseViewController<SplashViewModel> {
         
         viewModel = SplashViewModel()
         viewModel?.verifyLoggedIn(then: { status in
-            self.handleAuthStatus(status)
+            self.handleAuthState(status)
         })
     }
     
@@ -38,16 +38,23 @@ class SplashViewController: BaseViewController<SplashViewModel> {
         ])
     }
 
-    fileprivate func handleAuthStatus(_ status: AuthStatus) {
+    fileprivate func handleAuthState(_ status: AuthStatus) {
         switch status {
         case .loggedIn:
             AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
         default:
-            if UserDefaultsService.shared.isNewUser() {
-                AppDelegate.shared.rootViewController.setRoot(named: .onboarding, from: .onboarding)
-            } else {
-                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
-            }
+            handleLoggedOutState()
+            
+        }
+    }
+    
+    private func handleLoggedOutState() {
+        let isNewUser: Bool? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey)
+        
+        if isNewUser == true {
+            AppDelegate.shared.rootViewController.setRoot(named: .onboarding, from: .onboarding)
+        } else {
+            AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
         }
     }
 }
