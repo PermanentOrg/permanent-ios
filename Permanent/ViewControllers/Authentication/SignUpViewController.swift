@@ -59,12 +59,6 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         nameField.delegate = self
         emailField.delegate = self
         passwordField.delegate = self
-        
-        #if DEBUG
-        nameField.text = "Adrian Creteanu"
-        emailField.text = "adrian.creteanu+2@vspartners.us"
-        passwordField.text = "Test1234"
-        #endif
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
