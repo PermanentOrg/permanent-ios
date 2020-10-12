@@ -18,9 +18,36 @@ protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
     func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
     func signUp(with credentials: SignUpCredentials, then handler: @escaping ServerResponse)
+    func logout(then handler: @escaping ServerResponse)
 }
 
 extension LoginViewModel: LoginViewModelDelegate {
+    func logout(then handler: @escaping ServerResponse) {
+        let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
+
+        logoutOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: Translations.errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error(message: Translations.errorMessage))
+                }
+
+            case .error:
+                handler(.error(message: Translations.errorMessage))
+
+            default:
+                break
+            }
+        }
+    }
+
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
         let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
 

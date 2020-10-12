@@ -10,6 +10,13 @@ import UIKit
 @IBDesignable
 class TextField: CustomTextField {
     var contentEdgeInsets: UIEdgeInsets = .zero
+    
+    override var placeholder: String? {
+        didSet {
+            attributedPlaceholder = NSAttributedString(string: placeholder ?? "",
+                                                       attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+        }
+    }
 
     override func setup() {
         contentEdgeInsets = UIEdgeInsets(top: 8,
@@ -17,11 +24,14 @@ class TextField: CustomTextField {
                                          bottom: 8,
                                          right: 10)
 
-        tintColor = .black
-    }
+        backgroundColor = .primary
+        textColor = .white
+        font = Text.style4.font
+        tintColor = .white
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
+        layer.cornerRadius = 10
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.white.cgColor
     }
 
     override func textRect(forBounds bounds: CGRect) -> CGRect {
@@ -35,11 +45,8 @@ class TextField: CustomTextField {
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: contentEdgeInsets)
     }
-    
+
     func toggleBorder(active: Bool) {
-        layer.cornerRadius = 5
-        layer.borderWidth = active ? 2 : 0
-        layer.borderColor = active ? UIColor.tangerine.cgColor : nil
+        layer.borderColor = active ? UIColor.tangerine.cgColor : UIColor.white.cgColor
     }
-    
 }

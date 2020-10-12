@@ -40,7 +40,14 @@ class SplashViewController: BaseViewController<SplashViewModel> {
     fileprivate func handleAuthState(_ status: AuthStatus) {
         switch status {
         case .loggedIn:
-            AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
+            let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+            
+            if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode {
+                AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
+            } else {
+                AppDelegate.shared.rootViewController.setRoot(named: .biometrics, from: .authentication)
+            }
+            
         default:
             handleLoggedOutState()
             

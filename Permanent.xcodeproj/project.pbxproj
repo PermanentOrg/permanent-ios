@@ -45,6 +45,9 @@
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
 		BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB22527393400A69597 /* AccountUpdateVO.swift */; };
+		BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */; };
+		BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */; };
+		BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF867252DE642003D3829 /* BiometryUtils.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DD251C8C4200E24A51 /* Translations.swift */; };
 		BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */; };
@@ -76,6 +79,9 @@
 		BC6D3B552514F26F00390927 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B542514F26F00390927 /* APIError.swift */; };
 		BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */; };
 		BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B592514F62400390927 /* AuthenticationEndpoint.swift */; };
+		BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */; };
+		BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70F0252C740300113D5F /* PermanentError.swift */; };
+		BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */; };
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
@@ -142,6 +148,9 @@
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
 		BC326AB22527393400A69597 /* AccountUpdateVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateVO.swift; sourceTree = "<group>"; };
+		BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthErrors.swift; sourceTree = "<group>"; };
+		BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsViewController.swift; sourceTree = "<group>"; };
+		BC3DF867252DE642003D3829 /* BiometryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryUtils.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BC4526DD251C8C4200E24A51 /* Translations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translations.swift; sourceTree = "<group>"; };
 		BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeResponse.swift; sourceTree = "<group>"; };
@@ -173,6 +182,9 @@
 		BC6D3B542514F26F00390927 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestDispatcher.swift; sourceTree = "<group>"; };
 		BC6D3B592514F62400390927 /* AuthenticationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationEndpoint.swift; sourceTree = "<group>"; };
+		BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILocalAuthentication.swift; sourceTree = "<group>"; };
+		BC6E70F0252C740300113D5F /* PermanentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermanentError.swift; sourceTree = "<group>"; };
+		BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermanentLocalAuthentication.swift; sourceTree = "<group>"; };
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
 		BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEndpoint.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
@@ -267,6 +279,7 @@
 				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
 				BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */,
+				BC6E70F0252C740300113D5F /* PermanentError.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -309,6 +322,7 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				BC6E70EC252C6F0100113D5F /* Security */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
 				BC1BDF162513558800F2D239 /* Assets */,
@@ -458,6 +472,7 @@
 				BC6D3B40251363E800390927 /* LoginViewController.swift */,
 				BC97A46A2519EC1000E43205 /* VerificationCodeController.swift */,
 				BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */,
+				BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -476,6 +491,25 @@
 				BC6D3B562514F28800390927 /* APIRequestDispatcher.swift */,
 			);
 			path = Layer;
+			sourceTree = "<group>";
+		};
+		BC6E70EC252C6F0100113D5F /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				BC6E70ED252C6F0B00113D5F /* LocalAuthentication */,
+			);
+			path = Security;
+			sourceTree = "<group>";
+		};
+		BC6E70ED252C6F0B00113D5F /* LocalAuthentication */ = {
+			isa = PBXGroup;
+			children = (
+				BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */,
+				BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */,
+				BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */,
+				BC3DF867252DE642003D3829 /* BiometryUtils.swift */,
+			);
+			path = LocalAuthentication;
 			sourceTree = "<group>";
 		};
 		BCB0725A2523497B003E2F66 /* Popups */ = {
@@ -641,11 +675,14 @@
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
+				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
+				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
+				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
@@ -679,6 +716,7 @@
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
+				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* LoginViewModel.swift in Sources */,
 				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
@@ -687,6 +725,7 @@
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
+				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
@@ -698,6 +737,7 @@
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -843,9 +883,9 @@
 			baseConfigurationReference = FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -856,7 +896,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Staging DEV";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -867,9 +907,9 @@
 			baseConfigurationReference = F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -951,7 +991,7 @@
 			baseConfigurationReference = 9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
@@ -964,7 +1004,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME) Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "Permanent Mobile Staging";
+				PROVISIONING_PROFILE_SPECIFIER = "Staging DEV";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

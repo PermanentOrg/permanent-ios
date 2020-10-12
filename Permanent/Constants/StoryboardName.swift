@@ -26,6 +26,7 @@ enum ViewControllerIdentifier: String {
     case verificationCode
     case termsConditions
     case twoStepVerification
+    case biometrics
 
     var identifier: String {
         switch self {

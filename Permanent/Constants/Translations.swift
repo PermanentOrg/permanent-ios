@@ -42,4 +42,18 @@ struct Translations {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
+    static var usePasscode: String { return "UsePasscode".localized() }
+    static var welcomeMessage: String { return "WelcomeMessage".localized() }
+    static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
+    static var useLoginCredentials: String { return "UseLoginCredentials".localized() }
+    static var biometricsReason: String { return "BiometricsReason".localized() }
+    static var authenticationFailed: String { return "AuthenticationFailed".localized() }
+    static var hardwareUnavailable: String { return "HardwareUnavailable".localized() }
+    static var authenticationTimedOut: String { return "AuthenticationTimedOut".localized() }
+    static var authenticationNotEnrolled: String { return "AuthenticationNotEnrolled".localized() }
+    static var authenticationContextNotSet: String { return "AuthenticationContextNotSet".localized() }
+    static var authenticationCancelled: String { return "AuthenticationCancelled".localized() }
+    static var authenticationInteractionFailed: String { return "AuthenticationInteractionFailed".localized() }
+    static var authenticationLocked: String { return "AuthenticationLocked".localized() }
+    static var biometricsSetup: String { return "AuthenticationLocked".localized() }
 }
