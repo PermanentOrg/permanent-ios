@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Adrian Creteanu on 07/10/2020.
-//  Copyright © 2020 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
