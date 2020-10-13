@@ -7,11 +7,13 @@
 
 import UIKit
 
-class VerificationCodeController: BaseViewController<VerificationCodeViewModel> {
+class CodeVerificationController: BaseViewController<VerificationCodeViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var confirmButton: RoundedButton!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: CustomTextField!
+    
+    var verificationType: CodeVerificationType = .mfa
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -39,6 +41,7 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
         codeField.placeholder = Translations.enterCode
         codeField.delegate = self
         codeField.smartInsertDeleteType = .no
+        codeField.textContentType = .oneTimeCode
     }
     
     // MARK: - Actions
@@ -49,7 +52,7 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
             let code = codeField.text,
             code.isNotEmpty else { return }
         
-        let credentials = VerifyCodeCredentials(email, code)
+        let credentials = VerifyCodeCredentials(email, code, verificationType)
         
         showSpinner()
         viewModel?.verify(for: credentials, then: { status in
@@ -71,7 +74,7 @@ class VerificationCodeController: BaseViewController<VerificationCodeViewModel> 
     }
 }
 
-extension VerificationCodeController: UITextFieldDelegate {
+extension CodeVerificationController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
     }

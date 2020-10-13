@@ -78,6 +78,34 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         navigationController?.navigate(to: .main, from: .main)
     }
     
+    private func sendVerificationCodeSMS(forAccount id: String, email: String) {
+        viewModel?.sendVerificationCodeSMS(accountId: id, email: email, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                guard let codeVerificationController = self.navigationController?.create(
+                    viewController: .verificationCode,
+                    from: .authentication
+                ) as? CodeVerificationController else {
+                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                    return
+                }
+                
+                codeVerificationController.verificationType = .phone
+                
+                DispatchQueue.main.async {
+                    self.navigationController?.navigate(to: codeVerificationController)
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
+            }
+        })
+    }
+    
     func updatePhone() {
         guard
             let email: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey),
@@ -89,16 +117,14 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         showSpinner()
         
         viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
-            self.hideSpinner()
             
             switch status {
             case .success:
-                DispatchQueue.main.async {
-                    self.openMainScreen()
-                }
+                self.sendVerificationCodeSMS(forAccount: String(accountID), email: email)
                 
             case .error(let message):
                 DispatchQueue.main.async {
+                    self.hideSpinner()
                     self.showAlert(title: Translations.error, message: message)
                 }
             }

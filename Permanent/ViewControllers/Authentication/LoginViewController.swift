@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginViewController: BaseViewController<LoginViewModel> {
+class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var loginLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: RoundedButton!
@@ -29,7 +29,7 @@ class LoginViewController: BaseViewController<LoginViewModel> {
     fileprivate func initUI() {
         view.backgroundColor = .darkBlue
         
-        viewModel = LoginViewModel()
+        viewModel = AuthViewModel()
         
         loginLabel.text = Translations.login
         loginLabel.textColor = .white
