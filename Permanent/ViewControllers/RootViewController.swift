@@ -27,7 +27,7 @@ class RootViewController: UIViewController {
     }
     
     func setRoot(named controller: ViewControllerIdentifier, from storyboard: StoryboardName) {
-        let navController = UINavigationController()
+        let navController = NavigationController()
         let viewController = UIStoryboard(name: storyboard.name, bundle: nil)
             .instantiateViewController(withIdentifier: controller.identifier)
         
@@ -39,7 +39,7 @@ class RootViewController: UIViewController {
     }
     
     func setRoot<T: UIViewController>(_ viewController: T.Type) {
-        let navController = UINavigationController(rootViewController: T())
+        let navController = NavigationController(rootViewController: T())
         
         setupChild(navController)
         removeChild(current)

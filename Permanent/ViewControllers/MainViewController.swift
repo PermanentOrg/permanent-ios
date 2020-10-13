@@ -7,16 +7,30 @@
 
 import UIKit
 
-class MainViewController: BaseViewController<MainViewModel> {
+class MainViewController: BaseViewController<MyFilesViewModel> {
+    @IBOutlet var directoryLabel: UILabel!
+    @IBOutlet var tableView: UITableView!
     
-    override var prefersStatusBarHidden: Bool {
-        return true
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
+        
+        viewModel = MyFilesViewModel()
+        tableView.delegate = viewModel
+        tableView.dataSource = viewModel
+        
+        tableView.register(UINib(nibName: "FileTableViewCell", bundle: nil), forCellReuseIdentifier: "fileTableViewCell")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        navigationController?.navigationBar.barStyle = .black
     }
     
     fileprivate func initUI() {
@@ -26,5 +40,8 @@ class MainViewController: BaseViewController<MainViewModel> {
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.title = "My Files"
         styleNavBar()
+        
+        directoryLabel.font = Text.style3.font
+        directoryLabel.textColor = .primary
     }
 }

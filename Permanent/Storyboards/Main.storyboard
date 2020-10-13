@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,24 +17,43 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No files found" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rxe-L4-Uty" userLabel="Temp Label">
-                                <rect key="frame" x="142" y="441" width="130.5" height="24"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lqW-eP-52i" userLabel="Directory Label">
+                                <rect key="frame" x="20" y="74" width="374" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cYb-Ja-a8p">
+                                <rect key="frame" x="0.0" y="115" width="414" height="747"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </tableView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="Rxe-L4-Uty" firstAttribute="centerY" secondItem="olD-lK-dv0" secondAttribute="centerY" id="9SC-zO-A7s"/>
-                            <constraint firstItem="Rxe-L4-Uty" firstAttribute="centerX" secondItem="olD-lK-dv0" secondAttribute="centerX" id="t02-Yk-jw9"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="olD-lK-dv0"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="lqW-eP-52i" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="Efu-pm-s6S"/>
+                            <constraint firstItem="lqW-eP-52i" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="30" id="WwN-s8-hXh"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="YAf-x6-M8B"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" id="fpK-Xs-skM"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="cYb-Ja-a8p" secondAttribute="trailing" id="gJp-Dj-skk"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="lqW-eP-52i" secondAttribute="trailing" constant="20" id="jZu-Sl-9oQ"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="lqW-eP-52i" secondAttribute="bottom" constant="20" id="lXb-aj-hjC"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
+                        <outlet property="tableView" destination="cYb-Ja-a8p" id="qCt-bZ-1t1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="czR-oV-vKs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-259" y="202"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

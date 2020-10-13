@@ -55,13 +55,16 @@
 		BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E7251CACDF00E24A51 /* CodableHelper.swift */; };
 		BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E9251CADF600E24A51 /* ArchiveVO.swift */; };
 		BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EC251CD62C00E24A51 /* MainViewController.swift */; };
-		BC4526EF251CD65100E24A51 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EE251CD65100E24A51 /* MainViewModel.swift */; };
+		BC4526EF251CD65100E24A51 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */; };
 		BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC4526F0251CD6B600E24A51 /* Main.storyboard */; };
 		BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */; };
 		BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F4251DF5AE00E24A51 /* RootViewController.swift */; };
 		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
 		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
+		BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
+		BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358972535D35D00EEC48C /* FileTableViewCell.swift */; };
+		BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC6358982535D35D00EEC48C /* FileTableViewCell.xib */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardName.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
@@ -158,13 +161,16 @@
 		BC4526E7251CACDF00E24A51 /* CodableHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableHelper.swift; sourceTree = "<group>"; };
 		BC4526E9251CADF600E24A51 /* ArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveVO.swift; sourceTree = "<group>"; };
 		BC4526EC251CD62C00E24A51 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		BC4526EE251CD65100E24A51 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		BC4526F0251CD6B600E24A51 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
 		BC4526F4251DF5AE00E24A51 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
+		BC6358832535C7D000EEC48C /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		BC6358972535D35D00EEC48C /* FileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTableViewCell.swift; sourceTree = "<group>"; };
+		BC6358982535D35D00EEC48C /* FileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileTableViewCell.xib; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardName.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
@@ -229,6 +235,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BC6358962535D27300EEC48C /* Cells */,
 				BC1BDF1A2513567B00F2D239 /* XIBs */,
 				06644A8E24EBF72C003CD359 /* BigLogoView.swift */,
 				06644A8624EA772D003CD359 /* CustomButton.swift */,
@@ -252,6 +259,7 @@
 				BC4526EC251CD62C00E24A51 /* MainViewController.swift */,
 				BC4526F4251DF5AE00E24A51 /* RootViewController.swift */,
 				BC4526F6251DF5E900E24A51 /* SplashViewController.swift */,
+				BC6358832535C7D000EEC48C /* NavigationController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -292,7 +300,7 @@
 				06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */,
 				BC6D3B422513664C00390927 /* AuthViewModel.swift */,
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
-				BC4526EE251CD65100E24A51 /* MainViewModel.swift */,
+				BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */,
 				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 			);
 			path = ViewModels;
@@ -465,6 +473,15 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		BC6358962535D27300EEC48C /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
+				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -609,6 +626,7 @@
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
+				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
@@ -676,6 +694,7 @@
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
+				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
@@ -691,7 +710,7 @@
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
-				BC4526EF251CD65100E24A51 /* MainViewModel.swift in Sources */,
+				BC4526EF251CD65100E24A51 /* MyFilesViewModel.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
@@ -737,6 +756,7 @@
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,
 				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 			);
