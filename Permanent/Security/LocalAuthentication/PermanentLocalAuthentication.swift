@@ -49,8 +49,6 @@ extension PermanentLocalAuthentication: ILocalAuthentication {
     }
 
     func canAuthenticate() -> LocalAuthStatus {
-        currentContext = LAContext()
-
         var evalError: NSError?
         let canEvaluatePolicy = currentContext.canEvaluatePolicy(policy, error: &evalError)
         let error = LocalAuthErrors.extractAuthError(errorCode: evalError?.code)

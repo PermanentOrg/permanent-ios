@@ -49,7 +49,7 @@ struct Payloads {
                     ],
                     "AccountPasswordVO": [
                         "password": credentials.loginCredentials.password,
-                        "passwordVerify": credentials.loginCredentials.password,
+                        "passwordVerify": credentials.loginCredentials.password
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey
@@ -64,7 +64,7 @@ struct Payloads {
                     "AccountVO": [
                         "accountId": accountId,
                         "primaryPhone": updateData.phone,
-                        "primaryEmail": updateData.email,
+                        "primaryEmail": updateData.email
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
@@ -73,16 +73,29 @@ struct Payloads {
         ]
     }
     
+    static func smsVerificationCodePayload(accountId: String, email: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId,
+                        "primaryEmail": email
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey
+            ]
+        ]
+    }
     
     static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
                     "AccountVO": [
-                        "primaryEmail": credentials.email,
+                        "primaryEmail": credentials.email
                     ],
                     "AuthVO": [
-                        "type": "type.auth.mfaValidation",
+                        "type": credentials.type.value,
                         "token": credentials.code
                     ]
                 ]],

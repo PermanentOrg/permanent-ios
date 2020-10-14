@@ -10,7 +10,7 @@ import UIKit.UIAlertController
 
 typealias ServerResponse = (RequestStatus) -> Void
 
-class LoginViewModel: ViewModelInterface {
+class AuthViewModel: ViewModelInterface {
     weak var delegate: LoginViewModelDelegate?
 }
 
@@ -21,7 +21,7 @@ protocol LoginViewModelDelegate: ViewModelDelegateInterface {
     func logout(then handler: @escaping ServerResponse)
 }
 
-extension LoginViewModel: LoginViewModelDelegate {
+extension AuthViewModel: LoginViewModelDelegate {
     func logout(then handler: @escaping ServerResponse) {
         let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
 

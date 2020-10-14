@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SignUpViewController: BaseViewController<LoginViewModel> {
+class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: UIButton!
@@ -37,7 +37,7 @@ class SignUpViewController: BaseViewController<LoginViewModel> {
         view.backgroundColor = .primary
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        viewModel = LoginViewModel()
+        viewModel = AuthViewModel()
 
         titleLabel.text = Translations.signup
         titleLabel.textColor = .white

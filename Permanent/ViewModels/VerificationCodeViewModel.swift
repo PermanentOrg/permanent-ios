@@ -66,3 +66,17 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
         }
     }
 }
+
+enum CodeVerificationType {
+    case phone
+    case mfa
+    
+    var value: String {
+        switch self {
+        case .mfa:
+            return Constants.API.TYPE_AUTH_MFAVALIDATION
+        case .phone:
+            return Constants.API.TYPE_AUTH_PHONE
+        }
+    }
+}

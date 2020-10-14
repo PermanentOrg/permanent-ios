@@ -15,6 +15,7 @@ class AccountViewModel: ViewModelInterface {
 
 protocol AccountViewModelDelegate: ViewModelDelegateInterface {
     func update(for accountId: String, data: UpdateData, csrf: String, then handler: @escaping ServerResponse)
+    func sendVerificationCodeSMS(accountId: String, email: String, then handler: @escaping ServerResponse)
 }
 
 extension AccountViewModel: AccountViewModelDelegate {
@@ -41,6 +42,30 @@ extension AccountViewModel: AccountViewModelDelegate {
                 }
 
             case .error:
+                handler(.error(message: Translations.errorMessage))
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func sendVerificationCodeSMS(accountId: String, email: String, then handler: @escaping ServerResponse) {
+        let sendSMSOperation = APIOperation(AccountEndpoint.sendVerificationCodeSMS(accountId: accountId, email: email))
+
+        sendSMSOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                let model: AccountUpdateResponse? = JSONHelper.convertToModel(from: response)
+
+                if model?.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error(message: Translations.errorMessage))
+                }
+
+            case .error(let error):
+                print("error ", error.0)
                 handler(.error(message: Translations.errorMessage))
 
             default:

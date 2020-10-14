@@ -8,7 +8,7 @@
 import Foundation
 
 struct AccountUpdateVO: Codable {
-    let accountID: String?
+    let accountID: JSONAny?
     let primaryEmail, fullName: String?
     let address, address2, country, city: String?
     let state, zip: String?

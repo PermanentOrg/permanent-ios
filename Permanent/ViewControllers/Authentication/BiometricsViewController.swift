@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BiometricsViewController: BaseViewController<LoginViewModel> {
+class BiometricsViewController: BaseViewController<AuthViewModel> {
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var biometricsImageView: UIImageView!
     @IBOutlet var biometricsButton: RoundedButton!
@@ -18,7 +18,7 @@ class BiometricsViewController: BaseViewController<LoginViewModel> {
         super.viewDidLoad()
         
         initUI()
-        viewModel = LoginViewModel()
+        viewModel = AuthViewModel()
     }
     
     fileprivate func initUI() {
