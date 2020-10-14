@@ -37,4 +37,9 @@ class FileTableViewCell: UITableViewCell {
         fileDateLabel.text = "02-23-2020"
     }
     
+    func updateCell(model: FileViewModel) {
+        fileNameLabel.text = model.name
+        fileDateLabel.text = model.date
+    }
+    
 }

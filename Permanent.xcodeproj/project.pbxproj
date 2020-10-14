@@ -55,7 +55,6 @@
 		BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E7251CACDF00E24A51 /* CodableHelper.swift */; };
 		BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E9251CADF600E24A51 /* ArchiveVO.swift */; };
 		BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EC251CD62C00E24A51 /* MainViewController.swift */; };
-		BC4526EF251CD65100E24A51 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */; };
 		BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC4526F0251CD6B600E24A51 /* Main.storyboard */; };
 		BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */; };
 		BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F4251DF5AE00E24A51 /* RootViewController.swift */; };
@@ -65,6 +64,17 @@
 		BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
 		BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358972535D35D00EEC48C /* FileTableViewCell.swift */; };
 		BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC6358982535D35D00EEC48C /* FileTableViewCell.xib */; };
+		BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC63589D2536D75300EEC48C /* GetRootResponse.swift */; };
+		BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358A02536D80100EEC48C /* FilesEndpoint.swift */; };
+		BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */; };
+		BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */; };
+		BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */; };
+		BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */; };
+		BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B12536FD6400EEC48C /* ChildItemVO.swift */; };
+		BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B42536FD9200EEC48C /* FolderVO.swift */; };
+		BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */; };
+		BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BB25371FCB00EEC48C /* FileViewModel.swift */; };
+		BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BE2537414300EEC48C /* MinFolderVO.swift */; };
 		BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC64877F251B6590009D7DE1 /* LoginResponse.swift */; };
 		BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardName.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
@@ -161,7 +171,6 @@
 		BC4526E7251CACDF00E24A51 /* CodableHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableHelper.swift; sourceTree = "<group>"; };
 		BC4526E9251CADF600E24A51 /* ArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveVO.swift; sourceTree = "<group>"; };
 		BC4526EC251CD62C00E24A51 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		BC4526F0251CD6B600E24A51 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
 		BC4526F4251DF5AE00E24A51 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -171,6 +180,17 @@
 		BC6358832535C7D000EEC48C /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		BC6358972535D35D00EEC48C /* FileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTableViewCell.swift; sourceTree = "<group>"; };
 		BC6358982535D35D00EEC48C /* FileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileTableViewCell.xib; sourceTree = "<group>"; };
+		BC63589D2536D75300EEC48C /* GetRootResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetRootResponse.swift; sourceTree = "<group>"; };
+		BC6358A02536D80100EEC48C /* FilesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesEndpoint.swift; sourceTree = "<group>"; };
+		BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesViewModel.swift; sourceTree = "<group>"; };
+		BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderSizeVO.swift; sourceTree = "<group>"; };
+		BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderLinkVO.swift; sourceTree = "<group>"; };
+		BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimezoneVO.swift; sourceTree = "<group>"; };
+		BC6358B12536FD6400EEC48C /* ChildItemVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildItemVO.swift; sourceTree = "<group>"; };
+		BC6358B42536FD9200EEC48C /* FolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderVO.swift; sourceTree = "<group>"; };
+		BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigateMinResponse.swift; sourceTree = "<group>"; };
+		BC6358BB25371FCB00EEC48C /* FileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewModel.swift; sourceTree = "<group>"; };
+		BC6358BE2537414300EEC48C /* MinFolderVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MinFolderVO.swift; sourceTree = "<group>"; };
 		BC64877F251B6590009D7DE1 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
 		BC648781251B9FC7009D7DE1 /* StoryboardName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardName.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
@@ -288,6 +308,8 @@
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
 				BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */,
 				BC6E70F0252C740300113D5F /* PermanentError.swift */,
+				BC63589D2536D75300EEC48C /* GetRootResponse.swift */,
+				BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -295,13 +317,14 @@
 		06B0EB2C24E68289003D90C6 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BC6358BA25371FB400EEC48C /* UI */,
 				5E60451C251206F9002E47CB /* OnboardingViewModel.swift */,
 				5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */,
 				06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */,
 				BC6D3B422513664C00390927 /* AuthViewModel.swift */,
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
-				BC4526EE251CD65100E24A51 /* MyFilesViewModel.swift */,
 				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
+				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -412,6 +435,7 @@
 				BC6D3B592514F62400390927 /* AuthenticationEndpoint.swift */,
 				BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */,
 				BC326AAE2526195E00A69597 /* APIErrors.swift */,
+				BC6358A02536D80100EEC48C /* FilesEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -446,9 +470,11 @@
 		BC4526E3251CACAB00E24A51 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				BC6358A72536FC8000EEC48C /* Folder */,
 				BC4526E4251CACB300E24A51 /* AccountVO.swift */,
 				BC326AB22527393400A69597 /* AccountUpdateVO.swift */,
 				BC4526E9251CADF600E24A51 /* ArchiveVO.swift */,
+				BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -480,6 +506,26 @@
 				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		BC6358A72536FC8000EEC48C /* Folder */ = {
+			isa = PBXGroup;
+			children = (
+				BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */,
+				BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */,
+				BC6358B12536FD6400EEC48C /* ChildItemVO.swift */,
+				BC6358B42536FD9200EEC48C /* FolderVO.swift */,
+				BC6358BE2537414300EEC48C /* MinFolderVO.swift */,
+			);
+			path = Folder;
+			sourceTree = "<group>";
+		};
+		BC6358BA25371FB400EEC48C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				BC6358BB25371FCB00EEC48C /* FileViewModel.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
@@ -686,23 +732,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
+				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
+				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
+				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
+				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
+				BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
@@ -710,8 +762,9 @@
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
-				BC4526EF251CD65100E24A51 /* MyFilesViewModel.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
+				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
+				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
@@ -725,8 +778,10 @@
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
+				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
+				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
@@ -750,6 +805,7 @@
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
+				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,

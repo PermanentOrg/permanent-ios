@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MainViewController: BaseViewController<MyFilesViewModel> {
+class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var tableView: UITableView!
     
@@ -20,17 +20,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         initUI()
         
-        viewModel = MyFilesViewModel()
+        viewModel = FilesViewModel()
         tableView.delegate = viewModel
         tableView.dataSource = viewModel
-        
         tableView.register(UINib(nibName: "FileTableViewCell", bundle: nil), forCellReuseIdentifier: "fileTableViewCell")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        tableView.tableFooterView = UIView()
         
-        navigationController?.navigationBar.barStyle = .black
+        getRoot()
     }
     
     fileprivate func initUI() {
@@ -38,10 +34,32 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.title = "My Files"
+        navigationItem.title = Translations.myFiles
         styleNavBar()
         
         directoryLabel.font = Text.style3.font
         directoryLabel.textColor = .primary
+    }
+    
+    // MARK: - Actions
+    
+    private func getRoot() {
+        showSpinner()
+        
+        viewModel?.getRoot(then: { status in
+            self.hideSpinner()
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
+            }
+            
+        })
     }
 }
