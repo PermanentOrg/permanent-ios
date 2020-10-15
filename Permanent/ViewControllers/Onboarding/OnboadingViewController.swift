@@ -8,10 +8,6 @@
 import UIKit
 
 class OnboadingViewController: BaseViewController<OnboardingViewModel> {
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     @IBOutlet var nextButtonLabel: RoundedButton!
     @IBOutlet var skipButtonLabel: UIButton!
     

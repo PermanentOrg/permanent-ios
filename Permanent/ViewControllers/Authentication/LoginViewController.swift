@@ -16,10 +16,6 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -65,7 +61,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         let credentials = LoginCredentials(email, password)
         
-        showSpinner()
+        showSpinner(colored: .white)
         closeKeyboard()
         
         viewModel?.login(with: credentials, then: { status in
