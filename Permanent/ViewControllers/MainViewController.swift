@@ -10,6 +10,7 @@ import UIKit
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
+    @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -22,7 +23,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         initUI()
         
         viewModel = FilesViewModel()
-        tableView.register(UINib(nibName: "FileTableViewCell", bundle: nil), forCellReuseIdentifier: "fileTableViewCell")
+        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
         tableView.tableFooterView = UIView()
         
         getRoot()
@@ -40,6 +42,11 @@ class MainViewController: BaseViewController<FilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
+        
+        sortButton.setFont(Text.style11.font)
+        sortButton.setTitleColor(.middleGrey, for: [])
+        sortButton.tintColor = .middleGrey
+        sortButton.setTitle(Translations.name, for: [])
     }
     
     // MARK: - Actions
@@ -49,16 +56,15 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
-            
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool) {
+    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, then handler: @escaping () -> Void) {
         showSpinner()
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
-            
+            handler()
         })
     }
     
@@ -68,6 +74,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         switch status {
         case .success:
             DispatchQueue.main.async {
+                self.handleTableBackgroundView()
                 self.tableView.reloadData()
             }
             
@@ -81,21 +88,33 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBAction func backButtonAction(_ sender: UIButton) {
         guard
             let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.popLast(),
+            let _ = viewModel.navigationStack.popLast(),
             let destinationFolder = viewModel.navigationStack.last
         else {
             return
         }
         
-        // If we got to the root, hide the back button
-        if viewModel.navigationStack.count == 1 {
-            backButton.isHidden = true
+        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
+        navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+            self.directoryLabel.text = destinationFolder.name
+            
+            // If we got to the root, hide the back button.
+            if viewModel.navigationStack.count == 1 {
+                self.backButton.isHidden = true
+            }
+        })
+    }
+    
+    func handleTableBackgroundView() {
+        guard
+            let viewModel = viewModel,
+            !viewModel.viewModels.isEmpty
+        else {
+            tableView.backgroundView = EmptyFolderView()
+            return
         }
         
-        directoryLabel.text = destinationFolder.name
-        
-        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: true)
+        tableView.backgroundView = nil
     }
 }
 
@@ -107,7 +126,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let viewModel = self.viewModel,
-            let cell = tableView.dequeueReusableCell(withIdentifier: "fileTableViewCell") as? FileTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileTableViewCell.self)) as? FileTableViewCell
         else {
             fatalError()
         }
@@ -126,11 +145,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         let file = viewModel.viewModels[indexPath.row]
         guard file.type.isFolder else { return }
-        
-        backButton.isHidden = false
-        directoryLabel.text = file.name
-        
+
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: false)
+        navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+            self.backButton.isHidden = false
+            self.directoryLabel.text = file.name
+        })
     }
 }

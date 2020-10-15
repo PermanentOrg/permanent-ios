@@ -57,4 +57,6 @@ struct Translations {
     static var authenticationLocked: String { return "AuthenticationLocked".localized() }
     static var biometricsSetup: String { return "AuthenticationLocked".localized() }
     static var myFiles: String { return "MyFiles".localized() }
+    static var emptyFolderMessage: String { return "EmptyFolderMessage".localized() }
+    static var name: String { return "Name".localized() }
 }

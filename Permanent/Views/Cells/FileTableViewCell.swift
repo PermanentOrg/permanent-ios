@@ -31,13 +31,7 @@ class FileTableViewCell: UITableViewCell {
         fileNameLabel.textColor = .middleGrey
         fileDateLabel.font = Text.style12.font
         fileDateLabel.textColor = .middleGrey
-        
-        // Will be deleted
-        fileNameLabel.text = "Profile photos"
-        fileDateLabel.text = "02-23-2020"
-        
         fileImageView.clipsToBounds = true
-        fileImageView.contentMode = .scaleAspectFit
     }
     
     func updateCell(model: FileViewModel) {

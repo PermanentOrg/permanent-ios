@@ -42,8 +42,13 @@
                                     </label>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GB9-Qq-bfJ" userLabel="Sort Button">
+                                <rect key="frame" x="20" y="124" width="50" height="18"/>
+                                <inset key="imageEdgeInsets" minX="5" minY="5" maxX="0.0" maxY="0.0"/>
+                                <state key="normal" title="Name" image="expand"/>
+                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cYb-Ja-a8p">
-                                <rect key="frame" x="0.0" y="124" width="414" height="738"/>
+                                <rect key="frame" x="0.0" y="144" width="414" height="718"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
@@ -55,9 +60,11 @@
                         <viewLayoutGuide key="safeArea" id="olD-lK-dv0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="20" id="6Kc-47-eua"/>
+                            <constraint firstItem="GB9-Qq-bfJ" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="20" id="269-dG-Qrm"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="GB9-Qq-bfJ" secondAttribute="bottom" constant="2" id="8ni-ZE-G9Q"/>
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
+                            <constraint firstItem="GB9-Qq-bfJ" firstAttribute="leading" secondItem="GgD-GW-QOd" secondAttribute="leading" id="SHF-WQ-yaZ"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="YAf-x6-M8B"/>
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="30" id="dKE-LO-prz"/>
                             <constraint firstItem="cYb-Ja-a8p" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" id="fpK-Xs-skM"/>
@@ -67,6 +74,7 @@
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
+                        <outlet property="sortButton" destination="GB9-Qq-bfJ" id="RX1-KB-NHi"/>
                         <outlet property="tableView" destination="cYb-Ja-a8p" id="qCt-bZ-1t1"/>
                     </connections>
                 </viewController>
@@ -77,6 +85,7 @@
     </scenes>
     <resources>
         <image name="chevron.left" catalog="system" width="96" height="128"/>
+        <image name="expand" width="9" height="5.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
