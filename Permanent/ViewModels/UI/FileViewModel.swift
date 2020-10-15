@@ -17,7 +17,9 @@ struct FileViewModel {
     
     init(model: ChildItemVO) {
         self.name = model.displayName ?? "-"
-        self.date = model.displayDT ?? "-"
+        self.date = model.displayDT != nil ?
+            String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
+            
         self.thumbnail = model.thumbURL200 ?? "-"
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
@@ -27,7 +29,9 @@ struct FileViewModel {
     
     init(model: MinFolderVO) {
         self.name = model.displayName ?? "-"
-        self.date = model.displayDT ?? "-"
+        self.date = model.displayDT != nil ?
+            String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
+            
         self.thumbnail = model.thumbURL200 ?? "-"
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         

@@ -110,6 +110,7 @@
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
+		BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
 		BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
 		BD2403B02524978C00AE45B3 /* STAGING-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
@@ -230,6 +231,7 @@
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
+		BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "STAGING-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 				BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */,
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
+				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -759,6 +762,7 @@
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
+				BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,

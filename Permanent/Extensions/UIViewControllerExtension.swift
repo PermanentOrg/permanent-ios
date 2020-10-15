@@ -7,7 +7,6 @@
 
 import UIKit
 
-// spinnerView
 private var spinnerView: UIView?
 
 extension UIViewController {
@@ -17,7 +16,7 @@ extension UIViewController {
 
         let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         activityIndicator.center = spinnerView!.center
-        activityIndicator.color = .secondary
+        activityIndicator.color = .primary
         activityIndicator.startAnimating()
 
         spinnerView?.addSubview(activityIndicator)
