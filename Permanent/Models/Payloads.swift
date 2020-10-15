@@ -103,4 +103,43 @@ struct Payloads {
             ]
         ]
     }
+    
+    static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "FolderVO": [
+                        "archiveNbr": params.archiveNo,
+                        "folder_linkId": params.folderLinkId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+    }
+    
+    static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
+        
+        let childItemsDict = params.folderLinkIds.map {
+            return [
+                "folder_linkId": $0
+            ]
+        }
+        
+        let dict = [
+            "RequestVO": [
+                "data": [[
+                    "FolderVO": [
+                        "archiveNbr": params.archiveNo,
+                        "ChildItemVOs": childItemsDict
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+        
+        return dict
+    }
 }

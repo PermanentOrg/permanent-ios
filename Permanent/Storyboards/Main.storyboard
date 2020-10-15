@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,24 +17,77 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No files found" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rxe-L4-Uty" userLabel="Temp Label">
-                                <rect key="frame" x="142" y="441" width="130.5" height="24"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GgD-GW-QOd">
+                                <rect key="frame" x="20" y="74" width="92.5" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pwt-jE-HrX" userLabel="Back Button">
+                                        <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="36t-Zt-Rt0"/>
+                                            <constraint firstAttribute="height" constant="30" id="yzI-H1-5yY"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="15" maxY="0.0"/>
+                                        <state key="normal" image="chevron.left" catalog="system">
+                                            <color key="titleColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="backButtonAction:" destination="3PZ-n9-y83" eventType="touchUpInside" id="OTE-8s-QBN"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lqW-eP-52i" userLabel="Directory Label">
+                                        <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GB9-Qq-bfJ" userLabel="Sort Button">
+                                <rect key="frame" x="20" y="124" width="50" height="18"/>
+                                <inset key="imageEdgeInsets" minX="5" minY="5" maxX="0.0" maxY="0.0"/>
+                                <state key="normal" title="Name" image="expand"/>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cYb-Ja-a8p">
+                                <rect key="frame" x="0.0" y="144" width="414" height="718"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="3PZ-n9-y83" id="5Ul-hi-B3R"/>
+                                    <outlet property="delegate" destination="3PZ-n9-y83" id="Jtw-eh-kIG"/>
+                                </connections>
+                            </tableView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="Rxe-L4-Uty" firstAttribute="centerY" secondItem="olD-lK-dv0" secondAttribute="centerY" id="9SC-zO-A7s"/>
-                            <constraint firstItem="Rxe-L4-Uty" firstAttribute="centerX" secondItem="olD-lK-dv0" secondAttribute="centerX" id="t02-Yk-jw9"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="olD-lK-dv0"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="GB9-Qq-bfJ" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="20" id="269-dG-Qrm"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="GB9-Qq-bfJ" secondAttribute="bottom" constant="2" id="8ni-ZE-G9Q"/>
+                            <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
+                            <constraint firstItem="GB9-Qq-bfJ" firstAttribute="leading" secondItem="GgD-GW-QOd" secondAttribute="leading" id="SHF-WQ-yaZ"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="YAf-x6-M8B"/>
+                            <constraint firstItem="GgD-GW-QOd" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="30" id="dKE-LO-prz"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" id="fpK-Xs-skM"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="cYb-Ja-a8p" secondAttribute="trailing" id="gJp-Dj-skk"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
+                        <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
+                        <outlet property="sortButton" destination="GB9-Qq-bfJ" id="RX1-KB-NHi"/>
+                        <outlet property="tableView" destination="cYb-Ja-a8p" id="qCt-bZ-1t1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="czR-oV-vKs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-259" y="202"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="chevron.left" catalog="system" width="96" height="128"/>
+        <image name="expand" width="9" height="5.5"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

@@ -58,7 +58,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     }
     
     private func logout() {
-        showSpinner()
+        showSpinner(colored: .white)
         viewModel?.logout(then: { logoutStatus in
             self.hideSpinner()
             switch logoutStatus {

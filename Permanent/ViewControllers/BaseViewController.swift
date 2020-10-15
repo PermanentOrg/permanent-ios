@@ -38,6 +38,12 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .foregroundColor: UIColor.white,
             .font: Text.style14.font
         ]
+        
+        let settingsIcon = UIImage(named: "settings")?.original
+        let profileIcon = UIImage(named: "profile")?.original
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: settingsIcon, style: .plain, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: profileIcon, style: .plain, target: nil, action: nil)
     }
     
     func closeKeyboard() {

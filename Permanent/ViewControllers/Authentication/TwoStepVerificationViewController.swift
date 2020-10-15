@@ -114,7 +114,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         
         let updateData = UpdateData(email, phoneField.text!)
         
-        showSpinner()
+        showSpinner(colored: .white)
         
         viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
             

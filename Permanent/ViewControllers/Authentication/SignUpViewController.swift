@@ -28,10 +28,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         return true
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .primary
@@ -92,7 +88,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             loginCredentials
         )
         
-        showSpinner()
+        showSpinner(colored: .white)
         closeKeyboard()
         
         viewModel?.signUp(with: signUpCredentials, then: { status in

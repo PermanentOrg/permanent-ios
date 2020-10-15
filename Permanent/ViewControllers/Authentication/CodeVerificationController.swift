@@ -15,10 +15,6 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
     
     var verificationType: CodeVerificationType = .mfa
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -54,7 +50,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         
         let credentials = VerifyCodeCredentials(email, code, verificationType)
         
-        showSpinner()
+        showSpinner(colored: .white)
         viewModel?.verify(for: credentials, then: { status in
             DispatchQueue.main.async {
                 self.handleVerifyStatus(status)
