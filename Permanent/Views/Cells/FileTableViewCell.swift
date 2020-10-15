@@ -35,11 +35,18 @@ class FileTableViewCell: UITableViewCell {
         // Will be deleted
         fileNameLabel.text = "Profile photos"
         fileDateLabel.text = "02-23-2020"
+        
+        fileImageView.clipsToBounds = true
+        fileImageView.contentMode = .scaleAspectFit
     }
     
     func updateCell(model: FileViewModel) {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
+        
+        if !model.type.isFolder {
+            fileImageView.load(urlString: model.thumbnail)
+        }
     }
     
 }

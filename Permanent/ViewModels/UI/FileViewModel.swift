@@ -12,14 +12,13 @@ struct FileViewModel {
     let name: String
     let date: String
     let type: FileType
-    
     let archiveNo: String
     let folderLinkId: Int
     
     init(model: ChildItemVO) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT ?? "-"
-        self.thumbnail = model.thumbURL500 ?? "-"
+        self.thumbnail = model.thumbURL200 ?? "-"
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
@@ -29,7 +28,7 @@ struct FileViewModel {
     init(model: MinFolderVO) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT ?? "-"
-        self.thumbnail = model.thumbURL500 ?? "-"
+        self.thumbnail = model.thumbURL200 ?? "-"
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
