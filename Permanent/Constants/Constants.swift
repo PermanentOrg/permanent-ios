@@ -26,7 +26,10 @@ struct Text {
 }
 
 struct Constants {
-    struct API {}
+    struct API {
+        struct FileType {}
+    }
+
     struct Design {}
     struct URL {}
     struct Keys {
@@ -59,8 +62,6 @@ extension Constants.Design {
 
 extension Constants.API {
     static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
-    
-    static let MY_FILES_FOLDER = "My Files"
 
     static let TYPE_AUTH_CREATED_ACCOUNT_EMAIL = "type.auth.created_account_email"
     static let TYPE_AUTH_CREATED_ACCOUNT_TEXT = "type.auth.created_account_text"
@@ -75,6 +76,15 @@ extension Constants.API {
     static let TYPE_AUTH_VAULT = "type.auth.vault"
     static let TYPE_AUTH_MFA = "type.auth.mfa"
     static let TYPE_AUTH_MFAVALIDATION = "type.auth.mfaValidation"
+}
+
+extension Constants.API.FileType {
+    static let MY_FILES_FOLDER = "My Files"
+
+    static let TYPE_FOLDER_ROOT_PRIVATE = "type.folder.root.private"
+    static let TYPE_FOLDER_ROOT_PUBLIC = "type.folder.root.public"
+    static let TYPE_FOLDER_PRIVATE = "type.folder.private"
+    static let TYPE_RECORD_IMAGE = "type.record.image"
 }
 
 extension Constants.URL {

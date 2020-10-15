@@ -42,6 +42,7 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
 		BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB22527393400A69597 /* AccountUpdateVO.swift */; };
@@ -158,6 +159,7 @@
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
 		BC326AB22527393400A69597 /* AccountUpdateVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateVO.swift; sourceTree = "<group>"; };
@@ -475,6 +477,7 @@
 				BC326AB22527393400A69597 /* AccountUpdateVO.swift */,
 				BC4526E9251CADF600E24A51 /* ArchiveVO.swift */,
 				BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */,
+				BC2D95A425382215005FE8EF /* FileType.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -778,6 +781,7 @@
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
+				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,

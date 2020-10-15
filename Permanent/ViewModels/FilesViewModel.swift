@@ -13,13 +13,15 @@ typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: S
 
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
+    var csrf: String = ""
+    var navigationStack: [FileViewModel] = []
     
     weak var delegate: FilesViewModelDelegate?
 }
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
-    func navigateMin(params: NavigateMinParams, then handler: @escaping ServerResponse)
+    func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
 }
 
@@ -78,7 +80,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    func navigateMin(params: NavigateMinParams, then handler: @escaping ServerResponse) {
+    func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -89,7 +91,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     return
                 }
                 
-                self.onNavigateMinSuccess(model, handler)
+                self.onNavigateMinSuccess(model, backNavigation, handler)
                 
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
@@ -109,6 +111,8 @@ extension FilesViewModel: FilesViewModelDelegate {
             return
         }
         
+        self.viewModels.removeAll()
+        
         childItems.forEach {
             let file = FileViewModel(model: $0)
             self.viewModels.append(file)
@@ -117,7 +121,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         handler(.success)
     }
     
-    private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
+    private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
@@ -131,6 +135,11 @@ extension FilesViewModel: FilesViewModelDelegate {
         let folderLinkIds: [Int] = childItems
             .compactMap { $0.folderLinkID }
         
+        if !backNavigation {
+            let file = FileViewModel(model: folderVO)
+            self.navigationStack.append(file)
+        }
+        
         let params: GetLeanItemsParams = (archiveNo, folderLinkIds, csrf)
         getLeanItems(params: params, then: handler)
     }
@@ -139,7 +148,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
-            let myFilesFolder = childItems.first(where: { $0.displayName == Constants.API.MY_FILES_FOLDER }),
+            let myFilesFolder = childItems.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
             let archiveNo = myFilesFolder.archiveNbr,
             let folderLinkId = myFilesFolder.folderLinkID,
             let csrf = model.csrf
@@ -148,28 +157,9 @@ extension FilesViewModel: FilesViewModelDelegate {
             return
         }
         
-        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
-        navigateMin(params: params, then: handler)
-    }
-}
-
-extension FilesViewModel: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModels.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "fileTableViewCell") as? FileTableViewCell
-        else {
-            fatalError()
-        }
+        self.csrf = csrf
         
-        cell.updateCell(model: viewModels[indexPath.row])
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
+        navigateMin(params: params, backNavigation: false, then: handler)
     }
 }
