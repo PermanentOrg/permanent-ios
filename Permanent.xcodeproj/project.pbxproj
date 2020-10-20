@@ -96,6 +96,8 @@
 		BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */; };
 		BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70F0252C740300113D5F /* PermanentError.swift */; };
 		BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */; };
+		BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */; };
+		BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */; };
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
@@ -217,6 +219,8 @@
 		BC6E70EE252C6F5200113D5F /* ILocalAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ILocalAuthentication.swift; sourceTree = "<group>"; };
 		BC6E70F0252C740300113D5F /* PermanentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermanentError.swift; sourceTree = "<group>"; };
 		BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermanentLocalAuthentication.swift; sourceTree = "<group>"; };
+		BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadFilesView.xib; sourceTree = "<group>"; };
+		BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFilesView.swift; sourceTree = "<group>"; };
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
 		BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEndpoint.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
@@ -275,6 +279,7 @@
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
 				BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */,
+				BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -469,6 +474,7 @@
 				06644A8C24EBF51A003CD359 /* BigLogoView.xib */,
 				BCB0725F25235C59003E2F66 /* NavigationBarView.xib */,
 				BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */,
+				BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */,
 			);
 			path = XIBs;
 			sourceTree = "<group>";
@@ -689,6 +695,7 @@
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
+				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
@@ -786,6 +793,7 @@
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
+				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,

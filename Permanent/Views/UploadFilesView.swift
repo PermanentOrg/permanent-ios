@@ -1,13 +1,13 @@
 //
-//  EmptyFolderView.swift
+//  UploadFilesView.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 15/10/2020.
+//  Created by Adrian Creteanu on 20/10/2020.
 //
 
 import UIKit
 
-class EmptyFolderView: UIView {
+class UploadFilesView: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var emptyFolderLabel: UILabel!
     
@@ -24,14 +24,14 @@ class EmptyFolderView: UIView {
     }
     
     private func commonInit() {
-        Bundle.main.loadNibNamed(String(describing: EmptyFolderView.self), owner: self, options: nil)
+        Bundle.main.loadNibNamed(String(describing: UploadFilesView.self), owner: self, options: nil)
         
         addSubview(contentView)
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        emptyFolderLabel.text = Translations.emptyFolderMessage
-        emptyFolderLabel.font = Text.style16.font
-        emptyFolderLabel.textColor = .lightGray
+        emptyFolderLabel.text = Translations.uploadFilesMessage
+        emptyFolderLabel.font = Text.style13.font
+        emptyFolderLabel.textColor = .primary
     }
 }
