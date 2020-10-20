@@ -56,6 +56,14 @@
                                     <outlet property="delegate" destination="3PZ-n9-y83" id="Jtw-eh-kIG"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvX-vX-KAP" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="346" y="784" width="48" height="48"/>
+                                <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="48" id="aKB-cx-1Xq"/>
+                                    <constraint firstAttribute="height" constant="48" id="fep-Kh-irg"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="olD-lK-dv0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -65,22 +73,25 @@
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
                             <constraint firstItem="GB9-Qq-bfJ" firstAttribute="leading" secondItem="GgD-GW-QOd" secondAttribute="leading" id="SHF-WQ-yaZ"/>
-                            <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="YAf-x6-M8B"/>
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="30" id="dKE-LO-prz"/>
                             <constraint firstItem="cYb-Ja-a8p" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" id="fpK-Xs-skM"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="cYb-Ja-a8p" secondAttribute="trailing" id="gJp-Dj-skk"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="bottom" secondItem="vvX-vX-KAP" secondAttribute="bottom" constant="30" id="n6W-9b-fLa"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="trailing" secondItem="vvX-vX-KAP" secondAttribute="trailing" constant="20" id="tJO-cG-STx"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="tfa-bv-Z8D"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
+                        <outlet property="fabView" destination="vvX-vX-KAP" id="gMk-W1-ppL"/>
                         <outlet property="sortButton" destination="GB9-Qq-bfJ" id="RX1-KB-NHi"/>
                         <outlet property="tableView" destination="cYb-Ja-a8p" id="qCt-bZ-1t1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="czR-oV-vKs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-259" y="202"/>
+            <point key="canvasLocation" x="-259.4202898550725" y="201.5625"/>
         </scene>
     </scenes>
     <resources>
@@ -88,6 +99,9 @@
         <image name="expand" width="9" height="5.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemOrangeColor">
+            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

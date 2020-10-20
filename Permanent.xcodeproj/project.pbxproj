@@ -98,6 +98,7 @@
 		BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */; };
 		BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */; };
 		BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */; };
+		BC752BCF253EE53000EF7941 /* FABView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCE253EE52F00EF7941 /* FABView.swift */; };
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
@@ -221,6 +222,7 @@
 		BC6E70F2252C74B600113D5F /* PermanentLocalAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermanentLocalAuthentication.swift; sourceTree = "<group>"; };
 		BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadFilesView.xib; sourceTree = "<group>"; };
 		BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFilesView.swift; sourceTree = "<group>"; };
+		BC752BCE253EE52F00EF7941 /* FABView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABView.swift; sourceTree = "<group>"; };
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
 		BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEndpoint.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
 				BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */,
 				BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */,
+				BC752BCE253EE52F00EF7941 /* FABView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -796,6 +799,7 @@
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
+				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,

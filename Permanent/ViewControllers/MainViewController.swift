@@ -12,6 +12,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
+    @IBOutlet var fabView: FABView!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -26,6 +27,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: FileTableViewCell.self))
         tableView.tableFooterView = UIView()
+        fabView.delegate = self
         
         getRoot()
     }
@@ -151,5 +153,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             self.backButton.isHidden = false
             self.directoryLabel.text = file.name
         })
+    }
+}
+
+extension MainViewController: FABViewDelegate {
+    func didTap() {
+        print("HELLO")
     }
 }
