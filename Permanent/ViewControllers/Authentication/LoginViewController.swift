@@ -8,6 +8,7 @@
 import UIKit
 
 class LoginViewController: BaseViewController<AuthViewModel> {
+    @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var loginLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: RoundedButton!
@@ -118,6 +119,9 @@ class LoginViewController: BaseViewController<AuthViewModel> {
 extension LoginViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
+    
+        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
+        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -130,6 +134,7 @@ extension LoginViewController: UITextFieldDelegate {
             return true
         } else {
             view.endEditing(true)
+            scrollView.setContentOffset(.zero, animated: true)
             return false
         }
     }

@@ -8,6 +8,7 @@
 import UIKit
 
 class CodeVerificationController: BaseViewController<VerificationCodeViewModel> {
+    @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var confirmButton: RoundedButton!
     @IBOutlet private var copyrightLabel: UILabel!
@@ -73,6 +74,9 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
 extension CodeVerificationController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
+        
+        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
+        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -88,6 +92,7 @@ extension CodeVerificationController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
+        scrollView.setContentOffset(.zero, animated: true)
         return false
     }
 }
