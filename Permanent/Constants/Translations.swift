@@ -60,4 +60,6 @@ struct Translations {
     static var emptyFolderMessage: String { return "EmptyFolderMessage".localized() }
     static var uploadFilesMessage: String { return "UploadFilesMessage".localized() }
     static var name: String { return "Name".localized() }
+    static var upload: String { return "Upload".localized() }
+    static var newFolder: String { return "NewFolder".localized() }
 }

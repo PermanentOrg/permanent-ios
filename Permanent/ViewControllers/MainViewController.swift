@@ -158,6 +158,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        print("HELLO")
+        navigationController?.display(.fabActionSheet, from: .main, modally: true)
     }
 }

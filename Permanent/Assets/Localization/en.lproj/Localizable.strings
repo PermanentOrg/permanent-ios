@@ -57,3 +57,5 @@
 "UploadFilesMessage" = "Files in your archive appear here first.\nClick the “+” button below to upload files.";
 "EmptyFolderMessage" = "This folder is empty";
 "Name" = "Name";
+"Upload" = "Upload";
+"NewFolder" = "New Folder";

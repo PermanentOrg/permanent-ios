@@ -24,6 +24,7 @@ extension UIColor {
     static var lightGray = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1)
     static var middleGrey = UIColor(red: 96/255, green: 96/255, blue: 96/255, alpha: 1)
     static var black = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
+    static var galleryGray = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
 }
 
 extension UIColor {

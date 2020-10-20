@@ -42,6 +42,7 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
 		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
@@ -166,6 +167,7 @@
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC120C5E253EF8F500C41243 /* FABActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABActionSheet.swift; sourceTree = "<group>"; };
 		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */,
 				BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */,
 				BC752BCE253EE52F00EF7941 /* FABView.swift */,
+				BC120C5E253EF8F500C41243 /* FABActionSheet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -795,6 +798,7 @@
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
+				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
