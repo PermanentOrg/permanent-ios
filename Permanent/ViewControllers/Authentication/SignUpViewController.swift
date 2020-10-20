@@ -8,6 +8,7 @@
 import UIKit
 
 class SignUpViewController: BaseViewController<AuthViewModel> {
+    @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var loginButton: UIButton!
@@ -54,6 +55,8 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         nameField.delegate = self
         emailField.delegate = self
         passwordField.delegate = self
+        
+        scrollView.delegate = self
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
@@ -137,9 +140,18 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     }
 }
 
+extension SignUpViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print(scrollView.contentOffset)
+    }
+}
+
 extension SignUpViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
+        
+        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
+        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -155,6 +167,7 @@ extension SignUpViewController: UITextFieldDelegate {
             return true
         } else {
             view.endEditing(true)
+            scrollView.setContentOffset(.zero, animated: true)
             return false
         }
     }

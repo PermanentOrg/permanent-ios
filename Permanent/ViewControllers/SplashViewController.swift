@@ -50,17 +50,15 @@ class SplashViewController: BaseViewController<SplashViewModel> {
             
         default:
             handleLoggedOutState()
-            
         }
     }
     
     private func handleLoggedOutState() {
-        let isNewUser: Bool? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey)
+        let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
+        let route: (ViewControllerIdentifier, StoryboardName) = isNewUser ?
+            (.onboarding, .onboarding) :
+            (.signUp, .authentication)
         
-        if isNewUser == true {
-            AppDelegate.shared.rootViewController.setRoot(named: .onboarding, from: .onboarding)
-        } else {
-            AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
-        }
+        AppDelegate.shared.rootViewController.setRoot(named: route.0, from: route.1)
     }
 }

@@ -8,6 +8,7 @@
 import UIKit
 
 class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
+    @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
     @IBOutlet private var extraInfoLabel: UILabel!
@@ -135,6 +136,9 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
 extension TwoStepVerificationViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
+        
+        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
+        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -143,6 +147,7 @@ extension TwoStepVerificationViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
+        scrollView.setContentOffset(.zero, animated: true)
         return false
     }
 }
