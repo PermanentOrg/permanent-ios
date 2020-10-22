@@ -7,9 +7,10 @@
 
 import Foundation
 
+/// Protocol to which network session handling classes must conform to.
 protocol NetworkSessionProtocol {
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask?
     
+    func uploadTask(with request: URLRequest, from fileURL: URL, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?)-> Void) -> URLSessionUploadTask?
     //func downloadTask
-    //func uploadTask
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MobileCoreServices
 
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -158,6 +159,60 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        navigationController?.display(.fabActionSheet, from: .main, modally: true)
+        guard let actionSheet = self.navigationController?.create(
+            viewController: .fabActionSheet,
+            from: .main
+        ) as? FABActionSheet else {
+            self.showAlert(title: Translations.error, message: Translations.errorMessage)
+            return
+        }
+        
+        actionSheet.delegate = self
+        navigationController?.display(viewController: actionSheet)
+    }
+}
+
+extension MainViewController: FABActionSheetDelegate {
+    func didTapUpload() {
+        showActionSheet()
+    }
+    
+    func didTapNewFolder() {
+        print("TODO")
+    }
+    
+    func showActionSheet() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Take Photo or Video", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+        }))
+
+        actionSheet.addAction(UIAlertAction(title: "Photo Library", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Browse", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+            self.openFileBrowser()
+        }))
+
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openFileBrowser() {
+        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeImage as String,
+                                                                       kUTTypeCompositeContent as String],
+                                                       in: .import)
+        docPicker.delegate = self // make the VM the delegate
+        docPicker.allowsMultipleSelection = true
+        present(docPicker, animated: true, completion: nil)
+    }
+}
+
+extension MainViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        for url in urls {
+            print("Full path: ", url)
+            print("Document: ", url.lastPathComponent)
+        }
     }
 }

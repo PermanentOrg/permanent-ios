@@ -7,17 +7,23 @@
 
 import Foundation
 
+/// The request type that matches the URLSessionTask types.
 enum RequestType {
+    /// Will translate to a URLSessionDataTask.
     case data
+    /// Will translate to a URLSessionDownloadTask.
     case download
+    /// Will translate to a URLSessionUploadTask.
     case upload
 }
 
+/// The expected remote response type.
 enum ResponseType {
     case json
     case file
 }
 
+/// HTTP request methods.
 enum RequestMethod: String {
     case get = "GET"
     case post
@@ -28,14 +34,31 @@ enum RequestMethod: String {
 
 typealias RequestHeaders = [String: String]
 typealias RequestParameters = [String: Any?]
+typealias ProgressHandler = (Float) -> Void
 
+/// Protocol to which the HTTP requests must conform.
 protocol RequestProtocol {
+    
+    /// The path that will be appended to API's base URL.
     var path: String { get }
+    
+    /// The HTTP method.
     var method: RequestMethod { get }
+    
+    /// The HTTP headers.
     var headers: RequestHeaders? { get }
+    
+    /// The request parameters used for query parameters for GET requests and in the HTTP body for POST, PUT and PATCH requests.
     var parameters: RequestParameters? { get }
+    
+    /// The request type.
     var requestType: RequestType { get }
+    
+    /// The expected response type.
     var responseType: ResponseType { get }
+    
+    /// Upload/download progress handler.
+    var progressHandler: ProgressHandler? { get set }
 }
 
 extension RequestProtocol {

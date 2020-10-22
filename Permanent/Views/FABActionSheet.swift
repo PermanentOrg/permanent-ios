@@ -12,11 +12,7 @@ class FABActionSheet: UIViewController {
     @IBOutlet var uploadButton: RoundedButton!
     @IBOutlet var newFolderButton: RoundedButton!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        initUI()
-    }
+    weak var delegate: FABActionSheetDelegate?
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -34,6 +30,12 @@ class FABActionSheet: UIViewController {
         newFolderButton.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        initUI()
+    }
+    
     fileprivate func initUI() {
         view.backgroundColor = .clear
         
@@ -43,15 +45,35 @@ class FABActionSheet: UIViewController {
         sheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     
         uploadButton.setTitle(Translations.upload, for: [])
+        uploadButton.addTarget(self, action: #selector(uploadAction), for: .touchUpInside)
+        
         newFolderButton.setTitle(Translations.newFolder, for: [])
         
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(sheetTapAction)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(close)))
     }
     
     // MARK: - Actions
     
     @objc
-    fileprivate func sheetTapAction() {
+    fileprivate func close() {
         dismiss(animated: true, completion: nil)
     }
+    
+    @objc
+    fileprivate func uploadAction() {
+        dismiss(animated: true) {
+            self.delegate?.didTapUpload()
+        }
+    }
+    
+    @objc
+    fileprivate func newFolderAction() {
+        delegate?.didTapNewFolder()
+        close()
+    }
+}
+
+protocol FABActionSheetDelegate: class {
+    func didTapUpload()
+    func didTapNewFolder()
 }

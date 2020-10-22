@@ -19,7 +19,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - environment: Instance conforming to `EnvironmentProtocol` used to determine on which environment the requests will be executed.
     ///   - networkSession: Instance conforming to `NetworkSessionProtocol` used for executing requests with a specific configuration.
     required init(environment: EnvironmentProtocol = APIEnvironment.staging,
-                  networkSession: NetworkSessionProtocol = APINetworkSession()) {
+                  networkSession: NetworkSessionProtocol = APINetworkSession())
+    {
         self.environment = environment
         self.networkSession = networkSession
     }
@@ -45,6 +46,12 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         case .data:
             task = networkSession.dataTask(with: urlRequest, completionHandler: { data, urlResponse, error in
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
+            })
+
+        case .upload:
+            task = networkSession.uploadTask(with: urlRequest, from: URL(fileURLWithPath: ""), progressHandler: request.progressHandler, completion: { [weak self] data, urlResponse, error in
+
+                self?.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
 
         default: break

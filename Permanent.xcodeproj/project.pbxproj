@@ -377,6 +377,7 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				BC120C6125402BFF00C41243 /* Storage */,
 				BC6E70EC252C6F0100113D5F /* Security */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
@@ -425,6 +426,13 @@
 				BCB0725825221494003E2F66 /* PreferencesManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		BC120C6125402BFF00C41243 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 		BC1BDF162513558800F2D239 /* Assets */ = {
