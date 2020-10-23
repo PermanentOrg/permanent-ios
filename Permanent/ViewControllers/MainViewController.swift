@@ -5,8 +5,8 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
-import UIKit
 import MobileCoreServices
+import UIKit
 
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -119,6 +119,35 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         tableView.backgroundView = nil
     }
+    
+    func upload(fileURLS: [URL]) {
+        let files = fileURLS.map {
+            FileInfo(withFileURL: $0,
+                     filename: $0.lastPathComponent,
+                     name: $0.lastPathComponent,
+                     mimeType: "application/pdf") // TODO:
+        }
+        
+        showSpinner()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.viewModel?.upload(files: files, recordId: "52719") { status in
+                DispatchQueue.main.async {
+                    self.hideSpinner()
+                }
+                
+                switch status {
+                case .success:
+                    break
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.showAlert(title: Translations.error, message: message)
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
@@ -159,11 +188,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = self.navigationController?.create(
+        guard let actionSheet = navigationController?.create(
             viewController: .fabActionSheet,
             from: .main
         ) as? FABActionSheet else {
-            self.showAlert(title: Translations.error, message: Translations.errorMessage)
+            showAlert(title: Translations.error, message: Translations.errorMessage)
             return
         }
         
@@ -213,6 +242,8 @@ extension MainViewController: UIDocumentPickerDelegate {
         for url in urls {
             print("Full path: ", url)
             print("Document: ", url.lastPathComponent)
+            
+            upload(fileURLS: urls)
         }
     }
 }

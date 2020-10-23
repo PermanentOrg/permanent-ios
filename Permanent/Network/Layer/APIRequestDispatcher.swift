@@ -49,9 +49,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             })
 
         case .upload:
-            task = networkSession.uploadTask(with: urlRequest, from: URL(fileURLWithPath: ""), progressHandler: request.progressHandler, completion: { [weak self] data, urlResponse, error in
-
-                self?.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
+            task = networkSession.uploadTask(with: urlRequest, progressHandler: request.progressHandler, completion: { data, urlResponse, error in
+                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
 
         default: break
@@ -130,11 +129,15 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         guard let data = data else {
             return .failure(APIError.invalidResponse)
         }
-
+        
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
             return .success(json)
         } catch (let exception) {
+            let stringResponse = String(decoding: data, as: UTF8.self)
+            if stringResponse.isNotEmpty {
+                return .success(stringResponse)
+            }
             return .failure(APIError.parseError(exception.localizedDescription))
         }
     }

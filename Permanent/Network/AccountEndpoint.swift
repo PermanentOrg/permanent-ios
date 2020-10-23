@@ -48,4 +48,13 @@ extension AccountEndpoint: RequestProtocol {
     var requestType: RequestType { .data }
 
     var responseType: ResponseType { .json }
+    
+    var progressHandler: ProgressHandler? {
+        get { nil }
+        set {}
+    }
+    
+    var bodyData: Data? { nil }
+    
+    var customURL: String? { nil }
 }

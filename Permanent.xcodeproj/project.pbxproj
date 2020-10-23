@@ -63,6 +63,9 @@
 		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
 		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
+		BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
+		BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57F254181BD00E84DA9 /* DataExtension.swift */; };
+		BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D58225418EC400E84DA9 /* UploadManager.swift */; };
 		BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
 		BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358972535D35D00EEC48C /* FileTableViewCell.swift */; };
 		BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC6358982535D35D00EEC48C /* FileTableViewCell.xib */; };
@@ -188,6 +191,9 @@
 		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
+		BC62D57C254180D300E84DA9 /* FileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfo.swift; sourceTree = "<group>"; };
+		BC62D57F254181BD00E84DA9 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
+		BC62D58225418EC400E84DA9 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		BC6358832535C7D000EEC48C /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		BC6358972535D35D00EEC48C /* FileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTableViewCell.swift; sourceTree = "<group>"; };
 		BC6358982535D35D00EEC48C /* FileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileTableViewCell.xib; sourceTree = "<group>"; };
@@ -316,6 +322,7 @@
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
 				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
+				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -334,6 +341,7 @@
 				BC6E70F0252C740300113D5F /* PermanentError.swift */,
 				BC63589D2536D75300EEC48C /* GetRootResponse.swift */,
 				BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */,
+				BC62D57C254180D300E84DA9 /* FileInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -518,6 +526,7 @@
 			isa = PBXGroup;
 			children = (
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
+				BC62D58225418EC400E84DA9 /* UploadManager.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -775,6 +784,7 @@
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
@@ -821,6 +831,7 @@
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
+				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
@@ -845,6 +856,7 @@
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
+				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,

@@ -90,8 +90,8 @@ extension APINetworkSession: NetworkSessionProtocol {
         return dataTask
     }
 
-    func uploadTask(with request: URLRequest, from fileURL: URL, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? {
-        let uploadTask = session.uploadTask(with: request, fromFile: fileURL) { data, urlResponse, error in
+    func uploadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? {
+        let uploadTask = session.uploadTask(with: request, from: nil) { (data, urlResponse, error) in
             completion(data, urlResponse, error)
         }
 
