@@ -130,31 +130,18 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     func upload(fileURLS: [URL]) {
-        let files = fileURLS.map {
-            FileInfo(withFileURL: $0,
-                     filename: $0.lastPathComponent,
-                     name: $0.lastPathComponent,
-                     mimeType: "application/pdf") // TODO:
-        }
-        
-        showSpinner()
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.viewModel?.upload(files: files, recordId: "52726") { status in
+        self.viewModel?.uploadFiles(fileURLS, then: { status in
+            switch status {
+            case .success:
+                self.onUploadSuccess()
                 
-                switch status {
-                case .success:
-                    self.onUploadSuccess()
-                break
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.hideSpinner()
-                        self.showAlert(title: Translations.error, message: message)
-                    }
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.hideSpinner()
+                    self.showAlert(title: Translations.error, message: message)
                 }
             }
-        }
+        })
     }
     
     func onUploadSuccess() {

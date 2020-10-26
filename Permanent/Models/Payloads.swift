@@ -142,4 +142,21 @@ struct Payloads {
         
         return dict
     }
+    
+    static func uploadFileMetaPayload(for params: FileMetaParams) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "RecordVO": [
+                        "parentFolderId": params.folderId,
+                        "parentFolder_linkId": params.folderLinkId,
+                        "displayName": params.filename,
+                        "uploadFileName": params.filename
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+    }
 }
