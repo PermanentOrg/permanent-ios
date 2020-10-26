@@ -18,6 +18,11 @@ extension UINavigationController {
     func navigate(to viewController: UIViewController) {
         self.pushViewController(viewController, animated: true)
     }
+    
+    func display(viewController: UIViewController) {
+        viewController.modalPresentationStyle = .overCurrentContext
+        self.present(viewController, animated: true)
+    }
 
     func display(_ viewController: ViewControllerIdentifier, from storyboard: StoryboardName, modally: Bool = false) {
         let viewController = self.create(viewController: viewController, from: storyboard)

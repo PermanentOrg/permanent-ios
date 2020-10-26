@@ -10,6 +10,7 @@ enum APIEnvironment: EnvironmentProtocol {
     case development
     case production
     
+    /// The default HTTP request headers for the given environment.
     var headers: RequestHeaders? {
         switch self {
         case .staging:
@@ -21,6 +22,7 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    /// The base URL of the given environment.
     var baseURL: String {
         switch self {
         case .staging:

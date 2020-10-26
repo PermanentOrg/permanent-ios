@@ -69,4 +69,14 @@ extension AuthenticationEndpoint: RequestProtocol {
     var method: RequestMethod {
         return .post
     }
+    
+    var progressHandler: ProgressHandler? {
+        get { nil }
+        
+        set {}
+    }
+    
+    var bodyData: Data? { nil }
+    
+    var customURL: String? { nil }
 }

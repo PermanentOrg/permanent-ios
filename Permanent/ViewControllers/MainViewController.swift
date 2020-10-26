@@ -5,6 +5,7 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
+import MobileCoreServices
 import UIKit
 
 class MainViewController: BaseViewController<FilesViewModel> {
@@ -12,6 +13,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
+    @IBOutlet var fabView: FABView!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -26,6 +28,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: FileTableViewCell.self))
         tableView.tableFooterView = UIView()
+        fabView.delegate = self
         
         getRoot()
     }
@@ -116,6 +119,35 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         tableView.backgroundView = nil
     }
+    
+    func upload(fileURLS: [URL]) {
+        let files = fileURLS.map {
+            FileInfo(withFileURL: $0,
+                     filename: $0.lastPathComponent,
+                     name: $0.lastPathComponent,
+                     mimeType: "application/pdf") // TODO:
+        }
+        
+        showSpinner()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.viewModel?.upload(files: files, recordId: "52719") { status in
+                DispatchQueue.main.async {
+                    self.hideSpinner()
+                }
+                
+                switch status {
+                case .success:
+                    break
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.showAlert(title: Translations.error, message: message)
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
@@ -151,5 +183,67 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             self.backButton.isHidden = false
             self.directoryLabel.text = file.name
         })
+    }
+}
+
+extension MainViewController: FABViewDelegate {
+    func didTap() {
+        guard let actionSheet = navigationController?.create(
+            viewController: .fabActionSheet,
+            from: .main
+        ) as? FABActionSheet else {
+            showAlert(title: Translations.error, message: Translations.errorMessage)
+            return
+        }
+        
+        actionSheet.delegate = self
+        navigationController?.display(viewController: actionSheet)
+    }
+}
+
+extension MainViewController: FABActionSheetDelegate {
+    func didTapUpload() {
+        showActionSheet()
+    }
+    
+    func didTapNewFolder() {
+        print("TODO")
+    }
+    
+    func showActionSheet() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Take Photo or Video", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+        }))
+
+        actionSheet.addAction(UIAlertAction(title: "Photo Library", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Browse", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
+            self.openFileBrowser()
+        }))
+
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openFileBrowser() {
+        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeImage as String,
+                                                                       kUTTypeCompositeContent as String],
+                                                       in: .import)
+        docPicker.delegate = self // make the VM the delegate
+        docPicker.allowsMultipleSelection = true
+        present(docPicker, animated: true, completion: nil)
+    }
+}
+
+extension MainViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        for url in urls {
+            print("Full path: ", url)
+            print("Document: ", url.lastPathComponent)
+            
+            upload(fileURLS: urls)
+        }
     }
 }

@@ -19,7 +19,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - environment: Instance conforming to `EnvironmentProtocol` used to determine on which environment the requests will be executed.
     ///   - networkSession: Instance conforming to `NetworkSessionProtocol` used for executing requests with a specific configuration.
     required init(environment: EnvironmentProtocol = APIEnvironment.staging,
-                  networkSession: NetworkSessionProtocol = APINetworkSession()) {
+                  networkSession: NetworkSessionProtocol = APINetworkSession())
+    {
         self.environment = environment
         self.networkSession = networkSession
     }
@@ -44,6 +45,11 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         switch request.requestType {
         case .data:
             task = networkSession.dataTask(with: urlRequest, completionHandler: { data, urlResponse, error in
+                self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
+            })
+
+        case .upload:
+            task = networkSession.uploadTask(with: urlRequest, progressHandler: request.progressHandler, completion: { data, urlResponse, error in
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
 
@@ -123,11 +129,15 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         guard let data = data else {
             return .failure(APIError.invalidResponse)
         }
-
+        
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
             return .success(json)
         } catch (let exception) {
+            let stringResponse = String(decoding: data, as: UTF8.self)
+            if stringResponse.isNotEmpty {
+                return .success(stringResponse)
+            }
             return .failure(APIError.parseError(exception.localizedDescription))
         }
     }

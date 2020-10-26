@@ -13,6 +13,7 @@ struct FileViewModel {
     let date: String
     let type: FileType
     let archiveNo: String
+    let folderId: Int
     let folderLinkId: Int
     
     init(model: ChildItemVO) {
@@ -24,6 +25,7 @@ struct FileViewModel {
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
+        self.folderId = model.folderID ?? 0
         self.folderLinkId = model.folderLinkID ?? 0
     }
     
@@ -36,6 +38,7 @@ struct FileViewModel {
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
+        self.folderId = model.folderID ?? 0
         self.folderLinkId = model.folderLinkID ?? 0
     }
 }

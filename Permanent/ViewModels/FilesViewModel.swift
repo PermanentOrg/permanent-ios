@@ -23,9 +23,28 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
+    func upload(files: [FileInfo], recordId: String, then handler: @escaping ServerResponse)
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func upload(files: [FileInfo], recordId: String, then handler: @escaping ServerResponse) {
+        let boundary = UploadManager.instance.createBoundary()
+        let apiOperation = APIOperation(FilesEndpoint.upload(files: files, usingBoundary: boundary, recordId: recordId))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(_, _):
+                handler(.success)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
+    
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getLeanItems(params: params))
         

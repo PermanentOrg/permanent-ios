@@ -14,6 +14,8 @@ enum FilesEndpoint {
     case navigateMin(params: NavigateMinParams)
     
     case getLeanItems(params: GetLeanItemsParams)
+    
+    case upload(files: [FileInfo], usingBoundary: String, recordId: String) // TODO: Remove boundary from here
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -25,6 +27,8 @@ extension FilesEndpoint: RequestProtocol {
             return "/folder/navigateMin"
         case .getLeanItems:
             return "/folder/getLeanItems"
+        default:
+            return ""
         }
     }
     
@@ -33,7 +37,14 @@ extension FilesEndpoint: RequestProtocol {
     }
     
     var headers: RequestHeaders? {
-        nil
+        switch self {
+        case .upload(_, let boundary, _):
+            return [
+                "content-type": "multipart/form-data; boundary=\(boundary)"
+            ]
+        default:
+            return nil
+        }
     }
     
     var parameters: RequestParameters? {
@@ -42,16 +53,52 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.navigateMinPayload(for: params)
         case .getLeanItems(let params):
             return Payloads.getLeanItemsPayload(for: params)
+        case .upload(_, _, let recordId):
+            return ["recordid": recordId]
+            
         default:
             return nil
         }
     }
     
     var requestType: RequestType {
-        .data
+        switch self {
+        case .upload:
+            return .upload
+            
+        default:
+            return .data
+        }
     }
     
     var responseType: ResponseType {
         .json
+    }
+    
+    var progressHandler: ProgressHandler? {
+        get {
+            nil
+        }
+        set {}
+    }
+    
+    var bodyData: Data? {
+        switch self {
+        case .upload(let files, let boundary, _):
+            return UploadManager.instance.getBodyData(parameters: parameters ?? [:],
+                                                      files: files,
+                                                      boundary: boundary)
+        default:
+            return nil
+        }
+    }
+    
+    var customURL: String? {
+        switch self {
+        case .upload:
+            return "https://staging.permanent.org:9000"
+        default:
+            return nil
+        }
     }
 }
