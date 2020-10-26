@@ -11,6 +11,10 @@ private var spinnerView: UIView?
 
 extension UIViewController {
     func showSpinner(colored color: UIColor = .primary) {
+        if spinnerView != nil {
+            return
+        }
+
         spinnerView = UIView(frame: self.view.bounds)
         spinnerView?.backgroundColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
 
@@ -26,5 +30,14 @@ extension UIViewController {
     func hideSpinner() {
         spinnerView?.removeFromSuperview()
         spinnerView = nil
+    }
+    
+    public func showToast(message: String, seconds: Double = 3.0) {
+        let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        toast.view.alpha = 0.5
+        present(toast, animated: true, completion: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            toast.dismiss(animated: true)
+        }
     }
 }

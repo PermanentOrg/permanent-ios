@@ -63,6 +63,8 @@
 		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
 		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
+		BC566CDF2546BD69000249E1 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CDE2546BD69000249E1 /* ImagePicker.swift */; };
+		BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */; };
 		BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
 		BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57F254181BD00E84DA9 /* DataExtension.swift */; };
 		BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D58225418EC400E84DA9 /* UploadManager.swift */; };
@@ -191,6 +193,8 @@
 		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
+		BC566CDE2546BD69000249E1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertControllerExtension.swift; sourceTree = "<group>"; };
 		BC62D57C254180D300E84DA9 /* FileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfo.swift; sourceTree = "<group>"; };
 		BC62D57F254181BD00E84DA9 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		BC62D58225418EC400E84DA9 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
@@ -323,6 +327,7 @@
 				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
 				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
 				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
+				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -527,6 +532,7 @@
 			children = (
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC62D58225418EC400E84DA9 /* UploadManager.swift */,
+				BC566CDE2546BD69000249E1 /* ImagePicker.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -784,6 +790,7 @@
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BC566CDF2546BD69000249E1 /* ImagePicker.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
@@ -844,6 +851,7 @@
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
+				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,
