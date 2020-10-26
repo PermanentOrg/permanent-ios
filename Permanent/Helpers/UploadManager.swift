@@ -6,9 +6,26 @@
 //
 
 import Foundation
+import MobileCoreServices
 
 class UploadManager {
     static let instance = UploadManager()
+    
+    func getMimeType(forExtension fileExtension: String) -> String? {
+        guard
+            let extUTI = UTTypeCreatePreferredIdentifierForTag(
+                kUTTagClassFilenameExtension,
+                fileExtension as CFString,
+                nil
+            )?.takeUnretainedValue(),
+            
+            let mimeUTI = UTTypeCopyPreferredTagWithClass(extUTI, kUTTagClassMIMEType)
+        else {
+            return nil
+        }
+        
+        return mimeUTI.takeUnretainedValue() as String
+    }
     
     func createBoundary() -> String {
         var uuid = UUID().uuidString

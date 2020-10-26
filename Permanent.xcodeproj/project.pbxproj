@@ -63,7 +63,6 @@
 		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
 		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
-		BC566CDF2546BD69000249E1 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CDE2546BD69000249E1 /* ImagePicker.swift */; };
 		BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */; };
 		BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE62546FDE7000249E1 /* RecordVO.swift */; };
 		BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */; };
@@ -109,6 +108,7 @@
 		BC752BCF253EE53000EF7941 /* FABView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCE253EE52F00EF7941 /* FABView.swift */; };
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
+		BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */; };
 		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
@@ -195,7 +195,6 @@
 		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
-		BC566CDE2546BD69000249E1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertControllerExtension.swift; sourceTree = "<group>"; };
 		BC566CE62546FDE7000249E1 /* RecordVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVO.swift; sourceTree = "<group>"; };
 		BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMetaResponse.swift; sourceTree = "<group>"; };
@@ -241,6 +240,7 @@
 		BC752BCE253EE52F00EF7941 /* FABView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABView.swift; sourceTree = "<group>"; };
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
 		BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEndpoint.swift; sourceTree = "<group>"; };
+		BC915F4F254718FA00C86012 /* PHAssetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetExtension.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationController.swift; sourceTree = "<group>"; };
 		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
@@ -332,6 +332,7 @@
 				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
 				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
 				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
+				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -538,7 +539,6 @@
 			children = (
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC62D58225418EC400E84DA9 /* UploadManager.swift */,
-				BC566CDE2546BD69000249E1 /* ImagePicker.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -796,7 +796,6 @@
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
-				BC566CDF2546BD69000249E1 /* ImagePicker.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
@@ -820,6 +819,7 @@
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
+				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,

@@ -5,6 +5,7 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
+import BSImagePicker
 import MobileCoreServices
 import UIKit
 
@@ -14,13 +15,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
-    
-    
-    private lazy var imagePicker: ImagePicker = {
-       return ImagePicker(presentationController: self, delegate: self)
-    }()
-    
-    
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -130,7 +124,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     func upload(fileURLS: [URL]) {
-        self.viewModel?.uploadFiles(fileURLS, then: { status in
+        viewModel?.uploadFiles(fileURLS, then: { status in
             switch status {
             case .success:
                 self.onUploadSuccess()
@@ -229,7 +223,21 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        imagePicker.present()
+        let imagePicker = ImagePickerController()
+        
+        presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            guard let myAsset = assets.first else {
+                return
+            }
+    
+            myAsset.getURL { url in
+                guard let url = url else {
+                    return
+                }
+        
+                self.upload(fileURLS: [url])
+            }
+        })
     }
     
     func openFileBrowser() {
@@ -244,17 +252,6 @@ extension MainViewController: FABActionSheetDelegate {
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        for url in urls {
-            print("Full path: ", url)
-            print("Document: ", url.lastPathComponent)
-            
-            upload(fileURLS: urls)
-        }
-    }
-}
-
-extension MainViewController: ImagePickerDelegate {
-    func didSelect() {
-        // TODO
+        upload(fileURLS: urls)
     }
 }

@@ -29,17 +29,20 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
-    
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFile
     func uploadFiles(_ fileURLS: [URL], then handler: @escaping ServerResponse) {
-        let files = fileURLS.map {
-            FileInfo(withFileURL: $0,
-                     filename: $0.lastPathComponent,
-                     name: $0.lastPathComponent,
-                     mimeType: "application/pdf") // TODO:
+        let files = fileURLS.compactMap { (url) -> FileInfo? in
+            // TODO: Test
+            guard let mimeType = UploadManager.instance.getMimeType(forExtension: url.pathExtension) else {
+                return nil
+            }
+            
+            return FileInfo(withFileURL: url,
+                            filename: url.lastPathComponent,
+                            name: url.lastPathComponent,
+                            mimeType: mimeType)
         }
-        
         
         uploadQueue.removeAll() // ??
         uploadQueue.append(contentsOf: files)
@@ -53,8 +56,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         uploadFileMeta(file, withParams: params, then: handler)
     }
     
-    func uploadSingleFile(_ file: FileInfo, withParams: FileMetaParams, then handler: @escaping ServerResponse) {
-    }
+    func uploadSingleFile(_ file: FileInfo, withParams: FileMetaParams, then handler: @escaping ServerResponse) {}
     
     // Uploads the file meta to the server.
     // Must be executed before the actual upload of the file.
@@ -71,8 +73,8 @@ extension FilesViewModel: FilesViewModelDelegate {
                 }
                 
                 if model.isSuccessful == true,
-                   let recordId = model.results?.first?.data?.first?.recordVO?.recordID {
-                   
+                    let recordId = model.results?.first?.data?.first?.recordVO?.recordID
+                {
                     DispatchQueue.global(qos: .userInitiated).async {
                         self.uploadFile(file, recordId: recordId, then: handler)
                     }
@@ -90,7 +92,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    
     // Uploads the file to the server.
     
     func uploadFile(_ file: FileInfo, recordId: Int, then handler: @escaping ServerResponse) {
@@ -99,7 +100,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
-            case .json(_, _):
+            case .json:
                 handler(.success)
                 
             case .error(let error, _):
@@ -196,7 +197,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             return
         }
         
-        self.viewModels.removeAll()
+        viewModels.removeAll()
         
         childItems.forEach {
             let file = FileViewModel(model: $0)
@@ -222,7 +223,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         if !backNavigation {
             let file = FileViewModel(model: folderVO)
-            self.navigationStack.append(file)
+            navigationStack.append(file)
         }
         
         let params: GetLeanItemsParams = (archiveNo, folderLinkIds, csrf)

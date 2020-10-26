@@ -6,5 +6,6 @@ target 'Permanent' do
   pod 'Firebase/Analytics', '6.32.2'
   pod 'Firebase/Crashlytics', '6.32.2'
   pod 'ObjectMapper', '4.2.0'
- 
+  pod 'BSImagePicker', '3.3.1'
+  
 end
