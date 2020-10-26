@@ -208,7 +208,28 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func didTapNewFolder() {
-        print("TODO")
+        guard
+            let viewModel = viewModel,
+            let currentFolder = viewModel.navigationStack.last else { return }
+        
+        let params: NewFolderParams = ("Testing Folder v6", currentFolder.folderLinkId, viewModel.csrf)
+        
+        showSpinner()
+        viewModel.createNewFolder(params: params, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
+            }
+        })
     }
     
     func showActionSheet() {

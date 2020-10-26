@@ -18,6 +18,8 @@ enum FilesEndpoint {
     case uploadFileMeta(params: FileMetaParams)
     
     case upload(file: FileInfo, usingBoundary: String, recordId: Int) // TODO: Remove boundary from here
+    
+    case newFolder(params: NewFolderParams)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -31,6 +33,9 @@ extension FilesEndpoint: RequestProtocol {
             return "/folder/getLeanItems"
         case .uploadFileMeta:
             return "/record/postMetaBatch"
+        case .newFolder:
+            return "/folder/post"
+            
         default:
             return ""
         }
@@ -61,6 +66,8 @@ extension FilesEndpoint: RequestProtocol {
             return ["recordid": recordId]
         case .uploadFileMeta(let params):
             return Payloads.uploadFileMetaPayload(for: params)
+        case .newFolder(let params):
+            return Payloads.newFolderPayload(for: params)
             
         default:
             return nil
