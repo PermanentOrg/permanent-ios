@@ -151,6 +151,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
 }
 
+// MARK: - Table View Delegates
+
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel?.viewModels.count ?? 0
@@ -226,17 +228,9 @@ extension MainViewController: FABActionSheetDelegate {
         let imagePicker = ImagePickerController()
         
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
-            guard let myAsset = assets.first else {
-                return
-            }
-    
-            myAsset.getURL { url in
-                guard let url = url else {
-                    return
-                }
-        
-                self.upload(fileURLS: [url])
-            }
+            self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
+                self.upload(fileURLS: urls)
+            })
         })
     }
     
@@ -244,11 +238,13 @@ extension MainViewController: FABActionSheetDelegate {
         let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeImage as String,
                                                                        kUTTypeCompositeContent as String],
                                                        in: .import)
-        docPicker.delegate = self // make the VM the delegate
+        docPicker.delegate = self
         docPicker.allowsMultipleSelection = true
         present(docPicker, animated: true, completion: nil)
     }
 }
+
+// MARK: - Document Picker Delegate
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {

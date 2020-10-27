@@ -6,12 +6,11 @@
 //
 
 import Foundation
-import UIKit.UITableView
+import Photos.PHAsset
 
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
-
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
@@ -19,6 +18,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
     func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
+    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -45,6 +45,31 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
+        let dispatchGroup = DispatchGroup()
+        var urls: [URL] = []
+        
+        assets.forEach { photo in
+            dispatchGroup.enter()
+            
+            photo.getURL { url in
+                guard let imageURL = url else {
+                    dispatchGroup.leave()
+                    return
+                }
+                
+                urls.append(imageURL)
+                dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main, execute: {
+            completion(urls)
+        })
+    }
+    
+    
+    
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
     func uploadFiles(_ fileURLS: [URL], then handler: @escaping ServerResponse) {
