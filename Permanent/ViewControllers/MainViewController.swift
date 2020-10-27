@@ -80,8 +80,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         switch status {
         case .success:
             DispatchQueue.main.async {
-                self.handleTableBackgroundView()
-                self.tableView.reloadData()
+                self.refreshTableView()
             }
             
         case .error(let message):
@@ -111,31 +110,56 @@ class MainViewController: BaseViewController<FilesViewModel> {
         })
     }
     
+    func refreshTableView() {
+        handleTableBackgroundView()
+        tableView.reloadData()
+    }
+    
     func handleTableBackgroundView() {
-        guard
-            let viewModel = viewModel,
-            !viewModel.viewModels.isEmpty
-        else {
+        guard viewModel?.shouldDisplayBackgroundView == false else {
             tableView.backgroundView = EmptyFolderView()
             return
         }
-        
+
         tableView.backgroundView = nil
     }
     
     func upload(fileURLS: [URL]) {
-        viewModel?.uploadFiles(fileURLS, then: { status in
-            switch status {
-            case .success:
-                self.onUploadSuccess()
-                
-            case .error(let message):
+        viewModel?.uploadFiles(
+            fileURLS,
+            onUploadStart: {
                 DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: Translations.error, message: message)
+                    self.refreshTableView()
+                }
+            },
+            onFileUploaded: { uploadedFile, errorMessage in
+                // TODO
+                // Remove file from uploading list and move it to synced one
+                
+                guard let file = uploadedFile else {
+                    DispatchQueue.main.async {
+                        self.showAlert(title: Translations.error, message: errorMessage)
+                    }
+                    return
+                }
+                
+                print("FILE UPLOADED: ", file.filename ?? "____")
+                
+            },
+            
+            then: { status in
+                switch status {
+                case .success:
+                    self.onUploadSuccess()
+                
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.showAlert(title: Translations.error, message: message)
+                    }
                 }
             }
-        })
+        )
     }
     
     func onUploadSuccess() {
@@ -154,11 +178,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
 // MARK: - Table View Delegates
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel?.numberOfSections ?? 0
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.viewModels.count ?? 0
+        return viewModel?.numberOfRowsInSection(section) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // TODO: Create tableView Helper class
         guard
             let viewModel = self.viewModel,
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileTableViewCell.self)) as? FileTableViewCell
@@ -166,11 +195,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
-        let file = viewModel.viewModels[indexPath.row]
+        let file = viewModel.cellForRowAt(indexPath: indexPath)
         cell.updateCell(model: file)
         return cell
     }
     
+    // TODO:
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         

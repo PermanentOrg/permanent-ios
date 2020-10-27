@@ -12,12 +12,14 @@ typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, 
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
+typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
+typealias VoidAction = () -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
-    func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
+    //func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
 }
 
@@ -26,8 +28,50 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
+    var uploadInProgress: Bool = false
     
     weak var delegate: FilesViewModelDelegate?
+    
+    // MARK: - Table View Logic
+    
+    var shouldDisplayBackgroundView: Bool {
+        return viewModels.isEmpty && uploadQueue.isEmpty
+    }
+    
+    var numberOfSections: Int {
+        return uploadInProgress ? 2 : 1
+    }
+
+    func numberOfRowsInSection(_ section: Int) -> Int {
+        // If the upload is not in progress, we have only one section.
+        guard uploadInProgress else {
+            return viewModels.count
+        }
+    
+        switch section {
+        case FileListType.uploading.rawValue: return uploadQueue.count
+        case FileListType.synced.rawValue: return viewModels.count
+        default: fatalError() // We cannot have more than 2 sections.
+        }
+    }
+    
+    func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
+        guard uploadInProgress else {
+            return viewModels[indexPath.row]
+        }
+        
+        switch indexPath.section {
+        case FileListType.uploading.rawValue:
+            let fileInfo = uploadQueue[indexPath.row]
+            return FileViewModel(model: fileInfo)
+            
+        case FileListType.synced.rawValue:
+            return viewModels[indexPath.row]
+            
+        default:
+            fatalError()
+        }
+    }
     
     private func getFiles(from urls: [URL]) -> [FileInfo] {
         return urls.compactMap { (url) -> FileInfo? in
@@ -68,15 +112,19 @@ extension FilesViewModel: FilesViewModelDelegate {
         })
     }
     
-    
-    
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
-    func uploadFiles(_ fileURLS: [URL], then handler: @escaping ServerResponse) {
-        let files = getFiles(from: fileURLS)
+    func uploadFiles(_ fileURLS: [URL],
+                     onUploadStart: @escaping VoidAction,
+                     onFileUploaded: @escaping FileUploadResponse,
+                     then handler: @escaping ServerResponse) {
+        uploadInProgress = true
         
+        let files = getFiles(from: fileURLS)
         uploadQueue.removeAll() // Talk to Flavia. We should not be able to upload more items while we are already uploading.
         uploadQueue.append(contentsOf: files)
+        
+        onUploadStart()
         
         guard
             let file = uploadQueue.first,
@@ -86,25 +134,33 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
         
         let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
-        handleRecursiveFileUpload(file, withParams: params, then: handler)
+        handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
     }
     
-    func handleRecursiveFileUpload(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping ServerResponse) {
+    func handleRecursiveFileUpload(_ file: FileInfo,
+                                   withParams params: FileMetaParams,
+                                   onFileUploaded: @escaping FileUploadResponse,
+                                   then handler: @escaping ServerResponse) {
         upload(file, withParams: params) { status in
             switch status {
             case .success:
+                onFileUploaded(file, nil)
+                
                 // Remove the first item from queue
                 self.uploadQueue.removeFirst()
                 
                 // Check if the queue is not empty, and upload the next item otherwise.
                 if let nextFile = self.uploadQueue.first {
                     let params: FileMetaParams = (params.folderId, params.folderLinkId, nextFile.filename ?? "-", self.csrf)
-                    self.handleRecursiveFileUpload(nextFile, withParams: params, then: handler)
+                    self.handleRecursiveFileUpload(nextFile, withParams: params, onFileUploaded: onFileUploaded, then: handler)
                 } else {
+                    self.uploadInProgress = false
                     return handler(.success)
                 }
                 
             case .error(let message):
+                onFileUploaded(nil, message)
+                self.uploadInProgress = false
                 handler(.error(message: message))
             }
         }
@@ -311,4 +367,9 @@ extension FilesViewModel: FilesViewModelDelegate {
         let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
+}
+
+enum FileListType: Int {
+    case uploading = 0
+    case synced
 }
