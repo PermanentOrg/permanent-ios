@@ -17,7 +17,7 @@ struct FolderVO: Codable {
     let voDescription: String?
     let special: JSONNull?
     let sort: String?
-    let locnID: JSONNull?
+    let locnID: Int?
     let timeZoneID: Int?
     let view: String?
     let viewProperty, thumbArchiveNbr: JSONNull?
