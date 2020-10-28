@@ -15,7 +15,9 @@ enum FilesEndpoint {
     
     case getLeanItems(params: GetLeanItemsParams)
     
-    case upload(files: [FileInfo], usingBoundary: String, recordId: String) // TODO: Remove boundary from here
+    case uploadFileMeta(params: FileMetaParams)
+    
+    case upload(file: FileInfo, usingBoundary: String, recordId: Int) // TODO: Remove boundary from here
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -27,6 +29,8 @@ extension FilesEndpoint: RequestProtocol {
             return "/folder/navigateMin"
         case .getLeanItems:
             return "/folder/getLeanItems"
+        case .uploadFileMeta:
+            return "/record/postMetaBatch"
         default:
             return ""
         }
@@ -55,6 +59,8 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.getLeanItemsPayload(for: params)
         case .upload(_, _, let recordId):
             return ["recordid": recordId]
+        case .uploadFileMeta(let params):
+            return Payloads.uploadFileMetaPayload(for: params)
             
         default:
             return nil
@@ -84,9 +90,9 @@ extension FilesEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
-        case .upload(let files, let boundary, _):
+        case .upload(let file, let boundary, _):
             return UploadManager.instance.getBodyData(parameters: parameters ?? [:],
-                                                      files: files,
+                                                      file: file,
                                                       boundary: boundary)
         default:
             return nil

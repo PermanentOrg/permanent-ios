@@ -5,6 +5,7 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
+import BSImagePicker
 import MobileCoreServices
 import UIKit
 
@@ -47,8 +48,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         backButton.isHidden = true
         
         sortButton.setFont(Text.style11.font)
-        sortButton.setTitleColor(.middleGrey, for: [])
-        sortButton.tintColor = .middleGrey
+        sortButton.setTitleColor(.middleGray, for: [])
+        sortButton.tintColor = .middleGray
         sortButton.setTitle(Translations.name, for: [])
     }
     
@@ -62,18 +63,20 @@ class MainViewController: BaseViewController<FilesViewModel> {
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, then handler: @escaping () -> Void) {
+    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, then handler: (() -> Void)? = nil) {
         showSpinner()
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
-            handler()
+            handler?()
         })
     }
     
     private func onFilesFetchCompletion(_ status: RequestStatus) {
-        hideSpinner()
-        
+        DispatchQueue.main.async {
+            self.hideSpinner()
+        }
+    
         switch status {
         case .success:
             DispatchQueue.main.async {
@@ -121,32 +124,30 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     func upload(fileURLS: [URL]) {
-        let files = fileURLS.map {
-            FileInfo(withFileURL: $0,
-                     filename: $0.lastPathComponent,
-                     name: $0.lastPathComponent,
-                     mimeType: "application/pdf") // TODO:
-        }
-        
-        showSpinner()
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.viewModel?.upload(files: files, recordId: "52719") { status in
+        viewModel?.uploadFiles(fileURLS, then: { status in
+            switch status {
+            case .success:
+                self.onUploadSuccess()
+                
+            case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
-                }
-                
-                switch status {
-                case .success:
-                    break
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.showAlert(title: Translations.error, message: message)
-                    }
+                    self.showAlert(title: Translations.error, message: message)
                 }
             }
+        })
+    }
+    
+    func onUploadSuccess() {
+        guard
+            let viewModel = viewModel,
+            let currentFolder = viewModel.navigationStack.last
+        else {
+            return
         }
+        
+        let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf)
+        navigateToFolder(withParams: params, backNavigation: true, then: nil)
     }
 }
 
@@ -211,20 +212,32 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let photoLibraryAction = UIAlertAction(title: Translations.photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
+        let browseAction = UIAlertAction(title: Translations.browse, style: .default) { _ in self.openFileBrowser() }
+        let cancelAction = UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil)
+            
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addActions([photoLibraryAction, browseAction, cancelAction])
         
-        actionSheet.addAction(UIAlertAction(title: "Take Photo or Video", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
-        }))
-
-        actionSheet.addAction(UIAlertAction(title: "Photo Library", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
-        }))
-        
-        actionSheet.addAction(UIAlertAction(title: "Browse", style: UIAlertAction.Style.default, handler: { (_: UIAlertAction!) -> Void in
-            self.openFileBrowser()
-        }))
-
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openPhotoLibrary() {
+        let imagePicker = ImagePickerController()
+        
+        presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            guard let myAsset = assets.first else {
+                return
+            }
+    
+            myAsset.getURL { url in
+                guard let url = url else {
+                    return
+                }
+        
+                self.upload(fileURLS: [url])
+            }
+        })
     }
     
     func openFileBrowser() {
@@ -239,11 +252,6 @@ extension MainViewController: FABActionSheetDelegate {
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        for url in urls {
-            print("Full path: ", url)
-            print("Document: ", url.lastPathComponent)
-            
-            upload(fileURLS: urls)
-        }
+        upload(fileURLS: urls)
     }
 }

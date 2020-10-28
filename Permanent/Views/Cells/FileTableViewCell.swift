@@ -28,9 +28,9 @@ class FileTableViewCell: UITableViewCell {
     
     private func initUI() {
         fileNameLabel.font = Text.style11.font
-        fileNameLabel.textColor = .middleGrey
+        fileNameLabel.textColor = .middleGray
         fileDateLabel.font = Text.style12.font
-        fileDateLabel.textColor = .middleGrey
+        fileDateLabel.textColor = .middleGray
         fileImageView.clipsToBounds = true
     }
     
