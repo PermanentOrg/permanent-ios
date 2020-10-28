@@ -122,13 +122,18 @@ extension FilesViewModel: FilesViewModelDelegate {
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
                      then handler: @escaping ServerResponse) {
-        uploadInProgress = true
         
         let files = getFiles(from: fileURLS)
-        uploadQueue.removeAll() // TODO: Handle new upload.
         uploadQueue.append(contentsOf: files)
         
         onUploadStart()
+        
+        // User is already uploading, so we just return.
+        if uploadInProgress {
+            return
+        }
+        
+        uploadInProgress = true
         
         guard
             let file = uploadQueue.first,
@@ -224,6 +229,10 @@ extension FilesViewModel: FilesViewModelDelegate {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
+                var newFile = FileViewModel(model: file)
+                newFile.fileStatus = .synced
+                self.viewModels.prepend(newFile)
+                
                 handler(.success)
                 
             case .error(let error, _):

@@ -121,6 +121,7 @@
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
 		BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		BCC1E3222549866300B71866 /* FileListType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3212549866300B71866 /* FileListType.swift */; };
+		BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3242549A43F00B71866 /* ArrayExtension.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -256,6 +257,7 @@
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
 		BCC1E31E2549861C00B71866 /* FileStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStatus.swift; sourceTree = "<group>"; };
 		BCC1E3212549866300B71866 /* FileListType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListType.swift; sourceTree = "<group>"; };
+		BCC1E3242549A43F00B71866 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
 				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
 				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
+				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -867,6 +870,7 @@
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
+				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
