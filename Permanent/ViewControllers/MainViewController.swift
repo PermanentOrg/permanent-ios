@@ -252,7 +252,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
+        guard viewModel?.numberOfRowsInSection(section) != 0 else {
+            return nil
+        }
+        
         headerView.backgroundColor = .backgroundPrimary
         
         let sectionTitleLabel = UILabel()
@@ -271,6 +274,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard viewModel?.numberOfRowsInSection(section) != 0 else {
+            return 0
+        }
+
         return 40
     }
 }
