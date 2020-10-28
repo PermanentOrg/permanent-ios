@@ -51,6 +51,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.tableFooterView = UIView()
         tableView.refreshControl = refreshControl
         
+        refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
     }
     
@@ -177,6 +178,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
                         self.showAlert(title: Translations.error, message: errorMessage)
                     }
                     return
+                }
+                
+                DispatchQueue.main.async {
+                    self.refreshTableView()
                 }
                 
                 print("FILE UPLOADED: ", file.filename ?? "____")

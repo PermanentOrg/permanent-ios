@@ -119,6 +119,8 @@
 		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
 		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
+		BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
+		BCC1E3222549866300B71866 /* FileListType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3212549866300B71866 /* FileListType.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -252,6 +254,8 @@
 		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		BCC1E31E2549861C00B71866 /* FileStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStatus.swift; sourceTree = "<group>"; };
+		BCC1E3212549866300B71866 /* FileListType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListType.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -583,6 +587,8 @@
 			isa = PBXGroup;
 			children = (
 				BC6358BB25371FCB00EEC48C /* FileViewModel.swift */,
+				BCC1E31E2549861C00B71866 /* FileStatus.swift */,
+				BCC1E3212549866300B71866 /* FileListType.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -847,6 +853,7 @@
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
+				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
 				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
@@ -863,6 +870,7 @@
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
+				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,

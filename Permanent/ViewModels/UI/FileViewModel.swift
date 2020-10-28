@@ -15,6 +15,7 @@ struct FileViewModel {
     let archiveNo: String
     let folderId: Int
     let folderLinkId: Int
+    var fileStatus: FileStatus = .synced
     
     init(model: FileInfo) {
         self.name = model.filename ?? "-"
@@ -25,6 +26,7 @@ struct FileViewModel {
         self.archiveNo = ""
         self.folderId = -1
         self.folderLinkId = -1
+        self.fileStatus = .uploading
     }
     
     init(model: ChildItemVO) {

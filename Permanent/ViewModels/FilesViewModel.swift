@@ -63,7 +63,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch indexPath.section {
         case FileListType.uploading.rawValue:
             let fileInfo = uploadQueue[indexPath.row]
-            return FileViewModel(model: fileInfo)
+            var fileViewModel = FileViewModel(model: fileInfo)
+            
+            // If the first item in queue, set the `uploading` status.
+            fileViewModel.fileStatus = indexPath.row == 0 ? .uploading : .waiting
+            return fileViewModel
             
         case FileListType.synced.rawValue:
             return viewModels[indexPath.row]
@@ -121,7 +125,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         uploadInProgress = true
         
         let files = getFiles(from: fileURLS)
-        uploadQueue.removeAll() // Talk to Flavia. We should not be able to upload more items while we are already uploading.
+        uploadQueue.removeAll() // TODO: Handle new upload.
         uploadQueue.append(contentsOf: files)
         
         onUploadStart()
@@ -367,9 +371,4 @@ extension FilesViewModel: FilesViewModelDelegate {
         let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
-}
-
-enum FileListType: Int {
-    case uploading = 0
-    case synced
 }
