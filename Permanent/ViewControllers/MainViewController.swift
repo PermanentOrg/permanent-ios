@@ -12,27 +12,24 @@ import UIKit
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
-    @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    private let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
+        setupTableView()
         
         viewModel = FilesViewModel()
-        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
-        tableView.tableFooterView = UIView()
         fabView.delegate = self
         
-        getRoot()
+        getRootFolder()
     }
+    
+    // MARK: - UI Related
     
     fileprivate func initUI() {
         view.backgroundColor = .white
@@ -46,16 +43,85 @@ class MainViewController: BaseViewController<FilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
-        
-        sortButton.setFont(Text.style11.font)
-        sortButton.setTitleColor(.middleGray, for: [])
-        sortButton.tintColor = .middleGray
-        sortButton.setTitle(Translations.name, for: [])
     }
     
-    // MARK: - Actions
+    fileprivate func setupTableView() {
+        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
+        tableView.tableFooterView = UIView()
+        tableView.refreshControl = refreshControl
+        
+        refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
+    }
     
-    private func getRoot() {
+    func refreshTableView() {
+        handleTableBackgroundView()
+        tableView.reloadData()
+    }
+    
+    func handleTableBackgroundView() {
+        guard viewModel?.shouldDisplayBackgroundView == false else {
+            tableView.backgroundView = EmptyFolderView()
+            return
+        }
+
+        tableView.backgroundView = nil
+    }
+    
+    @IBAction
+    func backButtonAction(_ sender: UIButton) {
+        guard
+            let viewModel = viewModel,
+            let _ = viewModel.navigationStack.popLast(),
+            let destinationFolder = viewModel.navigationStack.last
+        else {
+            return
+        }
+        
+        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
+        navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+            self.directoryLabel.text = destinationFolder.name
+            
+            // If we got to the root, hide the back button.
+            if viewModel.navigationStack.count == 1 {
+                self.backButton.isHidden = true
+            }
+        })
+    }
+    
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true,
+                                      then handler: VoidAction? = nil)
+    {
+        guard
+            let viewModel = viewModel,
+            let currentFolder = viewModel.navigationStack.last else { return }
+        
+        let params: NavigateMinParams = (
+            currentFolder.archiveNo,
+            currentFolder.folderLinkId,
+            viewModel.csrf
+        )
+        
+        // Back navigation set to `true` so it's not considered a in-depth navigation.
+        navigateToFolder(withParams: params,
+                         backNavigation: true,
+                         shouldDisplaySpinner: shouldDisplaySpinner,
+                         then: handler)
+    }
+    
+    @objc
+    private func pullToRefreshAction() {
+        refreshCurrentFolder(
+            shouldDisplaySpinner: false,
+            then: {
+                self.refreshControl.endRefreshing()
+            }
+        )
+    }
+    
+    // MARK: - Network Related
+    
+    private func getRootFolder() {
         showSpinner()
         
         viewModel?.getRoot(then: { status in
@@ -63,8 +129,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, then handler: (() -> Void)? = nil) {
-        showSpinner()
+    private func navigateToFolder(withParams params: NavigateMinParams,
+                                  backNavigation: Bool,
+                                  shouldDisplaySpinner: Bool = true,
+                                  then handler: VoidAction? = nil)
+    {
+        shouldDisplaySpinner ? showSpinner() : nil
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
@@ -90,41 +160,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         }
     }
     
-    @IBAction func backButtonAction(_ sender: UIButton) {
-        guard
-            let viewModel = viewModel,
-            let _ = viewModel.navigationStack.popLast(),
-            let destinationFolder = viewModel.navigationStack.last
-        else {
-            return
-        }
-        
-        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
-            self.directoryLabel.text = destinationFolder.name
-            
-            // If we got to the root, hide the back button.
-            if viewModel.navigationStack.count == 1 {
-                self.backButton.isHidden = true
-            }
-        })
-    }
-    
-    func refreshTableView() {
-        handleTableBackgroundView()
-        tableView.reloadData()
-    }
-    
-    func handleTableBackgroundView() {
-        guard viewModel?.shouldDisplayBackgroundView == false else {
-            tableView.backgroundView = EmptyFolderView()
-            return
-        }
-
-        tableView.backgroundView = nil
-    }
-    
-    func upload(fileURLS: [URL]) {
+    private func upload(fileURLS: [URL]) {
         viewModel?.uploadFiles(
             fileURLS,
             onUploadStart: {
@@ -133,7 +169,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
             },
             onFileUploaded: { uploadedFile, errorMessage in
-                // TODO
+                // TODO:
                 // Remove file from uploading list and move it to synced one
                 
                 guard let file = uploadedFile else {
@@ -150,7 +186,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             then: { status in
                 switch status {
                 case .success:
-                    self.onUploadSuccess()
+                    self.refreshCurrentFolder()
                 
                 case .error(let message):
                     DispatchQueue.main.async {
@@ -160,18 +196,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
             }
         )
-    }
-    
-    func onUploadSuccess() {
-        guard
-            let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last
-        else {
-            return
-        }
-        
-        let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: params, backNavigation: true, then: nil)
     }
 }
 
@@ -207,6 +231,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         guard let viewModel = viewModel else {
             fatalError()
         }
+
+        guard !viewModel.uploadInProgress else {
+            return
+        }
         
         let file = viewModel.viewModels[indexPath.row]
         guard file.type.isFolder else { return }
@@ -216,6 +244,29 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             self.backButton.isHidden = false
             self.directoryLabel.text = file.name
         })
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .backgroundPrimary
+        
+        let sectionTitleLabel = UILabel()
+        sectionTitleLabel.text = "Section \(section)"
+        sectionTitleLabel.font = Text.style11.font
+        sectionTitleLabel.textColor = .middleGray
+
+        headerView.addSubview(sectionTitleLabel)
+        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            sectionTitleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            sectionTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
+        ])
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
     }
 }
 

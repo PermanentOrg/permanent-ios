@@ -39,7 +39,10 @@ class FileTableViewCell: UITableViewCell {
         fileDateLabel.text = model.date
         
         if !model.type.isFolder {
+            // TODO: See how to handle this better.
             fileImageView.load(urlString: model.thumbnail)
+        } else {
+            fileImageView.image = UIImage(named: "folder")
         }
     }
     
