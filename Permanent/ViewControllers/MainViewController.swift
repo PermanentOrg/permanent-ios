@@ -16,6 +16,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var fabView: FABView!
     
     private let refreshControl = UIRefreshControl()
+    private var actionDialog: ActionDialogView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,9 +184,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 DispatchQueue.main.async {
                     self.refreshTableView()
                 }
-                
-                print("FILE UPLOADED: ", file.filename ?? "____")
-                
             },
             
             then: { status in
@@ -201,6 +199,31 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
             }
         )
+    }
+    
+    private func createNewFolder(named name: String) {
+        guard
+            let viewModel = viewModel,
+            let currentFolder = viewModel.navigationStack.last else { return }
+
+        let params: NewFolderParams = (name, currentFolder.folderLinkId, viewModel.csrf)
+
+        showSpinner()
+        viewModel.createNewFolder(params: params, then: { status in
+            self.hideSpinner()
+
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.refreshTableView()
+                }
+
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: Translations.error, message: message)
+                }
+            }
+        })
     }
 }
 
@@ -256,6 +279,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             return nil
         }
         
+        let headerView = UIView()
         headerView.backgroundColor = .backgroundPrimary
         
         let sectionTitleLabel = UILabel()
@@ -303,28 +327,19 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func didTapNewFolder() {
-        guard
-            let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last else { return }
+        showActionDialog()
+    }
+    
+    func showActionDialog() {
+        actionDialog = ActionDialogView(
+            frame: self.view.bounds,
+            title: "Create new folder",
+            positiveButtonTitle: "Create",
+            placeholder: "Folder name"
+        )
         
-        let params: NewFolderParams = ("Testing Folder v6", currentFolder.folderLinkId, viewModel.csrf)
-        
-        showSpinner()
-        viewModel.createNewFolder(params: params, then: { status in
-            self.hideSpinner()
-            
-            switch status {
-            case .success:
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            
-            case .error(let message):
-                DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: message)
-                }
-            }
-        })
+        actionDialog!.delegate = self
+        self.view.addSubview(actionDialog!)
     }
     
     func showActionSheet() {
@@ -363,5 +378,24 @@ extension MainViewController: FABActionSheetDelegate {
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         upload(fileURLS: urls)
+    }
+}
+
+
+extension MainViewController: ActionDialogDelegate {
+    func didTapPositiveButton() {
+        guard let folderName = actionDialog?.fieldsInput?.first else {
+            DispatchQueue.main.async {
+                self.showAlert(title: Translations.error, message: Translations.errorMessage)
+            }
+            return
+        }
+        
+        if folderName.isEmpty {
+            return
+        }
+        
+        actionDialog?.dismiss()
+        createNewFolder(named: folderName)
     }
 }

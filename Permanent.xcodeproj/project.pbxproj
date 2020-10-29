@@ -122,6 +122,8 @@
 		BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		BCC1E3222549866300B71866 /* FileListType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3212549866300B71866 /* FileListType.swift */; };
 		BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3242549A43F00B71866 /* ArrayExtension.swift */; };
+		BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
+		BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -258,6 +260,8 @@
 		BCC1E31E2549861C00B71866 /* FileStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStatus.swift; sourceTree = "<group>"; };
 		BCC1E3212549866300B71866 /* FileListType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListType.swift; sourceTree = "<group>"; };
 		BCC1E3242549A43F00B71866 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
+		BCC1E32B254A193C00B71866 /* ActionDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ActionDialogView.xib; sourceTree = "<group>"; };
+		BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogView.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 				06644A8E24EBF72C003CD359 /* BigLogoView.swift */,
 				06644A8624EA772D003CD359 /* CustomButton.swift */,
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
+				BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */,
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
@@ -517,6 +522,7 @@
 				BCB0725F25235C59003E2F66 /* NavigationBarView.xib */,
 				BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */,
 				BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */,
+				BCC1E32B254A193C00B71866 /* ActionDialogView.xib */,
 			);
 			path = XIBs;
 			sourceTree = "<group>";
@@ -749,6 +755,7 @@
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
+				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -866,6 +873,7 @@
 				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
+				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,

@@ -11,10 +11,13 @@ import UIKit
 class TextField: CustomTextField {
     var contentEdgeInsets: UIEdgeInsets = .zero
     
+    @IBInspectable
+    var placeholderColor: UIColor = .white
+    
     override var placeholder: String? {
         didSet {
             attributedPlaceholder = NSAttributedString(string: placeholder ?? "",
-                                                       attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+                                                       attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         }
     }
 
@@ -29,9 +32,11 @@ class TextField: CustomTextField {
         font = Text.style4.font
         tintColor = .white
 
+        clipsToBounds = true
         layer.cornerRadius = 10
         layer.borderWidth = 1
         layer.borderColor = UIColor.white.cgColor
+        
     }
 
     override func textRect(forBounds bounds: CGRect) -> CGRect {
