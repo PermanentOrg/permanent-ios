@@ -6,33 +6,79 @@
 //
 
 import Foundation
-import UIKit.UITableView
+import Photos.PHAsset
 
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
-
-class FilesViewModel: NSObject, ViewModelInterface {
-    var viewModels: [FileViewModel] = []
-    var csrf: String = ""
-    var navigationStack: [FileViewModel] = []
-    var uploadQueue: [FileInfo] = []
-    
-    weak var delegate: FilesViewModelDelegate?
-}
+typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
+typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
+typealias VoidAction = () -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
-    func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
+    //func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
+    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
 }
 
-extension FilesViewModel: FilesViewModelDelegate {
-    // this method takes care of multiple upload process
-    // sets up a queue and calls uploadFileMeta and uploadFile
-    func uploadFiles(_ fileURLS: [URL], then handler: @escaping ServerResponse) {
-        let files = fileURLS.compactMap { (url) -> FileInfo? in
+class FilesViewModel: NSObject, ViewModelInterface {
+    var csrf: String = ""
+    var viewModels: [FileViewModel] = []
+    var navigationStack: [FileViewModel] = []
+    var uploadQueue: [FileInfo] = []
+    var uploadInProgress: Bool = false
+    
+    weak var delegate: FilesViewModelDelegate?
+    
+    // MARK: - Table View Logic
+    
+    var shouldDisplayBackgroundView: Bool {
+        return viewModels.isEmpty && uploadQueue.isEmpty
+    }
+    
+    var numberOfSections: Int {
+        return uploadInProgress ? 2 : 1
+    }
+
+    func numberOfRowsInSection(_ section: Int) -> Int {
+        // If the upload is not in progress, we have only one section.
+        guard uploadInProgress else {
+            return viewModels.count
+        }
+    
+        switch section {
+        case FileListType.uploading.rawValue: return uploadQueue.count
+        case FileListType.synced.rawValue: return viewModels.count
+        default: fatalError() // We cannot have more than 2 sections.
+        }
+    }
+    
+    func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
+        guard uploadInProgress else {
+            return viewModels[indexPath.row]
+        }
+        
+        switch indexPath.section {
+        case FileListType.uploading.rawValue:
+            let fileInfo = uploadQueue[indexPath.row]
+            var fileViewModel = FileViewModel(model: fileInfo)
+            
+            // If the first item in queue, set the `uploading` status.
+            fileViewModel.fileStatus = indexPath.row == 0 ? .uploading : .waiting
+            return fileViewModel
+            
+        case FileListType.synced.rawValue:
+            return viewModels[indexPath.row]
+            
+        default:
+            fatalError()
+        }
+    }
+    
+    private func getFiles(from urls: [URL]) -> [FileInfo] {
+        return urls.compactMap { (url) -> FileInfo? in
             // TODO: Test
             guard let mimeType = UploadManager.instance.getMimeType(forExtension: url.pathExtension) else {
                 return nil
@@ -43,48 +89,130 @@ extension FilesViewModel: FilesViewModelDelegate {
                             name: url.lastPathComponent,
                             mimeType: mimeType)
         }
+    }
+}
+
+extension FilesViewModel: FilesViewModelDelegate {
+    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
+        let dispatchGroup = DispatchGroup()
+        var urls: [URL] = []
         
-        uploadQueue.removeAll() // ??
-        uploadQueue.append(contentsOf: files)
+        assets.forEach { photo in
+            dispatchGroup.enter()
+            
+            photo.getURL { url in
+                guard let imageURL = url else {
+                    dispatchGroup.leave()
+                    return
+                }
+                
+                urls.append(imageURL)
+                dispatchGroup.leave()
+            }
+        }
         
-        // TODO: Handle multiple files
-        guard
-            let file = files.first,
-            let currentFolder = navigationStack.last else { return }
-        
-        let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
-        uploadFileMeta(file, withParams: params, then: handler)
+        dispatchGroup.notify(queue: .main, execute: {
+            completion(urls)
+        })
     }
     
-    func uploadSingleFile(_ file: FileInfo, withParams: FileMetaParams, then handler: @escaping ServerResponse) {}
+    // this method takes care of multiple upload process
+    // sets up a queue and calls uploadFileMeta and uploadFileData
+    func uploadFiles(_ fileURLS: [URL],
+                     onUploadStart: @escaping VoidAction,
+                     onFileUploaded: @escaping FileUploadResponse,
+                     then handler: @escaping ServerResponse) {
+        
+        let files = getFiles(from: fileURLS)
+        uploadQueue.append(contentsOf: files)
+        
+        onUploadStart()
+        
+        // User is already uploading, so we just return.
+        if uploadInProgress {
+            return
+        }
+        
+        uploadInProgress = true
+        
+        guard
+            let file = uploadQueue.first,
+            let currentFolder = navigationStack.last
+        else {
+            return handler(.error(message: Translations.errorMessage)) // ??
+        }
+        
+        let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
+        handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
+    }
+    
+    func handleRecursiveFileUpload(_ file: FileInfo,
+                                   withParams params: FileMetaParams,
+                                   onFileUploaded: @escaping FileUploadResponse,
+                                   then handler: @escaping ServerResponse) {
+        upload(file, withParams: params) { status in
+            switch status {
+            case .success:
+                onFileUploaded(file, nil)
+                
+                // Remove the first item from queue
+                self.uploadQueue.removeFirst()
+                
+                // Check if the queue is not empty, and upload the next item otherwise.
+                if let nextFile = self.uploadQueue.first {
+                    let params: FileMetaParams = (params.folderId, params.folderLinkId, nextFile.filename ?? "-", self.csrf)
+                    self.handleRecursiveFileUpload(nextFile, withParams: params, onFileUploaded: onFileUploaded, then: handler)
+                } else {
+                    self.uploadInProgress = false
+                    return handler(.success)
+                }
+                
+            case .error(let message):
+                onFileUploaded(nil, message)
+                self.uploadInProgress = false
+                handler(.error(message: message))
+            }
+        }
+    }
+    
+    private func upload(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping ServerResponse) {
+        uploadFileMeta(file, withParams: params) { id, errorMessage in
+            
+            guard let recordId = id else {
+                return handler(.error(message: errorMessage))
+            }
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.uploadFileData(file, recordId: recordId, then: handler)
+            }
+        }
+    }
     
     // Uploads the file meta to the server.
     // Must be executed before the actual upload of the file.
     
-    private func uploadFileMeta(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping ServerResponse) {
+    private func uploadFileMeta(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping FileMetaUploadResponse) {
         let apiOperation = APIOperation(FilesEndpoint.uploadFileMeta(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(nil, Translations.errorMessage)
                     return
                 }
                 
                 if model.isSuccessful == true,
                     let recordId = model.results?.first?.data?.first?.recordVO?.recordID
                 {
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        self.uploadFile(file, recordId: recordId, then: handler)
-                    }
+                    handler(recordId, nil)
                     
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(nil, Translations.errorMessage)
                 }
                 
             case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
+                handler(nil, error?.localizedDescription)
                 
             default:
                 break
@@ -94,13 +222,17 @@ extension FilesViewModel: FilesViewModelDelegate {
     
     // Uploads the file to the server.
     
-    func uploadFile(_ file: FileInfo, recordId: Int, then handler: @escaping ServerResponse) {
+    private func uploadFileData(_ file: FileInfo, recordId: Int, then handler: @escaping ServerResponse) {
         let boundary = UploadManager.instance.createBoundary()
         let apiOperation = APIOperation(FilesEndpoint.upload(file: file, usingBoundary: boundary, recordId: recordId))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
+                var newFile = FileViewModel(model: file)
+                newFile.fileStatus = .synced
+                self.viewModels.prepend(newFile)
+                
                 handler(.success)
                 
             case .error(let error, _):

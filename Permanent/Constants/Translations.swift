@@ -64,4 +64,5 @@ struct Translations {
     static var newFolder: String { return "NewFolder".localized() }
     static var browse: String { return "Browse".localized() }
     static var photoLibrary: String { return "PhotoLibrary".localized() }
+    static var waiting: String { return "Waiting".localized() }
 }

@@ -17,7 +17,7 @@ struct RecordVO: Codable {
     let recordVODescription: JSONNull?
     let displayDT: String?
     let displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT: JSONNull?
-    let locnID: JSONNull?
+    let locnID: Int?
     let timeZoneID: Int?
     let view, viewProperty: JSONNull?
     let imageRatio: Int?

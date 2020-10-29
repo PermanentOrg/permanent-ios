@@ -10,70 +10,94 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" restorationIdentifier="fileTableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="66" id="KGk-i7-Jjw" customClass="FileTableViewCell" customModule="Permanent" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="337" height="66"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="fileTableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="144" id="KGk-i7-Jjw" customClass="FileTableViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="430" height="144"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="337" height="66"/>
+                <rect key="frame" x="0.0" y="0.0" width="430" height="144"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="folder" translatesAutoresizingMaskIntoConstraints="NO" id="h0w-q0-XkC" userLabel="File Image View">
-                        <rect key="frame" x="20" y="16" width="34" height="34"/>
+                        <rect key="frame" x="20" y="55" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="Pdf-Ak-Vab"/>
                             <constraint firstAttribute="width" constant="34" id="xQz-gH-UNN"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="File Name Label">
-                        <rect key="frame" x="64" y="15" width="41.5" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="riX-GQ-IFP">
-                        <rect key="frame" x="64" y="36" width="66.5" height="15"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
+                        <rect key="frame" x="64" y="15" width="301" height="114"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tdl-In-Vb7" userLabel="Date Label">
-                                <rect key="frame" x="0.0" y="0.0" width="41.5" height="15"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2Ym-3f-4q8">
-                                <rect key="frame" x="51.5" y="0.0" width="15" height="15"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="15" id="LcM-lO-S7M"/>
-                                    <constraint firstAttribute="width" constant="15" id="a8j-oT-zSa"/>
-                                </constraints>
-                            </imageView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3w1-l8-M3K">
+                                <rect key="frame" x="0.0" y="0.0" width="301" height="105"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="File Name Label">
+                                        <rect key="frame" x="0.0" y="0.0" width="41.5" height="59.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="riX-GQ-IFP">
+                                        <rect key="frame" x="0.0" y="64.5" width="66.5" height="15"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tdl-In-Vb7" userLabel="Date Label">
+                                                <rect key="frame" x="0.0" y="0.0" width="41.5" height="15"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="2Ym-3f-4q8">
+                                                <rect key="frame" x="51.5" y="0.0" width="15" height="15"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="15" id="LcM-lO-S7M"/>
+                                                    <constraint firstAttribute="width" constant="15" id="a8j-oT-zSa"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                    </stackView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nid-5J-xom" userLabel="Status Label">
+                                        <rect key="frame" x="0.0" y="84.5" width="41.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="oeE-4y-tVi">
+                                <rect key="frame" x="0.0" y="110" width="301" height="4"/>
+                            </progressView>
                         </subviews>
                     </stackView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
-                        <rect key="frame" x="313" y="22" width="4" height="22"/>
+                        <rect key="frame" x="385" y="59.5" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="OEz-2P-8tz"/>
+                            <constraint firstAttribute="width" constant="25" id="PMz-Tj-Fd8"/>
+                        </constraints>
                         <state key="normal" image="more"/>
                     </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="1FZ-17-D40"/>
-                    <constraint firstItem="zU3-4p-PA7" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="5Jh-By-7kP"/>
-                    <constraint firstItem="zU3-4p-PA7" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="H3z-kB-ZAx"/>
+                    <constraint firstItem="KNW-4V-gMX" firstAttribute="leading" secondItem="PO6-uJ-qlZ" secondAttribute="trailing" constant="20" id="1Vz-KX-qFG"/>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="TVq-59-fuJ"/>
-                    <constraint firstItem="riX-GQ-IFP" firstAttribute="leading" secondItem="zU3-4p-PA7" secondAttribute="leading" id="aBS-wA-wyX"/>
+                    <constraint firstAttribute="bottom" secondItem="PO6-uJ-qlZ" secondAttribute="bottom" constant="15" id="WNS-Hl-fjH"/>
+                    <constraint firstItem="PO6-uJ-qlZ" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="aKa-VN-a5Z"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ap0-kV-sir"/>
-                    <constraint firstItem="KNW-4V-gMX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zU3-4p-PA7" secondAttribute="trailing" constant="10" id="gM1-gt-9OR"/>
-                    <constraint firstAttribute="bottom" secondItem="riX-GQ-IFP" secondAttribute="bottom" constant="15" id="kbn-VF-hlD"/>
                     <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" constant="20" id="l0H-G5-od7"/>
-                    <constraint firstItem="riX-GQ-IFP" firstAttribute="top" secondItem="zU3-4p-PA7" secondAttribute="bottom" id="p1t-S6-JcI"/>
+                    <constraint firstItem="PO6-uJ-qlZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="wTu-bW-Sut"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="dateStackView" destination="riX-GQ-IFP" id="KZg-XO-4wu"/>
                 <outlet property="fileDateLabel" destination="Tdl-In-Vb7" id="3bN-5t-blR"/>
                 <outlet property="fileImageView" destination="h0w-q0-XkC" id="5LU-1u-YKp"/>
                 <outlet property="fileNameLabel" destination="zU3-4p-PA7" id="syZ-AM-qiK"/>
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
+                <outlet property="progressView" destination="oeE-4y-tVi" id="Iwh-Qs-yad"/>
+                <outlet property="statusLabel" destination="Nid-5J-xom" id="2eE-cO-CIY"/>
             </connections>
-            <point key="canvasLocation" x="183.33333333333334" y="112.5"/>
+            <point key="canvasLocation" x="240.57971014492756" y="95.758928571428569"/>
         </tableViewCell>
     </objects>
     <resources>

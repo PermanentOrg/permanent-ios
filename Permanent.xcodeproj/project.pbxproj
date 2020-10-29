@@ -43,6 +43,7 @@
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
+		BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C7B38254861E7008E9A0D /* DateUtils.swift */; };
 		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
@@ -118,6 +119,9 @@
 		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
 		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
+		BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
+		BCC1E3222549866300B71866 /* FileListType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3212549866300B71866 /* FileListType.swift */; };
+		BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3242549A43F00B71866 /* ArrayExtension.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -175,6 +179,7 @@
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC120C5E253EF8F500C41243 /* FABActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABActionSheet.swift; sourceTree = "<group>"; };
+		BC1C7B38254861E7008E9A0D /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
@@ -250,6 +255,9 @@
 		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		BCC1E31E2549861C00B71866 /* FileStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStatus.swift; sourceTree = "<group>"; };
+		BCC1E3212549866300B71866 /* FileListType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListType.swift; sourceTree = "<group>"; };
+		BCC1E3242549A43F00B71866 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -333,6 +341,7 @@
 				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
 				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
 				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
+				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -539,6 +548,7 @@
 			children = (
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC62D58225418EC400E84DA9 /* UploadManager.swift */,
+				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -580,6 +590,8 @@
 			isa = PBXGroup;
 			children = (
 				BC6358BB25371FCB00EEC48C /* FileViewModel.swift */,
+				BCC1E31E2549861C00B71866 /* FileStatus.swift */,
+				BCC1E3212549866300B71866 /* FileListType.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -811,6 +823,7 @@
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
+				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
@@ -843,6 +856,7 @@
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
+				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
 				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
@@ -856,9 +870,11 @@
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
+				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
+				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,

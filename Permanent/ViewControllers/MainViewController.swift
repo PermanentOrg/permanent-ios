@@ -12,27 +12,24 @@ import UIKit
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
-    @IBOutlet var sortButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    private let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
+        setupTableView()
         
         viewModel = FilesViewModel()
-        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
-        tableView.tableFooterView = UIView()
         fabView.delegate = self
         
-        getRoot()
+        getRootFolder()
     }
+    
+    // MARK: - UI Related
     
     fileprivate func initUI() {
         view.backgroundColor = .white
@@ -46,52 +43,34 @@ class MainViewController: BaseViewController<FilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
-        
-        sortButton.setFont(Text.style11.font)
-        sortButton.setTitleColor(.middleGray, for: [])
-        sortButton.tintColor = .middleGray
-        sortButton.setTitle(Translations.name, for: [])
     }
     
-    // MARK: - Actions
-    
-    private func getRoot() {
-        showSpinner()
+    fileprivate func setupTableView() {
+        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
+        tableView.tableFooterView = UIView()
+        tableView.refreshControl = refreshControl
         
-        viewModel?.getRoot(then: { status in
-            self.onFilesFetchCompletion(status)
-        })
+        refreshControl.tintColor = .primary
+        refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, then handler: (() -> Void)? = nil) {
-        showSpinner()
-        
-        viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
-            self.onFilesFetchCompletion(status)
-            handler?()
-        })
+    func refreshTableView() {
+        handleTableBackgroundView()
+        tableView.reloadData()
     }
     
-    private func onFilesFetchCompletion(_ status: RequestStatus) {
-        DispatchQueue.main.async {
-            self.hideSpinner()
+    func handleTableBackgroundView() {
+        guard viewModel?.shouldDisplayBackgroundView == false else {
+            tableView.backgroundView = EmptyFolderView()
+            return
         }
-    
-        switch status {
-        case .success:
-            DispatchQueue.main.async {
-                self.handleTableBackgroundView()
-                self.tableView.reloadData()
-            }
-            
-        case .error(let message):
-            DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: message)
-            }
-        }
+
+        tableView.backgroundView = nil
     }
     
-    @IBAction func backButtonAction(_ sender: UIButton) {
+    @IBAction
+    func backButtonAction(_ sender: UIButton) {
         guard
             let viewModel = viewModel,
             let _ = viewModel.navigationStack.popLast(),
@@ -111,52 +90,133 @@ class MainViewController: BaseViewController<FilesViewModel> {
         })
     }
     
-    func handleTableBackgroundView() {
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true,
+                                      then handler: VoidAction? = nil)
+    {
         guard
             let viewModel = viewModel,
-            !viewModel.viewModels.isEmpty
-        else {
-            tableView.backgroundView = EmptyFolderView()
-            return
-        }
+            let currentFolder = viewModel.navigationStack.last else { return }
         
-        tableView.backgroundView = nil
+        let params: NavigateMinParams = (
+            currentFolder.archiveNo,
+            currentFolder.folderLinkId,
+            viewModel.csrf
+        )
+        
+        // Back navigation set to `true` so it's not considered a in-depth navigation.
+        navigateToFolder(withParams: params,
+                         backNavigation: true,
+                         shouldDisplaySpinner: shouldDisplaySpinner,
+                         then: handler)
     }
     
-    func upload(fileURLS: [URL]) {
-        viewModel?.uploadFiles(fileURLS, then: { status in
-            switch status {
-            case .success:
-                self.onUploadSuccess()
-                
-            case .error(let message):
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: Translations.error, message: message)
-                }
+    @objc
+    private func pullToRefreshAction() {
+        refreshCurrentFolder(
+            shouldDisplaySpinner: false,
+            then: {
+                self.refreshControl.endRefreshing()
             }
+        )
+    }
+    
+    // MARK: - Network Related
+    
+    private func getRootFolder() {
+        showSpinner()
+        
+        viewModel?.getRoot(then: { status in
+            self.onFilesFetchCompletion(status)
         })
     }
     
-    func onUploadSuccess() {
-        guard
-            let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last
-        else {
-            return
-        }
+    private func navigateToFolder(withParams params: NavigateMinParams,
+                                  backNavigation: Bool,
+                                  shouldDisplaySpinner: Bool = true,
+                                  then handler: VoidAction? = nil)
+    {
+        shouldDisplaySpinner ? showSpinner() : nil
         
-        let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: params, backNavigation: true, then: nil)
+        viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
+            self.onFilesFetchCompletion(status)
+            handler?()
+        })
+    }
+    
+    private func onFilesFetchCompletion(_ status: RequestStatus) {
+        DispatchQueue.main.async {
+            self.hideSpinner()
+        }
+    
+        switch status {
+        case .success:
+            DispatchQueue.main.async {
+                self.refreshTableView()
+            }
+            
+        case .error(let message):
+            DispatchQueue.main.async {
+                self.showAlert(title: Translations.error, message: message)
+            }
+        }
+    }
+    
+    private func upload(fileURLS: [URL]) {
+        viewModel?.uploadFiles(
+            fileURLS,
+            onUploadStart: {
+                DispatchQueue.main.async {
+                    self.refreshTableView()
+                }
+            },
+            onFileUploaded: { uploadedFile, errorMessage in
+                // TODO:
+                // Remove file from uploading list and move it to synced one
+                
+                guard let file = uploadedFile else {
+                    DispatchQueue.main.async {
+                        self.showAlert(title: Translations.error, message: errorMessage)
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self.refreshTableView()
+                }
+                
+                print("FILE UPLOADED: ", file.filename ?? "____")
+                
+            },
+            
+            then: { status in
+                switch status {
+                case .success:
+                    self.refreshCurrentFolder()
+                
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.showAlert(title: Translations.error, message: message)
+                    }
+                }
+            }
+        )
     }
 }
 
+// MARK: - Table View Delegates
+
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel?.numberOfSections ?? 0
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.viewModels.count ?? 0
+        return viewModel?.numberOfRowsInSection(section) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // TODO: Create tableView Helper class
         guard
             let viewModel = self.viewModel,
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileTableViewCell.self)) as? FileTableViewCell
@@ -164,16 +224,21 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
-        let file = viewModel.viewModels[indexPath.row]
+        let file = viewModel.cellForRowAt(indexPath: indexPath)
         cell.updateCell(model: file)
         return cell
     }
     
+    // TODO:
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         guard let viewModel = viewModel else {
             fatalError()
+        }
+
+        guard !viewModel.uploadInProgress else {
+            return
         }
         
         let file = viewModel.viewModels[indexPath.row]
@@ -184,6 +249,29 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             self.backButton.isHidden = false
             self.directoryLabel.text = file.name
         })
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .backgroundPrimary
+        
+        let sectionTitleLabel = UILabel()
+        sectionTitleLabel.text = "Section \(section)"
+        sectionTitleLabel.font = Text.style11.font
+        sectionTitleLabel.textColor = .middleGray
+
+        headerView.addSubview(sectionTitleLabel)
+        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            sectionTitleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            sectionTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
+        ])
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
     }
 }
 
@@ -226,17 +314,9 @@ extension MainViewController: FABActionSheetDelegate {
         let imagePicker = ImagePickerController()
         
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
-            guard let myAsset = assets.first else {
-                return
-            }
-    
-            myAsset.getURL { url in
-                guard let url = url else {
-                    return
-                }
-        
-                self.upload(fileURLS: [url])
-            }
+            self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
+                self.upload(fileURLS: urls)
+            })
         })
     }
     
@@ -244,11 +324,13 @@ extension MainViewController: FABActionSheetDelegate {
         let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeImage as String,
                                                                        kUTTypeCompositeContent as String],
                                                        in: .import)
-        docPicker.delegate = self // make the VM the delegate
+        docPicker.delegate = self
         docPicker.allowsMultipleSelection = true
         present(docPicker, animated: true, completion: nil)
     }
 }
+
+// MARK: - Document Picker Delegate
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
