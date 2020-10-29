@@ -171,9 +171,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
             },
             onFileUploaded: { uploadedFile, errorMessage in
-                // TODO:
-                // Remove file from uploading list and move it to synced one
-                
+                // TODO: what should we do on file upload fail?
                 guard let file = uploadedFile else {
                     DispatchQueue.main.async {
                         self.showAlert(title: Translations.error, message: errorMessage)
@@ -189,8 +187,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
             then: { status in
                 switch status {
                 case .success:
-                    self.refreshCurrentFolder()
-                
+                    if self.viewModel?.uploadingInCurrentFolder == true {
+                        self.refreshCurrentFolder()
+                    }
+                    
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
@@ -252,7 +252,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    // TODO:
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -260,12 +259,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
 
-        guard !viewModel.uploadInProgress else {
+        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        
+        guard
+            file.type.isFolder,
+            file.fileStatus == .synced else {
             return
         }
-        
-        let file = viewModel.viewModels[indexPath.row]
-        guard file.type.isFolder else { return }
 
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {

@@ -20,9 +20,12 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
-    //func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse)
+    func uploadFiles(_ fileURLS: [URL],
+                     onUploadStart: @escaping VoidAction,
+                     onFileUploaded: @escaping FileUploadResponse,
+                     then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -31,22 +34,27 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var uploadInProgress: Bool = false
+    var uploadFolder: FileViewModel?
     
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
     
+    var uploadingInCurrentFolder: Bool {
+        uploadFolder?.folderId == navigationStack.last?.folderId
+    }
+    
     var shouldDisplayBackgroundView: Bool {
-        return viewModels.isEmpty && uploadQueue.isEmpty
+        viewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
-        return uploadInProgress ? 2 : 1
+        uploadInProgress && uploadingInCurrentFolder ? 2 : 1
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload is not in progress, we have only one section.
-        guard uploadInProgress else {
+        guard uploadInProgress, uploadingInCurrentFolder else {
             return viewModels.count
         }
     
@@ -58,7 +66,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
-        guard uploadInProgress else {
+        guard uploadInProgress, uploadingInCurrentFolder else {
             return viewModels[indexPath.row]
         }
         
@@ -96,30 +104,31 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
 extension FilesViewModel: FilesViewModelDelegate {
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
-            let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
+        let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
             
-            apiOperation.execute(in: APIRequestDispatcher()) { result in
-                switch result {
-                case .json(let response, _):
-                    guard
-                        let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
-                        let folderVO = model.results?.first?.data?.first?.folderVO else {
-                        handler(.error(message: Translations.errorMessage))
-                        return
-                    }
-                    
-                    let folder = FileViewModel(model: folderVO)
-                    self.viewModels.insert(folder, at: 0)
-                    handler(.success)
-                    
-                case .error(let error, _):
-                    handler(.error(message: error?.localizedDescription))
-                    
-                default:
-                    break
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
+                    let folderVO = model.results?.first?.data?.first?.folderVO
+                else {
+                    handler(.error(message: Translations.errorMessage))
+                    return
                 }
+                    
+                let folder = FileViewModel(model: folderVO)
+                self.viewModels.insert(folder, at: 0)
+                handler(.success)
+                    
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
             }
         }
+    }
 
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
         let dispatchGroup = DispatchGroup()
@@ -149,10 +158,20 @@ extension FilesViewModel: FilesViewModelDelegate {
     func uploadFiles(_ fileURLS: [URL],
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
-                     then handler: @escaping ServerResponse) {
-        
+                     then handler: @escaping ServerResponse)
+    {
+        // Convert from [URL] to [FileInfo]
         let files = getFiles(from: fileURLS)
+        
+        guard
+            let file = files.first,
+            let currentFolder = navigationStack.last
+        else {
+            return handler(.error(message: Translations.errorMessage))
+        }
+        
         uploadQueue.append(contentsOf: files)
+        uploadFolder = currentFolder
         
         onUploadStart()
         
@@ -163,13 +182,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         uploadInProgress = true
         
-        guard
-            let file = uploadQueue.first,
-            let currentFolder = navigationStack.last
-        else {
-            return handler(.error(message: Translations.errorMessage)) // ??
-        }
-        
         let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
         handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
     }
@@ -177,7 +189,8 @@ extension FilesViewModel: FilesViewModelDelegate {
     func handleRecursiveFileUpload(_ file: FileInfo,
                                    withParams params: FileMetaParams,
                                    onFileUploaded: @escaping FileUploadResponse,
-                                   then handler: @escaping ServerResponse) {
+                                   then handler: @escaping ServerResponse)
+    {
         upload(file, withParams: params) { status in
             switch status {
             case .success:
@@ -257,9 +270,12 @@ extension FilesViewModel: FilesViewModelDelegate {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
-                var newFile = FileViewModel(model: file)
-                newFile.fileStatus = .synced
-                self.viewModels.prepend(newFile)
+                
+                if self.uploadingInCurrentFolder {
+                    var newFile = FileViewModel(model: file)
+                    newFile.fileStatus = .synced
+                    self.viewModels.prepend(newFile)
+                }
                 
                 handler(.success)
                 
@@ -347,8 +363,6 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
         }
     }
-    
-    
     
     private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard
