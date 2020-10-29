@@ -25,10 +25,14 @@ extension UIColor {
     static var middleGray = UIColor(red: 96/255, green: 96/255, blue: 96/255, alpha: 1)
     static var black = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
     static var galleryGray = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
+    static var brightRed = UIColor(red: 175/255, green: 0/255, blue: 0/255, alpha: 1)
+    static var doveGray = UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1)
+    static var dustyGray = UIColor(red: 96/255, green: 96/255, blue: 96/255, alpha: 1)
 }
 
 extension UIColor {
     static var primary = UIColor.darkBlue
     static var secondary = UIColor.tangerine
     static var backgroundPrimary = UIColor.white
+    static var overlay = UIColor.black.withAlphaComponent(0.25)
 }

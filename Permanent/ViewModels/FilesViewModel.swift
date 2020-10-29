@@ -8,6 +8,7 @@
 import Foundation
 import Photos.PHAsset
 
+typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
@@ -21,6 +22,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
     //func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
+    func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -93,6 +95,32 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
+            let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
+            
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    guard
+                        let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
+                        let folderVO = model.results?.first?.data?.first?.folderVO else {
+                        handler(.error(message: Translations.errorMessage))
+                        return
+                    }
+                    
+                    let folder = FileViewModel(model: folderVO)
+                    self.viewModels.insert(folder, at: 0)
+                    handler(.success)
+                    
+                case .error(let error, _):
+                    handler(.error(message: error?.localizedDescription))
+                    
+                default:
+                    break
+                }
+            }
+        }
+
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
         let dispatchGroup = DispatchGroup()
         var urls: [URL] = []
@@ -319,6 +347,8 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
         }
     }
+    
+    
     
     private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard

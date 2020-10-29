@@ -42,6 +42,8 @@ class FileTableViewCell: UITableViewCell {
         
         progressView.progressTintColor = .primary
         progressView.progress = 0.9
+        
+        moreButton.tintColor = .middleGray
     }
     
     func updateCell(model: FileViewModel) {
@@ -61,19 +63,34 @@ class FileTableViewCell: UITableViewCell {
     fileprivate func handleUI(forStatus status: FileStatus) {
         switch status {
         case .synced:
-            progressView.isHidden = true
-            statusLabel.isHidden = true
-            dateStackView.isHidden = false
+            updateSyncedUI()
+            
         case .waiting:
-            dateStackView.isHidden = true
             progressView.isHidden = true
             statusLabel.isHidden = false
+            updateUploadingUI()
             
         case .uploading:
-            dateStackView.isHidden = true
             statusLabel.isHidden = true
             progressView.isHidden = false
             progressView.setProgress(0.8, animated: true)
+            updateUploadingUI()
         }
+    }
+    
+    fileprivate func updateUploadingUI() {
+        dateStackView.isHidden = true
+        
+        let image = UIImage(named: "close")?.templated
+        moreButton.setImage(image, for: [])
+    }
+    
+    fileprivate func updateSyncedUI() {
+        progressView.isHidden = true
+        statusLabel.isHidden = true
+        dateStackView.isHidden = false
+        
+        let image = UIImage(named: "more")?.templated
+        moreButton.setImage(image, for: [])
     }
 }

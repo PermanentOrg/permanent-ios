@@ -21,7 +21,8 @@ struct FolderVO: Codable {
     let timeZoneID: Int?
     let view: String?
     let viewProperty, thumbArchiveNbr: JSONNull?
-    let imageRatio, type, thumbStatus: String?
+    let type, thumbStatus: String?
+    let imageRatio: JSONAny?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?

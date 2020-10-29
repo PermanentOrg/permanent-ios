@@ -120,9 +120,8 @@ struct Payloads {
     }
     
     static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
-        
         let childItemsDict = params.folderLinkIds.map {
-            return [
+            [
                 "folder_linkId": $0
             ]
         }
@@ -152,6 +151,21 @@ struct Payloads {
                         "parentFolder_linkId": params.folderLinkId,
                         "displayName": params.filename,
                         "uploadFileName": params.filename
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+    }
+    
+    static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "FolderVO": [
+                        "displayName": params.filename,
+                        "parentFolder_linkId": params.folderLinkId
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,

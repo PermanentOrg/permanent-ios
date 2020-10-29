@@ -48,6 +48,7 @@ class FABActionSheet: UIViewController {
         uploadButton.addTarget(self, action: #selector(uploadAction), for: .touchUpInside)
         
         newFolderButton.setTitle(Translations.newFolder, for: [])
+        newFolderButton.addTarget(self, action: #selector(newFolderAction), for: .touchUpInside)
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(close)))
     }
@@ -68,8 +69,9 @@ class FABActionSheet: UIViewController {
     
     @objc
     fileprivate func newFolderAction() {
-        delegate?.didTapNewFolder()
-        close()
+        dismiss(animated: true) {
+            self.delegate?.didTapNewFolder()
+        }
     }
 }
 
