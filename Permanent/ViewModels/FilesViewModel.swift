@@ -8,6 +8,7 @@
 import Foundation
 import Photos.PHAsset
 
+typealias FolderInfo = (folderId: Int, folderLinkId: Int)
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
@@ -20,9 +21,13 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
     func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
-    //func uploadFiles(_ files: [URL], then handler: @escaping ServerResponse)
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse)
+    func uploadFiles(_ fileURLS: [URL],
+                     toFolder folder: FolderInfo,
+                     onUploadStart: @escaping VoidAction,
+                     onFileUploaded: @escaping FileUploadResponse,
+                     then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -31,22 +36,39 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var uploadInProgress: Bool = false
+    var uploadFolder: FolderInfo?
     
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
     
+    func title(forSection section: Int) -> String {
+        guard uploadInProgress, uploadingInCurrentFolder else {
+            return Translations.name
+        }
+        
+        switch section {
+        case FileListType.uploading.rawValue: return Translations.uploads
+        case FileListType.synced.rawValue: return Translations.name
+        default: fatalError() // We cannot have more than 2 sections.
+        }
+    }
+    
+    var uploadingInCurrentFolder: Bool {
+        uploadFolder?.folderId == navigationStack.last?.folderId
+    }
+    
     var shouldDisplayBackgroundView: Bool {
-        return viewModels.isEmpty && uploadQueue.isEmpty
+        viewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
-        return uploadInProgress ? 2 : 1
+        uploadInProgress && uploadingInCurrentFolder ? 2 : 1
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload is not in progress, we have only one section.
-        guard uploadInProgress else {
+        guard uploadInProgress, uploadingInCurrentFolder else {
             return viewModels.count
         }
     
@@ -58,7 +80,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
-        guard uploadInProgress else {
+        guard uploadInProgress, uploadingInCurrentFolder else {
             return viewModels[indexPath.row]
         }
         
@@ -92,34 +114,50 @@ class FilesViewModel: NSObject, ViewModelInterface {
                             mimeType: mimeType)
         }
     }
+    
+    private func saveUploadProgressLocally(files: [FileInfo]) {
+        let stringURLS: [String] = files.map { $0.url.absoluteString }
+        PreferencesManager.shared.set(stringURLS, forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+    }
+    
+    func clearUploadQueue() {
+        uploadQueue.removeAll()
+        
+        PreferencesManager.shared.removeValues(forKeys: [
+            Constants.Keys.StorageKeys.uploadFilesURLS,
+            Constants.Keys.StorageKeys.uploadFolderId,
+            Constants.Keys.StorageKeys.uploadFolderLinkId
+        ])
+    }
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
-            let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
+        let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
             
-            apiOperation.execute(in: APIRequestDispatcher()) { result in
-                switch result {
-                case .json(let response, _):
-                    guard
-                        let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
-                        let folderVO = model.results?.first?.data?.first?.folderVO else {
-                        handler(.error(message: Translations.errorMessage))
-                        return
-                    }
-                    
-                    let folder = FileViewModel(model: folderVO)
-                    self.viewModels.insert(folder, at: 0)
-                    handler(.success)
-                    
-                case .error(let error, _):
-                    handler(.error(message: error?.localizedDescription))
-                    
-                default:
-                    break
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
+                    let folderVO = model.results?.first?.data?.first?.folderVO
+                else {
+                    handler(.error(message: Translations.errorMessage))
+                    return
                 }
+                    
+                let folder = FileViewModel(model: folderVO)
+                self.viewModels.insert(folder, at: 0)
+                handler(.success)
+                    
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
             }
         }
+    }
 
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
         let dispatchGroup = DispatchGroup()
@@ -147,12 +185,24 @@ extension FilesViewModel: FilesViewModelDelegate {
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
     func uploadFiles(_ fileURLS: [URL],
+                     toFolder folder: FolderInfo,
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
-                     then handler: @escaping ServerResponse) {
-        
+                     then handler: @escaping ServerResponse)
+    {
+        // Convert from [URL] to [FileInfo]
         let files = getFiles(from: fileURLS)
+        
+        guard let file = files.first else {
+            return handler(.error(message: Translations.errorMessage))
+        }
+        
         uploadQueue.append(contentsOf: files)
+        uploadFolder = folder
+        
+        PreferencesManager.shared.set(folder.folderId, forKey: Constants.Keys.StorageKeys.uploadFolderId)
+        PreferencesManager.shared.set(folder.folderLinkId, forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
+        saveUploadProgressLocally(files: files)
         
         onUploadStart()
         
@@ -163,28 +213,25 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         uploadInProgress = true
         
-        guard
-            let file = uploadQueue.first,
-            let currentFolder = navigationStack.last
-        else {
-            return handler(.error(message: Translations.errorMessage)) // ??
-        }
-        
-        let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
+        let params: FileMetaParams = (folder.folderId, folder.folderLinkId, file.filename ?? "-", csrf)
         handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
     }
     
     func handleRecursiveFileUpload(_ file: FileInfo,
                                    withParams params: FileMetaParams,
                                    onFileUploaded: @escaping FileUploadResponse,
-                                   then handler: @escaping ServerResponse) {
+                                   then handler: @escaping ServerResponse)
+    {
         upload(file, withParams: params) { status in
             switch status {
             case .success:
                 onFileUploaded(file, nil)
                 
-                // Remove the first item from queue
+                self.moveToSyncedFilesIfNeeded(file)
+                
+                // Remove the first item from queue and save progress.
                 self.uploadQueue.removeFirst()
+                self.saveUploadProgressLocally(files: self.uploadQueue)
                 
                 // Check if the queue is not empty, and upload the next item otherwise.
                 if let nextFile = self.uploadQueue.first {
@@ -257,10 +304,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
-                var newFile = FileViewModel(model: file)
-                newFile.fileStatus = .synced
-                self.viewModels.prepend(newFile)
-                
                 handler(.success)
                 
             case .error(let error, _):
@@ -269,6 +312,14 @@ extension FilesViewModel: FilesViewModelDelegate {
             default:
                 break
             }
+        }
+    }
+    
+    private func moveToSyncedFilesIfNeeded(_ file: FileInfo) {
+        if self.uploadingInCurrentFolder {
+            var newFile = FileViewModel(model: file)
+            newFile.fileStatus = .synced
+            self.viewModels.prepend(newFile)
         }
     }
     
@@ -347,8 +398,6 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
         }
     }
-    
-    
     
     private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard

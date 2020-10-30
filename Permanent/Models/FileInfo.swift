@@ -12,13 +12,13 @@ struct FileInfo {
     var mimeType: String?
     var filename: String?
     var name: String?
+    let url: URL
 
-    init(withFileURL url: URL?, filename: String, name: String, mimeType: String) {
-        guard let url = url else { return }
-        
+    init(withFileURL url: URL, filename: String, name: String, mimeType: String) {
         fileContents = try? Data(contentsOf: url)
         self.filename = filename
         self.name = name
         self.mimeType = mimeType
+        self.url = url
     }
 }

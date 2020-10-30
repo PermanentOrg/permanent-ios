@@ -128,6 +128,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
+            self.retryUnfinishedUploadsIfNeeded()
         })
     }
     
@@ -162,18 +163,35 @@ class MainViewController: BaseViewController<FilesViewModel> {
         }
     }
     
-    private func upload(fileURLS: [URL]) {
+    private func retryUnfinishedUploadsIfNeeded() {
+        guard
+            let fileURLS: [String] = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFilesURLS) else {
+            return
+        }
+        
+        guard
+            !fileURLS.isEmpty,
+            let folderId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderId),
+            let folderLinkId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderLinkId) else {
+            return
+        }
+        
+        let urls = fileURLS.compactMap { URL(string: $0) }
+        let folderInfo = (folderId, folderLinkId)
+        self.upload(fileURLS: urls, toFolder: folderInfo)
+    }
+    
+    private func upload(fileURLS: [URL], toFolder folder: FolderInfo) {
         viewModel?.uploadFiles(
             fileURLS,
+            toFolder: folder,
             onUploadStart: {
                 DispatchQueue.main.async {
                     self.refreshTableView()
                 }
             },
             onFileUploaded: { uploadedFile, errorMessage in
-                // TODO:
-                // Remove file from uploading list and move it to synced one
-                
+                // TODO: what should we do on file upload fail?
                 guard let file = uploadedFile else {
                     DispatchQueue.main.async {
                         self.showAlert(title: Translations.error, message: errorMessage)
@@ -189,8 +207,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
             then: { status in
                 switch status {
                 case .success:
-                    self.refreshCurrentFolder()
-                
+                    if self.viewModel?.uploadingInCurrentFolder == true {
+                        self.refreshCurrentFolder()
+                    }
+                    
+                    self.viewModel?.clearUploadQueue()
+                    
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
@@ -252,7 +274,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    // TODO:
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -260,12 +281,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
 
-        guard !viewModel.uploadInProgress else {
+        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        
+        guard
+            file.type.isFolder,
+            file.fileStatus == .synced else {
             return
         }
-        
-        let file = viewModel.viewModels[indexPath.row]
-        guard file.type.isFolder else { return }
 
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
@@ -283,7 +305,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         headerView.backgroundColor = .backgroundPrimary
         
         let sectionTitleLabel = UILabel()
-        sectionTitleLabel.text = "Section \(section)"
+        sectionTitleLabel.text = viewModel?.title(forSection: section)
         sectionTitleLabel.font = Text.style11.font
         sectionTitleLabel.textColor = .middleGray
 
@@ -333,9 +355,9 @@ extension MainViewController: FABActionSheetDelegate {
     func showActionDialog() {
         actionDialog = ActionDialogView(
             frame: self.view.bounds,
-            title: "Create new folder",
-            positiveButtonTitle: "Create",
-            placeholder: "Folder name"
+            title: Translations.createFolder,
+            positiveButtonTitle: Translations.create,
+            placeholder: Translations.folderName
         )
         
         actionDialog!.delegate = self
@@ -358,7 +380,14 @@ extension MainViewController: FABActionSheetDelegate {
         
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
-                self.upload(fileURLS: urls)
+                
+                guard let currentFolder = self.viewModel?.navigationStack.last else {
+                    // Display alert with cannot upload?
+                    return
+                }
+                
+                let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
+                self.upload(fileURLS: urls, toFolder: folderInfo)
             })
         })
     }
@@ -377,7 +406,13 @@ extension MainViewController: FABActionSheetDelegate {
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        upload(fileURLS: urls)
+        guard let currentFolder = viewModel?.navigationStack.last else {
+            // Display alert with cannot upload?
+            return
+        }
+        
+        let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
+        upload(fileURLS: urls, toFolder: folderInfo)
     }
 }
 

@@ -8,7 +8,7 @@
 import Foundation
 
 struct FileViewModel {
-    let thumbnail: String
+    let thumbnailURL: String?
     let name: String
     let date: String
     let type: FileType
@@ -21,7 +21,7 @@ struct FileViewModel {
         self.name = model.filename ?? "-"
         self.date = DateUtils.currentDate
         
-        self.thumbnail = "-"
+        self.thumbnailURL = nil
         self.type = .image // TODO
         self.archiveNo = ""
         self.folderId = -1
@@ -34,7 +34,7 @@ struct FileViewModel {
         self.date = model.displayDT != nil ?
             String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
             
-        self.thumbnail = model.thumbURL200 ?? "-"
+        self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
@@ -47,7 +47,7 @@ struct FileViewModel {
         self.date = model.displayDT != nil ?
             String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
             
-        self.thumbnail = model.thumbURL200 ?? "-"
+        self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveNo = model.archiveNbr ?? ""
