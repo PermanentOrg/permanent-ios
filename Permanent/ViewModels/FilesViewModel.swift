@@ -8,6 +8,7 @@
 import Foundation
 import Photos.PHAsset
 
+typealias FolderInfo = (folderId: Int, folderLinkId: Int)
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
@@ -23,6 +24,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse)
     func uploadFiles(_ fileURLS: [URL],
+                     toFolder folder: FolderInfo,
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
                      then handler: @escaping ServerResponse)
@@ -34,11 +36,23 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var uploadInProgress: Bool = false
-    var uploadFolder: FileViewModel?
+    var uploadFolder: FolderInfo?
     
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
+    
+    func title(forSection section: Int) -> String {
+        guard uploadInProgress, uploadingInCurrentFolder else {
+            return Translations.name
+        }
+        
+        switch section {
+        case FileListType.uploading.rawValue: return Translations.uploads
+        case FileListType.synced.rawValue: return Translations.name
+        default: fatalError() // We cannot have more than 2 sections.
+        }
+    }
     
     var uploadingInCurrentFolder: Bool {
         uploadFolder?.folderId == navigationStack.last?.folderId
@@ -153,9 +167,15 @@ extension FilesViewModel: FilesViewModelDelegate {
         })
     }
     
+    private func saveUploadProgressLocally(files: [FileInfo]) {
+        let stringURLS: [String] = files.map { $0.url.absoluteString }
+        PreferencesManager.shared.set(stringURLS, forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+    }
+    
     // this method takes care of multiple upload process
     // sets up a queue and calls uploadFileMeta and uploadFileData
     func uploadFiles(_ fileURLS: [URL],
+                     toFolder folder: FolderInfo,
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
                      then handler: @escaping ServerResponse)
@@ -163,15 +183,16 @@ extension FilesViewModel: FilesViewModelDelegate {
         // Convert from [URL] to [FileInfo]
         let files = getFiles(from: fileURLS)
         
-        guard
-            let file = files.first,
-            let currentFolder = navigationStack.last
-        else {
+        guard let file = files.first else {
             return handler(.error(message: Translations.errorMessage))
         }
         
         uploadQueue.append(contentsOf: files)
-        uploadFolder = currentFolder
+        uploadFolder = folder
+        
+        PreferencesManager.shared.set(folder.folderId, forKey: Constants.Keys.StorageKeys.uploadFolderId)
+        PreferencesManager.shared.set(folder.folderLinkId, forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
+        saveUploadProgressLocally(files: files)
         
         onUploadStart()
         
@@ -182,7 +203,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         uploadInProgress = true
         
-        let params: FileMetaParams = (currentFolder.folderId, currentFolder.folderLinkId, file.filename ?? "-", csrf)
+        let params: FileMetaParams = (folder.folderId, folder.folderLinkId, file.filename ?? "-", csrf)
         handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
     }
     
@@ -196,8 +217,11 @@ extension FilesViewModel: FilesViewModelDelegate {
             case .success:
                 onFileUploaded(file, nil)
                 
-                // Remove the first item from queue
+                self.moveToSyncedFilesIfNeeded(file)
+                
+                // Remove the first item from queue and save progress.
                 self.uploadQueue.removeFirst()
+                self.saveUploadProgressLocally(files: self.uploadQueue)
                 
                 // Check if the queue is not empty, and upload the next item otherwise.
                 if let nextFile = self.uploadQueue.first {
@@ -270,13 +294,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
-                
-                if self.uploadingInCurrentFolder {
-                    var newFile = FileViewModel(model: file)
-                    newFile.fileStatus = .synced
-                    self.viewModels.prepend(newFile)
-                }
-                
                 handler(.success)
                 
             case .error(let error, _):
@@ -285,6 +302,14 @@ extension FilesViewModel: FilesViewModelDelegate {
             default:
                 break
             }
+        }
+    }
+    
+    private func moveToSyncedFilesIfNeeded(_ file: FileInfo) {
+        if self.uploadingInCurrentFolder {
+            var newFile = FileViewModel(model: file)
+            newFile.fileStatus = .synced
+            self.viewModels.prepend(newFile)
         }
     }
     

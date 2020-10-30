@@ -41,7 +41,6 @@ class FileTableViewCell: UITableViewCell {
         statusLabel.text = Translations.waiting
         
         progressView.progressTintColor = .primary
-        progressView.progress = 0.9
         
         moreButton.tintColor = .middleGray
     }
@@ -52,7 +51,12 @@ class FileTableViewCell: UITableViewCell {
         
         if !model.type.isFolder {
             // TODO: See how to handle this better.
-            fileImageView.load(urlString: model.thumbnail)
+            if let imageURL = model.thumbnailURL {
+                fileImageView.load(urlString: imageURL)
+            } else {
+                fileImageView.image = UIImage(named: "cloud")
+            }
+            
         } else {
             fileImageView.image = UIImage(named: "folder")
         }
@@ -73,7 +77,8 @@ class FileTableViewCell: UITableViewCell {
         case .uploading:
             statusLabel.isHidden = true
             progressView.isHidden = false
-            progressView.setProgress(0.8, animated: true)
+            progressView.setProgress(1.0, animated: true)
+            
             updateUploadingUI()
         }
     }
