@@ -114,6 +114,21 @@ class FilesViewModel: NSObject, ViewModelInterface {
                             mimeType: mimeType)
         }
     }
+    
+    private func saveUploadProgressLocally(files: [FileInfo]) {
+        let stringURLS: [String] = files.map { $0.url.absoluteString }
+        PreferencesManager.shared.set(stringURLS, forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+    }
+    
+    func clearUploadQueue() {
+        uploadQueue.removeAll()
+        
+        PreferencesManager.shared.removeValues(forKeys: [
+            Constants.Keys.StorageKeys.uploadFilesURLS,
+            Constants.Keys.StorageKeys.uploadFolderId,
+            Constants.Keys.StorageKeys.uploadFolderLinkId
+        ])
+    }
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
@@ -165,11 +180,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         dispatchGroup.notify(queue: .main, execute: {
             completion(urls)
         })
-    }
-    
-    private func saveUploadProgressLocally(files: [FileInfo]) {
-        let stringURLS: [String] = files.map { $0.url.absoluteString }
-        PreferencesManager.shared.set(stringURLS, forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
     }
     
     // this method takes care of multiple upload process

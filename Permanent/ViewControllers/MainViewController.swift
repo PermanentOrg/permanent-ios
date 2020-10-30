@@ -211,8 +211,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                         self.refreshCurrentFolder()
                     }
                     
-                    // TODO: delete urls from local storage
-                
+                    self.viewModel?.clearUploadQueue()
                     
                 case .error(let message):
                     DispatchQueue.main.async {
