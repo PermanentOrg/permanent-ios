@@ -77,7 +77,7 @@ class FileTableViewCell: UITableViewCell {
         case .uploading:
             statusLabel.isHidden = true
             progressView.isHidden = false
-            progressView.setProgress(1.0, animated: true)
+            progressView.setProgress(0, animated: false)
             
             updateUploadingUI()
         }
@@ -97,5 +97,9 @@ class FileTableViewCell: UITableViewCell {
         
         let image = UIImage(named: "more")?.templated
         moreButton.setImage(image, for: [])
+    }
+    
+    func updateProgress(withValue value: Float) {
+        progressView.setProgress(value, animated: true)
     }
 }

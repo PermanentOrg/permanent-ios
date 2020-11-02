@@ -19,6 +19,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         
         initUI()
         viewModel = AuthViewModel()
+        attemptBiometricsAuth()
     }
     
     fileprivate func initUI() {
@@ -41,8 +42,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         copyrightLabel.font = Text.style12.font
     }
     
-    @IBAction
-    func biometricsCheckAction(_ sender: RoundedButton) {
+    private func attemptBiometricsAuth() {
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
             DispatchQueue.main.async {
                 self.navigationController?.display(.main, from: .main)
@@ -50,6 +50,11 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         }, onFailure: { error in
             self.handleBiometricsFailure(error)
         })
+    }
+    
+    @IBAction
+    func biometricsCheckAction(_ sender: RoundedButton) {
+        attemptBiometricsAuth()
     }
     
     @IBAction

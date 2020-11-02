@@ -27,6 +27,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      toFolder folder: FolderInfo,
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
+                     progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
 }
 
@@ -188,6 +189,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                      toFolder folder: FolderInfo,
                      onUploadStart: @escaping VoidAction,
                      onFileUploaded: @escaping FileUploadResponse,
+                     progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
     {
         // Convert from [URL] to [FileInfo]
@@ -202,7 +204,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         PreferencesManager.shared.set(folder.folderId, forKey: Constants.Keys.StorageKeys.uploadFolderId)
         PreferencesManager.shared.set(folder.folderLinkId, forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
-        saveUploadProgressLocally(files: files)
+        //saveUploadProgressLocally(files: files)
         
         onUploadStart()
         
@@ -214,15 +216,22 @@ extension FilesViewModel: FilesViewModelDelegate {
         uploadInProgress = true
         
         let params: FileMetaParams = (folder.folderId, folder.folderLinkId, file.filename ?? "-", csrf)
-        handleRecursiveFileUpload(file, withParams: params, onFileUploaded: onFileUploaded, then: handler)
+        handleRecursiveFileUpload(
+            file,
+            withParams: params,
+            onFileUploaded: onFileUploaded,
+            progressHandler: progressHandler,
+            then: handler
+        )
     }
     
     func handleRecursiveFileUpload(_ file: FileInfo,
                                    withParams params: FileMetaParams,
                                    onFileUploaded: @escaping FileUploadResponse,
+                                   progressHandler: ProgressHandler?,
                                    then handler: @escaping ServerResponse)
     {
-        upload(file, withParams: params) { status in
+        upload(file, withParams: params, progressHandler: progressHandler) { status in
             switch status {
             case .success:
                 onFileUploaded(file, nil)
@@ -231,12 +240,18 @@ extension FilesViewModel: FilesViewModelDelegate {
                 
                 // Remove the first item from queue and save progress.
                 self.uploadQueue.removeFirst()
-                self.saveUploadProgressLocally(files: self.uploadQueue)
+                //self.saveUploadProgressLocally(files: self.uploadQueue)
                 
                 // Check if the queue is not empty, and upload the next item otherwise.
                 if let nextFile = self.uploadQueue.first {
                     let params: FileMetaParams = (params.folderId, params.folderLinkId, nextFile.filename ?? "-", self.csrf)
-                    self.handleRecursiveFileUpload(nextFile, withParams: params, onFileUploaded: onFileUploaded, then: handler)
+                    self.handleRecursiveFileUpload(
+                        nextFile,
+                        withParams: params,
+                        onFileUploaded: onFileUploaded,
+                        progressHandler: progressHandler,
+                        then: handler
+                    )
                 } else {
                     self.uploadInProgress = false
                     return handler(.success)
@@ -250,7 +265,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    private func upload(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping ServerResponse) {
+    private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
         uploadFileMeta(file, withParams: params) { id, errorMessage in
             
             guard let recordId = id else {
@@ -258,7 +273,12 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
             
             DispatchQueue.global(qos: .userInitiated).async {
-                self.uploadFileData(file, recordId: recordId, then: handler)
+                self.uploadFileData(
+                    file,
+                    recordId: recordId,
+                    progressHandler: progressHandler,
+                    then: handler
+                )
             }
         }
     }
@@ -297,9 +317,14 @@ extension FilesViewModel: FilesViewModelDelegate {
     
     // Uploads the file to the server.
     
-    private func uploadFileData(_ file: FileInfo, recordId: Int, then handler: @escaping ServerResponse) {
+    private func uploadFileData(_ file: FileInfo, recordId: Int, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
         let boundary = UploadManager.instance.createBoundary()
-        let apiOperation = APIOperation(FilesEndpoint.upload(file: file, usingBoundary: boundary, recordId: recordId))
+        let apiOperation = APIOperation(FilesEndpoint.upload(
+            file: file,
+            usingBoundary: boundary,
+            recordId: recordId,
+            progressHandler: progressHandler
+        ))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -316,10 +341,10 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func moveToSyncedFilesIfNeeded(_ file: FileInfo) {
-        if self.uploadingInCurrentFolder {
+        if uploadingInCurrentFolder {
             var newFile = FileViewModel(model: file)
             newFile.fileStatus = .synced
-            self.viewModels.prepend(newFile)
+            viewModels.prepend(newFile)
         }
     }
     

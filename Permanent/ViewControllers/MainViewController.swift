@@ -121,6 +121,18 @@ class MainViewController: BaseViewController<FilesViewModel> {
         )
     }
     
+    private func handleUploadProgress(withValue value: Float) {
+        let indexPath = IndexPath(row: 0, section: 0)
+        
+        guard
+            let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
+        else {
+            return
+        }
+        
+        uploadingCell.updateProgress(withValue: value)
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -165,20 +177,22 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private func retryUnfinishedUploadsIfNeeded() {
         guard
-            let fileURLS: [String] = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFilesURLS) else {
+            let fileURLS: [String] = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+        else {
             return
         }
         
         guard
             !fileURLS.isEmpty,
             let folderId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderId),
-            let folderLinkId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderLinkId) else {
+            let folderLinkId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
+        else {
             return
         }
         
         let urls = fileURLS.compactMap { URL(string: $0) }
         let folderInfo = (folderId, folderLinkId)
-        self.upload(fileURLS: urls, toFolder: folderInfo)
+        upload(fileURLS: urls, toFolder: folderInfo)
     }
     
     private func upload(fileURLS: [URL], toFolder folder: FolderInfo) {
@@ -202,6 +216,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 DispatchQueue.main.async {
                     self.refreshTableView()
                 }
+            },
+            progressHandler: { progress in
+                DispatchQueue.main.async {
+                    self.handleUploadProgress(withValue: progress)
+                }
+                
             },
             
             then: { status in
@@ -285,7 +305,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard
             file.type.isFolder,
-            file.fileStatus == .synced else {
+            file.fileStatus == .synced
+        else {
             return
         }
 
@@ -354,14 +375,14 @@ extension MainViewController: FABActionSheetDelegate {
     
     func showActionDialog() {
         actionDialog = ActionDialogView(
-            frame: self.view.bounds,
+            frame: view.bounds,
             title: Translations.createFolder,
             positiveButtonTitle: Translations.create,
             placeholder: Translations.folderName
         )
         
         actionDialog!.delegate = self
-        self.view.addSubview(actionDialog!)
+        view.addSubview(actionDialog!)
     }
     
     func showActionSheet() {
@@ -415,7 +436,6 @@ extension MainViewController: UIDocumentPickerDelegate {
         upload(fileURLS: urls, toFolder: folderInfo)
     }
 }
-
 
 extension MainViewController: ActionDialogDelegate {
     func didTapPositiveButton() {
