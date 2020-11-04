@@ -140,7 +140,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
-            self.retryUnfinishedUploadsIfNeeded()
+            // self.retryUnfinishedUploadsIfNeeded()
         })
     }
     
@@ -150,6 +150,13 @@ class MainViewController: BaseViewController<FilesViewModel> {
                                   then handler: VoidAction? = nil)
     {
         shouldDisplaySpinner ? showSpinner() : nil
+        
+        // Clear the data before navigation so we avoid concurrent errors.
+        viewModel?.viewModels.removeAll()
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
@@ -191,14 +198,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
         }
         
         let urls = fileURLS.compactMap { URL(string: $0) }
-        let folderInfo = (folderId, folderLinkId)
+        let folderInfo = FolderInfo(folderId: folderId,
+                                    folderLinkId: folderLinkId)
         upload(fileURLS: urls, toFolder: folderInfo)
     }
     
     private func upload(fileURLS: [URL], toFolder folder: FolderInfo) {
+        let files = FileInfo.createFiles(from: fileURLS, parentFolder: folder)
+        
         viewModel?.uploadFiles(
-            fileURLS,
-            toFolder: folder,
+            files,
             onUploadStart: {
                 DispatchQueue.main.async {
                     self.refreshTableView()
@@ -206,16 +215,17 @@ class MainViewController: BaseViewController<FilesViewModel> {
             },
             onFileUploaded: { uploadedFile, errorMessage in
                 // TODO: what should we do on file upload fail?
-                guard let file = uploadedFile else {
+                guard uploadedFile != nil else {
                     DispatchQueue.main.async {
                         self.showAlert(title: Translations.error, message: errorMessage)
                     }
                     return
                 }
-                
+
                 DispatchQueue.main.async {
-                    self.refreshTableView()
+                    self.tableView.reloadData()
                 }
+                
             },
             progressHandler: { progress in
                 DispatchQueue.main.async {
@@ -227,8 +237,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
             then: { status in
                 switch status {
                 case .success:
-                    if self.viewModel?.uploadingInCurrentFolder == true {
-                        self.refreshCurrentFolder()
+                    if self.viewModel?.shouldRefreshList == true {
+                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
                     }
                     
                     self.viewModel?.clearUploadQueue()
@@ -407,7 +417,8 @@ extension MainViewController: FABActionSheetDelegate {
                     return
                 }
                 
-                let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
+                let folderInfo = FolderInfo(folderId: currentFolder.folderId,
+                                            folderLinkId: currentFolder.folderLinkId)
                 self.upload(fileURLS: urls, toFolder: folderInfo)
             })
         })
@@ -432,7 +443,8 @@ extension MainViewController: UIDocumentPickerDelegate {
             return
         }
         
-        let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
+        let folderInfo = FolderInfo(folderId: currentFolder.folderId,
+                                    folderLinkId: currentFolder.folderLinkId)
         upload(fileURLS: urls, toFolder: folderInfo)
     }
 }

@@ -113,6 +113,7 @@
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */; };
 		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
+		BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9DB37325516B27004F453B /* FolderInfo.swift */; };
 		BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */; };
 		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */; };
@@ -251,6 +252,7 @@
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationController.swift; sourceTree = "<group>"; };
 		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
+		BC9DB37325516B27004F453B /* FolderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderInfo.swift; sourceTree = "<group>"; };
 		BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewController.swift; sourceTree = "<group>"; };
 		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsConditionsPopup.swift; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 				BC63589D2536D75300EEC48C /* GetRootResponse.swift */,
 				BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */,
 				BC62D57C254180D300E84DA9 /* FileInfo.swift */,
+				BC9DB37325516B27004F453B /* FolderInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -851,6 +854,7 @@
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
+				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
