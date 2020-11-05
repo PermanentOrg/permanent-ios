@@ -116,18 +116,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     private func saveUploadProgressLocally(files: [FileInfo]) {
-        let stringURLS: [String] = files.map { $0.url.absoluteString }
-        PreferencesManager.shared.set(stringURLS, forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+        try? PreferencesManager.shared.setCustomObject(files, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
     
     func clearUploadQueue() {
         uploadQueue.removeAll()
         
-        PreferencesManager.shared.removeValues(forKeys: [
-            Constants.Keys.StorageKeys.uploadFilesURLS,
-            Constants.Keys.StorageKeys.uploadFolderId,
-            Constants.Keys.StorageKeys.uploadFolderLinkId
-        ])
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
 }
 
@@ -196,10 +191,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
         
         uploadQueue.append(contentsOf: files)
-        
-        // PreferencesManager.shared.set(folder.folderId, forKey: Constants.Keys.StorageKeys.uploadFolderId)
-        // PreferencesManager.shared.set(folder.folderLinkId, forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
-        // saveUploadProgressLocally(files: files)
+        saveUploadProgressLocally(files: uploadQueue)
         
         onUploadStart()
         

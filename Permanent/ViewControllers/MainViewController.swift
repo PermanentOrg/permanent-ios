@@ -140,7 +140,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
-            // self.retryUnfinishedUploadsIfNeeded()
+            self.retryUnfinishedUploadsIfNeeded()
         })
     }
     
@@ -184,28 +184,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private func retryUnfinishedUploadsIfNeeded() {
         guard
-            let fileURLS: [String] = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFilesURLS)
+            let uploadQueue: [FileInfo] = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey),
+            !uploadQueue.isEmpty
         else {
             return
         }
         
-        guard
-            !fileURLS.isEmpty,
-            let folderId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderId),
-            let folderLinkId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderLinkId)
-        else {
-            return
-        }
-        
-        let urls = fileURLS.compactMap { URL(string: $0) }
-        let folderInfo = FolderInfo(folderId: folderId,
-                                    folderLinkId: folderLinkId)
-        upload(fileURLS: urls, toFolder: folderInfo)
+        upload(files: uploadQueue)
     }
     
-    private func upload(fileURLS: [URL], toFolder folder: FolderInfo) {
-        let files = FileInfo.createFiles(from: fileURLS, parentFolder: folder)
-        
+    private func upload(files: [FileInfo]) {
         viewModel?.uploadFiles(
             files,
             onUploadStart: {
@@ -417,9 +405,7 @@ extension MainViewController: FABActionSheetDelegate {
                     return
                 }
                 
-                let folderInfo = FolderInfo(folderId: currentFolder.folderId,
-                                            folderLinkId: currentFolder.folderLinkId)
-                self.upload(fileURLS: urls, toFolder: folderInfo)
+                self.processUpload(toFolder: currentFolder, forURLS: urls)
             })
         })
     }
@@ -432,6 +418,16 @@ extension MainViewController: FABActionSheetDelegate {
         docPicker.allowsMultipleSelection = true
         present(docPicker, animated: true, completion: nil)
     }
+    
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+        let folderInfo = FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId
+        )
+        
+        let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
+        self.upload(files: files)
+    }
 }
 
 // MARK: - Document Picker Delegate
@@ -443,9 +439,7 @@ extension MainViewController: UIDocumentPickerDelegate {
             return
         }
         
-        let folderInfo = FolderInfo(folderId: currentFolder.folderId,
-                                    folderLinkId: currentFolder.folderLinkId)
-        upload(fileURLS: urls, toFolder: folderInfo)
+        self.processUpload(toFolder: currentFolder, forURLS: urls)
     }
 }
 

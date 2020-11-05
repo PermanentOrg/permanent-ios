@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct FileInfo {
+class FileInfo: NSObject, NSCoding {
     var fileContents: Data?
     var mimeType: String?
     var name: String
-    let url: URL
+    var url: URL
     var folder: FolderInfo
 
     init(withURL url: URL, named name: String, folder: FolderInfo) {
@@ -29,5 +29,19 @@ struct FileInfo {
                      named: $0.lastPathComponent,
                      folder: parentFolder)
         }
+    }
+
+    func encode(with coder: NSCoder) {
+        coder.encode(name, forKey: "name")
+        coder.encode(url, forKey: "url")
+        coder.encode(folder, forKey: "folder")
+    }
+    
+    required convenience init?(coder: NSCoder) {
+        let name = coder.decodeObject(forKey: "name") as! String
+        let url = coder.decodeObject(forKey: "url") as! URL
+        let folder = coder.decodeObject(forKey: "folder") as! FolderInfo
+        
+        self.init(withURL: url, named: name, folder: folder)
     }
 }
