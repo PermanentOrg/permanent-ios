@@ -75,6 +75,9 @@
                         </constraints>
                         <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                         <state key="normal" image="more"/>
+                        <connections>
+                            <action selector="moreButtonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="qel-9x-RHd"/>
+                        </connections>
                     </button>
                 </subviews>
                 <constraints>

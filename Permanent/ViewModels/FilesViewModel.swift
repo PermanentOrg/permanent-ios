@@ -28,6 +28,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      onFileUploaded: @escaping FileUploadResponse,
                      progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
+    func removeFromQueue(_ position: Int)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -43,7 +44,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     // MARK: - Table View Logic
     
     func title(forSection section: Int) -> String {
-        guard uploadInProgress, (uploadingInCurrentFolder || waitingToUpload) else {
+        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
             return Translations.name
         }
         
@@ -67,11 +68,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var shouldDisplayBackgroundView: Bool {
-        viewModels.isEmpty && uploadQueue.isEmpty // TODO
+        viewModels.isEmpty && uploadQueue.isEmpty // TODO:
     }
     
     var numberOfSections: Int {
-        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1 // TODO
+        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1 // TODO:
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
@@ -80,19 +81,19 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload is not in progress, we have only one section.
-        guard uploadInProgress, (uploadingInCurrentFolder || waitingToUpload) else {
+        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
             return viewModels.count
         }
     
         switch section {
-        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count  //uploadQueue.count
+        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count // uploadQueue.count
         case FileListType.synced.rawValue: return viewModels.count
         default: fatalError() // We cannot have more than 2 sections.
         }
     }
     
     func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
-        guard uploadInProgress, (uploadingInCurrentFolder || waitingToUpload) else {
+        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
             return viewModels[indexPath.row]
         }
         
@@ -127,6 +128,23 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func removeFromQueue(_ position: Int) {
+        guard queueItemsForCurrentFolder.count >= position else {
+            return
+        }
+        
+        // Find the selected file from current folder
+        let fileInfo = queueItemsForCurrentFolder[position]
+        
+        // Find it in the entire queue.
+        
+        guard let fileQueueIndex = uploadQueue.firstIndex(of: fileInfo) else {
+            return
+        }
+        
+        uploadQueue.remove(at: fileQueueIndex)
+    }
+    
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
             
@@ -185,7 +203,6 @@ extension FilesViewModel: FilesViewModelDelegate {
                      progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
     {
-        
         guard let file = files.first else {
             return handler(.error(message: Translations.errorMessage))
         }
@@ -225,9 +242,6 @@ extension FilesViewModel: FilesViewModelDelegate {
                                    progressHandler: ProgressHandler?,
                                    then handler: @escaping ServerResponse)
     {
-        
-        
-        
         upload(file, withParams: params, progressHandler: progressHandler) { status in
             switch status {
             case .success:
@@ -235,12 +249,20 @@ extension FilesViewModel: FilesViewModelDelegate {
                 
                 self.moveToSyncedFilesIfNeeded(file)
                 
-                // Remove the first item from queue and save progress.
-                self.uploadQueue.removeFirst()
-                self.saveUploadProgressLocally(files: self.uploadQueue)
-                
                 // Check if the queue is not empty, and upload the next item otherwise.
-                if let nextFile = self.uploadQueue.first {
+                if self.uploadQueue.isEmpty {
+                    self.uploadInProgress = false
+                    return handler(.success)
+                } else {
+                    // Remove the first item from queue and save progress.
+                    self.uploadQueue.removeFirst()
+                    
+                    guard let nextFile = self.uploadQueue.first else {
+                        self.uploadInProgress = false
+                        return handler(.success)
+                    }
+                    
+                    self.saveUploadProgressLocally(files: self.uploadQueue)
                     self.uploadFolder = nextFile.folder
                     
                     let params: FileMetaParams = (
@@ -257,11 +279,8 @@ extension FilesViewModel: FilesViewModelDelegate {
                         progressHandler: progressHandler,
                         then: handler
                     )
-                } else {
-                    self.uploadInProgress = false
-                    return handler(.success)
                 }
-                
+
             case .error(let message):
                 onFileUploaded(nil, message)
                 self.uploadInProgress = false

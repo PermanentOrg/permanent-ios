@@ -65,7 +65,7 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jh-tN-6Ko" userLabel="Positive" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                             <rect key="frame" x="144.5" y="0.0" width="119.5" height="30"/>
                                             <connections>
-                                                <action selector="positiveButtonAction" destination="-1" eventType="touchUpInside" id="v8j-wD-ioz"/>
+                                                <action selector="positiveButtonAction:" destination="-1" eventType="touchUpInside" id="zjX-1m-1W9"/>
                                             </connections>
                                         </button>
                                     </subviews>

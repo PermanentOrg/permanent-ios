@@ -133,6 +133,13 @@ class MainViewController: BaseViewController<FilesViewModel> {
         uploadingCell.updateProgress(withValue: value)
     }
     
+    @objc
+    private func removeFromQueue(atPosition position: Int) {
+        viewModel?.removeFromQueue(position)
+        
+        refreshTableView()
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -289,6 +296,16 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         let file = viewModel.cellForRowAt(indexPath: indexPath)
         cell.updateCell(model: file)
+        
+        cell.rightButtonTapAction = { _ in
+            guard file.fileStatus != .synced else {
+                // TODO: Handle `more` button tap and display action sheet.
+                return
+            }
+            
+            self.cellRightButtonAction(atPosition: indexPath.row)
+        }
+        
         return cell
     }
     
@@ -345,6 +362,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         return 40
     }
+    
+    private func cellRightButtonAction(atPosition position: Int) {
+        actionDialog?.dismiss()
+        removeFromQueue(atPosition: position)
+    }
 }
 
 extension MainViewController: FABViewDelegate {
@@ -368,18 +390,32 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func didTapNewFolder() {
-        showActionDialog()
+        showActionDialog(
+            styled: .singleField,
+            withTitle: Translations.createFolder,
+            placeholder: Translations.folderName,
+            positiveButtonTitle: Translations.create,
+            positiveAction: { self.newFolderAction() }
+        )
     }
     
-    func showActionDialog() {
+    // TODO: Move this to BaseVC
+    func showActionDialog(
+        styled style: ActionDialogStyle,
+        withTitle title: String,
+        placeholder: String? = nil,
+        positiveButtonTitle: String,
+        positiveAction: @escaping ButtonAction
+    ) {
         actionDialog = ActionDialogView(
             frame: view.bounds,
-            title: Translations.createFolder,
-            positiveButtonTitle: Translations.create,
-            placeholder: Translations.folderName
+            style: style,
+            title: title,
+            positiveButtonTitle: positiveButtonTitle,
+            placeholder: placeholder
         )
         
-        actionDialog!.delegate = self
+        actionDialog?.positiveAction = positiveAction
         view.addSubview(actionDialog!)
     }
     
@@ -426,25 +462,10 @@ extension MainViewController: FABActionSheetDelegate {
         )
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        self.upload(files: files)
+        upload(files: files)
     }
-}
-
-// MARK: - Document Picker Delegate
-
-extension MainViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let currentFolder = viewModel?.navigationStack.last else {
-            // Display alert with cannot upload?
-            return
-        }
-        
-        self.processUpload(toFolder: currentFolder, forURLS: urls)
-    }
-}
-
-extension MainViewController: ActionDialogDelegate {
-    func didTapPositiveButton() {
+    
+    private func newFolderAction() {
         guard let folderName = actionDialog?.fieldsInput?.first else {
             DispatchQueue.main.async {
                 self.showAlert(title: Translations.error, message: Translations.errorMessage)
@@ -458,5 +479,18 @@ extension MainViewController: ActionDialogDelegate {
         
         actionDialog?.dismiss()
         createNewFolder(named: folderName)
+    }
+}
+
+// MARK: - Document Picker Delegate
+
+extension MainViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let currentFolder = viewModel?.navigationStack.last else {
+            // Display alert with cannot upload?
+            return
+        }
+        
+        processUpload(toFolder: currentFolder, forURLS: urls)
     }
 }
