@@ -69,4 +69,5 @@ extension String {
     static var create: String { return "Create".localized() }
     static var folderName: String { return "FolderName".localized() }
     static var uploads: String { return "Uploads".localized() }
+    static var delete: String { return "Delete".localized() }
 }

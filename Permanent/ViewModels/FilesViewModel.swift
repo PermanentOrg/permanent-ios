@@ -92,7 +92,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
+    func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
             return viewModels[indexPath.row]
         }

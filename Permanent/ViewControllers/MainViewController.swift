@@ -294,7 +294,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
-        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file)
         
         cell.rightButtonTapAction = { _ in
@@ -316,7 +316,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
 
-        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
         
         guard
             file.type.isFolder,
@@ -368,7 +368,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             withImage: .deleteAction,
             backgroundColor: .destructive,
             handler: { _, _, completion in
-                self.showToast(message: "Tapped")
+                self.didTapDelete(at: indexPath)
                 completion(true)
             }
         )
@@ -381,15 +381,17 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         removeFromQueue(atPosition: position)
     }
     
-    private func makeContextualAction(
-        withImage image: UIImage,
-        backgroundColor: UIColor,
-        handler: @escaping UIContextualAction.Handler
-    ) -> UIContextualAction {
-        let action = UIContextualAction(style: .normal, title: nil, handler: handler)
-        action.image = image
-        action.backgroundColor = backgroundColor
-        return action
+    private func didTapDelete(at indexPath: IndexPath) {
+        guard let file = viewModel?.fileForRowAt(indexPath: indexPath) else {
+            return
+        }
+        
+        let title = String(format: "\(String.delete) \"%@\"?", file.name)
+        
+        showActionDialog(styled: .simple,
+                         withTitle: title,
+                         positiveButtonTitle: .delete,
+                         positiveAction: { self.showToast(message: "tapped") })
     }
 }
 
