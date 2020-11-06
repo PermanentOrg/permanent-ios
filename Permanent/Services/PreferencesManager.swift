@@ -34,11 +34,12 @@ class PreferencesManager {
     }
     
     func getCustomObject<T>(forKey key: String) throws -> T? {
-        guard let object: Data = getValue(forKey: key) else { return nil }
+        guard let object = userDefaults.data(forKey: key) else {
+            return nil
+        }
         
-        let decodedData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(object)
-        
-        return decodedData as? T
+        let decodedData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(object) as? T
+        return decodedData
     }
     
 }

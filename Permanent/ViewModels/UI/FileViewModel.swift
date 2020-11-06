@@ -18,14 +18,14 @@ struct FileViewModel {
     var fileStatus: FileStatus = .synced
     
     init(model: FileInfo) {
-        self.name = model.filename ?? "-"
+        self.name = model.name
         self.date = DateUtils.currentDate
         
         self.thumbnailURL = nil
         self.type = .image // TODO
         self.archiveNo = ""
-        self.folderId = -1
-        self.folderLinkId = -1
+        self.folderId = model.folder.folderId
+        self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
     }
     

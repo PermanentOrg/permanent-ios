@@ -15,7 +15,7 @@ class APINetworkSession: NSObject {
     private typealias ProgressAndCompletionHandlers = (progress: ProgressHandler?, completion: ((URL?, URLResponse?, Error?) -> Void)?)
 
     /// Dictionary containing associations of `ProgressAndCompletionHandlers` to `URLSessionTask` instances.
-    private var taskToHandlersMap: [URLSessionTask: ProgressAndCompletionHandlers] = [:]
+    private var taskToHandlersMap: [URLSessionTask: ProgressAndCompletionHandlers?] = [:]
 
     override public convenience init() {
         // Configure the default URLSessionConfiguration.
@@ -36,12 +36,16 @@ class APINetworkSession: NSObject {
         self.session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
     }
 
-    private func set(handlers: ProgressAndCompletionHandlers?, for task: URLSessionTask) {
+    private func setHandlers(_ handlers: ProgressAndCompletionHandlers?, for task: URLSessionTask) {
         taskToHandlersMap[task] = handlers
     }
 
     private func getHandlers(for task: URLSessionTask) -> ProgressAndCompletionHandlers? {
-        return taskToHandlersMap[task]
+        guard let handlers = taskToHandlersMap[task] else {
+            return nil
+        }
+
+        return handlers
     }
 
     deinit {
@@ -50,7 +54,7 @@ class APINetworkSession: NSObject {
     }
 }
 
-extension APINetworkSession: URLSessionDelegate {
+extension APINetworkSession: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         guard let handlers = getHandlers(for: task) else {
             return
@@ -61,7 +65,9 @@ extension APINetworkSession: URLSessionDelegate {
             handlers.progress?(progress)
         }
         //  Remove the associated handlers.
-        set(handlers: nil, for: task)
+        if totalBytesSent == totalBytesExpectedToSend {
+            setHandlers(nil, for: task)
+        }
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -77,7 +83,7 @@ extension APINetworkSession: URLSessionDelegate {
         }
 
         //  Remove the associated handlers.
-        set(handlers: nil, for: task)
+        setHandlers(nil, for: task)
     }
 }
 
@@ -91,12 +97,12 @@ extension APINetworkSession: NetworkSessionProtocol {
     }
 
     func uploadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? {
-        let uploadTask = session.uploadTask(with: request, from: nil) { (data, urlResponse, error) in
+        let uploadTask = session.uploadTask(with: request, from: nil) { data, urlResponse, error in
             completion(data, urlResponse, error)
         }
 
         // Set the associated progress handler for this task.
-        set(handlers: (progressHandler, nil), for: uploadTask)
+        setHandlers((progressHandler, nil), for: uploadTask)
         return uploadTask
     }
 }

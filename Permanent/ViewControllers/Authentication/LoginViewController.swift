@@ -53,12 +53,15 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     
     // MARK: - Actions
     
-    @IBAction
-    func loginAction(_ sender: RoundedButton) {
+    private func attemptLogin() {
         guard
             let email = emailField.text,
             let password = passwordField.text,
-            email.isNotEmpty, password.isNotEmpty else { return }
+            email.isNotEmpty, password.isNotEmpty
+        else {
+            showAlert(title: Translations.error, message: Translations.invalidFields)
+            return
+        }
         
         let credentials = LoginCredentials(email, password)
         
@@ -69,8 +72,12 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             DispatchQueue.main.async {
                 self.handleLoginStatus(status, credentials: credentials)
             }
-            
         })
+    }
+    
+    @IBAction
+    func loginAction(_ sender: RoundedButton) {
+        attemptLogin()
     }
     
     @IBAction
@@ -135,6 +142,7 @@ extension LoginViewController: UITextFieldDelegate {
         } else {
             view.endEditing(true)
             scrollView.setContentOffset(.zero, animated: true)
+            attemptLogin()
             return false
         }
     }

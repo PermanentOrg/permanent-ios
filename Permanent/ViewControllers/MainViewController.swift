@@ -121,6 +121,18 @@ class MainViewController: BaseViewController<FilesViewModel> {
         )
     }
     
+    private func handleUploadProgress(withValue value: Float) {
+        let indexPath = IndexPath(row: 0, section: 0)
+        
+        guard
+            let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
+        else {
+            return
+        }
+        
+        uploadingCell.updateProgress(withValue: value)
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -138,6 +150,13 @@ class MainViewController: BaseViewController<FilesViewModel> {
                                   then handler: VoidAction? = nil)
     {
         shouldDisplaySpinner ? showSpinner() : nil
+        
+        // Clear the data before navigation so we avoid concurrent errors.
+        viewModel?.viewModels.removeAll()
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
@@ -165,26 +184,18 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private func retryUnfinishedUploadsIfNeeded() {
         guard
-            let fileURLS: [String] = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFilesURLS) else {
+            let uploadQueue: [FileInfo] = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey),
+            !uploadQueue.isEmpty
+        else {
             return
         }
         
-        guard
-            !fileURLS.isEmpty,
-            let folderId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderId),
-            let folderLinkId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.uploadFolderLinkId) else {
-            return
-        }
-        
-        let urls = fileURLS.compactMap { URL(string: $0) }
-        let folderInfo = (folderId, folderLinkId)
-        self.upload(fileURLS: urls, toFolder: folderInfo)
+        upload(files: uploadQueue)
     }
     
-    private func upload(fileURLS: [URL], toFolder folder: FolderInfo) {
+    private func upload(files: [FileInfo]) {
         viewModel?.uploadFiles(
-            fileURLS,
-            toFolder: folder,
+            files,
             onUploadStart: {
                 DispatchQueue.main.async {
                     self.refreshTableView()
@@ -192,23 +203,30 @@ class MainViewController: BaseViewController<FilesViewModel> {
             },
             onFileUploaded: { uploadedFile, errorMessage in
                 // TODO: what should we do on file upload fail?
-                guard let file = uploadedFile else {
+                guard uploadedFile != nil else {
                     DispatchQueue.main.async {
                         self.showAlert(title: Translations.error, message: errorMessage)
                     }
                     return
                 }
-                
+
                 DispatchQueue.main.async {
-                    self.refreshTableView()
+                    self.tableView.reloadData()
                 }
+                
+            },
+            progressHandler: { progress in
+                DispatchQueue.main.async {
+                    self.handleUploadProgress(withValue: progress)
+                }
+                
             },
             
             then: { status in
                 switch status {
                 case .success:
-                    if self.viewModel?.uploadingInCurrentFolder == true {
-                        self.refreshCurrentFolder()
+                    if self.viewModel?.shouldRefreshList == true {
+                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
                     }
                     
                     self.viewModel?.clearUploadQueue()
@@ -285,7 +303,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard
             file.type.isFolder,
-            file.fileStatus == .synced else {
+            file.fileStatus == .synced
+        else {
             return
         }
 
@@ -354,14 +373,14 @@ extension MainViewController: FABActionSheetDelegate {
     
     func showActionDialog() {
         actionDialog = ActionDialogView(
-            frame: self.view.bounds,
+            frame: view.bounds,
             title: Translations.createFolder,
             positiveButtonTitle: Translations.create,
             placeholder: Translations.folderName
         )
         
         actionDialog!.delegate = self
-        self.view.addSubview(actionDialog!)
+        view.addSubview(actionDialog!)
     }
     
     func showActionSheet() {
@@ -386,8 +405,7 @@ extension MainViewController: FABActionSheetDelegate {
                     return
                 }
                 
-                let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
-                self.upload(fileURLS: urls, toFolder: folderInfo)
+                self.processUpload(toFolder: currentFolder, forURLS: urls)
             })
         })
     }
@@ -400,6 +418,16 @@ extension MainViewController: FABActionSheetDelegate {
         docPicker.allowsMultipleSelection = true
         present(docPicker, animated: true, completion: nil)
     }
+    
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+        let folderInfo = FolderInfo(
+            folderId: folder.folderId,
+            folderLinkId: folder.folderLinkId
+        )
+        
+        let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
+        self.upload(files: files)
+    }
 }
 
 // MARK: - Document Picker Delegate
@@ -411,11 +439,9 @@ extension MainViewController: UIDocumentPickerDelegate {
             return
         }
         
-        let folderInfo = (currentFolder.folderId, currentFolder.folderLinkId)
-        upload(fileURLS: urls, toFolder: folderInfo)
+        self.processUpload(toFolder: currentFolder, forURLS: urls)
     }
 }
-
 
 extension MainViewController: ActionDialogDelegate {
     func didTapPositiveButton() {

@@ -37,7 +37,7 @@ class UploadManager {
         return boundary
     }
     
-    func getHttpBody(forParameters parameters: RequestParameters, withBoundary boundary: String) -> Data {
+    private func getHttpBody(forParameters parameters: RequestParameters, withBoundary boundary: String) -> Data {
         var body = Data()
 
         for (key, value) in parameters {
@@ -55,17 +55,22 @@ class UploadManager {
         return body
     }
     
-    private func add(file: FileInfo, toBody body: inout Data, withBoundary boundary: String) -> [String]? {
+    private func add(file: FileInfo, toBody body: inout Data, withBoundary boundary: String) {
         var status = true
-        var failedFilenames: [String]?
-     
-        guard let filename = file.filename, let content = file.fileContents, let mimetype = file.mimeType, let _ = file.name else { return nil }
+        
+        guard
+            let content = file.fileContents,
+            let mimeType = file.mimeType
+        else {
+            return
+        }
+       
         status = false
         var data = Data()
      
         let formattedFileInfo = ["--\(boundary)\r\n",
-                                 "Content-Disposition: form-data; name=\"thefile\"; filename=\"\(filename)\"\r\n",
-                                 "Content-Type: \(mimetype)\r\n\r\n"]
+                                 "Content-Disposition: form-data; name=\"thefile\"; filename=\"\(file.name)\"\r\n",
+                                 "Content-Type: \(mimeType)\r\n\r\n"]
             
         if data.append(values: formattedFileInfo) {
             if data.append(values: [content]) {
@@ -77,29 +82,16 @@ class UploadManager {
      
         if status {
             body.append(data)
-        } else {
-            if failedFilenames == nil {
-                failedFilenames = [String]()
-            }
-     
-            failedFilenames?.append(filename)
         }
-        
-        return failedFilenames
     }
     
-    func close(body: inout Data, usingBoundary boundary: String) {
+    private func close(body: inout Data, usingBoundary boundary: String) {
         _ = body.append(values: ["\r\n--\(boundary)--\r\n"])
     }
     
     func getBodyData(parameters: RequestParameters, file: FileInfo, boundary: String) -> Data? {
         var body = self.getHttpBody(forParameters: parameters, withBoundary: boundary)
-        let failedFilenames = self.add(file: file, toBody: &body, withBoundary: boundary)
-        
-        if let failed = failedFilenames {
-            print("FAILED: ", failed)
-        }
-        
+        self.add(file: file, toBody: &body, withBoundary: boundary)
         self.close(body: &body, usingBoundary: boundary)
         
         print("REQUEST BODY\n\n", String(decoding: body, as: UTF8.self))
