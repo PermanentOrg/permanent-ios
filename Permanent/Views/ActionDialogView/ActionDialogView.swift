@@ -7,24 +7,19 @@
 
 import UIKit
 
-protocol ActionDialogDelegate: class {
-    func didTapPositiveButton()
-}
-
 class ActionDialogView: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var dialogView: UIView!
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var subtitleLabel: UILabel!
-
     @IBOutlet var cancelButton: RoundedButton!
     @IBOutlet var positiveButton: RoundedButton!
-    
     @IBOutlet var fieldsStackView: UIStackView!
     
     private var placeholder: String?
+    private var dialogStyle: ActionDialogStyle = .simple
     
-    weak var delegate: ActionDialogDelegate?
+    var positiveAction: ButtonAction?
     
     var fieldsInput: [String]? {
         var inputArray: [String]?
@@ -43,50 +38,32 @@ class ActionDialogView: UIView {
     }
     
     override func layoutSubviews() {
-        cancelButton.backgroundColor = .brightRed
-        cancelButton.layer.cornerRadius = Constants.Design.actionButtonRadius
+        styleActionButton(cancelButton, color: .brightRed)
+        styleActionButton(positiveButton, color: .primary)
         
-        positiveButton.backgroundColor = .primary
-        positiveButton.layer.cornerRadius = Constants.Design.actionButtonRadius
-        
-        for field in fieldsStackView.arrangedSubviews where (field as? TextField) != nil {
-            field.backgroundColor = .galleryGray
-            field.layer.borderColor = UIColor.doveGray.cgColor
+        for field in fieldsStackView.arrangedSubviews {
+            guard let textField = field as? TextField else { continue }
             
-            (field as? TextField)?.tintColor = .dustyGray
-            (field as? TextField)?.textColor = .dustyGray
-            (field as? TextField)?.placeholderColor = .dustyGray
-            (field as? TextField)?.placeholder = self.placeholder
-            (field as? TextField)?.delegate = self
+            styleTextField(textField)
         }
     }
     
     convenience init(
         frame: CGRect,
+        style: ActionDialogStyle,
         title: String?,
         positiveButtonTitle: String?,
         placeholder: String? = nil
     ) {
         self.init(frame: frame)
         
+        self.dialogStyle = style
+        self.placeholder = placeholder
+        
         commonInit()
         
         titleLabel.text = title
         positiveButton.setTitle(positiveButtonTitle, for: [])
-        
-        self.placeholder = placeholder
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        commonInit()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        commonInit()
     }
     
     func commonInit() {
@@ -97,20 +74,45 @@ class ActionDialogView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         initUI()
+        adjustUI(forStyle: self.dialogStyle)
     }
     
     fileprivate func initUI() {
         contentView.backgroundColor = UIColor.overlay
-        
         dialogView.layer.cornerRadius = 4
         
         titleLabel.font = Text.style3.font
         titleLabel.textColor = .primary
-        
         cancelButton.setTitle(Translations.cancel, for: [])
+    }
+    
+    fileprivate func adjustUI(forStyle style: ActionDialogStyle) {
+        switch style {
+        case .simple:
+            subtitleLabel.isHidden = true
+            fieldsStackView.isHidden = true
+            
+        case .singleField:
+            subtitleLabel.isHidden = true
         
-        // Temporary. This will be decided by the ActionDialogStyle enum.
-        subtitleLabel.isHidden = true
+        default:
+            break
+        }
+    }
+    
+    fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor) {
+        button.backgroundColor = color
+        button.layer.cornerRadius = Constants.Design.actionButtonRadius
+    }
+    
+    fileprivate func styleTextField(_ field: TextField) {
+        field.backgroundColor = .galleryGray
+        field.layer.borderColor = UIColor.doveGray.cgColor
+        field.tintColor = .dustyGray
+        field.textColor = .dustyGray
+        field.placeholderColor = .dustyGray
+        field.placeholder = self.placeholder
+        field.delegate = self
     }
     
     // MARK: - Actions
@@ -120,17 +122,14 @@ class ActionDialogView: UIView {
         dismiss()
     }
     
-    @IBAction
-    func positiveButtonAction() {
-        delegate?.didTapPositiveButton()
+    @IBAction func positiveButtonAction(_ sender: UIButton) {
+        positiveAction?()
     }
     
     func dismiss() {
         removeFromSuperview()
     }
 }
-
-// enum ActionDialogStyle
 
 extension ActionDialogView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -16,17 +16,12 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var progressView: UIProgressView!
     @IBOutlet var dateStackView: UIStackView!
     
+    var rightButtonTapAction: CellButtonTapAction?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         
         initUI()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
     private func initUI() {
@@ -41,7 +36,6 @@ class FileTableViewCell: UITableViewCell {
         statusLabel.text = Translations.waiting
         
         progressView.progressTintColor = .primary
-        
         moreButton.tintColor = .middleGray
     }
     
@@ -49,6 +43,11 @@ class FileTableViewCell: UITableViewCell {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         
+        setFileImage(forModel: model)
+        handleUI(forStatus: model.fileStatus)
+    }
+    
+    fileprivate func setFileImage(forModel model: FileViewModel) {
         if !model.type.isFolder {
             // TODO: See how to handle this better.
             if let imageURL = model.thumbnailURL {
@@ -60,8 +59,6 @@ class FileTableViewCell: UITableViewCell {
         } else {
             fileImageView.image = UIImage(named: "folder")
         }
-        
-        handleUI(forStatus: model.fileStatus)
     }
     
     fileprivate func handleUI(forStatus status: FileStatus) {
@@ -101,5 +98,10 @@ class FileTableViewCell: UITableViewCell {
     
     func updateProgress(withValue value: Float) {
         progressView.setProgress(value, animated: true)
+    }
+    
+    @IBAction
+    func moreButtonAction(_ sender: AnyObject) {
+        rightButtonTapAction?(self)
     }
 }
