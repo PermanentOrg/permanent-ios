@@ -37,7 +37,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.title = Translations.myFiles
+        navigationItem.title = .myFiles
         styleNavBar()
         
         directoryLabel.font = Text.style3.font
@@ -184,7 +184,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             
         case .error(let message):
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: message)
+                self.showAlert(title: .error, message: message)
             }
         }
     }
@@ -212,7 +212,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 // TODO: what should we do on file upload fail?
                 guard uploadedFile != nil else {
                     DispatchQueue.main.async {
-                        self.showAlert(title: Translations.error, message: errorMessage)
+                        self.showAlert(title: .error, message: errorMessage)
                     }
                     return
                 }
@@ -241,7 +241,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
-                        self.showAlert(title: Translations.error, message: message)
+                        self.showAlert(title: .error, message: message)
                     }
                 }
             }
@@ -267,7 +267,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
 
             case .error(let message):
                 DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: message)
+                    self.showAlert(title: .error, message: message)
                 }
             }
         })
@@ -363,9 +363,33 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return 40
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction.make(
+            withImage: .deleteAction,
+            backgroundColor: .destructive,
+            handler: { _, _, completion in
+                self.showToast(message: "Tapped")
+                completion(true)
+            }
+        )
+
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
     private func cellRightButtonAction(atPosition position: Int) {
         actionDialog?.dismiss()
         removeFromQueue(atPosition: position)
+    }
+    
+    private func makeContextualAction(
+        withImage image: UIImage,
+        backgroundColor: UIColor,
+        handler: @escaping UIContextualAction.Handler
+    ) -> UIContextualAction {
+        let action = UIContextualAction(style: .normal, title: nil, handler: handler)
+        action.image = image
+        action.backgroundColor = backgroundColor
+        return action
     }
 }
 
@@ -375,7 +399,7 @@ extension MainViewController: FABViewDelegate {
             viewController: .fabActionSheet,
             from: .main
         ) as? FABActionSheet else {
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+            showAlert(title: .error, message: .errorMessage)
             return
         }
         
@@ -392,9 +416,9 @@ extension MainViewController: FABActionSheetDelegate {
     func didTapNewFolder() {
         showActionDialog(
             styled: .singleField,
-            withTitle: Translations.createFolder,
-            placeholder: Translations.folderName,
-            positiveButtonTitle: Translations.create,
+            withTitle: .createFolder,
+            placeholder: .folderName,
+            positiveButtonTitle: .create,
             positiveAction: { self.newFolderAction() }
         )
     }
@@ -420,9 +444,9 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
-        let photoLibraryAction = UIAlertAction(title: Translations.photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
-        let browseAction = UIAlertAction(title: Translations.browse, style: .default) { _ in self.openFileBrowser() }
-        let cancelAction = UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil)
+        let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
+        let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
+        let cancelAction = UIAlertAction(title: .cancel, style: .cancel, handler: nil)
             
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addActions([photoLibraryAction, browseAction, cancelAction])
@@ -468,7 +492,7 @@ extension MainViewController: FABActionSheetDelegate {
     private func newFolderAction() {
         guard let folderName = actionDialog?.fieldsInput?.first else {
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                self.showAlert(title: .error, message: .errorMessage)
             }
             return
         }

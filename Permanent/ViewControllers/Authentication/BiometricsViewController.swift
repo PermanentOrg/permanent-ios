@@ -26,18 +26,18 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         view.backgroundColor = .primary
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        titleLabel.text = Translations.welcomeMessage
+        titleLabel.text = .welcomeMessage
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        biometricsButton.setTitle(String(format: Translations.unlockWithBiometrics, BiometryUtils.biometryInfo.name), for: [])
+        biometricsButton.setTitle(String(format: .unlockWithBiometrics, BiometryUtils.biometryInfo.name), for: [])
         biometricsImageView.image = UIImage(named: BiometryUtils.biometryInfo.iconName)
             
-        loginButton.setTitle(Translations.useLoginCredentials, for: [])
+        loginButton.setTitle(.useLoginCredentials, for: [])
         loginButton.setFont(Text.style5.font)
         loginButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
     }
@@ -74,7 +74,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                     
             case .error(let message):
                 DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: message)
+                    self.showAlert(title: .error, message: message)
                 }
             }
         })
@@ -89,8 +89,8 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         // User does not have biometrics & pincode enrolled.
         case LocalAuthErrors.notEnroledError.statusCode:
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error,
-                               message: String(format: Translations.biometricsSetup, BiometryUtils.biometryInfo.name))
+                self.showAlert(title: .error,
+                               message: String(format: .biometricsSetup, BiometryUtils.biometryInfo.name))
             }
             
         // Nothing to do here. Case treated by `loggedin` API call.
@@ -99,7 +99,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
             
         default:
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: error.errorDescription)
+                self.showAlert(title: .error, message: error.errorDescription)
             }
         }
     }

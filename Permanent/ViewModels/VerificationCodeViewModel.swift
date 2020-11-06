@@ -24,7 +24,7 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: VerifyResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -36,7 +36,7 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
                         let message = model.results?.first?.message?.first,
                         let verifyError = VerifyCodeError(rawValue: message)
                     else {
-                        handler(.error(message: Translations.errorMessage))
+                        handler(.error(message: .errorMessage))
                         return
                     }
                     
@@ -44,7 +44,7 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
                 }
                 
             case .error:
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
                 
             default:
                 break

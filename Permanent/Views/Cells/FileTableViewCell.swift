@@ -33,7 +33,7 @@ class FileTableViewCell: UITableViewCell {
         
         statusLabel.font = Text.style12.font
         statusLabel.textColor = .middleGray
-        statusLabel.text = Translations.waiting
+        statusLabel.text = .waiting
         
         progressView.progressTintColor = .primary
         moreButton.tintColor = .middleGray
@@ -53,11 +53,11 @@ class FileTableViewCell: UITableViewCell {
             if let imageURL = model.thumbnailURL {
                 fileImageView.load(urlString: imageURL)
             } else {
-                fileImageView.image = UIImage(named: "cloud")
+                fileImageView.image = .cloud
             }
             
         } else {
-            fileImageView.image = UIImage(named: "folder")
+            fileImageView.image = .folder
         }
     }
     
@@ -82,18 +82,14 @@ class FileTableViewCell: UITableViewCell {
     
     fileprivate func updateUploadingUI() {
         dateStackView.isHidden = true
-        
-        let image = UIImage(named: "close")?.templated
-        moreButton.setImage(image, for: [])
+        moreButton.setImage(UIImage.close.templated, for: [])
     }
     
     fileprivate func updateSyncedUI() {
         progressView.isHidden = true
         statusLabel.isHidden = true
         dateStackView.isHidden = false
-        
-        let image = UIImage(named: "more")?.templated
-        moreButton.setImage(image, for: [])
+        moreButton.setImage(UIImage.more.templated, for: [])
     }
     
     func updateProgress(withValue value: Float) {

@@ -1,13 +1,13 @@
-//
-//  Translations.swift
+//  
+//  Strings.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 24/09/2020.
+//  Created by Adrian Creteanu on 06/11/2020.
 //
 
 import Foundation
 
-struct Translations {
+extension String {
     static var signup: String { return "Signup".localized() }
     static var login: String { return "Login".localized() }
     static var fullName: String { return "FullName".localized() }

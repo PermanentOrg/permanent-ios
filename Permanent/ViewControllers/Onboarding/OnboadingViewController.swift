@@ -20,7 +20,7 @@ class OnboadingViewController: BaseViewController<OnboardingViewModel> {
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .darkBlue
         skipButtonLabel.setTitleColor(.white, for: .normal)
-        nextButtonLabel.setTitle(Translations.next, for: .normal)
+        nextButtonLabel.setTitle(.next, for: .normal)
     }
     
     @IBAction func nextButton(_ sender: RoundedButton) {

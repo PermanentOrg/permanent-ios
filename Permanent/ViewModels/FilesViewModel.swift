@@ -45,12 +45,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     func title(forSection section: Int) -> String {
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return Translations.name
+            return .name
         }
         
         switch section {
-        case FileListType.uploading.rawValue: return Translations.uploads
-        case FileListType.synced.rawValue: return Translations.name
+        case FileListType.uploading.rawValue: return .uploads
+        case FileListType.synced.rawValue: return .name
         default: fatalError() // We cannot have more than 2 sections.
         }
     }
@@ -155,7 +155,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
                     let folderVO = model.results?.first?.data?.first?.folderVO
                 else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                     
@@ -204,7 +204,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                      then handler: @escaping ServerResponse)
     {
         guard let file = files.first else {
-            return handler(.error(message: Translations.errorMessage))
+            return handler(.error(message: .errorMessage))
         }
         
         uploadQueue.append(contentsOf: files)
@@ -317,7 +317,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(nil, Translations.errorMessage)
+                    handler(nil, .errorMessage)
                     return
                 }
                 
@@ -327,7 +327,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     handler(recordId, nil)
                     
                 } else {
-                    handler(nil, Translations.errorMessage)
+                    handler(nil, .errorMessage)
                 }
                 
             case .error(let error, _):
@@ -379,7 +379,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -387,7 +387,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     self.onGetLeanItemsSuccess(model, handler)
                     
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
                 
             case .error(let error, _):
@@ -406,7 +406,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -414,7 +414,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     self.onGetRootSuccess(model, handler)
                     
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
                 
             case .error(let error, _):
@@ -433,7 +433,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -453,7 +453,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         
@@ -474,7 +474,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let archiveNo = folderVO.archiveNbr,
             let csrf = model.csrf
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         
@@ -499,7 +499,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let folderLinkId = myFilesFolder.folderLinkID,
             let csrf = model.csrf
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         

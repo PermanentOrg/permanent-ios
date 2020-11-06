@@ -43,6 +43,8 @@
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */; };
+		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
+		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
 		BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C7B38254861E7008E9A0D /* DateUtils.swift */; };
 		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
@@ -53,7 +55,6 @@
 		BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */; };
 		BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF867252DE642003D3829 /* BiometryUtils.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
-		BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DD251C8C4200E24A51 /* Translations.swift */; };
 		BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */; };
 		BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E4251CACB300E24A51 /* AccountVO.swift */; };
 		BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E7251CACDF00E24A51 /* CodableHelper.swift */; };
@@ -183,6 +184,8 @@
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogStyle.swift; sourceTree = "<group>"; };
+		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC120C5E253EF8F500C41243 /* FABActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABActionSheet.swift; sourceTree = "<group>"; };
 		BC1C7B38254861E7008E9A0D /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
@@ -193,7 +196,6 @@
 		BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsViewController.swift; sourceTree = "<group>"; };
 		BC3DF867252DE642003D3829 /* BiometryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryUtils.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		BC4526DD251C8C4200E24A51 /* Translations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translations.swift; sourceTree = "<group>"; };
 		BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeResponse.swift; sourceTree = "<group>"; };
 		BC4526E4251CACB300E24A51 /* AccountVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVO.swift; sourceTree = "<group>"; };
 		BC4526E7251CACDF00E24A51 /* CodableHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableHelper.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
 				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
 				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
+				BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -525,7 +528,7 @@
 			children = (
 				06B0EB2924E67EC4003D90C6 /* Constants.swift */,
 				BC648781251B9FC7009D7DE1 /* StoryboardName.swift */,
-				BC4526DD251C8C4200E24A51 /* Translations.swift */,
+				BC11C7FA2555769A008BDEFA /* Strings.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -901,7 +904,6 @@
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
-				BC4526DE251C8C4200E24A51 /* Translations.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
@@ -914,8 +916,10 @@
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
+				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
+				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,

@@ -14,9 +14,9 @@ enum LoginError: String {
     var description: String {
         switch self {
         case .mfaToken:
-            return Translations.MFARequired
+            return .MFARequired
         case .unknown:
-            return Translations.incorrectCredentials
+            return .incorrectCredentials
         }
     }
 }
@@ -28,9 +28,9 @@ enum VerifyCodeError: String {
     var description: String {
         switch self {
         case .tokenExpired:
-            return Translations.tokenExpired
+            return .tokenExpired
         case .tokenIncorrect:
-            return Translations.tokenIncorrect
+            return .tokenIncorrect
         }
     }
 }
@@ -41,7 +41,7 @@ enum SignUpError: String {
     var description: String {
         switch self {
         case .duplicateEmail:
-            return Translations.emailAlreadyUsed
+            return .emailAlreadyUsed
         }
     }
 }
@@ -52,7 +52,7 @@ enum AccountUpdateError: String {
     var description: String {
         switch self {
         case .phoneInvalid:
-            return Translations.invalidPhone
+            return .invalidPhone
         }
     }
 }

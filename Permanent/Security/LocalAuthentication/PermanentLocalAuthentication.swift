@@ -22,13 +22,13 @@ class PermanentLocalAuthentication: NSObject {
 
 extension PermanentLocalAuthentication: ILocalAuthentication {
     func authenticate(onSuccess: LocalAuthSuccessCallback?, onFailure: LocalAuthFailureCallback?) {
-        currentContext.localizedCancelTitle = Translations.cancel
-        currentContext.localizedFallbackTitle = Translations.usePasscode
+        currentContext.localizedCancelTitle = .cancel
+        currentContext.localizedFallbackTitle = .usePasscode
 
         let authStatus = canAuthenticate()
 
         if authStatus.canAuthenticate {
-            currentContext.evaluatePolicy(policy, localizedReason: Translations.biometricsReason, reply: { success, error in
+            currentContext.evaluatePolicy(policy, localizedReason: .biometricsReason, reply: { success, error in
                 if success {
                     onSuccess?()
                 } else {

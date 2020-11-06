@@ -36,19 +36,19 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
 
-        titleLabel.text = Translations.signup
+        titleLabel.text = .signup
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        nameField.placeholder = Translations.fullName
-        emailField.placeholder = Translations.email
-        passwordField.placeholder = Translations.password
+        nameField.placeholder = .fullName
+        emailField.placeholder = .email
+        passwordField.placeholder = .password
         
-        loginButton.setTitle(Translations.alreadyMember, for: [])
+        loginButton.setTitle(.alreadyMember, for: [])
         loginButton.setFont(Text.style5.font)
         loginButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
@@ -67,7 +67,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
                 from: .authentication
             ) as? TermsConditionsPopup
         else {
-            showAlert(title: Translations.error, message: Translations.invalidFields)
+            showAlert(title: .error, message: .invalidFields)
             return
         }
     
@@ -121,7 +121,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             performBackgroundLogin()
         case .error(let message):
             hideSpinner()
-            showAlert(title: Translations.error, message: message)
+            showAlert(title: .error, message: message)
         }
     }
     
@@ -135,7 +135,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
             navigationController?.navigate(to: .verificationCode, from: .authentication)
         case .error(let message):
-            showAlert(title: Translations.error, message: message)
+            showAlert(title: .error, message: message)
         }
     }
 }

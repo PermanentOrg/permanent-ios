@@ -29,18 +29,18 @@ extension AuthViewModel: LoginViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
 
                 if model.isSuccessful == true {
                     handler(.success)
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
 
             case .error:
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break
@@ -55,7 +55,7 @@ extension AuthViewModel: LoginViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
 
@@ -67,7 +67,7 @@ extension AuthViewModel: LoginViewModelDelegate {
                         let message = model.results?.first?.message?.first,
                         let loginError = LoginError(rawValue: message)
                     else {
-                        handler(.error(message: Translations.errorMessage))
+                        handler(.error(message: .errorMessage))
                         return
                     }
 
@@ -79,7 +79,7 @@ extension AuthViewModel: LoginViewModelDelegate {
                 }
 
             case .error:
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break
@@ -98,11 +98,11 @@ extension AuthViewModel: LoginViewModelDelegate {
                 if model?.isSuccessful == true {
                     handler(email, .success)
                 } else {
-                    handler(nil, .error(message: Translations.errorMessage))
+                    handler(nil, .error(message: .errorMessage))
                 }
 
             case .error:
-                handler(nil, .error(message: Translations.errorMessage))
+                handler(nil, .error(message: .errorMessage))
 
             default:
                 break
@@ -125,7 +125,7 @@ extension AuthViewModel: LoginViewModelDelegate {
                         let message = model?.results?.first?.message?.first,
                         let signUpError = SignUpError(rawValue: message)
                     else {
-                        handler(.error(message: Translations.errorMessage))
+                        handler(.error(message: .errorMessage))
                         return
                     }
 
@@ -133,7 +133,7 @@ extension AuthViewModel: LoginViewModelDelegate {
                 }
 
             case .error:
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break
@@ -142,14 +142,14 @@ extension AuthViewModel: LoginViewModelDelegate {
     }
 
     func createEmailInputAlert(then handler: @escaping (String?, RequestStatus) -> Void) -> UIAlertController {
-        let alert = UIAlertController(title: Translations.resetPassword, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: .resetPassword, message: nil, preferredStyle: .alert)
 
         alert.addTextField(configurationHandler: { textField in
-            textField.placeholder = Translations.enterEmail
+            textField.placeholder = .enterEmail
         })
 
-        alert.addAction(UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: Translations.ok, style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
             guard let email: String = alert.textFields?.first?.text else { return }
             self.forgotPassword(email: email, then: handler)
         }))

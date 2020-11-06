@@ -44,10 +44,10 @@ class FABActionSheet: UIViewController {
         sheetView.layer.cornerRadius = 8
         sheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     
-        uploadButton.setTitle(Translations.upload, for: [])
+        uploadButton.setTitle(.upload, for: [])
         uploadButton.addTarget(self, action: #selector(uploadAction), for: .touchUpInside)
         
-        newFolderButton.setTitle(Translations.newFolder, for: [])
+        newFolderButton.setTitle(.newFolder, for: [])
         newFolderButton.addTarget(self, action: #selector(newFolderAction), for: .touchUpInside)
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(close)))

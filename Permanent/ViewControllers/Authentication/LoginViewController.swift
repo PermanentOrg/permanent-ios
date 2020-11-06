@@ -28,22 +28,22 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
         
-        loginLabel.text = Translations.login
+        loginLabel.text = .login
         loginLabel.textColor = .white
         loginLabel.font = Text.style.font
         
-        emailField.placeholder = Translations.email
-        passwordField.placeholder = Translations.password
+        emailField.placeholder = .email
+        passwordField.placeholder = .password
         
-        signUpButton.setTitle(Translations.signup, for: [])
+        signUpButton.setTitle(.signup, for: [])
         signUpButton.setFont(Text.style5.font)
         signUpButton.setTitleColor(.white, for: [])
         
-        forgotPasswordButton.setTitle(Translations.forgotPassword, for: [])
+        forgotPasswordButton.setTitle(.forgotPassword, for: [])
         forgotPasswordButton.setFont(Text.style5.font)
         forgotPasswordButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
@@ -59,7 +59,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             let password = passwordField.text,
             email.isNotEmpty, password.isNotEmpty
         else {
-            showAlert(title: Translations.error, message: Translations.invalidFields)
+            showAlert(title: .error, message: .invalidFields)
             return
         }
         
@@ -101,10 +101,10 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     fileprivate func handleForgotPasswordStatus(_ status: RequestStatus, email: String?) {
         switch status {
         case .success:
-            showAlert(title: Translations.success,
-                      message: String(format: Translations.emailSent, email!))
+            showAlert(title: .success,
+                      message: String(format: .emailSent, email!))
         case .error(let message):
-            showAlert(title: Translations.error, message: message)
+            showAlert(title: .error, message: message)
         }
     }
     
@@ -118,7 +118,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
             navigationController?.navigate(to: .verificationCode, from: .authentication)
         case .error(let message):
-            showAlert(title: Translations.error, message: message)
+            showAlert(title: .error, message: message)
         }
     }
 }

@@ -83,7 +83,7 @@ class ActionDialogView: UIView {
         
         titleLabel.font = Text.style3.font
         titleLabel.textColor = .primary
-        cancelButton.setTitle(Translations.cancel, for: [])
+        cancelButton.setTitle(.cancel, for: [])
     }
     
     fileprivate func adjustUI(forStyle style: ActionDialogStyle) {

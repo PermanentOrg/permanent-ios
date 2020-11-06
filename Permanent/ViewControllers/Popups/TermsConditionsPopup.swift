@@ -45,10 +45,10 @@ class TermsConditionsPopup: UIViewController {
         webView.load(request)
         webView.navigationDelegate = self
         
-        declineButton.setTitle(Translations.decline, for: [])
-        acceptButton.setTitle(Translations.accept, for: [])
+        declineButton.setTitle(.decline, for: [])
+        acceptButton.setTitle(.accept, for: [])
         
-        navBarView.title = Translations.termsConditions
+        navBarView.title = .termsConditions
         navBarView.icon = UIImage(named: "close")
         navBarView.delegate = self
     }
