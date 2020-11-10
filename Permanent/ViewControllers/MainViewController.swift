@@ -272,6 +272,28 @@ class MainViewController: BaseViewController<FilesViewModel> {
             }
         })
     }
+    
+    func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.delete(file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.viewModel?.removeSyncedFile(file)
+                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    self.refreshTableView()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: .error, message: message)
+                }
+            }
+            
+        })
+    }
 }
 
 // MARK: - Table View Delegates
@@ -391,7 +413,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         showActionDialog(styled: .simple,
                          withTitle: title,
                          positiveButtonTitle: .delete,
-                         positiveAction: { self.showToast(message: "tapped") })
+                         positiveAction: {
+                            self.actionDialog?.dismiss()
+                            self.deleteFile(file, atIndexPath: indexPath)
+                         })
     }
 }
 

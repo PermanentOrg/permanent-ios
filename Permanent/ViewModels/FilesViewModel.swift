@@ -16,6 +16,7 @@ typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
+typealias DeleteFileParams = (file: FileViewModel, csrf: String)
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -29,6 +30,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
     func removeFromQueue(_ position: Int)
+    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -125,9 +127,46 @@ class FilesViewModel: NSObject, ViewModelInterface {
         
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
+    
+    func removeSyncedFile(_ file: FileViewModel) {
+        guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+            return
+        }
+        
+        viewModels.remove(at: index)
+    }
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+                    
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+                    
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
+            }
+        }
+    }
+    
     func removeFromQueue(_ position: Int) {
         guard queueItemsForCurrentFolder.count >= position else {
             return

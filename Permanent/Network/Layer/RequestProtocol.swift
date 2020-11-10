@@ -81,17 +81,7 @@ extension RequestProtocol {
         // Append all related properties.
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
-        
-        switch requestType {
-        case .data:
-            request.httpBody = jsonBody
-
-        case .upload:
-            request.httpBody = bodyData // maybe move the logic from upload manager or filesendpoint here?
-
-        default:
-            break
-        }
+        request.httpBody = bodyData ?? jsonBody
 
         return request
     }
@@ -125,7 +115,9 @@ extension RequestProtocol {
     /// Returns the URLRequest body `Data`
     private var jsonBody: Data? {
         // The body data should be used for POST, PUT and PATCH only
-        guard [.post, .put, .patch].contains(method), let parameters = parameters else {
+        guard
+            [.post, .put, .patch].contains(method),
+            let parameters = parameters else {
             return nil
         }
         // Convert parameters to JSON data
