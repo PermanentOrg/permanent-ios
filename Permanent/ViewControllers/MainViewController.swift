@@ -18,6 +18,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
     
+    private lazy var mediaRecorder: MediaRecorder = {
+        MediaRecorder(presentationController: self, delegate: self)
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -200,7 +204,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         upload(files: uploadQueue)
     }
     
-    private func upload(files: [FileInfo]) {
+    private func upload(files: [FileInfo], then handler: VoidAction? = nil) {
         viewModel?.uploadFiles(
             files,
             onUploadStart: {
@@ -237,6 +241,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     }
                     
                     self.viewModel?.clearUploadQueue()
+                    
+                    handler?()
                     
                 case .error(let message):
                     DispatchQueue.main.async {
@@ -414,8 +420,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          withTitle: title,
                          positiveButtonTitle: .delete,
                          positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.deleteFile(file, atIndexPath: indexPath)
+                             self.actionDialog?.dismiss()
+                             self.deleteFile(file, atIndexPath: indexPath)
                          })
     }
 }
@@ -471,14 +477,19 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
+        let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
         let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
         let cancelAction = UIAlertAction(title: .cancel, style: .cancel, handler: nil)
             
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addActions([photoLibraryAction, browseAction, cancelAction])
+        actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openCamera() {
+        mediaRecorder.present()
     }
     
     func openPhotoLibrary() {
@@ -506,14 +517,14 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], then handler: VoidAction? = nil) {
         let folderInfo = FolderInfo(
             folderId: folder.folderId,
             folderLinkId: folder.folderLinkId
         )
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        upload(files: files)
+        upload(files: files, then: handler)
     }
     
     private func newFolderAction() {
@@ -543,5 +554,20 @@ extension MainViewController: UIDocumentPickerDelegate {
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
+    }
+}
+
+extension MainViewController: MediaRecorderDelegate {
+    func didSelect(url: URL?) {
+        guard
+            let mediaUrl = url,
+            let currentFolder = viewModel?.navigationStack.last
+        else {
+            return
+        }
+        
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
+            self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
+        })
     }
 }
