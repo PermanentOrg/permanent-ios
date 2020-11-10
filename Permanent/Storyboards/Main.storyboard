@@ -19,7 +19,7 @@
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="K4z-EK-871">
                                 <rect key="frame" x="10" y="49" width="394" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
                             </searchBar>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GgD-GW-QOd">
                                 <rect key="frame" x="20" y="120" width="92.5" height="30"/>

@@ -41,6 +41,10 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadInProgress: Bool = false
     var uploadFolder: FolderInfo?
     
+    lazy var searchViewModels: [FileViewModel] = { [] }()
+    
+    var isSearchActive: Bool = false
+    
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
@@ -70,33 +74,37 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var shouldDisplayBackgroundView: Bool {
-        viewModels.isEmpty && uploadQueue.isEmpty // TODO:
+        syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
-        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1 // TODO:
+        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
         uploadQueue.filter { $0.folder.folderId == navigationStack.last?.folderId }
     }
+    
+    var syncedViewModels: [FileViewModel] {
+        isSearchActive ? searchViewModels : viewModels
+    }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload is not in progress, we have only one section.
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return viewModels.count
+            return syncedViewModels.count
         }
     
         switch section {
-        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count // uploadQueue.count
-        case FileListType.synced.rawValue: return viewModels.count
+        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count
+        case FileListType.synced.rawValue: return syncedViewModels.count
         default: fatalError() // We cannot have more than 2 sections.
         }
     }
     
     func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return viewModels[indexPath.row]
+            return syncedViewModels[indexPath.row]
         }
         
         switch indexPath.section {
@@ -111,7 +119,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             return fileViewModel
             
         case FileListType.synced.rawValue:
-            return viewModels[indexPath.row]
+            return syncedViewModels[indexPath.row]
             
         default:
             fatalError()
@@ -134,6 +142,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.remove(at: index)
+    }
+    
+    func searchFiles(byQuery query: String) {
+        let searchedItems = viewModels.filter {
+            $0.name.lowercased().starts(with: query.lowercased())
+        }
+        searchViewModels.removeAll()
+        searchViewModels.append(contentsOf: searchedItems)
     }
 }
 

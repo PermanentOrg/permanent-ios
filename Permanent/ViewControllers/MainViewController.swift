@@ -20,6 +20,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
     
+    private var isSearchActive: Bool = false
+    
     private lazy var mediaRecorder: MediaRecorder = {
         MediaRecorder(presentationController: self, delegate: self)
     }()
@@ -32,6 +34,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel = FilesViewModel()
         fabView.delegate = self
+        searchBar.delegate = self
         
         getRootFolder()
     }
@@ -78,6 +81,17 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.backgroundView = nil
     }
     
+    func invalidateSearchBarIfNeeded() {
+        guard viewModel?.isSearchActive == true else {
+            return
+        }
+        
+        searchBar.text = ""
+        viewModel?.isSearchActive = false
+        viewModel?.searchViewModels.removeAll()
+        view.endEditing(true)
+    }
+    
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard
@@ -88,6 +102,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             return
         }
         
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
@@ -357,6 +372,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
 
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
             self.backButton.isHidden = false
@@ -427,6 +443,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                              self.actionDialog?.dismiss()
                              self.deleteFile(file, atIndexPath: indexPath)
                          })
+    }
+}
+
+extension MainViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            viewModel?.isSearchActive = false
+        } else {
+            viewModel?.isSearchActive = true
+            viewModel?.searchFiles(byQuery: searchText)
+        }
+        
+        refreshTableView()
     }
 }
 
