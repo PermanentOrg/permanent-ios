@@ -17,8 +17,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="K4z-EK-871">
+                                <rect key="frame" x="10" y="49" width="394" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GgD-GW-QOd">
-                                <rect key="frame" x="20" y="74" width="92.5" height="30"/>
+                                <rect key="frame" x="20" y="120" width="92.5" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pwt-jE-HrX" userLabel="Back Button">
                                         <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -43,7 +47,7 @@
                                 </subviews>
                             </stackView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="cYb-Ja-a8p">
-                                <rect key="frame" x="0.0" y="124" width="414" height="738"/>
+                                <rect key="frame" x="0.0" y="160" width="414" height="702"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
@@ -63,21 +67,25 @@
                         <viewLayoutGuide key="safeArea" id="olD-lK-dv0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="GgD-GW-QOd" firstAttribute="top" secondItem="K4z-EK-871" secondAttribute="bottom" constant="15" id="3Gr-fw-alb"/>
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
+                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="K4z-EK-871" secondAttribute="trailing" constant="10" id="C8W-jw-ZDB"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
-                            <constraint firstItem="GgD-GW-QOd" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="30" id="dKE-LO-prz"/>
-                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="20" id="fSp-Fm-wd8"/>
+                            <constraint firstItem="K4z-EK-871" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="10" id="c7g-gn-aDT"/>
+                            <constraint firstItem="cYb-Ja-a8p" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="bottom" constant="10" id="fSp-Fm-wd8"/>
                             <constraint firstItem="cYb-Ja-a8p" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" id="fpK-Xs-skM"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="cYb-Ja-a8p" secondAttribute="trailing" id="gJp-Dj-skk"/>
                             <constraint firstItem="cYb-Ja-a8p" firstAttribute="bottom" secondItem="vvX-vX-KAP" secondAttribute="bottom" constant="30" id="n6W-9b-fLa"/>
                             <constraint firstItem="cYb-Ja-a8p" firstAttribute="trailing" secondItem="vvX-vX-KAP" secondAttribute="trailing" constant="20" id="tJO-cG-STx"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="bottom" secondItem="cYb-Ja-a8p" secondAttribute="bottom" id="tfa-bv-Z8D"/>
+                            <constraint firstItem="K4z-EK-871" firstAttribute="top" secondItem="olD-lK-dv0" secondAttribute="top" constant="5" id="uA9-1F-7Uv"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
                         <outlet property="fabView" destination="vvX-vX-KAP" id="gMk-W1-ppL"/>
+                        <outlet property="searchBar" destination="K4z-EK-871" id="VhW-9z-QRe"/>
                         <outlet property="tableView" destination="cYb-Ja-a8p" id="qCt-bZ-1t1"/>
                     </connections>
                 </viewController>
@@ -94,17 +102,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
+                                <rect key="frame" x="0.0" y="720" width="414" height="142"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
+                                        <rect key="frame" x="20" y="26" width="374" height="90"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="50" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -140,10 +148,10 @@
     </scenes>
     <designables>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>

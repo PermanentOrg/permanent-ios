@@ -15,6 +15,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     
+    @IBOutlet var searchBar: UISearchBar!
+    
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
     
@@ -48,6 +50,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
+        
+        searchBar.setDefaultStyle(placeholder: .searchFiles)
     }
     
     fileprivate func setupTableView() {

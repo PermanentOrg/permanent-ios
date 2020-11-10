@@ -52,6 +52,7 @@
 		BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
 		BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C7B38254861E7008E9A0D /* DateUtils.swift */; };
 		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
+		BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */; };
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
 		BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB22527393400A69597 /* AccountUpdateVO.swift */; };
@@ -200,6 +201,7 @@
 		BC120C5E253EF8F500C41243 /* FABActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABActionSheet.swift; sourceTree = "<group>"; };
 		BC1C7B38254861E7008E9A0D /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
+		BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISearchBarExtension.swift; sourceTree = "<group>"; };
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
 		BC326AB22527393400A69597 /* AccountUpdateVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateVO.swift; sourceTree = "<group>"; };
@@ -368,6 +370,7 @@
 				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
 				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
 				BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */,
+				BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -957,6 +960,7 @@
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
+				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
