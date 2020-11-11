@@ -70,4 +70,6 @@ extension String {
     static var folderName: String { return "FolderName".localized() }
     static var uploads: String { return "Uploads".localized() }
     static var delete: String { return "Delete".localized() }
+    static var takePhotoOrVideo: String { return "TakePhotoOrVideo".localized() }
+    static var searchFiles: String { return "SearchFiles".localized() }
 }

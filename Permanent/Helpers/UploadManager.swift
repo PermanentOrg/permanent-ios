@@ -94,8 +94,6 @@ class UploadManager {
         self.add(file: file, toBody: &body, withBoundary: boundary)
         self.close(body: &body, usingBoundary: boundary)
         
-        print("REQUEST BODY\n\n", String(decoding: body, as: UTF8.self))
-        
         return body
     }
 }

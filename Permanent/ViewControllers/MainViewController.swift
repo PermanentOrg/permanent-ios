@@ -15,8 +15,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     
+    @IBOutlet var searchBar: UISearchBar!
+    
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    
+    private var isSearchActive: Bool = false
+    
+    private lazy var mediaRecorder: MediaRecorder = {
+        MediaRecorder(presentationController: self, delegate: self)
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +34,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel = FilesViewModel()
         fabView.delegate = self
+        searchBar.delegate = self
         
         getRootFolder()
     }
@@ -44,6 +53,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
+        
+        searchBar.setDefaultStyle(placeholder: .searchFiles)
     }
     
     fileprivate func setupTableView() {
@@ -70,6 +81,17 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.backgroundView = nil
     }
     
+    func invalidateSearchBarIfNeeded() {
+        guard viewModel?.isSearchActive == true else {
+            return
+        }
+        
+        searchBar.text = ""
+        viewModel?.isSearchActive = false
+        viewModel?.searchViewModels.removeAll()
+        view.endEditing(true)
+    }
+    
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard
@@ -80,6 +102,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             return
         }
         
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
@@ -200,7 +223,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         upload(files: uploadQueue)
     }
     
-    private func upload(files: [FileInfo]) {
+    private func upload(files: [FileInfo], then handler: VoidAction? = nil) {
         viewModel?.uploadFiles(
             files,
             onUploadStart: {
@@ -237,6 +260,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     }
                     
                     self.viewModel?.clearUploadQueue()
+                    
+                    handler?()
                     
                 case .error(let message):
                     DispatchQueue.main.async {
@@ -347,6 +372,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
 
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
             self.backButton.isHidden = false
@@ -414,9 +440,26 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          withTitle: title,
                          positiveButtonTitle: .delete,
                          positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.deleteFile(file, atIndexPath: indexPath)
+                             self.actionDialog?.dismiss()
+                             self.deleteFile(file, atIndexPath: indexPath)
                          })
+    }
+}
+
+extension MainViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            viewModel?.isSearchActive = false
+        } else {
+            viewModel?.isSearchActive = true
+            viewModel?.searchFiles(byQuery: searchText)
+        }
+        
+        refreshTableView()
     }
 }
 
@@ -471,14 +514,19 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
+        let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
         let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
         let cancelAction = UIAlertAction(title: .cancel, style: .cancel, handler: nil)
             
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addActions([photoLibraryAction, browseAction, cancelAction])
+        actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openCamera() {
+        mediaRecorder.present()
     }
     
     func openPhotoLibrary() {
@@ -506,14 +554,14 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], then handler: VoidAction? = nil) {
         let folderInfo = FolderInfo(
             folderId: folder.folderId,
             folderLinkId: folder.folderLinkId
         )
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        upload(files: files)
+        upload(files: files, then: handler)
     }
     
     private func newFolderAction() {
@@ -543,5 +591,20 @@ extension MainViewController: UIDocumentPickerDelegate {
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
+    }
+}
+
+extension MainViewController: MediaRecorderDelegate {
+    func didSelect(url: URL?) {
+        guard
+            let mediaUrl = url,
+            let currentFolder = viewModel?.navigationStack.last
+        else {
+            return
+        }
+        
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
+            self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
+        })
     }
 }
