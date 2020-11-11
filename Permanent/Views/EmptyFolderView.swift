@@ -30,7 +30,7 @@ class EmptyFolderView: UIView {
         contentView.frame = bounds
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        emptyFolderLabel.text = Translations.emptyFolderMessage
+        emptyFolderLabel.text = .emptyFolderMessage
         emptyFolderLabel.font = Text.style16.font
         emptyFolderLabel.textColor = .lightGray
     }

@@ -19,6 +19,7 @@
 "Cancel" = "Cancel";
 "CopyrightText" = "© The Permanent Legacy Foundation 2020";
 "Decline" = "Decline";
+"Delete" = "Delete";
 "Email" = "Email";
 "EmailAlreadyUsed" = "This email is already in use.";
 "EmailSent" = "An email with instructions to change your password has been sent at %@.";
@@ -66,3 +67,5 @@
 "Create" = "Create";
 "FolderName" = "Folder Name";
 "Uploads" = "Uploads";
+"TakePhotoOrVideo" = "Take Photo or Video";
+"SearchFiles" = "Search Files";

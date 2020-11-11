@@ -35,4 +35,5 @@ extension UIColor {
     static var secondary = UIColor.tangerine
     static var backgroundPrimary = UIColor.white
     static var overlay = UIColor.black.withAlphaComponent(0.25)
+    static var destructive = UIColor.brightRed
 }

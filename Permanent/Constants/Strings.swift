@@ -1,13 +1,13 @@
-//
-//  Translations.swift
+//  
+//  Strings.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 24/09/2020.
+//  Created by Adrian Creteanu on 06/11/2020.
 //
 
 import Foundation
 
-struct Translations {
+extension String {
     static var signup: String { return "Signup".localized() }
     static var login: String { return "Login".localized() }
     static var fullName: String { return "FullName".localized() }
@@ -69,4 +69,7 @@ struct Translations {
     static var create: String { return "Create".localized() }
     static var folderName: String { return "FolderName".localized() }
     static var uploads: String { return "Uploads".localized() }
+    static var delete: String { return "Delete".localized() }
+    static var takePhotoOrVideo: String { return "TakePhotoOrVideo".localized() }
+    static var searchFiles: String { return "SearchFiles".localized() }
 }

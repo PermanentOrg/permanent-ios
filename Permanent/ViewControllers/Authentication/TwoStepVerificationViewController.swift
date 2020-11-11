@@ -31,25 +31,25 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
         
         viewModel = AccountViewModel()
         
-        titleLabel.text = Translations.twoStepTitle
+        titleLabel.text = .twoStepTitle
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        subtitleLabel.text = Translations.twoStepSubtitle
+        subtitleLabel.text = .twoStepSubtitle
         subtitleLabel.textColor = .white
         subtitleLabel.font = Text.style2.font
         
-        extraInfoLabel.text = Translations.addLater
+        extraInfoLabel.text = .addLater
         extraInfoLabel.textColor = .lightGray
         extraInfoLabel.font = Text.style6.font
         
-        confirmButton.setTitle(Translations.submit, for: [])
+        confirmButton.setTitle(.submit, for: [])
     
-        skipButton.setTitle(Translations.skip, for: [])
+        skipButton.setTitle(.skip, for: [])
         skipButton.setFont(Text.style9.font)
         skipButton.setTitleColor(.white, for: [])
         
-        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
@@ -64,7 +64,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
             let phone = phoneField.text,
             phone.isNotEmpty, phone.isPhoneNumber
         else {
-            showAlert(title: Translations.error, message: Translations.invalidPhone)
+            showAlert(title: .error, message: .invalidPhone)
             return
         }
         
@@ -89,7 +89,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
                     viewController: .verificationCode,
                     from: .authentication
                 ) as? CodeVerificationController else {
-                    self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                    self.showAlert(title: .error, message: .errorMessage)
                     return
                 }
                 
@@ -101,7 +101,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
                 
             case .error(let message):
                 DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: message)
+                    self.showAlert(title: .error, message: message)
                 }
             }
         })
@@ -126,7 +126,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
             case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
-                    self.showAlert(title: Translations.error, message: message)
+                    self.showAlert(title: .error, message: message)
                 }
             }
         })

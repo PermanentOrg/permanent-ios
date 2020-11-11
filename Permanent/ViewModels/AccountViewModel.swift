@@ -34,7 +34,7 @@ extension AccountViewModel: AccountViewModelDelegate {
                         let message = model?.results?.first?.message?.first,
                         let updateError = AccountUpdateError(rawValue: message)
                     else {
-                        handler(.error(message: Translations.errorMessage))
+                        handler(.error(message: .errorMessage))
                         return
                     }
 
@@ -42,7 +42,7 @@ extension AccountViewModel: AccountViewModelDelegate {
                 }
 
             case .error:
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break
@@ -61,12 +61,12 @@ extension AccountViewModel: AccountViewModelDelegate {
                 if model?.isSuccessful == true {
                     handler(.success)
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
 
             case .error(let error):
                 print("error ", error.0)
-                handler(.error(message: Translations.errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break

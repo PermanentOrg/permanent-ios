@@ -16,6 +16,7 @@ typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
+typealias DeleteFileParams = (file: FileViewModel, csrf: String)
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -29,6 +30,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      progressHandler: ProgressHandler?,
                      then handler: @escaping ServerResponse)
     func removeFromQueue(_ position: Int)
+    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -39,18 +41,22 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadInProgress: Bool = false
     var uploadFolder: FolderInfo?
     
+    lazy var searchViewModels: [FileViewModel] = { [] }()
+    
+    var isSearchActive: Bool = false
+    
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
     
     func title(forSection section: Int) -> String {
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return Translations.name
+            return .name
         }
         
         switch section {
-        case FileListType.uploading.rawValue: return Translations.uploads
-        case FileListType.synced.rawValue: return Translations.name
+        case FileListType.uploading.rawValue: return .uploads
+        case FileListType.synced.rawValue: return .name
         default: fatalError() // We cannot have more than 2 sections.
         }
     }
@@ -68,33 +74,37 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var shouldDisplayBackgroundView: Bool {
-        viewModels.isEmpty && uploadQueue.isEmpty // TODO:
+        syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
-        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1 // TODO:
+        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
         uploadQueue.filter { $0.folder.folderId == navigationStack.last?.folderId }
     }
+    
+    var syncedViewModels: [FileViewModel] {
+        isSearchActive ? searchViewModels : viewModels
+    }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload is not in progress, we have only one section.
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return viewModels.count
+            return syncedViewModels.count
         }
     
         switch section {
-        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count // uploadQueue.count
-        case FileListType.synced.rawValue: return viewModels.count
+        case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count
+        case FileListType.synced.rawValue: return syncedViewModels.count
         default: fatalError() // We cannot have more than 2 sections.
         }
     }
     
-    func cellForRowAt(indexPath: IndexPath) -> FileViewModel {
+    func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
         guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return viewModels[indexPath.row]
+            return syncedViewModels[indexPath.row]
         }
         
         switch indexPath.section {
@@ -109,7 +119,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             return fileViewModel
             
         case FileListType.synced.rawValue:
-            return viewModels[indexPath.row]
+            return syncedViewModels[indexPath.row]
             
         default:
             fatalError()
@@ -125,9 +135,54 @@ class FilesViewModel: NSObject, ViewModelInterface {
         
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
+    
+    func removeSyncedFile(_ file: FileViewModel) {
+        guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+            return
+        }
+        
+        viewModels.remove(at: index)
+    }
+    
+    func searchFiles(byQuery query: String) {
+        let searchedItems = viewModels.filter {
+            $0.name.lowercased().starts(with: query.lowercased())
+        }
+        searchViewModels.removeAll()
+        searchViewModels.append(contentsOf: searchedItems)
+    }
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+                    
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+                    
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
+            }
+        }
+    }
+    
     func removeFromQueue(_ position: Int) {
         guard queueItemsForCurrentFolder.count >= position else {
             return
@@ -155,7 +210,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
                     let folderVO = model.results?.first?.data?.first?.folderVO
                 else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                     
@@ -204,7 +259,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                      then handler: @escaping ServerResponse)
     {
         guard let file = files.first else {
-            return handler(.error(message: Translations.errorMessage))
+            return handler(.error(message: .errorMessage))
         }
         
         uploadQueue.append(contentsOf: files)
@@ -317,7 +372,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(nil, Translations.errorMessage)
+                    handler(nil, .errorMessage)
                     return
                 }
                 
@@ -327,7 +382,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     handler(recordId, nil)
                     
                 } else {
-                    handler(nil, Translations.errorMessage)
+                    handler(nil, .errorMessage)
                 }
                 
             case .error(let error, _):
@@ -379,7 +434,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -387,7 +442,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     self.onGetLeanItemsSuccess(model, handler)
                     
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
                 
             case .error(let error, _):
@@ -406,7 +461,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -414,7 +469,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                     self.onGetRootSuccess(model, handler)
                     
                 } else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
                 
             case .error(let error, _):
@@ -433,7 +488,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .json(let response, _):
                 guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: Translations.errorMessage))
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
@@ -453,7 +508,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         
@@ -474,7 +529,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let archiveNo = folderVO.archiveNbr,
             let csrf = model.csrf
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         
@@ -499,7 +554,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let folderLinkId = myFilesFolder.folderLinkID,
             let csrf = model.csrf
         else {
-            handler(.error(message: Translations.errorMessage))
+            handler(.error(message: .errorMessage))
             return
         }
         

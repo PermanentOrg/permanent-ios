@@ -15,8 +15,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     
+    @IBOutlet var searchBar: UISearchBar!
+    
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    
+    private var isSearchActive: Bool = false
+    
+    private lazy var mediaRecorder: MediaRecorder = {
+        MediaRecorder(presentationController: self, delegate: self)
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +34,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         viewModel = FilesViewModel()
         fabView.delegate = self
+        searchBar.delegate = self
         
         getRootFolder()
     }
@@ -37,13 +46,15 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.title = Translations.myFiles
+        navigationItem.title = .myFiles
         styleNavBar()
         
         directoryLabel.font = Text.style3.font
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
+        
+        searchBar.setDefaultStyle(placeholder: .searchFiles)
     }
     
     fileprivate func setupTableView() {
@@ -70,6 +81,17 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.backgroundView = nil
     }
     
+    func invalidateSearchBarIfNeeded() {
+        guard viewModel?.isSearchActive == true else {
+            return
+        }
+        
+        searchBar.text = ""
+        viewModel?.isSearchActive = false
+        viewModel?.searchViewModels.removeAll()
+        view.endEditing(true)
+    }
+    
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard
@@ -80,6 +102,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             return
         }
         
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
@@ -184,7 +207,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             
         case .error(let message):
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: message)
+                self.showAlert(title: .error, message: message)
             }
         }
     }
@@ -200,7 +223,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         upload(files: uploadQueue)
     }
     
-    private func upload(files: [FileInfo]) {
+    private func upload(files: [FileInfo], then handler: VoidAction? = nil) {
         viewModel?.uploadFiles(
             files,
             onUploadStart: {
@@ -212,7 +235,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 // TODO: what should we do on file upload fail?
                 guard uploadedFile != nil else {
                     DispatchQueue.main.async {
-                        self.showAlert(title: Translations.error, message: errorMessage)
+                        self.showAlert(title: .error, message: errorMessage)
                     }
                     return
                 }
@@ -238,10 +261,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     
                     self.viewModel?.clearUploadQueue()
                     
+                    handler?()
+                    
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
-                        self.showAlert(title: Translations.error, message: message)
+                        self.showAlert(title: .error, message: message)
                     }
                 }
             }
@@ -267,9 +292,31 @@ class MainViewController: BaseViewController<FilesViewModel> {
 
             case .error(let message):
                 DispatchQueue.main.async {
-                    self.showAlert(title: Translations.error, message: message)
+                    self.showAlert(title: .error, message: message)
                 }
             }
+        })
+    }
+    
+    func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.delete(file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.viewModel?.removeSyncedFile(file)
+                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    self.refreshTableView()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showAlert(title: .error, message: message)
+                }
+            }
+            
         })
     }
 }
@@ -294,7 +341,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
-        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file)
         
         cell.rightButtonTapAction = { _ in
@@ -316,7 +363,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
 
-        let file = viewModel.cellForRowAt(indexPath: indexPath)
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
         
         guard
             file.type.isFolder,
@@ -325,6 +372,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
 
+        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
             self.backButton.isHidden = false
@@ -363,9 +411,55 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return 40
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction.make(
+            withImage: .deleteAction,
+            backgroundColor: .destructive,
+            handler: { _, _, completion in
+                self.didTapDelete(at: indexPath)
+                completion(true)
+            }
+        )
+
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
     private func cellRightButtonAction(atPosition position: Int) {
         actionDialog?.dismiss()
         removeFromQueue(atPosition: position)
+    }
+    
+    private func didTapDelete(at indexPath: IndexPath) {
+        guard let file = viewModel?.fileForRowAt(indexPath: indexPath) else {
+            return
+        }
+        
+        let title = String(format: "\(String.delete) \"%@\"?", file.name)
+        
+        showActionDialog(styled: .simple,
+                         withTitle: title,
+                         positiveButtonTitle: .delete,
+                         positiveAction: {
+                             self.actionDialog?.dismiss()
+                             self.deleteFile(file, atIndexPath: indexPath)
+                         })
+    }
+}
+
+extension MainViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            viewModel?.isSearchActive = false
+        } else {
+            viewModel?.isSearchActive = true
+            viewModel?.searchFiles(byQuery: searchText)
+        }
+        
+        refreshTableView()
     }
 }
 
@@ -375,7 +469,7 @@ extension MainViewController: FABViewDelegate {
             viewController: .fabActionSheet,
             from: .main
         ) as? FABActionSheet else {
-            showAlert(title: Translations.error, message: Translations.errorMessage)
+            showAlert(title: .error, message: .errorMessage)
             return
         }
         
@@ -392,9 +486,9 @@ extension MainViewController: FABActionSheetDelegate {
     func didTapNewFolder() {
         showActionDialog(
             styled: .singleField,
-            withTitle: Translations.createFolder,
-            placeholder: Translations.folderName,
-            positiveButtonTitle: Translations.create,
+            withTitle: .createFolder,
+            placeholder: .folderName,
+            positiveButtonTitle: .create,
             positiveAction: { self.newFolderAction() }
         )
     }
@@ -420,14 +514,19 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
-        let photoLibraryAction = UIAlertAction(title: Translations.photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
-        let browseAction = UIAlertAction(title: Translations.browse, style: .default) { _ in self.openFileBrowser() }
-        let cancelAction = UIAlertAction(title: Translations.cancel, style: .cancel, handler: nil)
+        let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
+        let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
+        let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
+        let cancelAction = UIAlertAction(title: .cancel, style: .cancel, handler: nil)
             
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addActions([photoLibraryAction, browseAction, cancelAction])
+        actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func openCamera() {
+        mediaRecorder.present()
     }
     
     func openPhotoLibrary() {
@@ -455,20 +554,20 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], then handler: VoidAction? = nil) {
         let folderInfo = FolderInfo(
             folderId: folder.folderId,
             folderLinkId: folder.folderLinkId
         )
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        upload(files: files)
+        upload(files: files, then: handler)
     }
     
     private func newFolderAction() {
         guard let folderName = actionDialog?.fieldsInput?.first else {
             DispatchQueue.main.async {
-                self.showAlert(title: Translations.error, message: Translations.errorMessage)
+                self.showAlert(title: .error, message: .errorMessage)
             }
             return
         }
@@ -492,5 +591,20 @@ extension MainViewController: UIDocumentPickerDelegate {
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
+    }
+}
+
+extension MainViewController: MediaRecorderDelegate {
+    func didSelect(url: URL?) {
+        guard
+            let mediaUrl = url,
+            let currentFolder = viewModel?.navigationStack.last
+        else {
+            return
+        }
+        
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
+            self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
+        })
     }
 }

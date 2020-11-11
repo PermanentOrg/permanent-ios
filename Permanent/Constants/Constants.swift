@@ -40,7 +40,7 @@ struct Constants {
         struct StorageKeys {}
     }
 
-    // TODO: Move these to Translations
+    // TODO: Move these to String
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",
         "Preserve your most important \ndocuments with peace of mind.",

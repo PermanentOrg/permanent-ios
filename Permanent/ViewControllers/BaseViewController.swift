@@ -26,7 +26,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
     
     func showAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: Translations.ok, style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: .ok, style: .default, handler: nil))
 
         present(alert, animated: true)
     }

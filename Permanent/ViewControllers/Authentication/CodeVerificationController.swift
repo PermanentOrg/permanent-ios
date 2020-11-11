@@ -27,15 +27,15 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         
         viewModel = VerificationCodeViewModel()
         
-        titleLabel.text = Translations.enterVerificationCode
+        titleLabel.text = .enterVerificationCode
         titleLabel.textColor = .white
         titleLabel.font = Text.style.font
         
-        copyrightLabel.text = Translations.copyrightText
+        copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
         
-        codeField.placeholder = Translations.enterCode
+        codeField.placeholder = .enterCode
         codeField.delegate = self
         codeField.smartInsertDeleteType = .no
         codeField.textContentType = .oneTimeCode
@@ -66,7 +66,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         case .success:
             navigationController?.navigate(to: .main, from: .main)
         case .error(let message):
-            showAlert(title: Translations.error, message: message)
+            showAlert(title: .error, message: message)
         }
     }
 }

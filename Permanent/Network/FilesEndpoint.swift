@@ -20,6 +20,8 @@ enum FilesEndpoint {
     case upload(file: FileInfo, usingBoundary: String, recordId: Int, progressHandler: ProgressHandler?) // TODO: Remove boundary from here
     
     case newFolder(params: NewFolderParams)
+    
+    case delete(params: DeleteFileParams)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -35,15 +37,18 @@ extension FilesEndpoint: RequestProtocol {
             return "/record/postMetaBatch"
         case .newFolder:
             return "/folder/post"
-            
+        case .delete(let parameters):
+            if parameters.file.type.isFolder {
+                return "/folder/delete"
+            } else {
+                return "/record/delete"
+            }
         default:
             return ""
         }
     }
     
-    var method: RequestMethod {
-        .post
-    }
+    var method: RequestMethod { .post }
     
     var headers: RequestHeaders? {
         switch self {
@@ -104,6 +109,24 @@ extension FilesEndpoint: RequestProtocol {
             return UploadManager.instance.getBodyData(parameters: parameters ?? [:],
                                                       file: file,
                                                       boundary: boundary)
+            
+        case .delete(let parameters):
+            
+            if parameters.file.type.isFolder {
+                let folderVOData = FolderVOPayloadData(folderLinkId: parameters.file.folderLinkId)
+                let folderVO = FolderVOPayload(folderVO: folderVOData)
+                let requestVO = APIPayload.make(fromData: [folderVO], csrf: parameters.csrf)
+                
+                return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
+                
+            } else {
+                let recordVOData = RecordVOPayloadData(folderLinkId: parameters.file.folderLinkId)
+                let recordVO = RecordVOPayload(recordVO: recordVOData)
+                let requestVO = APIPayload.make(fromData: [recordVO], csrf: parameters.csrf)
+                
+                return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
+            }
+            
         default:
             return nil
         }
