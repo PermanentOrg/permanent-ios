@@ -53,7 +53,10 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
 
-        default: break
+        case .download: // TODO: [weak self]
+            task = networkSession.downloadTask(with: urlRequest, progressHandler: request.progressHandler, completionHandler: { (fileUrl, urlResponse, error) in
+                self.handleFileTaskResponse(fileUrl: fileUrl, urlResponse: urlResponse, error: error, completion: completion)
+            })
         }
         // Start the task.
         task?.resume()

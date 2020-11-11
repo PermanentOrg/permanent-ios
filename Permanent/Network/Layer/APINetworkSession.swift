@@ -87,6 +87,31 @@ extension APINetworkSession: URLSessionTaskDelegate {
     }
 }
 
+extension APINetworkSession: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        guard let handlers = getHandlers(for: downloadTask) else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            handlers.completion?(location, downloadTask.response, downloadTask.error)
+        }
+        //  Remove the associated handlers.
+        setHandlers(nil, for: downloadTask)
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        guard let handlers = getHandlers(for: downloadTask) else {
+            return
+        }
+
+        let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+        DispatchQueue.main.async {
+            handlers.progress?(progress)
+        }
+    }
+}
+
 extension APINetworkSession: NetworkSessionProtocol {
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
         let dataTask = session.dataTask(with: request) { data, response, error in
@@ -104,5 +129,13 @@ extension APINetworkSession: NetworkSessionProtocol {
         // Set the associated progress handler for this task.
         setHandlers((progressHandler, nil), for: uploadTask)
         return uploadTask
+    }
+
+    func downloadTask(with request: URLRequest, progressHandler: ProgressHandler?, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
+        let downloadTask = session.downloadTask(with: request) // don't we need the completion handler
+
+        // Set the associated progress and completion handlers for this task.
+        setHandlers((progressHandler, completionHandler), for: downloadTask)
+        return downloadTask
     }
 }

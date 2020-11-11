@@ -13,7 +13,7 @@ struct MinFolderVO: Codable {
     let archiveID: Int?
     let displayName, displayDT: String?
     let displayEndDT, derivedDT, derivedEndDT: String?
-    let note: JSONNull?
+    let note: String?
     let voDescription: String?
     let special: JSONNull?
     let sort: String?
@@ -47,8 +47,8 @@ struct MinFolderVO: Codable {
     let directiveVOS: JSONNull?
     let tagVOS, sharedArchiveVOS: [JSONAny]?
     let folderSizeVO: FolderSizeVO?
-    let attachmentRecordVOS: [JSONAny]?
-    let hasAttachments: JSONNull?
+    let attachmentRecordVOS: [AttachmentRecordVO]?
+    let hasAttachments: Bool?
     let childItemVOS: [ChildItemVO]?
     let shareVOS: [JSONAny]?
     let accessVO, returnDataSize: JSONNull?

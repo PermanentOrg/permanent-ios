@@ -72,4 +72,6 @@ extension String {
     static var delete: String { return "Delete".localized() }
     static var takePhotoOrVideo: String { return "TakePhotoOrVideo".localized() }
     static var searchFiles: String { return "SearchFiles".localized() }
+    static var cameraErrorMessage: String { return "CameraErrorMessage".localized() }
+    
 }

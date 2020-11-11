@@ -16,7 +16,7 @@ typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
-typealias DeleteFileParams = (file: FileViewModel, csrf: String)
+typealias ItemInfoParams = (file: FileViewModel, csrf: String)
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -154,6 +154,73 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    
+    func download(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        getRecord(file) { (status) in
+            switch status {
+            case .success:
+                print("aa")
+                
+            case .error(let message):
+                print(message)
+            }
+        }
+    }
+    
+    func getRecord(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file, csrf)))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<RecordVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<RecordVO>.decoder
+                    ),
+                    model.isSuccessful
+                    
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+                    
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
+            }
+        }
+    }
+    
+    func downloadFileData(url: URL, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: nil))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            
+            switch result {
+            case .file(let url, let urlResponse):
+                print("FILE downloaded at \(url)")
+                handler(.success)
+            
+            case .error(let error, let urlResponse):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    
+    
+
+    
+    
+    
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))
         

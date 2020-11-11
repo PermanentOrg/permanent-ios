@@ -13,14 +13,15 @@ struct ChildItemVO: Codable {
         let archiveID: Int?
         let displayName, displayDT: String?
         let displayEndDT, derivedDT, derivedEndDT: String?
-        let note: JSONNull?
+        let note: String?
         let special: JSONNull?
         let sort: String?
         let locnID: Int?
         let timeZoneID: Int?
         let view: String?
         let viewProperty, thumbArchiveNbr: JSONNull?
-        let imageRatio, type, thumbStatus: String?
+        let type, thumbStatus: String?
+        let imageRatio: JSONAny?
         let thumbURL200: String?
         let thumbURL500: String?
         let thumbURL1000: String?
@@ -45,8 +46,8 @@ struct ChildItemVO: Codable {
         let directiveVOS: JSONNull?
         let tagVOS, sharedArchiveVOS: [JSONAny]?
         let folderSizeVO: FolderSizeVO?
-        let attachmentRecordVOS: [JSONAny]?
-        let hasAttachments: JSONNull?
+        let attachmentRecordVOS: [AttachmentRecordVO]?
+        let hasAttachments: Bool?
         let childItemVOS: [ChildItemVO]?
         let shareVOS: [JSONAny]?
         let returnDataSize: JSONNull?
@@ -61,13 +62,13 @@ struct ChildItemVO: Codable {
         let derivedCreatedDT: JSONNull?
         let encryption: JSONNull?
         let fileDurationInSecs: JSONNull?
-        let fileStatus: JSONNull?
+        let fileStatus: String?
         let fileVOS: JSONNull?
         let folderArchiveID: JSONNull?
-        let isAttachment, metaToken: JSONNull?
-    
+        let metaToken: JSONNull?
+        let isAttachment: Bool?
         let processedDT: JSONNull?
-        let recordExifVO: JSONNull?
+        let recordExifVO: RecordExifVO?
         let recordID: Int?
         let refArchiveNbr: JSONNull?
         let saveAs: JSONNull?

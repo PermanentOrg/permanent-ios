@@ -1,23 +1,23 @@
 //  
-//  FolderVO.swift
+//  ParentFolderVO.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 14/10/2020.
+//  Created by Adrian Creteanu on 11/11/2020.
 //
 
 import Foundation
 
-struct FolderVO: Codable {
+struct ParentFolderVO: Model {
     let folderID: Int?
     let archiveNbr: String?
     let archiveID: Int?
-    let displayName, displayDT: String?
-    let displayEndDT, derivedDT, derivedEndDT: String?
+    let displayName, displayDT, displayEndDT, derivedDT: String?
+    let derivedEndDT: String?
     let note: String?
-    let voDescription: String?
+    let parentFolderVODescription: String?
     let special: JSONNull?
     let sort: String?
-    let locnID: Int?
+    let locnID: String?
     let timeZoneID: Int?
     let view: String?
     let viewProperty, thumbArchiveNbr: JSONNull?
@@ -34,11 +34,9 @@ struct FolderVO: Codable {
     let folderLinkVOS: [FolderLinkVO]?
     let accessRole: String?
     let position: Int?
-    let pathAsFolderLinkID: [Int]?
-    let shareDT: JSONNull?
-    let pathAsText: [String]?
-    let folderLinkID: Int?
-    let parentFolderLinkID: Int?
+    let shareDT, pathAsFolderLinkID: JSONNull?
+    let pathAsText: [JSONAny]?
+    let folderLinkID, parentFolderLinkID: Int?
     let parentFolderVOS: [JSONAny]?
     let parentArchiveNbr, parentDisplayName: JSONNull?
     let pathAsArchiveNbr, childFolderVOS, recordVOS: [JSONAny]?
@@ -46,15 +44,13 @@ struct FolderVO: Codable {
     let timezoneVO: TimezoneVO?
     let directiveVOS: JSONNull?
     let tagVOS, sharedArchiveVOS: [JSONAny]?
-    let folderSizeVO: FolderSizeVO?
+    let folderSizeVO: JSONNull?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
-    let childItemVOS: [FolderVO]?
-    let shareVOS: [JSONAny]?
-    let accessVO, returnDataSize: JSONNull?
+    let childItemVOS, shareVOS: [JSONAny]?
+    let accessVO, accessVOS: JSONNull?
     let archiveArchiveNbr: String?
-    let accessVOS: [JSONAny]?
-    let posStart, posLimit, searchScore: JSONNull?
+    let returnDataSize, posStart, posLimit, searchScore: JSONNull?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {
@@ -62,7 +58,7 @@ struct FolderVO: Codable {
         case archiveNbr
         case archiveID = "archiveId"
         case displayName, displayDT, displayEndDT, derivedDT, derivedEndDT, note
-        case voDescription = "description"
+        case parentFolderVODescription = "description"
         case special, sort
         case locnID = "locnId"
         case timeZoneID = "timeZoneId"

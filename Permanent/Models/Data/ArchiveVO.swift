@@ -19,7 +19,8 @@ struct ArchiveVO: Codable {
     let archiveVOPublic, view, viewProperty: JSONNull?
     let vaultKey: String?
     let thumbArchiveNbr: JSONNull?
-    let imageRatio, type, thumbStatus: String?
+    let type, thumbStatus: String?
+    let imageRatio: JSONAny?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?

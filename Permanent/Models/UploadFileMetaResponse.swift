@@ -37,7 +37,7 @@ struct UploadFileMetaResult: Codable {
 
 // MARK: - Datum
 struct UploadFileMetaData: Codable {
-    let recordVO: RecordVO?
+    let recordVO: RecordVOData?
 
     enum CodingKeys: String, CodingKey {
         case recordVO = "RecordVO"

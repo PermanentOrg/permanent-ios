@@ -31,6 +31,10 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         present(alert, animated: true)
     }
     
+    func showErrorAlert(message: String?) {
+        self.showAlert(title: .error, message: message)
+    }
+    
     func styleNavBar() {
         navigationController?.navigationBar.barTintColor = .darkBlue
         navigationController?.navigationBar.isTranslucent = false

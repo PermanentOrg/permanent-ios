@@ -69,3 +69,4 @@
 "Uploads" = "Uploads";
 "TakePhotoOrVideo" = "Take Photo or Video";
 "SearchFiles" = "Search Files";
+"CameraErrorMessage" = "Could not process the recorded media file.";
