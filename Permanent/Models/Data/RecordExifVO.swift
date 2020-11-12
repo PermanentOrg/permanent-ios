@@ -9,10 +9,10 @@ import Foundation
 
 struct RecordExifVO: Model {
     let recordExifID, recordID, height, width: Int?
-    let shutterSpeed, focalLength, aperture, fNumber: JSONNull? // TODO
-    let exposure, iso, brightness: JSONNull? // TODO
+    let shutterSpeed, focalLength, aperture, fNumber: JSONAny? // TODO
+    let exposure, iso, brightness: JSONAny? // TODO
     let flash: String?
-    let whiteBalance, xdpi, ydpi: JSONNull? // TODO
+    let whiteBalance, xdpi, ydpi: JSONAny? // TODO
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

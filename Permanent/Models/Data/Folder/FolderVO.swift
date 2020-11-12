@@ -42,7 +42,7 @@ struct FolderVO: Codable {
     let parentFolderVOS: [JSONAny]?
     let parentArchiveNbr, parentDisplayName: JSONNull?
     let pathAsArchiveNbr, childFolderVOS, recordVOS: [JSONAny]?
-    let locnVO: JSONNull?
+    let locnVO: LocnVO?
     let timezoneVO: TimezoneVO?
     let directiveVOS: JSONNull?
     let tagVOS, sharedArchiveVOS: [JSONAny]?

@@ -149,7 +149,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     private func handleUploadProgress(withValue value: Float) {
-        let indexPath = IndexPath(row: 0, section: 0)
+        let indexPath = IndexPath(row: 0, section: FileListType.uploading.rawValue)
         
         guard
             let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
@@ -453,32 +453,47 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func testDownload(_ file: FileViewModel) {
-        viewModel?.download(file, then: { url, errorMessage in
+        viewModel?.download(
+            file,
             
-            guard let shareURL = url else {
+            onDownloadStart: {
                 DispatchQueue.main.async {
-                    self.showErrorAlert(message: errorMessage)
+                    self.refreshTableView()
+                }
+            },
+            
+            onFileDownloaded: { url, errorMessage in
+                guard let shareURL = url else {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(message: errorMessage)
+                    }
+                
+                    return
                 }
                 
-                return
-            }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+                DispatchQueue.main.async {
+                    self.share(url: shareURL)
+                }
+            },
             
-            DispatchQueue.main.async {
-                self.share(url: shareURL)
+            then: { status in
+                
+                switch status {
+                case .success:
+                    break
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.showAlert(title: .error, message: message)
+                    }
+                }
             }
-            
-//
-//            switch status {
-//            case .success:
-//                print("Succ")
-//                break
-//
-//            case .error(let message):
-//                DispatchQueue.main.async {
-//                    self.showErrorAlert(message: message)
-//                }
-//            }
-        })
+        )
     }
 }
 
@@ -690,6 +705,6 @@ extension MainViewController: FileActionSheetDelegate {
     }
     
     func deleteAction(file: FileViewModel) {
-        // TODO
+        // TODO:
     }
 }

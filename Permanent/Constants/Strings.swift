@@ -79,4 +79,5 @@ extension String {
     static var publish: String { return "Publish".localized() }
     static var edit: String { return "Edit".localized() }
     static var share: String { return "Share".localized() }
+    static var downloads: String { return "Downloads".localized() }
 }

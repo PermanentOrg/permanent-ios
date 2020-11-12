@@ -42,7 +42,7 @@ struct RecordVOData: Model {
     let parentFolderLinkID: Int?
     let parentArchiveNbr, parentDisplayName, pathAsArchiveNbr: JSONNull?
     let parentFolderVOS: [ParentFolderVO]?
-    let locnVO, directiveVOS: JSONNull?
+    let locnVO, directiveVOS: LocnVO?
     let timezoneVO: TimezoneVO?
     let fileVOS: [FileVO]?
     let tagVOS, textDataVOS, archiveVOS: [JSONAny]?
