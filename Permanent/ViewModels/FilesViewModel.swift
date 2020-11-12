@@ -17,6 +17,8 @@ typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> V
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
 typealias ItemInfoParams = (file: FileViewModel, csrf: String)
+typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
+typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: String?) -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -154,20 +156,22 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
-    
-    func download(_ file: FileViewModel, then handler: @escaping ServerResponse) {
-        getRecord(file) { (status) in
-            switch status {
-            case .success:
-                print("aa")
-                
-            case .error(let message):
-                print(message)
+    func download(_ file: FileViewModel, then handler: @escaping DownloadResponse) {
+        getRecord(file) { record, errorMessage in
+        
+            guard
+                let record = record
+            else {
+                return handler(nil, errorMessage)
+            }
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.downloadFileData(record: record, then: handler)
             }
         }
     }
     
-    func getRecord(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+    func getRecord(_ file: FileViewModel, then handler: @escaping GetRecordResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file, csrf)))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -179,16 +183,17 @@ extension FilesViewModel: FilesViewModelDelegate {
                         with: APIResults<RecordVO>.decoder
                     ),
                     model.isSuccessful
+                // let downloadURL = model.results.first?.data?.first?.recordVO?.fileVOS?.first?.downloadURL
                     
                 else {
-                    handler(.error(message: .errorMessage))
+                    handler(nil, .errorMessage)
                     return
                 }
                 
-                handler(.success)
+                handler(model.results.first?.data?.first, nil)
                     
             case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
+                handler(nil, error?.localizedDescription)
                     
             default:
                 break
@@ -196,30 +201,74 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    func downloadFileData(url: URL, then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: nil))
+    func load(url: URL, to localUrl: URL, completion: @escaping () -> Void) {
+        let sessionConfig = URLSessionConfiguration.default
+        let session = URLSession(configuration: sessionConfig)
+        var request = try! URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
+            if let tempLocalUrl = tempLocalUrl, error == nil {
+                // Success
+                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                    print("Success: \(statusCode)")
+                }
+
+                do {
+                    // try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                    completion()
+                } catch (let writeError) {
+                    print("error writing file \(localUrl) : \(writeError)")
+                }
+
+            } else {
+                print("Failure: %@", error?.localizedDescription)
+            }
+        }
+        task.resume()
+    }
+    
+    func downloadFileData(record: RecordVO, then handler: @escaping DownloadResponse) {
         
+        guard
+            let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
+            let url = URL(string: downloadURL),
+            let fileName = record.recordVO?.uploadFileName
+        else {
+            return handler(nil, .errorMessage)
+        }
+        
+        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: nil))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             
             switch result {
-            case .file(let url, let urlResponse):
-                print("FILE downloaded at \(url)")
-                handler(.success)
-            
-            case .error(let error, let urlResponse):
-                handler(.error(message: error?.localizedDescription))
+            case .file(let data, _):
+                
+                guard let fileData = data else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                
+                do {
+                    let documentFolderURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                    let fileURL = documentFolderURL.appendingPathComponent(fileName)
+                    try fileData.write(to: fileURL)
+                            
+                    handler(fileURL, nil)
+                        
+                } catch {
+                    print("error writing file \(fileName) : \(error)")
+                    handler(nil, error.localizedDescription)
+                }
+                
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
                 
             default:
                 break
             }
         }
     }
-    
-    
-    
-
-    
-    
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))

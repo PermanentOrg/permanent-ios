@@ -8,7 +8,7 @@
 import Foundation
 
 struct APIResults<T: Model>: Model {
-    let Results: [APIResultData<T>]
+    let results: [APIResultData<T>]
     let isSuccessful: Bool
     let actionFailKeys: [JSONAny]
     let isSystemUp: Bool
@@ -16,6 +16,17 @@ struct APIResults<T: Model>: Model {
     let sessionID: String?
     let csrf: String
     let createdDT, updatedDT: String?
+
+    enum CodingKeys: String, CodingKey {
+        case results = "Results"
+        case isSuccessful
+        case actionFailKeys
+        case isSystemUp
+        case systemMessage
+        case sessionID
+        case csrf
+        case createdDT, updatedDT
+    }
 }
 
 struct APIResultData<T: Model>: Model {

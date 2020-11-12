@@ -69,14 +69,18 @@ extension RequestProtocol {
     /// - Parameter environment: The environment against which the `URLRequest` must be constructed.
     /// - Returns: An optional `URLRequest`.
     public func urlRequest(with environment: EnvironmentProtocol) -> URLRequest? {
-        // Create the base URL.
         
-        let stringURL = customURL ?? environment.baseURL
-        guard let url = url(with: stringURL) else {
+        var request: URLRequest
+        
+        // If we have a custom URL, we just use it as is.
+        if let stringURL = customURL,
+           let url = URL(string: stringURL) {
+            request = URLRequest(url: url)
+        } else if let url = url(with: environment.baseURL) {
+            request = URLRequest(url: url)
+        } else {
             return nil
         }
-        // Create a request with that URL.
-        var request = URLRequest(url: url)
 
         // Append all related properties.
         request.httpMethod = method.rawValue
@@ -93,9 +97,11 @@ extension RequestProtocol {
         }
         // Add the request path to the existing base URL path
         urlComponents.path = urlComponents.path + path
-        // Add query items to the request URL
-        urlComponents.queryItems = queryItems
-
+        // Add query items to the request URL if needed
+        if queryItems != nil {
+            urlComponents.queryItems = queryItems
+        }
+        
         return urlComponents.url
     }
 
