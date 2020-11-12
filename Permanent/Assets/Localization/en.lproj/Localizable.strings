@@ -70,3 +70,9 @@
 "TakePhotoOrVideo" = "Take Photo or Video";
 "SearchFiles" = "Search Files";
 "CameraErrorMessage" = "Could not process the recorded media file.";
+"Download" = "Download";
+"Copy" = "Copy";
+"Move" = "Move";
+"Publish" = "Publish";
+"Edit" = "Edit";
+"Share" = "Share";

@@ -19,6 +19,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    private var fileActionSheet: FileActionSheet?
     
     private var isSearchActive: Bool = false
     
@@ -38,7 +39,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
         fabView.delegate = self
         searchBar.delegate = self
         documentInteractionController.delegate = self
-        
         
         getRootFolder()
     }
@@ -349,12 +349,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         cell.updateCell(model: file)
         
         cell.rightButtonTapAction = { _ in
-            guard file.fileStatus != .synced else {
-                // TODO: Handle `more` button tap and display action sheet.
-                return
-            }
-            
-            self.cellRightButtonAction(atPosition: indexPath.row)
+            self.handleCellRightButtonAction(for: file, atPosition: indexPath.row)
         }
         
         return cell
@@ -433,6 +428,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         removeFromQueue(atPosition: position)
     }
     
+    private func handleCellRightButtonAction(for file: FileViewModel, atPosition position: Int) {
+        if file.fileStatus == .synced {
+            showFileActionSheet(file: file)
+        } else {
+            cellRightButtonAction(atPosition: position)
+        }
+    }
+    
     private func didTapDelete(at indexPath: IndexPath) {
         guard let file = viewModel?.fileForRowAt(indexPath: indexPath) else {
             return
@@ -445,14 +448,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          positiveButtonTitle: .delete,
                          positiveAction: {
                              self.actionDialog?.dismiss()
-//                             self.deleteFile(file, atIndexPath: indexPath)
-                            
-                            self.testDownload(file)
+                             self.deleteFile(file, atIndexPath: indexPath)
                          })
     }
     
     private func testDownload(_ file: FileViewModel) {
-        viewModel?.download(file, then: { (url, errorMessage)  in
+        viewModel?.download(file, then: { url, errorMessage in
             
             guard let shareURL = url else {
                 DispatchQueue.main.async {
@@ -462,13 +463,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 return
             }
             
-            
             DispatchQueue.main.async {
                 self.share(url: shareURL)
             }
-            
-            
-            
             
 //
 //            switch status {
@@ -550,6 +547,13 @@ extension MainViewController: FABActionSheetDelegate {
         
         actionDialog?.positiveAction = positiveAction
         view.addSubview(actionDialog!)
+    }
+    
+    func showFileActionSheet(file: FileViewModel) {
+        fileActionSheet = FileActionSheet(frame: view.bounds, file: file)
+        
+        fileActionSheet?.delegate = self
+        view.addSubview(fileActionSheet!)
     }
     
     func showActionSheet() {
@@ -655,25 +659,37 @@ extension MainViewController: MediaRecorderDelegate {
 extension MainViewController: UIDocumentInteractionControllerDelegate {
     /// If presenting atop a navigation stack, provide the navigation controller in order to animate in a manner consistent with the rest of the platform
     func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        guard let navVC = self.navigationController else {
+        guard let navVC = navigationController else {
             return self
         }
         return navVC
     }
     
     func share(url: URL) {
-            documentInteractionController.url = url
-            documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-            documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-            documentInteractionController.presentPreview(animated: true)
-        }
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentPreview(animated: true)
+    }
 }
 
 extension URL {
     var typeIdentifier: String? {
         return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
     }
+
     var localizedName: String? {
         return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
+    }
+}
+
+extension MainViewController: FileActionSheetDelegate {
+    func downloadAction(file: FileViewModel) {
+        fileActionSheet?.dismiss()
+        testDownload(file)
+    }
+    
+    func deleteAction(file: FileViewModel) {
+        // TODO
     }
 }

@@ -73,5 +73,10 @@ extension String {
     static var takePhotoOrVideo: String { return "TakePhotoOrVideo".localized() }
     static var searchFiles: String { return "SearchFiles".localized() }
     static var cameraErrorMessage: String { return "CameraErrorMessage".localized() }
-    
+    static var download: String { return "Download".localized() }
+    static var copy: String { return "Copy".localized() }
+    static var move: String { return "Move".localized() }
+    static var publish: String { return "Publish".localized() }
+    static var edit: String { return "Edit".localized() }
+    static var share: String { return "Share".localized() }
 }
