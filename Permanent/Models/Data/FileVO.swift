@@ -12,11 +12,11 @@ struct FileVO: Model {
     let format: String?
     let parentFileID: Int?
     let contentType, contentVersion: String?
-    let s3Version: JSONNull? // TODO
+    let s3Version: JSONAny? // TODO
     let s3VersionID, md5Checksum, cloud1, cloud2: String?
     let cloud3: String?
     let archiveID, height, width: Int?
-    let durationInSecs: JSONNull? // TODO
+    let durationInSecs: Int?
     let fileURL, downloadURL: String?
     let urlDT, status, type, createdDT: String?
     let updatedDT: String?

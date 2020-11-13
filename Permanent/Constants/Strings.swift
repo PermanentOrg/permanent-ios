@@ -80,4 +80,5 @@ extension String {
     static var edit: String { return "Edit".localized() }
     static var share: String { return "Share".localized() }
     static var downloads: String { return "Downloads".localized() }
+    static var cannotUpload: String { return "CannotUpload".localized() }
 }

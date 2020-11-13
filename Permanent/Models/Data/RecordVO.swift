@@ -24,10 +24,10 @@ struct RecordVOData: Model {
     let displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT: String?
     let locnID: Int?
     let timeZoneID: Int?
-    let view, viewProperty: JSONNull?
+    let view, viewProperty: JSONAny?
     let imageRatio: JSONAny?
     let encryption, metaToken: String?
-    let refArchiveNbr: JSONNull?
+    let refArchiveNbr: JSONAny?
     let type, thumbStatus: String?
     let thumbURL200, thumbURL500, thumbURL1000, thumbURL2000: String?
     let thumbDT, fileStatus: String?
@@ -40,20 +40,20 @@ struct RecordVOData: Model {
     let folderLinkType: String?
     let pathAsFolderLinkID, pathAsText: [String]?
     let parentFolderLinkID: Int?
-    let parentArchiveNbr, parentDisplayName, pathAsArchiveNbr: JSONNull?
+    let parentArchiveNbr, parentDisplayName, pathAsArchiveNbr: JSONAny?
     let parentFolderVOS: [ParentFolderVO]?
     let locnVO, directiveVOS: LocnVO?
     let timezoneVO: TimezoneVO?
     let fileVOS: [FileVO]?
     let tagVOS, textDataVOS, archiveVOS: [JSONAny]?
-    let saveAs: JSONNull?
+    let saveAs: JSONAny?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let isAttachment, hasAttachments: Bool?
-    let uploadURI, fileDurationInSecs: JSONNull?
+    let uploadURI, fileDurationInSecs: JSONAny?
     let batchNbr: Int?
     let recordExifVO: RecordExifVO?
     let shareVOS: [JSONAny]?
-    let accessVO, searchScore: JSONNull?
+    let accessVO, searchScore: JSONAny?
     let archiveArchiveNbr: String?
     let createdDT, updatedDT: String?
 

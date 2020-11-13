@@ -180,7 +180,10 @@ extension FilesViewModel: FilesViewModelDelegate {
                   onFileDownloaded: @escaping DownloadResponse,
                   then handler: @escaping ServerResponse)
     {
-        downloadQueue.append(file)
+        
+        var downloadFile = file
+        downloadFile.fileStatus = .downloading
+        downloadQueue.append(downloadFile)
         
         // save progress lcoally
         
@@ -193,7 +196,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         downloadInProgress = true
         
         handleRecursiveFileDownload(
-            file,
+            downloadFile,
             onFileDownloaded: onFileDownloaded,
             then: handler
         )

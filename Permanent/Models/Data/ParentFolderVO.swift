@@ -15,12 +15,12 @@ struct ParentFolderVO: Model {
     let derivedEndDT: String?
     let note: String?
     let parentFolderVODescription: String?
-    let special: JSONNull?
+    let special: JSONAny?
     let sort: String?
     let locnID: String?
     let timeZoneID: Int?
     let view: String?
-    let viewProperty, thumbArchiveNbr: JSONNull?
+    let viewProperty, thumbArchiveNbr: JSONAny?
     let type, thumbStatus: String?
     let imageRatio: JSONAny?
     let thumbURL200: String?
@@ -34,23 +34,23 @@ struct ParentFolderVO: Model {
     let folderLinkVOS: [FolderLinkVO]?
     let accessRole: String?
     let position: Int?
-    let shareDT, pathAsFolderLinkID: JSONNull?
+    let shareDT, pathAsFolderLinkID: JSONAny?
     let pathAsText: [JSONAny]?
     let folderLinkID, parentFolderLinkID: Int?
     let parentFolderVOS: [JSONAny]?
-    let parentArchiveNbr, parentDisplayName: JSONNull?
+    let parentArchiveNbr, parentDisplayName: JSONAny?
     let pathAsArchiveNbr, childFolderVOS, recordVOS: [JSONAny]?
     let locnVO: LocnVO?
     let timezoneVO: TimezoneVO?
-    let directiveVOS: JSONNull?
+    let directiveVOS: JSONAny?
     let tagVOS, sharedArchiveVOS: [JSONAny]?
-    let folderSizeVO: JSONNull?
+    let folderSizeVO: JSONAny?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS, shareVOS: [JSONAny]?
-    let accessVO, accessVOS: JSONNull?
+    let accessVO, accessVOS: JSONAny?
     let archiveArchiveNbr: String?
-    let returnDataSize, posStart, posLimit, searchScore: JSONNull?
+    let returnDataSize, posStart, posLimit, searchScore: JSONAny?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

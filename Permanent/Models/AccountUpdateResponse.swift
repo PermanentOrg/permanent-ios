@@ -13,7 +13,7 @@ struct AccountUpdateResponse: Codable {
     let actionFailKeys: [JSONAny]?
     let isSystemUp: Bool?
     let systemMessage: String?
-    let sessionID: JSONNull?
+    let sessionID: JSONAny?
     let csrf: String?
     let createdDT, updatedDT: String?
     

@@ -15,12 +15,12 @@ struct MinFolderVO: Codable {
     let displayEndDT, derivedDT, derivedEndDT: String?
     let note: String?
     let voDescription: String?
-    let special: JSONNull?
+    let special: JSONAny?
     let sort: String?
     let locnID: Int?
     let timeZoneID: Int?
     let view: String?
-    let viewProperty, thumbArchiveNbr: JSONNull?
+    let viewProperty, thumbArchiveNbr: JSONAny?
     let type, thumbStatus: String?
     let imageRatio: JSONAny?
     let thumbURL200: String?
@@ -35,26 +35,26 @@ struct MinFolderVO: Codable {
     let accessRole: String?
     let position: Int?
     let pathAsFolderLinkID: [Int]?
-    let shareDT: JSONNull?
+    let shareDT: JSONAny?
     let pathAsText: [String]?
     let folderLinkID: Int?
     let parentFolderLinkID: Int?
     let parentFolderVOS: [JSONAny]?
-    let parentArchiveNbr, parentDisplayName: JSONNull?
+    let parentArchiveNbr, parentDisplayName: JSONAny?
     let pathAsArchiveNbr, childFolderVOS, recordVOS: [JSONAny]?
     let locnVO: LocnVO?
     let timezoneVO: TimezoneVO?
-    let directiveVOS: JSONNull?
+    let directiveVOS: JSONAny?
     let tagVOS, sharedArchiveVOS: [JSONAny]?
     let folderSizeVO: FolderSizeVO?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS: [ChildItemVO]?
     let shareVOS: [JSONAny]?
-    let accessVO, returnDataSize: JSONNull?
+    let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?
     let accessVOS: [JSONAny]?
-    let posStart, posLimit, searchScore: JSONNull?
+    let posStart, posLimit, searchScore: JSONAny?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

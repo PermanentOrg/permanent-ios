@@ -14,7 +14,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
-    
     @IBOutlet var searchBar: UISearchBar!
     
     private let refreshControl = UIRefreshControl()
@@ -210,9 +209,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             }
             
         case .error(let message):
-            DispatchQueue.main.async {
-                self.showAlert(title: .error, message: message)
-            }
+            showErrorAlert(message: message)
         }
     }
     
@@ -238,10 +235,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             onFileUploaded: { uploadedFile, errorMessage in
                 // TODO: what should we do on file upload fail?
                 guard uploadedFile != nil else {
-                    DispatchQueue.main.async {
-                        self.showAlert(title: .error, message: errorMessage)
-                    }
-                    return
+                    return self.showErrorAlert(message: errorMessage)
                 }
 
                 DispatchQueue.main.async {
@@ -270,7 +264,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
-                        self.showAlert(title: .error, message: message)
+                        self.showErrorAlert(message: message)
                     }
                 }
             }
@@ -295,9 +289,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
 
             case .error(let message):
-                DispatchQueue.main.async {
-                    self.showAlert(title: .error, message: message)
-                }
+                self.showErrorAlert(message: message)
             }
         })
     }
@@ -316,9 +308,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
                 
             case .error(let message):
-                DispatchQueue.main.async {
-                    self.showAlert(title: .error, message: message)
-                }
+                self.showErrorAlert(message: message)
             }
             
         })
@@ -424,14 +414,18 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func cellRightButtonAction(atPosition position: Int) {
-        actionDialog?.dismiss()
         removeFromQueue(atPosition: position)
     }
     
     private func handleCellRightButtonAction(for file: FileViewModel, atPosition position: Int) {
-        if file.fileStatus == .synced {
+        switch file.fileStatus {
+        case .synced:
             showFileActionSheet(file: file)
-        } else {
+            
+        case .downloading:
+            break
+            
+        case .uploading, .waiting:
             cellRightButtonAction(atPosition: position)
         }
     }
@@ -589,13 +583,13 @@ extension MainViewController: FABActionSheetDelegate {
     
     func openPhotoLibrary() {
         let imagePicker = ImagePickerController()
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
         
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
                 guard let currentFolder = self.viewModel?.navigationStack.last else {
-                    // Display alert with cannot upload?
-                    return
+                    return self.showErrorAlert(message: .cannotUpload)
                 }
                 
                 self.processUpload(toFolder: currentFolder, forURLS: urls)
@@ -624,10 +618,7 @@ extension MainViewController: FABActionSheetDelegate {
     
     private func newFolderAction() {
         guard let folderName = actionDialog?.fieldsInput?.first else {
-            DispatchQueue.main.async {
-                self.showAlert(title: .error, message: .errorMessage)
-            }
-            return
+            return showErrorAlert(message: .errorMessage)
         }
         
         if folderName.isEmpty {
@@ -644,8 +635,7 @@ extension MainViewController: FABActionSheetDelegate {
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let currentFolder = viewModel?.navigationStack.last else {
-            // Display alert with cannot upload?
-            return
+            return showErrorAlert(message: .cannotUpload)
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
@@ -658,11 +648,7 @@ extension MainViewController: MediaRecorderDelegate {
             let mediaUrl = url,
             let currentFolder = viewModel?.navigationStack.last
         else {
-            DispatchQueue.main.async {
-                self.showAlert(title: .error, message: .cameraErrorMessage)
-            }
-            
-            return
+            return showErrorAlert(message: .cameraErrorMessage)
         }
         
         processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
@@ -672,29 +658,18 @@ extension MainViewController: MediaRecorderDelegate {
 }
 
 extension MainViewController: UIDocumentInteractionControllerDelegate {
-    /// If presenting atop a navigation stack, provide the navigation controller in order to animate in a manner consistent with the rest of the platform
     func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        guard let navVC = navigationController else {
-            return self
-        }
-        return navVC
+        return self
     }
     
     func share(url: URL) {
+        // For now, dismiss the preview in case another one opens so we avoid crash.
+        documentInteractionController.dismissPreview(animated: false)
+        
         documentInteractionController.url = url
         documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
         documentInteractionController.name = url.localizedName ?? url.lastPathComponent
         documentInteractionController.presentPreview(animated: true)
-    }
-}
-
-extension URL {
-    var typeIdentifier: String? {
-        return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
-    }
-
-    var localizedName: String? {
-        return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
     }
 }
 

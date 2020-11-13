@@ -14,12 +14,12 @@ struct ChildItemVO: Codable {
         let displayName, displayDT: String?
         let displayEndDT, derivedDT, derivedEndDT: String?
         let note: String?
-        let special: JSONNull?
+        let special: JSONAny?
         let sort: String?
         let locnID: Int?
         let timeZoneID: Int?
         let view: String?
-        let viewProperty, thumbArchiveNbr: JSONNull?
+        let viewProperty, thumbArchiveNbr: JSONAny?
         let type, thumbStatus: String?
         let imageRatio: JSONAny?
         let thumbURL200: String?
@@ -33,50 +33,50 @@ struct ChildItemVO: Codable {
         let folderLinkVOS: [FolderLinkVO]?
         let accessRole: String?
         let position: Int?
-        let shareDT: JSONNull?
+        let shareDT: JSONAny?
         let pathAsFolderLinkID: [Int]?
         let pathAsText: [JSONAny]?
         let folderLinkID: Int?
         let parentFolderLinkID: Int?
         let parentFolderVOS: [JSONAny]?
-        let parentArchiveNbr: JSONNull?
+        let parentArchiveNbr: JSONAny?
         let pathAsArchiveNbr, childFolderVOS, recordVOS: [JSONAny]?
         let locnVO: LocnVO?
         let timezoneVO: TimezoneVO?
-        let directiveVOS: JSONNull?
+        let directiveVOS: JSONAny?
         let tagVOS, sharedArchiveVOS: [JSONAny]?
         let folderSizeVO: FolderSizeVO?
         let attachmentRecordVOS: [AttachmentRecordVO]?
         let hasAttachments: Bool?
         let childItemVOS: [ChildItemVO]?
         let shareVOS: [JSONAny]?
-        let returnDataSize: JSONNull?
+        let returnDataSize: JSONAny?
         let archiveArchiveNbr: String?
         let accessVOS: [JSONAny]?
-        let posStart, posLimit: JSONNull?
+        let posStart, posLimit: JSONAny?
         let createdDT, updatedDT: String?
     
         // in plus fata de folder VO
-        let batchNbr: JSONNull?
+        let batchNbr: JSONAny?
         let childItemVODescription: String?
-        let derivedCreatedDT: JSONNull?
-        let encryption: JSONNull?
-        let fileDurationInSecs: JSONNull?
+        let derivedCreatedDT: JSONAny?
+        let encryption: JSONAny?
+        let fileDurationInSecs: JSONAny?
         let fileStatus: String?
-        let fileVOS: JSONNull?
-        let folderArchiveID: JSONNull?
-        let metaToken: JSONNull?
+        let fileVOS: JSONAny?
+        let folderArchiveID: JSONAny?
+        let metaToken: JSONAny?
         let isAttachment: Bool?
-        let processedDT: JSONNull?
+        let processedDT: JSONAny?
         let recordExifVO: RecordExifVO?
         let recordID: Int?
-        let refArchiveNbr: JSONNull?
-        let saveAs: JSONNull?
+        let refArchiveNbr: JSONAny?
+        let saveAs: JSONAny?
         let size: Int?
         let textDataVOS: [JSONAny]?
-        let uploadAccountID: JSONNull?
-        let uploadFileName: JSONNull?
-        let uploadURI: JSONNull?
+        let uploadAccountID: JSONAny?
+        let uploadFileName: JSONAny?
+        let uploadURI: JSONAny?
         let archiveVOS: [JSONAny]?
 
     enum CodingKeys: String, CodingKey {
