@@ -8,6 +8,7 @@
 import UIKit
 
 class ActionDialogView: UIView {
+    @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var contentView: UIView!
     @IBOutlet var dialogView: UIView!
     @IBOutlet var titleLabel: UILabel!
@@ -74,7 +75,7 @@ class ActionDialogView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         initUI()
-        adjustUI(forStyle: self.dialogStyle)
+        adjustUI(forStyle: dialogStyle)
     }
     
     fileprivate func initUI() {
@@ -111,7 +112,7 @@ class ActionDialogView: UIView {
         field.tintColor = .dustyGray
         field.textColor = .dustyGray
         field.placeholderColor = .dustyGray
-        field.placeholder = self.placeholder
+        field.placeholder = placeholder
         field.delegate = self
     }
     
@@ -132,7 +133,12 @@ class ActionDialogView: UIView {
 }
 
 extension ActionDialogView: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        scrollView.setContentOffset(.zero, animated: true)
         endEditing(true)
         return false
     }
