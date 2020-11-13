@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimezoneVO: Codable {
+struct TimezoneVO: Model {
     let timeZoneID: Int?
     let displayName, timeZonePlace, stdName, stdAbbrev: String?
     let stdOffset, dstName, dstAbbrev, dstOffset: String?

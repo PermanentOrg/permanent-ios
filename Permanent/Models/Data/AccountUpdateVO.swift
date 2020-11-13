@@ -14,17 +14,17 @@ struct AccountUpdateVO: Codable {
     let state, zip: String?
     let primaryPhone: String?
     let defaultArchiveID: Int?
-    let level, apiToken: JSONNull?
+    let level, apiToken: JSONAny?
     let betaParticipant: Int?
-    let facebookAccountID, googleAccountID: JSONNull?
+    let facebookAccountID, googleAccountID: JSONAny?
     let status, type, emailStatus, phoneStatus: String?
     let notificationPreferences: String?
-    let agreed, optIn, emailArray, inviteCode: JSONNull?
-    let rememberMe, keepLoggedIn, accessRole: JSONNull?
+    let agreed, optIn, emailArray, inviteCode: JSONAny?
+    let rememberMe, keepLoggedIn, accessRole: JSONAny?
     let spaceTotal, spaceLeft: Int?
-    let fileTotal: JSONNull?
+    let fileTotal: JSONAny?
     let fileLeft: Int?
-    let changePrimaryEmail, changePrimaryPhone: JSONNull?
+    let changePrimaryEmail, changePrimaryPhone: JSONAny?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

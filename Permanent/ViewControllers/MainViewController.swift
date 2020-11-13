@@ -14,17 +14,19 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
-    
     @IBOutlet var searchBar: UISearchBar!
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    private var fileActionSheet: FileActionSheet?
     
     private var isSearchActive: Bool = false
     
     private lazy var mediaRecorder: MediaRecorder = {
         MediaRecorder(presentationController: self, delegate: self)
     }()
+    
+    let documentInteractionController = UIDocumentInteractionController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +37,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         viewModel = FilesViewModel()
         fabView.delegate = self
         searchBar.delegate = self
+        documentInteractionController.delegate = self
         
         getRootFolder()
     }
@@ -145,7 +148,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     private func handleUploadProgress(withValue value: Float) {
-        let indexPath = IndexPath(row: 0, section: 0)
+        let indexPath = IndexPath(row: 0, section: FileListType.uploading.rawValue)
         
         guard
             let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
@@ -206,9 +209,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             }
             
         case .error(let message):
-            DispatchQueue.main.async {
-                self.showAlert(title: .error, message: message)
-            }
+            showErrorAlert(message: message)
         }
     }
     
@@ -234,10 +235,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             onFileUploaded: { uploadedFile, errorMessage in
                 // TODO: what should we do on file upload fail?
                 guard uploadedFile != nil else {
-                    DispatchQueue.main.async {
-                        self.showAlert(title: .error, message: errorMessage)
-                    }
-                    return
+                    return self.showErrorAlert(message: errorMessage)
                 }
 
                 DispatchQueue.main.async {
@@ -266,7 +264,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 case .error(let message):
                     DispatchQueue.main.async {
                         self.hideSpinner()
-                        self.showAlert(title: .error, message: message)
+                        self.showErrorAlert(message: message)
                     }
                 }
             }
@@ -291,9 +289,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
 
             case .error(let message):
-                DispatchQueue.main.async {
-                    self.showAlert(title: .error, message: message)
-                }
+                self.showErrorAlert(message: message)
             }
         })
     }
@@ -312,9 +308,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
                 
             case .error(let message):
-                DispatchQueue.main.async {
-                    self.showAlert(title: .error, message: message)
-                }
+                self.showErrorAlert(message: message)
             }
             
         })
@@ -345,12 +339,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         cell.updateCell(model: file)
         
         cell.rightButtonTapAction = { _ in
-            guard file.fileStatus != .synced else {
-                // TODO: Handle `more` button tap and display action sheet.
-                return
-            }
-            
-            self.cellRightButtonAction(atPosition: indexPath.row)
+            self.handleCellRightButtonAction(for: file, atPosition: indexPath.row)
         }
         
         return cell
@@ -425,8 +414,20 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func cellRightButtonAction(atPosition position: Int) {
-        actionDialog?.dismiss()
         removeFromQueue(atPosition: position)
+    }
+    
+    private func handleCellRightButtonAction(for file: FileViewModel, atPosition position: Int) {
+        switch file.fileStatus {
+        case .synced:
+            showFileActionSheet(file: file)
+            
+        case .downloading:
+            break
+            
+        case .uploading, .waiting:
+            cellRightButtonAction(atPosition: position)
+        }
     }
     
     private func didTapDelete(at indexPath: IndexPath) {
@@ -443,6 +444,50 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                              self.actionDialog?.dismiss()
                              self.deleteFile(file, atIndexPath: indexPath)
                          })
+    }
+    
+    private func testDownload(_ file: FileViewModel) {
+        viewModel?.download(
+            file,
+            
+            onDownloadStart: {
+                DispatchQueue.main.async {
+                    self.refreshTableView()
+                }
+            },
+            
+            onFileDownloaded: { url, errorMessage in
+                guard let shareURL = url else {
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(message: errorMessage)
+                    }
+                
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+                DispatchQueue.main.async {
+                    self.share(url: shareURL)
+                }
+            },
+            
+            then: { status in
+                
+                switch status {
+                case .success:
+                    break
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.showAlert(title: .error, message: message)
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -513,6 +558,13 @@ extension MainViewController: FABActionSheetDelegate {
         view.addSubview(actionDialog!)
     }
     
+    func showFileActionSheet(file: FileViewModel) {
+        fileActionSheet = FileActionSheet(frame: view.bounds, file: file)
+        
+        fileActionSheet?.delegate = self
+        view.addSubview(fileActionSheet!)
+    }
+    
     func showActionSheet() {
         let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
@@ -531,13 +583,13 @@ extension MainViewController: FABActionSheetDelegate {
     
     func openPhotoLibrary() {
         let imagePicker = ImagePickerController()
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
         
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
                 guard let currentFolder = self.viewModel?.navigationStack.last else {
-                    // Display alert with cannot upload?
-                    return
+                    return self.showErrorAlert(message: .cannotUpload)
                 }
                 
                 self.processUpload(toFolder: currentFolder, forURLS: urls)
@@ -566,10 +618,7 @@ extension MainViewController: FABActionSheetDelegate {
     
     private func newFolderAction() {
         guard let folderName = actionDialog?.fieldsInput?.first else {
-            DispatchQueue.main.async {
-                self.showAlert(title: .error, message: .errorMessage)
-            }
-            return
+            return showErrorAlert(message: .errorMessage)
         }
         
         if folderName.isEmpty {
@@ -586,8 +635,7 @@ extension MainViewController: FABActionSheetDelegate {
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let currentFolder = viewModel?.navigationStack.last else {
-            // Display alert with cannot upload?
-            return
+            return showErrorAlert(message: .cannotUpload)
         }
         
         processUpload(toFolder: currentFolder, forURLS: urls)
@@ -600,11 +648,38 @@ extension MainViewController: MediaRecorderDelegate {
             let mediaUrl = url,
             let currentFolder = viewModel?.navigationStack.last
         else {
-            return
+            return showErrorAlert(message: .cameraErrorMessage)
         }
         
         processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
             self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
         })
+    }
+}
+
+extension MainViewController: UIDocumentInteractionControllerDelegate {
+    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+        return self
+    }
+    
+    func share(url: URL) {
+        // For now, dismiss the preview in case another one opens so we avoid crash.
+        documentInteractionController.dismissPreview(animated: false)
+        
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentPreview(animated: true)
+    }
+}
+
+extension MainViewController: FileActionSheetDelegate {
+    func downloadAction(file: FileViewModel) {
+        fileActionSheet?.dismiss()
+        testDownload(file)
+    }
+    
+    func deleteAction(file: FileViewModel) {
+        // TODO:
     }
 }

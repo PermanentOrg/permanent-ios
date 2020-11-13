@@ -1,49 +1,60 @@
-//  
+//
 //  RecordVO.swift
 //  Permanent
 //
 //  Created by Adrian Creteanu on 26/10/2020.
 //
 
-import Foundation
+struct RecordVO: Model {
+    let recordVO: RecordVOData?
 
-// MARK: - RecordVO
-struct RecordVO: Codable {
+    enum CodingKeys: String, CodingKey {
+        case recordVO = "RecordVO"
+    }
+}
+
+struct RecordVOData: Model {
     let recordID, archiveID: Int?
     let archiveNbr: String?
-    let publicDT, note: JSONNull?
+    let publicDT, note: String?
     let displayName, uploadFileName: String?
     let uploadAccountID, size: Int?
-    let recordVODescription: JSONNull?
+    let recordVODescription: String?
     let displayDT: String?
-    let displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT: JSONNull?
+    let displayEndDT, derivedDT, derivedEndDT, derivedCreatedDT: String?
     let locnID: Int?
     let timeZoneID: Int?
-    let view, viewProperty: JSONNull?
-    let imageRatio: Int?
+    let view, viewProperty: JSONAny?
+    let imageRatio: JSONAny?
     let encryption, metaToken: String?
-    let refArchiveNbr: JSONNull?
+    let refArchiveNbr: JSONAny?
     let type, thumbStatus: String?
-    let thumbURL200, thumbURL500, thumbURL1000, thumbURL2000: JSONNull?
-    let thumbDT, fileStatus: JSONNull?
+    let thumbURL200, thumbURL500, thumbURL1000, thumbURL2000: String?
+    let thumbDT, fileStatus: String?
     let status: String?
-    let processedDT: JSONNull?
+    let processedDT: String?
     let folderLinkVOS: [FolderLinkVO]?
     let folderLinkID, parentFolderID, position: Int?
     let accessRole: String?
     let folderArchiveID: Int?
     let folderLinkType: String?
-    let pathAsFolderLinkID, pathAsText: JSONNull?
+    let pathAsFolderLinkID, pathAsText: [String]?
     let parentFolderLinkID: Int?
-    let parentFolderVOS, parentArchiveNbr, parentDisplayName, pathAsArchiveNbr: JSONNull?
-    let locnVO, timezoneVO, fileVOS, directiveVOS: JSONNull?
+    let parentArchiveNbr, parentDisplayName, pathAsArchiveNbr: JSONAny?
+    let parentFolderVOS: [ParentFolderVO]?
+    let locnVO, directiveVOS: LocnVO?
+    let timezoneVO: TimezoneVO?
+    let fileVOS: [FileVO]?
     let tagVOS, textDataVOS, archiveVOS: [JSONAny]?
-    let saveAs, attachmentRecordVOS, isAttachment, hasAttachments: JSONNull?
-    let uploadURI, fileDurationInSecs: JSONNull?
+    let saveAs: JSONAny?
+    let attachmentRecordVOS: [AttachmentRecordVO]?
+    let isAttachment, hasAttachments: Bool?
+    let uploadURI, fileDurationInSecs: JSONAny?
     let batchNbr: Int?
-    let recordExifVO: JSONNull?
+    let recordExifVO: RecordExifVO?
     let shareVOS: [JSONAny]?
-    let accessVO, searchScore, archiveArchiveNbr: JSONNull?
+    let accessVO, searchScore: JSONAny?
+    let archiveArchiveNbr: String?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

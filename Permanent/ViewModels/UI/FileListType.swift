@@ -9,7 +9,9 @@ import Foundation
 
 enum FileListType: Int {
     
-    case uploading = 0
+    case downloading = 0
+    
+    case uploading
     
     case synced
 }

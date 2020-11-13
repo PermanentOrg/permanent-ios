@@ -8,6 +8,9 @@
 import Foundation
 
 enum FilesEndpoint {
+    
+    // NAVIGATION
+    
     /// Retrieves the “root” of an archive: the parent folder that contains the My Files and Public folders.
     case getRoot
     
@@ -15,13 +18,23 @@ enum FilesEndpoint {
     
     case getLeanItems(params: GetLeanItemsParams)
     
+    // FILES MANAGEMENT
+    
+    case newFolder(params: NewFolderParams)
+    
+    case delete(params: ItemInfoParams)
+    
+    // UPLOAD
+    
     case uploadFileMeta(params: FileMetaParams)
     
     case upload(file: FileInfo, usingBoundary: String, recordId: Int, progressHandler: ProgressHandler?) // TODO: Remove boundary from here
     
-    case newFolder(params: NewFolderParams)
+    // DOWNLOAD
     
-    case delete(params: DeleteFileParams)
+    case getRecord(itemInfo: ItemInfoParams)
+    
+    case download(url: URL, progressHandler: ProgressHandler?)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -43,12 +56,21 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/delete"
             }
+        case .getRecord:
+            return "/record/get"
         default:
             return ""
         }
     }
     
-    var method: RequestMethod { .post }
+    var method: RequestMethod {
+        switch self {
+        case .download:
+            return .get
+        default:
+            return .post
+        }
+    }
     
     var headers: RequestHeaders? {
         switch self {
@@ -84,19 +106,29 @@ extension FilesEndpoint: RequestProtocol {
         case .upload:
             return .upload
             
+        case .download:
+            return .download
+            
         default:
             return .data
         }
     }
     
     var responseType: ResponseType {
-        .json
+        switch self {
+        case .download:
+            return .file
+            
+        default:
+            return .json
+        }
     }
     
     var progressHandler: ProgressHandler? {
         get {
             switch self {
             case .upload(_, _, _, let handler): return handler
+            case .download(_, let handler): return handler
             default: return nil
             }
         }
@@ -120,12 +152,17 @@ extension FilesEndpoint: RequestProtocol {
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
                 
             } else {
-                let recordVOData = RecordVOPayloadData(folderLinkId: parameters.file.folderLinkId)
-                let recordVO = RecordVOPayload(recordVO: recordVOData)
+                let recordVO = RecordVOPayload(folderLinkId: parameters.file.folderLinkId)
                 let requestVO = APIPayload.make(fromData: [recordVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             }
+            
+        case .getRecord(let itemInfo):
+            let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId)
+            let requestVO = APIPayload.make(fromData: [recordVO], csrf: itemInfo.csrf)
+            
+            return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             
         default:
             return nil
@@ -136,6 +173,8 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .upload:
             return "https://staging.permanent.org:9000"
+        case .download(let url, _):
+            return url.absoluteString
         default:
             return nil
         }

@@ -14,9 +14,14 @@ typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: Strin
 typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
+
+typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
+
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
-typealias DeleteFileParams = (file: FileViewModel, csrf: String)
+typealias ItemInfoParams = (file: FileViewModel, csrf: String)
+typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
+typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: String?) -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -38,7 +43,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
+    
+    var downloadQueue: [FileViewModel] = []
+    
     var uploadInProgress: Bool = false
+    var downloadInProgress: Bool = false
+    
     var uploadFolder: FolderInfo?
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
@@ -50,15 +60,20 @@ class FilesViewModel: NSObject, ViewModelInterface {
     // MARK: - Table View Logic
     
     func title(forSection section: Int) -> String {
-        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return .name
-        }
+        guard uploadOrDownloadInProgress else { return .name }
         
         switch section {
+        case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
         case FileListType.synced.rawValue: return .name
-        default: fatalError() // We cannot have more than 2 sections.
+        default: fatalError() // We cannot have more than 3 sections.
         }
+    }
+    
+    var uploadOrDownloadInProgress: Bool {
+        return
+            uploadInProgress && uploadingInCurrentFolder || waitingToUpload || // UPLOAD
+            downloadInProgress // DOWNLOAD
     }
     
     var waitingToUpload: Bool {
@@ -78,7 +93,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var numberOfSections: Int {
-        uploadInProgress && (uploadingInCurrentFolder || waitingToUpload) ? 2 : 1
+        uploadOrDownloadInProgress ? 3 : 1
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
@@ -90,12 +105,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
-        // If the upload is not in progress, we have only one section.
-        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return syncedViewModels.count
-        }
+        // If the upload or download is not in progress, we have only one section.
+        guard uploadOrDownloadInProgress else { return syncedViewModels.count }
     
         switch section {
+        case FileListType.downloading.rawValue: return downloadQueue.count
         case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count
         case FileListType.synced.rawValue: return syncedViewModels.count
         default: fatalError() // We cannot have more than 2 sections.
@@ -103,11 +117,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
-        guard uploadInProgress, uploadingInCurrentFolder || waitingToUpload else {
-            return syncedViewModels[indexPath.row]
-        }
-        
+        guard uploadOrDownloadInProgress else { return syncedViewModels[indexPath.row] }
+
         switch indexPath.section {
+        case FileListType.downloading.rawValue:
+            return downloadQueue[indexPath.row]
+        
         case FileListType.uploading.rawValue:
             let fileInfo = queueItemsForCurrentFolder[indexPath.row]
             var fileViewModel = FileViewModel(model: fileInfo)
@@ -136,6 +151,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
     
+    func clearDownloadQueue() {
+        downloadQueue.removeAll()
+        
+        // delete from prefs
+    }
+    
     func removeSyncedFile(_ file: FileViewModel) {
         guard let index = viewModels.firstIndex(where: { $0 == file }) else {
             return
@@ -154,6 +175,180 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func download(_ file: FileViewModel,
+                  onDownloadStart: @escaping VoidAction,
+                  onFileDownloaded: @escaping DownloadResponse,
+                  then handler: @escaping ServerResponse)
+    {
+        
+        var downloadFile = file
+        downloadFile.fileStatus = .downloading
+        downloadQueue.append(downloadFile)
+        
+        // save progress lcoally
+        
+        onDownloadStart()
+        
+        if downloadInProgress {
+            return
+        }
+        
+        downloadInProgress = true
+        
+        handleRecursiveFileDownload(
+            downloadFile,
+            onFileDownloaded: onFileDownloaded,
+            then: handler
+        )
+    }
+    
+    private func downloadFile(_ file: FileViewModel, then handler: @escaping DownloadResponse) {
+        getRecord(file) { record, errorMessage in
+        
+            guard
+                let record = record
+            else {
+                return handler(nil, errorMessage)
+            }
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.downloadFileData(record: record, then: handler)
+            }
+        }
+    }
+    
+    func handleRecursiveFileDownload(_ file: FileViewModel,
+                                     onFileDownloaded: @escaping FileDownloadResponse,
+                                     then handler: @escaping ServerResponse)
+    {
+        downloadFile(file) { url, errorMessage in
+            
+            if let url = url {
+                onFileDownloaded(url, nil)
+                
+                if self.downloadQueue.isEmpty {
+                    self.downloadInProgress = false
+                    return handler(.success)
+                } else {
+                    // Remove the first item from queue and save progress.
+                    self.downloadQueue.removeFirst()
+                    
+                    guard let nextFile = self.downloadQueue.first else {
+                        self.downloadInProgress = false
+                        return handler(.success)
+                    }
+                    
+                    // save progress in prefs
+                    
+                    self.handleRecursiveFileDownload(nextFile, onFileDownloaded: onFileDownloaded, then: handler)
+                }
+            } else {
+                onFileDownloaded(nil, errorMessage)
+                self.downloadInProgress = false
+                
+                handler(.error(message: errorMessage))
+            }
+        }
+    }
+    
+    func getRecord(_ file: FileViewModel, then handler: @escaping GetRecordResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file, csrf)))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<RecordVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<RecordVO>.decoder
+                    ),
+                    model.isSuccessful
+                // let downloadURL = model.results.first?.data?.first?.recordVO?.fileVOS?.first?.downloadURL
+                    
+                else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                
+                handler(model.results.first?.data?.first, nil)
+                    
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+                    
+            default:
+                break
+            }
+        }
+    }
+    
+    func load(url: URL, to localUrl: URL, completion: @escaping () -> Void) {
+        let sessionConfig = URLSessionConfiguration.default
+        let session = URLSession(configuration: sessionConfig)
+        var request = try! URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
+            if let tempLocalUrl = tempLocalUrl, error == nil {
+                // Success
+                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                    print("Success: \(statusCode)")
+                }
+
+                do {
+                    // try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                    completion()
+                } catch (let writeError) {
+                    print("error writing file \(localUrl) : \(writeError)")
+                }
+
+            } else {
+                print("Failure: %@", error?.localizedDescription)
+            }
+        }
+        task.resume()
+    }
+    
+    func downloadFileData(record: RecordVO, then handler: @escaping DownloadResponse) {
+        guard
+            let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
+            let url = URL(string: downloadURL),
+            let fileName = record.recordVO?.uploadFileName
+        else {
+            return handler(nil, .errorMessage)
+        }
+        
+        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: nil))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            
+            switch result {
+            case .file(let data, _):
+                
+                guard let fileData = data else {
+                    handler(nil, .errorMessage)
+                    return
+                }
+                
+                do {
+                    let documentFolderURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                    let fileURL = documentFolderURL.appendingPathComponent(fileName)
+                    try fileData.write(to: fileURL)
+                            
+                    handler(fileURL, nil)
+                        
+                } catch {
+                    print("error writing file \(fileName) : \(error)")
+                    handler(nil, error.localizedDescription)
+                }
+                
+            case .error(let error, _):
+                handler(nil, error?.localizedDescription)
+                
+            default:
+                break
+            }
+        }
+    }
+    
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))
         

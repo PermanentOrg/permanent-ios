@@ -35,7 +35,7 @@ class JSONHelper {
     }
 }
 
-class JSONNull: Codable, Hashable {
+private class JSONNull: Codable, Hashable {
 
     public static func == (lhs: JSONNull, rhs: JSONNull) -> Bool {
         return true

@@ -48,16 +48,24 @@ class FileTableViewCell: UITableViewCell {
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {
-        if !model.type.isFolder {
-            // TODO: See how to handle this better.
-            if let imageURL = model.thumbnailURL {
-                fileImageView.load(urlString: imageURL)
-            } else {
-                fileImageView.image = .cloud
-            }
-            
-        } else {
+        if model.type.isFolder {
             fileImageView.image = .folder
+        } else {
+            switch model.fileStatus {
+            case .synced:
+                if let imageURL = model.thumbnailURL {
+                    fileImageView.load(urlString: imageURL)
+                } else {
+                    // File is in the synced list, but it does not have a thumbnail yet.
+                    fileImageView.image = .placeholder
+                }
+                
+            case .downloading:
+                fileImageView.image = .download
+                
+            case .uploading, .waiting:
+                fileImageView.image = .cloud // TODO: waiting can be used on download, too.
+            }
         }
     }
     
@@ -66,7 +74,7 @@ class FileTableViewCell: UITableViewCell {
         case .synced:
             updateSyncedUI()
             
-        case .waiting:
+        case .waiting, .downloading:
             progressView.isHidden = true
             statusLabel.isHidden = false
             updateUploadingUI()

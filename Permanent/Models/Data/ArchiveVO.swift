@@ -10,16 +10,17 @@ import Foundation
 struct ArchiveVO: Codable {
     let childFolderVOS, folderSizeVOS, recordVOS: [JSONAny]?
     let accessRole, fullName: String?
-    let spaceTotal, spaceLeft, fileTotal, fileLeft: JSONNull?
-    let relationType, homeCity, homeState, homeCountry: JSONNull?
+    let spaceTotal, spaceLeft, fileTotal, fileLeft: JSONAny?
+    let relationType, homeCity, homeState, homeCountry: JSONAny?
     let itemVOS: [JSONAny]?
-    let birthDay, company, archiveVODescription: JSONNull?
+    let birthDay, company, archiveVODescription: JSONAny?
     let archiveID: Int?
     let publicDT, archiveNbr: String?
-    let archiveVOPublic, view, viewProperty: JSONNull?
+    let archiveVOPublic, view, viewProperty: JSONAny?
     let vaultKey: String?
-    let thumbArchiveNbr: JSONNull?
-    let imageRatio, type, thumbStatus: String?
+    let thumbArchiveNbr: JSONAny?
+    let type, thumbStatus: String?
+    let imageRatio: JSONAny?
     let thumbURL200: String?
     let thumbURL500: String?
     let thumbURL1000: String?

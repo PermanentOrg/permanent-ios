@@ -10,6 +10,10 @@ import Foundation
 struct RecordVOPayload: Model {
     let recordVO: RecordVOPayloadData
     
+    init(folderLinkId: Int) {
+        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId)
+    }
+    
     enum CodingKeys: String, CodingKey {
         case recordVO = "RecordVO"
     }

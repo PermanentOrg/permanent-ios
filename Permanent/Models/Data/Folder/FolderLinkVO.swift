@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct FolderLinkVO: Codable {
+struct FolderLinkVO: Model {
     let folderLinkID, archiveID, folderID: Int?
     let recordID: Int?
     let parentFolderLinkID, parentFolderID, position, linkCount: Int?
     let accessRole, type, status: String?
-    let shareDT: JSONNull?
+    let shareDT: String?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

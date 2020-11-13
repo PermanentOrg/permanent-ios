@@ -53,7 +53,14 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
 
-        default: break
+        case .download: // TODO: [weak self]
+            task = networkSession.dataTask(with: urlRequest, completionHandler: { data, urlResponse, error in
+                self.handleFileTaskResponseData(data: data, urlResponse: urlResponse, error: error, completion: completion)
+            })
+
+//            task = networkSession.downloadTask(with: urlRequest, progressHandler: request.progressHandler, completionHandler: { fileUrl, urlResponse, error in
+//                self.handleFileTaskResponse(fileUrl: fileUrl, urlResponse: urlResponse, error: error, completion: completion)
+//            })
         }
         // Start the task.
         task?.resume()
@@ -96,6 +103,26 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         }
     }
 
+    private func handleFileTaskResponseData(data: Data?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
+        guard let urlResponse = urlResponse as? HTTPURLResponse else {
+            completion(OperationResult.error(APIError.invalidResponse, nil))
+            return
+        }
+
+        let result = verify(data: data, urlResponse: urlResponse, error: error)
+        switch result {
+        case .success(let data):
+            DispatchQueue.main.async {
+                completion(OperationResult.file(data as? Data, urlResponse))
+            }
+
+        case .failure(let error):
+            DispatchQueue.main.async {
+                completion(OperationResult.error(error, urlResponse))
+            }
+        }
+    }
+
     /// Handles the url response that is expected as a file saved ad the given URL.
     /// - Parameters:
     ///   - fileUrl: The `URL` where the file has been downloaded.
@@ -111,9 +138,67 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         let result = verify(data: fileUrl, urlResponse: urlResponse, error: error)
         switch result {
         case .success(let url):
-            DispatchQueue.main.async {
-                completion(OperationResult.file(url as? URL, urlResponse))
+
+            guard let tempLocalURL = url as? URL else {
+                return
             }
+
+            do {
+                let documentFolderURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                let fileURL = documentFolderURL.appendingPathComponent("mydownload.jpeg")
+                try FileManager.default.copyItem(at: tempLocalURL, to: fileURL)
+
+                DispatchQueue.main.async {
+                    //completion(OperationResult.file(fileURL, urlResponse))
+                }
+
+            } catch {
+                print("errrorr", error)
+            }
+
+//            if let dataURL = try? Data(contentsOf: fileURL) {
+//
+//
+//                let fileHelper = FileHelper()
+//
+//                let savedURL = fileHelper.saveFile(dataURL, withExtension: "jpeg")
+//
+//
+//                DispatchQueue.main.async {
+//                    completion(OperationResult.file(savedURL, urlResponse))
+//                }
+//
+//            } else {
+//                print("Hello")
+//            }
+
+//            let documentsUrl: URL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first as! URL
+//            let destinationFileUrl = documentsUrl.appendingPathComponent("downloadedFile.jpg")
+//
+//
+//            let myURLData = try? Data(contentsOf: fileURL)
+//
+//            do {
+//                try FileManager.default.copyItem(at: fileURL, to: destinationFileUrl)
+//            } catch (let writeError) {
+//                print("Error creating a file \(destinationFileUrl) : \(writeError)")
+//
+//                fatalError()
+//            }
+
+//            let fileManager = FileManager.default
+//            let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//            do {
+//                let fileURLs = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
+//                // process files
+//                print(fileURLs)
+//            } catch {
+//                print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
+//            }
+
+//            DispatchQueue.main.async {
+//                completion(OperationResult.file(destinationFileUrl, urlResponse))
+//            }
 
         case .failure(let error):
             DispatchQueue.main.async {
@@ -129,7 +214,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         guard let data = data else {
             return .failure(APIError.invalidResponse)
         }
-        
+
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
             return .success(json)

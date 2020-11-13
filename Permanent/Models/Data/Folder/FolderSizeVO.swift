@@ -21,7 +21,7 @@ struct FolderSizeVO: Codable {
     let lastExecuteDT, lastExecuteReason, nextExecuteDT, displayName: String?
     let folderSizeVODescription, type, status: String?
     let position: Int?
-    let recursive: JSONNull?
+    let recursive: JSONAny?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

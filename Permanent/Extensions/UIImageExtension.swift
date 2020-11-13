@@ -25,4 +25,6 @@ extension UIImage {
     static let close = UIImage(named: "close")!
     static let cloud = UIImage(named: "cloud")!
     static let folder = UIImage(named: "folder")!
+    static let download = UIImage(named: "download")!
+    static let placeholder = UIImage(named: "placeholder")!
 }
