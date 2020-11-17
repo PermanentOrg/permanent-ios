@@ -35,8 +35,8 @@ enum SortOption: Int, CaseIterable {
     
     var apiValue: String {
         switch self {
-        case .dateAscending: return "sort.created_date_asc"
-        case .dateDescending: return "sort.created_date_desc"
+        case .dateAscending: return "sort.display_date_asc"
+        case .dateDescending: return "sort.display_date_desc"
         case .nameAscending: return "sort.alphabetical_asc"
         case .nameDescending: return "sort.alphabetical_desc"
         case .typeAscending: return "sort.type_asc"

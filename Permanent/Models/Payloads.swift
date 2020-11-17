@@ -131,6 +131,7 @@ struct Payloads {
                 "data": [[
                     "FolderVO": [
                         "archiveNbr": params.archiveNo,
+                        "sort": params.sortOption.apiValue,
                         "ChildItemVOs": childItemsDict
                     ]
                 ]],

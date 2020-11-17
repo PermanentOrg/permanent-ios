@@ -80,5 +80,5 @@
 "CannotUpload" = "Cannot upload selected files.";
 "Date" = "Date";
 "FileType" = "File Type";
-"Ascending" = "Ascending";
-"Descending" = "Descending";
+"Ascending" = "ascending";
+"Descending" = "descending";

@@ -22,7 +22,7 @@ class SortActionSheet: UIView {
 
     convenience init(
         frame: CGRect,
-        selectedOption: SortOption
+        selectedOption: SortOption = .nameAscending
     ) {
         self.init(frame: frame)
         
