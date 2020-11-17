@@ -167,7 +167,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     func searchFiles(byQuery query: String) {
         let searchedItems = viewModels.filter {
-            $0.name.lowercased().starts(with: query.lowercased())
+            $0.name.lowercased().contains(query.lowercased())
         }
         searchViewModels.removeAll()
         searchViewModels.append(contentsOf: searchedItems)

@@ -18,6 +18,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
     
     private var isSearchActive: Bool = false
@@ -525,7 +526,15 @@ extension MainViewController: FABViewDelegate {
 
 extension MainViewController: FABActionSheetDelegate {
     func didTapUpload() {
-        showActionSheet()
+        //        showActionSheet()
+        
+        sortActionSheet = SortActionSheet(
+            frame: view.bounds,
+            selectedOption: .nameAscending
+        )
+        
+        sortActionSheet?.delegate = self
+        view.addSubview(sortActionSheet!)
     }
     
     func didTapNewFolder() {
@@ -681,5 +690,12 @@ extension MainViewController: FileActionSheetDelegate {
     
     func deleteAction(file: FileViewModel) {
         // TODO:
+    }
+}
+
+extension MainViewController: SortActionSheetDelegate {
+    
+    func didSelectOption(_ option: SortOption) {
+        self.showToast(message: option.apiValue)
     }
 }
