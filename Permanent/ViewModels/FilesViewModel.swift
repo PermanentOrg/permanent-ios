@@ -14,7 +14,6 @@ typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: Strin
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
-
 typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
@@ -43,15 +42,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
-    
     var downloadQueue: [FileViewModel] = []
-    
     var activeSortOption: SortOption = .nameAscending
-    
     var uploadInProgress: Bool = false
     var downloadInProgress: Bool = false
-    
     var uploadFolder: FolderInfo?
+    var fileAction: FileAction = .none
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     

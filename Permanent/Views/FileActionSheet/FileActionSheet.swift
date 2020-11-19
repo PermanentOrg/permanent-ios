@@ -10,6 +10,7 @@ import UIKit
 protocol FileActionSheetDelegate: class {
     func downloadAction(file: FileViewModel)
     func deleteAction(file: FileViewModel)
+    func copyAction(file: FileViewModel)
 }
 
 class FileActionSheet: UIView {
@@ -29,7 +30,11 @@ class FileActionSheet: UIView {
     
     private var file: FileViewModel!
     
+    
+    
     override func layoutSubviews() {
+        super.layoutSubviews()
+        
         styleActionButton(downloadButton, color: .primary, text: .download)
         styleActionButton(copyButton, color: .primary, text: .copy)
         styleActionButton(moveButton, color: .primary, text: .move)
@@ -37,6 +42,13 @@ class FileActionSheet: UIView {
         styleActionButton(deleteButton, color: .destructive, text: .delete)
         styleActionButton(editButton, color: .primary, text: .edit)
         styleActionButton(shareButton, color: .primary, text: .share)
+        
+        
+//        UIView.animate(withDuration: 0.5, delay: 0.2, options: UIView.AnimationOptions.curveEaseOut, animations: {
+//            self.contentView.backgroundColor = UIColor.overlay
+//        }, completion: nil)
+        
+        
     }
     
     convenience init(
@@ -56,6 +68,7 @@ class FileActionSheet: UIView {
         
         addSubview(contentView)
         contentView.frame = bounds
+        contentView.backgroundColor = .clear
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         initUI()
@@ -64,7 +77,7 @@ class FileActionSheet: UIView {
     }
     
     fileprivate func initUI() {
-        contentView.backgroundColor = UIColor.overlay
+        
         sheetView.layer.cornerRadius = 4
         
         // titleLabel.font = Text.style3.font
@@ -72,7 +85,7 @@ class FileActionSheet: UIView {
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor, text: String) {
-        button.backgroundColor = color
+        button.bgColor = color
         button.layer.cornerRadius = Constants.Design.actionButtonRadius
         button.setTitle(text, for: [])
     }
@@ -87,10 +100,18 @@ class FileActionSheet: UIView {
     @IBAction
     func downloadAction(_ sender: UIButton) {
         delegate?.downloadAction(file: self.file)
+        
+        dismiss()
     }
     
     @IBAction
     func deleteAction(_ sender: UIButton) {
         delegate?.deleteAction(file: self.file)
+    }
+    
+    @IBAction func copyAction(_ sender: UIButton) {
+        delegate?.copyAction(file: self.file)
+        
+        dismiss()
     }
 }

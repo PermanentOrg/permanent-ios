@@ -342,7 +342,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atPosition: indexPath.row)
@@ -581,9 +581,26 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showFileActionSheet(file: FileViewModel) {
-        fileActionSheet = FileActionSheet(frame: view.bounds, file: file)
+        let origin = CGPoint(x: 0, y: view.bounds.height)
+        fileActionSheet = FileActionSheet(
+            frame: CGRect(origin: origin, size: view.bounds.size),
+            file: file
+        )
         
         fileActionSheet?.delegate = self
+        
+        UIView.animate(
+            withDuration: 0.4,
+            delay: 0,
+            options: .curveEaseInOut,
+            animations: {
+                self.fileActionSheet?.frame = self.view.bounds
+            },
+            completion: { _ in
+                self.fileActionSheet?.backgroundColor = .overlay
+            })
+        
+        
         view.addSubview(fileActionSheet!)
     }
     
@@ -703,6 +720,18 @@ extension MainViewController: FileActionSheetDelegate {
     
     func deleteAction(file: FileViewModel) {
         // TODO:
+    }
+    
+    func copyAction(file: FileViewModel) {
+        
+        viewModel?.fileAction = .copy
+        
+        // Hide the FAB view
+        fabView.isHidden = true
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
 
