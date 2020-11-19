@@ -64,13 +64,9 @@ class FileActionSheet: UIView {
     }
     
     func commonInit() {
-        Bundle.main.loadNibNamed(String(describing: FileActionSheet.self), owner: self, options: nil)
-        
-        addSubview(contentView)
-        contentView.frame = bounds
-        contentView.backgroundColor = .clear
-        contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        loadNib()
+        setupView(contentView)
+
         initUI()
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))

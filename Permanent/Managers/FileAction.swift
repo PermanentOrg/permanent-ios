@@ -13,8 +13,15 @@ enum FileAction {
     
     case move
     
-    case edit
-    
     case none
+    
+    
+    var title: String {
+        switch self {
+        case .copy: return .copy
+        case .move: return .move
+        default: return ""
+        }
+    }
     
 }

@@ -15,6 +15,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     @IBOutlet var searchBar: UISearchBar!
+    @IBOutlet var fileActionBottomView: BottomActionSheet!
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
@@ -34,6 +35,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         initUI()
         setupTableView()
+        setupBottomActionSheet()
         
         viewModel = FilesViewModel()
         fabView.delegate = self
@@ -59,6 +61,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         backButton.isHidden = true
         
         searchBar.setDefaultStyle(placeholder: .searchFiles)
+        
+        fileActionBottomView.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -94,6 +98,36 @@ class MainViewController: BaseViewController<FilesViewModel> {
         viewModel?.isSearchActive = false
         viewModel?.searchViewModels.removeAll()
         view.endEditing(true)
+    }
+    
+    fileprivate func setupBottomActionSheet() {
+        fileActionBottomView.closeAction = {
+            self.setupUIForAction(.none)
+        }
+        
+        fileActionBottomView.fileAction = {
+            
+        }
+    }
+    
+    fileprivate func setupUIForAction(_ action: FileAction) {
+        
+        viewModel?.fileAction = action
+        
+        switch action {
+        case .none:
+            fabView.isHidden = false
+            fileActionBottomView.isHidden = true
+            
+        case .move, .copy:
+            fabView.isHidden = true
+            fileActionBottomView.isHidden = false
+            fileActionBottomView.setActionTitle(action.title)
+        }
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData() // TODO
+        }
     }
     
     @IBAction
@@ -527,7 +561,7 @@ extension MainViewController: FABViewDelegate {
             showAlert(title: .error, message: .errorMessage)
             return
         }
-        
+
         actionSheet.delegate = self
         navigationController?.display(viewController: actionSheet)
     }
@@ -723,15 +757,9 @@ extension MainViewController: FileActionSheetDelegate {
     }
     
     func copyAction(file: FileViewModel) {
+        setupUIForAction(.copy)
         
-        viewModel?.fileAction = .copy
-        
-        // Hide the FAB view
-        fabView.isHidden = true
-        
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
+        // Copy API Call
     }
 }
 

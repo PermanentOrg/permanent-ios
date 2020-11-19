@@ -150,6 +150,8 @@
 		BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7025652C2A00842ABD /* FileActionManager.swift */; };
 		BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7425652F4400842ABD /* FileAction.swift */; };
 		BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7725655E8F00842ABD /* FileState.swift */; };
+		BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */; };
+		BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -314,6 +316,8 @@
 		BCE8DA7025652C2A00842ABD /* FileActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionManager.swift; sourceTree = "<group>"; };
 		BCE8DA7425652F4400842ABD /* FileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAction.swift; sourceTree = "<group>"; };
 		BCE8DA7725655E8F00842ABD /* FileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileState.swift; sourceTree = "<group>"; };
+		BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BottomActionSheet.xib; sourceTree = "<group>"; };
+		BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomActionSheet.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -351,6 +355,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
 				BC7A793F255ED1F000DDFD4D /* SortActionSheet */,
 				BC4278C0255D526400270B34 /* FileActionSheet */,
 				BC0D35AE2553FC0A00786E8C /* ActionDialogView */,
@@ -775,6 +780,15 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		BCE8DA7A2566733A00842ABD /* BottomActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */,
+				BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */,
+			);
+			path = BottomActionSheet;
+			sourceTree = "<group>";
+		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -863,6 +877,7 @@
 				BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
@@ -1020,6 +1035,7 @@
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
+				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
