@@ -18,6 +18,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
+    private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
     
     private var isSearchActive: Bool = false
@@ -164,6 +165,11 @@ class MainViewController: BaseViewController<FilesViewModel> {
         viewModel?.removeFromQueue(position)
         
         refreshTableView()
+    }
+    
+    @objc
+    private func headerButtonAction(_ sender: UIButton) {
+        showSortActionSheetDialog()
     }
     
     // MARK: - Network Related
@@ -377,17 +383,21 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let headerView = UIView()
         headerView.backgroundColor = .backgroundPrimary
         
-        let sectionTitleLabel = UILabel()
-        sectionTitleLabel.text = viewModel?.title(forSection: section)
-        sectionTitleLabel.font = Text.style11.font
-        sectionTitleLabel.textColor = .middleGray
-
-        headerView.addSubview(sectionTitleLabel)
-        sectionTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        let sectionTitleButton = UIButton()
+        sectionTitleButton.setTitle(viewModel?.title(forSection: section), for: [])
+        sectionTitleButton.setFont(Text.style11.font)
+        sectionTitleButton.setTitleColor(.middleGray, for: [])
+        
+        if viewModel?.shouldPerformAction(forSection: section) == true {
+            sectionTitleButton.addTarget(self, action: #selector(headerButtonAction(_:)), for: .touchUpInside)
+        }
+        
+        headerView.addSubview(sectionTitleButton)
+        sectionTitleButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            sectionTitleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-            sectionTitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
+            sectionTitleButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            sectionTitleButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
         ])
         return headerView
     }
@@ -538,6 +548,18 @@ extension MainViewController: FABActionSheetDelegate {
         )
     }
     
+    func showSortActionSheetDialog() {
+        guard let viewModel = viewModel else { return }
+        
+        sortActionSheet = SortActionSheet(
+            frame: view.bounds,
+            selectedOption: viewModel.activeSortOption
+        )
+        
+        sortActionSheet?.delegate = self
+        view.addSubview(sortActionSheet!)
+    }
+    
     // TODO: Move this to BaseVC
     func showActionDialog(
         styled style: ActionDialogStyle,
@@ -681,5 +703,12 @@ extension MainViewController: FileActionSheetDelegate {
     
     func deleteAction(file: FileViewModel) {
         // TODO:
+    }
+}
+
+extension MainViewController: SortActionSheetDelegate {
+    func didSelectOption(_ option: SortOption) {
+        viewModel?.activeSortOption = option
+        self.refreshCurrentFolder()
     }
 }

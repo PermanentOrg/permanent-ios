@@ -11,7 +11,7 @@ import Photos.PHAsset
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
-typealias GetLeanItemsParams = (archiveNo: String, folderLinkIds: [Int], csrf: String)
+typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 
@@ -46,6 +46,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     var downloadQueue: [FileViewModel] = []
     
+    var activeSortOption: SortOption = .nameAscending
+    
     var uploadInProgress: Bool = false
     var downloadInProgress: Bool = false
     
@@ -59,13 +61,20 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     // MARK: - Table View Logic
     
+    func shouldPerformAction(forSection section: Int) -> Bool {
+        guard uploadOrDownloadInProgress else { return true }
+        
+        // Perform action only for synced items
+        return section == FileListType.synced.rawValue
+    }
+    
     func title(forSection section: Int) -> String {
-        guard uploadOrDownloadInProgress else { return .name }
+        guard uploadOrDownloadInProgress else { return activeSortOption.title }
         
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
-        case FileListType.synced.rawValue: return .name
+        case FileListType.synced.rawValue: return activeSortOption.title
         default: fatalError() // We cannot have more than 3 sections.
         }
     }
@@ -167,7 +176,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     func searchFiles(byQuery query: String) {
         let searchedItems = viewModels.filter {
-            $0.name.lowercased().starts(with: query.lowercased())
+            $0.name.lowercased().contains(query.lowercased())
         }
         searchViewModels.removeAll()
         searchViewModels.append(contentsOf: searchedItems)
@@ -736,7 +745,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             navigationStack.append(file)
         }
         
-        let params: GetLeanItemsParams = (archiveNo, folderLinkIds, csrf)
+        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, csrf)
         getLeanItems(params: params, then: handler)
     }
     

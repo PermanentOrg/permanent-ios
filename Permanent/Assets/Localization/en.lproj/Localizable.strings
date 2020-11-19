@@ -78,3 +78,7 @@
 "Share" = "Share";
 "Downloads" = "Downloads";
 "CannotUpload" = "Cannot upload selected files.";
+"Date" = "Date";
+"FileType" = "File Type";
+"Ascending" = "ascending";
+"Descending" = "descending";

@@ -10,6 +10,30 @@ import UIKit
 @IBDesignable
 class RoundedButton: CustomButton {
     
+    var color: HighlightColor = (.secondary, UIColor.secondary.lighter(by: 10) ?? .secondary)
+    
+    var bgColor: UIColor? {
+        didSet {
+            guard let bgColor = bgColor else { return }
+            
+            backgroundColor = bgColor
+            self.color = (default: bgColor, highlightColor: bgColor.lighter(by: 10) ?? bgColor)
+        }
+    }
+    
+    @IBInspectable
+    var radius: CGFloat = 0.0 {
+        didSet {
+            layer.cornerRadius = radius
+        }
+    }
+    
+    override var isHighlighted: Bool {
+        didSet {
+            backgroundColor = isHighlighted ? color.highlightColor : color.default
+        }
+    }
+    
     override func setup() {
         backgroundColor = UIColor.tangerine
         titleLabel?.font = Text.style.font

@@ -81,4 +81,9 @@ extension String {
     static var share: String { return "Share".localized() }
     static var downloads: String { return "Downloads".localized() }
     static var cannotUpload: String { return "CannotUpload".localized() }
+    static var date: String { return "Date".localized() }
+    static var fileType: String { return "FileType".localized() }
+    static var ascending: String { return "Ascending".localized() }
+    static var descending: String { return "Descending".localized() }
+    static var sortOption: String { return "%@ (%@)" }
 }
