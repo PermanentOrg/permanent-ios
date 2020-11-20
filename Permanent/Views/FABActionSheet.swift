@@ -26,6 +26,7 @@ class FABActionSheet: UIViewController {
         newFolderButton.backgroundColor = .galleryGray
         newFolderButton.setTitleColor(.darkBlue, for: [])
         
+        uploadButton.bgColor = .primary
         uploadButton.layer.cornerRadius = Constants.Design.actionButtonRadius
         newFolderButton.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
