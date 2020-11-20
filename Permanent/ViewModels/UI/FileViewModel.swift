@@ -8,6 +8,8 @@
 import Foundation
 
 struct FileViewModel: Equatable {
+    
+    
     let thumbnailURL: String?
     let name: String
     let date: String
@@ -19,8 +21,11 @@ struct FileViewModel: Equatable {
     let recordId: Int
     
     let folderId: Int
+    let parentFolderId: Int
     let folderLinkId: Int
     var fileStatus: FileStatus = .synced
+    var fileState: FileState = .enabled
+    
     
     init(model: FileInfo) {
         self.name = model.name
@@ -32,6 +37,7 @@ struct FileViewModel: Equatable {
         self.archiveNo = ""
         self.recordId = -1
         self.folderId = model.folder.folderId
+        self.parentFolderId = -1
         self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
     }
@@ -50,6 +56,7 @@ struct FileViewModel: Equatable {
         self.recordId = model.recordID ?? -1
         
         self.folderId = model.folderID ?? -1
+        self.parentFolderId = model.parentFolderID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
     }
     
@@ -67,6 +74,7 @@ struct FileViewModel: Equatable {
         self.recordId = model.childItemVOS?.first?.recordID ?? -1 // TODO:
         
         self.folderId = model.folderID ?? -1
+        self.parentFolderId = model.parentFolderID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
     }
 }

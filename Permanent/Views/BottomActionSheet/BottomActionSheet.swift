@@ -37,7 +37,8 @@ class BottomActionSheet: UIView {
         closeButton.setTitle(.cancel, for: [])
         closeButton.setFont(Text.style11.font)
         
-        actionButton.setTitleColor(.primary, for: [])
+        actionButton.setTitleColor(.primary, for: .normal)
+        actionButton.setTitleColor(UIColor.primary.withAlphaComponent(0.5), for: .disabled)
         actionButton.setFont(Text.style11.font)
     }
     
@@ -53,4 +54,7 @@ class BottomActionSheet: UIView {
         actionButton.setTitle(title, for: [])
     }
     
+    func toggleActionButton(enabled: Bool) {
+        actionButton.isEnabled = enabled
+    }
 }

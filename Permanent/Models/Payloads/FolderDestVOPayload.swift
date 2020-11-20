@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct FolderVOPayload: Model {
-    let folderVO: FolderVOPayloadData
+struct FolderDestVOPayload: Model {
+    let folderVO: FolderDestVOPayloadData
     
     init(folderLinkId: Int) {
-        self.folderVO = FolderVOPayloadData(folderLinkId: folderLinkId)
+        self.folderVO = FolderDestVOPayloadData(folderLinkId: folderLinkId)
     }
     
     enum CodingKeys: String, CodingKey {
-        case folderVO = "FolderVO"
+        case folderVO = "FolderDestVO"
     }
 }
 
-struct FolderVOPayloadData: Model {
+struct FolderDestVOPayloadData: Model {
     let folderLinkId: Int
 
     enum CodingKeys: String, CodingKey {

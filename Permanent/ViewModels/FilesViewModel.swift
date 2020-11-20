@@ -19,6 +19,8 @@ typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
 typealias ItemInfoParams = (file: FileViewModel, csrf: String)
+typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
+typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
 typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: String?) -> Void
 
@@ -40,7 +42,7 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
 class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var viewModels: [FileViewModel] = []
-    var navigationStack: [FileViewModel] = []
+    fileprivate var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var downloadQueue: [FileViewModel] = []
     var activeSortOption: SortOption = .nameAscending
@@ -49,6 +51,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadFolder: FolderInfo?
     var fileAction: FileAction = .none
     
+    var selectedFile: FileViewModel?
+    var currentFolder: FileViewModel? { navigationStack.last }
+    
     lazy var searchViewModels: [FileViewModel] = { [] }()
     
     var isSearchActive: Bool = false
@@ -56,6 +61,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
     weak var delegate: FilesViewModelDelegate?
     
     // MARK: - Table View Logic
+    
+    var currentFolderIsRoot: Bool { navigationStack.count == 1 }
+    
+    func removeCurrentFolderFromHierarchy() -> FileViewModel? {
+        navigationStack.popLast()
+    }
     
     func shouldPerformAction(forSection section: Int) -> Bool {
         guard uploadOrDownloadInProgress else { return true }
@@ -74,7 +85,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         default: fatalError() // We cannot have more than 3 sections.
         }
     }
-    
+
     var uploadOrDownloadInProgress: Bool {
         return
             uploadInProgress && uploadingInCurrentFolder || waitingToUpload || // UPLOAD
@@ -180,6 +191,34 @@ class FilesViewModel: NSObject, ViewModelInterface {
 }
 
 extension FilesViewModel: FilesViewModelDelegate {
+    func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
+        let parameters: RelocateParams = ((file, destination), fileAction, csrf)
+    
+        let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let httpResponse, _):
+                guard
+                    let response = httpResponse,
+                    let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                    let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
+                    
+                    return handler(.error(message: .errorMessage))
+                }
+                
+                handler(.success)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                    
+            default:
+                break
+            }
+        }
+    }
+    
     func download(_ file: FileViewModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,

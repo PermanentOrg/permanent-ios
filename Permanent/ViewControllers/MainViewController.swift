@@ -21,7 +21,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private var actionDialog: ActionDialogView?
     private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
-    
     private var isSearchActive: Bool = false
     
     private lazy var mediaRecorder: MediaRecorder = {
@@ -106,12 +105,19 @@ class MainViewController: BaseViewController<FilesViewModel> {
         }
         
         fileActionBottomView.fileAction = {
-            
+            guard
+                let source = self.viewModel?.selectedFile,
+                let destination = self.viewModel?.currentFolder else {
+                
+                self.showErrorAlert(message: .errorMessage)
+                return
+            }
+
+            self.didTapRelocate(source: source, destination: destination)
         }
     }
     
     fileprivate func setupUIForAction(_ action: FileAction) {
-        
         viewModel?.fileAction = action
         
         switch action {
@@ -123,19 +129,26 @@ class MainViewController: BaseViewController<FilesViewModel> {
             fabView.isHidden = true
             fileActionBottomView.isHidden = false
             fileActionBottomView.setActionTitle(action.title)
+            toggleFileAction(action)
         }
         
         DispatchQueue.main.async {
-            self.tableView.reloadData() // TODO
+            self.tableView.reloadData()
         }
+    }
+    
+    fileprivate func toggleFileAction(_ action: FileAction?) {
+        // If we try to move file in the same folder, disable the button
+        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId
+        fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard
             let viewModel = viewModel,
-            let _ = viewModel.navigationStack.popLast(),
-            let destinationFolder = viewModel.navigationStack.last
+            let _ = viewModel.removeCurrentFolderFromHierarchy(),
+            let destinationFolder = viewModel.currentFolder
         else {
             return
         }
@@ -146,7 +159,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             self.directoryLabel.text = destinationFolder.name
             
             // If we got to the root, hide the back button.
-            if viewModel.navigationStack.count == 1 {
+            if viewModel.currentFolderIsRoot {
                 self.backButton.isHidden = true
             }
         })
@@ -157,7 +170,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     {
         guard
             let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last else { return }
+            let currentFolder = viewModel.currentFolder else { return }
         
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
@@ -246,6 +259,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         case .success:
             DispatchQueue.main.async {
                 self.refreshTableView()
+                self.toggleFileAction(self.viewModel?.fileAction)
             }
             
         case .error(let message):
@@ -314,7 +328,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private func createNewFolder(named name: String) {
         guard
             let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last else { return }
+            let currentFolder = viewModel.currentFolder else { return }
 
         let params: NewFolderParams = (name, currentFolder.folderLinkId, viewModel.csrf)
 
@@ -351,6 +365,22 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 self.showErrorAlert(message: message)
             }
             
+        })
+    }
+    
+    func relocate(file: FileViewModel, to destination: FileViewModel) {
+        self.showSpinner()
+        viewModel?.relocate(file: file, to: destination, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                self.viewModel?.viewModels.prepend(file)
+                self.setupUIForAction(.none)
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
         })
     }
 }
@@ -487,6 +517,20 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          positiveAction: {
                              self.actionDialog?.dismiss()
                              self.deleteFile(file, atIndexPath: indexPath)
+                         })
+    }
+    
+    private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
+        guard let fileAction = viewModel?.fileAction else { return }
+        
+        let title = String(format: "\(fileAction.title) \"%@\"?", source.name)
+        
+        showActionDialog(styled: .simple,
+                         withTitle: title,
+                         positiveButtonTitle: fileAction.title,
+                         positiveAction: {
+                            self.actionDialog?.dismiss()
+                            self.relocate(file: source, to: destination)
                          })
     }
     
@@ -661,7 +705,7 @@ extension MainViewController: FABActionSheetDelegate {
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
-                guard let currentFolder = self.viewModel?.navigationStack.last else {
+                guard let currentFolder = self.viewModel?.currentFolder else {
                     return self.showErrorAlert(message: .cannotUpload)
                 }
                 
@@ -707,7 +751,7 @@ extension MainViewController: FABActionSheetDelegate {
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let currentFolder = viewModel?.navigationStack.last else {
+        guard let currentFolder = viewModel?.currentFolder else {
             return showErrorAlert(message: .cannotUpload)
         }
         
@@ -719,7 +763,7 @@ extension MainViewController: MediaRecorderDelegate {
     func didSelect(url: URL?) {
         guard
             let mediaUrl = url,
-            let currentFolder = viewModel?.navigationStack.last
+            let currentFolder = viewModel?.currentFolder
         else {
             return showErrorAlert(message: .cameraErrorMessage)
         }
@@ -747,6 +791,7 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 }
 
 extension MainViewController: FileActionSheetDelegate {
+    
     func downloadAction(file: FileViewModel) {
         fileActionSheet?.dismiss()
         testDownload(file)
@@ -756,10 +801,10 @@ extension MainViewController: FileActionSheetDelegate {
         // TODO:
     }
     
-    func copyAction(file: FileViewModel) {
-        setupUIForAction(.copy)
+    func relocateAction(file: FileViewModel, action: FileAction) {
+        viewModel?.selectedFile = file
         
-        // Copy API Call
+        setupUIForAction(action)
     }
 }
 

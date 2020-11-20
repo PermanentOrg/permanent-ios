@@ -10,7 +10,7 @@ import UIKit
 protocol FileActionSheetDelegate: class {
     func downloadAction(file: FileViewModel)
     func deleteAction(file: FileViewModel)
-    func copyAction(file: FileViewModel)
+    func relocateAction(file: FileViewModel, action: FileAction)
 }
 
 class FileActionSheet: UIView {
@@ -29,26 +29,17 @@ class FileActionSheet: UIView {
     weak var delegate: FileActionSheetDelegate?
     
     private var file: FileViewModel!
-    
-    
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         
         styleActionButton(downloadButton, color: .primary, text: .download)
         styleActionButton(copyButton, color: .primary, text: .copy)
         styleActionButton(moveButton, color: .primary, text: .move)
-        styleActionButton(publishButton, color: .primary, text: .publish)
+        //styleActionButton(publishButton, color: .primary, text: .publish)
         styleActionButton(deleteButton, color: .destructive, text: .delete)
-        styleActionButton(editButton, color: .primary, text: .edit)
-        styleActionButton(shareButton, color: .primary, text: .share)
-        
-        
-//        UIView.animate(withDuration: 0.5, delay: 0.2, options: UIView.AnimationOptions.curveEaseOut, animations: {
-//            self.contentView.backgroundColor = UIColor.overlay
-//        }, completion: nil)
-        
-        
+        //styleActionButton(editButton, color: .primary, text: .edit)
+        //styleActionButton(shareButton, color: .primary, text: .share)
     }
     
     convenience init(
@@ -70,6 +61,11 @@ class FileActionSheet: UIView {
         initUI()
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
+        
+        // Hide these buttons temporarily
+        publishButton.isHidden = true
+        editButton.isHidden = true
+        shareButton.isHidden = true
     }
     
     fileprivate func initUI() {
@@ -106,7 +102,14 @@ class FileActionSheet: UIView {
     }
     
     @IBAction func copyAction(_ sender: UIButton) {
-        delegate?.copyAction(file: self.file)
+        delegate?.relocateAction(file: self.file, action: .copy)
+        
+        dismiss()
+    }
+    
+    @IBAction
+    func moveAction(_ sender: UIButton) {
+        delegate?.relocateAction(file: self.file, action: .move)
         
         dismiss()
     }

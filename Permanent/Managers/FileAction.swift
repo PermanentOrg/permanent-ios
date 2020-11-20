@@ -15,7 +15,6 @@ enum FileAction {
     
     case none
     
-    
     var title: String {
         switch self {
         case .copy: return .copy
@@ -24,4 +23,11 @@ enum FileAction {
         }
     }
     
+    var endpointValue: String {
+        switch self {
+        case .copy: return "copy"
+        case .move: return "move"
+        default: return ""
+        }
+    }
 }

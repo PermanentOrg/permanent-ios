@@ -47,6 +47,9 @@
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PMR-P5-ywn" userLabel="Move Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="80" width="374" height="30"/>
+                                    <connections>
+                                        <action selector="moveAction:" destination="-1" eventType="touchUpInside" id="oCw-HU-lni"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phf-dD-p8f" userLabel="Publish Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="120" width="374" height="30"/>
