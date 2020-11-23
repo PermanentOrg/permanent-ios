@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BottomActionSheet" customModule="Permanent" customModuleProvider="target">
+            <connections>
+                <outlet property="actionButton" destination="0Ym-qE-YjA" id="r4o-IE-X9P"/>
+                <outlet property="closeButton" destination="afg-mL-2HO" id="YDb-2b-z3f"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="oUf-aE-HgH"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="408" height="61"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="Vix-J6-JUe">
+                    <rect key="frame" x="288" y="15" width="90" height="31"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="afg-mL-2HO" userLabel="Cancel Button">
+                            <rect key="frame" x="0.0" y="0.0" width="30" height="31"/>
+                            <connections>
+                                <action selector="closeButtonAction:" destination="-1" eventType="touchUpInside" id="7zx-gu-lVH"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Ym-qE-YjA" userLabel="Action Button">
+                            <rect key="frame" x="60" y="0.0" width="30" height="31"/>
+                            <connections>
+                                <action selector="fileActionButton:" destination="-1" eventType="touchUpInside" id="bVh-mS-ZWD"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="Vix-J6-JUe" secondAttribute="bottom" constant="15" id="QV3-xf-vMF"/>
+                <constraint firstItem="Vix-J6-JUe" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="15" id="U8L-T3-hMl"/>
+                <constraint firstAttribute="trailing" secondItem="Vix-J6-JUe" secondAttribute="trailing" constant="30" id="esS-UF-WiX"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="59.420289855072468" y="-175.78125"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

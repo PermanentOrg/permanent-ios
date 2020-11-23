@@ -10,14 +10,14 @@ import UIKit
 @IBDesignable
 class RoundedButton: CustomButton {
     
-    var color: HighlightColor = (.secondary, UIColor.secondary.lighter(by: 10) ?? .secondary)
+    var color: HighlightColor = (.secondary, UIColor.secondary.lighter(by: 5) ?? .secondary)
     
     var bgColor: UIColor? {
         didSet {
             guard let bgColor = bgColor else { return }
             
             backgroundColor = bgColor
-            self.color = (default: bgColor, highlightColor: bgColor.lighter(by: 10) ?? bgColor)
+            self.color = (default: bgColor, highlightColor: bgColor.lighter(by: 5) ?? bgColor)
         }
     }
     

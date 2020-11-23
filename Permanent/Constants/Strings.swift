@@ -86,4 +86,6 @@ extension String {
     static var ascending: String { return "Ascending".localized() }
     static var descending: String { return "Descending".localized() }
     static var sortOption: String { return "%@ (%@)" }
+    static var copyHere: String { return "CopyHere".localized() }
+    static var moveHere: String { return "MoveHere".localized() }
 }

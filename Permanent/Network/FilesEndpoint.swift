@@ -23,6 +23,8 @@ enum FilesEndpoint {
     case newFolder(params: NewFolderParams)
     
     case delete(params: ItemInfoParams)
+
+    case relocate(params: RelocateParams)
     
     // UPLOAD
     
@@ -58,6 +60,14 @@ extension FilesEndpoint: RequestProtocol {
             }
         case .getRecord:
             return "/record/get"
+            
+        case .relocate(let parameters):
+            if parameters.items.source.type.isFolder {
+                return "/folder/\(parameters.action.endpointValue)"
+            } else {
+                return "/record/\(parameters.action.endpointValue)"
+            }
+  
         default:
             return ""
         }
@@ -143,10 +153,8 @@ extension FilesEndpoint: RequestProtocol {
                                                       boundary: boundary)
             
         case .delete(let parameters):
-            
             if parameters.file.type.isFolder {
-                let folderVOData = FolderVOPayloadData(folderLinkId: parameters.file.folderLinkId)
-                let folderVO = FolderVOPayload(folderVO: folderVOData)
+                let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
                 let requestVO = APIPayload.make(fromData: [folderVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
@@ -164,6 +172,21 @@ extension FilesEndpoint: RequestProtocol {
             
             return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             
+        case .relocate(let parameters):
+            if parameters.items.source.type.isFolder {
+                let copyVO = RelocateFolderPayload(folderLinkId: parameters.items.source.folderLinkId,
+                                                     folderDestLinkId: parameters.items.destination.folderLinkId)
+                let requestVO = APIPayload.make(fromData: [copyVO], csrf: parameters.csrf)
+                
+                return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
+            } else {
+                let copyVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
+                                                     folderDestLinkId: parameters.items.destination.folderLinkId)
+                let requestVO = APIPayload.make(fromData: [copyVO], csrf: parameters.csrf)
+                
+                return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
+            }
+
         default:
             return nil
         }

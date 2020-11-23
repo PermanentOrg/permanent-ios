@@ -15,6 +15,7 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var statusLabel: UILabel!
     @IBOutlet var progressView: UIProgressView!
     @IBOutlet var dateStackView: UIStackView!
+    @IBOutlet var overlayView: UIView!
     
     var rightButtonTapAction: CellButtonTapAction?
     
@@ -37,14 +38,27 @@ class FileTableViewCell: UITableViewCell {
         
         progressView.progressTintColor = .primary
         moreButton.tintColor = .middleGray
+        
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel) {
+    func updateCell(model: FileViewModel, fileAction: FileAction) {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
+        toggleInteraction(forModel: model, action: fileAction)
+    }
+    
+    fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
+        if model.type.isFolder {
+            overlayView.isHidden = true
+            self.isUserInteractionEnabled = true
+        } else {
+            overlayView.isHidden = action == .none
+            self.isUserInteractionEnabled = action == .none
+        }
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {

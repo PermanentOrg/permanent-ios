@@ -14,7 +14,7 @@ protocol SortActionSheetDelegate: class {
 class SortActionSheet: UIView {
     private var sheetView: UIView!
     private var stackView: UIStackView!
-    
+
     private var selectedOption: SortOption!
     
     weak var delegate: SortActionSheetDelegate?
@@ -48,7 +48,6 @@ class SortActionSheet: UIView {
             sheetView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.trailingAnchor.constraint(equalTo: sheetView.trailingAnchor),
             sheetView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            //sheetView.heightAnchor.constraint(equalToConstant: 200)
         ])
         
         // Stack view

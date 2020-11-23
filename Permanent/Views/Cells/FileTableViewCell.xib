@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -79,16 +80,24 @@
                             <action selector="moreButtonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="qel-9x-RHd"/>
                         </connections>
                     </button>
+                    <view hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mnZ-AY-U2a" userLabel="Overlay View">
+                        <rect key="frame" x="0.0" y="0.0" width="430" height="144"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="1FZ-17-D40"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="leading" secondItem="PO6-uJ-qlZ" secondAttribute="trailing" constant="20" id="1Vz-KX-qFG"/>
+                    <constraint firstItem="mnZ-AY-U2a" firstAttribute="height" secondItem="H2p-sc-9uM" secondAttribute="height" id="6Ug-Y0-b4G"/>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="TVq-59-fuJ"/>
                     <constraint firstAttribute="bottom" secondItem="PO6-uJ-qlZ" secondAttribute="bottom" constant="15" id="WNS-Hl-fjH"/>
+                    <constraint firstItem="mnZ-AY-U2a" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Zev-Oy-QXM"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="aKa-VN-a5Z"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ap0-kV-sir"/>
+                    <constraint firstItem="mnZ-AY-U2a" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="gQw-XG-a6N"/>
                     <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" constant="20" id="l0H-G5-od7"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="wTu-bW-Sut"/>
+                    <constraint firstItem="mnZ-AY-U2a" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="wu3-KZ-2R1"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
@@ -98,6 +107,7 @@
                 <outlet property="fileImageView" destination="h0w-q0-XkC" id="5LU-1u-YKp"/>
                 <outlet property="fileNameLabel" destination="zU3-4p-PA7" id="syZ-AM-qiK"/>
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
+                <outlet property="overlayView" destination="mnZ-AY-U2a" id="tlf-Qh-IK8"/>
                 <outlet property="progressView" destination="oeE-4y-tVi" id="Iwh-Qs-yad"/>
                 <outlet property="statusLabel" destination="Nid-5J-xom" id="2eE-cO-CIY"/>
             </connections>
@@ -107,5 +117,8 @@
     <resources>
         <image name="folder" width="42.5" height="34"/>
         <image name="more" width="4" height="16"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

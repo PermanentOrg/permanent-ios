@@ -10,6 +10,7 @@ import UIKit
 protocol FileActionSheetDelegate: class {
     func downloadAction(file: FileViewModel)
     func deleteAction(file: FileViewModel)
+    func relocateAction(file: FileViewModel, action: FileAction)
 }
 
 class FileActionSheet: UIView {
@@ -28,15 +29,17 @@ class FileActionSheet: UIView {
     weak var delegate: FileActionSheetDelegate?
     
     private var file: FileViewModel!
-    
+
     override func layoutSubviews() {
+        super.layoutSubviews()
+        
         styleActionButton(downloadButton, color: .primary, text: .download)
         styleActionButton(copyButton, color: .primary, text: .copy)
         styleActionButton(moveButton, color: .primary, text: .move)
-        styleActionButton(publishButton, color: .primary, text: .publish)
+        //styleActionButton(publishButton, color: .primary, text: .publish)
         styleActionButton(deleteButton, color: .destructive, text: .delete)
-        styleActionButton(editButton, color: .primary, text: .edit)
-        styleActionButton(shareButton, color: .primary, text: .share)
+        //styleActionButton(editButton, color: .primary, text: .edit)
+        //styleActionButton(shareButton, color: .primary, text: .share)
     }
     
     convenience init(
@@ -52,19 +55,21 @@ class FileActionSheet: UIView {
     }
     
     func commonInit() {
-        Bundle.main.loadNibNamed(String(describing: FileActionSheet.self), owner: self, options: nil)
-        
-        addSubview(contentView)
-        contentView.frame = bounds
-        contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        loadNib()
+        setupView(contentView)
+
         initUI()
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
+        
+        // Hide these buttons temporarily
+        publishButton.isHidden = true
+        editButton.isHidden = true
+        shareButton.isHidden = true
     }
     
     fileprivate func initUI() {
-        contentView.backgroundColor = UIColor.overlay
+        
         sheetView.layer.cornerRadius = 4
         
         // titleLabel.font = Text.style3.font
@@ -72,7 +77,7 @@ class FileActionSheet: UIView {
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor, text: String) {
-        button.backgroundColor = color
+        button.bgColor = color
         button.layer.cornerRadius = Constants.Design.actionButtonRadius
         button.setTitle(text, for: [])
     }
@@ -87,10 +92,25 @@ class FileActionSheet: UIView {
     @IBAction
     func downloadAction(_ sender: UIButton) {
         delegate?.downloadAction(file: self.file)
+        
+        dismiss()
     }
     
     @IBAction
     func deleteAction(_ sender: UIButton) {
         delegate?.deleteAction(file: self.file)
+    }
+    
+    @IBAction func copyAction(_ sender: UIButton) {
+        delegate?.relocateAction(file: self.file, action: .copy)
+        
+        dismiss()
+    }
+    
+    @IBAction
+    func moveAction(_ sender: UIButton) {
+        delegate?.relocateAction(file: self.file, action: .move)
+        
+        dismiss()
     }
 }

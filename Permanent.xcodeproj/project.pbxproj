@@ -42,7 +42,11 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
+		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
+		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
+		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
 		BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */; };
+		BC0D99AD256BD72200D29041 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AC256BD72200D29041 /* Colors.swift */; };
 		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
 		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC11C80225594ABD008BDEFA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80125594ABD008BDEFA /* Model.swift */; };
@@ -147,6 +151,11 @@
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
+		BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7025652C2A00842ABD /* FileActionManager.swift */; };
+		BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7425652F4400842ABD /* FileAction.swift */; };
+		BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7725655E8F00842ABD /* FileState.swift */; };
+		BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */; };
+		BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -203,7 +212,11 @@
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
+		BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelocateFolderPayload.swift; sourceTree = "<group>"; };
+		BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelocateRecordPayload.swift; sourceTree = "<group>"; };
 		BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogStyle.swift; sourceTree = "<group>"; };
+		BC0D99AC256BD72200D29041 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC11C80125594ABD008BDEFA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -308,6 +321,11 @@
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
 		BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		BCE8DA7025652C2A00842ABD /* FileActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionManager.swift; sourceTree = "<group>"; };
+		BCE8DA7425652F4400842ABD /* FileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAction.swift; sourceTree = "<group>"; };
+		BCE8DA7725655E8F00842ABD /* FileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileState.swift; sourceTree = "<group>"; };
+		BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BottomActionSheet.xib; sourceTree = "<group>"; };
+		BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomActionSheet.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -345,6 +363,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
 				BC7A793F255ED1F000DDFD4D /* SortActionSheet */,
 				BC4278C0255D526400270B34 /* FileActionSheet */,
 				BC0D35AE2553FC0A00786E8C /* ActionDialogView */,
@@ -467,6 +486,7 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				BCE8DA6F25652C1B00842ABD /* Managers */,
 				BC120C6125402BFF00C41243 /* Storage */,
 				BC6E70EC252C6F0100113D5F /* Security */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
@@ -533,6 +553,9 @@
 			children = (
 				BC11C80B25595BA3008BDEFA /* RecordVOPayload.swift */,
 				BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */,
+				BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */,
+				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
+				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
 			);
 			path = Payloads;
 			sourceTree = "<group>";
@@ -588,6 +611,7 @@
 				BC648781251B9FC7009D7DE1 /* StoryboardName.swift */,
 				BC11C7FA2555769A008BDEFA /* Strings.swift */,
 				BCA120CB2562C64300ECAD7B /* HighlightColor.swift */,
+				BC0D99AC256BD72200D29041 /* Colors.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -690,6 +714,7 @@
 				BC6358BB25371FCB00EEC48C /* FileViewModel.swift */,
 				BCC1E31E2549861C00B71866 /* FileStatus.swift */,
 				BCC1E3212549866300B71866 /* FileListType.swift */,
+				BCE8DA7725655E8F00842ABD /* FileState.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -756,6 +781,24 @@
 				BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */,
 			);
 			path = Popups;
+			sourceTree = "<group>";
+		};
+		BCE8DA6F25652C1B00842ABD /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
+				BCE8DA7425652F4400842ABD /* FileAction.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		BCE8DA7A2566733A00842ABD /* BottomActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */,
+				BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */,
+			);
+			path = BottomActionSheet;
 			sourceTree = "<group>";
 		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
@@ -846,6 +889,7 @@
 				BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
@@ -929,7 +973,9 @@
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
+				BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
+				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
 				BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
@@ -939,6 +985,7 @@
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
+				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
@@ -958,6 +1005,7 @@
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
+				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */,
@@ -997,10 +1045,12 @@
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
+				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
+				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
@@ -1014,7 +1064,9 @@
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
+				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
+				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,

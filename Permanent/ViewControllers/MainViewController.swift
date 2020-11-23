@@ -15,12 +15,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     @IBOutlet var searchBar: UISearchBar!
+    @IBOutlet var fileActionBottomView: BottomActionSheet!
     
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
     private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
-    
     private var isSearchActive: Bool = false
     
     private lazy var mediaRecorder: MediaRecorder = {
@@ -34,6 +34,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         initUI()
         setupTableView()
+        setupBottomActionSheet()
         
         viewModel = FilesViewModel()
         fabView.delegate = self
@@ -59,6 +60,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         backButton.isHidden = true
         
         searchBar.setDefaultStyle(placeholder: .searchFiles)
+        
+        fileActionBottomView.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -96,12 +99,56 @@ class MainViewController: BaseViewController<FilesViewModel> {
         view.endEditing(true)
     }
     
+    fileprivate func setupBottomActionSheet() {
+        fileActionBottomView.closeAction = {
+            self.setupUIForAction(.none)
+        }
+        
+        fileActionBottomView.fileAction = {
+            guard
+                let source = self.viewModel?.selectedFile,
+                let destination = self.viewModel?.currentFolder else {
+                
+                self.showErrorAlert(message: .errorMessage)
+                return
+            }
+
+            self.didTapRelocate(source: source, destination: destination)
+        }
+    }
+    
+    fileprivate func setupUIForAction(_ action: FileAction) {
+        viewModel?.fileAction = action
+        
+        switch action {
+        case .none:
+            fabView.isHidden = false
+            fileActionBottomView.isHidden = true
+            
+        case .move, .copy:
+            fabView.isHidden = true
+            fileActionBottomView.isHidden = false
+            fileActionBottomView.setActionTitle(action.title)
+            toggleFileAction(action)
+        }
+        
+        DispatchQueue.main.async {
+            self.refreshTableView()
+        }
+    }
+    
+    fileprivate func toggleFileAction(_ action: FileAction?) {
+        // If we try to move file in the same folder, disable the button
+        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId
+        fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
+    }
+    
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard
             let viewModel = viewModel,
-            let _ = viewModel.navigationStack.popLast(),
-            let destinationFolder = viewModel.navigationStack.last
+            let _ = viewModel.removeCurrentFolderFromHierarchy(),
+            let destinationFolder = viewModel.currentFolder
         else {
             return
         }
@@ -112,7 +159,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             self.directoryLabel.text = destinationFolder.name
             
             // If we got to the root, hide the back button.
-            if viewModel.navigationStack.count == 1 {
+            if viewModel.currentFolderIsRoot {
                 self.backButton.isHidden = true
             }
         })
@@ -123,7 +170,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     {
         guard
             let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last else { return }
+            let currentFolder = viewModel.currentFolder else { return }
         
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
@@ -212,6 +259,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         case .success:
             DispatchQueue.main.async {
                 self.refreshTableView()
+                self.toggleFileAction(self.viewModel?.fileAction)
             }
             
         case .error(let message):
@@ -280,7 +328,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private func createNewFolder(named name: String) {
         guard
             let viewModel = viewModel,
-            let currentFolder = viewModel.navigationStack.last else { return }
+            let currentFolder = viewModel.currentFolder else { return }
 
         let params: NewFolderParams = (name, currentFolder.folderLinkId, viewModel.csrf)
 
@@ -319,6 +367,22 @@ class MainViewController: BaseViewController<FilesViewModel> {
             
         })
     }
+    
+    func relocate(file: FileViewModel, to destination: FileViewModel) {
+        self.showSpinner()
+        viewModel?.relocate(file: file, to: destination, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                self.viewModel?.viewModels.prepend(file)
+                self.setupUIForAction(.none)
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        })
+    }
 }
 
 // MARK: - Table View Delegates
@@ -342,10 +406,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction)
         
         cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atPosition: indexPath.row)
+            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell
@@ -411,39 +475,55 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard let viewModel = viewModel else {
+            fatalError()
+        }
+        
+        let selectedFile = viewModel.fileForRowAt(indexPath: indexPath)
+        
+        let moreAction = UIContextualAction.make(
+            withImage: .moreAction,
+            backgroundColor: .middleGray,
+            handler: { _, _, completion in
+                self.showFileActionSheet(file: selectedFile, atIndexPath: indexPath)
+                completion(true)
+            }
+        )
+        
         let deleteAction = UIContextualAction.make(
             withImage: .deleteAction,
             backgroundColor: .destructive,
             handler: { _, _, completion in
-                self.didTapDelete(at: indexPath)
+                self.didTapDelete(forFile: selectedFile, atIndexPath: indexPath)
                 completion(true)
             }
         )
-
-        return UISwipeActionsConfiguration(actions: [deleteAction])
+        
+        return UISwipeActionsConfiguration(actions: [
+            moreAction,
+            deleteAction
+        ])
     }
     
     private func cellRightButtonAction(atPosition position: Int) {
         removeFromQueue(atPosition: position)
     }
     
-    private func handleCellRightButtonAction(for file: FileViewModel, atPosition position: Int) {
+    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            showFileActionSheet(file: file)
+            showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
             break
             
         case .uploading, .waiting:
-            cellRightButtonAction(atPosition: position)
+            cellRightButtonAction(atPosition: indexPath.row)
         }
     }
     
-    private func didTapDelete(at indexPath: IndexPath) {
-        guard let file = viewModel?.fileForRowAt(indexPath: indexPath) else {
-            return
-        }
+    private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
         
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
@@ -453,6 +533,20 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          positiveAction: {
                              self.actionDialog?.dismiss()
                              self.deleteFile(file, atIndexPath: indexPath)
+                         })
+    }
+    
+    private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
+        guard let fileAction = viewModel?.fileAction else { return }
+        
+        let title = String(format: "\(fileAction.title) \"%@\"?", source.name)
+        
+        showActionDialog(styled: .simple,
+                         withTitle: title,
+                         positiveButtonTitle: fileAction.title,
+                         positiveAction: {
+                            self.actionDialog?.dismiss()
+                            self.relocate(file: source, to: destination)
                          })
     }
     
@@ -527,7 +621,7 @@ extension MainViewController: FABViewDelegate {
             showAlert(title: .error, message: .errorMessage)
             return
         }
-        
+
         actionSheet.delegate = self
         navigationController?.display(viewController: actionSheet)
     }
@@ -580,10 +674,29 @@ extension MainViewController: FABActionSheetDelegate {
         view.addSubview(actionDialog!)
     }
     
-    func showFileActionSheet(file: FileViewModel) {
-        fileActionSheet = FileActionSheet(frame: view.bounds, file: file)
+    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        let origin = CGPoint(x: 0, y: view.bounds.height)
+        fileActionSheet = FileActionSheet(
+            frame: CGRect(origin: origin, size: view.bounds.size),
+            title: file.name,
+            file: file,
+            indexPath: indexPath
+        )
         
         fileActionSheet?.delegate = self
+        
+        UIView.animate(
+            withDuration: 0.4,
+            delay: 0,
+            options: .curveEaseInOut,
+            animations: {
+                self.fileActionSheet?.frame = self.view.bounds
+            },
+            completion: { _ in
+                self.fileActionSheet?.backgroundColor = .overlay
+            })
+        
+        
         view.addSubview(fileActionSheet!)
     }
     
@@ -610,7 +723,7 @@ extension MainViewController: FABActionSheetDelegate {
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
-                guard let currentFolder = self.viewModel?.navigationStack.last else {
+                guard let currentFolder = self.viewModel?.currentFolder else {
                     return self.showErrorAlert(message: .cannotUpload)
                 }
                 
@@ -656,7 +769,7 @@ extension MainViewController: FABActionSheetDelegate {
 
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let currentFolder = viewModel?.navigationStack.last else {
+        guard let currentFolder = viewModel?.currentFolder else {
             return showErrorAlert(message: .cannotUpload)
         }
         
@@ -668,7 +781,7 @@ extension MainViewController: MediaRecorderDelegate {
     func didSelect(url: URL?) {
         guard
             let mediaUrl = url,
-            let currentFolder = viewModel?.navigationStack.last
+            let currentFolder = viewModel?.currentFolder
         else {
             return showErrorAlert(message: .cameraErrorMessage)
         }
@@ -696,13 +809,20 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 }
 
 extension MainViewController: FileActionSheetDelegate {
+    
+    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        didTapDelete(forFile: file, atIndexPath: indexPath)
+    }
+    
     func downloadAction(file: FileViewModel) {
         fileActionSheet?.dismiss()
         testDownload(file)
     }
     
-    func deleteAction(file: FileViewModel) {
-        // TODO:
+    func relocateAction(file: FileViewModel, action: FileAction) {
+        viewModel?.selectedFile = file
+        
+        setupUIForAction(action)
     }
 }
 

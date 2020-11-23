@@ -82,3 +82,5 @@
 "FileType" = "File Type";
 "Ascending" = "ascending";
 "Descending" = "descending";
+"CopyHere" = "Copy here";
+"MoveHere" = "Move here";

@@ -23,9 +23,10 @@ class FABActionSheet: UIViewController {
         sheetView.layer.shadowOpacity = 1
         sheetView.layer.shadowOffset = CGSize(width: 0, height: -4)
         
-        newFolderButton.backgroundColor = .galleryGray
+        newFolderButton.bgColor = .galleryGray
         newFolderButton.setTitleColor(.darkBlue, for: [])
         
+        uploadButton.bgColor = .primary
         uploadButton.layer.cornerRadius = Constants.Design.actionButtonRadius
         newFolderButton.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
