@@ -46,6 +46,7 @@
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
 		BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */; };
+		BC0D99AD256BD72200D29041 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AC256BD72200D29041 /* Colors.swift */; };
 		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
 		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC11C80225594ABD008BDEFA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80125594ABD008BDEFA /* Model.swift */; };
@@ -215,6 +216,7 @@
 		BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelocateFolderPayload.swift; sourceTree = "<group>"; };
 		BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelocateRecordPayload.swift; sourceTree = "<group>"; };
 		BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogStyle.swift; sourceTree = "<group>"; };
+		BC0D99AC256BD72200D29041 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC11C80125594ABD008BDEFA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -609,6 +611,7 @@
 				BC648781251B9FC7009D7DE1 /* StoryboardName.swift */,
 				BC11C7FA2555769A008BDEFA /* Strings.swift */,
 				BCA120CB2562C64300ECAD7B /* HighlightColor.swift */,
+				BC0D99AC256BD72200D29041 /* Colors.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -982,6 +985,7 @@
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
+				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,

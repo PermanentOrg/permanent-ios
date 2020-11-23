@@ -133,7 +133,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         }
         
         DispatchQueue.main.async {
-            self.tableView.reloadData()
+            self.refreshTableView()
         }
     }
     
@@ -409,7 +409,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         cell.updateCell(model: file, fileAction: viewModel.fileAction)
         
         cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atPosition: indexPath.row)
+            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell
@@ -475,39 +475,55 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard let viewModel = viewModel else {
+            fatalError()
+        }
+        
+        let selectedFile = viewModel.fileForRowAt(indexPath: indexPath)
+        
+        let moreAction = UIContextualAction.make(
+            withImage: .moreAction,
+            backgroundColor: .middleGray,
+            handler: { _, _, completion in
+                self.showFileActionSheet(file: selectedFile, atIndexPath: indexPath)
+                completion(true)
+            }
+        )
+        
         let deleteAction = UIContextualAction.make(
             withImage: .deleteAction,
             backgroundColor: .destructive,
             handler: { _, _, completion in
-                self.didTapDelete(at: indexPath)
+                self.didTapDelete(forFile: selectedFile, atIndexPath: indexPath)
                 completion(true)
             }
         )
-
-        return UISwipeActionsConfiguration(actions: [deleteAction])
+        
+        return UISwipeActionsConfiguration(actions: [
+            moreAction,
+            deleteAction
+        ])
     }
     
     private func cellRightButtonAction(atPosition position: Int) {
         removeFromQueue(atPosition: position)
     }
     
-    private func handleCellRightButtonAction(for file: FileViewModel, atPosition position: Int) {
+    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            showFileActionSheet(file: file)
+            showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
             break
             
         case .uploading, .waiting:
-            cellRightButtonAction(atPosition: position)
+            cellRightButtonAction(atPosition: indexPath.row)
         }
     }
     
-    private func didTapDelete(at indexPath: IndexPath) {
-        guard let file = viewModel?.fileForRowAt(indexPath: indexPath) else {
-            return
-        }
+    private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
         
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
@@ -658,11 +674,13 @@ extension MainViewController: FABActionSheetDelegate {
         view.addSubview(actionDialog!)
     }
     
-    func showFileActionSheet(file: FileViewModel) {
+    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         let origin = CGPoint(x: 0, y: view.bounds.height)
         fileActionSheet = FileActionSheet(
             frame: CGRect(origin: origin, size: view.bounds.size),
-            file: file
+            title: file.name,
+            file: file,
+            indexPath: indexPath
         )
         
         fileActionSheet?.delegate = self
@@ -792,13 +810,13 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     
+    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        didTapDelete(forFile: file, atIndexPath: indexPath)
+    }
+    
     func downloadAction(file: FileViewModel) {
         fileActionSheet?.dismiss()
         testDownload(file)
-    }
-    
-    func deleteAction(file: FileViewModel) {
-        // TODO:
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {
