@@ -28,6 +28,7 @@ enum ViewControllerIdentifier: String {
     case twoStepVerification
     case biometrics
     case fabActionSheet
+    case sideMenu
 
     var identifier: String {
         switch self {
@@ -41,6 +42,8 @@ enum ViewControllerIdentifier: String {
             return "TwoStepVerification"
         case .fabActionSheet:
             return "FABActionSheet"
+        case .sideMenu:
+            return "SideMenu"
         default:
             return self.rawValue.capitalized
         }

@@ -26,20 +26,26 @@ class RootViewController: UIViewController {
         setupChild(current)
     }
     
+    func setDrawerRoot() {
+        guard let mainViewController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
+                .instantiateViewController(withIdentifier: ViewControllerIdentifier.main.identifier)
+                as? MainViewController else { return }
+        
+        let navController = RootNavigationController(viewController: mainViewController)
+        let drawerController = DrawerViewController(rootViewController: navController, sideMenuController: SideMenuViewController())
+        
+        // Move these 3 lines to a method
+        setupChild(drawerController)
+        removeChild(current)
+        current = drawerController
+    }
+    
     func setRoot(named controller: ViewControllerIdentifier, from storyboard: StoryboardName) {
         let navController = NavigationController()
         let viewController = UIStoryboard(name: storyboard.name, bundle: nil)
             .instantiateViewController(withIdentifier: controller.identifier)
         
         navController.viewControllers = [viewController]
-        
-        setupChild(navController)
-        removeChild(current)
-        current = navController
-    }
-    
-    func setRoot<T: UIViewController>(_ viewController: T.Type) {
-        let navController = NavigationController(rootViewController: T())
         
         setupChild(navController)
         removeChild(current)

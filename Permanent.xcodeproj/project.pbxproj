@@ -47,6 +47,9 @@
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
 		BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */; };
 		BC0D99AD256BD72200D29041 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AC256BD72200D29041 /* Colors.swift */; };
+		BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */; };
+		BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */; };
+		BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */; };
 		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
 		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC11C80225594ABD008BDEFA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80125594ABD008BDEFA /* Model.swift */; };
@@ -217,6 +220,9 @@
 		BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelocateRecordPayload.swift; sourceTree = "<group>"; };
 		BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogStyle.swift; sourceTree = "<group>"; };
 		BC0D99AC256BD72200D29041 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuViewController.swift; sourceTree = "<group>"; };
+		BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
+		BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationController.swift; sourceTree = "<group>"; };
 		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC11C80125594ABD008BDEFA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -396,6 +402,9 @@
 				BC4526F4251DF5AE00E24A51 /* RootViewController.swift */,
 				BC4526F6251DF5E900E24A51 /* SplashViewController.swift */,
 				BC6358832535C7D000EEC48C /* NavigationController.swift */,
+				BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */,
+				BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */,
+				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -971,9 +980,11 @@
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
+				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
 				BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */,
+				BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
@@ -1065,6 +1076,7 @@
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
+				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,

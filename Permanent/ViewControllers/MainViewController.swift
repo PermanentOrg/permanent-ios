@@ -22,10 +22,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
     private var isSearchActive: Bool = false
-    
-    private lazy var mediaRecorder: MediaRecorder = {
-        MediaRecorder(presentationController: self, delegate: self)
-    }()
+    private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
     let documentInteractionController = UIDocumentInteractionController()
     
