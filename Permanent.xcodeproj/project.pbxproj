@@ -52,6 +52,8 @@
 		BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */; };
 		BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99C3256DB18500D29041 /* DrawerTableViewCell.swift */; };
 		BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC0D99C4256DB18500D29041 /* DrawerTableViewCell.xib */; };
+		BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99C8256E5B8B00D29041 /* DrawerOption.swift */; };
+		BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99CB256E5BF000D29041 /* TableViewData.swift */; };
 		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
 		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC11C80225594ABD008BDEFA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80125594ABD008BDEFA /* Model.swift */; };
@@ -227,6 +229,8 @@
 		BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationController.swift; sourceTree = "<group>"; };
 		BC0D99C3256DB18500D29041 /* DrawerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerTableViewCell.swift; sourceTree = "<group>"; };
 		BC0D99C4256DB18500D29041 /* DrawerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DrawerTableViewCell.xib; sourceTree = "<group>"; };
+		BC0D99C8256E5B8B00D29041 /* DrawerOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerOption.swift; sourceTree = "<group>"; };
+		BC0D99CB256E5BF000D29041 /* TableViewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewData.swift; sourceTree = "<group>"; };
 		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC11C80125594ABD008BDEFA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -456,6 +460,7 @@
 				BC11C80125594ABD008BDEFA /* Model.swift */,
 				BC11C80425594B41008BDEFA /* APIResults.swift */,
 				BC11C807255953B2008BDEFA /* APIPayload.swift */,
+				BC0D99C8256E5B8B00D29041 /* DrawerOption.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -634,6 +639,7 @@
 				BC11C7FA2555769A008BDEFA /* Strings.swift */,
 				BCA120CB2562C64300ECAD7B /* HighlightColor.swift */,
 				BC0D99AC256BD72200D29041 /* Colors.swift */,
+				BC0D99CB256E5BF000D29041 /* TableViewData.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -1073,6 +1079,7 @@
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
+				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
@@ -1096,6 +1103,7 @@
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
 				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
+				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,

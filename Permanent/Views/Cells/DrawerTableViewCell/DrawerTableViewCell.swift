@@ -15,10 +15,9 @@ class DrawerTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        //contentView.backgroundColor = .primary
+        selectionStyle = .none
         
-        menuItemImageView.image = .delete
-        
+        menuItemImageView.image = .delete        
         menuItemTitleLabel.textColor = .white
         menuItemTitleLabel.font = Text.style9.font
     }
@@ -27,11 +26,11 @@ class DrawerTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
-        if selected {
-            contentView.backgroundColor = .mainPurple
-        } else {
-            contentView.backgroundColor = .primary
-        }
+        contentView.backgroundColor = selected ? .mainPurple : .primary
     }
     
+    func updateCell(with data: DrawerOption) {
+        menuItemImageView.image = data.icon
+        menuItemTitleLabel.text = data.title
+    }
 }

@@ -73,15 +73,17 @@ class DrawerViewController: UIViewController {
         
         let width: CGFloat = isMenuExpanded ? (view.bounds.width * 2 / 3) : 0
         
-        UIView.animate(withDuration: 0, delay: 0, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
             self.sideMenuController.view.frame = CGRect(
                 origin: self.sideMenuOrigin,
                 size: CGSize(width: width, height: self.sideMenuHeight)
             )
             
-            
             self.sideMenuController.view.layoutIfNeeded()
             self.backgroundView.alpha = (self.isMenuExpanded) ? 0.5 : 0.0
+            
+            (self.sideMenuController as? SideMenuViewController)?.adjustUIForAnimation(isOpening: self.isMenuExpanded)
+            
         }, completion: nil)
     }
     

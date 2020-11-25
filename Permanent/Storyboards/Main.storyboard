@@ -114,19 +114,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Jq9-XJ-hMO">
-                                <rect key="frame" x="20" y="54" width="180" height="20.5"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="42G-RC-aoy">
+                                <rect key="frame" x="0.0" y="44" width="414" height="70.5"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bryson Williams archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iq0-2Q-Eqk" userLabel="Archive Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="180" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iq0-2Q-Eqk" userLabel="Title Label">
+                                        <rect key="frame" x="20" y="10" width="82.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dqx-r7-BC8" userLabel="Info Button">
+                                        <rect key="frame" x="20" y="30.5" width="30" height="30"/>
+                                    </button>
                                 </subviews>
-                            </stackView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="Iq0-2Q-Eqk" firstAttribute="leading" secondItem="42G-RC-aoy" secondAttribute="leading" constant="20" id="XFj-IU-uGx"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Iq0-2Q-Eqk" secondAttribute="trailing" constant="20" id="dbZ-Om-tf0"/>
+                                    <constraint firstItem="Iq0-2Q-Eqk" firstAttribute="top" secondItem="42G-RC-aoy" secondAttribute="top" constant="10" id="gVw-Me-uXq"/>
+                                    <constraint firstItem="Dqx-r7-BC8" firstAttribute="top" secondItem="Iq0-2Q-Eqk" secondAttribute="bottom" id="jEE-Qn-gZL"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Dqx-r7-BC8" secondAttribute="trailing" constant="20" id="par-wo-Ckh"/>
+                                    <constraint firstItem="Dqx-r7-BC8" firstAttribute="leading" secondItem="Iq0-2Q-Eqk" secondAttribute="leading" id="rWl-8M-eir"/>
+                                    <constraint firstAttribute="bottom" secondItem="Dqx-r7-BC8" secondAttribute="bottom" constant="10" id="ysd-qi-B7K"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="frN-Y0-fth">
-                                <rect key="frame" x="0.0" y="84.5" width="414" height="777.5"/>
+                                <rect key="frame" x="0.0" y="114.5" width="414" height="747.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="9WN-xr-ona" id="pt8-m2-Erl"/>
@@ -138,15 +151,16 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="frN-Y0-fth" firstAttribute="leading" secondItem="55x-tS-poO" secondAttribute="leading" id="EV6-18-wZe"/>
+                            <constraint firstItem="42G-RC-aoy" firstAttribute="bottom" secondItem="frN-Y0-fth" secondAttribute="top" id="I2h-8h-deh"/>
                             <constraint firstItem="frN-Y0-fth" firstAttribute="bottom" secondItem="55x-tS-poO" secondAttribute="bottom" id="OKg-Xn-Ohy"/>
                             <constraint firstItem="55x-tS-poO" firstAttribute="trailing" secondItem="frN-Y0-fth" secondAttribute="trailing" id="PjO-o4-2eT"/>
-                            <constraint firstItem="frN-Y0-fth" firstAttribute="top" secondItem="Jq9-XJ-hMO" secondAttribute="bottom" constant="10" id="ZWo-lD-4w0"/>
-                            <constraint firstItem="Jq9-XJ-hMO" firstAttribute="leading" secondItem="55x-tS-poO" secondAttribute="leading" constant="20" id="b6A-Pp-WIE"/>
-                            <constraint firstItem="Jq9-XJ-hMO" firstAttribute="top" secondItem="55x-tS-poO" secondAttribute="top" constant="10" id="gnJ-uF-eQc"/>
-                            <constraint firstItem="55x-tS-poO" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Jq9-XJ-hMO" secondAttribute="trailing" constant="20" id="paP-0u-haN"/>
+                            <constraint firstItem="55x-tS-poO" firstAttribute="trailing" secondItem="42G-RC-aoy" secondAttribute="trailing" id="Pr4-qA-3In"/>
+                            <constraint firstItem="55x-tS-poO" firstAttribute="top" secondItem="42G-RC-aoy" secondAttribute="top" id="bI1-AX-bvH"/>
+                            <constraint firstItem="42G-RC-aoy" firstAttribute="leading" secondItem="55x-tS-poO" secondAttribute="leading" id="o1S-ho-7jq"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="infoButton" destination="Dqx-r7-BC8" id="srP-7b-Nta"/>
                         <outlet property="tableView" destination="frN-Y0-fth" id="Cfw-ir-z6D"/>
                         <outlet property="titleLabel" destination="Iq0-2Q-Eqk" id="Cqq-8s-btI"/>
                     </connections>

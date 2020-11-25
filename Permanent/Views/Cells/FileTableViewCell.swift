@@ -63,7 +63,8 @@ class FileTableViewCell: UITableViewCell {
     
     fileprivate func setFileImage(forModel model: FileViewModel) {
         if model.type.isFolder {
-            fileImageView.image = .folder
+            fileImageView.image = UIImage.folder.templated
+            fileImageView.tintColor = .mainPurple
         } else {
             switch model.fileStatus {
             case .synced:

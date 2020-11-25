@@ -10,6 +10,11 @@ import UIKit
 class SideMenuViewController: UIViewController {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var titleLabel: UILabel!
+    @IBOutlet private var infoButton: UIButton!
+    
+    var shouldDisplayLine = false
+    
+    private let tableViewData = TableViewData.drawerData
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +30,11 @@ class SideMenuViewController: UIViewController {
         
         titleLabel.font = Text.style8.font
         titleLabel.textColor = .white
+        titleLabel.isHidden = true
+        
+        infoButton.setTitle(.manageArchives, for: [])
+        infoButton.setFont(Text.style17.font)
+        infoButton.setTitleColor(.white, for: [])
     }
     
     fileprivate func setupTableView() {
@@ -33,33 +43,47 @@ class SideMenuViewController: UIViewController {
         
         tableView.tableFooterView = UIView()
     }
-
-    // MARK: - Actions
+    
+    func adjustUIForAnimation(isOpening: Bool) {
+        self.shouldDisplayLine = isOpening
+        self.titleLabel.isHidden = !isOpening
+        self.infoButton.isHidden = !isOpening
+        
+        self.tableView.reloadData()
+    }
 }
 
 extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return tableViewData.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        guard let drawerSection = DrawerSection(rawValue: section) else { return 0 }
+        
+        return tableViewData[drawerSection]?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell,
+            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let menuOption = tableViewData[drawerSection]?[indexPath.row]
         else {
             fatalError()
         }
         
-        cell.backgroundColor = indexPath.row == 0 ? .mainPurple : .primary
+        cell.updateCell(with: menuOption)
         return cell
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .none)
+    }
+    
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard section == DrawerSection.files.rawValue else { return nil }
+        guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return nil }
         
         let headerView = UIView()
         
@@ -80,7 +104,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard section == DrawerSection.files.rawValue else { return 0 }
+        guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return 0 }
         
         return 21
     }
@@ -89,5 +113,5 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
 
 enum DrawerSection: Int {
     case files
-    case others // rename
+    case others
 }
