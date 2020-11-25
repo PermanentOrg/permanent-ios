@@ -50,6 +50,8 @@
 		BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */; };
 		BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */; };
 		BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */; };
+		BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99C3256DB18500D29041 /* DrawerTableViewCell.swift */; };
+		BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC0D99C4256DB18500D29041 /* DrawerTableViewCell.xib */; };
 		BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FA2555769A008BDEFA /* Strings.swift */; };
 		BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */; };
 		BC11C80225594ABD008BDEFA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80125594ABD008BDEFA /* Model.swift */; };
@@ -223,6 +225,8 @@
 		BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuViewController.swift; sourceTree = "<group>"; };
 		BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
 		BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationController.swift; sourceTree = "<group>"; };
+		BC0D99C3256DB18500D29041 /* DrawerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerTableViewCell.swift; sourceTree = "<group>"; };
+		BC0D99C4256DB18500D29041 /* DrawerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DrawerTableViewCell.xib; sourceTree = "<group>"; };
 		BC11C7FA2555769A008BDEFA /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIContextualActionExtension.swift; sourceTree = "<group>"; };
 		BC11C80125594ABD008BDEFA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -557,6 +561,15 @@
 			path = ActionDialogView;
 			sourceTree = "<group>";
 		};
+		BC0D99BA256DB04100D29041 /* DrawerTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BC0D99C3256DB18500D29041 /* DrawerTableViewCell.swift */,
+				BC0D99C4256DB18500D29041 /* DrawerTableViewCell.xib */,
+			);
+			path = DrawerTableViewCell;
+			sourceTree = "<group>";
+		};
 		BC11C80A25595B93008BDEFA /* Payloads */ = {
 			isa = PBXGroup;
 			children = (
@@ -699,6 +712,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				BC0D99BA256DB04100D29041 /* DrawerTableViewCell */,
 				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
 				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
 			);
@@ -908,6 +922,7 @@
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
+				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
@@ -1075,6 +1090,7 @@
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
+				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,

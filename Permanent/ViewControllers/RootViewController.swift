@@ -27,12 +27,14 @@ class RootViewController: UIViewController {
     }
     
     func setDrawerRoot() {
-        guard let mainViewController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
+        let mainViewController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
                 .instantiateViewController(withIdentifier: ViewControllerIdentifier.main.identifier)
-                as? MainViewController else { return }
+        
+        let sideMenuController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
+                .instantiateViewController(withIdentifier: ViewControllerIdentifier.sideMenu.identifier)
         
         let navController = RootNavigationController(viewController: mainViewController)
-        let drawerController = DrawerViewController(rootViewController: navController, sideMenuController: SideMenuViewController())
+        let drawerController = DrawerViewController(rootViewController: navController, sideMenuController: sideMenuController)
         
         // Move these 3 lines to a method
         setupChild(drawerController)
