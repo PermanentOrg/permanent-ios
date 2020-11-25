@@ -27,6 +27,7 @@ extension UIColor {
     static var brightRed = UIColor(red: 175/255, green: 0/255, blue: 0/255, alpha: 1)
     static var doveGray = UIColor(red: 112/255, green: 112/255, blue: 112/255, alpha: 1)
     static var dustyGray = UIColor(red: 96/255, green: 96/255, blue: 96/255, alpha: 1)
+    static var mainPurple = UIColor(red: 141/255, green: 0/255, blue: 133/255, alpha: 1)
 }
 
 extension UIColor {

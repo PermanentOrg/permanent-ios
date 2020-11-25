@@ -43,7 +43,7 @@ class SplashViewController: BaseViewController<SplashViewModel> {
             let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
             
             if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode {
-                AppDelegate.shared.rootViewController.setRoot(named: .main, from: .main)
+                AppDelegate.shared.rootViewController.setDrawerRoot()
             } else {
                 AppDelegate.shared.rootViewController.setRoot(named: .biometrics, from: .authentication)
             }

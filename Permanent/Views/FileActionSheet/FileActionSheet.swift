@@ -9,15 +9,14 @@ import UIKit
 
 protocol FileActionSheetDelegate: class {
     func downloadAction(file: FileViewModel)
-    func deleteAction(file: FileViewModel)
+    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath)
     func relocateAction(file: FileViewModel, action: FileAction)
 }
 
 class FileActionSheet: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var sheetView: UIView!
-    // @IBOutlet var titleLabel: UILabel!
-    
+    @IBOutlet var titleLabel: UILabel!
     @IBOutlet var downloadButton: RoundedButton!
     @IBOutlet var copyButton: RoundedButton!
     @IBOutlet var moveButton: RoundedButton!
@@ -29,6 +28,7 @@ class FileActionSheet: UIView {
     weak var delegate: FileActionSheetDelegate?
     
     private var file: FileViewModel!
+    private var indexPath: IndexPath!
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -36,29 +36,33 @@ class FileActionSheet: UIView {
         styleActionButton(downloadButton, color: .primary, text: .download)
         styleActionButton(copyButton, color: .primary, text: .copy)
         styleActionButton(moveButton, color: .primary, text: .move)
-        //styleActionButton(publishButton, color: .primary, text: .publish)
         styleActionButton(deleteButton, color: .destructive, text: .delete)
+        //styleActionButton(publishButton, color: .primary, text: .publish)
         //styleActionButton(editButton, color: .primary, text: .edit)
         //styleActionButton(shareButton, color: .primary, text: .share)
     }
     
     convenience init(
         frame: CGRect,
-        file: FileViewModel
+        title: String?,
+        file: FileViewModel,
+        indexPath: IndexPath
     ) {
         self.init(frame: frame)
         self.file = file
-        
-        commonInit()
-        
-        // titleLabel.text = title
+        self.indexPath = indexPath
+                
+        initUI(title: title)
     }
     
-    func commonInit() {
+    func initUI(title: String?) {
         loadNib()
         setupView(contentView)
 
-        initUI()
+        sheetView.layer.cornerRadius = 4
+        titleLabel.text = title
+        titleLabel.font = Text.style11.font
+        titleLabel.textColor = .textPrimary
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
         
@@ -66,14 +70,6 @@ class FileActionSheet: UIView {
         publishButton.isHidden = true
         editButton.isHidden = true
         shareButton.isHidden = true
-    }
-    
-    fileprivate func initUI() {
-        
-        sheetView.layer.cornerRadius = 4
-        
-        // titleLabel.font = Text.style3.font
-        // titleLabel.textColor = .primary
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor, text: String) {
@@ -98,7 +94,9 @@ class FileActionSheet: UIView {
     
     @IBAction
     func deleteAction(_ sender: UIButton) {
-        delegate?.deleteAction(file: self.file)
+        delegate?.deleteAction(file: self.file, atIndexPath: self.indexPath)
+        
+        dismiss()
     }
     
     @IBAction func copyAction(_ sender: UIButton) {

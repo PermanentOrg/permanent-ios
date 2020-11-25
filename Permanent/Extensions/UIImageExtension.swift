@@ -28,4 +28,16 @@ extension UIImage {
     static let folder = UIImage(named: "folder")!
     static let download = UIImage(named: "download")!
     static let placeholder = UIImage(named: "placeholder")!
+    static let profile = UIImage(named: "profile")!
+    static let settings = UIImage(named: "settings")!
+    static let group = UIImage(named: "group")!
+    static let `public` = UIImage(named: "public")!
+    static let share = UIImage(named: "share")!
+    static let relationships = UIImage(named: "relationships")!
+    static let power = UIImage(named: "power")!
+    
+    
+    
+    
+    
 }

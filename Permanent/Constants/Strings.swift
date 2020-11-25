@@ -88,4 +88,10 @@ extension String {
     static var sortOption: String { return "%@ (%@)" }
     static var copyHere: String { return "CopyHere".localized() }
     static var moveHere: String { return "MoveHere".localized() }
+    static var `public`: String { return "Public".localized() }
+    static var relationships: String { return "Relationships".localized() }
+    static var shares: String { return "Shares".localized() }
+    static var members: String { return "Members".localized() }
+    static var apps: String { return "Apps".localized() }
+    static var manageArchives: String { return "ManageArchives".localized() }
 }
