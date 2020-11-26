@@ -642,12 +642,26 @@ extension MainViewController: FABActionSheetDelegate {
     func showSortActionSheetDialog() {
         guard let viewModel = viewModel else { return }
         
+        let origin = CGPoint(x: 0, y: view.bounds.height)
         sortActionSheet = SortActionSheet(
-            frame: view.bounds,
+            frame: CGRect(origin: origin, size: view.bounds.size),
             selectedOption: viewModel.activeSortOption
         )
         
         sortActionSheet?.delegate = self
+        
+        UIView.animate(
+            withDuration: 0.4,
+            delay: 0,
+            options: .curveEaseInOut,
+            animations: {
+                self.sortActionSheet?.frame = self.view.bounds
+            },
+            completion: { _ in
+                self.sortActionSheet?.backgroundColor = .overlay
+            })
+        
+        
         view.addSubview(sortActionSheet!)
     }
     

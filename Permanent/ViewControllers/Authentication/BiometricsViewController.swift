@@ -45,7 +45,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     private func attemptBiometricsAuth() {
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
             DispatchQueue.main.async {
-                self.navigationController?.display(.main, from: .main)
+                AppDelegate.shared.rootViewController.setDrawerRoot()
             }
         }, onFailure: { error in
             self.handleBiometricsFailure(error)

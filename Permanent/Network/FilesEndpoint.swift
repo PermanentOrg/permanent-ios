@@ -160,14 +160,14 @@ extension FilesEndpoint: RequestProtocol {
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
                 
             } else {
-                let recordVO = RecordVOPayload(folderLinkId: parameters.file.folderLinkId)
+                let recordVO = RecordVOPayload(folderLinkId: parameters.file.folderLinkId, parentFolderLinkId: parameters.file.parentFolderLinkId)
                 let requestVO = APIPayload.make(fromData: [recordVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             }
             
         case .getRecord(let itemInfo):
-            let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId)
+            let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId, parentFolderLinkId: itemInfo.file.parentFolderLinkId)
             let requestVO = APIPayload.make(fromData: [recordVO], csrf: itemInfo.csrf)
             
             return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
@@ -180,9 +180,10 @@ extension FilesEndpoint: RequestProtocol {
                 
                 return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
             } else {
-                let copyVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
-                                                     folderDestLinkId: parameters.items.destination.folderLinkId)
-                let requestVO = APIPayload.make(fromData: [copyVO], csrf: parameters.csrf)
+                let relocateVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
+                                                     folderDestLinkId: parameters.items.destination.folderLinkId,
+                                                     parentFolderLinkId: parameters.items.source.parentFolderLinkId)
+                let requestVO = APIPayload.make(fromData: [relocateVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
             }

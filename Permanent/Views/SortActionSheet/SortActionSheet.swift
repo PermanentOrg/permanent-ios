@@ -34,7 +34,6 @@ class SortActionSheet: UIView {
     }
 
     fileprivate func initUI() {
-        backgroundColor = .overlay
         
         sheetView = UIView()
         sheetView.layer.cornerRadius = 4
