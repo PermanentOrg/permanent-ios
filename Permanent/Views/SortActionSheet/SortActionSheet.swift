@@ -15,6 +15,7 @@ class SortActionSheet: UIView {
     private var sheetView: UIView!
     private var stackView: UIStackView!
 
+    private var onDismiss: ButtonAction!
     private var selectedOption: SortOption!
     
     weak var delegate: SortActionSheetDelegate?
@@ -22,10 +23,12 @@ class SortActionSheet: UIView {
 
     convenience init(
         frame: CGRect,
-        selectedOption: SortOption = .nameAscending
+        selectedOption: SortOption = .nameAscending,
+        onDismiss: @escaping ButtonAction
     ) {
         self.init(frame: frame)
         
+        self.onDismiss = onDismiss
         self.selectedOption = selectedOption
         
         initUI()
@@ -80,7 +83,7 @@ class SortActionSheet: UIView {
 
     @objc
     func dismiss() {
-        removeFromSuperview()
+        onDismiss()
     }
     
     @objc

@@ -27,6 +27,7 @@ class FileActionSheet: UIView {
     
     weak var delegate: FileActionSheetDelegate?
     
+    private var onDismiss: ButtonAction!
     private var file: FileViewModel!
     private var indexPath: IndexPath!
 
@@ -46,12 +47,14 @@ class FileActionSheet: UIView {
         frame: CGRect,
         title: String?,
         file: FileViewModel,
-        indexPath: IndexPath
+        indexPath: IndexPath,
+        onDismiss: @escaping ButtonAction
     ) {
         self.init(frame: frame)
         self.file = file
         self.indexPath = indexPath
-                
+        self.onDismiss = onDismiss
+            
         initUI(title: title)
     }
     
@@ -82,7 +85,7 @@ class FileActionSheet: UIView {
 
     @objc
     func dismiss() {
-        removeFromSuperview()
+        onDismiss()
     }
     
     @IBAction
