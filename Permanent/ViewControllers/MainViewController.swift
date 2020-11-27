@@ -831,13 +831,13 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
     }
     
     func share(url: URL) {
-        // For now, dismiss the preview in case another one opens so we avoid crash.
-        documentInteractionController.dismissPreview(animated: false)
+        // For now, dismiss the menu in case another one opens so we avoid crash.
+        documentInteractionController.dismissMenu(animated: true)
         
         documentInteractionController.url = url
         documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
         documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentPreview(animated: true)
+        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
 }
 

@@ -18,6 +18,7 @@
                 <outlet property="editButton" destination="thy-cA-9uj" id="Ufg-ld-sLv"/>
                 <outlet property="moveButton" destination="PMR-P5-ywn" id="A7i-5X-eYu"/>
                 <outlet property="publishButton" destination="phf-dD-p8f" id="ilr-xl-Df0"/>
+                <outlet property="safeAreaView" destination="K43-JO-KKh" id="nhf-pa-OD6"/>
                 <outlet property="shareButton" destination="fgi-ud-4Tw" id="WLX-75-6eM"/>
                 <outlet property="sheetView" destination="HuO-Fl-83D" id="Vzt-G1-xBu"/>
                 <outlet property="titleLabel" destination="o7g-I7-EWb" id="mwT-cL-Ih5"/>
@@ -29,7 +30,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HuO-Fl-83D" userLabel="Sheet View">
-                    <rect key="frame" x="0.0" y="536" width="414" height="326"/>
+                    <rect key="frame" x="0.0" y="476" width="414" height="420"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o7g-I7-EWb" userLabel="Title Label">
                             <rect key="frame" x="20" y="18" width="374" height="0.0"/>
@@ -38,47 +39,52 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Af9-e6-lW9">
-                            <rect key="frame" x="20" y="30" width="374" height="270"/>
+                            <rect key="frame" x="20" y="30" width="374" height="340"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X5x-QR-Ehp" userLabel="Download Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                     <connections>
                                         <action selector="downloadAction:" destination="-1" eventType="touchUpInside" id="mtS-M1-3HI"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DVb-dB-Ntj" userLabel="Copy Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="50" width="374" height="40"/>
                                     <connections>
                                         <action selector="copyAction:" destination="-1" eventType="touchUpInside" id="A8M-u6-K5l"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PMR-P5-ywn" userLabel="Move Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="80" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="100" width="374" height="40"/>
                                     <connections>
                                         <action selector="moveAction:" destination="-1" eventType="touchUpInside" id="oCw-HU-lni"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phf-dD-p8f" userLabel="Publish Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="120" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="150" width="374" height="40"/>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qMX-dZ-l1n" userLabel="Delete Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="160" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="200" width="374" height="40"/>
                                     <connections>
                                         <action selector="deleteAction:" destination="-1" eventType="touchUpInside" id="XGE-FP-g2v"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="thy-cA-9uj" userLabel="Edit Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="200" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="250" width="374" height="40"/>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fgi-ud-4Tw" userLabel="Share Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="240" width="374" height="30"/>
+                                    <rect key="frame" x="0.0" y="300" width="374" height="40"/>
                                 </button>
                             </subviews>
                         </stackView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K43-JO-KKh" userLabel="Safe Area View">
+                            <rect key="frame" x="0.0" y="386" width="414" height="34"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="Af9-e6-lW9" secondAttribute="bottom" constant="26" id="26Q-KO-u3T"/>
+                        <constraint firstAttribute="bottom" secondItem="Af9-e6-lW9" secondAttribute="bottom" constant="50" id="26Q-KO-u3T"/>
+                        <constraint firstAttribute="bottom" secondItem="K43-JO-KKh" secondAttribute="bottom" id="7Z0-55-WW2"/>
                         <constraint firstItem="o7g-I7-EWb" firstAttribute="top" secondItem="HuO-Fl-83D" secondAttribute="top" constant="18" id="BdU-hJ-wKE"/>
                         <constraint firstItem="Af9-e6-lW9" firstAttribute="top" secondItem="o7g-I7-EWb" secondAttribute="bottom" constant="12" id="e3S-IV-aHS"/>
                         <constraint firstAttribute="trailing" secondItem="o7g-I7-EWb" secondAttribute="trailing" constant="20" id="hcZ-NL-J7r"/>
@@ -93,32 +99,35 @@
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="HuO-Fl-83D" secondAttribute="trailing" id="2A4-D7-veT"/>
                 <constraint firstItem="HuO-Fl-83D" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Evs-B3-Xe6"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="HuO-Fl-83D" secondAttribute="bottom" id="UoB-nd-mJy"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="K43-JO-KKh" secondAttribute="top" id="geo-zJ-YZy"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="K43-JO-KKh" secondAttribute="trailing" id="jGi-pW-uFG"/>
+                <constraint firstItem="HuO-Fl-83D" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" constant="34" id="mGO-cy-v1C"/>
+                <constraint firstItem="K43-JO-KKh" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="re0-ah-kJ3"/>
             </constraints>
             <point key="canvasLocation" x="139" y="134"/>
         </view>
     </objects>
     <designables>
         <designable name="DVb-dB-Ntj">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="PMR-P5-ywn">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="X5x-QR-Ehp">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="fgi-ud-4Tw">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="phf-dD-p8f">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="qMX-dZ-l1n">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="thy-cA-9uj">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
     </designables>
     <resources>

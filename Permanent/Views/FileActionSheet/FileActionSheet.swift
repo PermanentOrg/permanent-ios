@@ -24,6 +24,7 @@ class FileActionSheet: UIView {
     @IBOutlet var deleteButton: RoundedButton!
     @IBOutlet var editButton: RoundedButton!
     @IBOutlet var shareButton: RoundedButton!
+    @IBOutlet var safeAreaView: UIView!
     
     weak var delegate: FileActionSheetDelegate?
     
@@ -73,6 +74,8 @@ class FileActionSheet: UIView {
         publishButton.isHidden = true
         editButton.isHidden = true
         shareButton.isHidden = true
+        
+        safeAreaView.backgroundColor = .backgroundPrimary
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor, text: String) {
