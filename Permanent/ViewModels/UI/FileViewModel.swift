@@ -22,6 +22,7 @@ struct FileViewModel: Equatable {
     
     let folderId: Int
     let parentFolderId: Int
+    let parentFolderLinkId: Int
     let folderLinkId: Int
     var fileStatus: FileStatus = .synced
     var fileState: FileState = .enabled
@@ -38,6 +39,7 @@ struct FileViewModel: Equatable {
         self.recordId = -1
         self.folderId = model.folder.folderId
         self.parentFolderId = -1
+        self.parentFolderLinkId = -1
         self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
     }
@@ -57,6 +59,7 @@ struct FileViewModel: Equatable {
         
         self.folderId = model.folderID ?? -1
         self.parentFolderId = model.parentFolderID ?? -1
+        self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
     }
     
@@ -75,6 +78,7 @@ struct FileViewModel: Equatable {
         
         self.folderId = model.folderID ?? -1
         self.parentFolderId = model.parentFolderID ?? -1
+        self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
     }
 }

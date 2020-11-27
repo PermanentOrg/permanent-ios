@@ -10,8 +10,9 @@ import Foundation
 struct RecordVOPayload: Model {
     let recordVO: RecordVOPayloadData
     
-    init(folderLinkId: Int) {
-        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId)
+    init(folderLinkId: Int, parentFolderLinkId: Int) {
+        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId,
+                                            parentFolderLinkId: parentFolderLinkId)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -21,8 +22,10 @@ struct RecordVOPayload: Model {
 
 struct RecordVOPayloadData: Model {
     let folderLinkId: Int
+    let parentFolderLinkId: Int
     
     enum CodingKeys: String, CodingKey {
         case folderLinkId = "folder_linkId"
+        case parentFolderLinkId = "parentFolder_linkId"
     }
 }

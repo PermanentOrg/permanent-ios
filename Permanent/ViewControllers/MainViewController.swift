@@ -17,6 +17,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     
+    private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
     private var actionDialog: ActionDialogView?
     private var sortActionSheet: SortActionSheet?
@@ -41,6 +42,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
         getRootFolder()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
+    }
+    
     // MARK: - UI Related
     
     fileprivate func initUI() {
@@ -59,6 +66,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
         searchBar.setDefaultStyle(placeholder: .searchFiles)
         
         fileActionBottomView.isHidden = true
+        
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
     }
     
     fileprivate func setupTableView() {
@@ -640,15 +651,27 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showSortActionSheetDialog() {
-        guard let viewModel = viewModel else { return }
+        guard
+            sortActionSheet == nil,
+            let viewModel = viewModel else { return }
         
         sortActionSheet = SortActionSheet(
-            frame: view.bounds,
-            selectedOption: viewModel.activeSortOption
+            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
+            selectedOption: viewModel.activeSortOption,
+            onDismiss: {
+                self.view.dismissPopup(
+                    self.sortActionSheet,
+                    overlayView: self.overlayView,
+                    completion: { _ in
+                        self.sortActionSheet?.removeFromSuperview()
+                        self.sortActionSheet = nil
+                    })
+            }
         )
         
         sortActionSheet?.delegate = self
         view.addSubview(sortActionSheet!)
+        self.view.presentPopup(sortActionSheet, overlayView: overlayView)        
     }
     
     // TODO: Move this to BaseVC
@@ -659,42 +682,55 @@ extension MainViewController: FABActionSheetDelegate {
         positiveButtonTitle: String,
         positiveAction: @escaping ButtonAction
     ) {
+        
+        guard actionDialog == nil else { return }
+        
         actionDialog = ActionDialogView(
-            frame: view.bounds,
+            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
             style: style,
             title: title,
             positiveButtonTitle: positiveButtonTitle,
-            placeholder: placeholder
+            placeholder: placeholder,
+            onDismiss: {
+                self.view.dismissPopup(
+                    self.actionDialog,
+                    overlayView: self.overlayView,
+                    completion: { _ in
+                        self.actionDialog?.removeFromSuperview()
+                        self.actionDialog = nil
+                    })
+            }
         )
         
         actionDialog?.positiveAction = positiveAction
         view.addSubview(actionDialog!)
+        self.view.presentPopup(actionDialog, overlayView: overlayView)
     }
     
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        let origin = CGPoint(x: 0, y: view.bounds.height)
+        // Safety measure, in case the user taps to show sheet, but the previously shown one
+        // has not finished dimissing and being deallocated.
+        guard fileActionSheet == nil else { return }
+        
         fileActionSheet = FileActionSheet(
-            frame: CGRect(origin: origin, size: view.bounds.size),
+            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
             title: file.name,
             file: file,
-            indexPath: indexPath
+            indexPath: indexPath,
+            onDismiss: {
+                self.view.dismissPopup(
+                    self.fileActionSheet,
+                    overlayView: self.overlayView,
+                    completion: { _ in
+                        self.fileActionSheet?.removeFromSuperview()
+                        self.fileActionSheet = nil
+                    })
+            }
         )
         
         fileActionSheet?.delegate = self
-        
-        UIView.animate(
-            withDuration: 0.4,
-            delay: 0,
-            options: .curveEaseInOut,
-            animations: {
-                self.fileActionSheet?.frame = self.view.bounds
-            },
-            completion: { _ in
-                self.fileActionSheet?.backgroundColor = .overlay
-            })
-        
-        
         view.addSubview(fileActionSheet!)
+        self.view.presentPopup(fileActionSheet, overlayView: overlayView)
     }
     
     func showActionSheet() {

@@ -17,6 +17,7 @@ class ActionDialogView: UIView {
     @IBOutlet var positiveButton: RoundedButton!
     @IBOutlet var fieldsStackView: UIStackView!
     
+    private var onDismiss: ButtonAction!
     private var placeholder: String?
     private var dialogStyle: ActionDialogStyle = .simple
     
@@ -54,10 +55,12 @@ class ActionDialogView: UIView {
         style: ActionDialogStyle,
         title: String?,
         positiveButtonTitle: String?,
-        placeholder: String? = nil
+        placeholder: String? = nil,
+        onDismiss: @escaping ButtonAction
     ) {
         self.init(frame: frame)
         
+        self.onDismiss = onDismiss
         self.dialogStyle = style
         self.placeholder = placeholder
         
@@ -68,23 +71,21 @@ class ActionDialogView: UIView {
     }
     
     func commonInit() {
-        Bundle.main.loadNibNamed(String(describing: ActionDialogView.self), owner: self, options: nil)
-        
-        addSubview(contentView)
-        contentView.frame = bounds
-        contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        loadNib()
+        setupView(contentView)
         
         initUI()
         adjustUI(forStyle: dialogStyle)
     }
     
     fileprivate func initUI() {
-        contentView.backgroundColor = UIColor.overlay
-        dialogView.layer.cornerRadius = 4
+        dialogView.layer.cornerRadius = Constants.Design.sheetCornerRadius
         
         titleLabel.font = Text.style3.font
         titleLabel.textColor = .primary
         cancelButton.setTitle(.cancel, for: [])
+        
+        contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
     }
     
     fileprivate func adjustUI(forStyle style: ActionDialogStyle) {
@@ -127,8 +128,9 @@ class ActionDialogView: UIView {
         positiveAction?()
     }
     
+    @objc
     func dismiss() {
-        removeFromSuperview()
+        onDismiss()
     }
 }
 
