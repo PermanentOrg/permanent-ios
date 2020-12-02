@@ -248,10 +248,8 @@ extension FilesViewModel: FilesViewModelDelegate {
     
     private func downloadFile(_ file: FileViewModel, then handler: @escaping DownloadResponse) {
         getRecord(file) { record, errorMessage in
-        
-            guard
-                let record = record
-            else {
+
+            guard let record = record else {
                 return handler(nil, errorMessage)
             }
             
@@ -325,33 +323,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    func load(url: URL, to localUrl: URL, completion: @escaping () -> Void) {
-        let sessionConfig = URLSessionConfiguration.default
-        let session = URLSession(configuration: sessionConfig)
-        var request = try! URLRequest(url: url)
-        request.httpMethod = "GET"
-
-        let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
-            if let tempLocalUrl = tempLocalUrl, error == nil {
-                // Success
-                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                    print("Success: \(statusCode)")
-                }
-
-                do {
-                    // try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
-                    completion()
-                } catch (let writeError) {
-                    print("error writing file \(localUrl) : \(writeError)")
-                }
-
-            } else {
-                print("Failure: %@", error?.localizedDescription)
-            }
-        }
-        task.resume()
-    }
-    
     func downloadFileData(record: RecordVO, then handler: @escaping DownloadResponse) {
         guard
             let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
@@ -365,25 +336,16 @@ extension FilesViewModel: FilesViewModelDelegate {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             
             switch result {
-            case .file(let data, _):
+            case .file(let fileURL, _):
                 
-                guard let fileData = data else {
+                guard let url = fileURL else {
                     handler(nil, .errorMessage)
                     return
                 }
                 
-                do {
-                    let documentFolderURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-                    let fileURL = documentFolderURL.appendingPathComponent(fileName)
-                    try fileData.write(to: fileURL)
-                            
-                    handler(fileURL, nil)
-                        
-                } catch {
-                    print("error writing file \(fileName) : \(error)")
-                    handler(nil, error.localizedDescription)
-                }
-                
+                let tempFileURL = FileHelper().saveFile(at: url, named: fileName)
+                handler(tempFileURL, nil)
+    
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
                 

@@ -39,6 +39,23 @@ class FileHelper {
         }
     }
     
+    func saveFile(at url: URL, named name: String? = nil) -> URL? {
+        do {
+            let fileURL = self.defaultDirectoryURL!
+                .appendingPathComponent(name ?? UUID().uuidString)
+          
+            // If we already have an item stored at this path, we remove it first.
+            try? FileManager.default.removeItem(at: fileURL)
+            
+            try FileManager.default.copyItem(at: url, to: fileURL)
+            return fileURL
+            
+        } catch {
+            print("Error. Could not save file.", error)
+            return nil
+        }
+    }
+    
     func deleteFile(at location: URL) {
         DispatchQueue.global(qos: .utility).async {
             try? FileManager.default.removeItem(at: location)

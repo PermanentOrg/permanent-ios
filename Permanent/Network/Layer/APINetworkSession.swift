@@ -89,13 +89,6 @@ extension APINetworkSession: URLSessionTaskDelegate {
 
 extension APINetworkSession: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let handlers = getHandlers(for: downloadTask) else {
-            return
-        }
-
-        DispatchQueue.main.async {
-            handlers.completion?(location, downloadTask.response, downloadTask.error)
-        }
         //  Remove the associated handlers.
         setHandlers(nil, for: downloadTask)
     }
@@ -131,11 +124,13 @@ extension APINetworkSession: NetworkSessionProtocol {
         return uploadTask
     }
 
-    func downloadTask(with request: URLRequest, progressHandler: ProgressHandler?, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
-        let downloadTask = session.downloadTask(with: request) // don't we need the completion handler
-
+    func downloadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
+        let downloadTask = session.downloadTask(with: request) { (url, urlResponse, error) in
+            completion(url, urlResponse, error)
+        }
+        
         // Set the associated progress and completion handlers for this task.
-        setHandlers((progressHandler, completionHandler), for: downloadTask)
+        setHandlers((progressHandler, completion), for: downloadTask)
         return downloadTask
     }
 }
