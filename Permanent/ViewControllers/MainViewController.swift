@@ -203,8 +203,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         )
     }
     
-    private func handleUploadProgress(withValue value: Float) {
-        let indexPath = IndexPath(row: 0, section: FileListType.uploading.rawValue)
+    private func handleUploadProgress(withValue value: Float, listSection section: FileListType) {
+        let indexPath = IndexPath(row: 0, section: section.rawValue)
         
         guard
             let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
@@ -305,9 +305,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
                 
             },
+            
             progressHandler: { progress in
                 DispatchQueue.main.async {
-                    self.handleUploadProgress(withValue: progress)
+                    self.handleUploadProgress(withValue: progress, listSection: FileListType.uploading)
                 }
                 
             },
@@ -558,7 +559,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          })
     }
     
-    private func testDownload(_ file: FileViewModel) {
+    private func download(_ file: FileViewModel) {
         viewModel?.download(
             file,
             
@@ -583,6 +584,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 DispatchQueue.main.async {
                     self.share(url: shareURL)
+                }
+            },
+            
+            progressHandler: { progress in
+                DispatchQueue.main.async {
+                    self.handleUploadProgress(withValue: progress, listSection: FileListType.downloading)
                 }
             },
             
@@ -849,7 +856,7 @@ extension MainViewController: FileActionSheetDelegate {
     
     func downloadAction(file: FileViewModel) {
         fileActionSheet?.dismiss()
-        testDownload(file)
+        download(file)
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {

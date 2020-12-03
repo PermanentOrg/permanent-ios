@@ -89,21 +89,21 @@ class FileTableViewCell: UITableViewCell {
         case .synced:
             updateSyncedUI()
             
-        case .waiting, .downloading:
+        case .waiting:
             progressView.isHidden = true
             statusLabel.isHidden = false
-            updateUploadingUI()
+            updateUploadOrDownloadUI()
             
-        case .uploading:
+        case .uploading, .downloading:
             statusLabel.isHidden = true
             progressView.isHidden = false
             progressView.setProgress(0, animated: false)
             
-            updateUploadingUI()
+            updateUploadOrDownloadUI()
         }
     }
     
-    fileprivate func updateUploadingUI() {
+    fileprivate func updateUploadOrDownloadUI() {
         dateStackView.isHidden = true
         moreButton.setImage(UIImage.close.templated, for: [])
     }

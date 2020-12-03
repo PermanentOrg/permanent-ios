@@ -37,6 +37,11 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      then handler: @escaping ServerResponse)
     func removeFromQueue(_ position: Int)
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse)
+    func download(_ file: FileViewModel,
+                  onDownloadStart: @escaping VoidAction,
+                  onFileDownloaded: @escaping DownloadResponse,
+                  progressHandler: ProgressHandler?,
+                  then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -222,6 +227,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     func download(_ file: FileViewModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
+                  progressHandler: ProgressHandler?,
                   then handler: @escaping ServerResponse)
     {
         
@@ -242,11 +248,12 @@ extension FilesViewModel: FilesViewModelDelegate {
         handleRecursiveFileDownload(
             downloadFile,
             onFileDownloaded: onFileDownloaded,
+            progressHandler: progressHandler,
             then: handler
         )
     }
     
-    private func downloadFile(_ file: FileViewModel, then handler: @escaping DownloadResponse) {
+    private func downloadFile(_ file: FileViewModel, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         getRecord(file) { record, errorMessage in
 
             guard let record = record else {
@@ -254,16 +261,17 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
             
             DispatchQueue.global(qos: .userInitiated).async {
-                self.downloadFileData(record: record, then: handler)
+                self.downloadFileData(record: record, progressHandler: progressHandler, then: handler)
             }
         }
     }
     
     func handleRecursiveFileDownload(_ file: FileViewModel,
                                      onFileDownloaded: @escaping FileDownloadResponse,
+                                     progressHandler: ProgressHandler?,
                                      then handler: @escaping ServerResponse)
     {
-        downloadFile(file) { url, errorMessage in
+        downloadFile(file, progressHandler: progressHandler) { url, errorMessage in
             
             if let url = url {
                 onFileDownloaded(url, nil)
@@ -282,7 +290,10 @@ extension FilesViewModel: FilesViewModelDelegate {
                     
                     // save progress in prefs
                     
-                    self.handleRecursiveFileDownload(nextFile, onFileDownloaded: onFileDownloaded, then: handler)
+                    self.handleRecursiveFileDownload(nextFile,
+                                                     onFileDownloaded: onFileDownloaded,
+                                                     progressHandler: progressHandler,
+                                                     then: handler)
                 }
             } else {
                 onFileDownloaded(nil, errorMessage)
@@ -305,7 +316,6 @@ extension FilesViewModel: FilesViewModelDelegate {
                         with: APIResults<RecordVO>.decoder
                     ),
                     model.isSuccessful
-                // let downloadURL = model.results.first?.data?.first?.recordVO?.fileVOS?.first?.downloadURL
                     
                 else {
                     handler(nil, .errorMessage)
@@ -323,7 +333,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
-    func downloadFileData(record: RecordVO, then handler: @escaping DownloadResponse) {
+    func downloadFileData(record: RecordVO, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         guard
             let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
             let url = URL(string: downloadURL),
@@ -332,7 +342,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             return handler(nil, .errorMessage)
         }
         
-        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: nil))
+        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: progressHandler))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             
             switch result {
@@ -343,7 +353,12 @@ extension FilesViewModel: FilesViewModelDelegate {
                     return
                 }
                 
-                let tempFileURL = FileHelper().saveFile(at: url, named: fileName)
+                let fileHelper = FileHelper()
+                let tempFileURL = fileHelper.saveFile(at: url, named: fileName)
+                
+                // Delete the old temp file (the one without extension).
+                fileHelper.deleteFile(at: url)
+                
                 handler(tempFileURL, nil)
     
             case .error(let error, _):
