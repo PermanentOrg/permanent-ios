@@ -134,6 +134,8 @@
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
 		BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8E7946257A787C008ED0F5 /* LinkTextField.swift */; };
+		BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC8E794B257A8526008ED0F5 /* ArchiveTableViewCell.xib */; };
+		BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */; };
 		BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */; };
@@ -316,6 +318,8 @@
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
 		BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountEndpoint.swift; sourceTree = "<group>"; };
 		BC8E7946257A787C008ED0F5 /* LinkTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkTextField.swift; sourceTree = "<group>"; };
+		BC8E794B257A8526008ED0F5 /* ArchiveTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ArchiveTableViewCell.xib; sourceTree = "<group>"; };
+		BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveTableViewCell.swift; sourceTree = "<group>"; };
 		BC915F4F254718FA00C86012 /* PHAssetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetExtension.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationController.swift; sourceTree = "<group>"; };
@@ -732,6 +736,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				BC8E7949257A8505008ED0F5 /* ArchiveTableViewCell */,
 				BC0D99BA256DB04100D29041 /* DrawerTableViewCell */,
 				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
 				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
@@ -816,6 +821,15 @@
 				BCA120C5256279C100ECAD7B /* SortOption.swift */,
 			);
 			path = SortActionSheet;
+			sourceTree = "<group>";
+		};
+		BC8E7949257A8505008ED0F5 /* ArchiveTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BC8E794B257A8526008ED0F5 /* ArchiveTableViewCell.xib */,
+				BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */,
+			);
+			path = ArchiveTableViewCell;
 			sourceTree = "<group>";
 		};
 		BCB0725A2523497B003E2F66 /* Popups */ = {
@@ -953,6 +967,7 @@
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
+				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
@@ -1026,6 +1041,7 @@
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
+				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,

@@ -23,11 +23,11 @@ class ShareViewController: UIViewController {
         
         linkOptionsStackView.isHidden = true
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .settings, style: .plain, target: self, action: #selector(toggleView))
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .settings, style: .plain, target: self, action: #selector(toggleView))
         
         
         configureUI()
-
+        setupTableView()
     }
     
     fileprivate func configureUI() {
@@ -48,6 +48,12 @@ class ShareViewController: UIViewController {
         
         linkOptionsView.link = "https://www.permanent.org/p/archive/00sm-00"
         linkOptionsView.configureButtons(withData: StaticData.shareLinkButtonsConfig)
+    }
+    
+    fileprivate func setupTableView() {
+        tableView.register(UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self))
+        tableView.tableFooterView = UIView()
     }
     
     fileprivate func styleHeaderLabels(_ labels: [UILabel]) {
@@ -72,13 +78,13 @@ class ShareViewController: UIViewController {
 
 extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return 5
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        let cell = UITableViewCell()
-        cell.textLabel?.text = "Mike tyson archive"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveTableViewCell.self)) else {
+            fatalError()
+        }
         return cell
     }
 }
