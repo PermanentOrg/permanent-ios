@@ -90,3 +90,6 @@
 "Members" = "Members";
 "Apps" = "Apps";
 "ManageArchives" = "Tap here to manage archives";
+"GetShareLink" = "Get share link";
+"ShareLink" = "Share link";
+"ShareDescription" = "Send this link via text, email, or other message service to invite people to share this content.";

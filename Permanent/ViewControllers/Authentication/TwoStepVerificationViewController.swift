@@ -76,7 +76,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
     }
     
     private func openMainScreen() {
-        navigationController?.navigate(to: .main, from: .main)
+        navigationController?.display(.main, from: .main)
     }
     
     private func sendVerificationCodeSMS(forAccount id: String, email: String) {
@@ -85,8 +85,8 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
             
             switch status {
             case .success:
-                guard let codeVerificationController = self.navigationController?.create(
-                    viewController: .verificationCode,
+                guard let codeVerificationController = UIViewController.create(
+                    withIdentifier: .verificationCode,
                     from: .authentication
                 ) as? CodeVerificationController else {
                     self.showAlert(title: .error, message: .errorMessage)
@@ -96,7 +96,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
                 codeVerificationController.verificationType = .phone
                 
                 DispatchQueue.main.async {
-                    self.navigationController?.navigate(to: codeVerificationController)
+                    self.navigationController?.display(viewController: codeVerificationController)
                 }
                 
             case .error(let message):

@@ -113,10 +113,10 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         switch status {
         case .success:
-            navigationController?.navigate(to: .main, from: .main)
+            navigationController?.display(.main, from: .main)
         case .mfaToken:
             PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-            navigationController?.navigate(to: .verificationCode, from: .authentication)
+            navigationController?.display(.verificationCode, from: .authentication)
         case .error(let message):
             showAlert(title: .error, message: message)
         }

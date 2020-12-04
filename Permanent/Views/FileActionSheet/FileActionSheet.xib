@@ -73,6 +73,9 @@
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fgi-ud-4Tw" userLabel="Share Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="300" width="374" height="40"/>
+                                    <connections>
+                                        <action selector="shareAction:" destination="-1" eventType="touchUpInside" id="5xZ-ka-R9t"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </stackView>

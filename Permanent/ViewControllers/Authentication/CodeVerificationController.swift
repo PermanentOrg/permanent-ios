@@ -64,7 +64,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         
         switch status {
         case .success:
-            navigationController?.navigate(to: .main, from: .main)
+            navigationController?.display(.main, from: .main)
         case .error(let message):
             showAlert(title: .error, message: message)
         }

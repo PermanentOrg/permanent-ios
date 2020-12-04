@@ -62,8 +62,8 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBAction func signUpAction(_ sender: RoundedButton) {
         guard
             areFieldsValid,
-            let termsConditionsVC = navigationController?.create(
-                viewController: .termsConditions,
+            let termsConditionsVC = UIViewController.create(
+                withIdentifier: .termsConditions,
                 from: .authentication
             ) as? TermsConditionsPopup
         else {
@@ -77,8 +77,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     
     @IBAction
     func alreadyMemberAction(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: StoryboardName.authentication.name, bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: ViewControllerIdentifier.login.identifier)
+        let vc = UIViewController.create(withIdentifier: .login, from: .authentication)
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -130,10 +129,10 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         
         switch status {
         case .success:
-            navigationController?.navigate(to: .twoStepVerification, from: .authentication)
+            navigationController?.display(.twoStepVerification, from: .authentication)
         case .mfaToken:
             PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-            navigationController?.navigate(to: .verificationCode, from: .authentication)
+            navigationController?.display(.verificationCode, from: .authentication)
         case .error(let message):
             showAlert(title: .error, message: message)
         }

@@ -56,6 +56,9 @@ class MainViewController: BaseViewController<FilesViewModel> {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.title = .myFiles
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = .white
+        
         styleNavBar()
         
         directoryLabel.font = Text.style3.font
@@ -629,8 +632,8 @@ extension MainViewController: UISearchBarDelegate {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = navigationController?.create(
-            viewController: .fabActionSheet,
+        guard let actionSheet = UIViewController.create(
+            withIdentifier: .fabActionSheet,
             from: .main
         ) as? FABActionSheet else {
             showAlert(title: .error, message: .errorMessage)
@@ -638,7 +641,7 @@ extension MainViewController: FABViewDelegate {
         }
 
         actionSheet.delegate = self
-        navigationController?.display(viewController: actionSheet)
+        navigationController?.display(viewController: actionSheet, modally: true)
     }
 }
 
@@ -849,6 +852,10 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 }
 
 extension MainViewController: FileActionSheetDelegate {
+    func share(file: FileViewModel) {
+        self.navigationController?.display(.share, from: .share)
+    }
+    
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)

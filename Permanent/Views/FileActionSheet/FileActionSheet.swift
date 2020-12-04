@@ -11,6 +11,7 @@ protocol FileActionSheetDelegate: class {
     func downloadAction(file: FileViewModel)
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath)
     func relocateAction(file: FileViewModel, action: FileAction)
+    func share(file: FileViewModel)
 }
 
 class FileActionSheet: UIView {
@@ -39,9 +40,9 @@ class FileActionSheet: UIView {
         styleActionButton(copyButton, color: .primary, text: .copy)
         styleActionButton(moveButton, color: .primary, text: .move)
         styleActionButton(deleteButton, color: .destructive, text: .delete)
+        styleActionButton(shareButton, color: .primary, text: .share)
         //styleActionButton(publishButton, color: .primary, text: .publish)
         //styleActionButton(editButton, color: .primary, text: .edit)
-        //styleActionButton(shareButton, color: .primary, text: .share)
     }
     
     convenience init(
@@ -73,7 +74,6 @@ class FileActionSheet: UIView {
         // Hide these buttons temporarily
         publishButton.isHidden = true
         editButton.isHidden = true
-        shareButton.isHidden = true
         
         safeAreaView.backgroundColor = .backgroundPrimary
     }
@@ -114,6 +114,12 @@ class FileActionSheet: UIView {
     @IBAction
     func moveAction(_ sender: UIButton) {
         delegate?.relocateAction(file: self.file, action: .move)
+        
+        dismiss()
+    }
+    
+    @IBAction func shareAction(_ sender: UIButton) {
+        delegate?.share(file: self.file)
         
         dismiss()
     }

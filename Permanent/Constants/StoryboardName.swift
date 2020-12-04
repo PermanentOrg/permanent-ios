@@ -12,13 +12,14 @@ enum StoryboardName: String {
     case authentication
     case launch
     case onboarding
+    case share
 
     var name: String {
         return self.rawValue.capitalized
     }
 }
 
-enum ViewControllerIdentifier: String {
+enum ViewControllerId: String {
     case main
     case login
     case signUp
@@ -29,8 +30,9 @@ enum ViewControllerIdentifier: String {
     case biometrics
     case fabActionSheet
     case sideMenu
+    case share
 
-    var identifier: String {
+    var value: String {
         switch self {
         case .signUp:
             return "SignUp"
