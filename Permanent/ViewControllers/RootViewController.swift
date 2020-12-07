@@ -27,11 +27,8 @@ class RootViewController: UIViewController {
     }
     
     func setDrawerRoot() {
-        let mainViewController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
-                .instantiateViewController(withIdentifier: ViewControllerIdentifier.main.identifier)
-        
-        let sideMenuController = UIStoryboard(name: StoryboardName.main.name, bundle: nil)
-                .instantiateViewController(withIdentifier: ViewControllerIdentifier.sideMenu.identifier)
+        let mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
+        let sideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main)
         
         let navController = RootNavigationController(viewController: mainViewController)
         let drawerController = DrawerViewController(rootViewController: navController, sideMenuController: sideMenuController)
@@ -42,10 +39,9 @@ class RootViewController: UIViewController {
         current = drawerController
     }
     
-    func setRoot(named controller: ViewControllerIdentifier, from storyboard: StoryboardName) {
+    func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {
         let navController = NavigationController()
-        let viewController = UIStoryboard(name: storyboard.name, bundle: nil)
-            .instantiateViewController(withIdentifier: controller.identifier)
+        let viewController = UIViewController.create(withIdentifier: controller, from: storyboard)
         
         navController.viewControllers = [viewController]
         

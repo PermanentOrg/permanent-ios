@@ -14,10 +14,15 @@ class TextField: CustomTextField {
     @IBInspectable
     var placeholderColor: UIColor = .white
     
+    @IBInspectable
+    var placeholderFont: UIFont = Text.style7.font
+    
     override var placeholder: String? {
         didSet {
             attributedPlaceholder = NSAttributedString(string: placeholder ?? "",
-                                                       attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+                                                       attributes: [
+                                                        NSAttributedString.Key.foregroundColor: placeholderColor,
+                                                        NSAttributedString.Key.font: placeholderFont])
         }
     }
 

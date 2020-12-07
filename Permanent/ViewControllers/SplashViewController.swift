@@ -55,7 +55,7 @@ class SplashViewController: BaseViewController<SplashViewModel> {
     
     private func handleLoggedOutState() {
         let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
-        let route: (ViewControllerIdentifier, StoryboardName) = isNewUser ?
+        let route: (ViewControllerId, StoryboardName) = isNewUser ?
             (.onboarding, .onboarding) :
             (.signUp, .authentication)
         

@@ -20,7 +20,7 @@ protocol OperationProtocol {
 enum OperationResult {
     case json(_: Any?, _: HTTPURLResponse?)
     
-    case file(_: Data?, _: HTTPURLResponse?) // URL?
+    case file(_: URL?, _: HTTPURLResponse?)
     
     case error(_: Error?, _: HTTPURLResponse?)
 }

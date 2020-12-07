@@ -56,6 +56,9 @@ class MainViewController: BaseViewController<FilesViewModel> {
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.title = .myFiles
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = .white
+        
         styleNavBar()
         
         directoryLabel.font = Text.style3.font
@@ -203,8 +206,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         )
     }
     
-    private func handleUploadProgress(withValue value: Float) {
-        let indexPath = IndexPath(row: 0, section: FileListType.uploading.rawValue)
+    private func handleUploadProgress(withValue value: Float, listSection section: FileListType) {
+        let indexPath = IndexPath(row: 0, section: section.rawValue)
         
         guard
             let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
@@ -305,9 +308,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
                 }
                 
             },
+            
             progressHandler: { progress in
                 DispatchQueue.main.async {
-                    self.handleUploadProgress(withValue: progress)
+                    self.handleUploadProgress(withValue: progress, listSection: FileListType.uploading)
                 }
                 
             },
@@ -558,7 +562,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          })
     }
     
-    private func testDownload(_ file: FileViewModel) {
+    private func download(_ file: FileViewModel) {
         viewModel?.download(
             file,
             
@@ -583,6 +587,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 DispatchQueue.main.async {
                     self.share(url: shareURL)
+                }
+            },
+            
+            progressHandler: { progress in
+                DispatchQueue.main.async {
+                    self.handleUploadProgress(withValue: progress, listSection: FileListType.downloading)
                 }
             },
             
@@ -622,8 +632,8 @@ extension MainViewController: UISearchBarDelegate {
 
 extension MainViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = navigationController?.create(
-            viewController: .fabActionSheet,
+        guard let actionSheet = UIViewController.create(
+            withIdentifier: .fabActionSheet,
             from: .main
         ) as? FABActionSheet else {
             showAlert(title: .error, message: .errorMessage)
@@ -631,7 +641,7 @@ extension MainViewController: FABViewDelegate {
         }
 
         actionSheet.delegate = self
-        navigationController?.display(viewController: actionSheet)
+        navigationController?.display(viewController: actionSheet, modally: true)
     }
 }
 
@@ -842,6 +852,10 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 }
 
 extension MainViewController: FileActionSheetDelegate {
+    func share(file: FileViewModel) {
+        self.navigationController?.display(.share, from: .share)
+    }
+    
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
@@ -849,7 +863,7 @@ extension MainViewController: FileActionSheetDelegate {
     
     func downloadAction(file: FileViewModel) {
         fileActionSheet?.dismiss()
-        testDownload(file)
+        download(file)
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {

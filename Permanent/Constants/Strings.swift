@@ -94,4 +94,8 @@ extension String {
     static var members: String { return "Members".localized() }
     static var apps: String { return "Apps".localized() }
     static var manageArchives: String { return "ManageArchives".localized() }
+    static var getShareLink: String { return "GetShareLink".localized() }
+    static var shareLink: String { return "ShareLink".localized() }
+    static var shareDescription: String { return "ShareDescription".localized() }
+    
 }

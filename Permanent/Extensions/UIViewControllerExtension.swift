@@ -41,3 +41,10 @@ extension UIViewController {
         }
     }
 }
+
+extension UIViewController {
+    static func create(withIdentifier id: ViewControllerId, from storyboard: StoryboardName) -> UIViewController {
+        let storyboard = UIStoryboard(name: storyboard.name, bundle: nil)
+        return storyboard.instantiateViewController(withIdentifier: id.value)
+    }
+}
