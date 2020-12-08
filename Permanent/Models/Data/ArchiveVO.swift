@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ArchiveVO: Codable {
+struct ArchiveVO: Model {
     let childFolderVOS, folderSizeVOS, recordVOS: [JSONAny]?
     let accessRole, fullName: String?
     let spaceTotal, spaceLeft, fileTotal, fileLeft: JSONAny?

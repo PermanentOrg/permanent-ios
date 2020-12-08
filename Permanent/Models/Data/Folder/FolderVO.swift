@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct FolderVO: Codable {
+struct FolderVO: Model {
     let folderID: Int?
     let archiveNbr: String?
     let archiveID: Int?

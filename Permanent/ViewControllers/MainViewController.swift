@@ -853,7 +853,19 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-        self.navigationController?.display(.share, from: .share)
+        
+        guard
+            let viewModel = viewModel,
+            let shareVC = UIViewController.create(
+                withIdentifier: .share,
+                from: .share) as? ShareViewController
+        else {
+            return
+        }
+        
+        shareVC.sharedFile = file
+        shareVC.csrf = viewModel.csrf
+        self.navigationController?.display(viewController: shareVC)
     }
     
     

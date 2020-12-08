@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AccountVO: Codable {
+struct AccountVO: Model {
     let accountID: Int?
     let primaryEmail, fullName: String?
     let address, address2, country, city: String?

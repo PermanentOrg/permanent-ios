@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ShareViewController: UIViewController {
+class ShareViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var filenameLabel: UILabel!
     @IBOutlet var createLinkButton: RoundedButton!
     @IBOutlet var linkOptionsView: LinkOptionsView!
@@ -17,15 +17,22 @@ class ShareViewController: UIViewController {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var sharingWithLabel: UILabel!
     
-
+    var sharedFile: FileViewModel!
+    var csrf: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel = ShareLinkViewModel()
+        viewModel?.fileViewModel = sharedFile
+        viewModel?.csrf = csrf
         
         linkOptionsStackView.isHidden = true
         linkOptionsView.delegate = self
         
         configureUI()
         setupTableView()
+        getShareLink()
     }
     
     fileprivate func configureUI() {
@@ -37,13 +44,12 @@ class ShareViewController: UIViewController {
         
         styleHeaderLabels([filenameLabel, titleLabel, sharingWithLabel])
         
-        filenameLabel.text = "Around the world" // TODO
+        filenameLabel.text = sharedFile.name
         titleLabel.text = .shareLink
         descriptionLabel.text = .shareDescription
         descriptionLabel.font = Text.style8.font
         descriptionLabel.textColor = .textPrimary
         
-        linkOptionsView.link = "https://www.permanent.org/p/archive/00sm-00"
         linkOptionsView.configureButtons(withData: StaticData.shareLinkButtonsConfig)
     }
     
@@ -64,6 +70,32 @@ class ShareViewController: UIViewController {
         self.createLinkButton.isHidden = true
         UIView.animate(
             animations: {
+            self.linkOptionsStackView.isHidden = false
+        })
+    }
+    
+    // MARK: - Network Requests
+    
+    fileprivate func getShareLink() {
+        viewModel?.getShareLink(then: { shareVO, error in
+            guard error == nil else {
+                self.showToast(message: "Share by URL id is null")
+                return
+            }
+            
+            guard
+                let shareVO = shareVO?.shareByURLVO,
+                shareVO.sharebyURLID != nil,
+                let shareURL = shareVO.shareURL else {
+                
+                self.showToast(message: "Share by URL id is null")
+                return
+            }
+            
+            self.linkOptionsView.link = shareURL
+            
+            // TODO:
+            self.createLinkButton.isHidden = true
             self.linkOptionsStackView.isHidden = false
         })
     }
