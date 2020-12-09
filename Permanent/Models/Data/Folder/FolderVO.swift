@@ -50,7 +50,7 @@ struct FolderVO: Model {
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS: [FolderVO]?
-    let shareVOS: [JSONAny]?
+    let shareVOS: [ShareVO]?
     let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?
     let accessVOS: [JSONAny]?

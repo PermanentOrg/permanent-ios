@@ -16,6 +16,7 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var progressView: UIProgressView!
     @IBOutlet var dateStackView: UIStackView!
     @IBOutlet var overlayView: UIView!
+    @IBOutlet var sharesImageView: UIImageView!
     
     var rightButtonTapAction: CellButtonTapAction?
     
@@ -27,17 +28,20 @@ class FileTableViewCell: UITableViewCell {
     
     private func initUI() {
         fileNameLabel.font = Text.style11.font
-        fileNameLabel.textColor = .middleGray
+        fileNameLabel.textColor = .textPrimary
         fileDateLabel.font = Text.style12.font
-        fileDateLabel.textColor = .middleGray
+        fileDateLabel.textColor = .textPrimary
         fileImageView.clipsToBounds = true
+        
+        sharesImageView.image = UIImage.group.templated
+        sharesImageView.tintColor = .iconTintPrimary
         
         statusLabel.font = Text.style12.font
         statusLabel.textColor = .middleGray
         statusLabel.text = .waiting
         
         progressView.progressTintColor = .primary
-        moreButton.tintColor = .middleGray
+        moreButton.tintColor = .iconTintPrimary
         
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
@@ -45,6 +49,7 @@ class FileTableViewCell: UITableViewCell {
     func updateCell(model: FileViewModel, fileAction: FileAction) {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
+        sharesImageView.isHidden = model.minArchiveVOS.isEmpty
         
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)

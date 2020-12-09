@@ -8,8 +8,6 @@
 import Foundation
 
 struct FileViewModel: Equatable {
-    
-    
     let thumbnailURL: String?
     let name: String
     let date: String
@@ -17,7 +15,6 @@ struct FileViewModel: Equatable {
     
     let archiveId: Int
     let archiveNo: String
-    
     let recordId: Int
     
     let folderId: Int
@@ -26,7 +23,7 @@ struct FileViewModel: Equatable {
     let folderLinkId: Int
     var fileStatus: FileStatus = .synced
     var fileState: FileState = .enabled
-    
+    var minArchiveVOS: [MinArchiveVO] = []
     
     init(model: FileInfo) {
         self.name = model.name
@@ -61,6 +58,15 @@ struct FileViewModel: Equatable {
         self.parentFolderId = model.parentFolderID ?? -1
         self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
+        
+        model.shareVOS?.forEach {
+            if let fullName = $0.archiveVO?.fullName,
+                let thumbnailURL = $0.archiveVO?.thumbURL200 {
+            
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL)
+                self.minArchiveVOS.append(minArchive)
+            }
+        }
     }
     
     init(model: MinFolderVO) {
@@ -80,5 +86,14 @@ struct FileViewModel: Equatable {
         self.parentFolderId = model.parentFolderID ?? -1
         self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
+        
+        model.shareVOS?.forEach {
+            if let fullName = $0.archiveVO?.fullName,
+                let thumbnailURL = $0.archiveVO?.thumbURL200 {
+            
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL)
+                self.minArchiveVOS.append(minArchive)
+            }
+        }
     }
 }

@@ -27,17 +27,17 @@ class ArchiveTableViewCell: UITableViewCell {
         relationshipLabel.font = Text.style12.font
         relationshipLabel.textColor = .textPrimary
         archiveImageView.clipsToBounds = true
-        
         moreButton.tintColor = .middleGray
-        archiveImageView.backgroundColor = .primary
-        
-        // TEST
-        archiveNameLabel.text = "The Johnny Williams Archive"
-        relationshipLabel.text = "Friend"
     }
     
     @IBAction
     func moreButtonAction(_ sender: AnyObject) {
         rightButtonTapAction?(self)
+    }
+    
+    func updateCell(model: MinArchiveVO) {
+        archiveImageView.load(urlString: model.thumbnail)
+        archiveNameLabel.text = model.name
+        relationshipLabel.text = "Friend" // TODO: Ask Andrew
     }
 }

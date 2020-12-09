@@ -175,6 +175,8 @@
 		BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7725655E8F00842ABD /* FileState.swift */; };
 		BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */; };
 		BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */; };
+		BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27B2580F3C600567E8C /* ShareVO.swift */; };
+		BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -364,6 +366,8 @@
 		BCE8DA7725655E8F00842ABD /* FileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileState.swift; sourceTree = "<group>"; };
 		BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BottomActionSheet.xib; sourceTree = "<group>"; };
 		BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomActionSheet.swift; sourceTree = "<group>"; };
+		BCEAB27B2580F3C600567E8C /* ShareVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVO.swift; sourceTree = "<group>"; };
+		BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinArchiveVO.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -720,6 +724,8 @@
 				BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */,
 				BC4278C7255D70DF00270B34 /* LocnVO.swift */,
 				BCD414DC257F828E0019548F /* SharebyURLVO.swift */,
+				BCEAB27B2580F3C600567E8C /* ShareVO.swift */,
+				BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1147,6 +1153,7 @@
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
+				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
@@ -1180,6 +1187,7 @@
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
+				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
