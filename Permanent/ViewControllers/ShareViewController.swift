@@ -22,17 +22,14 @@ class ShareViewController: UIViewController {
         super.viewDidLoad()
         
         linkOptionsStackView.isHidden = true
-        
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .settings, style: .plain, target: self, action: #selector(toggleView))
-        
+        linkOptionsView.delegate = self
         
         configureUI()
         setupTableView()
     }
     
     fileprivate func configureUI() {
-        
-        navigationItem.title = "Share"
+        navigationItem.title = .share
         
         createLinkButton.layer.cornerRadius = Constants.Design.actionButtonRadius
         createLinkButton.bgColor = .primary
@@ -62,17 +59,13 @@ class ShareViewController: UIViewController {
             $0.textColor = .primary
         }
     }
-    
-    
-    @objc // TEST. Will be deleted.
-    func toggleView() {
-        linkOptionsStackView.isHidden.toggle()
-        createLinkButton.isHidden.toggle()
-        
-    }
+
     @IBAction func createLinkAction(_ sender: UIButton) {
-        createLinkButton.isHidden = true
-        linkOptionsStackView.isHidden = false
+        self.createLinkButton.isHidden = true
+        UIView.animate(
+            animations: {
+            self.linkOptionsStackView.isHidden = false
+        })
     }
 }
 
@@ -86,5 +79,20 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         return cell
+    }
+}
+
+extension ShareViewController: LinkOptionsViewDelegate {
+    func copyLink() {
+        let pasteboard = UIPasteboard.general
+        pasteboard.string = linkOptionsView.link
+        view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .linkCopied)
+    }
+    
+    func revokeLink() {
+        self.linkOptionsStackView.isHidden = true
+        UIView.animate(animations: {
+            self.createLinkButton.isHidden = false
+        })
     }
 }

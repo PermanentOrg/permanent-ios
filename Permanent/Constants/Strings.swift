@@ -97,5 +97,5 @@ extension String {
     static var getShareLink: String { return "GetShareLink".localized() }
     static var shareLink: String { return "ShareLink".localized() }
     static var shareDescription: String { return "ShareDescription".localized() }
-    
+    static var linkCopied: String { return "LinkCopied".localized() }
 }

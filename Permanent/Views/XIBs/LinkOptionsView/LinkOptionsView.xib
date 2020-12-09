@@ -41,6 +41,9 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2cF-1N-4B8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="328.5" width="512" height="89.5"/>
+                            <connections>
+                                <action selector="revokeLinkAction:" destination="-1" eventType="touchUpInside" id="Woq-0g-21Z"/>
+                            </connections>
                         </button>
                     </subviews>
                 </stackView>
@@ -58,16 +61,16 @@
     </objects>
     <designables>
         <designable name="2cF-1N-4B8">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="5g4-oc-hfW">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="cjF-wV-A7Z">
-            <size key="intrinsicContentSize" width="143" height="34"/>
+            <size key="intrinsicContentSize" width="32" height="34"/>
         </designable>
         <designable name="vXO-We-CqA">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
     </designables>
     <resources>
