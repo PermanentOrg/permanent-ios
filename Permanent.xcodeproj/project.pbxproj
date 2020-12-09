@@ -165,6 +165,7 @@
 		BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D9257F80500019548F /* ShareEndpoint.swift */; };
 		BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414DC257F828E0019548F /* SharebyURLVO.swift */; };
 		BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
+		BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E72580BFFE0019548F /* ShareLinkOption.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -353,6 +354,7 @@
 		BCD414D9257F80500019548F /* ShareEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEndpoint.swift; sourceTree = "<group>"; };
 		BCD414DC257F828E0019548F /* SharebyURLVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharebyURLVO.swift; sourceTree = "<group>"; };
 		BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOPayload.swift; sourceTree = "<group>"; };
+		BCD414E72580BFFE0019548F /* ShareLinkOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkOption.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -466,6 +468,7 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BCD414E62580BFCB0019548F /* Enums */,
 				BC11C80A25595B93008BDEFA /* Payloads */,
 				BC4526E3251CACAB00E24A51 /* Data */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
@@ -861,6 +864,14 @@
 			path = LinkOptionsView;
 			sourceTree = "<group>";
 		};
+		BCD414E62580BFCB0019548F /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				BCD414E72580BFFE0019548F /* ShareLinkOption.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
 		BCE8DA6F25652C1B00842ABD /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1038,6 +1049,7 @@
 			files = (
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
+				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,

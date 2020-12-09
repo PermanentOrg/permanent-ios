@@ -10,7 +10,7 @@ import Foundation
 typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
 protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
-    func getShareLink(then handler: @escaping ShareLinkResponse)
+    func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
 }
 
 class ShareLinkViewModel: NSObject, ViewModelInterface {
@@ -21,8 +21,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
 }
 
 extension ShareLinkViewModel: ShareLinkViewModelDelegate {
-    func getShareLink(then handler: @escaping ShareLinkResponse) {
-        let apiOperation = APIOperation(ShareEndpoint.getLink(file: fileViewModel, csrf: csrf))
+    func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
+        let endpoint = option.endpoint(for: fileViewModel, and: csrf)
+        let apiOperation = APIOperation(endpoint)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

@@ -32,7 +32,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         
         configureUI()
         setupTableView()
-        getShareLink()
+        getShareLink(option: .retrieve)
     }
     
     fileprivate func configureUI() {
@@ -67,22 +67,17 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     }
 
     @IBAction func createLinkAction(_ sender: UIButton) {
-        self.createLinkButton.isHidden = true
-        UIView.animate(
-            animations: {
-            self.linkOptionsStackView.isHidden = false
-        })
+        getShareLink(option: .create)
     }
     
     // MARK: - Network Requests
     
-    fileprivate func getShareLink() {
+    fileprivate func getShareLink(option: ShareLinkOption) {
         showSpinner()
-        viewModel?.getShareLink(then: { shareVO, error in
+        viewModel?.getShareLink(option: option, then: { shareVO, error in
             self.hideSpinner()
             
             guard error == nil else {
-                self.showToast(message: "Share by URL id is null")
                 return
             }
             
@@ -90,16 +85,18 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                 let shareVO = shareVO,
                 shareVO.sharebyURLID != nil,
                 let shareURL = shareVO.shareURL else {
-                
-                self.showToast(message: "Share by URL id is null")
                 return
             }
             
             self.linkOptionsView.link = shareURL
             
-            // TODO:
-            self.createLinkButton.isHidden = true
-            self.linkOptionsStackView.isHidden = false
+            DispatchQueue.main.async {
+                self.createLinkButton.isHidden = true
+                UIView.animate(
+                    animations: {
+                    self.linkOptionsStackView.isHidden = false
+                })
+            }
         })
     }
     
