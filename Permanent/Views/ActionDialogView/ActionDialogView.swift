@@ -103,7 +103,7 @@ class ActionDialogView: UIView {
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor) {
-        button.backgroundColor = color
+        button.bgColor = color
         button.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
     

@@ -8,6 +8,7 @@
 import UIKit
 class BaseViewController<T: ViewModelInterface>: UIViewController {
     var viewModel: T?
+    var actionDialog: ActionDialogView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,4 +54,37 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
     func closeKeyboard() {
         view.endEditing(true)
     }
+    
+    func showActionDialog(
+        styled style: ActionDialogStyle,
+        withTitle title: String,
+        placeholder: String? = nil,
+        positiveButtonTitle: String,
+        positiveAction: @escaping ButtonAction,
+        overlayView: UIView?
+    ) {
+        
+        guard actionDialog == nil else { return }
+        
+        actionDialog = ActionDialogView(
+            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
+            style: style,
+            title: title,
+            positiveButtonTitle: positiveButtonTitle,
+            placeholder: placeholder,
+            onDismiss: {
+                self.view.dismissPopup(
+                    self.actionDialog,
+                    overlayView: overlayView,
+                    completion: { _ in
+                        self.actionDialog?.removeFromSuperview()
+                        self.actionDialog = nil
+                    })
+            }
+        )
+        
+        actionDialog?.positiveAction = positiveAction
+        view.addSubview(actionDialog!)
+        self.view.presentPopup(actionDialog, overlayView: overlayView)
+    } 
 }

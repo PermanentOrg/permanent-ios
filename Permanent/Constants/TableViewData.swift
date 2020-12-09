@@ -28,9 +28,9 @@ struct TableViewData {
 
 struct StaticData {
     static let shareLinkButtonsConfig: [(title: String, bgColor: UIColor)] = [
-        ("Copy link", .primary),
-        ("Manage link", .primary),
-        ("Revoke link", .destructive)
+        (.copyLink, .primary),
+        (.manageLink, .primary),
+        (.revokeLink, .destructive)
     ]
 }
 

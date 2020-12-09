@@ -17,6 +17,8 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var sharingWithLabel: UILabel!
     
+    private let overlayView = UIView()
+    
     var sharedFile: FileViewModel!
     var csrf: String!
     
@@ -35,6 +37,12 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         getShareLink(option: .retrieve)
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
+    }
+    
     fileprivate func configureUI() {
         navigationItem.title = .share
         
@@ -51,6 +59,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         descriptionLabel.textColor = .textPrimary
         
         linkOptionsView.configureButtons(withData: StaticData.shareLinkButtonsConfig)
+        
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
     }
     
     fileprivate func setupTableView() {
@@ -145,6 +157,13 @@ extension ShareViewController: LinkOptionsViewDelegate {
     }
     
     func revokeLinkAction() {
-        revokeLink()
+        showActionDialog(styled: .simple,
+                         withTitle: "\(String.revokeLink)?",
+                         positiveButtonTitle: .revoke,
+                         positiveAction: {
+                            self.actionDialog?.dismiss()
+                            self.revokeLink()
+                         },
+                         overlayView: self.overlayView)
     }
 }

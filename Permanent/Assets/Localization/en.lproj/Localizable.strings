@@ -94,3 +94,8 @@
 "ShareLink" = "Share link";
 "ShareDescription" = "Send this link via text, email, or other message service to invite people to share this content.";
 "LinkCopied" = "Link copied";
+"CopyLink" = "Copy";
+"ManageLink" = "Manage";
+"Revoke" = "Revoke";
+"Link" = "Link";
+
