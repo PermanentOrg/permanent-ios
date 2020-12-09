@@ -10,6 +10,7 @@ import Foundation
 enum ShareEndpoint {
     case getLink(file: FileViewModel, csrf: String)
     case generateShareLink
+    case revokeLink(link: SharebyURLVOData, csrf: String)
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -17,6 +18,7 @@ extension ShareEndpoint: RequestProtocol {
         switch self {
         case .getLink: return "/share/getLink"
         case .generateShareLink: return "/share/generateShareLink"
+        case .revokeLink: return "/share/dropShareLink"
         }
     }
     
@@ -52,6 +54,21 @@ extension ShareEndpoint: RequestProtocol {
                 
                 return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             }
+            
+        case .revokeLink(let link, let csrf):
+            guard
+                let linkId = link.sharebyURLID,
+                let byAccountId = link.byAccountID,
+                let byArchiveId = link.byArchiveID else { return nil }
+            
+            let sharebyURLVO = SharebyURLVOPayload(
+                linkId: linkId,
+                byAccountId: byAccountId,
+                byArchiveId: byArchiveId
+            )
+            let requestVO = APIPayload.make(fromData: [sharebyURLVO], csrf: csrf)
+            
+            return try? APIPayload<SharebyURLVOPayload>.encoder.encode(requestVO)
             
         default: return nil
         }

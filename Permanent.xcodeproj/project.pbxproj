@@ -164,6 +164,7 @@
 		BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D6257F74780019548F /* ShareLinkViewModel.swift */; };
 		BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D9257F80500019548F /* ShareEndpoint.swift */; };
 		BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414DC257F828E0019548F /* SharebyURLVO.swift */; };
+		BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -351,6 +352,7 @@
 		BCD414D6257F74780019548F /* ShareLinkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkViewModel.swift; sourceTree = "<group>"; };
 		BCD414D9257F80500019548F /* ShareEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEndpoint.swift; sourceTree = "<group>"; };
 		BCD414DC257F828E0019548F /* SharebyURLVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharebyURLVO.swift; sourceTree = "<group>"; };
+		BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOPayload.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -603,6 +605,7 @@
 			children = (
 				BC11C80B25595BA3008BDEFA /* RecordVOPayload.swift */,
 				BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */,
+				BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */,
 				BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */,
 				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
 				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
@@ -1122,6 +1125,7 @@
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
+				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,

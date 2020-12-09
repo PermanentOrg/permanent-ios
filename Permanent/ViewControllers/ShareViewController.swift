@@ -77,14 +77,17 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     // MARK: - Network Requests
     
     fileprivate func getShareLink() {
+        showSpinner()
         viewModel?.getShareLink(then: { shareVO, error in
+            self.hideSpinner()
+            
             guard error == nil else {
                 self.showToast(message: "Share by URL id is null")
                 return
             }
             
             guard
-                let shareVO = shareVO?.shareByURLVO,
+                let shareVO = shareVO,
                 shareVO.sharebyURLID != nil,
                 let shareURL = shareVO.shareURL else {
                 
@@ -97,6 +100,29 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             // TODO:
             self.createLinkButton.isHidden = true
             self.linkOptionsStackView.isHidden = false
+        })
+    }
+    
+    fileprivate func revokeLink() {
+        showSpinner()
+        
+        viewModel?.revokeLink(then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.linkOptionsStackView.isHidden = true
+                    UIView.animate(animations: {
+                        self.createLinkButton.isHidden = false
+                    })
+                }
+               
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
         })
     }
 }
@@ -115,16 +141,13 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ShareViewController: LinkOptionsViewDelegate {
-    func copyLink() {
+    func copyLinkAction() {
         let pasteboard = UIPasteboard.general
         pasteboard.string = linkOptionsView.link
         view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .linkCopied)
     }
     
-    func revokeLink() {
-        self.linkOptionsStackView.isHidden = true
-        UIView.animate(animations: {
-            self.createLinkButton.isHidden = false
-        })
+    func revokeLinkAction() {
+        revokeLink()
     }
 }

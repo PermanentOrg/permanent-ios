@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias ShareLinkResponse = (SharebyURLVO?, String?) -> Void
+typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
 protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
     func getShareLink(then handler: @escaping ShareLinkResponse)
@@ -16,6 +16,7 @@ protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
 class ShareLinkViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var fileViewModel: FileViewModel!
+    var shareVO: SharebyURLVOData?
     weak var delegate: ShareLinkViewModelDelegate?
 }
 
@@ -36,7 +37,8 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
                     return
                 }
             
-                handler(model.results.first?.data?.first, nil)
+                self.shareVO = model.results.first?.data?.first?.shareByURLVO
+                handler(self.shareVO, nil)
                 
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
@@ -47,5 +49,35 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
         }
     }
     
+    func revokeLink(then handler: @escaping ServerResponse) {
+        guard let shareVO = shareVO else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let apiOperation = APIOperation(ShareEndpoint.revokeLink(link: shareVO, csrf: csrf))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+            
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
     
 }
