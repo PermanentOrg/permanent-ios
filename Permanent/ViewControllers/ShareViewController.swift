@@ -168,7 +168,13 @@ extension ShareViewController: LinkOptionsViewDelegate {
     }
     
     func manageLinkAction() {
-        self.navigationController?.display(.manageLink, from: .share, modally: true)
+        guard
+            let manageLinkVC = UIViewController.create(withIdentifier: .manageLink, from: .share) as? ManageLinkViewController else {
+            return
+        }
+        
+        manageLinkVC.shareViewModel = self.viewModel
+        self.navigationController?.display(viewController: manageLinkVC, modally: true)
     }
     
     func revokeLinkAction() {

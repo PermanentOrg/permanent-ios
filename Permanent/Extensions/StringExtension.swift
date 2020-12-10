@@ -15,6 +15,10 @@ extension String {
     func localized(withComment comment: String = "") -> String {
         return NSLocalizedString(self, comment: comment)
     }
+    
+    var dateOnly: String {
+        return String(self.prefix(while: { $0 != "T" }))
+    }
 }
 
 // MARK: - Validations

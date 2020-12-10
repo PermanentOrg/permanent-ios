@@ -44,7 +44,7 @@ struct FileViewModel: Equatable {
     init(model: ChildItemVO) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ?
-            String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
+            model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
@@ -72,7 +72,7 @@ struct FileViewModel: Equatable {
     init(model: MinFolderVO) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ?
-            String(model.displayDT!.prefix(while: { $0 != "T" })) : "-"
+            model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous

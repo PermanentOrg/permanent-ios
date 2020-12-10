@@ -172,7 +172,7 @@
                     <connections>
                         <outlet property="autoApproveSwitchView" destination="8xd-fw-Fc4" id="lcf-BI-SWc"/>
                         <outlet property="cancelButton" destination="QPg-eh-qhO" id="Kdp-3g-4yS"/>
-                        <outlet property="expDatePickerView" destination="mIi-D7-d70" id="lD7-Za-uPz"/>
+                        <outlet property="expDateInputView" destination="mIi-D7-d70" id="hPn-Tv-JKi"/>
                         <outlet property="maxUsesInputView" destination="MOf-Xs-CNt" id="utC-fm-vkZ"/>
                         <outlet property="saveButton" destination="k9G-sI-qMW" id="Q52-DL-OjU"/>
                         <outlet property="sharePreviewSwitchView" destination="x4q-es-S21" id="4bS-mb-9sq"/>

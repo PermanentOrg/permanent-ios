@@ -37,7 +37,7 @@ class ArchiveTableViewCell: UITableViewCell {
     
     func updateCell(model: MinArchiveVO) {
         archiveImageView.load(urlString: model.thumbnail)
-        archiveNameLabel.text = model.name
-        relationshipLabel.text = "Friend" // TODO: Ask Andrew
+        archiveNameLabel.text = String.init(format: .archiveName, model.name)
+        relationshipLabel.text = "Friend" // TODO
     }
 }

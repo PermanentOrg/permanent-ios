@@ -24,8 +24,21 @@ class InputSettingsView: UIView {
         }
     }
     
-    var inputValue: String? {
-        return textField.text
+    @IBInspectable
+    var value: String? {
+        didSet {
+            textField.text = value
+        }
+    }
+    
+    var keyboardType: UIKeyboardType? {
+        didSet {
+            textField.keyboardType = keyboardType ?? .default
+        }
+    }
+    
+    var inputValue: String {
+        return textField.text ?? ""
     }
     
     override init(frame: CGRect) {
@@ -63,12 +76,21 @@ class InputSettingsView: UIView {
         self.addSubview(textField)
     }
     
-    func configureDatePickerUI() {
-        let toolbar = UIToolbar();
+    func configureNumericUI() {
+        let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneDatePicker));
+        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(cancel));
+        
+        toolbar.setItems([doneButton], animated: false)
+        textField.inputAccessoryView = toolbar
+    }
+    
+    func configureDatePickerUI() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(doneDatePicker));
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let cancelButton = UIBarButtonItem(title: .cancel, style: .plain, target: self, action: #selector(cancelDatePicker));
+        let cancelButton = UIBarButtonItem(title: .cancel, style: .plain, target: self, action: #selector(cancel))
         
         toolbar.setItems([doneButton,spaceButton,cancelButton], animated: false)
         
@@ -85,7 +107,7 @@ class InputSettingsView: UIView {
     }
 
     @objc
-    private func cancelDatePicker(){
+    private func cancel(){
         self.endEditing(true)
     }
 }

@@ -111,4 +111,5 @@ extension String {
     static var optional: String { return "Optional".localized() }
     static var autoApprove: String { return "AutoApprove".localized() }
     static var noSharesMessage: String { return "NoSharesMessage".localized() }
+    static var archiveName: String { return "ArchiveName".localized() }
 }

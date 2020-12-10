@@ -106,3 +106,4 @@
 "Optional" = "Optional";
 "AutoApprove" = "Auto approve";
 "NoSharesMessage" = "This item is not shared with any archives";
+"ArchiveName" = "The %@ Archive";

@@ -12,6 +12,14 @@ class SwitchSettingsView: UIView {
     fileprivate var textLabel: UILabel!
     fileprivate var switchView: UISwitch!
     
+    func toggle(isOn: Bool) {
+        switchView.setOn(isOn, animated: false)
+    }
+    
+    var isToggled: Bool {
+        return switchView.isOn
+    }
+    
     @IBInspectable
     var text: String? {
         didSet {
