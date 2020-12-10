@@ -68,7 +68,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     fileprivate func setupTableView() {
         tableView.register(UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self))
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = UIView()        
+        tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ?
+            UIView.tableViewBgView(withTitle: .noSharesMessage) :
+            nil
     }
     
     fileprivate func styleHeaderLabels(_ labels: [UILabel]) {

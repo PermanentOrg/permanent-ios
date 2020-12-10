@@ -105,3 +105,4 @@
 "ExpirationDate" = "Expiration date";
 "Optional" = "Optional";
 "AutoApprove" = "Auto approve";
+"NoSharesMessage" = "This item is not shared with any archives";

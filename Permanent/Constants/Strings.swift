@@ -110,4 +110,5 @@ extension String {
     static var expirationDate: String { return "\("ExpirationDate".localized()) (\(optional.lowercased()))" }
     static var optional: String { return "Optional".localized() }
     static var autoApprove: String { return "AutoApprove".localized() }
+    static var noSharesMessage: String { return "NoSharesMessage".localized() }
 }

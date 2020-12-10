@@ -95,4 +95,23 @@ extension UIView {
                            })
         })
     }
+    
+    static func tableViewBgView(withTitle title: String) -> UIView {
+        let bgView = UIView()
+        bgView.backgroundColor = .backgroundPrimary
+        
+        let noSharesLabel = UILabel()
+        noSharesLabel.font = Text.style8.font
+        noSharesLabel.textColor = .textPrimary
+        noSharesLabel.text = title
+        
+        bgView.addSubview(noSharesLabel)
+        noSharesLabel.enableAutoLayout()
+        NSLayoutConstraint.activate([
+            noSharesLabel.topAnchor.constraint(equalTo: bgView.topAnchor, constant: 5),
+            noSharesLabel.leadingAnchor.constraint(equalTo: bgView.leadingAnchor, constant: 20)
+        ])
+        
+        return bgView
+    }
 }
