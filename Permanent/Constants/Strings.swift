@@ -104,4 +104,10 @@ extension String {
     static var revoke: String { return "Revoke".localized() }
     static var link: String { return "Link".localized() }
     static var save: String { return "Save".localized() }
+    static var done: String { return "Done".localized() }
+    static var sharePreview: String { return "SharePreview".localized() }
+    static var maxNumberUses: String { return "\("MaxNumberUses".localized()) (\(optional.lowercased()))" }
+    static var expirationDate: String { return "\("ExpirationDate".localized()) (\(optional.lowercased()))" }
+    static var optional: String { return "Optional".localized() }
+    static var autoApprove: String { return "AutoApprove".localized() }
 }

@@ -27,11 +27,10 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
     fileprivate func configureUI() {
         view.backgroundColor = .backgroundPrimary
      
-        sharePreviewSwitchView.text = "Share preview"
-        autoApproveSwitchView.text = "Auto approve"
-        
-        maxUsesInputView.placeholder = "Max uses"
-        expDatePickerView.placeholder = "Expiration date (opt)"
+        sharePreviewSwitchView.text = .sharePreview
+        autoApproveSwitchView.text = .autoApprove
+        maxUsesInputView.placeholder = .maxNumberUses
+        expDatePickerView.placeholder = .expirationDate
         expDatePickerView.configureDatePickerUI()
         
         cancelButton.configureActionButtonUI(title: .cancel)
@@ -47,15 +46,4 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
     
     @IBAction func saveAction(_ sender: UIButton) {
     }
-    
-    fileprivate func displayDatePicker() {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        
-        let pickerSize : CGSize = datePicker.sizeThatFits(.zero)
-        datePicker.frame = CGRect(x: 0, y: 250, width: pickerSize.width, height: 460)
-            
-        view.addSubview(datePicker)
-    }
-    
 }

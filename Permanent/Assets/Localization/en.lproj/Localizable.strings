@@ -99,4 +99,9 @@
 "Revoke" = "Revoke";
 "Link" = "Link";
 "Save" = "Save";
-
+"Done" = "Done";
+"SharePreview" = "Share preview";
+"MaxNumberUses" = "Max numbers of uses";
+"ExpirationDate" = "Expiration date";
+"Optional" = "Optional";
+"AutoApprove" = "Auto approve";
