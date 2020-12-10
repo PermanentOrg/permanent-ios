@@ -164,6 +164,10 @@ extension ShareViewController: LinkOptionsViewDelegate {
         view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .linkCopied)
     }
     
+    func manageLinkAction() {
+        self.navigationController?.display(.manageLink, from: .share, modally: true)
+    }
+    
     func revokeLinkAction() {
         showActionDialog(styled: .simple,
                          withTitle: "\(String.revokeLink)?",

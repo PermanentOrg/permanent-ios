@@ -103,4 +103,5 @@ extension String {
     static var revokeLink: String { return "\("Revoke".localized()) \(link.lowercased())" }
     static var revoke: String { return "Revoke".localized() }
     static var link: String { return "Link".localized() }
+    static var save: String { return "Save".localized() }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 protocol LinkOptionsViewDelegate: class {
     func copyLinkAction()
+    func manageLinkAction()
     func revokeLinkAction()
 }
 
@@ -64,6 +65,10 @@ class LinkOptionsView: UIView {
     
     @IBAction func copyLinkAction(_ sender: UIButton) {
         delegate?.copyLinkAction()
+    }
+    
+    @IBAction func manageLinkAction(_ sender: UIButton) {
+        delegate?.manageLinkAction()
     }
     
     @IBAction func revokeLinkAction(_ sender: UIButton) {

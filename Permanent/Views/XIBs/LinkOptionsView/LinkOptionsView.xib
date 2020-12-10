@@ -38,6 +38,9 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5g4-oc-hfW" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="219" width="512" height="89.5"/>
+                            <connections>
+                                <action selector="manageLinkAction:" destination="-1" eventType="touchUpInside" id="hU5-mJ-tUY"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2cF-1N-4B8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="328.5" width="512" height="89.5"/>
