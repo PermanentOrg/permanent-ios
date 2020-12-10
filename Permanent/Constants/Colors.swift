@@ -37,4 +37,5 @@ extension UIColor {
     static var overlay = UIColor.black.withAlphaComponent(0.25)
     static var destructive = UIColor.brightRed
     static var textPrimary = UIColor.middleGray
+    static var iconTintPrimary = UIColor.middleGray
 }

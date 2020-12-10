@@ -50,7 +50,7 @@ struct MinFolderVO: Codable {
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS: [ChildItemVO]?
-    let shareVOS: [JSONAny]?
+    let shareVOS: [ShareVO]?
     let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?
     let accessVOS: [JSONAny]?

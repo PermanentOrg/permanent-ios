@@ -46,7 +46,7 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="2Ym-3f-4q8">
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="2Ym-3f-4q8" userLabel="Shares Image View">
                                                 <rect key="frame" x="51.5" y="0.0" width="15" height="15"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="15" id="LcM-lO-S7M"/>
@@ -109,13 +109,14 @@
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
                 <outlet property="overlayView" destination="mnZ-AY-U2a" id="tlf-Qh-IK8"/>
                 <outlet property="progressView" destination="oeE-4y-tVi" id="Iwh-Qs-yad"/>
+                <outlet property="sharesImageView" destination="2Ym-3f-4q8" id="Wuj-O8-sQS"/>
                 <outlet property="statusLabel" destination="Nid-5J-xom" id="2eE-cO-CIY"/>
             </connections>
             <point key="canvasLocation" x="240.57971014492756" y="95.758928571428569"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="folder" width="42.5" height="34"/>
+        <image name="folder" width="21" height="17"/>
         <image name="more" width="4" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

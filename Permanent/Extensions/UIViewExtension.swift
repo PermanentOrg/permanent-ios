@@ -49,17 +49,17 @@ extension UIView {
         
     }
     
-    func presentPopup(_ popupView: UIView?, overlayView: UIView) {
+    func presentPopup(_ popupView: UIView?, overlayView: UIView?) {
         UIView.animate(animations: {
             popupView?.frame = self.bounds
-            overlayView.alpha = 0.5
+            overlayView?.alpha = 0.5
         })
     }
     
-    func dismissPopup(_ popupView: UIView?, overlayView: UIView, completion: ((Bool) -> Void)? = nil) {
+    func dismissPopup(_ popupView: UIView?, overlayView: UIView?, completion: ((Bool) -> Void)? = nil) {
         UIView.animate(animations: {
             popupView?.frame = CGRect(origin: CGPoint(x: 0, y: self.bounds.height), size: self.bounds.size)
-            overlayView.alpha = 0.0
+            overlayView?.alpha = 0.0
         }, completion: completion)
     }
     

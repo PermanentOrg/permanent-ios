@@ -19,7 +19,6 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
-    private var actionDialog: ActionDialogView?
     private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
     private var isSearchActive: Bool = false
@@ -543,9 +542,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          withTitle: title,
                          positiveButtonTitle: .delete,
                          positiveAction: {
-                             self.actionDialog?.dismiss()
-                             self.deleteFile(file, atIndexPath: indexPath)
-                         })
+                            self.actionDialog?.dismiss()
+                            self.deleteFile(file, atIndexPath: indexPath)
+                         }, overlayView: self.overlayView)
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -559,7 +558,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          positiveAction: {
                             self.actionDialog?.dismiss()
                             self.relocate(file: source, to: destination)
-                         })
+                         }, overlayView: self.overlayView)
     }
     
     private func download(_ file: FileViewModel) {
@@ -656,7 +655,8 @@ extension MainViewController: FABActionSheetDelegate {
             withTitle: .createFolder,
             placeholder: .folderName,
             positiveButtonTitle: .create,
-            positiveAction: { self.newFolderAction() }
+            positiveAction: { self.newFolderAction() },
+            overlayView: self.overlayView
         )
     }
     
@@ -683,40 +683,7 @@ extension MainViewController: FABActionSheetDelegate {
         view.addSubview(sortActionSheet!)
         self.view.presentPopup(sortActionSheet, overlayView: overlayView)        
     }
-    
-    // TODO: Move this to BaseVC
-    func showActionDialog(
-        styled style: ActionDialogStyle,
-        withTitle title: String,
-        placeholder: String? = nil,
-        positiveButtonTitle: String,
-        positiveAction: @escaping ButtonAction
-    ) {
-        
-        guard actionDialog == nil else { return }
-        
-        actionDialog = ActionDialogView(
-            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-            style: style,
-            title: title,
-            positiveButtonTitle: positiveButtonTitle,
-            placeholder: placeholder,
-            onDismiss: {
-                self.view.dismissPopup(
-                    self.actionDialog,
-                    overlayView: self.overlayView,
-                    completion: { _ in
-                        self.actionDialog?.removeFromSuperview()
-                        self.actionDialog = nil
-                    })
-            }
-        )
-        
-        actionDialog?.positiveAction = positiveAction
-        view.addSubview(actionDialog!)
-        self.view.presentPopup(actionDialog, overlayView: overlayView)
-    }
-    
+
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         // Safety measure, in case the user taps to show sheet, but the previously shown one
         // has not finished dimissing and being deallocated.
@@ -853,7 +820,19 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-        self.navigationController?.display(.share, from: .share)
+        
+        guard
+            let viewModel = viewModel,
+            let shareVC = UIViewController.create(
+                withIdentifier: .share,
+                from: .share) as? ShareViewController
+        else {
+            return
+        }
+        
+        shareVC.sharedFile = file
+        shareVC.csrf = viewModel.csrf
+        self.navigationController?.display(viewController: shareVC)
     }
     
     

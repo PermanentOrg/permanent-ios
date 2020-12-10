@@ -161,6 +161,11 @@
 		BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */; };
 		BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC5501E255AB31800CA1574 /* FileHelper.swift */; };
 		BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC76EA255E8BF800903D3C /* URLExtension.swift */; };
+		BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D6257F74780019548F /* ShareLinkViewModel.swift */; };
+		BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D9257F80500019548F /* ShareEndpoint.swift */; };
+		BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414DC257F828E0019548F /* SharebyURLVO.swift */; };
+		BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
+		BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E72580BFFE0019548F /* ShareLinkOption.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
@@ -170,6 +175,8 @@
 		BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7725655E8F00842ABD /* FileState.swift */; };
 		BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */; };
 		BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */; };
+		BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27B2580F3C600567E8C /* ShareVO.swift */; };
+		BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -345,6 +352,11 @@
 		BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogView.swift; sourceTree = "<group>"; };
 		BCC5501E255AB31800CA1574 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		BCCC76EA255E8BF800903D3C /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
+		BCD414D6257F74780019548F /* ShareLinkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkViewModel.swift; sourceTree = "<group>"; };
+		BCD414D9257F80500019548F /* ShareEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEndpoint.swift; sourceTree = "<group>"; };
+		BCD414DC257F828E0019548F /* SharebyURLVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharebyURLVO.swift; sourceTree = "<group>"; };
+		BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOPayload.swift; sourceTree = "<group>"; };
+		BCD414E72580BFFE0019548F /* ShareLinkOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkOption.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
 		BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderView.swift; sourceTree = "<group>"; };
@@ -354,6 +366,8 @@
 		BCE8DA7725655E8F00842ABD /* FileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileState.swift; sourceTree = "<group>"; };
 		BCE8DA7B2566735C00842ABD /* BottomActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BottomActionSheet.xib; sourceTree = "<group>"; };
 		BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomActionSheet.swift; sourceTree = "<group>"; };
+		BCEAB27B2580F3C600567E8C /* ShareVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVO.swift; sourceTree = "<group>"; };
+		BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinArchiveVO.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -458,6 +472,7 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BCD414E62580BFCB0019548F /* Enums */,
 				BC11C80A25595B93008BDEFA /* Payloads */,
 				BC4526E3251CACAB00E24A51 /* Data */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
@@ -492,6 +507,7 @@
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
 				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
+				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -596,6 +612,7 @@
 			children = (
 				BC11C80B25595BA3008BDEFA /* RecordVOPayload.swift */,
 				BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */,
+				BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */,
 				BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */,
 				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
 				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
@@ -644,6 +661,7 @@
 				BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */,
 				BC326AAE2526195E00A69597 /* APIErrors.swift */,
 				BC6358A02536D80100EEC48C /* FilesEndpoint.swift */,
+				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -705,6 +723,9 @@
 				BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */,
 				BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */,
 				BC4278C7255D70DF00270B34 /* LocnVO.swift */,
+				BCD414DC257F828E0019548F /* SharebyURLVO.swift */,
+				BCEAB27B2580F3C600567E8C /* ShareVO.swift */,
+				BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -847,6 +868,14 @@
 				BCC1CCF325792E950069E337 /* LinkOptionsView.xib */,
 			);
 			path = LinkOptionsView;
+			sourceTree = "<group>";
+		};
+		BCD414E62580BFCB0019548F /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				BCD414E72580BFFE0019548F /* ShareLinkOption.swift */,
+			);
+			path = Enums;
 			sourceTree = "<group>";
 		};
 		BCE8DA6F25652C1B00842ABD /* Managers */ = {
@@ -1026,6 +1055,7 @@
 			files = (
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
+				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
@@ -1096,6 +1126,7 @@
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
@@ -1112,6 +1143,7 @@
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
+				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
@@ -1121,6 +1153,7 @@
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
+				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
@@ -1136,9 +1169,11 @@
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
+				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
+				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
@@ -1152,6 +1187,7 @@
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
+				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,

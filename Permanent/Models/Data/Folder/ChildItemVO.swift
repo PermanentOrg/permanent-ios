@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ChildItemVO: Codable {
+struct ChildItemVO: Model {
     let folderID: Int?
         let archiveNbr: String?
         let archiveID: Int?
@@ -49,7 +49,7 @@ struct ChildItemVO: Codable {
         let attachmentRecordVOS: [AttachmentRecordVO]?
         let hasAttachments: Bool?
         let childItemVOS: [ChildItemVO]?
-        let shareVOS: [JSONAny]?
+        let shareVOS: [ShareVO]?
         let returnDataSize: JSONAny?
         let archiveArchiveNbr: String?
         let accessVOS: [JSONAny]?

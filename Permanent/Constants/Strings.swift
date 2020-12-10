@@ -98,4 +98,9 @@ extension String {
     static var shareLink: String { return "ShareLink".localized() }
     static var shareDescription: String { return "ShareDescription".localized() }
     static var linkCopied: String { return "LinkCopied".localized() }
+    static var copyLink: String { return "\("CopyLink".localized()) \(link.lowercased())" }
+    static var manageLink: String { return "\("ManageLink".localized()) \(link.lowercased())" }
+    static var revokeLink: String { return "\("Revoke".localized()) \(link.lowercased())" }
+    static var revoke: String { return "Revoke".localized() }
+    static var link: String { return "Link".localized() }
 }
