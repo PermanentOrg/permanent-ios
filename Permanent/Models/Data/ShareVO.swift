@@ -10,7 +10,7 @@ import Foundation
 struct ShareVO: Model {
     let shareID, folderLinkID, archiveID: Int?
     let accessRole, type, status, requestToken: String?
-    let previewToggle: Bool?
+    let previewToggle: JSONAny?
     let folderVO: FolderVO?
     let recordVO: RecordVO?
     let archiveVO: ArchiveVO?

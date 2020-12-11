@@ -149,7 +149,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId
+        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
         fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
@@ -822,7 +822,7 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-        
+    
         guard
             let viewModel = viewModel,
             let shareVC = UIViewController.create(
@@ -831,7 +831,7 @@ extension MainViewController: FileActionSheetDelegate {
         else {
             return
         }
-        
+
         shareVC.sharedFile = file
         shareVC.csrf = viewModel.csrf
         self.navigationController?.display(viewController: shareVC)
