@@ -205,7 +205,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         )
     }
     
-    private func handleUploadProgress(withValue value: Float, listSection section: FileListType) {
+    private func handleProgress(withValue value: Float, listSection section: FileListType) {
         let indexPath = IndexPath(row: 0, section: section.rawValue)
         
         guard
@@ -310,7 +310,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
             
             progressHandler: { progress in
                 DispatchQueue.main.async {
-                    self.handleUploadProgress(withValue: progress, listSection: FileListType.uploading)
+                    self.handleProgress(withValue: progress, listSection: FileListType.uploading)
                 }
                 
             },
@@ -593,7 +593,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             
             progressHandler: { progress in
                 DispatchQueue.main.async {
-                    self.handleUploadProgress(withValue: progress, listSection: FileListType.downloading)
+                    self.handleProgress(withValue: progress, listSection: FileListType.downloading)
                 }
             },
             
