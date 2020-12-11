@@ -342,24 +342,17 @@ extension FilesViewModel: FilesViewModelDelegate {
             return handler(nil, .errorMessage)
         }
         
-        let apiOperation = APIOperation(FilesEndpoint.download(url: url, progressHandler: progressHandler))
+        let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             
             switch result {
             case .file(let fileURL, _):
-                
                 guard let url = fileURL else {
                     handler(nil, .errorMessage)
                     return
                 }
-                
-                let fileHelper = FileHelper()
-                let tempFileURL = fileHelper.saveFile(at: url, named: fileName)
-                
-                // Delete the old temp file (the one without extension).
-                fileHelper.deleteFile(at: url)
-                
-                handler(tempFileURL, nil)
+            
+                handler(url, nil)
     
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
