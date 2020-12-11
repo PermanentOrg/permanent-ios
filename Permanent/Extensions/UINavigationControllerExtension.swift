@@ -11,7 +11,7 @@ extension UINavigationController {
     
     func display(viewController: UIViewController, modally: Bool = false) {
         if modally {
-            viewController.modalPresentationStyle = .overCurrentContext
+            viewController.modalPresentationStyle = .popover
             self.present(viewController, animated: true)
         } else {
             self.pushViewController(viewController, animated: true)
@@ -20,7 +20,7 @@ extension UINavigationController {
 
     func display(_ id: ViewControllerId, from storyboard: StoryboardName, modally: Bool = false) {
         let viewController = UIViewController.create(withIdentifier: id, from: storyboard)
-        self.display(viewController: viewController)
+        self.display(viewController: viewController, modally: modally)
     }
 }
 

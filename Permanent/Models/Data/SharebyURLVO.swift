@@ -20,11 +20,12 @@ struct SharebyURLVOData: Model {
     let status, urlToken: String?
     let folderLinkID: JSONAny?
     let shareURL: String?
-    let uses, maxUses: Int?
-    let autoApproveToggle: JSONAny? // Bool
-    let previewToggle: Int?
+    let uses: Int?
+    var maxUses: Int?
+    var autoApproveToggle: Int?
+    var previewToggle: Int?
     let defaultAccessRole: String?
-    let expiresDT: String?
+    var expiresDT: String?
     let byAccountID, byArchiveID: Int?
     let createdDT, updatedDT: String?
     let accountVO: AccountVO?

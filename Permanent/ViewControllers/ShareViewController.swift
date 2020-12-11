@@ -68,7 +68,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     fileprivate func setupTableView() {
         tableView.register(UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self))
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = UIView()        
+        tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ?
+            UIView.tableViewBgView(withTitle: .noSharesMessage) :
+            nil
     }
     
     fileprivate func styleHeaderLabels(_ labels: [UILabel]) {
@@ -162,6 +165,16 @@ extension ShareViewController: LinkOptionsViewDelegate {
         let pasteboard = UIPasteboard.general
         pasteboard.string = linkOptionsView.link
         view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .linkCopied)
+    }
+    
+    func manageLinkAction() {
+        guard
+            let manageLinkVC = UIViewController.create(withIdentifier: .manageLink, from: .share) as? ManageLinkViewController else {
+            return
+        }
+        
+        manageLinkVC.shareViewModel = self.viewModel
+        self.navigationController?.display(viewController: manageLinkVC, modally: true)
     }
     
     func revokeLinkAction() {

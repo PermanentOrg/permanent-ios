@@ -31,6 +31,7 @@ enum ViewControllerId: String {
     case fabActionSheet
     case sideMenu
     case share
+    case manageLink
 
     var value: String {
         switch self {
@@ -46,6 +47,8 @@ enum ViewControllerId: String {
             return "FABActionSheet"
         case .sideMenu:
             return "SideMenu"
+        case .manageLink:
+            return "ManageLink"
         default:
             return self.rawValue.capitalized
         }

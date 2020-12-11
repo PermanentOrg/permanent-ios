@@ -177,10 +177,14 @@
 		BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */; };
 		BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27B2580F3C600567E8C /* ShareVO.swift */; };
 		BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */; };
+		BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB2822581132700567E8C /* SwitchSettingsView.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
 		BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */; };
+		BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */; };
+		BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */; };
+		BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C322582B484001D89E1 /* ManageLinkData.swift */; };
 		BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
 		BD2403B02524978C00AE45B3 /* STAGING-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
@@ -368,10 +372,14 @@
 		BCE8DA7E256674D300842ABD /* BottomActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomActionSheet.swift; sourceTree = "<group>"; };
 		BCEAB27B2580F3C600567E8C /* ShareVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVO.swift; sourceTree = "<group>"; };
 		BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinArchiveVO.swift; sourceTree = "<group>"; };
+		BCEAB2822581132700567E8C /* SwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchSettingsView.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
 		BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentRecordVO.swift; sourceTree = "<group>"; };
+		BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkViewController.swift; sourceTree = "<group>"; };
+		BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputSettingsView.swift; sourceTree = "<group>"; };
+		BCFB0C322582B484001D89E1 /* ManageLinkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkData.swift; sourceTree = "<group>"; };
 		BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "STAGING-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
@@ -405,6 +413,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BCEAB2812581125800567E8C /* Share Link */,
 				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
 				BC7A793F255ED1F000DDFD4D /* SortActionSheet */,
 				BC4278C0255D526400270B34 /* FileActionSheet */,
@@ -443,6 +452,7 @@
 				BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */,
 				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
 				BCC1CCEB2578FB030069E337 /* ShareViewController.swift */,
+				BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -616,6 +626,7 @@
 				BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */,
 				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
 				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
+				BCFB0C322582B484001D89E1 /* ManageLinkData.swift */,
 			);
 			path = Payloads;
 			sourceTree = "<group>";
@@ -896,6 +907,15 @@
 			path = BottomActionSheet;
 			sourceTree = "<group>";
 		};
+		BCEAB2812581125800567E8C /* Share Link */ = {
+			isa = PBXGroup;
+			children = (
+				BCEAB2822581132700567E8C /* SwitchSettingsView.swift */,
+				BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */,
+			);
+			path = "Share Link";
+			sourceTree = "<group>";
+		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1062,6 +1082,7 @@
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
@@ -1093,6 +1114,7 @@
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
+				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
@@ -1115,6 +1137,7 @@
 				BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
+				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
@@ -1126,6 +1149,7 @@
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
 				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
