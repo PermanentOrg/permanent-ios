@@ -12,8 +12,15 @@ class InputSettingsView: UIView {
     fileprivate var textField: TextField!
     
     fileprivate lazy var datePicker: UIDatePicker = {
-       let picker = UIDatePicker()
+        let picker = UIDatePicker()
+        picker.enableAutoLayout()
+        picker.frame.size = CGSize(width: self.bounds.width, height: 200)
         picker.datePickerMode = .date
+        
+        if #available(iOS 13.4, *) {
+            picker.preferredDatePickerStyle = .wheels
+        }
+        
         return picker
     }()
     

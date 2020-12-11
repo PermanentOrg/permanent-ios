@@ -26,10 +26,10 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
-                        <rect key="frame" x="64" y="15" width="301" height="114"/>
+                        <rect key="frame" x="64" y="15" width="286" height="114"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3w1-l8-M3K">
-                                <rect key="frame" x="0.0" y="0.0" width="301" height="105"/>
+                                <rect key="frame" x="0.0" y="0.0" width="286" height="105"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="File Name Label">
                                         <rect key="frame" x="0.0" y="0.0" width="41.5" height="59.5"/>
@@ -64,15 +64,15 @@
                                 </subviews>
                             </stackView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oeE-4y-tVi">
-                                <rect key="frame" x="0.0" y="110" width="301" height="4"/>
+                                <rect key="frame" x="0.0" y="110" width="286" height="4"/>
                             </progressView>
                         </subviews>
                     </stackView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
-                        <rect key="frame" x="385" y="59.5" width="25" height="25"/>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
+                        <rect key="frame" x="370" y="52" width="40" height="40"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="25" id="OEz-2P-8tz"/>
-                            <constraint firstAttribute="width" constant="25" id="PMz-Tj-Fd8"/>
+                            <constraint firstAttribute="height" constant="40" id="OEz-2P-8tz"/>
+                            <constraint firstAttribute="width" constant="40" id="PMz-Tj-Fd8"/>
                         </constraints>
                         <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                         <state key="normal" image="more"/>
