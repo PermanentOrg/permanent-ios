@@ -74,6 +74,8 @@ class FileTableViewCell: UITableViewCell {
             switch model.fileStatus {
             case .synced:
                 if let imageURL = model.thumbnailURL {
+                    // We display the placeholder until the images loads from the network.
+                    fileImageView.image = .placeholder
                     fileImageView.load(urlString: imageURL)
                 } else {
                     // File is in the synced list, but it does not have a thumbnail yet.

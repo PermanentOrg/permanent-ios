@@ -538,13 +538,15 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
-        showActionDialog(styled: .simple,
-                         withTitle: title,
-                         positiveButtonTitle: .delete,
-                         positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.deleteFile(file, atIndexPath: indexPath)
-                         }, overlayView: self.overlayView)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            self.showActionDialog(styled: .simple,
+                             withTitle: title,
+                             positiveButtonTitle: .delete,
+                             positiveAction: {
+                                self.actionDialog?.dismiss()
+                                self.deleteFile(file, atIndexPath: indexPath)
+                             }, overlayView: self.overlayView)
+        })
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -743,8 +745,8 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openFileBrowser() {
-        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeImage as String,
-                                                                       kUTTypeCompositeContent as String],
+        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String,
+                                                                        kUTTypeContent as String],
                                                        in: .import)
         docPicker.delegate = self
         docPicker.allowsMultipleSelection = true

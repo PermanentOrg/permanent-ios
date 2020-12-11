@@ -36,7 +36,7 @@ enum FilesEndpoint {
     
     case getRecord(itemInfo: ItemInfoParams)
     
-    case download(url: URL, progressHandler: ProgressHandler?)
+    case download(url: URL, filename: String, progressHandler: ProgressHandler?)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -105,6 +105,8 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.uploadFileMetaPayload(for: params)
         case .newFolder(let params):
             return Payloads.newFolderPayload(for: params)
+        case .download(_, let filename, _):
+            return ["filename": filename]
             
         default:
             return nil
@@ -138,7 +140,7 @@ extension FilesEndpoint: RequestProtocol {
         get {
             switch self {
             case .upload(_, _, _, let handler): return handler
-            case .download(_, let handler): return handler
+            case .download(_, _, let handler): return handler
             default: return nil
             }
         }
@@ -197,7 +199,7 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .upload:
             return "https://staging.permanent.org:9000"
-        case .download(let url, _):
+        case .download(let url, _, _):
             return url.absoluteString
         default:
             return nil

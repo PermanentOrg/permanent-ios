@@ -16,11 +16,14 @@ class APINetworkSession: NSObject {
 
     /// Dictionary containing associations of `ProgressAndCompletionHandlers` to `URLSessionTask` instances.
     private var taskToHandlersMap: [URLSessionTask: ProgressAndCompletionHandlers?] = [:]
+    
+    /// The name of the file that is being downloaded.
+    private var downloadedFileName: String?
 
     override public convenience init() {
         // Configure the default URLSessionConfiguration.
         let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.timeoutIntervalForResource = 30
+        sessionConfiguration.timeoutIntervalForResource = 300
         sessionConfiguration.waitsForConnectivity = true
 
         // Create a `OperationQueue` instance for scheduling the delegate calls and completion handlers.
@@ -89,12 +92,14 @@ extension APINetworkSession: URLSessionTaskDelegate {
 
 extension APINetworkSession: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let handlers = getHandlers(for: downloadTask) else {
+        guard
+            let fileName = self.downloadedFileName,
+            let handlers = getHandlers(for: downloadTask) else {
             return
         }
         
         // Save the file locally, before it is deleted by the system.
-        let tempFileURL = FileHelper().saveFile(at: location)
+        let tempFileURL = FileHelper().saveFile(at: location, named: fileName)
         
         DispatchQueue.main.async {
             handlers.completion?(tempFileURL, downloadTask.response, downloadTask.error)
@@ -135,7 +140,8 @@ extension APINetworkSession: NetworkSessionProtocol {
         return uploadTask
     }
 
-    func downloadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
+    func downloadTask(with request: URLRequest, fileName: String, progressHandler: ProgressHandler?, completion: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
+        self.downloadedFileName = fileName
         let downloadTask = session.downloadTask(with: request)
         
         // Set the associated progress and completion handlers for this task.

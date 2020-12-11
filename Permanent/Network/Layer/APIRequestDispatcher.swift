@@ -54,7 +54,12 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             })
 
         case .download: // TODO: [weak self]
-            task = networkSession.downloadTask(with: urlRequest, progressHandler: request.progressHandler, completion: { fileUrl, urlResponse, error in
+            guard
+                let fileName = request.parameters?["filename"] as? String else {
+                return nil
+            }
+            
+            task = networkSession.downloadTask(with: urlRequest, fileName: fileName, progressHandler: request.progressHandler, completion: { fileUrl, urlResponse, error in
                 self.handleFileTaskResponse(fileUrl: fileUrl, urlResponse: urlResponse, error: error, completion: completion)
             })
         }
