@@ -31,8 +31,7 @@ class SharesViewController: UIViewController {
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
+        tableView.registerNib(cellClass: FileTableViewCell.self)
         tableView.tableFooterView = UIView()
     }
 }
@@ -43,8 +42,7 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileTableViewCell.self), for: indexPath)
-        
+        let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
         return cell
     }
 }

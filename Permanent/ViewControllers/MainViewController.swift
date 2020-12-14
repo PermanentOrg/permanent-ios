@@ -75,8 +75,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: FileTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: FileTableViewCell.self))
+        tableView.registerNib(cellClass: FileTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.refreshControl = refreshControl
         
@@ -408,14 +407,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // TODO: Create tableView Helper class
-        guard
-            let viewModel = self.viewModel,
-            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileTableViewCell.self)) as? FileTableViewCell
-        else {
+        guard let viewModel = self.viewModel else {
             fatalError()
         }
-        
+       
+        let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file, fileAction: viewModel.fileAction)
         

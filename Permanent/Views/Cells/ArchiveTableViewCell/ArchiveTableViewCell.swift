@@ -1,5 +1,5 @@
 //
-//  FileTableViewCell.swift
+//  ArchiveTableViewCell.swift
 //  Permanent
 //
 //  Created by Adrian Creteanu on 04/12/2020.
