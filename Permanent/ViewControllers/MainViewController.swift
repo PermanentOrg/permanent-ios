@@ -90,7 +90,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
-            tableView.backgroundView = EmptyFolderView()
+            tableView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
+                                                       image: .emptyFolder)
             return
         }
 
