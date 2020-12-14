@@ -15,11 +15,21 @@ class RootNavigationController: UINavigationController {
     public init(viewController: UIViewController) {
         super.init(rootViewController: viewController)
 
-        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.profile.original, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
+        configureNavigationItems()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureNavigationItems() {
+        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.profile.original, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
+    }
+    
+    func changeRootController(viewController: UIViewController) {
+        self.setViewControllers([viewController], animated: true)
+        
+        configureNavigationItems()
     }
 }
 

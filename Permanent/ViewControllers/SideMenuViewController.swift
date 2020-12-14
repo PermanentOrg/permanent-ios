@@ -82,6 +82,20 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .none)
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard
+            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+        else {
+            fatalError()
+        }
+        
+        if menuOption.title ==  .shares {
+            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return nil }
         

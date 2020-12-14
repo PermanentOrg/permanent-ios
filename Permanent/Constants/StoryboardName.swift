@@ -31,6 +31,7 @@ enum ViewControllerId: String {
     case fabActionSheet
     case sideMenu
     case share
+    case shares
     case manageLink
 
     var value: String {

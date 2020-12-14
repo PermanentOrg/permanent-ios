@@ -119,38 +119,38 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="kmV-zg-TDk">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="kmV-zg-TDk">
                                 <rect key="frame" x="20" y="64" width="374" height="283"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x4q-es-S21" userLabel="Share Preview Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x4q-es-S21" userLabel="Share Preview Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="59.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8xd-fw-Fc4" userLabel="Auto Approve Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8xd-fw-Fc4" userLabel="Auto Approve Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="74.5" width="374" height="59.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MOf-Xs-CNt" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MOf-Xs-CNt" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="149" width="374" height="59.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIi-D7-d70" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mIi-D7-d70" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="223.5" width="374" height="59.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="V1x-M9-TMR">
-                                <rect key="frame" x="20" y="792" width="374" height="30"/>
+                                <rect key="frame" x="20" y="782" width="374" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPg-eh-qhO" userLabel="Cancel Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="172" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="172" height="40"/>
                                         <connections>
                                             <action selector="cancelAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="nxe-iG-CZb"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k9G-sI-qMW" userLabel="Save Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="202" y="0.0" width="172" height="30"/>
+                                        <rect key="frame" x="202" y="0.0" width="172" height="40"/>
                                         <connections>
                                             <action selector="saveAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="Ifa-ny-bNk"/>
                                         </connections>
@@ -182,16 +182,61 @@
             </objects>
             <point key="canvasLocation" x="1762" y="262"/>
         </scene>
+        <!--Shares View Controller-->
+        <scene sceneID="YG5-cA-bOS">
+            <objects>
+                <viewController storyboardIdentifier="Shares" id="b58-5x-32K" customClass="SharesViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="V7M-ol-T4T">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Qju-dd-gQn">
+                                <rect key="frame" x="20" y="64" width="374" height="32"/>
+                                <segments>
+                                    <segment title="First"/>
+                                    <segment title="Second"/>
+                                </segments>
+                            </segmentedControl>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Pjh-9G-4Tx">
+                                <rect key="frame" x="0.0" y="115" width="414" height="747"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="b58-5x-32K" id="ar6-ve-d3g"/>
+                                    <outlet property="delegate" destination="b58-5x-32K" id="liS-Ih-raY"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="wyV-hy-Lxu"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Qju-dd-gQn" secondAttribute="trailing" constant="20" id="D6E-sP-pOS"/>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="bottom" secondItem="Pjh-9G-4Tx" secondAttribute="bottom" id="JTh-LD-O7C"/>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Pjh-9G-4Tx" secondAttribute="trailing" id="Pk3-0b-Cdd"/>
+                            <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
+                            <constraint firstItem="Pjh-9G-4Tx" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" id="W53-iS-fT6"/>
+                            <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
+                            <constraint firstItem="Pjh-9G-4Tx" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="20" id="mLN-yF-bRw"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="segmentedControl" destination="Qju-dd-gQn" id="Dld-0E-k5g"/>
+                        <outlet property="tableView" destination="Pjh-9G-4Tx" id="yF7-dd-5jr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cGH-f2-EBi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2708.6956521739135" y="271.875"/>
+        </scene>
     </scenes>
     <designables>
         <designable name="QPg-eh-qhO">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="eyh-Xi-naH">
             <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="k9G-sI-qMW">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
     </designables>
     <resources>
