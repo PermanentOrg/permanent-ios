@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Members View Controller-->
+        <scene sceneID="Dlw-WY-qZH">
+            <objects>
+                <viewController storyboardIdentifier="Members" id="GSS-UI-zUH" customClass="MembersViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DsG-m4-CgC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8us-Dr-8hZ">
+                                <rect key="frame" x="0.0" y="57" width="414" height="685"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="GSS-UI-zUH" id="ATW-Gm-bfv"/>
+                                    <outlet property="delegate" destination="GSS-UI-zUH" id="Je8-NB-0N4"/>
+                                </connections>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gmW-ZF-fWK" userLabel="Add Members Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="762" width="374" height="40"/>
+                                <connections>
+                                    <action selector="addMembersAction:" destination="GSS-UI-zUH" eventType="touchUpInside" id="O1f-Vl-I7I"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="q02-99-HRE"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="q02-99-HRE" firstAttribute="bottom" secondItem="gmW-ZF-fWK" secondAttribute="bottom" constant="60" id="2Ag-DP-uWn"/>
+                            <constraint firstItem="gmW-ZF-fWK" firstAttribute="leading" secondItem="q02-99-HRE" secondAttribute="leading" constant="20" id="99t-B9-T0k"/>
+                            <constraint firstItem="8us-Dr-8hZ" firstAttribute="leading" secondItem="q02-99-HRE" secondAttribute="leading" id="Rny-g0-mCh"/>
+                            <constraint firstItem="8us-Dr-8hZ" firstAttribute="top" secondItem="q02-99-HRE" secondAttribute="top" constant="13" id="aM5-YE-XtD"/>
+                            <constraint firstItem="gmW-ZF-fWK" firstAttribute="top" secondItem="8us-Dr-8hZ" secondAttribute="bottom" constant="20" id="fqm-ZY-LNz"/>
+                            <constraint firstItem="q02-99-HRE" firstAttribute="trailing" secondItem="gmW-ZF-fWK" secondAttribute="trailing" constant="20" id="y7E-sU-8J8"/>
+                            <constraint firstItem="q02-99-HRE" firstAttribute="trailing" secondItem="8us-Dr-8hZ" secondAttribute="trailing" id="yrW-4E-Nmx"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="addMembersButton" destination="gmW-ZF-fWK" id="KnW-De-I6Q"/>
+                        <outlet property="tableView" destination="8us-Dr-8hZ" id="FUe-Gs-M9g"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="c8o-ev-EsS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-455.07246376811599" y="-145.3125"/>
+        </scene>
+    </scenes>
+    <designables>
+        <designable name="gmW-ZF-fWK">
+            <size key="intrinsicContentSize" width="30" height="40"/>
+        </designable>
+    </designables>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -186,6 +186,11 @@
 		BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */; };
 		BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9065C2587964E00DF1B64 /* SharedFileTableViewCell.swift */; };
 		BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCF9065F2587965A00DF1B64 /* SharedFileTableViewCell.xib */; };
+		BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF906632587B0C200DF1B64 /* MembersViewController.swift */; };
+		BCF906672587B12000DF1B64 /* Members.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCF906662587B12000DF1B64 /* Members.storyboard */; };
+		BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9066A2587B2D200DF1B64 /* MemberTableViewCell.swift */; };
+		BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9066E2588C1A000DF1B64 /* MemberRoleHeader.swift */; };
+		BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF906712589FA1700DF1B64 /* TooltipView.swift */; };
 		BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */; };
 		BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */; };
 		BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C322582B484001D89E1 /* ManageLinkData.swift */; };
@@ -385,6 +390,11 @@
 		BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtension.swift; sourceTree = "<group>"; };
 		BCF9065C2587964E00DF1B64 /* SharedFileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileTableViewCell.swift; sourceTree = "<group>"; };
 		BCF9065F2587965A00DF1B64 /* SharedFileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileTableViewCell.xib; sourceTree = "<group>"; };
+		BCF906632587B0C200DF1B64 /* MembersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembersViewController.swift; sourceTree = "<group>"; };
+		BCF906662587B12000DF1B64 /* Members.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Members.storyboard; sourceTree = "<group>"; };
+		BCF9066A2587B2D200DF1B64 /* MemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberTableViewCell.swift; sourceTree = "<group>"; };
+		BCF9066E2588C1A000DF1B64 /* MemberRoleHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberRoleHeader.swift; sourceTree = "<group>"; };
+		BCF906712589FA1700DF1B64 /* TooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TooltipView.swift; sourceTree = "<group>"; };
 		BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkViewController.swift; sourceTree = "<group>"; };
 		BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputSettingsView.swift; sourceTree = "<group>"; };
 		BCFB0C322582B484001D89E1 /* ManageLinkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkData.swift; sourceTree = "<group>"; };
@@ -440,6 +450,7 @@
 				BC752BCE253EE52F00EF7941 /* FABView.swift */,
 				BC120C5E253EF8F500C41243 /* FABActionSheet.swift */,
 				BC8E7946257A787C008ED0F5 /* LinkTextField.swift */,
+				BCF906712589FA1700DF1B64 /* TooltipView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -462,6 +473,7 @@
 				BCC1CCEB2578FB030069E337 /* ShareViewController.swift */,
 				BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */,
 				BCF90654258770B700DF1B64 /* SharesViewController.swift */,
+				BCF906632587B0C200DF1B64 /* MembersViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -670,6 +682,7 @@
 				BC6D3B3D251363A900390927 /* Authentication.storyboard */,
 				BC4526F0251CD6B600E24A51 /* Main.storyboard */,
 				BCC1CCE82578F8DA0069E337 /* Share.storyboard */,
+				BCF906662587B12000DF1B64 /* Members.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -778,6 +791,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				BCF906692587B1C100DF1B64 /* Members */,
 				BCF9065B2587963400DF1B64 /* SharedFileTableViewCell */,
 				BC8E7949257A8505008ED0F5 /* ArchiveTableViewCell */,
 				BC0D99BA256DB04100D29041 /* DrawerTableViewCell */,
@@ -936,6 +950,15 @@
 			path = SharedFileTableViewCell;
 			sourceTree = "<group>";
 		};
+		BCF906692587B1C100DF1B64 /* Members */ = {
+			isa = PBXGroup;
+			children = (
+				BCF9066A2587B2D200DF1B64 /* MemberTableViewCell.swift */,
+				BCF9066E2588C1A000DF1B64 /* MemberRoleHeader.swift */,
+			);
+			path = Members;
+			sourceTree = "<group>";
+		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1020,6 +1043,7 @@
 				BCC1CCF425792E950069E337 /* LinkOptionsView.xib in Resources */,
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
+				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */,
 				BD2403B02524978C00AE45B3 /* STAGING-GoogleService-Info.plist in Resources */,
 				BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */,
@@ -1194,10 +1218,12 @@
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
+				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
+				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
@@ -1206,6 +1232,7 @@
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
+				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
@@ -1248,6 +1275,7 @@
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
 				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,
 				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,

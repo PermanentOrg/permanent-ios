@@ -115,4 +115,7 @@ extension String {
     static var sharedByMe: String { return "SharedByMe".localized() }
     static var sharedWithMe: String { return "SharedWithMe".localized() }
     static var shareActionMessage: String { return "ShareActionMessage".localized() }
+    static var addMembers: String { return "\(add) \(members)" }
+    static var add: String { return "Add".localized() }
+    
 }
