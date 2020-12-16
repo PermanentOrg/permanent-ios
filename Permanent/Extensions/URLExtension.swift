@@ -15,4 +15,8 @@ extension URL {
     var localizedName: String? {
         return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
     }
+    
+    public init?(string: String?) {
+        self.init(string: string ?? "")
+    }
 }
