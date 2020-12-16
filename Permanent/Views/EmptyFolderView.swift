@@ -10,6 +10,7 @@ import UIKit
 class EmptyFolderView: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var emptyFolderLabel: UILabel!
+    @IBOutlet var emptyImageView: UIImageView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,15 +24,20 @@ class EmptyFolderView: UIView {
         commonInit()
     }
     
+    convenience init(title: String, image: UIImage) {
+        self.init(frame: .zero)
+        
+        commonInit()
+        
+        emptyFolderLabel.text = title
+        emptyImageView.image = image
+    }
+    
     private func commonInit() {
-        Bundle.main.loadNibNamed(String(describing: EmptyFolderView.self), owner: self, options: nil)
+        loadNib()
+        setupView(contentView)
         
-        addSubview(contentView)
-        contentView.frame = bounds
-        contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        emptyFolderLabel.text = .emptyFolderMessage
-        emptyFolderLabel.font = Text.style16.font
-        emptyFolderLabel.textColor = .lightGray
+        emptyFolderLabel.font = Text.style8.font
+        emptyFolderLabel.textColor = .textPrimary
     }
 }

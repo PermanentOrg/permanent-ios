@@ -182,6 +182,10 @@
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
 		BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */; };
+		BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF90654258770B700DF1B64 /* SharesViewController.swift */; };
+		BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */; };
+		BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9065C2587964E00DF1B64 /* SharedFileTableViewCell.swift */; };
+		BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCF9065F2587965A00DF1B64 /* SharedFileTableViewCell.xib */; };
 		BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */; };
 		BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */; };
 		BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C322582B484001D89E1 /* ManageLinkData.swift */; };
@@ -377,6 +381,10 @@
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
 		BCF4E5DA255C3782003505BA /* AttachmentRecordVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentRecordVO.swift; sourceTree = "<group>"; };
+		BCF90654258770B700DF1B64 /* SharesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharesViewController.swift; sourceTree = "<group>"; };
+		BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtension.swift; sourceTree = "<group>"; };
+		BCF9065C2587964E00DF1B64 /* SharedFileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileTableViewCell.swift; sourceTree = "<group>"; };
+		BCF9065F2587965A00DF1B64 /* SharedFileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileTableViewCell.xib; sourceTree = "<group>"; };
 		BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkViewController.swift; sourceTree = "<group>"; };
 		BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputSettingsView.swift; sourceTree = "<group>"; };
 		BCFB0C322582B484001D89E1 /* ManageLinkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkData.swift; sourceTree = "<group>"; };
@@ -453,6 +461,7 @@
 				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
 				BCC1CCEB2578FB030069E337 /* ShareViewController.swift */,
 				BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */,
+				BCF90654258770B700DF1B64 /* SharesViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -460,21 +469,22 @@
 		06B0EB2624E67E52003D90C6 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				06B0EB2724E67E6A003D90C6 /* UIColor.swift */,
-				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
-				BC97A4682518E73300E43205 /* StringExtension.swift */,
-				BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */,
-				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
-				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
-				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
-				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
-				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
-				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
 				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
+				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
+				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
+				BC97A4682518E73300E43205 /* StringExtension.swift */,
+				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
+				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
+				06B0EB2724E67E6A003D90C6 /* UIColor.swift */,
 				BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */,
+				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
+				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
+				BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */,
 				BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */,
-				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
+				BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */,
+				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
+				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -768,6 +778,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				BCF9065B2587963400DF1B64 /* SharedFileTableViewCell */,
 				BC8E7949257A8505008ED0F5 /* ArchiveTableViewCell */,
 				BC0D99BA256DB04100D29041 /* DrawerTableViewCell */,
 				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
@@ -916,6 +927,15 @@
 			path = "Share Link";
 			sourceTree = "<group>";
 		};
+		BCF9065B2587963400DF1B64 /* SharedFileTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BCF9065C2587964E00DF1B64 /* SharedFileTableViewCell.swift */,
+				BCF9065F2587965A00DF1B64 /* SharedFileTableViewCell.xib */,
+			);
+			path = SharedFileTableViewCell;
+			sourceTree = "<group>";
+		};
 		C451B6122C72A441834259B6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1012,6 +1032,7 @@
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
+				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
@@ -1076,6 +1097,7 @@
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
+				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
@@ -1093,6 +1115,7 @@
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
+				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
@@ -1149,6 +1172,7 @@
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
 				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
