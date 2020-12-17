@@ -8,6 +8,7 @@
 import UIKit
 
 typealias ButtonAction = () -> Void
+typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
 struct Text {
@@ -25,10 +26,9 @@ struct Text {
     static var style12 = TextStyle(UIFont(name: "OpenSans-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.center)
     static let style13 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
     static var style14 = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
-    static let style15 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
-    static let style16 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
-    static let style17 = TextStyle(UIFont(name: "OpenSans-Bold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
-    static let style18 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
+    static let style15 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
+    static let style16 = TextStyle(UIFont(name: "OpenSans-Bold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style17 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
 }
 
 struct Constants {

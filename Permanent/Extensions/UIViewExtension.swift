@@ -74,7 +74,7 @@ extension UIView {
         let messageLabel = UILabel() //UILabel(frame: CGRect(origin: bannerView.center, size: CGSize(width: self.bounds.width, height: height / 2)))
         messageLabel.text = title
         messageLabel.textColor = .bilbaoGreen
-        messageLabel.font = Text.style18.font
+        messageLabel.font = Text.style17.font
         
         bannerView.addSubview(messageLabel)
         messageLabel.enableAutoLayout()
@@ -113,5 +113,12 @@ extension UIView {
         ])
         
         return bgView
+    }
+    
+    // MARK: - Auto Layout
+    
+    func constraintToSquare(_ side: CGFloat) {
+        self.widthAnchor.constraint(equalToConstant: side).isActive = true
+        self.heightAnchor.constraint(equalToConstant: side).isActive = true
     }
 }

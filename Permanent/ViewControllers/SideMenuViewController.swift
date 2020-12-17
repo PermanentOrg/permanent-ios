@@ -33,7 +33,7 @@ class SideMenuViewController: UIViewController {
         titleLabel.isHidden = true
         
         infoButton.setTitle(.manageArchives, for: [])
-        infoButton.setFont(Text.style17.font)
+        infoButton.setFont(Text.style16.font)
         infoButton.setTitleColor(.white, for: [])
     }
     
@@ -92,6 +92,9 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         
         if menuOption.title ==  .shares {
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        } else if menuOption.title == .members {
+            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
         }
     }

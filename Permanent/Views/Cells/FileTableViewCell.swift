@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class FileTableViewCell: UITableViewCell {
     @IBOutlet var fileNameLabel: UILabel!
@@ -42,6 +43,7 @@ class FileTableViewCell: UITableViewCell {
         
         progressView.progressTintColor = .primary
         moreButton.tintColor = .iconTintPrimary
+        moreButton.imageView?.contentMode = .scaleAspectFit
         
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
@@ -73,14 +75,8 @@ class FileTableViewCell: UITableViewCell {
         } else {
             switch model.fileStatus {
             case .synced:
-                if let imageURL = model.thumbnailURL {
-                    // We display the placeholder until the images loads from the network.
-                    fileImageView.image = .placeholder
-                    fileImageView.load(urlString: imageURL)
-                } else {
-                    // File is in the synced list, but it does not have a thumbnail yet.
-                    fileImageView.image = .placeholder
-                }
+                let fileURL = URL(string: model.thumbnailURL)
+                fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
                 
             case .downloading:
                 fileImageView.image = .download
