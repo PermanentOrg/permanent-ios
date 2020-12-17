@@ -109,8 +109,7 @@ struct Payloads {
             "RequestVO": [
                 "data": [[
                     "FolderVO": [
-                        "archiveNbr": params.archiveNo,
-                        "folder_linkId": params.folderLinkId
+                        "archiveNbr": params.archiveNo
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
