@@ -36,11 +36,7 @@ class FileActionSheet: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        styleActionButton(downloadButton, color: .primary, text: .download)
-        styleActionButton(copyButton, color: .primary, text: .copy)
-        styleActionButton(moveButton, color: .primary, text: .move)
-        styleActionButton(deleteButton, color: .destructive, text: .delete)
-        styleActionButton(shareButton, color: .primary, text: .share)
+        
         //styleActionButton(publishButton, color: .primary, text: .publish)
         //styleActionButton(editButton, color: .primary, text: .edit)
     }
@@ -76,6 +72,21 @@ class FileActionSheet: UIView {
         editButton.isHidden = true
         
         safeAreaView.backgroundColor = .backgroundPrimary
+        
+        configureButtons()
+    }
+    
+    fileprivate func configureButtons() {
+        styleActionButton(copyButton, color: .primary, text: .copy)
+        styleActionButton(moveButton, color: .primary, text: .move)
+        styleActionButton(deleteButton, color: .destructive, text: .delete)
+        styleActionButton(shareButton, color: .primary, text: .share)
+        
+        if file.type.isFolder {
+            downloadButton.isHidden = true
+        } else {
+            styleActionButton(downloadButton, color: .primary, text: .download)
+        }
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor, text: String) {

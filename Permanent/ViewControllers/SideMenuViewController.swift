@@ -13,6 +13,7 @@ class SideMenuViewController: UIViewController {
     @IBOutlet private var infoButton: UIButton!
     
     var shouldDisplayLine = false
+    var selectedMenuOption: DrawerOption = .files
     
     private let tableViewData = TableViewData.drawerData
     
@@ -79,7 +80,17 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .none)
+        
+        guard
+            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+        else {
+            fatalError()
+        }
+        
+        if menuOption == selectedMenuOption {
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -90,13 +101,8 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             fatalError()
         }
         
-        if menuOption.title ==  .shares {
-            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-        } else if menuOption.title == .members {
-            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-        }
+        selectedMenuOption = menuOption
+        handleMenuOptionTap(forOption: menuOption)
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -124,6 +130,22 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return 0 }
         
         return 21
+    }
+    
+    fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
+        switch option {
+        case .files:
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .shares:
+            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .logOut:
+            self.showToast(message: "Loggin out...")
+            break
+        }
     }
 }
 

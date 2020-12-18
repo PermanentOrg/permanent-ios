@@ -117,5 +117,6 @@ extension String {
     static var shareActionMessage: String { return "ShareActionMessage".localized() }
     static var addMembers: String { return "\(add) \(members)" }
     static var add: String { return "Add".localized() }
+    static var logOut: String { return "LogOut".localized() }
     
 }
