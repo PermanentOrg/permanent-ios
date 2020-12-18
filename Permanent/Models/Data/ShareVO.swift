@@ -13,7 +13,7 @@ struct ShareVO: Model {
     let previewToggle: JSONAny?
     let folderVO: FolderVO?
     let recordVO: RecordVO?
-    let archiveVO: ArchiveVO?
+    let archiveVO: ArchiveVOData?
     let accountVO: AccountVO?
     let createdDT, updatedDT: String?
 

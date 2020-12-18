@@ -7,17 +7,19 @@
 
 import UIKit
 
-class SharesViewController: UIViewController {
+class SharesViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var segmentedControl: UISegmentedControl!
     @IBOutlet var tableView: UITableView!
-    
-    private var tableViewData: [SharedFileData] = TableViewData.sharedByMeData
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        viewModel = ShareLinkViewModel()
+        
         configureUI()
         setupTableView()
+     
+        getShares()
     }
     
     fileprivate func configureUI() {
@@ -38,39 +40,63 @@ class SharesViewController: UIViewController {
     fileprivate func setupTableView() {
         tableView.registerNib(cellClass: SharedFileTableViewCell.self)
         tableView.tableFooterView = UIView()
-        configureTableViewBgView()
+        tableView.separatorInset = .zero
     }
     
     fileprivate func configureTableViewBgView() {
-        if tableViewData.isEmpty {
+        if let items = viewModel?.items, items.isEmpty {
             tableView.backgroundView = EmptyFolderView(title: .shareActionMessage, image: .shares)
         } else {
             tableView.backgroundView = nil
         }
     }
     
-    @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
-            tableViewData = TableViewData.sharedByMeData
-        } else {
-            tableViewData = TableViewData.sharedWithMeData
-        }
-        
+    fileprivate func refreshTableView() {
         self.tableView.reloadData()
         self.configureTableViewBgView()
+    }
+    
+    @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        guard let listType = ShareListType(rawValue: sender.selectedSegmentIndex) else {
+            return
+        }
+        
+        viewModel?.shareListType = listType
+        refreshTableView()
+    }
+
+    fileprivate func getShares() {
+        showSpinner()
+        viewModel?.getShares(then: { status in
+            self.hideSpinner()
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.refreshTableView()
+                }
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
     }
 }
 
 extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableViewData.count
+        return viewModel?.items.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeue(cellClass: SharedFileTableViewCell.self, forIndexPath: indexPath)
+        guard let viewModel = self.viewModel else {
+            fatalError()
+        }
         
-        let item = tableViewData[indexPath.row]
+        let cell = tableView.dequeue(cellClass: SharedFileTableViewCell.self, forIndexPath: indexPath)
+        let item = viewModel.items[indexPath.row]
         cell.updateCell(model: item)
+        
         return cell
     }
     
@@ -78,3 +104,4 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
+

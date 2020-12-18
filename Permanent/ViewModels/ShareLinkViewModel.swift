@@ -17,7 +17,22 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
+    
+    var shareListType: ShareListType = .sharedByMe
+    
+    var sharedByMeViewModels: [SharedFileViewModel] = []
+    var sharedWithMeViewModels: [SharedFileViewModel] = []
+    
     weak var delegate: ShareLinkViewModelDelegate?
+    
+    
+    var items: [SharedFileViewModel] {
+        switch shareListType {
+        case.sharedByMe: return sharedByMeViewModels
+        case .sharedWithMe: return sharedWithMeViewModels
+        }
+    }
+     
 }
 
 extension ShareLinkViewModel: ShareLinkViewModelDelegate {
@@ -108,6 +123,47 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
             
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func getShares(then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(ShareEndpoint.getShares)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                
+                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding(
+                    from: response,
+                    with: APIResults<ArchiveVO>.decoder
+                ) else {
+                    return handler(.error(message: .errorMessage))
+                }
+                
+                let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
+                
+                model.results.first?.data?.forEach { archive in
+                    let itemVOS = archive.archiveVO?.itemVOS
+                    
+                    itemVOS?.forEach {
+                        let sharedFileVM = SharedFileViewModel(model: $0, thumbURL: archive.archiveVO?.thumbURL200)
+                        
+                        if $0.archiveID == currentArchiveId {
+                            self.sharedByMeViewModels.append(sharedFileVM)
+                        } else {
+                            self.sharedWithMeViewModels.append(sharedFileVM)
+                        }
+                    }
+                }
+                
+                handler(.success)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
                 
             default:
                 break

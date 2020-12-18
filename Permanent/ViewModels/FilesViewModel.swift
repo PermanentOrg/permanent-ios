@@ -769,6 +769,9 @@ extension FilesViewModel: FilesViewModelDelegate {
         
         self.csrf = csrf
         
+        let archiveId = myFilesFolder.archiveID
+        PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
+        
         let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
         navigateMin(params: params, backNavigation: false, then: handler)
     }

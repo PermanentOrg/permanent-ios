@@ -47,8 +47,6 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .foregroundColor: UIColor.white,
             .font: Text.style14.font
         ]
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.original, style: .plain, target: nil, action: nil)
     }
     
     func closeKeyboard() {

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class SharedFileTableViewCell: UITableViewCell {
     @IBOutlet var fileNameLabel: UILabel!
@@ -39,12 +40,18 @@ class SharedFileTableViewCell: UITableViewCell {
         archiveImageView.clipsToBounds = true
     }
     
-    func updateCell(model: SharedFileData) {
-        fileNameLabel.text = model.fileName
+    func updateCell(model: SharedFileViewModel) {
+        fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         sharesImageView.isHidden = false
-        fileImageView.load(urlString: model.thumbnailURL)
-        archiveImageView.load(urlString: model.archiveThumbnailURL)
+        archiveImageView.sd_setImage(with: URL(string: model.archiveThumbnailURL))
+        
+        if model.type.isFolder {
+            fileImageView.image = UIImage.folder.templated
+            fileImageView.tintColor = .mainPurple
+        } else {
+            fileImageView.sd_setImage(with: URL(string: model.thumbnailURL))
+        }
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {
