@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SideMenuViewController: UIViewController {
+class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var infoButton: UIButton!
@@ -23,6 +23,8 @@ class SideMenuViewController: UIViewController {
         initUI()
         
         setupTableView()
+        
+        viewModel = AuthViewModel()
     }
     
     fileprivate func initUI() {
@@ -51,6 +53,31 @@ class SideMenuViewController: UIViewController {
         self.infoButton.isHidden = !isOpening
         
         self.tableView.reloadData()
+    }
+    
+    fileprivate func showLogOutDialog() {
+        self.showActionDialog(
+            styled: .simple,
+            withTitle: "Are you sure you want to log out?",
+            positiveButtonTitle: .logOut,
+            positiveAction: {
+                self.logOut()
+            },
+            overlayView: nil)
+    }
+    
+    fileprivate func logOut() {
+        viewModel?.logout(then: { status in
+            switch status {
+            case .success:
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
     }
 }
 
@@ -143,8 +170,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .logOut:
-            self.showToast(message: "Loggin out...")
-            break
+            logOut()
         }
     }
 }
