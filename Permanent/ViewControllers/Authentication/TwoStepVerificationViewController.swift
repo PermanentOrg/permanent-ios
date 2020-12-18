@@ -76,7 +76,7 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
     }
     
     private func openMainScreen() {
-        navigationController?.display(.main, from: .main)
+        AppDelegate.shared.rootViewController.setDrawerRoot()
     }
     
     private func sendVerificationCodeSMS(forAccount id: String, email: String) {
