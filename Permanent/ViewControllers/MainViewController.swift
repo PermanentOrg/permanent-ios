@@ -78,6 +78,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.registerNib(cellClass: FileTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.refreshControl = refreshControl
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
@@ -695,6 +696,7 @@ extension MainViewController: FABActionSheetDelegate {
             file: file,
             indexPath: indexPath,
             onDismiss: {
+                self.tableView.deselectRow(at: indexPath, animated: true)
                 self.view.dismissPopup(
                     self.fileActionSheet,
                     overlayView: self.overlayView,
