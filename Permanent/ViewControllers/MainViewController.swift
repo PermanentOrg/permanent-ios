@@ -521,6 +521,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none) // test
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
