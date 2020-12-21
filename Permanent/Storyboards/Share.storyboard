@@ -119,38 +119,48 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="kmV-zg-TDk">
-                                <rect key="frame" x="20" y="64" width="374" height="283"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x4q-es-S21" userLabel="Share Preview Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="374" height="59.5"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8xd-fw-Fc4" userLabel="Auto Approve Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="74.5" width="374" height="59.5"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MOf-Xs-CNt" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="149" width="374" height="59.5"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIi-D7-d70" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="223.5" width="374" height="59.5"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                    </view>
-                                </subviews>
-                            </stackView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x4q-es-S21" userLabel="Share Preview Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="64" width="374" height="45"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="LQo-oo-Qso"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8xd-fw-Fc4" userLabel="Auto Approve Switch View" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="114" width="374" height="45"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pjZ-WT-n5G" userLabel="Auto Approve Tooltip Label">
+                                <rect key="frame" x="20" y="169" width="374" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MOf-Xs-CNt" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="219" width="374" height="45"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mIi-D7-d70" customClass="InputSettingsView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="20" y="294" width="374" height="45"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUE-0H-850" userLabel="Max Uses Tooltip Label">
+                                <rect key="frame" x="20" y="274" width="374" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DVS-Ag-zFY" userLabel="Exp Date Tooltip Label">
+                                <rect key="frame" x="20" y="349" width="374" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="V1x-M9-TMR">
                                 <rect key="frame" x="20" y="792" width="374" height="30"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPg-eh-qhO" userLabel="Cancel Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="172" height="30"/>
-                                        <connections>
-                                            <action selector="cancelAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="nxe-iG-CZb"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k9G-sI-qMW" userLabel="Save Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="202" y="0.0" width="172" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
                                         <connections>
                                             <action selector="saveAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="Ifa-ny-bNk"/>
                                         </connections>
@@ -161,19 +171,42 @@
                         <viewLayoutGuide key="safeArea" id="hTY-BH-K0U"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="V1x-M9-TMR" firstAttribute="trailing" secondItem="kmV-zg-TDk" secondAttribute="trailing" id="2yT-ap-oB1"/>
-                            <constraint firstItem="kmV-zg-TDk" firstAttribute="top" secondItem="hTY-BH-K0U" secondAttribute="top" constant="20" id="4rV-h7-XIs"/>
-                            <constraint firstItem="kmV-zg-TDk" firstAttribute="leading" secondItem="hTY-BH-K0U" secondAttribute="leading" constant="20" id="Tsg-AO-pz8"/>
+                            <constraint firstItem="jUE-0H-850" firstAttribute="top" secondItem="MOf-Xs-CNt" secondAttribute="bottom" constant="10" id="6Z4-8L-STi"/>
+                            <constraint firstItem="mIi-D7-d70" firstAttribute="height" secondItem="x4q-es-S21" secondAttribute="height" id="7QO-Mc-hfT"/>
+                            <constraint firstItem="jUE-0H-850" firstAttribute="leading" secondItem="MOf-Xs-CNt" secondAttribute="leading" id="9Wk-Ig-vdz"/>
+                            <constraint firstItem="x4q-es-S21" firstAttribute="leading" secondItem="hTY-BH-K0U" secondAttribute="leading" constant="20" id="Efd-D4-NQN"/>
+                            <constraint firstItem="hTY-BH-K0U" firstAttribute="trailing" secondItem="x4q-es-S21" secondAttribute="trailing" constant="20" id="FnJ-dy-aMT"/>
+                            <constraint firstItem="MOf-Xs-CNt" firstAttribute="top" secondItem="pjZ-WT-n5G" secondAttribute="bottom" constant="50" id="ILn-Yi-5Xw"/>
+                            <constraint firstItem="MOf-Xs-CNt" firstAttribute="trailing" secondItem="x4q-es-S21" secondAttribute="trailing" id="Jpj-XN-KZf"/>
+                            <constraint firstItem="x4q-es-S21" firstAttribute="top" secondItem="hTY-BH-K0U" secondAttribute="top" constant="20" id="L0m-fF-dDl"/>
+                            <constraint firstItem="MOf-Xs-CNt" firstAttribute="leading" secondItem="x4q-es-S21" secondAttribute="leading" id="N0C-Zx-zkz"/>
+                            <constraint firstItem="pjZ-WT-n5G" firstAttribute="leading" secondItem="8xd-fw-Fc4" secondAttribute="leading" id="OoM-nM-git"/>
+                            <constraint firstItem="DVS-Ag-zFY" firstAttribute="leading" secondItem="mIi-D7-d70" secondAttribute="leading" id="REE-jT-20S"/>
+                            <constraint firstItem="mIi-D7-d70" firstAttribute="top" secondItem="jUE-0H-850" secondAttribute="bottom" constant="20" id="RuR-qD-8Xp"/>
+                            <constraint firstItem="MOf-Xs-CNt" firstAttribute="height" secondItem="x4q-es-S21" secondAttribute="height" id="SpR-L9-5wj"/>
+                            <constraint firstItem="8xd-fw-Fc4" firstAttribute="leading" secondItem="x4q-es-S21" secondAttribute="leading" id="T00-JO-Sco"/>
+                            <constraint firstItem="pjZ-WT-n5G" firstAttribute="top" secondItem="8xd-fw-Fc4" secondAttribute="bottom" constant="10" id="UEi-fW-0dU"/>
+                            <constraint firstItem="8xd-fw-Fc4" firstAttribute="height" secondItem="x4q-es-S21" secondAttribute="height" id="UWI-8C-dmb"/>
+                            <constraint firstItem="pjZ-WT-n5G" firstAttribute="trailing" secondItem="8xd-fw-Fc4" secondAttribute="trailing" id="UcM-92-Kyz"/>
+                            <constraint firstItem="8xd-fw-Fc4" firstAttribute="trailing" secondItem="x4q-es-S21" secondAttribute="trailing" id="aTV-dw-ndX"/>
+                            <constraint firstItem="mIi-D7-d70" firstAttribute="leading" secondItem="x4q-es-S21" secondAttribute="leading" id="flS-6E-e7o"/>
+                            <constraint firstItem="V1x-M9-TMR" firstAttribute="trailing" secondItem="x4q-es-S21" secondAttribute="trailing" id="kru-pd-oKd"/>
+                            <constraint firstItem="mIi-D7-d70" firstAttribute="trailing" secondItem="x4q-es-S21" secondAttribute="trailing" id="lkY-Da-hZ5"/>
+                            <constraint firstItem="jUE-0H-850" firstAttribute="trailing" secondItem="MOf-Xs-CNt" secondAttribute="trailing" id="nLQ-GI-BOw"/>
                             <constraint firstItem="hTY-BH-K0U" firstAttribute="bottom" secondItem="V1x-M9-TMR" secondAttribute="bottom" constant="40" id="pH6-M6-wNd"/>
-                            <constraint firstItem="hTY-BH-K0U" firstAttribute="trailing" secondItem="kmV-zg-TDk" secondAttribute="trailing" constant="20" id="sAE-yl-kbL"/>
-                            <constraint firstItem="V1x-M9-TMR" firstAttribute="leading" secondItem="kmV-zg-TDk" secondAttribute="leading" id="wvW-MD-7cD"/>
+                            <constraint firstItem="DVS-Ag-zFY" firstAttribute="trailing" secondItem="mIi-D7-d70" secondAttribute="trailing" id="qD2-aa-ba2"/>
+                            <constraint firstItem="8xd-fw-Fc4" firstAttribute="top" secondItem="x4q-es-S21" secondAttribute="bottom" constant="5" id="uHG-kk-fzd"/>
+                            <constraint firstItem="V1x-M9-TMR" firstAttribute="leading" secondItem="x4q-es-S21" secondAttribute="leading" id="xJo-IP-dYQ"/>
+                            <constraint firstItem="DVS-Ag-zFY" firstAttribute="top" secondItem="mIi-D7-d70" secondAttribute="bottom" constant="10" id="xgM-NC-PmI"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="autoApproveSwitchView" destination="8xd-fw-Fc4" id="lcf-BI-SWc"/>
-                        <outlet property="cancelButton" destination="QPg-eh-qhO" id="Kdp-3g-4yS"/>
+                        <outlet property="autoApproveTooltipLabel" destination="pjZ-WT-n5G" id="P4w-rG-5si"/>
                         <outlet property="expDateInputView" destination="mIi-D7-d70" id="hPn-Tv-JKi"/>
+                        <outlet property="expDateTooltipLabel" destination="DVS-Ag-zFY" id="69y-ua-cqw"/>
                         <outlet property="maxUsesInputView" destination="MOf-Xs-CNt" id="utC-fm-vkZ"/>
+                        <outlet property="maxUsesTooltipLabel" destination="jUE-0H-850" id="VyD-su-fPo"/>
                         <outlet property="saveButton" destination="k9G-sI-qMW" id="Q52-DL-OjU"/>
                         <outlet property="sharePreviewSwitchView" destination="x4q-es-S21" id="4bS-mb-9sq"/>
                     </connections>
@@ -231,17 +264,6 @@
             <point key="canvasLocation" x="2708.6956521739135" y="271.875"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="QPg-eh-qhO">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-        <designable name="eyh-Xi-naH">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-        <designable name="k9G-sI-qMW">
-            <size key="intrinsicContentSize" width="30" height="30"/>
-        </designable>
-    </designables>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

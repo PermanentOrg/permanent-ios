@@ -118,5 +118,8 @@ extension String {
     static var addMembers: String { return "\(add) \(members)" }
     static var add: String { return "Add".localized() }
     static var logOut: String { return "LogOut".localized() }
-    
+    static var autoApproveTooltip: String { return "AutoApproveTooltip".localized() }
+    static var maxUsesTooltip: String { return "MaxUsesTooltip".localized() }
+    static var expDateTooltip: String { return "ExpDateTooltip".localized() }
+    static var advancedOptions: String { return "AdvancedOptions".localized() }
 }

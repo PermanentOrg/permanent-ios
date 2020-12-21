@@ -12,8 +12,10 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var autoApproveSwitchView: SwitchSettingsView!
     @IBOutlet var maxUsesInputView: InputSettingsView!
     @IBOutlet var expDateInputView: InputSettingsView!
-    @IBOutlet var cancelButton: RoundedButton!
     @IBOutlet var saveButton: RoundedButton!
+    @IBOutlet var autoApproveTooltipLabel: UILabel!
+    @IBOutlet var maxUsesTooltipLabel: UILabel!
+    @IBOutlet var expDateTooltipLabel: UILabel!
     
     var shareViewModel: ShareLinkViewModel?
 
@@ -37,8 +39,11 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
         expDateInputView.placeholder = .expirationDate
         expDateInputView.configureDatePickerUI()
         
-        cancelButton.configureActionButtonUI(title: .cancel)
         saveButton.configureActionButtonUI(title: .save)
+        
+        autoApproveTooltipLabel.style(withFont: Text.style4.font, text: .autoApproveTooltip)
+        maxUsesTooltipLabel.style(withFont: Text.style4.font, text: .maxUsesTooltip)
+        expDateTooltipLabel.style(withFont: Text.style4.font, text: .expDateTooltip)
         
         prefillDataIfNeeded()
     }
@@ -57,10 +62,6 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     // MARK: - Actions
-    
-    @IBAction func cancelAction(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
-    }
     
     @IBAction func saveAction(_ sender: UIButton) {
         showSpinner()

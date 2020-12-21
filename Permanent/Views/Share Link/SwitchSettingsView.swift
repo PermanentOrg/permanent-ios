@@ -40,16 +40,13 @@ class SwitchSettingsView: UIView {
     }
     
     fileprivate func commonInit() {
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.lightGray.cgColor
-        layer.cornerRadius = Constants.Design.actionButtonRadius
         
         textLabel = UILabel()
         textLabel.font = Text.style3.font
         textLabel.textColor = .primary
         
         switchView = UISwitch()
-        switchView.onTintColor = .primary
+        switchView.onTintColor = .mainPurple
         
         self.addSubview(textLabel)
         self.addSubview(switchView)
@@ -60,7 +57,7 @@ class SwitchSettingsView: UIView {
         NSLayoutConstraint.activate([
             textLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             textLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-            textLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            textLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             
             switchView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             switchView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
