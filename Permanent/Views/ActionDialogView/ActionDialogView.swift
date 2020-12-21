@@ -48,6 +48,12 @@ class ActionDialogView: UIView {
             
             styleTextField(textField)
         }
+        
+        // Display the keyboard after showing dialog
+        if fieldsStackView.isHidden == false {
+            fieldsStackView.arrangedSubviews.first?.becomeFirstResponder()
+        }
+    
     }
     
     convenience init(
@@ -96,7 +102,7 @@ class ActionDialogView: UIView {
             
         case .singleField:
             subtitleLabel.isHidden = true
-        
+            
         default:
             break
         }
