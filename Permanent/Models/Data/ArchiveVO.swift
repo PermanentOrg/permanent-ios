@@ -8,11 +8,19 @@
 import Foundation
 
 struct ArchiveVO: Model {
+    let archiveVO: ArchiveVOData?
+
+    enum CodingKeys: String, CodingKey {
+        case archiveVO = "ArchiveVO"
+    }
+}
+
+struct ArchiveVOData: Model {
     let childFolderVOS, folderSizeVOS, recordVOS: [JSONAny]?
     let accessRole, fullName: String?
     let spaceTotal, spaceLeft, fileTotal, fileLeft: JSONAny?
     let relationType, homeCity, homeState, homeCountry: JSONAny?
-    let itemVOS: [JSONAny]?
+    let itemVOS: [ItemVO]?
     let birthDay, company, archiveVODescription: JSONAny?
     let archiveID: Int?
     let publicDT, archiveNbr: String?

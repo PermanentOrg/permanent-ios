@@ -16,8 +16,8 @@ class DrawerTableViewCell: UITableViewCell {
         // Initialization code
         
         selectionStyle = .none
-        
-        menuItemImageView.image = .delete        
+    
+        menuItemImageView.tintColor = .white
         menuItemTitleLabel.textColor = .white
         menuItemTitleLabel.font = Text.style9.font
     }

@@ -64,7 +64,7 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         
         switch status {
         case .success:
-            navigationController?.display(.main, from: .main)
+            AppDelegate.shared.rootViewController.setDrawerRoot()
         case .error(let message):
             showAlert(title: .error, message: message)
         }

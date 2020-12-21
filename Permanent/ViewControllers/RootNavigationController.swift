@@ -23,7 +23,8 @@ class RootNavigationController: UINavigationController {
     }
     
     func configureNavigationItems() {
-        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.profile.original, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
+        topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.hamburger.templated, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
+        topViewController?.navigationItem.leftBarButtonItem?.tintColor = .white
     }
     
     func changeRootController(viewController: UIViewController) {

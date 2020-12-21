@@ -29,8 +29,10 @@ extension UIImage {
     static let folder = UIImage(named: "folder")!
     static let group = UIImage(named: "group")!
     static let info = UIImage(named: "info")!
+    static let hamburger = UIImage(named: "hamburger")!
     static let more = UIImage(named: "more")!
     static let moreAction = UIImage(named: "moreAction")!
+    static let logOut = UIImage(named: "logOut")!
     static let placeholder = UIImage(named: "placeholder")!
     static let power = UIImage(named: "power")!
     static let profile = UIImage(named: "profile")!

@@ -7,12 +7,13 @@
 
 import UIKit
 
-class SideMenuViewController: UIViewController {
+class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var infoButton: UIButton!
     
     var shouldDisplayLine = false
+    var selectedMenuOption: DrawerOption = .files
     
     private let tableViewData = TableViewData.drawerData
     
@@ -22,6 +23,8 @@ class SideMenuViewController: UIViewController {
         initUI()
         
         setupTableView()
+        
+        viewModel = AuthViewModel()
     }
     
     fileprivate func initUI() {
@@ -51,6 +54,31 @@ class SideMenuViewController: UIViewController {
         
         self.tableView.reloadData()
     }
+    
+    fileprivate func showLogOutDialog() {
+        self.showActionDialog(
+            styled: .simple,
+            withTitle: "Are you sure you want to log out?",
+            positiveButtonTitle: .logOut,
+            positiveAction: {
+                self.logOut()
+            },
+            overlayView: nil)
+    }
+    
+    fileprivate func logOut() {
+        viewModel?.logout(then: { status in
+            switch status {
+            case .success:
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
+    }
 }
 
 extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
@@ -79,7 +107,17 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: true, scrollPosition: .none)
+        
+        guard
+            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+        else {
+            fatalError()
+        }
+        
+        if menuOption == selectedMenuOption {
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -90,13 +128,8 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             fatalError()
         }
         
-        if menuOption.title ==  .shares {
-            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-        } else if menuOption.title == .members {
-            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-        }
+        selectedMenuOption = menuOption
+        handleMenuOptionTap(forOption: menuOption)
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -124,6 +157,21 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return 0 }
         
         return 21
+    }
+    
+    fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
+        switch option {
+        case .files:
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .shares:
+            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .logOut:
+            logOut()
+        }
     }
 }
 

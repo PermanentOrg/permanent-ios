@@ -31,7 +31,7 @@ struct SharebyURLVOData: Model {
     let accountVO: AccountVO?
     let folderVO: FolderVO?
     let recordVO: RecordVO?
-    let archiveVO: ArchiveVO?
+    let archiveVO: ArchiveVOData?
     let shareVO: JSONAny? // TODO
 
     enum CodingKeys: String, CodingKey {
