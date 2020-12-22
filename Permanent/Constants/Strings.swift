@@ -85,7 +85,7 @@ extension String {
     static var fileType: String { return "FileType".localized() }
     static var ascending: String { return "Ascending".localized() }
     static var descending: String { return "Descending".localized() }
-    static var sortOption: String { return "%@ (%@)" }
+    static var sortOption: String { return "%@ %@" }
     static var copyHere: String { return "CopyHere".localized() }
     static var moveHere: String { return "MoveHere".localized() }
     static var `public`: String { return "Public".localized() }
@@ -118,5 +118,14 @@ extension String {
     static var addMembers: String { return "\(add) \(members)" }
     static var add: String { return "Add".localized() }
     static var logOut: String { return "LogOut".localized() }
-    
+    static var autoApproveTooltip: String { return "AutoApproveTooltip".localized() }
+    static var maxUsesTooltip: String { return "MaxUsesTooltip".localized() }
+    static var expDateTooltip: String { return "ExpDateTooltip".localized() }
+    static var advancedOptions: String { return "AdvancedOptions".localized() }
+    static var file: String { return "File".localized() }
+    static var fileCopied: String { return "\(file) \("Copied".localized().lowercased())" }
+    static var fileMoved: String { return "\(file) \("Moved".localized().lowercased())" }
+
+    static let arrowUpCharacter: String = "\u{2191}"
+    static let arrowDownCharacter: String = "\u{2193}"
 }

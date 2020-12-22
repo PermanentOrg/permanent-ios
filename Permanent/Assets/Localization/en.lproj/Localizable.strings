@@ -112,3 +112,10 @@
 "ShareActionMessage" = "You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!";
 "Add" = "Add";
 "LogOut" = "Log Out";
+"AutoApproveTooltip" = "Automatically approve requests for access to this share.";
+"MaxUsesTooltip" = "This link will disappear after the max number of uses has been reached.";
+"ExpDateTooltip" = "This link will disappear after the expiration date has been reached.";
+"AdvancedOptions" = "Advanced Options";
+"File" = "File";
+"Copied" = "Copied";
+"Moved" = "Moved";

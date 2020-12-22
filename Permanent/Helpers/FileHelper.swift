@@ -25,10 +25,10 @@ class FileHelper {
     }
     
     // create protocol for these
-    func saveFile(_ data: Data, withExtension extension: String) -> URL? {
+    func saveFile(_ data: Data, named name: String, withExtension extension: String) -> URL? {
         do {
             let fileURL = self.defaultDirectoryURL!
-                .appendingPathComponent(UUID().uuidString)
+                .appendingPathComponent(name)
                 .appendingPathExtension(`extension`)
             
             try data.write(to: fileURL)

@@ -62,9 +62,14 @@ class FileTableViewCell: UITableViewCell {
         if model.type.isFolder {
             overlayView.isHidden = true
             self.isUserInteractionEnabled = true
+            moreButton.isEnabled = action == .none
+            moreButton.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
+            
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
+            moreButton.isEnabled = action == .none
+            moreButton.tintColor = .iconTintPrimary
         }
     }
     

@@ -78,6 +78,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         tableView.registerNib(cellClass: FileTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.refreshControl = refreshControl
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
@@ -387,7 +388,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
-                self.setupUIForAction(.none)
+                
+                DispatchQueue.main.async {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,
+                                                     title: self.viewModel?.fileAction.action ?? .success)
+                    self.setupUIForAction(.none)
+                }
                 
             case .error(let message):
                 self.showErrorAlert(message: message)
@@ -521,6 +527,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none) // test
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
@@ -694,6 +701,7 @@ extension MainViewController: FABActionSheetDelegate {
             file: file,
             indexPath: indexPath,
             onDismiss: {
+                self.tableView.deselectRow(at: indexPath, animated: true)
                 self.view.dismissPopup(
                     self.fileActionSheet,
                     overlayView: self.overlayView,
