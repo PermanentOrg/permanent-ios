@@ -13,4 +13,10 @@ open class DateUtils {
         formatter.dateFormat = "yyyy.MM.dd"
         return formatter.string(from: Date())
     }
+
+    class var fileTimestamp: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-hhmmss"
+        return formatter.string(from: Date())
+    }
 }

@@ -62,7 +62,8 @@ extension MediaRecorder: UIImagePickerControllerDelegate {
         if let image = info[.originalImage] as? UIImage,
             let imageData = image.jpegData(compressionQuality: 1.0)
         {
-            let url = self.fileHelper.saveFile(imageData, withExtension: "jpeg")
+            let imageName = "IMG_\(DateUtils.fileTimestamp)"
+            let url = self.fileHelper.saveFile(imageData, named: imageName, withExtension: "jpeg")
             return self.pickerController(picker, didSelect: url)
 
         } else {
