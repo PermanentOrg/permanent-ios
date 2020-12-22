@@ -116,3 +116,6 @@
 "MaxUsesTooltip" = "This link will disappear after the max number of uses has been reached.";
 "ExpDateTooltip" = "This link will disappear after the expiration date has been reached.";
 "AdvancedOptions" = "Advanced Options";
+"File" = "File";
+"Copied" = "Copied";
+"Moved" = "Moved";

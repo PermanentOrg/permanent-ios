@@ -23,6 +23,14 @@ enum FileAction {
         }
     }
     
+    var action: String {
+        switch self {
+        case .copy: return .fileCopied
+        case .move: return .fileMoved
+        default: return ""
+        }
+    }
+    
     var endpointValue: String {
         switch self {
         case .copy: return "copy"

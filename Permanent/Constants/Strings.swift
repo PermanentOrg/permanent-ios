@@ -122,6 +122,10 @@ extension String {
     static var maxUsesTooltip: String { return "MaxUsesTooltip".localized() }
     static var expDateTooltip: String { return "ExpDateTooltip".localized() }
     static var advancedOptions: String { return "AdvancedOptions".localized() }
+    static var file: String { return "File".localized() }
+    static var fileCopied: String { return "\(file) \("Copied".localized().lowercased())" }
+    static var fileMoved: String { return "\(file) \("Moved".localized().lowercased())" }
+
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
 }

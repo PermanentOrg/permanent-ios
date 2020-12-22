@@ -388,7 +388,12 @@ class MainViewController: BaseViewController<FilesViewModel> {
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
-                self.setupUIForAction(.none)
+                
+                DispatchQueue.main.async {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,
+                                                     title: self.viewModel?.fileAction.action ?? .success)
+                    self.setupUIForAction(.none)
+                }
                 
             case .error(let message):
                 self.showErrorAlert(message: message)
