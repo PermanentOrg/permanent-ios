@@ -32,7 +32,7 @@ struct TableViewData {
 
 struct StaticData {
     static let shareLinkButtonsConfig: [(title: String, bgColor: UIColor)] = [
-        (.copyLink, .primary),
+        (.shareLink, .primary),
         (.advancedOptions, .primary),
         (.revokeLink, .destructive)
     ]

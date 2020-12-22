@@ -162,9 +162,13 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ShareViewController: LinkOptionsViewDelegate {
     func copyLinkAction() {
-        let pasteboard = UIPasteboard.general
-        pasteboard.string = linkOptionsView.link
-        view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .linkCopied)
+        guard let link = linkOptionsView.link else {
+            return
+        }
+        
+        let activityViewController = UIActivityViewController(activityItems: [link], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = self.view
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     func manageLinkAction() {
