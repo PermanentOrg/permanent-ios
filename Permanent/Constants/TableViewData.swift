@@ -24,7 +24,7 @@ struct TableViewData {
             //DrawerOption(icon: .group, title: .members, isSelected: false),
             //DrawerOption(icon: .power, title: .apps, isSelected: false),
             //DrawerOption(icon: .power, title: .logOut, isSelected: false),
-            
+            DrawerOption.members,
             DrawerOption.logOut
         ]
     ]

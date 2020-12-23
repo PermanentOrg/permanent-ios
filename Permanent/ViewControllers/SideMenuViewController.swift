@@ -169,6 +169,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .members:
+            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         case .logOut:
             logOut()
         }

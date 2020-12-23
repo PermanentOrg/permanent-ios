@@ -119,3 +119,9 @@
 "File" = "File";
 "Copied" = "Copied";
 "Moved" = "Moved";
+"Owner" = "Owner";
+"Manager" = "Manager";
+"Curator" = "Curator";
+"Editor" = "Editor";
+"Contributor" = "Contributor";
+"Viewer" = "Viewer";

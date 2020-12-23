@@ -35,7 +35,7 @@ struct SignUpResult: Codable {
 }
 
 struct SignUpData: Codable {
-    let accountVO: AccountVO?
+    let accountVO: AccountVOData?
 
     enum CodingKeys: String, CodingKey {
         case accountVO = "AccountVO"

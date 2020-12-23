@@ -14,7 +14,7 @@ struct ShareVO: Model {
     let folderVO: FolderVO?
     let recordVO: RecordVO?
     let archiveVO: ArchiveVOData?
-    let accountVO: AccountVO?
+    let accountVO: AccountVOData?
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {

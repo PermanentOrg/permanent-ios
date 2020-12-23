@@ -7,19 +7,23 @@
 
 import UIKit
 
-class MembersViewController: UIViewController {
+class MembersViewController: BaseViewController<MembersViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var addMembersButton: RoundedButton!
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
-    var sectionTexts = ["1", "2", "3", "4", "5"]
+    var sectionTexts = ["1", "2", "3", "4", "5", "6"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewModel = MembersViewModel()
+        
         configureUI()
         setupTableView()
+        
+        getMembers()
     }
     
     fileprivate func configureUI() {
@@ -57,28 +61,55 @@ class MembersViewController: UIViewController {
             tooltipView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
         ])
     }
+    
+    fileprivate func getMembers() {
+        viewModel?.getMembers(then: { status in
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
+    }
 }
 
 extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return AccessRole.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        guard let accessRole = AccessRole(rawValue: section) else { return 0 }
+        
+        return viewModel?.numberOfItemsForRole(accessRole) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let accessRole = AccessRole(rawValue: indexPath.section) else {
+            fatalError()
+        }
+        
         let cell = tableView.dequeue(cellClass: MemberTableViewCell.self, forIndexPath: indexPath)
-        cell.updateCell()
+        cell.member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
+        guard let accessRole = AccessRole(rawValue: section) else {
+            fatalError()
+        }
+        
         let headerView = MemberRoleHeader(
-            role: "Owner",
+            role: accessRole.groupName.pluralized(),
             tooltipText: "Lorem Ipsum is ansjda sdjan dajsnd jasdnasj dasjdnasj dnasjd njasnds ajdasnaj  \(sectionTexts[section])",
             action: { point, text in
                 self.showTooltip(anchorPoint: point, text: text)

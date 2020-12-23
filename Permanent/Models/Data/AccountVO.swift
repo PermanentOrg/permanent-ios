@@ -8,6 +8,14 @@
 import Foundation
 
 struct AccountVO: Model {
+    let accountVO: AccountVOData?
+    
+    enum CodingKeys: String, CodingKey {
+        case accountVO = "AccountVO"
+    }
+}
+
+struct AccountVOData: Model {
     let accountID: Int?
     let primaryEmail, fullName: String?
     let address, address2, country, city: String?
@@ -20,7 +28,8 @@ struct AccountVO: Model {
     let status, type, emailStatus, phoneStatus: String?
     let notificationPreferences: String?
     let agreed, optIn, emailArray, inviteCode: JSONAny?
-    let rememberMe, keepLoggedIn, accessRole: JSONAny?
+    let rememberMe, keepLoggedIn: JSONAny?
+    let accessRole: String?
     let spaceTotal, spaceLeft: Int?
     let fileTotal: JSONAny?
     let fileLeft: Int?

@@ -125,6 +125,12 @@ extension String {
     static var file: String { return "File".localized() }
     static var fileCopied: String { return "\(file) \("Copied".localized().lowercased())" }
     static var fileMoved: String { return "\(file) \("Moved".localized().lowercased())" }
+    static var owner: String { return "Owner".localized() }
+    static var manager: String { return "Manager".localized() }
+    static var curator: String { return "Curator".localized() }
+    static var editor: String { return "Editor".localized() }
+    static var contributor: String { return "Contributor".localized() }
+    static var viewer: String { return "Viewer".localized() }
 
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
