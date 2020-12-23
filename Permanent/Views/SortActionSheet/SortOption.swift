@@ -24,10 +24,10 @@ enum SortOption: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .dateAscending: return String.init(format: .sortOption, String.date, String.arrowUpCharacter)
-        case .dateDescending: return String.init(format: .sortOption, String.date, String.arrowDownCharacter)
-        case .nameAscending: return String.init(format: .sortOption, String.name, String.arrowUpCharacter)
-        case .nameDescending: return String.init(format: .sortOption, String.name, String.arrowDownCharacter)
+        case .dateAscending: return String.init(format: .sortOption, String.date, "(\(String.oldest))")
+        case .dateDescending: return String.init(format: .sortOption, String.date, "(\(String.newest))")
+        case .nameAscending: return String.init(format: .sortOption, String.name, String.aToZ)
+        case .nameDescending: return String.init(format: .sortOption, String.name, String.zToA)
         case .typeAscending: return String.init(format: .sortOption, String.fileType, String.arrowUpCharacter)
         case .typeDescending: return String.init(format: .sortOption, String.fileType, String.arrowDownCharacter)
         }

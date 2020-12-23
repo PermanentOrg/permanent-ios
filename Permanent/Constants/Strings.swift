@@ -121,7 +121,6 @@ extension String {
     static var autoApproveTooltip: String { return "AutoApproveTooltip".localized() }
     static var maxUsesTooltip: String { return "MaxUsesTooltip".localized() }
     static var expDateTooltip: String { return "ExpDateTooltip".localized() }
-    static var advancedOptions: String { return "AdvancedOptions".localized() }
     static var file: String { return "File".localized() }
     static var fileCopied: String { return "\(file) \("Copied".localized().lowercased())" }
     static var fileMoved: String { return "\(file) \("Moved".localized().lowercased())" }
@@ -131,7 +130,20 @@ extension String {
     static var editor: String { return "Editor".localized() }
     static var contributor: String { return "Contributor".localized() }
     static var viewer: String { return "Viewer".localized() }
-
+    static var none: String { return "None".localized() }
+    static var ownerTooltipText: String { return "OwnerTooltipText".localized() }
+    static var managerTooltipText: String { return "ManagerTooltipText".localized() }
+    static var curatorTooltipText: String { return "CuratorTooltipText".localized() }
+    static var editorTooltipText: String { return "EditorTooltipText".localized() }
+    static var contributorTooltipText: String { return "ContributorTooltipText".localized() }
+    static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
+    
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
+    
+    static let aToZ: String = "(A-Z)"
+    static let zToA: String = "(Z-A)"
+    static var oldest: String { return "Oldest".localized() }
+    static var newest: String { return "Newest".localized() }
+    static var linkSettings: String { return "LinkSettings".localized() }
 }

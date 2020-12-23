@@ -13,8 +13,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
-    var sectionTexts = ["1", "2", "3", "4", "5", "6"]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,17 +28,19 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         navigationItem.title = .members
         view.backgroundColor = .backgroundPrimary
         addMembersButton.configureActionButtonUI(title: .addMembers)
+        addMembersButton.isHidden = true
     }
     
     fileprivate func setupTableView() {
         tableView.register(cellClass: MemberTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
-        tableView.estimatedSectionHeaderHeight = 40
+        tableView.estimatedSectionHeaderHeight = 80
+        tableView.sectionFooterHeight = 1
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        self.showToast(message: "Add members")
+        self.showToast(message: .addMembers)
     }
     
     fileprivate func showTooltip(anchorPoint: CGPoint, text: String) {
@@ -102,21 +102,37 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        guard let accessRole = AccessRole(rawValue: section) else {
+        guard
+            let accessRole = AccessRole(rawValue: section),
+            let tooltipText = StaticData.rolesTooltipData[accessRole] else {
             fatalError()
         }
         
         let headerView = MemberRoleHeader(
             role: accessRole.groupName.pluralized(),
-            tooltipText: "Lorem Ipsum is ansjda sdjan dajsnd jasdnasj dasjdnasj dnasjd njasnds ajdasnaj  \(sectionTexts[section])",
+            tooltipText: tooltipText,
             action: { point, text in
                 self.showTooltip(anchorPoint: point, text: text)
             })
+        
+        let numberOfItems = viewModel?.numberOfItemsForRole(accessRole)
+        headerView.isSectionEmpty = numberOfItems == 0
+        
         return headerView
     }
-
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let lineView = UIView()
+        lineView.backgroundColor = .lightGray
+        return lineView
+    }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -125,4 +141,5 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         guard tooltipView.isDescendant(of: view) else { return }
         tooltipView.removeFromSuperview()
     }
+
 }
