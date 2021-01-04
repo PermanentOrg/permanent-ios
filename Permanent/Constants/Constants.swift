@@ -67,6 +67,7 @@ extension Constants.Design {
     static let actionButtonRadius: CGFloat = 4
     static let sheetCornerRadius: CGFloat = 4
     static let bannerHeight: CGFloat = 45
+    static let pickerHeight: CGFloat = 200
 }
 
 extension Constants.API {

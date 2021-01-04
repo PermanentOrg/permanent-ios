@@ -11,6 +11,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var addMembersButton: RoundedButton!
     
+    private let overlayView = UIView()
+    
     lazy var tooltipView = TooltipView(frame: .zero)
     
     override func viewDidLoad() {
@@ -24,11 +26,20 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         getMembers()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
+    }
+    
     fileprivate func configureUI() {
-        navigationItem.title = .members
+        navigationItem.title = String.member.pluralized()
         view.backgroundColor = .backgroundPrimary
-        addMembersButton.configureActionButtonUI(title: .addMembers)
-        addMembersButton.isHidden = true
+        addMembersButton.configureActionButtonUI(title: String.addMember.pluralized())
+        
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0.0
     }
     
     fileprivate func setupTableView() {
@@ -40,7 +51,18 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        self.showToast(message: .addMembers)
+        let accessRoles = AccessRole.allCases.map { $0.groupName }
+        
+        self.showActionDialog(
+            styled: .inputWithDropdown,
+            withTitle: .addMember,
+            placeholders: [.memberEmail, .accessLevel],
+            dropdownValues: accessRoles,
+            positiveButtonTitle: .save,
+            positiveAction: {
+                print("Tapped")
+            },
+            overlayView: self.overlayView)
     }
     
     fileprivate func showTooltip(anchorPoint: CGPoint, text: String) {
@@ -63,7 +85,10 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func getMembers() {
+    
+        showSpinner()
         viewModel?.getMembers(then: { status in
+            self.hideSpinner()
             switch status {
             case .success:
                 DispatchQueue.main.async {

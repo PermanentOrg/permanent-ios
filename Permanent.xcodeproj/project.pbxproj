@@ -85,6 +85,8 @@
 		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
 		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
+		BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5596F025A345ED00BF55DA /* DropdownView.swift */; };
+		BC55970425A3462900BF55DA /* DropdownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC55970325A3462900BF55DA /* DropdownView.xib */; };
 		BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */; };
 		BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE62546FDE7000249E1 /* RecordVO.swift */; };
 		BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */; };
@@ -301,6 +303,8 @@
 		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
+		BC5596F025A345ED00BF55DA /* DropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownView.swift; sourceTree = "<group>"; };
+		BC55970325A3462900BF55DA /* DropdownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropdownView.xib; sourceTree = "<group>"; };
 		BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertControllerExtension.swift; sourceTree = "<group>"; };
 		BC566CE62546FDE7000249E1 /* RecordVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVO.swift; sourceTree = "<group>"; };
 		BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMetaResponse.swift; sourceTree = "<group>"; };
@@ -455,6 +459,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BC55970225A3461A00BF55DA /* DropdownView */,
 				BCEAB2812581125800567E8C /* Share Link */,
 				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
 				BC7A793F255ED1F000DDFD4D /* SortActionSheet */,
@@ -812,6 +817,15 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		BC55970225A3461A00BF55DA /* DropdownView */ = {
+			isa = PBXGroup;
+			children = (
+				BC5596F025A345ED00BF55DA /* DropdownView.swift */,
+				BC55970325A3462900BF55DA /* DropdownView.xib */,
+			);
+			path = DropdownView;
+			sourceTree = "<group>";
+		};
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1088,6 +1102,7 @@
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
+				BC55970425A3462900BF55DA /* DropdownView.xib in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
@@ -1219,6 +1234,7 @@
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
+				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,

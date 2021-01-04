@@ -56,7 +56,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
     func showActionDialog(
         styled style: ActionDialogStyle,
         withTitle title: String,
-        placeholder: String? = nil,
+        placeholders: [String]? = nil,
+        dropdownValues: [String]? = nil,
         positiveButtonTitle: String,
         positiveAction: @escaping ButtonAction,
         overlayView: UIView?
@@ -69,7 +70,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             style: style,
             title: title,
             positiveButtonTitle: positiveButtonTitle,
-            placeholder: placeholder,
+            placeholders: placeholders,
+            dropdownValues: dropdownValues,
             onDismiss: {
                 self.view.dismissPopup(
                     self.actionDialog,

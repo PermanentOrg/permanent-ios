@@ -659,7 +659,7 @@ extension MainViewController: FABActionSheetDelegate {
         showActionDialog(
             styled: .singleField,
             withTitle: .createFolder,
-            placeholder: .folderName,
+            placeholders: [.folderName],
             positiveButtonTitle: .create,
             positiveAction: { self.newFolderAction() },
             overlayView: self.overlayView
@@ -769,14 +769,13 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     private func newFolderAction() {
-        guard let folderName = actionDialog?.fieldsInput?.first else {
-            return showErrorAlert(message: .errorMessage)
-        }
-        
-        if folderName.isEmpty {
+
+        guard
+            let folderName = actionDialog?.fieldsInput.first,
+            folderName.isNotEmpty else {
             return
         }
-        
+    
         actionDialog?.dismiss()
         createNewFolder(named: folderName)
     }

@@ -91,7 +91,7 @@ extension String {
     static var `public`: String { return "Public".localized() }
     static var relationships: String { return "Relationships".localized() }
     static var shares: String { return "Shares".localized() }
-    static var members: String { return "Members".localized() }
+    static var member: String { return "Member".localized() }
     static var apps: String { return "Apps".localized() }
     static var manageArchives: String { return "ManageArchives".localized() }
     static var getShareLink: String { return "GetShareLink".localized() }
@@ -115,7 +115,7 @@ extension String {
     static var sharedByMe: String { return "SharedByMe".localized() }
     static var sharedWithMe: String { return "SharedWithMe".localized() }
     static var shareActionMessage: String { return "ShareActionMessage".localized() }
-    static var addMembers: String { return "\(add) \(members)" }
+    static var addMember: String { return "\(add) \(member)" }
     static var add: String { return "Add".localized() }
     static var logOut: String { return "LogOut".localized() }
     static var autoApproveTooltip: String { return "AutoApproveTooltip".localized() }
@@ -137,6 +137,8 @@ extension String {
     static var editorTooltipText: String { return "EditorTooltipText".localized() }
     static var contributorTooltipText: String { return "ContributorTooltipText".localized() }
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
+    static var accessLevel: String { return "AccessLevel".localized() }
+    static var memberEmail: String { return "\(member) \(email)" }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
