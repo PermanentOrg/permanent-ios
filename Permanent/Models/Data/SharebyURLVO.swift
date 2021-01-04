@@ -28,7 +28,7 @@ struct SharebyURLVOData: Model {
     var expiresDT: String?
     let byAccountID, byArchiveID: Int?
     let createdDT, updatedDT: String?
-    let accountVO: AccountVO?
+    let accountVO: AccountVOData?
     let folderVO: FolderVO?
     let recordVO: RecordVO?
     let archiveVO: ArchiveVOData?

@@ -19,6 +19,10 @@ extension String {
     var dateOnly: String {
         return String(self.prefix(while: { ($0 != "T") && ($0 != " ") }))
     }
+    
+    func pluralized() -> String {
+        return self + "s"
+    }
 }
 
 // MARK: - Validations

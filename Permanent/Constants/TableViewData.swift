@@ -24,7 +24,7 @@ struct TableViewData {
             //DrawerOption(icon: .group, title: .members, isSelected: false),
             //DrawerOption(icon: .power, title: .apps, isSelected: false),
             //DrawerOption(icon: .power, title: .logOut, isSelected: false),
-            
+            DrawerOption.members,
             DrawerOption.logOut
         ]
     ]
@@ -33,8 +33,17 @@ struct TableViewData {
 struct StaticData {
     static let shareLinkButtonsConfig: [(title: String, bgColor: UIColor)] = [
         (.shareLink, .primary),
-        (.advancedOptions, .primary),
+        (.linkSettings, .primary),
         (.revokeLink, .destructive)
+    ]
+    
+    static let rolesTooltipData: [AccessRole: String] = [
+        .owner: .ownerTooltipText,
+        .manager: .managerTooltipText,
+        .curator: .curatorTooltipText,
+        .editor: .editorTooltipText,
+        .contributor: .contributorTooltipText,
+        .viewer: .viewerTooltipText
     ]
 }
 

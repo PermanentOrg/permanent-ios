@@ -10,12 +10,14 @@ import UIKit
 enum DrawerOption {
     case files
     case shares
+    case members
     case logOut
     
     var icon: UIImage? {
         switch self {
         case .files: return .folder
         case .shares: return .share
+        case .members: return .group
         case .logOut: return UIImage.logOut.templated
         }
     }
@@ -24,6 +26,7 @@ enum DrawerOption {
         switch self {
         case .files: return .myFiles
         case .shares: return .shares
+        case .members: return .members
         case .logOut: return .logOut
         }
     }

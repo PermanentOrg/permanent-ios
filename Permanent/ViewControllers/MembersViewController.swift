@@ -7,36 +7,40 @@
 
 import UIKit
 
-class MembersViewController: UIViewController {
+class MembersViewController: BaseViewController<MembersViewModel> {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var addMembersButton: RoundedButton!
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
-    var sectionTexts = ["1", "2", "3", "4", "5"]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewModel = MembersViewModel()
+        
         configureUI()
         setupTableView()
+        
+        getMembers()
     }
     
     fileprivate func configureUI() {
         navigationItem.title = .members
         view.backgroundColor = .backgroundPrimary
         addMembersButton.configureActionButtonUI(title: .addMembers)
+        addMembersButton.isHidden = true
     }
     
     fileprivate func setupTableView() {
         tableView.register(cellClass: MemberTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
-        tableView.estimatedSectionHeaderHeight = 40
+        tableView.estimatedSectionHeaderHeight = 80
+        tableView.sectionFooterHeight = 1
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        self.showToast(message: "Add members")
+        self.showToast(message: .addMembers)
     }
     
     fileprivate func showTooltip(anchorPoint: CGPoint, text: String) {
@@ -57,35 +61,78 @@ class MembersViewController: UIViewController {
             tooltipView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
         ])
     }
+    
+    fileprivate func getMembers() {
+        viewModel?.getMembers(then: { status in
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
+    }
 }
 
 extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
+        return AccessRole.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        guard let accessRole = AccessRole(rawValue: section) else { return 0 }
+        
+        return viewModel?.numberOfItemsForRole(accessRole) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let accessRole = AccessRole(rawValue: indexPath.section) else {
+            fatalError()
+        }
+        
         let cell = tableView.dequeue(cellClass: MemberTableViewCell.self, forIndexPath: indexPath)
-        cell.updateCell()
+        cell.member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
         
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
+        guard
+            let accessRole = AccessRole(rawValue: section),
+            let tooltipText = StaticData.rolesTooltipData[accessRole] else {
+            fatalError()
+        }
+        
         let headerView = MemberRoleHeader(
-            role: "Owner",
-            tooltipText: "Lorem Ipsum is ansjda sdjan dajsnd jasdnasj dasjdnasj dnasjd njasnds ajdasnaj  \(sectionTexts[section])",
+            role: accessRole.groupName.pluralized(),
+            tooltipText: tooltipText,
             action: { point, text in
                 self.showTooltip(anchorPoint: point, text: text)
             })
+        
+        let numberOfItems = viewModel?.numberOfItemsForRole(accessRole)
+        headerView.isSectionEmpty = numberOfItems == 0
+        
         return headerView
     }
-
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let lineView = UIView()
+        lineView.backgroundColor = .lightGray
+        return lineView
+    }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -94,4 +141,5 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         guard tooltipView.isDescendant(of: view) else { return }
         tooltipView.removeFromSuperview()
     }
+
 }

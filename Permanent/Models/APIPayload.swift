@@ -11,7 +11,7 @@ struct APIPayload<T: Model>: Model {
     let RequestVO: RequestVOData<T>
     
     // TODO: Make csrf global
-    static func make(fromData data: [T], csrf: String) -> APIPayload<T> {
+    static func make(fromData data: [T], csrf: String?) -> APIPayload<T> {
         let voData = RequestVOData(
             data: data,
             apiKey: Constants.API.apiKey,

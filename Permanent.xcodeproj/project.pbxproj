@@ -110,6 +110,13 @@
 		BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardName.swift */; };
 		BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
 		BC6AF9A32590E6EC00483BBA /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */; };
+		BC6AF9A625922CBA00483BBA /* AccountVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9A525922CBA00483BBA /* AccountVOPayload.swift */; };
+		BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */; };
+		BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */; };
+		BC6AF9B0259342E100483BBA /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9AF259342E100483BBA /* Account.swift */; };
+		BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9B22593434500483BBA /* AccessRole.swift */; };
+		BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9B5259343BE00483BBA /* AccountVM.swift */; };
+		BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */; };
 		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
 		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* AuthViewModel.swift */; };
@@ -319,6 +326,13 @@
 		BC648781251B9FC7009D7DE1 /* StoryboardName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardName.swift; sourceTree = "<group>"; };
 		BC648783251BA24C009D7DE1 /* Payloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
 		BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
+		BC6AF9A525922CBA00483BBA /* AccountVOPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVOPayload.swift; sourceTree = "<group>"; };
+		BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembersViewModel.swift; sourceTree = "<group>"; };
+		BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembersEndpoint.swift; sourceTree = "<group>"; };
+		BC6AF9AF259342E100483BBA /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		BC6AF9B22593434500483BBA /* AccessRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessRole.swift; sourceTree = "<group>"; };
+		BC6AF9B5259343BE00483BBA /* AccountVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVM.swift; sourceTree = "<group>"; };
+		BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveVOPayload.swift; sourceTree = "<group>"; };
 		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
 		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
@@ -515,6 +529,7 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BC6AF9AE259342D800483BBA /* Account */,
 				BCD414E62580BFCB0019548F /* Enums */,
 				BC11C80A25595B93008BDEFA /* Payloads */,
 				BC4526E3251CACAB00E24A51 /* Data */,
@@ -551,6 +566,7 @@
 				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
+				BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -659,6 +675,8 @@
 				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
 				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
 				BCFB0C322582B484001D89E1 /* ManageLinkData.swift */,
+				BC6AF9A525922CBA00483BBA /* AccountVOPayload.swift */,
+				BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */,
 			);
 			path = Payloads;
 			sourceTree = "<group>";
@@ -700,6 +718,7 @@
 				BC6358A02536D80100EEC48C /* FilesEndpoint.swift */,
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
+				BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -830,6 +849,15 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		BC6AF9AE259342D800483BBA /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				BC6AF9AF259342E100483BBA /* Account.swift */,
+				BC6AF9B5259343BE00483BBA /* AccountVM.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
 		BC6D3B3F251363D600390927 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -917,6 +945,7 @@
 			children = (
 				BCD414E72580BFFE0019548F /* ShareLinkOption.swift */,
 				BCD948D9258CAF6300089F86 /* ShareListType.swift */,
+				BC6AF9B22593434500483BBA /* AccessRole.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -1125,6 +1154,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -1153,6 +1183,7 @@
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
 				BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */,
+				BC6AF9A625922CBA00483BBA /* AccountVOPayload.swift in Sources */,
 				BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
@@ -1165,9 +1196,11 @@
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
+				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
+				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
@@ -1212,7 +1245,9 @@
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
+				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
@@ -1280,6 +1315,7 @@
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
+				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,

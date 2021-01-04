@@ -11,6 +11,13 @@ class MemberTableViewCell: UITableViewCell {
     fileprivate var nameLabel: UILabel!
     fileprivate var emailLabel: UILabel!
     
+    var member: Account? {
+        didSet {
+            nameLabel.text = member?.name
+            emailLabel.text = member?.email
+        }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -45,9 +52,5 @@ class MemberTableViewCell: UITableViewCell {
             vStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
         ])
     }
-    
-    func updateCell() {
-        nameLabel.text = "Mike Johnson"
-        emailLabel.text = "mike.johnson@apple.com"
-    }
+
 }
