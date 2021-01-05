@@ -64,6 +64,7 @@
 		BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C7B38254861E7008E9A0D /* DateUtils.swift */; };
 		BC2D95A525382215005FE8EF /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
 		BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */; };
+		BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC30AFD825A46E7900D37BB5 /* ArchiveSharePayload.swift */; };
 		BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
 		BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */; };
 		BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AB22527393400A69597 /* AccountUpdateVO.swift */; };
@@ -282,6 +283,7 @@
 		BC1C7B38254861E7008E9A0D /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		BC2D95A425382215005FE8EF /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISearchBarExtension.swift; sourceTree = "<group>"; };
+		BC30AFD825A46E7900D37BB5 /* ArchiveSharePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSharePayload.swift; sourceTree = "<group>"; };
 		BC326AAE2526195E00A69597 /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateResponse.swift; sourceTree = "<group>"; };
 		BC326AB22527393400A69597 /* AccountUpdateVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountUpdateVO.swift; sourceTree = "<group>"; };
@@ -682,6 +684,7 @@
 				BCFB0C322582B484001D89E1 /* ManageLinkData.swift */,
 				BC6AF9A525922CBA00483BBA /* AccountVOPayload.swift */,
 				BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */,
+				BC30AFD825A46E7900D37BB5 /* ArchiveSharePayload.swift */,
 			);
 			path = Payloads;
 			sourceTree = "<group>";
@@ -1263,6 +1266,7 @@
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
+				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,

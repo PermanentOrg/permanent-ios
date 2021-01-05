@@ -63,7 +63,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             dropdownValues: accessRoles,
             positiveButtonTitle: .save,
             positiveAction: {
-                print("Tapped")
+                self.addMember()
             },
             overlayView: self.overlayView)
     }
@@ -104,6 +104,35 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                 }
             }
         })
+    }
+    
+    fileprivate func addMember() {
+        
+        guard
+            let fieldsInput = actionDialog?.fieldsInput,
+            let email = fieldsInput.first,
+            let role = fieldsInput.last,
+            let apiRole = AccessRole.apiRoleForValue(role) else { return }
+                
+        let addMemberPayload = (email, apiRole)
+        actionDialog?.dismiss()
+        
+        showSpinner()
+        viewModel?.addMember(params: addMemberPayload, then: { status in
+            self.hideSpinner()
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                }
+            }
+        })
+        
     }
 }
 
