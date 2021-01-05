@@ -40,6 +40,9 @@ class DropdownView: UIView {
         backgroundColor = .galleryGray
         valueLabel.textColor = .dustyGray
         valueLabel.font = Text.style4.font
+        
+        arrowImage.contentMode = .scaleAspectFit
+        arrowImage.image = .expand
 
         clipsToBounds = true
         layer.cornerRadius = 10
@@ -52,7 +55,16 @@ class DropdownView: UIView {
     
     @objc
     fileprivate func tapAction(_ selector: UITapGestureRecognizer) {
+        rotateImage(upwards: true)
         dropdownAction?()
+    }
+    
+    func rotateImage(upwards: Bool) {
+        if upwards {
+            arrowImage.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
+        } else {
+            arrowImage.transform = CGAffineTransform.identity
+        }
     }
     
 }

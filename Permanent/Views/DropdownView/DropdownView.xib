@@ -27,10 +27,10 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ifn-fH-njZ" userLabel="Arrow Image View">
-                    <rect key="frame" x="417" y="35.5" width="15" height="15"/>
+                    <rect key="frame" x="422" y="38" width="10" height="10"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="15" id="WMf-s4-i4P"/>
-                        <constraint firstAttribute="height" constant="15" id="tgV-Zg-EKH"/>
+                        <constraint firstAttribute="width" constant="10" id="WMf-s4-i4P"/>
+                        <constraint firstAttribute="height" constant="10" id="tgV-Zg-EKH"/>
                     </constraints>
                 </imageView>
             </subviews>

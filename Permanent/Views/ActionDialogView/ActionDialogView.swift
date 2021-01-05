@@ -178,6 +178,8 @@ class ActionDialogView: UIView {
 extension ActionDialogView: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+        
+        (fieldsStackView.arrangedSubviews.last as? DropdownView)?.rotateImage(upwards: false)
         pickerView.removeFromSuperview()
     }
     
@@ -208,8 +210,12 @@ extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        let dropdownView = fieldsStackView.arrangedSubviews.last as? DropdownView
+        dropdownView?.value = dropdownValues?[row]
+        dropdownView?.rotateImage(upwards: false)
+        
         scrollView.setContentOffset(.zero, animated: true)
-        (fieldsStackView.arrangedSubviews.last as? DropdownView)?.value = dropdownValues?[row]
         pickerView.removeFromSuperview()
     }
     

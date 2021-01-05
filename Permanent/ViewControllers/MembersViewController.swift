@@ -51,7 +51,10 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        let accessRoles = AccessRole.allCases.map { $0.groupName }
+        
+        let accessRoles = AccessRole.allCases
+            .filter { $0 != .owner }
+            .map { $0.groupName }
         
         self.showActionDialog(
             styled: .inputWithDropdown,
