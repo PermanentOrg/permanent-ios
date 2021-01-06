@@ -87,7 +87,7 @@
 "Shares" = "Shares";
 "Public" = "Public";
 "Relationships" = "Relationships";
-"Members" = "Members";
+"Member" = "Member";
 "Apps" = "Apps";
 "ManageArchives" = "Tap here to manage archives";
 "GetShareLink" = "Get share link";
@@ -134,3 +134,4 @@
 "Oldest" = "Oldest";
 "Newest" = "Newest";
 "LinkSettings" = "Link Settings";
+"AccessLevel" = "Access Level";

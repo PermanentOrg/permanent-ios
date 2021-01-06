@@ -26,7 +26,7 @@ enum DrawerOption {
         switch self {
         case .files: return .myFiles
         case .shares: return .shares
-        case .members: return .members
+        case .members: return String.member.pluralized()
         case .logOut: return .logOut
         }
     }

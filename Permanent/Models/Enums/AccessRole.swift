@@ -44,4 +44,16 @@ enum AccessRole: Int, CaseIterable {
             
         }
     }
+    
+    static func apiRoleForValue(_ stringValue: String) -> String? {
+        switch stringValue {
+        case .owner: return "access.role.owner"
+        case .manager: return "access.role.manager"
+        case .curator: return "access.role.curator"
+        case .editor: return "access.role.editor"
+        case .contributor: return "access.role.contributor"
+        case .viewer: return "access.role.viewer"
+        default: return nil
+        }
+    }
 }
