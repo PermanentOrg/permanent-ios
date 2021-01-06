@@ -389,6 +389,8 @@
 		BCC1E3242549A43F00B71866 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		BCC1E32B254A193C00B71866 /* ActionDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ActionDialogView.xib; sourceTree = "<group>"; };
 		BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogView.swift; sourceTree = "<group>"; };
+		BCC4066325A5E57D00E29CC4 /* Permanent-Staging.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Permanent-Staging.entitlements"; sourceTree = "<group>"; };
+		BCC4066425A5E5EA00E29CC4 /* Permanent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Permanent.entitlements; sourceTree = "<group>"; };
 		BCC5501E255AB31800CA1574 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		BCCC76EA255E8BF800903D3C /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		BCD414D6257F74780019548F /* ShareLinkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkViewModel.swift; sourceTree = "<group>"; };
@@ -692,6 +694,7 @@
 		BC1BDF162513558800F2D239 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				BCC4066025A5E2F100E29CC4 /* Entitlements */,
 				BC4526D7251BE50E00E24A51 /* Localization */,
 				5ED0856524E3E5CA00CDB4D3 /* Fonts */,
 				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
@@ -955,6 +958,15 @@
 				BCC1CCF325792E950069E337 /* LinkOptionsView.xib */,
 			);
 			path = LinkOptionsView;
+			sourceTree = "<group>";
+		};
+		BCC4066025A5E2F100E29CC4 /* Entitlements */ = {
+			isa = PBXGroup;
+			children = (
+				BCC4066325A5E57D00E29CC4 /* Permanent-Staging.entitlements */,
+				BCC4066425A5E5EA00E29CC4 /* Permanent.entitlements */,
+			);
+			path = Entitlements;
 			sourceTree = "<group>";
 		};
 		BCD414E62580BFCB0019548F /* Enums */ = {
@@ -1491,6 +1503,7 @@
 			baseConfigurationReference = FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1516,6 +1529,7 @@
 			baseConfigurationReference = F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1601,6 +1615,7 @@
 			baseConfigurationReference = 9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1680,6 +1695,7 @@
 			baseConfigurationReference = 4555EA2FF4726D00ABFEBD19 /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
