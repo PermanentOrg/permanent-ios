@@ -11,8 +11,8 @@ enum MembersEndpoint {
     
     case members(archiveNbr: String)
     
-    case addMember(archiveNbr: String, params: AddMemberParams, csrf: String)
-    
+    case modifyMember(operation: MemberOperation, archiveNbr: String, params: AddMemberParams, csrf: String)
+
 }
 
 extension MembersEndpoint: RequestProtocol {
@@ -21,8 +21,8 @@ extension MembersEndpoint: RequestProtocol {
         switch self {
         case .members:
             return "/archive/getShares"
-        case .addMember:
-            return "/archive/share"
+        case .modifyMember(let operation, _, _, _):
+            return operation.endpoint
         }
     }
     
@@ -51,7 +51,7 @@ extension MembersEndpoint: RequestProtocol {
             
             return try? APIPayload<ArchiveVOPayload>.encoder.encode(requestVO)
             
-        case .addMember(let archiveNbr, let params, let csrf):
+        case .modifyMember(_, let archiveNbr, let params, let csrf):
 
             let archiveShareVO = ArchiveSharePayload(archiveNbr: archiveNbr, accountData: params)
             let requestVO = APIPayload.make(fromData: [archiveShareVO], csrf: csrf)

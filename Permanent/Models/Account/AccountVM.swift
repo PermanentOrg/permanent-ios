@@ -17,11 +17,4 @@ struct AccountVM: Account {
         self.email = accountVO.accountVO?.primaryEmail ?? ""
         self.accessRole = AccessRole.roleForValue(accountVO.accountVO?.accessRole)
     }
-    
-    init(name: String, email: String, role: AccessRole) {
-        self.name = name
-        self.email = email
-        self.accessRole = role
-    }
-    
 }
