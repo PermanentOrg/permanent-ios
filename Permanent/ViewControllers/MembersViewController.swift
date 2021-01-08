@@ -52,15 +52,11 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     @IBAction func addMembersAction(_ sender: UIButton) {
         
-        let accessRoles = AccessRole.allCases
-            .filter { $0 != .owner }
-            .map { $0.groupName }
-        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: .addMember,
             placeholders: [.memberEmail, .accessLevel],
-            dropdownValues: accessRoles,
+            dropdownValues: StaticData.accessRoles,
             positiveButtonTitle: .save,
             positiveAction: {
                 self.modifyMember(withOperation: .add)
@@ -140,7 +136,13 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             return (nil, email, apiRole)
             
         case .edit:
-            break
+            guard
+                let account = member,
+                let fieldsInput = actionDialog?.fieldsInput,
+                let role = fieldsInput.first,
+                let apiRole = AccessRole.apiRoleForValue(role) else { return nil }
+            
+            return (account.accountId, account.email, apiRole)
             
         case .remove:
             guard
@@ -150,8 +152,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             return (nil, account.email, apiRole)
         
         }
-        
-        return nil
     }
     
     fileprivate func didTapDelete(forAccount account: Account) {
@@ -160,7 +160,24 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                               positiveButtonTitle: .delete,
                               positiveAction: {
                                 self.modifyMember(account, withOperation: .remove)
-                              }, overlayView: self.overlayView)
+                              },
+                              overlayView: self.overlayView
+        )
+    }
+    
+    fileprivate func didTapEdit(forAccount account: Account) {
+        self.showActionDialog(styled: .dropdownWithDescription,
+                              withTitle: account.name,
+                              description: account.email,
+                              placeholders: [.accessLevel],
+                              prefilledValues: [account.accessRole.groupName],
+                              dropdownValues: StaticData.accessRoles,
+                              positiveButtonTitle: .save,
+                              positiveAction: {
+                                self.modifyMember(account, withOperation: .edit)
+                              },
+                              overlayView: self.overlayView
+        )
     }
 }
 
@@ -245,7 +262,17 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             }
         )
         
+        let editAction = UIContextualAction.make(
+            withImage: .editAction,
+            backgroundColor: .primary,
+            handler: { _, _, completion in
+                self.didTapEdit(forAccount: account)
+                completion(true)
+            }
+        )
+        
         return UISwipeActionsConfiguration(actions: [
+            editAction,
             deleteAction
         ])
     }

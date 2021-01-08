@@ -21,6 +21,9 @@ enum ActionDialogStyle {
     /// Dialog with title, multiple input field and action buttons.
     case multipleFields
     
+    /// Dialog with title, description and action buttons.
+    case dropdownWithDescription
+    
     /// Dialog with title, an input field and a dropdown (UIPickerView).
     case inputWithDropdown
     
