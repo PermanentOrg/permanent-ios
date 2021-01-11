@@ -37,3 +37,9 @@ extension UITableViewCell {
         return String(describing: Self.self)
     }
 }
+
+extension UICollectionViewCell {
+    static var reuseIdentifier: String {
+        return String(describing: Self.self)
+    }
+}
