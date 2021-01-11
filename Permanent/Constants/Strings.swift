@@ -139,6 +139,8 @@ extension String {
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
+    static var removeMember: String { return "RemoveMember".localized() }
+    static var pending: String { return "Pending".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"

@@ -21,6 +21,7 @@ class ActionDialogView: UIView {
     
     private var onDismiss: ButtonAction!
     private var placeholders: [String]?
+    private var prefilledValues: [String]?
     private var dropdownValues: [String]?
     private var dialogStyle: ActionDialogStyle = .simple
     
@@ -46,8 +47,10 @@ class ActionDialogView: UIView {
         frame: CGRect,
         style: ActionDialogStyle,
         title: String?,
+        description: String? = nil,
         positiveButtonTitle: String?,
         placeholders: [String]? = nil,
+        prefilledValues: [String]? = nil,
         dropdownValues: [String]? = nil,
         onDismiss: @escaping ButtonAction
     ) {
@@ -56,11 +59,13 @@ class ActionDialogView: UIView {
         self.onDismiss = onDismiss
         self.dialogStyle = style
         self.placeholders = placeholders
+        self.prefilledValues = prefilledValues
         self.dropdownValues = dropdownValues
         
         commonInit()
         
         titleLabel.text = title
+        subtitleLabel.text = description
         positiveButton.setTitle(positiveButtonTitle, for: [])
     }
     
@@ -77,6 +82,10 @@ class ActionDialogView: UIView {
         
         titleLabel.font = Text.style3.font
         titleLabel.textColor = .primary
+        
+        subtitleLabel.font = Text.style8.font
+        subtitleLabel.textColor = .textPrimary
+        
         cancelButton.setTitle(.cancel, for: [])
         
         styleActionButton(cancelButton, color: .brightRed)
@@ -98,28 +107,36 @@ class ActionDialogView: UIView {
             
         case .inputWithDropdown:
             subtitleLabel.isHidden = true
+            initDropdown()
             
-            pickerView.backgroundColor = .backgroundPrimary
-            pickerView.delegate = self
-            pickerView.dataSource = self
-        
-            pickerView.frame = CGRect(
-                origin: CGPoint(x: 0, y: self.frame.height - Constants.Design.pickerHeight),
-                size: CGSize(width: self.frame.width, height: Constants.Design.pickerHeight)
-            )
+        case .dropdownWithDescription:
+            fieldsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
             
-            let dropdownView = DropdownView()
-            dropdownView.dropdownAction = {
-                self.endEditing(true)
-                self.addSubview(self.pickerView)
-                self.scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
-            }
-            
-            fieldsStackView.addArrangedSubview(dropdownView)
+            initDropdown()
             
         default:
             break
         }
+    }
+    
+    fileprivate func initDropdown() {
+        pickerView.backgroundColor = .backgroundPrimary
+        pickerView.delegate = self
+        pickerView.dataSource = self
+    
+        pickerView.frame = CGRect(
+            origin: CGPoint(x: 0, y: self.frame.height - Constants.Design.pickerHeight),
+            size: CGSize(width: self.frame.width, height: Constants.Design.pickerHeight)
+        )
+        
+        let dropdownView = DropdownView()
+        dropdownView.dropdownAction = {
+            self.endEditing(true)
+            self.addSubview(self.pickerView)
+            self.scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+        }
+        
+        fieldsStackView.addArrangedSubview(dropdownView)
     }
     
     fileprivate func styleActionButton(_ button: RoundedButton, color: UIColor) {
@@ -139,17 +156,16 @@ class ActionDialogView: UIView {
     
     fileprivate func styleFields() {
         for (index, field) in fieldsStackView.arrangedSubviews.enumerated() {
-            //guard let textField = field as? TextField else { continue }
+
+            let fieldValue = prefilledValues?[index] ?? placeholders?[index]
             
             if let textField = field as? TextField {
-                styleTextField(textField, placeholder: placeholders?[index])
+                styleTextField(textField, placeholder: fieldValue)
             } else {
                 if let dropdownView = field as? DropdownView {
-                    dropdownView.value = placeholders?[index]
+                    dropdownView.value = fieldValue
                 }
             }
-            
-            
         }
         
         // Display the keyboard after showing dialog

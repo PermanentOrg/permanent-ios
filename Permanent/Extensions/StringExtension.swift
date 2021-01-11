@@ -23,6 +23,10 @@ extension String {
     func pluralized() -> String {
         return self + "s"
     }
+    
+    func parenthesized() -> String {
+        return "(" + self + ")"
+    }
 }
 
 // MARK: - Validations
