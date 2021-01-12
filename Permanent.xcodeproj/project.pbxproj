@@ -200,6 +200,8 @@
 		BCEECD7A25ADBE3800A4520E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7925ADBE3800A4520E /* File.swift */; };
 		BCEECD7D25ADBEC500A4520E /* FileVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7C25ADBEC500A4520E /* FileVM.swift */; };
 		BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */; };
+		BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8325AE05BA00A4520E /* ShareDetails.swift */; };
+		BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -429,6 +431,8 @@
 		BCEECD7925ADBE3800A4520E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		BCEECD7C25ADBEC500A4520E /* FileVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVM.swift; sourceTree = "<group>"; };
 		BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOTokenPayload.swift; sourceTree = "<group>"; };
+		BCEECD8325AE05BA00A4520E /* ShareDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetails.swift; sourceTree = "<group>"; };
+		BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetailsVM.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -1057,6 +1061,8 @@
 			children = (
 				BCEECD7925ADBE3800A4520E /* File.swift */,
 				BCEECD7C25ADBEC500A4520E /* FileVM.swift */,
+				BCEECD8325AE05BA00A4520E /* ShareDetails.swift */,
+				BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1412,10 +1418,12 @@
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
+				BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
+				BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,

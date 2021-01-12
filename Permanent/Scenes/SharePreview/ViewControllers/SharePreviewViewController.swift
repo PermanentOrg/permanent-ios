@@ -36,21 +36,19 @@ class SharePreviewViewController: UIViewController {
     }
 
     fileprivate func configureUI() {
-        navigationItem.title = "Share preview"
-        view.backgroundColor = .middleGray
+        navigationItem.title = .sharePreview
+        view.backgroundColor = .galleryGray
      
         headerView.backgroundColor = .backgroundPrimary
         collectionView.backgroundColor = .backgroundPrimary
         
-        shareNameLabel.text = "Permanent illustrations"
+        shareNameLabel.text = "Permanent illustrations" // TODO
         shareNameLabel.textColor = .black
         shareNameLabel.font = Text.style18.font
         
-        sharedByLabel.text = "Shared by Brandon Wilson"
         sharedByLabel.textColor = .textPrimary
         sharedByLabel.font = Text.style12.font
         
-        archiveNameLabel.text = "From the Brandon Wilson Archive"
         archiveNameLabel.textColor = .textPrimary
         archiveNameLabel.font = Text.style19.font
         
@@ -59,7 +57,7 @@ class SharePreviewViewController: UIViewController {
         archiveImage.clipsToBounds = true
         archiveImage.layer.cornerRadius = 30
         
-        actionButton.configureActionButtonUI(title: "request access")
+        actionButton.configureActionButtonUI(title: .requestApproval)
     }
     
     fileprivate func setupCollectionView() {
@@ -124,13 +122,15 @@ extension SharePreviewViewController: UICollectionViewDelegateFlowLayout {
 
 extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     
-    func updateScreen(status: RequestStatus) {
-        
+    func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {
-        case.success: collectionView.reloadData()
+        case.success:
+            archiveNameLabel.text = shareDetails?.archiveName
+            sharedByLabel.text = shareDetails?.accountName
+            collectionView.reloadData()
+            
         case .error(let error): print(error)
             // TODO: Move showError alert to UIVC extension
         }
     }
-    
 }

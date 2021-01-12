@@ -135,3 +135,6 @@
 "Newest" = "Newest";
 "LinkSettings" = "Link Settings";
 "AccessLevel" = "Access Level";
+"SharedBy" = "Shared by %@";
+"FromArchive" = "From the %@ Archive";
+"RequestApproval" = "Request Approval";

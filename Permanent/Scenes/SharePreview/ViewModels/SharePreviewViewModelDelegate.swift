@@ -25,6 +25,6 @@ protocol SharePreviewViewModelDelegate {
 
 protocol SharePreviewViewModelViewDelegate: class {
     
-    func updateScreen(status: RequestStatus)
+    func updateScreen(status: RequestStatus, shareDetails: ShareDetails?)
     
 }

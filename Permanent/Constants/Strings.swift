@@ -139,6 +139,9 @@ extension String {
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
+    static var sharedBy: String { return "SharedBy".localized() }
+    static var fromArchive: String { return "FromArchive".localized() }
+    static var requestApproval: String { return "RequestApproval".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"

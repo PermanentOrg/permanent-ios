@@ -43,9 +43,11 @@ class SharePreviewViewModel {
                     ),
 
                     model.isSuccessful,
-                    let sss = model.results.first?.data?.first else {
+                    let sss = model.results.first?.data?.first?.shareByURLVO else {
                     
-                    self.viewDelegate?.updateScreen(status: .error(message: .errorMessage))
+                    self.viewDelegate?.updateScreen(
+                        status: .error(message: .errorMessage),
+                        shareDetails: nil)
                     return
                 }
                 
@@ -53,7 +55,9 @@ class SharePreviewViewModel {
                 
                
             case .error(let error, _):
-                self.viewDelegate?.updateScreen(status: .error(message: error?.localizedDescription))
+                self.viewDelegate?.updateScreen(
+                    status: .error(message: error?.localizedDescription),
+                    shareDetails: nil)
                 
             default:
                 return
@@ -62,19 +66,21 @@ class SharePreviewViewModel {
         
     }
     
-    fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVO) {
+    fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVOData) {
         
-        if let folderData = model.shareByURLVO?.folderData {
+        if let folderData = model.folderData {
             if let files = extractSharedFiles(from: folderData) {
                 self.files = files
             }
-        } else if let recordData = model.shareByURLVO?.recordData {
+        } else if let recordData = model.recordData {
             if let file = extractSharedFile(from: recordData) {
                 self.files = [file]
             }
         }
         
-        viewDelegate?.updateScreen(status: .success)
+        let details = ShareDetailsVM(model: model)
+        
+        viewDelegate?.updateScreen(status: .success, shareDetails: details)
         
     }
     
