@@ -8,6 +8,9 @@
 import UIKit
 
 class SharePreviewViewController: UIViewController {
+    
+    // MARK: - Properties
+    
     @IBOutlet var archiveImage: UIImageView!
     @IBOutlet var headerView: UIView!
     @IBOutlet var shareNameLabel: UILabel!
@@ -16,11 +19,20 @@ class SharePreviewViewController: UIViewController {
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var actionButton: RoundedButton!
     
+    var viewModel: SharePreviewViewModelDelegate! {
+        didSet {
+            viewModel.viewDelegate = self
+        }
+    }
+    
+    // MARK: - UIViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
         setupCollectionView()
+        viewModel.start()
     }
 
     fileprivate func configureUI() {
@@ -64,23 +76,29 @@ class SharePreviewViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func previewAction(_ sender: UIButton) {
-        
+        // TODO
     }
     
 }
 
+// MARK: - UICollectionView Delegates
 
 extension SharePreviewViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return viewModel.numberOfItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileLargeCollectionViewCell.reuseIdentifier, for: indexPath)
+        guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: FileLargeCollectionViewCell.reuseIdentifier,
+                for: indexPath
+        ) as? FileLargeCollectionViewCell else {
+            fatalError()
+        }
         
+        cell.file = viewModel.itemFor(row: indexPath.row)
         return cell
-        
     }
 }
 
@@ -100,4 +118,19 @@ extension SharePreviewViewController: UICollectionViewDelegateFlowLayout {
         
         return CGSize(width: size, height: size)
     }
+}
+
+// MARK: ViewModel Delegate
+
+extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
+    
+    func updateScreen(status: RequestStatus) {
+        
+        switch status {
+        case.success: collectionView.reloadData()
+        case .error(let error): print(error)
+            // TODO: Move showError alert to UIVC extension
+        }
+    }
+    
 }

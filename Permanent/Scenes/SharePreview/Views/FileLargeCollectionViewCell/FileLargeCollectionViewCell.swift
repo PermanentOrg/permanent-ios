@@ -6,11 +6,22 @@
 //
 
 import UIKit
+import SDWebImage
 
 class FileLargeCollectionViewCell: UICollectionViewCell {
 
+    // MARK: - Properties
+    
     @IBOutlet var fileThumbImage: UIImageView!
     @IBOutlet var nameLabel: UILabel!
+    
+    var file: File? {
+        didSet {
+            nameLabel.text = file?.name
+            let url = URL(string: file?.thumbStringURL)
+            fileThumbImage.sd_setImage(with: url)
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,11 +30,8 @@ class FileLargeCollectionViewCell: UICollectionViewCell {
     }
     
     fileprivate func configureUI() {
-        fileThumbImage.backgroundColor = .red
-        fileThumbImage.contentMode = .scaleAspectFit
-        
+        fileThumbImage.contentMode = .scaleAspectFill        
         nameLabel.textColor = .textPrimary
         nameLabel.font = Text.style20.font
-        nameLabel.text = "Around the world"
     }
 }
