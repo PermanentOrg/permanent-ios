@@ -142,6 +142,8 @@ extension String {
     static var sharedBy: String { return "SharedBy".localized() }
     static var fromArchive: String { return "FromArchive".localized() }
     static var requestApproval: String { return "RequestApproval".localized() }
+    static var removeMember: String { return "RemoveMember".localized() }
+    static var pending: String { return "Pending".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"

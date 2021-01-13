@@ -25,6 +25,8 @@ extension UIImage {
     static let delete = UIImage(named: "delete")!
     static let deleteAction = UIImage(named: "deleteAction")!
     static let download = UIImage(named: "download")!
+    static let edit = UIImage(named: "edit")!
+    static let editAction = UIImage(named: "editAction")!
     static let emptyFolder = UIImage(named: "emptyFolder")!
     static let expand = UIImage(named: "expand")!
     static let folder = UIImage(named: "folder")!

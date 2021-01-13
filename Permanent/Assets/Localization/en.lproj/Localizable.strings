@@ -138,3 +138,5 @@
 "SharedBy" = "Shared by %@";
 "FromArchive" = "From the %@ Archive";
 "RequestApproval" = "Request Approval";
+"RemoveMember" = "Remove member?";
+"Pending" = "Pending";

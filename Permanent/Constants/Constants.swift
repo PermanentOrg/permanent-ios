@@ -37,6 +37,7 @@ struct Text {
 struct Constants {
     struct API {
         struct FileType {}
+        struct AccountStatus {}
     }
 
     struct Design {}
@@ -103,6 +104,11 @@ extension Constants.API.FileType {
 
 extension Constants.URL {
     static let termsConditionsURL = "https://www.permanent.org/privacy-policy/"
+}
+
+extension Constants.API.AccountStatus {
+    static let STATUS_GENERIC_PENDING = "status.generic.pending"
+    static let STATUS_GENERIC_OK = "status.generic.ok"
 }
 
 extension Constants.Keys.StorageKeys {
