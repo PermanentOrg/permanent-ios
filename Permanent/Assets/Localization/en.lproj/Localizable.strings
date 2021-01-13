@@ -140,3 +140,5 @@
 "RequestApproval" = "Request Approval";
 "RemoveMember" = "Remove member?";
 "Pending" = "Pending";
+"RequestAwaitingApproval" = "Your request is awaiting approval";
+"ViewInArchive" = "View in archive";

@@ -13,6 +13,14 @@ protocol ShareDetails {
     
     var accountName: String { get }
     
-    //var sharedFileName: String { get }
+    var sharedFileName: String { get }
+    
+    var hasAccess: Bool { get }
+    
+    var showPreview: Bool { get }
+    
+    var archiveThumbURL: URL? { get }
+    
+    var status: ShareStatus { get }
     
 }

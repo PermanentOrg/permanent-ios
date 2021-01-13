@@ -144,6 +144,8 @@ extension String {
     static var requestApproval: String { return "RequestApproval".localized() }
     static var removeMember: String { return "RemoveMember".localized() }
     static var pending: String { return "Pending".localized() }
+    static var requestAwaitingApproval: String { return "RequestAwaitingApproval".localized() }
+    static var viewInArchive: String { return "ViewInArchive".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"

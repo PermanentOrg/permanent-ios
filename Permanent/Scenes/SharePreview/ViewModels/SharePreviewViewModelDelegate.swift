@@ -21,10 +21,14 @@ protocol SharePreviewViewModelDelegate {
     
     func start()
     
+    var isBusy: Bool { get }
+    
 }
 
 protocol SharePreviewViewModelViewDelegate: class {
     
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?)
+    
+    func updateSpinner(isLoading: Bool)
     
 }

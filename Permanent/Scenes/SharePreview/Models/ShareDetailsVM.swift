@@ -10,8 +10,12 @@ import Foundation
 struct ShareDetailsVM: ShareDetails {
     var archiveName: String = ""
     var accountName: String = ""
-    //var sharedFileName: String
-
+    var sharedFileName: String
+    var hasAccess: Bool
+    var showPreview: Bool
+    var archiveThumbURL: URL?
+    var status: ShareStatus
+    
     init(model: SharebyURLVOData) {
         if let archive = model.archiveVO?.fullName {
             archiveName = String.init(format: .fromArchive, archive)
@@ -20,6 +24,14 @@ struct ShareDetailsVM: ShareDetails {
             accountName = String.init(format: .sharedBy, name)
         }
         
+        archiveThumbURL = URL(string: model.archiveVO?.thumbURL200)
+        sharedFileName =
+            model.recordData?.displayName ??
+            model.folderData?.displayName ?? ""
+        
+        hasAccess = model.shareVO != nil
+        showPreview = model.previewToggle == 1
+        status = ShareStatus.status(forValue: model.shareVO?.status)
     }
-    
+
 }

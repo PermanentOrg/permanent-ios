@@ -17,6 +17,12 @@ class SharePreviewViewModel {
     
     fileprivate var files: [File] = []
     
+    var isBusy: Bool = false {
+        didSet {
+            viewDelegate?.updateSpinner(isLoading: isBusy)
+        }
+    }
+    
     var urlToken: String?
     
     func start() {
@@ -31,9 +37,12 @@ class SharePreviewViewModel {
     
     func fetchSharedItems(urlToken: String) {
         
-        let apiOperation = APIOperation(ShareEndpoint.checkLink(token: urlToken))
+        isBusy = true
         
+        let apiOperation = APIOperation(ShareEndpoint.checkLink(token: urlToken))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
+            self.isBusy = false
+            
             switch result {
             case .json(let response, _):
                 guard
@@ -81,6 +90,9 @@ class SharePreviewViewModel {
         let details = ShareDetailsVM(model: model)
         
         viewDelegate?.updateScreen(status: .success, shareDetails: details)
+        
+        // Delete the saved token if it existed.
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.shareURLToken)
         
     }
     

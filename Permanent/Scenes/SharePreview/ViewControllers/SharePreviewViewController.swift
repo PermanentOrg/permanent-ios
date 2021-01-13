@@ -42,7 +42,6 @@ class SharePreviewViewController: UIViewController {
         headerView.backgroundColor = .backgroundPrimary
         collectionView.backgroundColor = .backgroundPrimary
         
-        shareNameLabel.text = "Permanent illustrations" // TODO
         shareNameLabel.textColor = .black
         shareNameLabel.font = Text.style18.font
         
@@ -52,12 +51,12 @@ class SharePreviewViewController: UIViewController {
         archiveNameLabel.textColor = .textPrimary
         archiveNameLabel.font = Text.style19.font
         
-        
         archiveImage.backgroundColor = .primary
         archiveImage.clipsToBounds = true
         archiveImage.layer.cornerRadius = 30
         
-        actionButton.configureActionButtonUI(title: .requestApproval)
+        archiveImage.isHidden = true
+        actionButton.isHidden = true
     }
     
     fileprivate func setupCollectionView() {
@@ -69,6 +68,21 @@ class SharePreviewViewController: UIViewController {
         flowLayout.minimumInteritemSpacing = 0
         flowLayout.minimumLineSpacing = 0
         collectionView.collectionViewLayout = flowLayout
+    }
+    
+    fileprivate func setupActionButton(forStatus status: ShareStatus) {
+        switch status {
+        case .pending:
+            actionButton.isEnabled = false
+            actionButton.titleLabel?.adjustsFontSizeToFitWidth = true
+            actionButton.setTitleColor(.primary, for: [])
+            actionButton.configureActionButtonUI(title: status.infoText, bgColor: .backgroundPrimary)
+            
+        default:
+            actionButton.configureActionButtonUI(title: status.infoText)
+        }
+        
+        actionButton.isHidden = false
     }
     
     // MARK: - Actions
@@ -125,12 +139,27 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {
         case.success:
-            archiveNameLabel.text = shareDetails?.archiveName
-            sharedByLabel.text = shareDetails?.accountName
             collectionView.reloadData()
+            
+            if let details = shareDetails {
+                if !details.showPreview {
+                    collectionView.addBlur(styled: .dark)
+                }
+                
+                shareNameLabel.text = details.sharedFileName
+                archiveNameLabel.text = details.archiveName
+                sharedByLabel.text = details.accountName
+                setupActionButton(forStatus: details.status)
+                archiveImage.sd_setImage(with: details.archiveThumbURL)
+                archiveImage.isHidden = false
+            }
             
         case .error(let error): print(error)
             // TODO: Move showError alert to UIVC extension
         }
+    }
+    
+    func updateSpinner(isLoading: Bool) {
+        isLoading ? showSpinner() : hideSpinner()
     }
 }
