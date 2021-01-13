@@ -114,4 +114,5 @@ extension Constants.Keys.StorageKeys {
     static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
+    static let shareURLToken = "shareURLTokenStorageKey"
 }

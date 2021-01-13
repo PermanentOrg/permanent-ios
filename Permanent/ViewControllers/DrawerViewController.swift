@@ -86,9 +86,12 @@ class DrawerViewController: UIViewController {
             
         }, completion: nil)
     }
-    
-    // Change this name
+
     func navigateTo(viewController: UIViewController) {
+        rootViewController.display(viewController: viewController)
+    }
+    
+    func changeRoot(viewController: UIViewController) {
         rootViewController.changeRootController(viewController: viewController)
         toggleMenu()
     }

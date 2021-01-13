@@ -26,8 +26,16 @@ class RootViewController: UIViewController {
         setupChild(current)
     }
     
-    func changeDrawerRoot(viewController: UIViewController) {
+    var isDrawerRootActive: Bool {
+        return current is DrawerViewController
+    }
+    
+    func navigateTo(viewController: UIViewController) {
         (current as? DrawerViewController)?.navigateTo(viewController: viewController)
+    }
+    
+    func changeDrawerRoot(viewController: UIViewController) {
+        (current as? DrawerViewController)?.changeRoot(viewController: viewController)
     }
     
     func setDrawerRoot() {
