@@ -13,7 +13,11 @@ struct ArchiveSharePayload: Model {
     
     init(archiveNbr: String, accountData: AddMemberParams) {
         archiveVO = ArchiveVOPayloadData(archiveNbr: archiveNbr)
-        accountVO = AccountVOPayloadData(accountId: nil, email: accountData.email, role: accountData.role)
+        accountVO = AccountVOPayloadData(
+            accountId: accountData.accountId,
+            email: accountData.email,
+            role: accountData.role
+        )
     }
     
     enum CodingKeys: String, CodingKey {

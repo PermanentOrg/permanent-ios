@@ -52,18 +52,14 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     @IBAction func addMembersAction(_ sender: UIButton) {
         
-        let accessRoles = AccessRole.allCases
-            .filter { $0 != .owner }
-            .map { $0.groupName }
-        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: .addMember,
             placeholders: [.memberEmail, .accessLevel],
-            dropdownValues: accessRoles,
+            dropdownValues: StaticData.accessRoles,
             positiveButtonTitle: .save,
             positiveAction: {
-                self.addMember()
+                self.modifyMember(withOperation: .add)
             },
             overlayView: self.overlayView)
     }
@@ -106,33 +102,82 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         })
     }
     
-    fileprivate func addMember() {
+    fileprivate func modifyMember(_ member: Account? = nil, withOperation operation: MemberOperation) {
         
-        guard
-            let fieldsInput = actionDialog?.fieldsInput,
-            let email = fieldsInput.first,
-            let role = fieldsInput.last,
-            let apiRole = AccessRole.apiRoleForValue(role) else { return }
-                
-        let addMemberPayload = (email, apiRole)
+        guard let parameters = getModifyMemberParams(member: member, operation: operation) else { return }
+        
         actionDialog?.dismiss()
         
         showSpinner()
-        viewModel?.addMember(params: addMemberPayload, then: { status in
-            self.hideSpinner()
+        viewModel?.modifyMember(operation, params: parameters, then: { status in
             switch status {
             case .success:
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                self.getMembers()
                 
             case .error(let message):
                 DispatchQueue.main.async {
+                    self.hideSpinner()
                     self.showErrorAlert(message: message)
                 }
             }
         })
+    }
+    
+    fileprivate func getModifyMemberParams(member: Account?, operation: MemberOperation) -> AddMemberParams? {
         
+        switch operation {
+        case .add:
+            guard
+                let fieldsInput = actionDialog?.fieldsInput,
+                let email = fieldsInput.first,
+                let role = fieldsInput.last,
+                let apiRole = AccessRole.apiRoleForValue(role) else { return nil }
+            
+            return (nil, email, apiRole)
+            
+        case .edit:
+            guard
+                let account = member,
+                let fieldsInput = actionDialog?.fieldsInput,
+                let role = fieldsInput.first,
+                let apiRole = AccessRole.apiRoleForValue(role) else { return nil }
+            
+            return (account.accountId, account.email, apiRole)
+            
+        case .remove:
+            guard
+                let account = member,
+                let apiRole = AccessRole.apiRoleForValue(account.accessRole.groupName) else { return nil }
+            
+            return (nil, account.email, apiRole)
+        
+        }
+    }
+    
+    fileprivate func didTapDelete(forAccount account: Account) {
+        self.showActionDialog(styled: .simple,
+                              withTitle: String.init(format: .removeMember, account.name),
+                              positiveButtonTitle: .delete,
+                              positiveAction: {
+                                self.modifyMember(account, withOperation: .remove)
+                              },
+                              overlayView: self.overlayView
+        )
+    }
+    
+    fileprivate func didTapEdit(forAccount account: Account) {
+        self.showActionDialog(styled: .dropdownWithDescription,
+                              withTitle: account.name,
+                              description: account.email,
+                              placeholders: [.accessLevel],
+                              prefilledValues: [account.accessRole.groupName],
+                              dropdownValues: StaticData.accessRoles,
+                              positiveButtonTitle: .save,
+                              positiveAction: {
+                                self.modifyMember(account, withOperation: .edit)
+                              },
+                              overlayView: self.overlayView
+        )
     }
 }
 
@@ -197,6 +242,39 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard tooltipView.isDescendant(of: view) else { return }
         tooltipView.removeFromSuperview()
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard
+            let viewModel = viewModel,
+            let accessRole = AccessRole(rawValue: indexPath.section),
+            let account = viewModel.itemAtRow(indexPath.row, withRole: accessRole) else {
+            fatalError()
+        }
+        
+        let deleteAction = UIContextualAction.make(
+            withImage: .deleteAction,
+            backgroundColor: .destructive,
+            handler: { _, _, completion in
+                self.didTapDelete(forAccount: account)
+                completion(true)
+            }
+        )
+        
+        let editAction = UIContextualAction.make(
+            withImage: .editAction,
+            backgroundColor: .primary,
+            handler: { _, _, completion in
+                self.didTapEdit(forAccount: account)
+                completion(true)
+            }
+        )
+        
+        return UISwipeActionsConfiguration(actions: [
+            editAction,
+            deleteAction
+        ])
     }
 
 }

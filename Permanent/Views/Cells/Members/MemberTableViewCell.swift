@@ -9,12 +9,16 @@ import UIKit
 
 class MemberTableViewCell: UITableViewCell {
     fileprivate var nameLabel: UILabel!
+    fileprivate var statusLabel: UILabel!
     fileprivate var emailLabel: UILabel!
     
     var member: Account? {
         didSet {
             nameLabel.text = member?.name
             emailLabel.text = member?.email
+            
+            statusLabel.text = member?.status.value.parenthesized()
+            statusLabel.isHidden = member?.status != .pending
         }
     }
     
@@ -34,13 +38,21 @@ class MemberTableViewCell: UITableViewCell {
         nameLabel.textColor = .primary
         nameLabel.font = Text.style11.font
         
+        statusLabel = UILabel()
+        statusLabel.textColor = .textPrimary
+        statusLabel.font = Text.style12.font
+        
+        let hStack = UIStackView(arrangedSubviews: [nameLabel, statusLabel])
+        hStack.spacing = 10
+        
         emailLabel = UILabel()
         emailLabel.textColor = .textPrimary
         emailLabel.font = Text.style8.font
         
-        let vStack = UIStackView(arrangedSubviews: [nameLabel, emailLabel])
+        let vStack = UIStackView(arrangedSubviews: [hStack, emailLabel])
         vStack.axis = .vertical
         vStack.spacing = 0
+        vStack.alignment = .leading
         
         self.addSubview(vStack)
         vStack.enableAutoLayout()

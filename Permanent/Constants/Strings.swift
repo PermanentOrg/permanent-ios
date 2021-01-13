@@ -146,6 +146,8 @@ extension String {
     static var newPassword: String { return "New Password".localized()}
     static var logInWithFingerPrint: String { return "Log in with Fingerprint/Face ID?".localized()}
     static var twoStepVerification: String { return "Two-Step Verification?".localized()}
+    static var removeMember: String { return "RemoveMember".localized() }
+    static var pending: String { return "Pending".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"

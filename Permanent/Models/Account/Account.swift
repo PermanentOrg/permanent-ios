@@ -9,11 +9,15 @@ import Foundation
 
 protocol Account {
     
+    var accountId: Int { get }
+    
     var name: String { get }
     
     var email: String { get }
     
     var accessRole: AccessRole { get }
+    
+    var status: AccountStatus { get }
     
 }
 

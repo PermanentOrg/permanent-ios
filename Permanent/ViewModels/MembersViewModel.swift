@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias AddMemberParams = (email: String, role: String)
+typealias AddMemberParams = (accountId: Int?, email: String, role: String)
 
 protocol MembersViewModelDelegate: ViewModelDelegateInterface {
     
@@ -71,7 +71,7 @@ extension MembersViewModel: MembersViewModelDelegate {
         }
     }
     
-    func addMember(params: AddMemberParams, then handler: @escaping ServerResponse) {
+    func modifyMember(_ operation: MemberOperation, params: AddMemberParams, then handler: @escaping ServerResponse) {
         
         guard let archiveNbr: String = PreferencesManager.shared.getValue(
             forKey: Constants.Keys.StorageKeys.archiveNbrStorageKey
@@ -79,22 +79,19 @@ extension MembersViewModel: MembersViewModelDelegate {
             return
         }
         
-        let operation = APIOperation(MembersEndpoint.addMember(archiveNbr: archiveNbr, params: params, csrf: csrf))
-        operation.execute(in: APIRequestDispatcher()) { result in
+        let apiOperation = APIOperation(MembersEndpoint.modifyMember(operation: operation, archiveNbr: archiveNbr, params: params, csrf: csrf))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard
                     let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
                         with: APIResults<AccountVO>.decoder
-                    ), model.isSuccessful,
-                    let member = model.results.first?.data?.first else {
+                    ), model.isSuccessful else {
                     
                     return handler(.error(message: .errorMessage))
                 }
                                 
-                self.onAddMemberSuccess(member)
-                
                 handler(.success)
                 
             case .error(let error, _):
@@ -103,17 +100,6 @@ extension MembersViewModel: MembersViewModelDelegate {
             default:
                 break
             }
-        }
-    }
-    
-    fileprivate func onAddMemberSuccess(_ account: AccountVO) {
-        let accountVO = AccountVM(accountVO: account)
-        self.members.append(accountVO)
-        
-        if var membersSameRole = self.memberSections[accountVO.accessRole] {
-            self.memberSections[accountVO.accessRole]?.append(accountVO)
-        } else {
-            self.memberSections[accountVO.accessRole] = [accountVO]
         }
     }
     
