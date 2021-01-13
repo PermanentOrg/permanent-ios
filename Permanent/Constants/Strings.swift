@@ -139,6 +139,13 @@ extension String {
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
+    static var security: String { return "Security".localized() }
+    static var updatePassword: String { return "Update Password".localized()}
+    static var currentPassword: String { return "Current Password".localized()}
+    static var reTypePassword: String { return "Re-type Password".localized()}
+    static var newPassword: String { return "New Password".localized()}
+    static var logInWithFingerPrint: String { return "Log in with Fingerprint/Face ID?".localized()}
+    static var twoStepVerification: String { return "Two-Step Verification?".localized()}
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
