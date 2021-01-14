@@ -255,7 +255,7 @@
                                         </constraints>
                                     </view>
                                     <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJt-fn-z04">
-                                        <rect key="frame" x="0.0" y="55" width="374" height="663"/>
+                                        <rect key="frame" x="0.0" y="55" width="374" height="653"/>
                                         <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <wkWebViewConfiguration key="configuration">
                                             <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -263,10 +263,10 @@
                                         </wkWebViewConfiguration>
                                     </wkWebView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="sWz-Og-kE4">
-                                        <rect key="frame" x="50" y="738" width="274" height="30"/>
+                                        <rect key="frame" x="50" y="728" width="274" height="40"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OaK-kf-z91" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="124.5" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="124.5" height="40"/>
                                                 <state key="normal" title="Button"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="color" keyPath="bgColor">
@@ -278,7 +278,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SHM-i5-eFY" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="149.5" y="0.0" width="124.5" height="30"/>
+                                                <rect key="frame" x="149.5" y="0.0" width="124.5" height="40"/>
                                                 <state key="normal" title="Button"/>
                                                 <connections>
                                                     <action selector="acceptAction:" destination="K5X-4i-JV7" eventType="touchUpInside" id="xtJ-Uk-hhK"/>
