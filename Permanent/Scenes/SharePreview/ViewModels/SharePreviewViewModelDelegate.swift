@@ -25,6 +25,8 @@ protocol SharePreviewViewModelDelegate {
     
     var isBusy: Bool { get }
     
+    var showPreview: Bool { get }
+    
 }
 
 protocol SharePreviewViewModelViewDelegate: class {

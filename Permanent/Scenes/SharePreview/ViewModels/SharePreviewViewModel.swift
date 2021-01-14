@@ -19,6 +19,8 @@ class SharePreviewViewModel {
     
     fileprivate var shareStatus: ShareStatus = .needsApproval
     
+    var showPreview: Bool = false
+    
     fileprivate var csrf: String = ""
     
     var isBusy: Bool = false {
@@ -151,6 +153,7 @@ class SharePreviewViewModel {
         let details = ShareDetailsVM(model: model)
         
         self.shareStatus = details.status
+        self.showPreview = details.showPreview
         
         viewDelegate?.updateScreen(status: .success, shareDetails: details)
         

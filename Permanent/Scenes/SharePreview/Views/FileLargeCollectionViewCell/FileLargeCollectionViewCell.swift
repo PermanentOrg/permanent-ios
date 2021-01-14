@@ -23,6 +23,14 @@ class FileLargeCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    var showPreview: Bool = false {
+        didSet {
+            if !showPreview {
+                addBlur(styled: .light)
+            }
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         

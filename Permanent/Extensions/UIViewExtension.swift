@@ -126,6 +126,11 @@ extension UIView {
 extension UIView {
     
     func addBlur(styled blurStyle: UIBlurEffect.Style = .light) {
+        
+        let backView = UIView(frame: self.bounds)
+        backView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        self.addSubview(backView)
+        
         let blurEffect = UIBlurEffect(style: blurStyle)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = bounds

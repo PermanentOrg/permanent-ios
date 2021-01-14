@@ -110,6 +110,8 @@ extension SharePreviewViewController: UICollectionViewDelegate, UICollectionView
         }
         
         cell.file = viewModel.itemFor(row: indexPath.row)
+        cell.showPreview = viewModel.showPreview
+        
         return cell
     }
 }
@@ -158,10 +160,6 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             collectionView.reloadData()
             
             if let details = shareDetails {
-                if !details.showPreview {
-                    collectionView.addBlur(styled: .dark)
-                }
-                
                 // Header setup
                 shareNameLabel.text = details.sharedFileName
                 archiveNameLabel.text = details.archiveName
