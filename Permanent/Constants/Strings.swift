@@ -139,8 +139,13 @@ extension String {
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
+    static var sharedBy: String { return "SharedBy".localized() }
+    static var fromArchive: String { return "FromArchive".localized() }
+    static var requestApproval: String { return "RequestApproval".localized() }
     static var removeMember: String { return "RemoveMember".localized() }
     static var pending: String { return "Pending".localized() }
+    static var requestAwaitingApproval: String { return "RequestAwaitingApproval".localized() }
+    static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"

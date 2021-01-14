@@ -238,6 +238,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
             self.retryUnfinishedUploadsIfNeeded()
+            self.checkForSavedUniversalLink()
         })
     }
     
@@ -276,6 +277,24 @@ class MainViewController: BaseViewController<FilesViewModel> {
         case .error(let message):
             showErrorAlert(message: message)
         }
+    }
+    
+    fileprivate func checkForSavedUniversalLink() {
+        
+        guard
+            let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken),
+            let sharePreviewVC = UIViewController.create(
+                    withIdentifier: .sharePreview,
+                    from: .share
+            ) as? SharePreviewViewController else {
+            return
+        }
+        
+        let viewModel = SharePreviewViewModel()
+        viewModel.urlToken = token
+        sharePreviewVC.viewModel = viewModel
+        
+        navigationController?.display(viewController: sharePreviewVC)
     }
     
     private func retryUnfinishedUploadsIfNeeded() {

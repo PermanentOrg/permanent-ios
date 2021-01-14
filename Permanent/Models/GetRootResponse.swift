@@ -37,7 +37,7 @@ struct GetRootResult: Codable {
 
 // MARK: - Datum
 struct GetRootData: Codable {
-    let folderVO: FolderVO?
+    let folderVO: FolderVOData?
 
     enum CodingKeys: String, CodingKey {
         case folderVO = "FolderVO"

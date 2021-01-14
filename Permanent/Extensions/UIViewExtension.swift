@@ -122,3 +122,16 @@ extension UIView {
         self.heightAnchor.constraint(equalToConstant: side).isActive = true
     }
 }
+
+extension UIView {
+    
+    func addBlur(styled blurStyle: UIBlurEffect.Style = .light) {
+        let blurEffect = UIBlurEffect(style: blurStyle)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.isUserInteractionEnabled = false
+        addSubview(blurEffectView)
+    }
+    
+}

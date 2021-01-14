@@ -135,6 +135,11 @@
 "Newest" = "Newest";
 "LinkSettings" = "Link Settings";
 "AccessLevel" = "Access Level";
+"SharedBy" = "Shared by %@";
+"FromArchive" = "From the %@ Archive";
+"RequestApproval" = "Request Approval";
 "RemoveMember" = "Remove member?";
 "Pending" = "Pending";
+"RequestAwaitingApproval" = "Your request is awaiting approval";
+"ViewInArchive" = "View in archive";
 "AddStorage" = "Add Storage";

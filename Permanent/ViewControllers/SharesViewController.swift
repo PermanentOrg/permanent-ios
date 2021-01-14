@@ -11,6 +11,8 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet var segmentedControl: UISegmentedControl!
     @IBOutlet var tableView: UITableView!
     
+    var selectedIndex: Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -32,9 +34,16 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
         
+        
+        if let listType = ShareListType(rawValue: selectedIndex) {
+            segmentedControl.selectedSegmentIndex = selectedIndex
+            viewModel?.shareListType = listType
+        }
+        
         if #available(iOS 13.0, *) {
             segmentedControl.selectedSegmentTintColor = .primary
         }
+        
     }
     
     fileprivate func setupTableView() {

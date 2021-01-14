@@ -45,7 +45,7 @@ struct ItemVO: Model {
     let attachmentRecordVOS: [JSONAny]?
     let hasAttachments: JSONAny?
     let childItemVOS: [JSONAny]?
-    let shareVOS: [ShareVO]?
+    let shareVOS: [ShareVOData]?
     let accessVOS: JSONAny?
     let archiveArchiveNbr: String?
     let returnDataSize, posStart, posLimit, recordID: JSONAny?

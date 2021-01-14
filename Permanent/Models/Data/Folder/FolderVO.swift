@@ -8,6 +8,14 @@
 import Foundation
 
 struct FolderVO: Model {
+    let folderVO: FolderVOData?
+    
+    enum CodingKeys: String, CodingKey {
+        case folderVO = "FolderVO"
+    }
+}
+
+struct FolderVOData: Model {
     let folderID: Int?
     let archiveNbr: String?
     let archiveID: Int?
@@ -49,8 +57,8 @@ struct FolderVO: Model {
     let folderSizeVO: FolderSizeVO?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
-    let childItemVOS: [FolderVO]?
-    let shareVOS: [ShareVO]?
+    let childItemVOS: [FolderVOData]?
+    let shareVOS: [ShareVOData]?
     let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?
     let accessVOS: [JSONAny]?

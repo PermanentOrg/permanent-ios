@@ -52,7 +52,7 @@ struct RecordVOData: Model {
     let uploadURI, fileDurationInSecs: JSONAny?
     let batchNbr: Int?
     let recordExifVO: RecordExifVO?
-    let shareVOS: [ShareVO]?
+    let shareVOS: [ShareVOData]?
     let accessVO, searchScore: JSONAny?
     let archiveArchiveNbr: String?
     let createdDT, updatedDT: String?
