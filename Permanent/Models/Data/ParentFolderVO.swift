@@ -48,7 +48,7 @@ struct ParentFolderVO: Model {
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS: [JSONAny]?
-    let shareVOS: [ShareVO]?
+    let shareVOS: [ShareVOData]?
     let accessVO, accessVOS: JSONAny?
     let archiveArchiveNbr: String?
     let returnDataSize, posStart, posLimit, searchScore: JSONAny?

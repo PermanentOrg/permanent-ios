@@ -216,8 +216,12 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         
+        let sectionName = accessRole != .owner ?
+            accessRole.groupName.pluralized() :
+            accessRole.groupName
+        
         let headerView = MemberRoleHeader(
-            role: accessRole.groupName.pluralized(),
+            role: sectionName,
             tooltipText: tooltipText,
             action: { point, text in
                 self.showTooltip(anchorPoint: point, text: text)

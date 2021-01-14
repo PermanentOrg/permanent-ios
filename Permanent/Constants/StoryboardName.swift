@@ -35,6 +35,7 @@ enum ViewControllerId: String {
     case shares
     case members
     case manageLink
+    case sharePreview
 
     var value: String {
         switch self {
@@ -52,6 +53,9 @@ enum ViewControllerId: String {
             return "SideMenu"
         case .manageLink:
             return "ManageLink"
+        case .sharePreview:
+            return "SharePreview"
+        
         default:
             return self.rawValue.capitalized
         }

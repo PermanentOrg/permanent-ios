@@ -29,10 +29,10 @@ struct SharebyURLVOData: Model {
     let byAccountID, byArchiveID: Int?
     let createdDT, updatedDT: String?
     let accountVO: AccountVOData?
-    let folderVO: FolderVO?
-    let recordVO: RecordVO?
+    let folderData: FolderVOData?
+    let recordData: RecordVOData?
     let archiveVO: ArchiveVOData?
-    let shareVO: JSONAny? // TODO
+    let shareVO: ShareVOData?
 
     enum CodingKeys: String, CodingKey {
         case sharebyURLID = "shareby_urlId"
@@ -43,8 +43,8 @@ struct SharebyURLVOData: Model {
         case byAccountID = "byAccountId"
         case byArchiveID = "byArchiveId"
         case createdDT, updatedDT
-        case folderVO = "FolderVO"
-        case recordVO = "RecordVO"
+        case folderData = "FolderVO"
+        case recordData = "RecordVO"
         case archiveVO = "ArchiveVO"
         case accountVO = "AccountVO"
         case shareVO = "ShareVO"
