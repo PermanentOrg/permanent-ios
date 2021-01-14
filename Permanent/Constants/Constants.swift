@@ -100,6 +100,7 @@ extension Constants.API.FileType {
 
 extension Constants.URL {
     static let termsConditionsURL = "https://www.permanent.org/privacy-policy/"
+    static let buyStorageURL = "https://www.permanent.org/add-storage/"
 }
 
 extension Constants.API.AccountStatus {

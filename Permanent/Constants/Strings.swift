@@ -141,6 +141,7 @@ extension String {
     static var memberEmail: String { return "\(member) \(email)" }
     static var removeMember: String { return "RemoveMember".localized() }
     static var pending: String { return "Pending".localized() }
+    static var addStorage: String { return "AddStorage".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
