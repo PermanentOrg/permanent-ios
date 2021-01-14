@@ -137,3 +137,14 @@
 "AccessLevel" = "Access Level";
 "RemoveMember" = "Remove member?";
 "Pending" = "Pending";
+"InvalidCsrf" = "Invalid CSRF";
+"IncorectOldPassword" = "The old password you have entered is incorrect";
+"LowPasswordComplexity" = "The new password does not meet complexity requirements";
+"PasswordMatchError" = "New Password doesn't match Re-type Password";
+"PasswordChangedSuccessfully" = "Password changed successfully.";
+"Security" = "Security";
+"UpdatePassword" = "Update Password";
+"CurrentPassword" = "Current Password";
+"ReTypePassword" = "Re-type Password";
+"NewPassword" = "New Password";
+

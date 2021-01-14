@@ -79,33 +79,18 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
         showSpinner(colored: .white)
         closeKeyboard()
 
-//        viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, csrf: csrf, then: { success in
-//            if success {
-//                print("Succ")
-//            } else {
-//                // Display alert error
-//                print("Error")
-//            }
-//        })
-//    }
-        
-        
         viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, csrf: csrf, then: { status in
-
+            
             switch status {
-            case .success:
+            case .success(let message):
+                DispatchQueue.main.async {
                     self.hideSpinner()
-                    self.showAlert(title: .success, message: "Password Changed successfully.")
-                    print(status)
+                    self.showAlert(title: .success, message: message)
+                }
             case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
                     self.showAlert(title: .error, message: message)
-                }
-            case .mfaToken:
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: .error, message: "mfa error")
                 }
             }
         })

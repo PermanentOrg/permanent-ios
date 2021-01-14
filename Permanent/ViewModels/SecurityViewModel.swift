@@ -26,31 +26,24 @@ extension SecurityViewModel:SecurityViewModelDelegate {
         let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data, csrf: csrf))
 
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in
-            print(result)
+
             switch result {
             case .json(let response, _):
-                guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
+                guard let model: ChangePasswordResponse = JSONHelper.convertToModel(from: response) else {
                     handler(.error(message: .errorMessage))
                     return
                 }
-
                 if model.isSuccessful == true {
-                   // self.saveStorageData(model)
-                    handler(.success)
+                    handler(.success(message: .passwordChangedSuccessfully))
                 } else {
                     guard
-                        let message = model.results?.first?.message?.first,
-                        let loginError = LoginError(rawValue: message)
+                        let message = model.Results?.first?.message?.first,
+                        let passwordChangeError = PasswordChangeError(rawValue: message)
                     else {
                         handler(.error(message: .errorMessage))
                         return
                     }
-
-                    if loginError == .mfaToken {
-                        handler(.mfaToken)
-                    } else {
-                        handler(.error(message: loginError.description))
-                    }
+                        handler(.error(message: passwordChangeError.description))
                 }
 
             case .error:
@@ -63,7 +56,6 @@ extension SecurityViewModel:SecurityViewModelDelegate {
     }
 }
 enum PasswordChangeStatus {
-    case success
-    case mfaToken
+    case success(message: String?)
     case error(message: String?)
 }

@@ -42,6 +42,11 @@ extension String {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
+    static var invalidCsrf: String { return "InvalidCsrf".localized() }
+    static var incorectOldPassword: String { return "IncorectOldPassword".localized() }
+    static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
+    static var passwordMatchError: String { return "PasswordMatchError".localized() }
+    static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
@@ -140,10 +145,10 @@ extension String {
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
     static var security: String { return "Security".localized() }
-    static var updatePassword: String { return "Update Password".localized()}
-    static var currentPassword: String { return "Current Password".localized()}
-    static var reTypePassword: String { return "Re-type Password".localized()}
-    static var newPassword: String { return "New Password".localized()}
+    static var updatePassword: String { return "UpdatePassword".localized()}
+    static var currentPassword: String { return "CurrentPassword".localized()}
+    static var reTypePassword: String { return "ReTypePassword".localized()}
+    static var newPassword: String { return "NewPassword".localized()}
     static var logInWithFingerPrint: String { return "Log in with Fingerprint/Face ID?".localized()}
     static var twoStepVerification: String { return "Two-Step Verification?".localized()}
     static var removeMember: String { return "RemoveMember".localized() }
