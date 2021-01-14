@@ -88,7 +88,7 @@ class SharePreviewViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func previewAction(_ sender: UIButton) {
-        // TODO
+        viewModel.performAction()
     }
     
 }
@@ -136,6 +136,22 @@ extension SharePreviewViewController: UICollectionViewDelegateFlowLayout {
 
 extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     
+    func updateShareAccess(status: RequestStatus, shareStatus: ShareStatus?) {
+        
+        switch status {
+        case .success:
+            if let shareStatus = shareStatus {
+                setupActionButton(forStatus: shareStatus)
+            }
+            
+        case .error(let message):
+            print(message)
+            
+        }
+        
+    }
+    
+    
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {
         case.success:
@@ -146,12 +162,14 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
                     collectionView.addBlur(styled: .dark)
                 }
                 
+                // Header setup
                 shareNameLabel.text = details.sharedFileName
                 archiveNameLabel.text = details.archiveName
                 sharedByLabel.text = details.accountName
-                setupActionButton(forStatus: details.status)
                 archiveImage.sd_setImage(with: details.archiveThumbURL)
                 archiveImage.isHidden = false
+                
+                setupActionButton(forStatus: details.status)
             }
             
         case .error(let error): print(error)
@@ -161,5 +179,17 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     
     func updateSpinner(isLoading: Bool) {
         isLoading ? showSpinner() : hideSpinner()
+    }
+    
+    func viewInArchive() {
+
+        guard let sharesVC = UIViewController.create(
+                withIdentifier: .shares,
+                from: .share) as? SharesViewController else {
+            return
+        }
+        
+        sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
     }
 }

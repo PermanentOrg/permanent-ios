@@ -93,7 +93,11 @@ class DrawerViewController: UIViewController {
     
     func changeRoot(viewController: UIViewController) {
         rootViewController.changeRootController(viewController: viewController)
-        toggleMenu()
+        
+        if isMenuExpanded {
+            toggleMenu()
+        }
+        
     }
     
     fileprivate func configureGestures() {

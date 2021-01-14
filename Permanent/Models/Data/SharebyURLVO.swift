@@ -32,7 +32,7 @@ struct SharebyURLVOData: Model {
     let folderData: FolderVOData?
     let recordData: RecordVOData?
     let archiveVO: ArchiveVOData?
-    let shareVO: ShareVO?
+    let shareVO: ShareVOData?
 
     enum CodingKeys: String, CodingKey {
         case sharebyURLID = "shareby_urlId"

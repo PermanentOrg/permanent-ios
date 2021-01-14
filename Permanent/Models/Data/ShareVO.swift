@@ -8,6 +8,14 @@
 import Foundation
 
 struct ShareVO: Model {
+    let shareVO: ShareVOData
+    
+    enum CodingKeys: String, CodingKey {
+        case shareVO = "ShareVO"
+    }
+}
+
+struct ShareVOData: Model {
     let shareID, folderLinkID, archiveID: Int?
     let accessRole, type, status, requestToken: String?
     let previewToggle: JSONAny?

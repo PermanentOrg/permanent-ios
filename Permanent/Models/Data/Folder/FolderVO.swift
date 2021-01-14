@@ -58,7 +58,7 @@ struct FolderVOData: Model {
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
     let childItemVOS: [FolderVOData]?
-    let shareVOS: [ShareVO]?
+    let shareVOS: [ShareVOData]?
     let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?
     let accessVOS: [JSONAny]?

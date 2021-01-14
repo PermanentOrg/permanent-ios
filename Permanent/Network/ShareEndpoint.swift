@@ -21,6 +21,8 @@ enum ShareEndpoint {
     
     case checkLink(token: String)
     
+    case requestShareAccess(token: String, csrf: String)
+    
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -32,6 +34,7 @@ extension ShareEndpoint: RequestProtocol {
         case .updateShareLink: return "/share/updateShareLink"
         case .getShares: return "/share/getShares"
         case .checkLink: return "/share/checkShareLink"
+        case .requestShareAccess: return "/share/requestShareAccess"
         }
     }
     
@@ -82,6 +85,13 @@ extension ShareEndpoint: RequestProtocol {
             let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
             
             let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: nil)
+            return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
+            
+        case .requestShareAccess(let token, let csrf):
+            
+            let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
+            
+            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: csrf)
             return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
             
         default:

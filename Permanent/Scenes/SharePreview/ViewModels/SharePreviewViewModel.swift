@@ -17,21 +17,37 @@ class SharePreviewViewModel {
     
     fileprivate var files: [File] = []
     
+    fileprivate var shareStatus: ShareStatus = .needsApproval
+    
+    fileprivate var csrf: String = ""
+    
     var isBusy: Bool = false {
         didSet {
             viewDelegate?.updateSpinner(isLoading: isBusy)
         }
     }
     
-    var urlToken: String?
+    var urlToken: String!
     
     func start() {
+        fetchSharedItems(urlToken: urlToken)
+    }
+    
+    func performAction() {
         
-        guard let token = urlToken else { return }
-        
-        fetchSharedItems(urlToken: token)
+        switch self.shareStatus {
+        case .accepted:
+            viewDelegate?.viewInArchive()
+            
+        case .needsApproval:
+            requestShareAccess(urlToken: urlToken)
+            
+        default:
+            break
+        }
         
     }
+    
     
     // MARK: - Network
     
@@ -52,7 +68,7 @@ class SharePreviewViewModel {
                     ),
 
                     model.isSuccessful,
-                    let sss = model.results.first?.data?.first?.shareByURLVO else {
+                    let shareByURL = model.results.first?.data?.first?.shareByURLVO else {
                     
                     self.viewDelegate?.updateScreen(
                         status: .error(message: .errorMessage),
@@ -60,7 +76,8 @@ class SharePreviewViewModel {
                     return
                 }
                 
-                self.onFetchSharedItemsSuccess(sss)
+                self.csrf = model.csrf
+                self.onFetchSharedItemsSuccess(shareByURL)
                 
                
             case .error(let error, _):
@@ -75,6 +92,50 @@ class SharePreviewViewModel {
         
     }
     
+    func requestShareAccess(urlToken: String) {
+        
+        isBusy = true
+        
+        let apiOperation = APIOperation(ShareEndpoint.requestShareAccess(token: urlToken, csrf: csrf))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            self.isBusy = false
+            
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ShareVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<ShareVO>.decoder
+                    ),
+
+                    model.isSuccessful,
+                    let shareVO = model.results.first?.data?.first?.shareVO else {
+                    
+                    self.viewDelegate?.updateShareAccess(
+                        status: .error(message: .errorMessage),
+                        shareStatus: nil)
+                    
+                    return
+                }
+
+                let status = ShareStatus.status(forValue: shareVO.status)
+                self.shareStatus = status
+                self.viewDelegate?.updateShareAccess(status: .success, shareStatus: status)
+               
+            case .error(let error, _):
+                self.viewDelegate?.updateShareAccess(
+                    status: .error(message: error?.localizedDescription),
+                    shareStatus: nil)
+                
+            default:
+                return
+            }
+        }
+        
+    }
+    
+    
+    
     fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVOData) {
         
         if let folderData = model.folderData {
@@ -88,6 +149,8 @@ class SharePreviewViewModel {
         }
         
         let details = ShareDetailsVM(model: model)
+        
+        self.shareStatus = details.status
         
         viewDelegate?.updateScreen(status: .success, shareDetails: details)
         
