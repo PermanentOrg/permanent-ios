@@ -17,7 +17,7 @@ class DrawerTableViewCell: UITableViewCell {
         
         selectionStyle = .none
     
-        menuItemImageView.tintColor = .white
+        menuItemImageView.tintColor = .iconTintLight
         menuItemTitleLabel.textColor = .white
         menuItemTitleLabel.font = Text.style9.font
     }
@@ -30,7 +30,7 @@ class DrawerTableViewCell: UITableViewCell {
     }
     
     func updateCell(with data: DrawerOption) {
-        menuItemImageView.image = data.icon
+        menuItemImageView.image = data.icon?.templated
         menuItemTitleLabel.text = data.title
     }
 }

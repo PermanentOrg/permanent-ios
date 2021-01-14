@@ -38,4 +38,5 @@ extension UIColor {
     static var destructive = UIColor.brightRed
     static var textPrimary = UIColor.middleGray
     static var iconTintPrimary = UIColor.middleGray
+    static var iconTintLight = UIColor.white
 }

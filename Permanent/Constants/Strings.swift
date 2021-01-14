@@ -146,6 +146,7 @@ extension String {
     static var pending: String { return "Pending".localized() }
     static var requestAwaitingApproval: String { return "RequestAwaitingApproval".localized() }
     static var viewInArchive: String { return "ViewInArchive".localized() }
+    static var addStorage: String { return "AddStorage".localized() }
     
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
