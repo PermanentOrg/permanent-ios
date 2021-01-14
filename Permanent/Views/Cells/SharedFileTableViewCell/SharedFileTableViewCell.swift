@@ -16,6 +16,7 @@ class SharedFileTableViewCell: UITableViewCell {
     @IBOutlet var dateStackView: UIStackView!
     @IBOutlet var sharesImageView: UIImageView!
     @IBOutlet var archiveImageView: UIImageView!
+    @IBOutlet var progressView: UIProgressView!
     
     var rightButtonTapAction: CellButtonTapAction?
     
@@ -35,6 +36,7 @@ class SharedFileTableViewCell: UITableViewCell {
         sharesImageView.image = UIImage.group.templated
         sharesImageView.tintColor = .iconTintPrimary
         
+        progressView.progressTintColor = .primary
         moreButton.tintColor = .iconTintPrimary
         
         archiveImageView.clipsToBounds = true
@@ -51,6 +53,35 @@ class SharedFileTableViewCell: UITableViewCell {
             fileImageView.tintColor = .mainPurple
         } else {
             fileImageView.sd_setImage(with: URL(string: model.thumbnailURL))
+        }
+        
+        handleUI(forStatus: model.status)
+        
+        if model.type.isFolder {
+            moreButton.isHidden = true
+        }
+
+    }
+    
+    fileprivate func handleUI(forStatus status: FileStatus) {
+        switch status {
+        case .synced:
+            progressView.isHidden = true
+            moreButton.setImage(UIImage.more.templated, for: [])
+        break
+            
+        case .waiting:
+            progressView.isHidden = true
+            //statusLabel.isHidden = false
+            //updateUploadOrDownloadUI()
+            
+        case .downloading:
+            progressView.isHidden = false
+            progressView.setProgress(0, animated: false)
+            moreButton.setImage(UIImage.close.templated, for: [])
+        
+        default:
+            break
         }
     }
     
@@ -77,6 +108,10 @@ class SharedFileTableViewCell: UITableViewCell {
                 fileImageView.image = .cloud // TODO: waiting can be used on download, too.
             }
         }
+    }
+    
+    func updateProgress(withValue value: Float) {
+        progressView.setProgress(value, animated: true)
     }
 
     @IBAction

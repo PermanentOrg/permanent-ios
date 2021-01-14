@@ -25,16 +25,79 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     weak var delegate: ShareLinkViewModelDelegate?
     
+    private lazy var downloader: Downloader = DownloadManager(csrf: csrf)
+    
     var items: [SharedFileViewModel] {
         switch shareListType {
         case .sharedByMe: return sharedByMeViewModels
         case .sharedWithMe: return sharedWithMeViewModels
         }
     }
+    
+    func changeStatus(forFile file: SharedFileViewModel, status: FileStatus) {
+        
+        
+//        guard
+//            let item = items.first(where: { $0 == file} ) else {
+//            return
+//        }
+        
+        switch shareListType {
+        case .sharedByMe:
+            sharedByMeViewModels = sharedByMeViewModels.map {
+                var mutableVM = $0
+                
+                if mutableVM.folderLinkId == file.folderLinkId {
+                    mutableVM.status = status
+                }
+                
+                return mutableVM
+            }
+            
+        case .sharedWithMe:
+            sharedWithMeViewModels = sharedWithMeViewModels.map {
+                var mutableVM = $0
+                
+                if mutableVM.folderLinkId == file.folderLinkId {
+                    mutableVM.status = status
+                }
+                
+                return mutableVM
+            }
+        }
+        
+        
+        
+        
+
+        
+    }
+    
      
 }
 
 extension ShareLinkViewModel: ShareLinkViewModelDelegate {
+    
+    func download(_ file: SharedFileViewModel,
+                  onDownloadStart: @escaping VoidAction,
+                  onFileDownloaded: @escaping DownloadResponse,
+                  progressHandler: ProgressHandler?,
+                  then handler: @escaping ServerResponse) {
+        
+        
+        
+        downloader.download(file,
+                            onDownloadStart: onDownloadStart,
+                            onFileDownloaded: onFileDownloaded,
+                            progressHandler: progressHandler,
+                            then: handler)
+        
+        
+    }
+    
+    
+    
+    
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: fileViewModel, and: csrf)
         let apiOperation = APIOperation(endpoint)
