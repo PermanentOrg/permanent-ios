@@ -8,11 +8,21 @@
 import Foundation
 
 enum ShareEndpoint {
+    
     case getLink(file: FileViewModel, csrf: String)
+    
     case generateShareLink(file: FileViewModel, csrf: String) // TODO: Create typealias
+    
     case revokeLink(link: SharebyURLVOData, csrf: String)
+    
     case updateShareLink(link: SharebyURLVOData, csrf: String)
+    
     case getShares
+    
+    case checkLink(token: String)
+    
+    case requestShareAccess(token: String, csrf: String)
+    
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -23,6 +33,8 @@ extension ShareEndpoint: RequestProtocol {
         case .revokeLink: return "/share/dropShareLink"
         case .updateShareLink: return "/share/updateShareLink"
         case .getShares: return "/share/getShares"
+        case .checkLink: return "/share/checkShareLink"
+        case .requestShareAccess: return "/share/requestShareAccess"
         }
     }
     
@@ -67,6 +79,20 @@ extension ShareEndpoint: RequestProtocol {
             let requestVO = APIPayload.make(fromData: [sharebyURLVO], csrf: csrf)
             
             return try? APIPayload<SharebyURLVOPayload>.encoder.encode(requestVO)
+            
+        case .checkLink(let token):
+            
+            let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
+            
+            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: nil)
+            return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
+            
+        case .requestShareAccess(let token, let csrf):
+            
+            let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
+            
+            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: csrf)
+            return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
             
         default:
             return nil

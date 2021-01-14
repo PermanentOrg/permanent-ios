@@ -49,7 +49,7 @@ struct ChildItemVO: Model {
         let attachmentRecordVOS: [AttachmentRecordVO]?
         let hasAttachments: Bool?
         let childItemVOS: [ChildItemVO]?
-        let shareVOS: [ShareVO]?
+        let shareVOS: [ShareVOData]?
         let returnDataSize: JSONAny?
         let archiveArchiveNbr: String?
         let accessVOS: [JSONAny]?

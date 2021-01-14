@@ -25,10 +25,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     weak var delegate: ShareLinkViewModelDelegate?
     
-    
     var items: [SharedFileViewModel] {
         switch shareListType {
-        case.sharedByMe: return sharedByMeViewModels
+        case .sharedByMe: return sharedByMeViewModels
         case .sharedWithMe: return sharedWithMeViewModels
         }
     }

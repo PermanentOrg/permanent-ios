@@ -178,6 +178,7 @@
 		BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */; };
 		BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC4066D25A6F8FA00E29CC4 /* MemberOperation.swift */; };
 		BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC4067025A86E9C00E29CC4 /* AccountStatus.swift */; };
+		BCC4067525A89C4400E29CC4 /* SharePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC4067425A89C4400E29CC4 /* SharePreviewViewController.swift */; };
 		BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC5501E255AB31800CA1574 /* FileHelper.swift */; };
 		BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC76EA255E8BF800903D3C /* URLExtension.swift */; };
 		BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D6257F74780019548F /* ShareLinkViewModel.swift */; };
@@ -200,6 +201,16 @@
 		BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27B2580F3C600567E8C /* ShareVO.swift */; };
 		BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */; };
 		BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB2822581132700567E8C /* SwitchSettingsView.swift */; };
+		BCEECD0325AC628400A4520E /* FileLargeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD0125AC628400A4520E /* FileLargeCollectionViewCell.swift */; };
+		BCEECD0425AC628400A4520E /* FileLargeCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCEECD0225AC628400A4520E /* FileLargeCollectionViewCell.xib */; };
+		BCEECD6325ADA7D000A4520E /* SharePreviewViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD6225ADA7D000A4520E /* SharePreviewViewModelDelegate.swift */; };
+		BCEECD6625ADA88400A4520E /* SharePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD6525ADA88400A4520E /* SharePreviewViewModel.swift */; };
+		BCEECD7A25ADBE3800A4520E /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7925ADBE3800A4520E /* File.swift */; };
+		BCEECD7D25ADBEC500A4520E /* FileVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7C25ADBEC500A4520E /* FileVM.swift */; };
+		BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */; };
+		BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8325AE05BA00A4520E /* ShareDetails.swift */; };
+		BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */; };
+		BCEECD8D25AF129B00A4520E /* ShareStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8C25AF129B00A4520E /* ShareStatus.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -403,8 +414,11 @@
 		BCC1E3242549A43F00B71866 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		BCC1E32B254A193C00B71866 /* ActionDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ActionDialogView.xib; sourceTree = "<group>"; };
 		BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDialogView.swift; sourceTree = "<group>"; };
+		BCC4066325A5E57D00E29CC4 /* Permanent-Staging.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Permanent-Staging.entitlements"; sourceTree = "<group>"; };
+		BCC4066425A5E5EA00E29CC4 /* Permanent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Permanent.entitlements; sourceTree = "<group>"; };
 		BCC4066D25A6F8FA00E29CC4 /* MemberOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberOperation.swift; sourceTree = "<group>"; };
 		BCC4067025A86E9C00E29CC4 /* AccountStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStatus.swift; sourceTree = "<group>"; };
+		BCC4067425A89C4400E29CC4 /* SharePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewViewController.swift; sourceTree = "<group>"; };
 		BCC5501E255AB31800CA1574 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		BCCC76EA255E8BF800903D3C /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		BCD414D6257F74780019548F /* ShareLinkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkViewModel.swift; sourceTree = "<group>"; };
@@ -427,6 +441,16 @@
 		BCEAB27B2580F3C600567E8C /* ShareVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVO.swift; sourceTree = "<group>"; };
 		BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinArchiveVO.swift; sourceTree = "<group>"; };
 		BCEAB2822581132700567E8C /* SwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchSettingsView.swift; sourceTree = "<group>"; };
+		BCEECD0125AC628400A4520E /* FileLargeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLargeCollectionViewCell.swift; sourceTree = "<group>"; };
+		BCEECD0225AC628400A4520E /* FileLargeCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileLargeCollectionViewCell.xib; sourceTree = "<group>"; };
+		BCEECD6225ADA7D000A4520E /* SharePreviewViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewViewModelDelegate.swift; sourceTree = "<group>"; };
+		BCEECD6525ADA88400A4520E /* SharePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreviewViewModel.swift; sourceTree = "<group>"; };
+		BCEECD7925ADBE3800A4520E /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		BCEECD7C25ADBEC500A4520E /* FileVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVM.swift; sourceTree = "<group>"; };
+		BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOTokenPayload.swift; sourceTree = "<group>"; };
+		BCEECD8325AE05BA00A4520E /* ShareDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetails.swift; sourceTree = "<group>"; };
+		BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetailsVM.swift; sourceTree = "<group>"; };
+		BCEECD8C25AF129B00A4520E /* ShareStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareStatus.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -631,6 +655,7 @@
 		5E2C5D1924D98EE100E2B95F /* Permanent */ = {
 			isa = PBXGroup;
 			children = (
+				BCEECD5725ADA5F800A4520E /* Scenes */,
 				BCE8DA6F25652C1B00842ABD /* Managers */,
 				BC6E70EC252C6F0100113D5F /* Security */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
@@ -707,6 +732,7 @@
 				BC11C80B25595BA3008BDEFA /* RecordVOPayload.swift */,
 				BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */,
 				BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */,
+				BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */,
 				BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */,
 				BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */,
 				BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */,
@@ -721,6 +747,7 @@
 		BC1BDF162513558800F2D239 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				BCC4066025A5E2F100E29CC4 /* Entitlements */,
 				BC4526D7251BE50E00E24A51 /* Localization */,
 				5ED0856524E3E5CA00CDB4D3 /* Fonts */,
 				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
@@ -987,6 +1014,15 @@
 			path = LinkOptionsView;
 			sourceTree = "<group>";
 		};
+		BCC4066025A5E2F100E29CC4 /* Entitlements */ = {
+			isa = PBXGroup;
+			children = (
+				BCC4066325A5E57D00E29CC4 /* Permanent-Staging.entitlements */,
+				BCC4066425A5E5EA00E29CC4 /* Permanent.entitlements */,
+			);
+			path = Entitlements;
+			sourceTree = "<group>";
+		};
 		BCD414E62580BFCB0019548F /* Enums */ = {
 			isa = PBXGroup;
 			children = (
@@ -1024,6 +1060,71 @@
 				BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */,
 			);
 			path = "Share Link";
+			sourceTree = "<group>";
+		};
+		BCEECCF625AC620A00A4520E /* FileLargeCollectionViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECD0125AC628400A4520E /* FileLargeCollectionViewCell.swift */,
+				BCEECD0225AC628400A4520E /* FileLargeCollectionViewCell.xib */,
+			);
+			path = FileLargeCollectionViewCell;
+			sourceTree = "<group>";
+		};
+		BCEECD5725ADA5F800A4520E /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECD5825ADA60F00A4520E /* SharePreview */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		BCEECD5825ADA60F00A4520E /* SharePreview */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECD5D25ADA68C00A4520E /* Models */,
+				BCEECD5E25ADA69000A4520E /* ViewControllers */,
+				BCEECD6025ADA6A500A4520E /* ViewModels */,
+				BCEECD5F25ADA69900A4520E /* Views */,
+			);
+			path = SharePreview;
+			sourceTree = "<group>";
+		};
+		BCEECD5D25ADA68C00A4520E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECD7925ADBE3800A4520E /* File.swift */,
+				BCEECD7C25ADBEC500A4520E /* FileVM.swift */,
+				BCEECD8325AE05BA00A4520E /* ShareDetails.swift */,
+				BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */,
+				BCEECD8C25AF129B00A4520E /* ShareStatus.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BCEECD5E25ADA69000A4520E /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				BCC4067425A89C4400E29CC4 /* SharePreviewViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BCEECD5F25ADA69900A4520E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECCF625AC620A00A4520E /* FileLargeCollectionViewCell */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BCEECD6025ADA6A500A4520E /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECD6225ADA7D000A4520E /* SharePreviewViewModelDelegate.swift */,
+				BCEECD6525ADA88400A4520E /* SharePreviewViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		BCF9065B2587963400DF1B64 /* SharedFileTableViewCell */ = {
@@ -1146,6 +1247,7 @@
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
+				BCEECD0425AC628400A4520E /* FileLargeCollectionViewCell.xib in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
@@ -1218,17 +1320,22 @@
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BCEECD6625ADA88400A4520E /* SharePreviewViewModel.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
+				BCEECD0325AC628400A4520E /* FileLargeCollectionViewCell.swift in Sources */,
+				BCC4067525A89C4400E29CC4 /* SharePreviewViewController.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */,
+				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
+				BCEECD7A25ADBE3800A4520E /* File.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
@@ -1237,6 +1344,7 @@
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
 				BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */,
 				BC6AF9A625922CBA00483BBA /* AccountVOPayload.swift in Sources */,
+				BCEECD7D25ADBEC500A4520E /* FileVM.swift in Sources */,
 				BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
@@ -1304,6 +1412,7 @@
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
+				BCEECD8D25AF129B00A4520E /* ShareStatus.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
@@ -1321,6 +1430,7 @@
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
+				BCEECD6325ADA7D000A4520E /* SharePreviewViewModelDelegate.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */,
@@ -1350,10 +1460,12 @@
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
+				BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
+				BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
@@ -1531,6 +1643,7 @@
 			baseConfigurationReference = FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1556,6 +1669,7 @@
 			baseConfigurationReference = F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1641,6 +1755,7 @@
 			baseConfigurationReference = 9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
@@ -1720,6 +1835,7 @@
 			baseConfigurationReference = 4555EA2FF4726D00ABFEBD19 /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;

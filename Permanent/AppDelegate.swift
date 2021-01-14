@@ -21,6 +21,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         return true
     }
+    
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        
+        guard
+            userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let url = userActivity.webpageURL else {
+            return false
+        }
+        
+        if rootViewController.isDrawerRootActive {
+            return navigateFromUniversalLink(url: url)
+        } else {
+            saveUnivesalLinkToken(url.lastPathComponent)
+            return false
+        }
+        
+    }
 
     fileprivate func initFirebase() {
         guard
@@ -35,6 +52,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         FirebaseApp.configure(options: fileOpts)
     }
+    
+    fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
+        guard let sharePreviewVC = UIViewController.create(
+                withIdentifier: .sharePreview,
+                from: .share
+        ) as? SharePreviewViewController else { return false }
+        
+        let viewModel = SharePreviewViewModel()
+        viewModel.urlToken = url.lastPathComponent
+        sharePreviewVC.viewModel = viewModel
+        
+        rootViewController.navigateTo(viewController: sharePreviewVC)
+        return true
+    }
+    
+    fileprivate func saveUnivesalLinkToken(_ token: String) {
+        PreferencesManager.shared.set(token, forKey: Constants.Keys.StorageKeys.shareURLToken)
+    }
+    
 }
 
 extension AppDelegate {

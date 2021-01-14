@@ -29,6 +29,9 @@ struct Text {
     static let style15 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
     static let style16 = TextStyle(UIFont(name: "OpenSans-Bold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style17 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
+    static let style18 = TextStyle(UIFont(name: "OpenSans-Bold", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
+    static let style19 = TextStyle(UIFont(name: "OpenSans-Italic", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
+    static let style20 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
 }
 
 struct Constants {
@@ -69,6 +72,7 @@ extension Constants.Design {
     static let sheetCornerRadius: CGFloat = 4
     static let bannerHeight: CGFloat = 45
     static let pickerHeight: CGFloat = 200
+    static let numberOfGridItemsPerRow = 2
 }
 
 extension Constants.API {
@@ -100,6 +104,7 @@ extension Constants.API.FileType {
 
 extension Constants.URL {
     static let termsConditionsURL = "https://www.permanent.org/privacy-policy/"
+    static let buyStorageURL = "https://www.permanent.org/add-storage/"
 }
 
 extension Constants.API.AccountStatus {
@@ -116,4 +121,5 @@ extension Constants.Keys.StorageKeys {
     static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
+    static let shareURLToken = "shareURLTokenStorageKey"
 }

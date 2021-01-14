@@ -135,6 +135,9 @@
 "Newest" = "Newest";
 "LinkSettings" = "Link Settings";
 "AccessLevel" = "Access Level";
+"SharedBy" = "Shared by %@";
+"FromArchive" = "From the %@ Archive";
+"RequestApproval" = "Request Approval";
 "RemoveMember" = "Remove member?";
 "Pending" = "Pending";
 "InvalidCsrf" = "Invalid CSRF";
@@ -147,4 +150,6 @@
 "CurrentPassword" = "Current Password";
 "ReTypePassword" = "Re-type Password";
 "NewPassword" = "New Password";
-
+"RequestAwaitingApproval" = "Your request is awaiting approval";
+"ViewInArchive" = "View in archive";
+"AddStorage" = "Add Storage";

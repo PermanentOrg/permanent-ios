@@ -757,8 +757,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
-            let childItems = folderVO.childItemVOS,
-            let myFilesFolder = childItems.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
             let archiveNo = myFilesFolder.archiveNbr,
             let folderLinkId = myFilesFolder.folderLinkID,
             let csrf = model.csrf

@@ -43,4 +43,5 @@ extension UIImage {
     static let settings = UIImage(named: "settings")!
     static let share = UIImage(named: "share")!
     static let shares = UIImage(named: "shares")!
+    static let storage = UIImage(named: "storage")!
 }

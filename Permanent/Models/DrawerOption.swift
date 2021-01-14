@@ -12,6 +12,7 @@ enum DrawerOption {
     case shares
     case members
     case security
+    case addStorage
     case logOut
     
     var icon: UIImage? {
@@ -20,6 +21,7 @@ enum DrawerOption {
         case .shares: return .share
         case .members: return .group
         case .security: return .settings
+        case .addStorage: return .storage
         case .logOut: return UIImage.logOut.templated
         }
     }
@@ -30,6 +32,7 @@ enum DrawerOption {
         case .shares: return .shares
         case .members: return String.member.pluralized()
         case .security: return String.security
+        case .addStorage: return String.addStorage
         case .logOut: return .logOut
         }
     }
