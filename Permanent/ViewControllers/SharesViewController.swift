@@ -19,6 +19,8 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
     
     var selectedIndex: Int = 0
     
+    var selectedFileId: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -45,7 +47,6 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
         segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
-        
         
         if let listType = ShareListType(rawValue: selectedIndex) {
             segmentedControl.selectedSegmentIndex = selectedIndex
@@ -76,8 +77,8 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
         }
     }
     
-    fileprivate func refreshTableView() {
-        self.tableView.reloadData()
+    fileprivate func refreshTableView(_ completion: (() -> ())? = nil) {
+        self.tableView.reloadData(completion)
         self.configureTableViewBgView()
     }
     
@@ -124,7 +125,9 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
             switch status {
             case .success:
                 DispatchQueue.main.async {
-                    self.refreshTableView()
+                    self.refreshTableView {
+                        self.scrollToFileIfNeeded()
+                    }
                 }
             case .error(let message):
                 DispatchQueue.main.async {
@@ -273,18 +276,23 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func scrollToFileIfNeeded() {
+        guard
+            let folderLinkId = self.selectedFileId,
+            let index = self.viewModel?.items.firstIndex(where: { $0.folderLinkId == folderLinkId} ) else {
+            return
+        }
+        
+        let indexPath = IndexPath(row: index, section: 0)
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+    }
 }
 
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: SharedFileViewModel) {
-        
-        
         download(file)
-        
-        
     }
-    
-    
 }
 
 extension SharesViewController: UIDocumentInteractionControllerDelegate {

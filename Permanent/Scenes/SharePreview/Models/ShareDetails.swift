@@ -15,6 +15,8 @@ protocol ShareDetails {
     
     var sharedFileName: String { get }
     
+    var folderLinkId: Int { get }
+    
     var hasAccess: Bool { get }
     
     var showPreview: Bool { get }

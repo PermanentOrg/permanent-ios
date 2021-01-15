@@ -188,6 +188,7 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         }
         
         sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+        sharesVC.selectedFileId = viewModel.shareDetails?.folderLinkId
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
     }
 }

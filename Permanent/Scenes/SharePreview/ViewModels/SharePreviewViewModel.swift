@@ -154,7 +154,7 @@ class SharePreviewViewModel {
         }
         
         let details = ShareDetailsVM(model: model)
-        self.shareDetails = details        
+        self.shareDetails = details
         viewDelegate?.updateScreen(status: .success, shareDetails: details)
         
         // Delete the saved token if it existed.
