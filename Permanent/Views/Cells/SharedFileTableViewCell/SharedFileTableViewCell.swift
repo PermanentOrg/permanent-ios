@@ -57,10 +57,7 @@ class SharedFileTableViewCell: UITableViewCell {
         
         handleUI(forStatus: model.status)
         
-        if model.type.isFolder {
-            moreButton.isHidden = true
-        }
-
+        moreButton.isHidden = model.type.isFolder
     }
     
     fileprivate func handleUI(forStatus status: FileStatus) {
