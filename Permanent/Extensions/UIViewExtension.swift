@@ -139,4 +139,15 @@ extension UIView {
         addSubview(blurEffectView)
     }
     
+    func removeBlurIfNeeded() {
+        guard self.subviews.last is UIVisualEffectView else {
+            return
+        }
+        
+        // We have to remove the blur view, and the view underneath it (backView).
+        // See `addBlur` method.
+        for _ in 0..<2 {
+            self.subviews.last?.removeFromSuperview()
+        }
+    }
 }

@@ -21,6 +21,6 @@ protocol ShareDetails {
     
     var archiveThumbURL: URL? { get }
     
-    var status: ShareStatus { get }
+    var status: ShareStatus { get set }
     
 }

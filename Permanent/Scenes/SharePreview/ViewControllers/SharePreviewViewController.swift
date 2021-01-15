@@ -110,7 +110,7 @@ extension SharePreviewViewController: UICollectionViewDelegate, UICollectionView
         }
         
         cell.file = viewModel.itemFor(row: indexPath.row)
-        cell.showPreview = viewModel.showPreview
+        cell.details = viewModel.shareDetails
         
         return cell
     }
@@ -144,6 +144,7 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         case .success:
             if let shareStatus = shareStatus {
                 setupActionButton(forStatus: shareStatus)
+                collectionView.reloadData()
             }
             
         case .error(let message):
@@ -152,7 +153,6 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         }
         
     }
-    
     
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {

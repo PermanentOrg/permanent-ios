@@ -23,11 +23,22 @@ class FileLargeCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var showPreview: Bool = false {
+    var details: ShareDetails? {
         didSet {
-            if !showPreview {
-                addBlur(styled: .light)
+            
+            // When status is `accepted`, we don't care about the `showPreview` parameter and we don't blur.
+            guard details?.status != .accepted else {
+                removeBlurIfNeeded()
+                return
             }
+
+            guard
+                details?.showPreview == false else {
+                return
+            }
+            
+            addBlur()
+ 
         }
     }
     
