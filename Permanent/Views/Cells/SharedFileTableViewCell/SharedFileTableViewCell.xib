@@ -10,34 +10,34 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="82" id="KGk-i7-Jjw" customClass="SharedFileTableViewCell" customModule="Permanent" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="430" height="82"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="87" id="KGk-i7-Jjw" customClass="SharedFileTableViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="465" height="87"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="430" height="82"/>
+                <rect key="frame" x="0.0" y="0.0" width="465" height="87"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="folder" translatesAutoresizingMaskIntoConstraints="NO" id="h0w-q0-XkC" userLabel="File Image View">
-                        <rect key="frame" x="20" y="24" width="34" height="34"/>
+                        <rect key="frame" x="20" y="26.5" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="Pdf-Ak-Vab"/>
                             <constraint firstAttribute="width" constant="34" id="xQz-gH-UNN"/>
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
-                        <rect key="frame" x="64" y="15" width="252" height="52"/>
+                        <rect key="frame" x="64" y="15" width="287" height="57"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3w1-l8-M3K">
-                                <rect key="frame" x="0.0" y="0.0" width="252" height="52"/>
+                                <rect key="frame" x="0.0" y="0.0" width="287" height="48"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="File Name Label">
-                                        <rect key="frame" x="0.0" y="0.0" width="41.5" height="32"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="41.5" height="28"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="riX-GQ-IFP">
-                                        <rect key="frame" x="0.0" y="37" width="66.5" height="15"/>
+                                        <rect key="frame" x="0.0" y="33" width="66.5" height="15"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tdl-In-Vb7" userLabel="Date Label">
                                                 <rect key="frame" x="0.0" y="0.0" width="41.5" height="15"/>
@@ -56,10 +56,13 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="AGf-kt-q9q">
+                                <rect key="frame" x="0.0" y="53" width="287" height="4"/>
+                            </progressView>
                         </subviews>
                     </stackView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DIm-GS-HAo" userLabel="Archive Image View">
-                        <rect key="frame" x="336" y="24" width="34" height="34"/>
+                        <rect key="frame" x="371" y="26.5" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="W42-7w-0Rw"/>
                             <constraint firstAttribute="width" constant="34" id="i9t-uQ-BTd"/>
@@ -71,7 +74,7 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
-                        <rect key="frame" x="370" y="21" width="40" height="40"/>
+                        <rect key="frame" x="405" y="23.5" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="OEz-2P-8tz"/>
                             <constraint firstAttribute="width" constant="40" id="PMz-Tj-Fd8"/>
@@ -104,9 +107,10 @@
                 <outlet property="fileImageView" destination="h0w-q0-XkC" id="5LU-1u-YKp"/>
                 <outlet property="fileNameLabel" destination="zU3-4p-PA7" id="syZ-AM-qiK"/>
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
+                <outlet property="progressView" destination="AGf-kt-q9q" id="3GJ-lB-h17"/>
                 <outlet property="sharesImageView" destination="2Ym-3f-4q8" id="Wuj-O8-sQS"/>
             </connections>
-            <point key="canvasLocation" x="240.57971014492756" y="75"/>
+            <point key="canvasLocation" x="265.94202898550725" y="76.674107142857139"/>
         </tableViewCell>
     </objects>
     <resources>

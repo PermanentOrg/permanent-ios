@@ -110,6 +110,8 @@ extension SharePreviewViewController: UICollectionViewDelegate, UICollectionView
         }
         
         cell.file = viewModel.itemFor(row: indexPath.row)
+        cell.details = viewModel.shareDetails
+        
         return cell
     }
 }
@@ -142,6 +144,7 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         case .success:
             if let shareStatus = shareStatus {
                 setupActionButton(forStatus: shareStatus)
+                collectionView.reloadData()
             }
             
         case .error(let message):
@@ -151,17 +154,12 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         
     }
     
-    
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {
         case.success:
             collectionView.reloadData()
             
             if let details = shareDetails {
-                if !details.showPreview {
-                    collectionView.addBlur(styled: .dark)
-                }
-                
                 // Header setup
                 shareNameLabel.text = details.sharedFileName
                 archiveNameLabel.text = details.archiveName
@@ -190,6 +188,7 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         }
         
         sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+        sharesVC.selectedFileId = viewModel.shareDetails?.folderLinkId
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
     }
 }

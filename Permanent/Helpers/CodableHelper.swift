@@ -98,7 +98,7 @@ class JSONAny: Codable {
         if let value = try? container.decode(Bool.self) {
             return value
         }
-        if let value = try? container.decode(Int64.self) {
+        if let value = try? container.decode(Int.self) {
             return value
         }
         if let value = try? container.decode(Double.self) {

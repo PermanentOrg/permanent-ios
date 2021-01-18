@@ -7,36 +7,27 @@
 
 import UIKit
 
-protocol FileActionSheetDelegate: class {
-    func downloadAction(file: FileViewModel)
-    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath)
-    func relocateAction(file: FileViewModel, action: FileAction)
-    func share(file: FileViewModel)
+protocol SharedFileActionSheetDelegate: class {
+    func downloadAction(file: SharedFileViewModel)
 }
 
-class FileActionSheet: UIView {
+class SharedFileActionSheet: UIView {
     @IBOutlet var contentView: UIView!
     @IBOutlet var sheetView: UIView!
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var downloadButton: RoundedButton!
-    @IBOutlet var copyButton: RoundedButton!
-    @IBOutlet var moveButton: RoundedButton!
-    @IBOutlet var publishButton: RoundedButton!
-    @IBOutlet var deleteButton: RoundedButton!
-    @IBOutlet var editButton: RoundedButton!
-    @IBOutlet var shareButton: RoundedButton!
     @IBOutlet var safeAreaView: UIView!
     
-    weak var delegate: FileActionSheetDelegate?
+    weak var delegate: SharedFileActionSheetDelegate?
     
     private var onDismiss: ButtonAction!
-    private var file: FileViewModel!
+    private var file: SharedFileViewModel!
     private var indexPath: IndexPath!
     
     convenience init(
         frame: CGRect,
         title: String?,
-        file: FileViewModel,
+        file: SharedFileViewModel,
         indexPath: IndexPath,
         onDismiss: @escaping ButtonAction
     ) {
@@ -58,22 +49,13 @@ class FileActionSheet: UIView {
         titleLabel.textColor = .textPrimary
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
-        
-        // Hide these buttons temporarily
-        publishButton.isHidden = true
-        editButton.isHidden = true
-        
+    
         safeAreaView.backgroundColor = .backgroundPrimary
         
         configureButtons()
     }
     
     fileprivate func configureButtons() {
-        styleActionButton(copyButton, color: .primary, text: .copy)
-        styleActionButton(moveButton, color: .primary, text: .move)
-        styleActionButton(deleteButton, color: .destructive, text: .delete)
-        styleActionButton(shareButton, color: .primary, text: .share)
-        
         if file.type.isFolder {
             downloadButton.isHidden = true
         } else {
@@ -97,32 +79,6 @@ class FileActionSheet: UIView {
     @IBAction
     func downloadAction(_ sender: UIButton) {
         delegate?.downloadAction(file: self.file)
-        
-        dismiss()
-    }
-    
-    @IBAction
-    func deleteAction(_ sender: UIButton) {
-        delegate?.deleteAction(file: self.file, atIndexPath: self.indexPath)
-        
-        dismiss()
-    }
-    
-    @IBAction func copyAction(_ sender: UIButton) {
-        delegate?.relocateAction(file: self.file, action: .copy)
-        
-        dismiss()
-    }
-    
-    @IBAction
-    func moveAction(_ sender: UIButton) {
-        delegate?.relocateAction(file: self.file, action: .move)
-        
-        dismiss()
-    }
-    
-    @IBAction func shareAction(_ sender: UIButton) {
-        delegate?.share(file: self.file)
         
         dismiss()
     }

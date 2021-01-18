@@ -34,7 +34,7 @@ enum FilesEndpoint {
     
     // DOWNLOAD
     
-    case getRecord(itemInfo: ItemInfoParams)
+    case getRecord(itemInfo: GetRecordParams)
     
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
 }
@@ -169,7 +169,10 @@ extension FilesEndpoint: RequestProtocol {
             }
             
         case .getRecord(let itemInfo):
-            let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId, parentFolderLinkId: itemInfo.file.parentFolderLinkId)
+            //let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId, parentFolderLinkId: itemInfo.file.parentFolderLinkId)
+            
+            let recordVO = RecordVOPayload(folderLinkId: itemInfo.folderLinkId, parentFolderLinkId: itemInfo.parentFolderLinkId)
+            
             let requestVO = APIPayload.make(fromData: [recordVO], csrf: itemInfo.csrf)
             
             return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)

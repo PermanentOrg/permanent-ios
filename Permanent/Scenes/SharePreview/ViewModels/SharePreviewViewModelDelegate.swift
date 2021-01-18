@@ -24,6 +24,8 @@ protocol SharePreviewViewModelDelegate {
     func performAction()
     
     var isBusy: Bool { get }
+        
+    var shareDetails: ShareDetails? { get }
     
 }
 

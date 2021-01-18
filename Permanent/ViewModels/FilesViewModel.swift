@@ -19,6 +19,10 @@ typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
 typealias ItemInfoParams = (file: FileViewModel, csrf: String)
+typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: String)
+
+
+
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
@@ -305,7 +309,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     func getRecord(_ file: FileViewModel, then handler: @escaping GetRecordResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file, csrf)))
+        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

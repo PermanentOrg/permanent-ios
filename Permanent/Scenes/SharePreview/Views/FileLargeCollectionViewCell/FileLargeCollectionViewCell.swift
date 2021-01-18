@@ -23,6 +23,25 @@ class FileLargeCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    var details: ShareDetails? {
+        didSet {
+            
+            // When status is `accepted`, we don't care about the `showPreview` parameter and we don't blur.
+            guard details?.status != .accepted else {
+                removeBlurIfNeeded()
+                return
+            }
+
+            guard
+                details?.showPreview == false else {
+                return
+            }
+            
+            addBlur()
+ 
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
