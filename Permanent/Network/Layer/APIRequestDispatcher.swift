@@ -55,7 +55,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
 
         case .download: // TODO: [weak self]
             guard
-                let fileName = request.parameters?["filename"] as? String else {
+                let fileName = request.parameters?["filename"] as? String
+            else {
                 return nil
             }
             
@@ -76,6 +77,12 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - error: The received  optional `Error` instance.
     ///   - completion: Completion handler.
     private func handleJsonTaskResponse(data: Data?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
+        
+        // Check for errors
+        if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
+            return completion(.error(apiError, nil))
+        }
+        
         // Check if the response is valid.
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             completion(OperationResult.error(APIError.invalidResponse, nil))
@@ -111,6 +118,12 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - error: The received  optional `Error` instance.
     ///   - completion: Completion handler.
     private func handleFileTaskResponse(fileUrl: URL?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
+        
+        // Check for errors
+        if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
+            return completion(.error(apiError, nil))
+        }
+        
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             completion(OperationResult.error(APIError.invalidResponse, nil))
             return
@@ -170,6 +183,17 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             return .failure(APIError.serverError(error?.localizedDescription))
         default:
             return .failure(APIError.unknown)
+        }
+    }
+    
+    private func checkForError(_ error: Error?) -> APIError? {
+        guard let errorCode = (error as NSError?)?.code else { return nil }
+        
+        switch errorCode {
+        case NSURLErrorCancelled:
+            return .cancelled
+            
+        default: return nil
         }
     }
 }

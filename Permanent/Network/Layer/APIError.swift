@@ -5,8 +5,10 @@
 //  Created by Adrian Creteanu on 18/09/2020.
 //
 
+import Foundation
+
 /// Enum of API Errors
-enum APIError: Error {
+enum APIError: Error, Equatable {
     /// No data received from the server.
     case noData
     /// The server response was invalid (unexpected format).
@@ -19,4 +21,24 @@ enum APIError: Error {
     case parseError(String?)
     /// Unknown error.
     case unknown
+    /// Request cancelled.
+    case cancelled
+    
+    static func error(withCode code: Int?) -> APIError? {
+        switch code {
+        case NSURLErrorCancelled:
+            return .cancelled
+            
+        default:
+            return nil
+        }
+    }
+    
+    var message: String {
+        switch self {
+        case .cancelled: return .errorCancelled
+        case .unknown: return .errorUnknown
+        default: return .errorServer
+        }
+    }
 }

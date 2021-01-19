@@ -1,4 +1,4 @@
-//  
+//
 //  SharesViewController.swift
 //  Permanent
 //
@@ -60,7 +60,6 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
-        
     }
     
     fileprivate func setupTableView() {
@@ -78,8 +77,8 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     fileprivate func refreshTableView(_ completion: (() -> ())? = nil) {
-        self.tableView.reloadData(completion)
-        self.configureTableViewBgView()
+        tableView.reloadData(completion)
+        configureTableViewBgView()
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
@@ -109,13 +108,14 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
                     completion: { _ in
                         self.fileActionSheet?.removeFromSuperview()
                         self.fileActionSheet = nil
-                    })
+                    }
+                )
             }
         )
         
         fileActionSheet?.delegate = self
         view.addSubview(fileActionSheet!)
-        self.view.presentPopup(fileActionSheet, overlayView: overlayView)
+        view.presentPopup(fileActionSheet, overlayView: overlayView)
     }
 
     fileprivate func getShares() {
@@ -137,36 +137,20 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
         })
     }
     
-    private func download(_ file: SharedFileViewModel) {
+    private func download(_ file: FileDownloadInfo) {
         viewModel?.download(
             file,
             
             onDownloadStart: {
-                
-                self.viewModel?.changeStatus(forFile: file, status: .downloading)
-                
                 DispatchQueue.main.async {
-                    self.refreshTableView()
+                    self.changeStatus(.downloading, forFile: file)
                 }
             },
             
-            onFileDownloaded: { url, errorMessage in
-                guard let shareURL = url else {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(message: errorMessage)
-                    }
-                
-                    return
-                }
-                
-                self.viewModel?.changeStatus(forFile: file, status: .synced)
-                
+            onFileDownloaded: { url, error in
                 DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-                DispatchQueue.main.async {
-                    self.share(url: shareURL)
+                    self.onFileDownloaded(file: file,
+                                          url: url, error: error)
                 }
             },
             
@@ -175,24 +159,33 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
 //                    self.handleProgress(withValue: progress, listSection: FileListType.downloading)
                     
                     self.handleProgress(forFile: file, withValue: progress)
-                    
-                }
-            },
-            
-            then: { status in
-                
-                switch status {
-                case .success:
-                    break
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.hideSpinner()
-                        self.showAlert(title: .error, message: message)
-                    }
                 }
             }
         )
+    }
+    
+    fileprivate func changeStatus(_ status: FileStatus, forFile file: FileDownloadInfo) {
+        viewModel?.changeStatus(forFile: file, status: status)
+        tableView.reloadData()
+    }
+    
+    fileprivate func onFileDownloaded(file: FileDownloadInfo, url: URL?, error: Error?) {
+        
+        changeStatus(.synced, forFile: file)
+        
+        guard let shareURL = url else {
+            let apiError = (error as? APIError) ?? .unknown
+            
+            if apiError == .cancelled {
+                view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .downloadCancelled)
+            } else {
+                showErrorAlert(message: apiError.message)
+            }
+
+            return
+        }
+        
+        share(url: shareURL)
     }
     
     private func handleCellRightButtonAction(for file: SharedFileViewModel, atIndexPath indexPath: IndexPath) {
@@ -202,32 +195,35 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
-            break
+            viewModel?.cancelDownload()
+            
+            let downloadInfo = FileDownloadInfoVM(
+                folderLinkId: file.folderLinkId,
+                parentFolderLinkId: file.parentFolderLinkId
+            )
+            
+            viewModel?.changeStatus(forFile: downloadInfo, status: .synced)
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
             
         case .uploading, .waiting:
-            //cellRightButtonAction(atPosition: indexPath.row)
+            // cellRightButtonAction(atPosition: indexPath.row)
             break
         }
     }
     
-    private func onDownloadStart(forFile file: SharedFileViewModel) {
-        
-    }
-    
-    private func handleProgress(forFile file: SharedFileViewModel, withValue value: Float) {
-        
+    private func handleProgress(forFile file: FileDownloadInfo, withValue value: Float) {
         guard
             
-            
-            
             let index = viewModel?.items.firstIndex(where: { $0.folderLinkId == file.folderLinkId }),
-            let downloadingCell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SharedFileTableViewCell else {
+            let downloadingCell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SharedFileTableViewCell
+        else {
             return
         }
         
-        
         downloadingCell.updateProgress(withValue: value)
-        
     }
     
 //    private func handleProgress(withValue value: Float, listSection section: FileListType) {
@@ -249,7 +245,6 @@ class SharesViewController: BaseViewController<ShareLinkViewModel> {
 //
 //        uploadingCell.updateProgress(withValue: value)
 //    }
-    
 }
 
 extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
@@ -279,8 +274,9 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func scrollToFileIfNeeded() {
         guard
-            let folderLinkId = self.selectedFileId,
-            let index = self.viewModel?.items.firstIndex(where: { $0.folderLinkId == folderLinkId} ) else {
+            let folderLinkId = selectedFileId,
+            let index = viewModel?.items.firstIndex(where: { $0.folderLinkId == folderLinkId })
+        else {
             return
         }
         
@@ -291,7 +287,12 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: SharedFileViewModel) {
-        download(file)
+        let downloadInfo = FileDownloadInfoVM(
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
+        )
+        
+        download(downloadInfo)
     }
 }
 

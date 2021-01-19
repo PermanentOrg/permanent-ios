@@ -596,10 +596,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             },
             
-            onFileDownloaded: { url, errorMessage in
+            onFileDownloaded: { url, error in
                 guard let shareURL = url else {
                     DispatchQueue.main.async {
-                        self.showErrorAlert(message: errorMessage)
+                        self.showErrorAlert(message: (error as? APIError)?.message)
                     }
                 
                     return

@@ -12,6 +12,7 @@ class SharedFileTableViewCell: UITableViewCell {
     @IBOutlet var fileNameLabel: UILabel!
     @IBOutlet var fileDateLabel: UILabel!
     @IBOutlet var moreButton: UIButton!
+    @IBOutlet var rightButtonImageView: UIImageView!
     @IBOutlet var fileImageView: UIImageView!
     @IBOutlet var dateStackView: UIStackView!
     @IBOutlet var sharesImageView: UIImageView!
@@ -36,9 +37,8 @@ class SharedFileTableViewCell: UITableViewCell {
         sharesImageView.image = UIImage.group.templated
         sharesImageView.tintColor = .iconTintPrimary
         
+        rightButtonImageView.tintColor = .iconTintPrimary
         progressView.progressTintColor = .primary
-        moreButton.tintColor = .iconTintPrimary
-        
         archiveImageView.clipsToBounds = true
     }
     
@@ -57,14 +57,15 @@ class SharedFileTableViewCell: UITableViewCell {
         
         handleUI(forStatus: model.status)
         
-        moreButton.isHidden = model.type.isFolder
+        moreButton.isEnabled = !model.type.isFolder
+        rightButtonImageView.isHidden = model.type.isFolder
     }
     
     fileprivate func handleUI(forStatus status: FileStatus) {
         switch status {
         case .synced:
             progressView.isHidden = true
-            moreButton.setImage(UIImage.more.templated, for: [])
+            rightButtonImageView.image = UIImage.more.templated
         break
             
         case .waiting:
@@ -75,7 +76,8 @@ class SharedFileTableViewCell: UITableViewCell {
         case .downloading:
             progressView.isHidden = false
             progressView.setProgress(0, animated: false)
-            moreButton.setImage(UIImage.close.templated, for: [])
+        
+            rightButtonImageView.image = UIImage.close.templated
         
         default:
             break

@@ -14,7 +14,6 @@ typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: Strin
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
-typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
@@ -25,8 +24,8 @@ typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: S
 
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
-typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
-typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: String?) -> Void
+typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
+typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -271,11 +270,11 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     func handleRecursiveFileDownload(_ file: FileViewModel,
-                                     onFileDownloaded: @escaping FileDownloadResponse,
+                                     onFileDownloaded: @escaping DownloadResponse,
                                      progressHandler: ProgressHandler?,
                                      then handler: @escaping ServerResponse)
     {
-        downloadFile(file, progressHandler: progressHandler) { url, errorMessage in
+        downloadFile(file, progressHandler: progressHandler) { url, error in
             
             if let url = url {
                 onFileDownloaded(url, nil)
@@ -300,10 +299,10 @@ extension FilesViewModel: FilesViewModelDelegate {
                                                      then: handler)
                 }
             } else {
-                onFileDownloaded(nil, errorMessage)
+                onFileDownloaded(nil, error)
                 self.downloadInProgress = false
                 
-                handler(.error(message: errorMessage))
+                handler(.error(message: (error as? APIError)?.message))
             }
         }
     }
@@ -322,14 +321,14 @@ extension FilesViewModel: FilesViewModelDelegate {
                     model.isSuccessful
                     
                 else {
-                    handler(nil, .errorMessage)
+                    handler(nil, APIError.parseError(nil))
                     return
                 }
                 
                 handler(model.results.first?.data?.first, nil)
                     
             case .error(let error, _):
-                handler(nil, error?.localizedDescription)
+                handler(nil, error as? APIError)
                     
             default:
                 break
@@ -343,7 +342,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             let url = URL(string: downloadURL),
             let fileName = record.recordVO?.uploadFileName
         else {
-            return handler(nil, .errorMessage)
+            return handler(nil, APIError.invalidResponse)
         }
         
         let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))
@@ -352,14 +351,14 @@ extension FilesViewModel: FilesViewModelDelegate {
             switch result {
             case .file(let fileURL, _):
                 guard let url = fileURL else {
-                    handler(nil, .errorMessage)
+                    handler(nil, APIError.invalidResponse)
                     return
                 }
             
                 handler(url, nil)
     
             case .error(let error, _):
-                handler(nil, error?.localizedDescription)
+                handler(nil, error as? APIError)
                 
             default:
                 break
