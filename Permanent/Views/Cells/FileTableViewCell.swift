@@ -12,6 +12,7 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var fileNameLabel: UILabel!
     @IBOutlet var fileDateLabel: UILabel!
     @IBOutlet var moreButton: UIButton!
+    @IBOutlet var rightButtonImageView: UIImageView!
     @IBOutlet var fileImageView: UIImageView!
     @IBOutlet var statusLabel: UILabel!
     @IBOutlet var progressView: UIProgressView!
@@ -42,8 +43,7 @@ class FileTableViewCell: UITableViewCell {
         statusLabel.text = .waiting
         
         progressView.progressTintColor = .primary
-        moreButton.tintColor = .iconTintPrimary
-        moreButton.imageView?.contentMode = .scaleAspectFit
+        rightButtonImageView.tintColor = .iconTintPrimary
         
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
@@ -63,13 +63,13 @@ class FileTableViewCell: UITableViewCell {
             overlayView.isHidden = true
             self.isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
-            moreButton.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
+            rightButtonImageView.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
             
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
             moreButton.isEnabled = action == .none
-            moreButton.tintColor = .iconTintPrimary
+            rightButtonImageView.tintColor = .iconTintPrimary
         }
     }
     
@@ -113,14 +113,14 @@ class FileTableViewCell: UITableViewCell {
     
     fileprivate func updateUploadOrDownloadUI() {
         dateStackView.isHidden = true
-        moreButton.setImage(UIImage.close.templated, for: [])
+        rightButtonImageView.image = UIImage.close.templated
     }
     
     fileprivate func updateSyncedUI() {
         progressView.isHidden = true
         statusLabel.isHidden = true
         dateStackView.isHidden = false
-        moreButton.setImage(UIImage.more.templated, for: [])
+        rightButtonImageView.image = UIImage.more.templated
     }
     
     func updateProgress(withValue value: Float) {

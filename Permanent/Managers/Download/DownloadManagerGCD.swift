@@ -26,12 +26,14 @@ class DownloadManagerGCD: Downloader {
     func download(_ file: FileDownloadInfo,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?) {
+                  progressHandler: ProgressHandler?,
+                  completion: VoidAction? = nil) {
         serialQueue.async {
             self.startDownload(file,
                                onDownloadStart: onDownloadStart,
                                onFileDownloaded: onFileDownloaded,
-                               progressHandler: progressHandler)
+                               progressHandler: progressHandler,
+                               completion: completion)
         }
     }
     
@@ -42,7 +44,8 @@ class DownloadManagerGCD: Downloader {
     fileprivate func startDownload(_ file: FileDownloadInfo,
                                    onDownloadStart: @escaping VoidAction,
                                    onFileDownloaded: @escaping DownloadResponse,
-                                   progressHandler: ProgressHandler?) {
+                                   progressHandler: ProgressHandler?,
+                                   completion: VoidAction? = nil) {
         onDownloadStart()
         
         downloadFile(file, progressHandler: progressHandler) { url, error in
@@ -54,6 +57,8 @@ class DownloadManagerGCD: Downloader {
             } else {
                 onFileDownloaded(nil, error)
             }
+            
+            completion?()
         }
     }
     

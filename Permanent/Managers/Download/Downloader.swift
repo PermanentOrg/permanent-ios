@@ -12,7 +12,8 @@ protocol Downloader {
     func download(_ file: FileDownloadInfo,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?)
+                  progressHandler: ProgressHandler?,
+                  completion: VoidAction?)
     
     func cancelDownload()
     

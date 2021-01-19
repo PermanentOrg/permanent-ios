@@ -81,7 +81,8 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
         downloader.download(file,
                             onDownloadStart: onDownloadStart,
                             onFileDownloaded: onFileDownloaded,
-                            progressHandler: progressHandler)
+                            progressHandler: progressHandler,
+                            completion: nil)
     }
     
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
