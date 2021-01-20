@@ -17,17 +17,19 @@ class SharePreviewViewModel {
     
     fileprivate var files: [File] = []
     
-    fileprivate var shareStatus: ShareStatus = .needsApproval
-    
     fileprivate var csrf: String = ""
+    
+    var urlToken: String!
+
+    var shareDetails: ShareDetails?
     
     var isBusy: Bool = false {
         didSet {
             viewDelegate?.updateSpinner(isLoading: isBusy)
         }
     }
-    
-    var urlToken: String!
+
+    // MARK: - Events
     
     func start() {
         fetchSharedItems(urlToken: urlToken)
@@ -35,7 +37,7 @@ class SharePreviewViewModel {
     
     func performAction() {
         
-        switch self.shareStatus {
+        switch self.shareDetails?.status {
         case .accepted:
             viewDelegate?.viewInArchive()
             
@@ -119,8 +121,11 @@ class SharePreviewViewModel {
                 }
 
                 let status = ShareStatus.status(forValue: shareVO.status)
-                self.shareStatus = status
+                self.shareDetails?.status = status
+            
                 self.viewDelegate?.updateShareAccess(status: .success, shareStatus: status)
+            
+            break
                
             case .error(let error, _):
                 self.viewDelegate?.updateShareAccess(
@@ -149,14 +154,11 @@ class SharePreviewViewModel {
         }
         
         let details = ShareDetailsVM(model: model)
-        
-        self.shareStatus = details.status
-        
+        self.shareDetails = details
         viewDelegate?.updateScreen(status: .success, shareDetails: details)
         
         // Delete the saved token if it existed.
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.shareURLToken)
-        
     }
     
     fileprivate func extractSharedFiles(from folder: FolderVOData) -> [File]? {

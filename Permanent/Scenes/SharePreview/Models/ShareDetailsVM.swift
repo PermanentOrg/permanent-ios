@@ -15,6 +15,7 @@ struct ShareDetailsVM: ShareDetails {
     var showPreview: Bool
     var archiveThumbURL: URL?
     var status: ShareStatus
+    var folderLinkId: Int
     
     init(model: SharebyURLVOData) {
         if let archive = model.archiveVO?.fullName {
@@ -32,6 +33,7 @@ struct ShareDetailsVM: ShareDetails {
         hasAccess = model.shareVO != nil
         showPreview = model.previewToggle == 1
         status = ShareStatus.status(forValue: model.shareVO?.status)
+        folderLinkId = (model.folderLinkID?.value as? Int) ?? -1
     }
 
 }

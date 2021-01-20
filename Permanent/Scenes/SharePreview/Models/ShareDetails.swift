@@ -15,12 +15,14 @@ protocol ShareDetails {
     
     var sharedFileName: String { get }
     
+    var folderLinkId: Int { get }
+    
     var hasAccess: Bool { get }
     
     var showPreview: Bool { get }
     
     var archiveThumbURL: URL? { get }
     
-    var status: ShareStatus { get }
+    var status: ShareStatus { get set }
     
 }

@@ -550,7 +550,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
-            break
+            
+            viewModel?.cancelDownload()
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+            
             
         case .uploading, .waiting:
             cellRightButtonAction(atPosition: indexPath.row)
@@ -596,21 +602,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             },
             
-            onFileDownloaded: { url, errorMessage in
-                guard let shareURL = url else {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(message: errorMessage)
-                    }
-                
-                    return
-                }
-                
+            onFileDownloaded: { url, error in
                 DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-                DispatchQueue.main.async {
-                    self.share(url: shareURL)
+                    self.onFileDownloaded(url: url, error: error)
                 }
             },
             
@@ -618,22 +612,27 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 DispatchQueue.main.async {
                     self.handleProgress(withValue: progress, listSection: FileListType.downloading)
                 }
-            },
-            
-            then: { status in
-                
-                switch status {
-                case .success:
-                    break
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.hideSpinner()
-                        self.showAlert(title: .error, message: message)
-                    }
-                }
             }
         )
+    }
+    
+    fileprivate func onFileDownloaded(url: URL?, error: Error?) {
+        
+        self.refreshTableView()
+        
+        guard let shareURL = url else {
+            let apiError = (error as? APIError) ?? .unknown
+            
+            if apiError == .cancelled {
+                view.showNotificationBanner(height: Constants.Design.bannerHeight, title: .downloadCancelled)
+            } else {
+                showErrorAlert(message: apiError.message)
+            }
+
+            return
+        }
+        
+        share(url: shareURL)
     }
 }
 

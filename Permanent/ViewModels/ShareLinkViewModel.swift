@@ -1,4 +1,4 @@
-//  
+//
 //  ShareLinkViewModel.swift
 //  Permanent
 //
@@ -25,16 +25,66 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     weak var delegate: ShareLinkViewModelDelegate?
     
+    private lazy var downloader: Downloader = DownloadManagerGCD(csrf: csrf)
+    
     var items: [SharedFileViewModel] {
         switch shareListType {
         case .sharedByMe: return sharedByMeViewModels
         case .sharedWithMe: return sharedWithMeViewModels
         }
     }
-     
+    
+    func changeStatus(forFile file: FileDownloadInfo, status: FileStatus) {
+//        guard
+//            let item = items.first(where: { $0 == file} ) else {
+//            return
+//        }
+        
+        switch shareListType {
+        case .sharedByMe:
+            sharedByMeViewModels = sharedByMeViewModels.map {
+                var mutableVM = $0
+                
+                if mutableVM.folderLinkId == file.folderLinkId {
+                    mutableVM.status = status
+                }
+                
+                return mutableVM
+            }
+            
+        case .sharedWithMe:
+            sharedWithMeViewModels = sharedWithMeViewModels.map {
+                var mutableVM = $0
+                
+                if mutableVM.folderLinkId == file.folderLinkId {
+                    mutableVM.status = status
+                }
+                
+                return mutableVM
+            }
+        }
+    }
 }
 
 extension ShareLinkViewModel: ShareLinkViewModelDelegate {
+    
+    func cancelDownload() {
+        downloader.cancelDownload()
+    }
+    
+    
+    func download(_ file: FileDownloadInfo,
+                  onDownloadStart: @escaping VoidAction,
+                  onFileDownloaded: @escaping DownloadResponse,
+                  progressHandler: ProgressHandler?)
+    {
+        downloader.download(file,
+                            onDownloadStart: onDownloadStart,
+                            onFileDownloaded: onFileDownloaded,
+                            progressHandler: progressHandler,
+                            completion: nil)
+    }
+    
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: fileViewModel, and: csrf)
         let apiOperation = APIOperation(endpoint)
@@ -47,7 +97,8 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
                         from: response,
                         with: APIResults<SharebyURLVO>.decoder
                     ),
-                    model.isSuccessful else {
+                    model.isSuccessful
+                else {
                     handler(nil, .errorMessage)
                     return
                 }
@@ -79,7 +130,8 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
                         from: response,
                         with: APIResults<NoDataModel>.decoder
                     ),
-                    model.isSuccessful else {
+                    model.isSuccessful
+                else {
                     handler(.error(message: .errorMessage))
                     return
                 }
@@ -110,11 +162,11 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
                         from: response,
                         with: APIResults<SharebyURLVO>.decoder
                     ),
-                    model.isSuccessful else {
+                    model.isSuccessful
+                else {
                     handler(nil, .errorMessage)
                     return
                 }
-                
                 
                 let updatedModel = model.results.first?.data?.first?.shareByURLVO
                 self.processShareLinkUpdateModel(updatedModel)
@@ -171,7 +223,7 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
     }
     
     func prepareShareLinkUpdatePayload(forData data: ManageLinkData) -> SharebyURLVOData? {
-        var payloadVO = self.shareVO
+        var payloadVO = shareVO
         payloadVO?.maxUses = data.maxUses
         payloadVO?.previewToggle = data.previewToggle
         payloadVO?.autoApproveToggle = data.autoApproveToggle
@@ -181,9 +233,9 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
     }
     
     fileprivate func processShareLinkUpdateModel(_ model: SharebyURLVOData?) {
-        self.shareVO?.maxUses = model?.maxUses
-        self.shareVO?.previewToggle = model?.previewToggle
-        self.shareVO?.autoApproveToggle = model?.autoApproveToggle
-        self.shareVO?.expiresDT = model?.expiresDT
+        shareVO?.maxUses = model?.maxUses
+        shareVO?.previewToggle = model?.previewToggle
+        shareVO?.autoApproveToggle = model?.autoApproveToggle
+        shareVO?.expiresDT = model?.expiresDT
     }
 }

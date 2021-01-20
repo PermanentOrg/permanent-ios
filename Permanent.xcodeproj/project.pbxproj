@@ -81,6 +81,9 @@
 		BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC4278C1255D528A00270B34 /* FileActionSheet.xib */; };
 		BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C4255D535E00270B34 /* FileActionSheet.swift */; };
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
+		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
+		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
+		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */; };
 		BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526E4251CACB300E24A51 /* AccountVO.swift */; };
@@ -99,6 +102,9 @@
 		BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE62546FDE7000249E1 /* RecordVO.swift */; };
 		BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */; };
 		BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC581A4D255A98DB00171D7A /* MediaRecorder.swift */; };
+		BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */; };
+		BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */; };
+		BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */; };
 		BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
 		BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57F254181BD00E84DA9 /* DataExtension.swift */; };
 		BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D58225418EC400E84DA9 /* UploadManager.swift */; };
@@ -212,6 +218,7 @@
 		BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8325AE05BA00A4520E /* ShareDetails.swift */; };
 		BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */; };
 		BCEECD8D25AF129B00A4520E /* ShareStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8C25AF129B00A4520E /* ShareStatus.swift */; };
+		BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECDAE25B0594B00A4520E /* Downloader.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
 		BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */; };
@@ -320,6 +327,9 @@
 		BC4278C1255D528A00270B34 /* FileActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionSheet.xib; sourceTree = "<group>"; };
 		BC4278C4255D535E00270B34 /* FileActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionSheet.swift; sourceTree = "<group>"; };
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
+		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
+		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
+		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeResponse.swift; sourceTree = "<group>"; };
 		BC4526E4251CACB300E24A51 /* AccountVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVO.swift; sourceTree = "<group>"; };
@@ -338,6 +348,9 @@
 		BC566CE62546FDE7000249E1 /* RecordVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVO.swift; sourceTree = "<group>"; };
 		BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMetaResponse.swift; sourceTree = "<group>"; };
 		BC581A4D255A98DB00171D7A /* MediaRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRecorder.swift; sourceTree = "<group>"; };
+		BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
+		BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfo.swift; sourceTree = "<group>"; };
+		BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManagerGCD.swift; sourceTree = "<group>"; };
 		BC62D57C254180D300E84DA9 /* FileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfo.swift; sourceTree = "<group>"; };
 		BC62D57F254181BD00E84DA9 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		BC62D58225418EC400E84DA9 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
@@ -453,6 +466,7 @@
 		BCEECD8325AE05BA00A4520E /* ShareDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetails.swift; sourceTree = "<group>"; };
 		BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetailsVM.swift; sourceTree = "<group>"; };
 		BCEECD8C25AF129B00A4520E /* ShareStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareStatus.swift; sourceTree = "<group>"; };
+		BCEECDAE25B0594B00A4520E /* Downloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
 		BCF4E5D7255C2EB2003505BA /* RecordExifVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordExifVO.swift; sourceTree = "<group>"; };
@@ -504,6 +518,7 @@
 			isa = PBXGroup;
 			children = (
 				5E218BF225A869B100B56625 /* SecurityView */,
+				BC451D4D25B06AAC00DC02DB /* SharedFileActionSheet */,
 				BC55970225A3461A00BF55DA /* DropdownView */,
 				BCEAB2812581125800567E8C /* Share Link */,
 				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
@@ -573,6 +588,7 @@
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
 				BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */,
+				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -825,6 +841,15 @@
 			path = FileActionSheet;
 			sourceTree = "<group>";
 		};
+		BC451D4D25B06AAC00DC02DB /* SharedFileActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */,
+				BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */,
+			);
+			path = SharedFileActionSheet;
+			sourceTree = "<group>";
+		};
 		BC4526D7251BE50E00E24A51 /* Localization */ = {
 			isa = PBXGroup;
 			children = (
@@ -1041,6 +1066,7 @@
 		BCE8DA6F25652C1B00842ABD /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				BCEECDAD25B0591B00A4520E /* Download */,
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
 			);
@@ -1077,6 +1103,7 @@
 		BCEECD5725ADA5F800A4520E /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				BCEECDA825B058BF00A4520E /* Shares */,
 				BCEECD5825ADA60F00A4520E /* SharePreview */,
 			);
 			path = Scenes;
@@ -1128,6 +1155,32 @@
 				BCEECD6525ADA88400A4520E /* SharePreviewViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BCEECDA825B058BF00A4520E /* Shares */ = {
+			isa = PBXGroup;
+			children = (
+				BCEECDA925B058CD00A4520E /* ViewControllers */,
+			);
+			path = Shares;
+			sourceTree = "<group>";
+		};
+		BCEECDA925B058CD00A4520E /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BCEECDAD25B0591B00A4520E /* Download */ = {
+			isa = PBXGroup;
+			children = (
+				BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */,
+				BCEECDAE25B0594B00A4520E /* Downloader.swift */,
+				BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */,
+				BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */,
+			);
+			path = Download;
 			sourceTree = "<group>";
 		};
 		BCF9065B2587963400DF1B64 /* SharedFileTableViewCell */ = {
@@ -1247,6 +1300,7 @@
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
+				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
@@ -1337,6 +1391,8 @@
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
+				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
+				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BCEECD7A25ADBE3800A4520E /* File.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
@@ -1376,6 +1432,7 @@
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
+				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
@@ -1389,6 +1446,7 @@
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
+				BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */,
@@ -1413,6 +1471,7 @@
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
@@ -1469,6 +1528,7 @@
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
+				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
 				BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
@@ -1650,7 +1710,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1676,7 +1736,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1762,7 +1822,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1842,7 +1902,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";

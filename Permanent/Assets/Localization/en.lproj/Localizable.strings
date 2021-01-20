@@ -153,3 +153,10 @@
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
 "AddStorage" = "Add Storage";
+
+
+/// Errors
+"ErrorCancelled" = "Request has been cancelled.";
+"ErrorUnknown" = "Some unknown error has occured. Please try again.";
+"ErrorServer" = "Server error has occured. Please try again.";
+"DownloadCancelled" = "Download cancelled";

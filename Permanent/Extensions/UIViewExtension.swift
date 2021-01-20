@@ -126,6 +126,11 @@ extension UIView {
 extension UIView {
     
     func addBlur(styled blurStyle: UIBlurEffect.Style = .light) {
+        
+        let backView = UIView(frame: self.bounds)
+        backView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        self.addSubview(backView)
+        
         let blurEffect = UIBlurEffect(style: blurStyle)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = bounds
@@ -134,4 +139,15 @@ extension UIView {
         addSubview(blurEffectView)
     }
     
+    func removeBlurIfNeeded() {
+        guard self.subviews.last is UIVisualEffectView else {
+            return
+        }
+        
+        // We have to remove the blur view, and the view underneath it (backView).
+        // See `addBlur` method.
+        for _ in 0..<2 {
+            self.subviews.last?.removeFromSuperview()
+        }
+    }
 }
