@@ -25,10 +25,10 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
-                        <rect key="frame" x="64" y="15" width="287" height="57"/>
+                        <rect key="frame" x="64" y="15" width="307" height="57"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="3w1-l8-M3K">
-                                <rect key="frame" x="0.0" y="0.0" width="287" height="48"/>
+                                <rect key="frame" x="0.0" y="0.0" width="307" height="48"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="File Name Label">
                                         <rect key="frame" x="0.0" y="0.0" width="41.5" height="28"/>
@@ -57,12 +57,12 @@
                                 </subviews>
                             </stackView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="AGf-kt-q9q">
-                                <rect key="frame" x="0.0" y="53" width="287" height="4"/>
+                                <rect key="frame" x="0.0" y="53" width="307" height="4"/>
                             </progressView>
                         </subviews>
                     </stackView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DIm-GS-HAo" userLabel="Archive Image View">
-                        <rect key="frame" x="371" y="26.5" width="34" height="34"/>
+                        <rect key="frame" x="391" y="26.5" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="W42-7w-0Rw"/>
                             <constraint firstAttribute="width" constant="34" id="i9t-uQ-BTd"/>
@@ -73,14 +73,16 @@
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
-                        <rect key="frame" x="405" y="23.5" width="40" height="40"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BCM-ja-FYJ">
+                        <rect key="frame" x="439" y="37.5" width="12" height="12"/>
+                    </imageView>
+                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
+                        <rect key="frame" x="425" y="23.5" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="OEz-2P-8tz"/>
                             <constraint firstAttribute="width" constant="40" id="PMz-Tj-Fd8"/>
                         </constraints>
                         <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
-                        <state key="normal" image="more"/>
                         <connections>
                             <action selector="moreButtonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="qel-9x-RHd"/>
                         </connections>
@@ -90,11 +92,15 @@
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="leading" secondItem="DIm-GS-HAo" secondAttribute="trailing" id="0Ad-W0-df6"/>
                     <constraint firstItem="DIm-GS-HAo" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="0g4-94-G4a"/>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="1FZ-17-D40"/>
+                    <constraint firstItem="BCM-ja-FYJ" firstAttribute="centerX" secondItem="KNW-4V-gMX" secondAttribute="centerX" id="1bx-OD-WTc"/>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="TVq-59-fuJ"/>
+                    <constraint firstItem="BCM-ja-FYJ" firstAttribute="centerY" secondItem="KNW-4V-gMX" secondAttribute="centerY" id="UcL-G0-ZOl"/>
                     <constraint firstAttribute="bottom" secondItem="PO6-uJ-qlZ" secondAttribute="bottom" constant="15" id="WNS-Hl-fjH"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="aKa-VN-a5Z"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ap0-kV-sir"/>
-                    <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" constant="20" id="l0H-G5-od7"/>
+                    <constraint firstItem="BCM-ja-FYJ" firstAttribute="height" secondItem="KNW-4V-gMX" secondAttribute="height" multiplier="0.3" id="cM6-rR-kP1"/>
+                    <constraint firstItem="BCM-ja-FYJ" firstAttribute="width" secondItem="KNW-4V-gMX" secondAttribute="width" multiplier="0.3" id="ddS-RF-A0I"/>
+                    <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" id="l0H-G5-od7"/>
                     <constraint firstItem="DIm-GS-HAo" firstAttribute="leading" secondItem="PO6-uJ-qlZ" secondAttribute="trailing" constant="20" id="m2g-ie-8Ow"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="wTu-bW-Sut"/>
                 </constraints>
@@ -108,6 +114,7 @@
                 <outlet property="fileNameLabel" destination="zU3-4p-PA7" id="syZ-AM-qiK"/>
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
                 <outlet property="progressView" destination="AGf-kt-q9q" id="3GJ-lB-h17"/>
+                <outlet property="rightButtonImageView" destination="BCM-ja-FYJ" id="tdO-Ls-f2h"/>
                 <outlet property="sharesImageView" destination="2Ym-3f-4q8" id="Wuj-O8-sQS"/>
             </connections>
             <point key="canvasLocation" x="265.94202898550725" y="76.674107142857139"/>
@@ -115,6 +122,5 @@
     </objects>
     <resources>
         <image name="folder" width="21" height="17"/>
-        <image name="more" width="4" height="16"/>
     </resources>
 </document>

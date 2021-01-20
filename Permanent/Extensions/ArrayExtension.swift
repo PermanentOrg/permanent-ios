@@ -11,4 +11,10 @@ extension Array {
     public mutating func prepend(_ newElement: Element) {
         self.insert(newElement, at: self.startIndex)
     }
+    
+    public mutating func safeRemoveFirst() {
+        guard !isEmpty else { return }
+        
+        removeFirst()
+    }
 }

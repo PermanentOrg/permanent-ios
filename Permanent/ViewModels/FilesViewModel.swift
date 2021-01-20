@@ -14,7 +14,6 @@ typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: Strin
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
-typealias FileDownloadResponse = (_ url: URL?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
 typealias UploadQueue = [FolderInfo: [FileInfo]]
@@ -25,8 +24,8 @@ typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: S
 
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
-typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: String?) -> Void
-typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: String?) -> Void
+typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
+typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
 
 protocol FilesViewModelDelegate: ViewModelDelegateInterface {
     func getRoot(then handler: @escaping ServerResponse)
@@ -41,11 +40,6 @@ protocol FilesViewModelDelegate: ViewModelDelegateInterface {
                      then handler: @escaping ServerResponse)
     func removeFromQueue(_ position: Int)
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse)
-    func download(_ file: FileViewModel,
-                  onDownloadStart: @escaping VoidAction,
-                  onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?,
-                  then handler: @escaping ServerResponse)
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
@@ -64,6 +58,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var currentFolder: FileViewModel? { navigationStack.last }
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
+    private lazy var downloader: Downloader = DownloadManagerGCD(csrf: csrf)
     
     var isSearchActive: Bool = false
     
@@ -228,143 +223,39 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
     
+    func cancelDownload() {
+        downloadInProgress = false
+        downloadQueue.safeRemoveFirst()
+        
+        downloader.cancelDownload()
+    }
+    
     func download(_ file: FileViewModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?,
-                  then handler: @escaping ServerResponse)
+                  progressHandler: ProgressHandler?)
     {
         
         var downloadFile = file
         downloadFile.fileStatus = .downloading
         downloadQueue.append(downloadFile)
         
-        // save progress lcoally
-        
-        onDownloadStart()
-        
-        if downloadInProgress {
-            return
-        }
-        
         downloadInProgress = true
         
-        handleRecursiveFileDownload(
-            downloadFile,
-            onFileDownloaded: onFileDownloaded,
-            progressHandler: progressHandler,
-            then: handler
+        let downloadInfo = FileDownloadInfoVM(
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
         )
-    }
-    
-    private func downloadFile(_ file: FileViewModel, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
-        getRecord(file) { record, errorMessage in
-
-            guard let record = record else {
-                return handler(nil, errorMessage)
-            }
-            
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.downloadFileData(record: record, progressHandler: progressHandler, then: handler)
-            }
-        }
-    }
-    
-    func handleRecursiveFileDownload(_ file: FileViewModel,
-                                     onFileDownloaded: @escaping FileDownloadResponse,
-                                     progressHandler: ProgressHandler?,
-                                     then handler: @escaping ServerResponse)
-    {
-        downloadFile(file, progressHandler: progressHandler) { url, errorMessage in
-            
-            if let url = url {
-                onFileDownloaded(url, nil)
-                
-                if self.downloadQueue.isEmpty {
-                    self.downloadInProgress = false
-                    return handler(.success)
-                } else {
-                    // Remove the first item from queue and save progress.
-                    self.downloadQueue.removeFirst()
-                    
-                    guard let nextFile = self.downloadQueue.first else {
-                        self.downloadInProgress = false
-                        return handler(.success)
-                    }
-                    
-                    // save progress in prefs
-                    
-                    self.handleRecursiveFileDownload(nextFile,
-                                                     onFileDownloaded: onFileDownloaded,
-                                                     progressHandler: progressHandler,
-                                                     then: handler)
-                }
-            } else {
-                onFileDownloaded(nil, errorMessage)
-                self.downloadInProgress = false
-                
-                handler(.error(message: errorMessage))
-            }
-        }
-    }
-    
-    func getRecord(_ file: FileViewModel, then handler: @escaping GetRecordResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<RecordVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<RecordVO>.decoder
-                    ),
-                    model.isSuccessful
-                    
-                else {
-                    handler(nil, .errorMessage)
-                    return
-                }
-                
-                handler(model.results.first?.data?.first, nil)
-                    
-            case .error(let error, _):
-                handler(nil, error?.localizedDescription)
-                    
-            default:
-                break
-            }
-        }
-    }
+        downloader.download(downloadInfo,
+                            onDownloadStart: onDownloadStart,
+                            onFileDownloaded: onFileDownloaded,
+                            progressHandler: progressHandler,
+                            completion: {
+                                self.downloadInProgress = false
+                                self.downloadQueue.safeRemoveFirst()
+                            })
     
-    func downloadFileData(record: RecordVO, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
-        guard
-            let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
-            let url = URL(string: downloadURL),
-            let fileName = record.recordVO?.uploadFileName
-        else {
-            return handler(nil, .errorMessage)
-        }
-        
-        let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            
-            switch result {
-            case .file(let fileURL, _):
-                guard let url = fileURL else {
-                    handler(nil, .errorMessage)
-                    return
-                }
-            
-                handler(url, nil)
-    
-            case .error(let error, _):
-                handler(nil, error?.localizedDescription)
-                
-            default:
-                break
-            }
-        }
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {

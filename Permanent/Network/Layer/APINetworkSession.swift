@@ -80,7 +80,7 @@ extension APINetworkSession: URLSessionTaskDelegate {
         else {
             return
         }
-
+        
         DispatchQueue.main.async {
             handlers.completion?(nil, downloadTask.response, downloadTask.error)
         }

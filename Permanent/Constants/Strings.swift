@@ -148,6 +148,12 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     
+    /// Errors
+    static var errorCancelled: String { return "ErrorCancelled".localized() }
+    static var errorUnknown: String { return "ErrorUnknown".localized() }
+    static var errorServer: String { return "ErrorServer".localized() }
+    static var downloadCancelled: String { return "DownloadCancelled".localized() }
+    
     static let arrowUpCharacter: String = "\u{2191}"
     static let arrowDownCharacter: String = "\u{2193}"
     

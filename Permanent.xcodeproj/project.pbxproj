@@ -74,6 +74,7 @@
 		BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC4278C1255D528A00270B34 /* FileActionSheet.xib */; };
 		BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C4255D535E00270B34 /* FileActionSheet.swift */; };
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
+		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -95,6 +96,8 @@
 		BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */; };
 		BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC581A4D255A98DB00171D7A /* MediaRecorder.swift */; };
 		BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */; };
+		BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */; };
+		BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */; };
 		BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
 		BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57F254181BD00E84DA9 /* DataExtension.swift */; };
 		BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D58225418EC400E84DA9 /* UploadManager.swift */; };
@@ -208,7 +211,6 @@
 		BCEECD8425AE05BA00A4520E /* ShareDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8325AE05BA00A4520E /* ShareDetails.swift */; };
 		BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */; };
 		BCEECD8D25AF129B00A4520E /* ShareStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD8C25AF129B00A4520E /* ShareStatus.swift */; };
-		BCEECDAB25B0590800A4520E /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECDAA25B0590800A4520E /* DownloadManager.swift */; };
 		BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECDAE25B0594B00A4520E /* Downloader.swift */; };
 		BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D1255C2CB2003505BA /* FileVO.swift */; };
 		BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */; };
@@ -311,6 +313,7 @@
 		BC4278C1255D528A00270B34 /* FileActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionSheet.xib; sourceTree = "<group>"; };
 		BC4278C4255D535E00270B34 /* FileActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionSheet.swift; sourceTree = "<group>"; };
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
+		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -332,6 +335,8 @@
 		BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMetaResponse.swift; sourceTree = "<group>"; };
 		BC581A4D255A98DB00171D7A /* MediaRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRecorder.swift; sourceTree = "<group>"; };
 		BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
+		BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfo.swift; sourceTree = "<group>"; };
+		BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManagerGCD.swift; sourceTree = "<group>"; };
 		BC62D57C254180D300E84DA9 /* FileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfo.swift; sourceTree = "<group>"; };
 		BC62D57F254181BD00E84DA9 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		BC62D58225418EC400E84DA9 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
@@ -447,7 +452,6 @@
 		BCEECD8325AE05BA00A4520E /* ShareDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetails.swift; sourceTree = "<group>"; };
 		BCEECD8625AE199E00A4520E /* ShareDetailsVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDetailsVM.swift; sourceTree = "<group>"; };
 		BCEECD8C25AF129B00A4520E /* ShareStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareStatus.swift; sourceTree = "<group>"; };
-		BCEECDAA25B0590800A4520E /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		BCEECDAE25B0594B00A4520E /* Downloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		BCF4E5D1255C2CB2003505BA /* FileVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileVO.swift; sourceTree = "<group>"; };
 		BCF4E5D4255C2DFB003505BA /* ParentFolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentFolderVO.swift; sourceTree = "<group>"; };
@@ -1142,8 +1146,10 @@
 		BCEECDAD25B0591B00A4520E /* Download */ = {
 			isa = PBXGroup;
 			children = (
-				BCEECDAA25B0590800A4520E /* DownloadManager.swift */,
+				BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */,
 				BCEECDAE25B0594B00A4520E /* Downloader.swift */,
+				BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */,
+				BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */,
 			);
 			path = Download;
 			sourceTree = "<group>";
@@ -1355,6 +1361,7 @@
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
+				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BCEECD7A25ADBE3800A4520E /* File.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
@@ -1393,6 +1400,7 @@
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
+				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
@@ -1429,6 +1437,7 @@
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
@@ -1457,7 +1466,6 @@
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
-				BCEECDAB25B0590800A4520E /* DownloadManager.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
@@ -1666,7 +1674,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1692,7 +1700,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1778,7 +1786,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1858,7 +1866,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";

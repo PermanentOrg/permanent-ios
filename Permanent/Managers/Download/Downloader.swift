@@ -9,12 +9,12 @@ import Foundation
 
 protocol Downloader {
     
-    //func download(fromURL: URL)
-    
-    func download(_ file: SharedFileViewModel,
+    func download(_ file: FileDownloadInfo,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
                   progressHandler: ProgressHandler?,
-                  then handler: @escaping ServerResponse)
+                  completion: VoidAction?)
+    
+    func cancelDownload()
     
 }
