@@ -139,6 +139,7 @@
 "FromArchive" = "From the %@ Archive";
 "RequestApproval" = "Request Approval";
 "RemoveMember" = "Remove member?";
+"Remove" = "Remove";
 "Pending" = "Pending";
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
