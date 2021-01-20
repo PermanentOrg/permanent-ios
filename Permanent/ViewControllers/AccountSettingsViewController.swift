@@ -9,6 +9,8 @@
 import UIKit
 
 class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
+
+    
     
     @IBOutlet weak var contentUpdateButton: RoundedButton!
     @IBOutlet weak var currentPasswordView: PasswordElementView!
@@ -17,6 +19,7 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
     @IBOutlet weak var firstLineView: UIView!
     @IBOutlet weak var logWithFaceIdView: SwitchSettingsView!
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,30 +39,29 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
         self.currentPasswordView.delegate = self
         self.reTypePasswordView.delegate = self
         self.newPasswordView.delegate = self
+        self.logWithFaceIdView.delegate = self
+
+        let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+        let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
+        
+        if (authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode)
+        {
+            logWithFaceIdView.isUserInteractionEnabled = false
+            logWithFaceIdView.toggle(isOn: false)
+        } else {
+            logWithFaceIdView.toggle(isOn: biometricsAuthEnabled)
+        }
     }
 
     @IBAction func pressedUpdateButton(_ sender: RoundedButton) {
         attemptPasswordChange()
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return true
-    }
-    
-    private func switchBasedNextTextField(_ textField: UITextField) {
-        switch textField {
-        case self.currentPasswordView:
-            self.reTypePasswordView.becomeFirstResponder()
-        case self.reTypePasswordView:
-            self.newPasswordView.becomeFirstResponder()
-        default:
-            self.newPasswordView.resignFirstResponder()
-        }
-    }
-    
     // MARK: Actions
 
     private func attemptPasswordChange() {
+        let group = DispatchGroup()
+        
         guard
             let currentPass = currentPasswordView.value,
             let retypePass = reTypePasswordView.value,
@@ -71,38 +73,68 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
         }
         
         guard
-            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
-            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return }
+            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        else {
+                return
+        }
         
         let updatePasswordParameters = ChangePasswordCredentials(newPass,retypePass,currentPass)
         
         showSpinner(colored: .white)
         closeKeyboard()
-
-        viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, csrf: csrf, then: { status in
-            
-            switch status {
-            case .success(let message):
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: .success, message: message)
-                }
-            case .error(let message):
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: .error, message: message)
-                }
+        
+        group.enter()
+        viewModel?.getNewCsrf( then: { status in
+            DispatchQueue.main.async {
+                group.leave()
             }
         })
+
+        group.notify(queue: DispatchQueue.global()){
+            self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, csrf: self.viewModel?.actualCsrf ?? "", then: { status in
+            
+                switch status {
+                case .success(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.currentPasswordView.clearPasswordField()
+                        self.reTypePasswordView.clearPasswordField()
+                        self.newPasswordView.clearPasswordField()
+                        self.showAlert(title: .success, message: message)
+                    }
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.hideSpinner()
+                        self.showAlert(title: .error, message: message)
+                    }
+                }
+            })
+        }
     }
     
-    
-    fileprivate func handlePasswordChange(_ status: PasswordChangeStatus, credentials: ChangePasswordCredentials) {
-        hideSpinner()
-        
+    func switchToggleWasPressed(Sender: UISwitch) {
+        PreferencesManager.shared.set(Sender.isOn,forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled)
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.switchBasedNextTextField(textField)
+        return true
+    }
+    
+    private func switchBasedNextTextField(_ textField: UITextField) {
+        switch textField {
+        case self.currentPasswordView.passwordTextField:
+            self.newPasswordView.passwordTextField.becomeFirstResponder()
+        case self.newPasswordView.passwordTextField:
+            self.reTypePasswordView.passwordTextField.becomeFirstResponder()
+        default:
+            self.reTypePasswordView.passwordTextField.resignFirstResponder()
+        }
+    }
 }
 extension AccountSettingsViewController : UITextFieldDelegate {
+    
+}
+extension AccountSettingsViewController : ActionForSwitchSettingsView{
     
 }

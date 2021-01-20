@@ -126,7 +126,7 @@
     </scenes>
     <designables>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
     </designables>
     <resources>

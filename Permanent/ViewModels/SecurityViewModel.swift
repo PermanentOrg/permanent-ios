@@ -13,10 +13,12 @@ typealias ChangePasswordCredentials = (password: String,passwordVerify: String,p
 
 class SecurityViewModel: ViewModelInterface {
     weak var delegate: SecurityViewModelDelegate?
+    var actualCsrf: String?
 }
 
 protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
     func changePassword(with accountId: String, data: ChangePasswordCredentials, csrf: String, then handler: @escaping (PasswordChangeStatus)-> Void)
+    func getNewCsrf(then handler: @escaping (Bool)-> Void)
 }
 
 extension SecurityViewModel:SecurityViewModelDelegate {
@@ -26,7 +28,7 @@ extension SecurityViewModel:SecurityViewModelDelegate {
         let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data, csrf: csrf))
 
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in
-
+        
             switch result {
             case .json(let response, _):
                 guard let model: ChangePasswordResponse = JSONHelper.convertToModel(from: response) else {
@@ -53,6 +55,30 @@ extension SecurityViewModel:SecurityViewModelDelegate {
                 break
             }
         }
+    }
+    func getNewCsrf(then handler: @escaping (Bool)-> Void){
+        
+        let getNewCsrfOperation = APIOperation(AccountEndpoint.getValidCsrf)
+        
+        getNewCsrfOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                print(response!)
+                guard let model: LoggedInResponse = JSONHelper.convertToModel(from: response) else {
+                    self.actualCsrf = "error"
+                    return
+                }
+                self.actualCsrf = model.csrf
+                handler(true)
+                return
+            case .error:
+                handler(false)
+                break
+            default:
+                break
+            }
+        }
+        
     }
 }
 enum PasswordChangeStatus {

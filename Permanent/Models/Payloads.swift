@@ -191,4 +191,7 @@ struct Payloads {
             ]
         ]
     }
+    static func getValidCsrf() -> RequestParameters  {
+        return ["data":"none"]
+    }
 }

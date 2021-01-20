@@ -18,6 +18,8 @@ enum AccountEndpoint {
     case sendVerificationCodeSMS(accountId: String, email: String)
     /// Change user password
     case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials, csrf: String )
+    /// Get valid CSRF parameter
+    case getValidCsrf
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -31,6 +33,8 @@ extension AccountEndpoint: RequestProtocol {
             return "/auth/resendTextCreatedAccount"
         case .changePassword:
             return "/account/changePassword"
+        case .getValidCsrf:
+            return "/auth/loggedIn"
         }
     }
 
@@ -44,6 +48,8 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.smsVerificationCodePayload(accountId: id, email: email)
         case .changePassword(let id, let passData, let csrf):
             return Payloads.updatePassword(accountId: id,updateData: passData , csrf: csrf)
+        case .getValidCsrf:
+            return Payloads.getValidCsrf()
         }
     }
 

@@ -12,6 +12,8 @@ class SwitchSettingsView: UIView {
     fileprivate var textLabel: UILabel!
     fileprivate var switchView: UISwitch!
     
+    var delegate: ActionForSwitchSettingsView?
+    
     func toggle(isOn: Bool) {
         switchView.setOn(isOn, animated: false)
     }
@@ -63,5 +65,15 @@ class SwitchSettingsView: UIView {
             switchView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             switchView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
         ])
+        
+        switchView.addTarget(self, action: #selector(toggleWasPressed(Sender:)), for: .touchUpInside)
     }
+    
+    @objc func toggleWasPressed(Sender: UISwitch){
+        delegate?.switchToggleWasPressed(Sender: Sender)
+    }
+}
+
+protocol ActionForSwitchSettingsView  {
+    func switchToggleWasPressed(Sender: UISwitch)
 }

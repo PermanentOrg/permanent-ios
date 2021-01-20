@@ -39,7 +39,6 @@ class PasswordElementView: UIView {
     fileprivate func commonInit() {
         loadNib()
         setupView(contentView)
-        
         contentView.backgroundColor = .blueGray
         
     }
@@ -49,5 +48,8 @@ class PasswordElementView: UIView {
         self.valueLabel.font = Text.style3.font
         self.passwordTextField.textColor = .middleGray
         self.passwordTextField.returnKeyType = returnKey
+    }
+    func clearPasswordField() {
+        self.passwordTextField.text = ""
     }
 }
