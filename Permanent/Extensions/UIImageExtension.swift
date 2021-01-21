@@ -39,6 +39,7 @@ extension UIImage {
     static let placeholder = UIImage(named: "placeholder")!
     static let power = UIImage(named: "power")!
     static let profile = UIImage(named: "profile")!
+    static let removeAction = UIImage(named: "removeAction")!
     static let relationships = UIImage(named: "relationships")!
     static let settings = UIImage(named: "settings")!
     static let share = UIImage(named: "share")!
