@@ -148,6 +148,7 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     static var remove: String { return "Remove".localized() }
+    static var activityFeed: String { return "ActivityFeed".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

@@ -75,6 +75,11 @@
 		BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C4255D535E00270B34 /* FileActionSheet.swift */; };
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
 		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
+		BC42ED9725B9AC930031B965 /* ActivityFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED9625B9AC930031B965 /* ActivityFeedViewController.swift */; };
+		BC42ED9B25B9ACB10031B965 /* ActivityFeedViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED9A25B9ACB10031B965 /* ActivityFeedViewModelDelegate.swift */; };
+		BC42ED9E25B9AD760031B965 /* ActivityFeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED9D25B9AD760031B965 /* ActivityFeedViewModel.swift */; };
+		BC42EDA325B9B0600031B965 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDA125B9B0600031B965 /* NotificationTableViewCell.swift */; };
+		BC42EDA425B9B0600031B965 /* NotificationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDA225B9B0600031B965 /* NotificationTableViewCell.xib */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -314,6 +319,11 @@
 		BC4278C4255D535E00270B34 /* FileActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionSheet.swift; sourceTree = "<group>"; };
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
 		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
+		BC42ED9625B9AC930031B965 /* ActivityFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewController.swift; sourceTree = "<group>"; };
+		BC42ED9A25B9ACB10031B965 /* ActivityFeedViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewModelDelegate.swift; sourceTree = "<group>"; };
+		BC42ED9D25B9AD760031B965 /* ActivityFeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewModel.swift; sourceTree = "<group>"; };
+		BC42EDA125B9B0600031B965 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
+		BC42EDA225B9B0600031B965 /* NotificationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableViewCell.xib; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -812,6 +822,58 @@
 			path = FileActionSheet;
 			sourceTree = "<group>";
 		};
+		BC42ED9125B9AC3D0031B965 /* Activity Feed */ = {
+			isa = PBXGroup;
+			children = (
+				BC42ED9325B9AC730031B965 /* Models */,
+				BC42ED9225B9AC6D0031B965 /* ViewControllers */,
+				BC42ED9425B9AC780031B965 /* ViewModels */,
+				BC42ED9525B9AC7F0031B965 /* Views */,
+			);
+			path = "Activity Feed";
+			sourceTree = "<group>";
+		};
+		BC42ED9225B9AC6D0031B965 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				BC42ED9625B9AC930031B965 /* ActivityFeedViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BC42ED9325B9AC730031B965 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BC42ED9425B9AC780031B965 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BC42ED9A25B9ACB10031B965 /* ActivityFeedViewModelDelegate.swift */,
+				BC42ED9D25B9AD760031B965 /* ActivityFeedViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BC42ED9525B9AC7F0031B965 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDA025B9B0350031B965 /* NotificationTableViewCell */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BC42EDA025B9B0350031B965 /* NotificationTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDA125B9B0600031B965 /* NotificationTableViewCell.swift */,
+				BC42EDA225B9B0600031B965 /* NotificationTableViewCell.xib */,
+			);
+			path = NotificationTableViewCell;
+			sourceTree = "<group>";
+		};
 		BC451D4D25B06AAC00DC02DB /* SharedFileActionSheet */ = {
 			isa = PBXGroup;
 			children = (
@@ -1074,13 +1136,14 @@
 		BCEECD5725ADA5F800A4520E /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				BC42ED9125B9AC3D0031B965 /* Activity Feed */,
 				BCEECDA825B058BF00A4520E /* Shares */,
-				BCEECD5825ADA60F00A4520E /* SharePreview */,
+				BCEECD5825ADA60F00A4520E /* Share Preview */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
 		};
-		BCEECD5825ADA60F00A4520E /* SharePreview */ = {
+		BCEECD5825ADA60F00A4520E /* Share Preview */ = {
 			isa = PBXGroup;
 			children = (
 				BCEECD5D25ADA68C00A4520E /* Models */,
@@ -1088,7 +1151,7 @@
 				BCEECD6025ADA6A500A4520E /* ViewModels */,
 				BCEECD5F25ADA69900A4520E /* Views */,
 			);
-			path = SharePreview;
+			path = "Share Preview";
 			sourceTree = "<group>";
 		};
 		BCEECD5D25ADA68C00A4520E /* Models */ = {
@@ -1268,6 +1331,7 @@
 				BC55970425A3462900BF55DA /* DropdownView.xib in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
+				BC42EDA425B9B0600031B965 /* NotificationTableViewCell.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
@@ -1363,6 +1427,7 @@
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
+				BC42EDA325B9B0600031B965 /* NotificationTableViewCell.swift in Sources */,
 				BCEECD7A25ADBE3800A4520E /* File.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
@@ -1432,6 +1497,7 @@
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
+				BC42ED9B25B9ACB10031B965 /* ActivityFeedViewModelDelegate.swift in Sources */,
 				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
 				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,
@@ -1474,6 +1540,7 @@
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
+				BC42ED9725B9AC930031B965 /* ActivityFeedViewController.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
@@ -1483,6 +1550,7 @@
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
+				BC42ED9E25B9AD760031B965 /* ActivityFeedViewModel.swift in Sources */,
 				BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
