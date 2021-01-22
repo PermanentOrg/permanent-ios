@@ -15,6 +15,8 @@ protocol ActivityFeedViewModelDelegate {
     
     var numberOfItems: Int { get }
     
+    func itemFor(row: Int) -> Notification
+    
     // Events
     
     func start()
@@ -25,6 +27,8 @@ protocol ActivityFeedViewModelDelegate {
 
 protocol ActivityFeedViewModelViewDelegate: class {
     
+    func updateScreen(status: RequestStatus)
     
+    func updateSpinner(isLoading: Bool)
     
 }

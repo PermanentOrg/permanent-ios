@@ -80,6 +80,10 @@
 		BC42ED9E25B9AD760031B965 /* ActivityFeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED9D25B9AD760031B965 /* ActivityFeedViewModel.swift */; };
 		BC42EDA325B9B0600031B965 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDA125B9B0600031B965 /* NotificationTableViewCell.swift */; };
 		BC42EDA425B9B0600031B965 /* NotificationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDA225B9B0600031B965 /* NotificationTableViewCell.xib */; };
+		BC42EDA825BAD7C10031B965 /* NotificationsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDA725BAD7C10031B965 /* NotificationsEndpoint.swift */; };
+		BC42EDAC25BADD7E0031B965 /* NotificationVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDAB25BADD7E0031B965 /* NotificationVO.swift */; };
+		BC42EDAF25BAE0CB0031B965 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDAE25BAE0CB0031B965 /* Notification.swift */; };
+		BC42EDB225BAE64C0031B965 /* NotificationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDB125BAE64C0031B965 /* NotificationVM.swift */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -324,6 +328,10 @@
 		BC42ED9D25B9AD760031B965 /* ActivityFeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewModel.swift; sourceTree = "<group>"; };
 		BC42EDA125B9B0600031B965 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
 		BC42EDA225B9B0600031B965 /* NotificationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NotificationTableViewCell.xib; sourceTree = "<group>"; };
+		BC42EDA725BAD7C10031B965 /* NotificationsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsEndpoint.swift; sourceTree = "<group>"; };
+		BC42EDAB25BADD7E0031B965 /* NotificationVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVO.swift; sourceTree = "<group>"; };
+		BC42EDAE25BAE0CB0031B965 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		BC42EDB125BAE64C0031B965 /* NotificationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVM.swift; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -784,6 +792,7 @@
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */,
+				BC42EDA725BAD7C10031B965 /* NotificationsEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -844,6 +853,9 @@
 		BC42ED9325B9AC730031B965 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BC42EDAB25BADD7E0031B965 /* NotificationVO.swift */,
+				BC42EDAE25BAE0CB0031B965 /* Notification.swift */,
+				BC42EDB125BAE64C0031B965 /* NotificationVM.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1399,6 +1411,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
+				BC42EDB225BAE64C0031B965 /* NotificationVM.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -1450,6 +1463,7 @@
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
+				BC42EDAC25BADD7E0031B965 /* NotificationVO.swift in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
@@ -1513,6 +1527,7 @@
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
+				BC42EDAF25BAE0CB0031B965 /* Notification.swift in Sources */,
 				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
@@ -1554,6 +1569,7 @@
 				BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
+				BC42EDA825BAD7C10031B965 /* NotificationsEndpoint.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */,

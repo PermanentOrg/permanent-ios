@@ -16,6 +16,13 @@ class NotificationTableViewCell: UITableViewCell {
     @IBOutlet var dateLabel: UILabel!
     @IBOutlet var typeImageView: UIImageView!
     
+    var notification: Notification? {
+        didSet {
+            notificationLabel.text = notification?.message
+            dateLabel.text = notification?.date
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
