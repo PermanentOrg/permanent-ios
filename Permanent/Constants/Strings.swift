@@ -161,6 +161,7 @@ extension String {
     static var requestAwaitingApproval: String { return "RequestAwaitingApproval".localized() }
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
+    static var remove: String { return "Remove".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

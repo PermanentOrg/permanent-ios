@@ -157,7 +157,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     fileprivate func didTapDelete(forAccount account: Account) {
         self.showActionDialog(styled: .simple,
                               withTitle: String.init(format: .removeMember, account.name),
-                              positiveButtonTitle: .delete,
+                              positiveButtonTitle: .remove,
                               positiveAction: {
                                 self.modifyMember(account, withOperation: .remove)
                               },
@@ -197,6 +197,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         guard let accessRole = AccessRole(rawValue: indexPath.section) else {
             fatalError()
         }
+    
         
         let cell = tableView.dequeue(cellClass: MemberTableViewCell.self, forIndexPath: indexPath)
         cell.member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
@@ -258,7 +259,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let deleteAction = UIContextualAction.make(
-            withImage: .deleteAction,
+            withImage: .removeAction,
             backgroundColor: .destructive,
             handler: { _, _, completion in
                 self.didTapDelete(forAccount: account)
