@@ -148,6 +148,12 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     static var remove: String { return "Remove".localized() }
+    static var giveAGig: String { return "GiveAGig".localized() }
+    static var inviteInfo: String { return "InviteInfo".localized() }
+    static var sendInvite: String { return "SendInvite".localized() }
+    static var resend: String { return "Resend".localized() }
+    static var yourInvitations: String { return "YourInvitations".localized() }
+    static var invitations: String { return "Invitations".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

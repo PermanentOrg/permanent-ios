@@ -38,6 +38,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         infoButton.setTitle(.manageArchives, for: [])
         infoButton.setFont(Text.style16.font)
         infoButton.setTitleColor(.white, for: [])
+        infoButton.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -50,7 +51,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     func adjustUIForAnimation(isOpening: Bool) {
         self.shouldDisplayLine = isOpening
         self.titleLabel.isHidden = !isOpening
-        self.infoButton.isHidden = !isOpening
+        //self.infoButton.isHidden = !isOpening
         
         self.tableView.reloadData()
     }
@@ -177,9 +178,17 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             guard let url = URL(string: Constants.URL.buyStorageURL) else { return }
             UIApplication.shared.open(url)
             
+        case .invitations:
+            navigateToController(.invitations, from: .invitations)
+            
         case .logOut:
             logOut()
         }
+    }
+    
+    fileprivate func navigateToController(_ id: ViewControllerId, from storyboard: StoryboardName) {
+        let newRootVC = UIViewController.create(withIdentifier: id, from: storyboard)
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
     }
 }
 

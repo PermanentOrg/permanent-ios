@@ -75,6 +75,10 @@
 		BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C4255D535E00270B34 /* FileActionSheet.swift */; };
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
 		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
+		BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDB525BB116A0031B965 /* Invitations.storyboard */; };
+		BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */; };
+		BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */; };
+		BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -314,6 +318,10 @@
 		BC4278C4255D535E00270B34 /* FileActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionSheet.swift; sourceTree = "<group>"; };
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
 		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
+		BC42EDB525BB116A0031B965 /* Invitations.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Invitations.storyboard; sourceTree = "<group>"; };
+		BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationsViewController.swift; sourceTree = "<group>"; };
+		BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationTableViewCell.swift; sourceTree = "<group>"; };
+		BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -759,6 +767,7 @@
 				BC4526F0251CD6B600E24A51 /* Main.storyboard */,
 				BCC1CCE82578F8DA0069E337 /* Share.storyboard */,
 				BCF906662587B12000DF1B64 /* Members.storyboard */,
+				BC42EDB525BB116A0031B965 /* Invitations.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -810,6 +819,56 @@
 				BC4278C4255D535E00270B34 /* FileActionSheet.swift */,
 			);
 			path = FileActionSheet;
+			sourceTree = "<group>";
+		};
+		BC42EDB825BB11860031B965 /* Invitations */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDBB25BB119B0031B965 /* Models */,
+				BC42EDB925BB11910031B965 /* ViewControllers */,
+				BC42EDBC25BB119F0031B965 /* ViewModels */,
+				BC42EDBA25BB11970031B965 /* Views */,
+			);
+			path = Invitations;
+			sourceTree = "<group>";
+		};
+		BC42EDB925BB11910031B965 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		BC42EDBA25BB11970031B965 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDC025BEE9160031B965 /* InvitationTableViewCell */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BC42EDBB25BB119B0031B965 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BC42EDBC25BB119F0031B965 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BC42EDC025BEE9160031B965 /* InvitationTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */,
+				BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */,
+			);
+			path = InvitationTableViewCell;
 			sourceTree = "<group>";
 		};
 		BC451D4D25B06AAC00DC02DB /* SharedFileActionSheet */ = {
@@ -1074,6 +1133,7 @@
 		BCEECD5725ADA5F800A4520E /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				BC42EDB825BB11860031B965 /* Invitations */,
 				BCEECDA825B058BF00A4520E /* Shares */,
 				BCEECD5825ADA60F00A4520E /* SharePreview */,
 			);
@@ -1272,11 +1332,13 @@
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
+				BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				BCEECD0425AC628400A4520E /* FileLargeCollectionViewCell.xib in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
+				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
@@ -1347,6 +1409,7 @@
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BCEECD6625ADA88400A4520E /* SharePreviewViewModel.swift in Sources */,
+				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
@@ -1383,6 +1446,7 @@
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
+				BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,

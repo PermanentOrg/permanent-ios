@@ -26,6 +26,7 @@ struct TableViewData {
             //DrawerOption(icon: .power, title: .logOut, isSelected: false),
             DrawerOption.members,
             DrawerOption.addStorage,
+            DrawerOption.invitations,
             DrawerOption.logOut
         ]
     ]

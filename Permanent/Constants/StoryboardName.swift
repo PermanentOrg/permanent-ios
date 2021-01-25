@@ -14,6 +14,7 @@ enum StoryboardName: String {
     case onboarding
     case members
     case share
+    case invitations
     
     var name: String {
         return self.rawValue.capitalized
@@ -36,6 +37,7 @@ enum ViewControllerId: String {
     case members
     case manageLink
     case sharePreview
+    case invitations
 
     var value: String {
         switch self {
