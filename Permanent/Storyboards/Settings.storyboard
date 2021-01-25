@@ -114,7 +114,7 @@
                         <outlet property="contentUpdateButton" destination="S4H-vw-aNZ" id="Enh-oR-t7F"/>
                         <outlet property="currentPasswordView" destination="ZaR-Lf-U3y" id="AfV-0Q-Qcr"/>
                         <outlet property="firstLineView" destination="fWz-P8-1yb" id="XeM-Vj-w6f"/>
-                        <outlet property="logWithFaceIdView" destination="2o9-qH-Dds" id="esR-3U-RNu"/>
+                        <outlet property="logWithBiometricsView" destination="2o9-qH-Dds" id="r3S-5X-7A5"/>
                         <outlet property="newPasswordView" destination="Ubi-Qk-1kO" id="U0I-NW-CNv"/>
                         <outlet property="reTypePasswordView" destination="AuZ-aT-FoJ" id="Ujz-lj-zmY"/>
                     </connections>
@@ -126,7 +126,7 @@
     </scenes>
     <designables>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>
