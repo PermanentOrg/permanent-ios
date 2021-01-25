@@ -42,7 +42,7 @@ extension String {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
-    static var incorectOldPassword: String { return "IncorectOldPassword".localized() }
+    static var incorrectOldPassword: String { return "IncorrectOldPassword".localized() }
     static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
     static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}

@@ -58,14 +58,14 @@ enum AccountUpdateError: String {
 }
 
 enum PasswordChangeError: String {
-    case incorectOldPassword = "warning.auth.bad_old_password"
+    case incorrectOldPassword = "warning.auth.bad_old_password"
     case lowPasswordComplexity = "warning.registration.password_complexity"
     case passwordMatchError = "warning.registration.password_match"
     
     var description: String {
         switch self {
-        case .incorectOldPassword:
-            return .incorectOldPassword
+        case .incorrectOldPassword:
+            return .incorrectOldPassword
         case .lowPasswordComplexity:
             return .lowPasswordComplexity
         case .passwordMatchError:
