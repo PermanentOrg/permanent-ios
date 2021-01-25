@@ -140,11 +140,10 @@
 "RequestApproval" = "Request Approval";
 "RemoveMember" = "Remove member?";
 "Pending" = "Pending";
-"InvalidCsrf" = "Invalid CSRF";
-"IncorectOldPassword" = "The old password you have entered is incorrect";
-"LowPasswordComplexity" = "The new password does not meet complexity requirements";
-"PasswordMatchError" = "New Password doesn't match Re-type Password";
-"PasswordChangedSuccessfully" = "Password changed successfully.";
+"IncorectOldPassword" = " Old password entered is incorrect. Please try again.";
+"LowPasswordComplexity" = "Password must be at least 8 characters in length.";
+"PasswordMatchError" = "Passwords must match.";
+"PasswordChangedSuccessfully" = "Password updated.";
 "Security" = "Security";
 "UpdatePassword" = "Update Password";
 "CurrentPassword" = "Current Password";
@@ -153,7 +152,11 @@
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
 "AddStorage" = "Add Storage";
-
+"LogInWithBiometrics" = "Log in with Fingerprint/Face ID?";
+"LogInWith" = "Log in with ";
+"LogInFaceId" = "Face ID?";
+"LogInTouchId" = "Touch ID?";
+"TwoStepVerification" = "Two-Step Verification?";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

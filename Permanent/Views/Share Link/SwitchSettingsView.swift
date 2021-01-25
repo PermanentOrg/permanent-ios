@@ -66,14 +66,14 @@ class SwitchSettingsView: UIView {
             switchView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
         ])
         
-        switchView.addTarget(self, action: #selector(toggleWasPressed(Sender:)), for: .touchUpInside)
+        switchView.addTarget(self, action: #selector(toggleWasPressed(sender:)), for: .touchUpInside)
     }
     
-    @objc func toggleWasPressed(Sender: UISwitch){
-        delegate?.switchToggleWasPressed(Sender: Sender)
+    @objc func toggleWasPressed(sender: UISwitch){
+        delegate?.switchToggleWasPressed(sender: sender)
     }
 }
 
 protocol ActionForSwitchSettingsView  {
-    func switchToggleWasPressed(Sender: UISwitch)
+    func switchToggleWasPressed(sender: UISwitch)
 }

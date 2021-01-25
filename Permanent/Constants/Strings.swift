@@ -42,7 +42,6 @@ extension String {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
-    static var invalidCsrf: String { return "InvalidCsrf".localized() }
     static var incorectOldPassword: String { return "IncorectOldPassword".localized() }
     static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
@@ -149,8 +148,11 @@ extension String {
     static var currentPassword: String { return "CurrentPassword".localized()}
     static var reTypePassword: String { return "ReTypePassword".localized()}
     static var newPassword: String { return "NewPassword".localized()}
-    static var logInWithFingerPrint: String { return "Log in with Fingerprint/Face ID?".localized()}
-    static var twoStepVerification: String { return "Two-Step Verification?".localized()}
+    static var logInWithBiometrics: String { return "LogInWithBiometrics".localized()}
+    static var logInWith: String { return "Log in with ".localized()}
+    static var LogInFaceId: String{ return "LogInFaceId".localized()}
+    static var LogInTouchId: String{ return "LogInTouchId".localized()}
+    static var twoStepVerification: String { return "TwoStepVerification".localized()}
     static var sharedBy: String { return "SharedBy".localized() }
     static var fromArchive: String { return "FromArchive".localized() }
     static var requestApproval: String { return "RequestApproval".localized() }
