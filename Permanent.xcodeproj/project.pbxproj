@@ -79,6 +79,12 @@
 		BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */; };
 		BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */; };
 		BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */; };
+		BC42EDC725C011010031B965 /* Invite.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC625C011010031B965 /* Invite.swift */; };
+		BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC925C011130031B965 /* InviteVM.swift */; };
+		BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDCC25C011290031B965 /* InviteVO.swift */; };
+		BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */; };
+		BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD525C0184D0031B965 /* InviteViewModelDelegate.swift */; };
+		BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD825C0192C0031B965 /* InviteViewModel.swift */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -322,6 +328,12 @@
 		BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationsViewController.swift; sourceTree = "<group>"; };
 		BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationTableViewCell.swift; sourceTree = "<group>"; };
 		BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
+		BC42EDC625C011010031B965 /* Invite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invite.swift; sourceTree = "<group>"; };
+		BC42EDC925C011130031B965 /* InviteVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteVM.swift; sourceTree = "<group>"; };
+		BC42EDCC25C011290031B965 /* InviteVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteVO.swift; sourceTree = "<group>"; };
+		BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEndpoint.swift; sourceTree = "<group>"; };
+		BC42EDD525C0184D0031B965 /* InviteViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteViewModelDelegate.swift; sourceTree = "<group>"; };
+		BC42EDD825C0192C0031B965 /* InviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteViewModel.swift; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -783,6 +795,7 @@
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */,
+				BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -851,6 +864,9 @@
 		BC42EDBB25BB119B0031B965 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BC42EDC625C011010031B965 /* Invite.swift */,
+				BC42EDC925C011130031B965 /* InviteVM.swift */,
+				BC42EDCC25C011290031B965 /* InviteVO.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -858,6 +874,8 @@
 		BC42EDBC25BB119F0031B965 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BC42EDD525C0184D0031B965 /* InviteViewModelDelegate.swift */,
+				BC42EDD825C0192C0031B965 /* InviteViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1408,6 +1426,7 @@
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
+				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
 				BCEECD6625ADA88400A4520E /* SharePreviewViewModel.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
@@ -1415,6 +1434,7 @@
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				BCEECD0325AC628400A4520E /* FileLargeCollectionViewCell.swift in Sources */,
 				BCC4067525A89C4400E29CC4 /* SharePreviewViewController.swift in Sources */,
+				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
@@ -1448,6 +1468,7 @@
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
 				BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
+				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
@@ -1458,6 +1479,7 @@
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
+				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
@@ -1474,6 +1496,7 @@
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
+				BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
@@ -1510,6 +1533,7 @@
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
+				BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
 				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,

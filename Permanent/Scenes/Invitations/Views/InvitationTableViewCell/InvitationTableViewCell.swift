@@ -15,6 +15,13 @@ class InvitationTableViewCell: UITableViewCell {
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var resendButton: RoundedButton!
     @IBOutlet var revokeButton: RoundedButton!
+    
+    var invite: Invite? {
+        didSet {
+            nameLabel.text = invite?.name
+            emailLabel.text = invite?.email
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -179,7 +179,13 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             UIApplication.shared.open(url)
             
         case .invitations:
-            navigateToController(.invitations, from: .invitations)
+            guard
+                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitationsViewController else {
+                return
+            }
+            
+            inviteVC.viewModel = InviteViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
             
         case .logOut:
             logOut()

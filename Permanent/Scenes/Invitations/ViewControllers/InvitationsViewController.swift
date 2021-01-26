@@ -17,6 +17,12 @@ class InvitationsViewController: UIViewController {
     @IBOutlet private var yourInvitationsLabel: UILabel!
     @IBOutlet private var tableView: UITableView!
     
+    var viewModel: InviteViewModelDelegate! {
+        didSet {
+            viewModel.viewDelegate = self
+        }
+    }
+    
     // MARK: - UIViewController
     
     override func viewDidLoad() {
@@ -24,6 +30,7 @@ class InvitationsViewController: UIViewController {
         
         configureUI()
         setupTableView()
+        viewModel.start()
     }
     
     fileprivate func configureUI() {
@@ -53,17 +60,36 @@ class InvitationsViewController: UIViewController {
 extension InvitationsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return viewModel.numberOfItems
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeue(cellClass: InvitationTableViewCell.self, forIndexPath: indexPath)
+        cell.invite = viewModel.itemFor(row: indexPath.row)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+}
+
+extension InvitationsViewController: InviteViewModelViewDelegate {
+    
+    func updateScreen(status: RequestStatus) {
+        switch status {
+        case .success:
+            self.tableView.reloadData()
+            
+        case .error(let message):
+            print(message)
+        }
+    }
+
+    func updateSpinner(isLoading: Bool) {
+        isLoading ? showSpinner() : hideSpinner()
     }
     
 }
