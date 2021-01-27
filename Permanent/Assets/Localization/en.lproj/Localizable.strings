@@ -158,6 +158,7 @@
 "LogInFaceId" = "Face ID?";
 "LogInTouchId" = "Touch ID?";
 "TwoStepVerification" = "Two-Step Verification?";
+"ActivityFeed" = "Activity Feed";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";
