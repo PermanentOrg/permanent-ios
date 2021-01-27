@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Account Settings View Controller-->
+        <scene sceneID="NYQ-Mq-HnA">
+            <objects>
+                <viewController storyboardIdentifier="AccountSettings" id="U2U-Bo-n5y" customClass="AccountSettingsViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2QP-wY-db1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="vKa-Za-ffa">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d32-Lh-2lY">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S4H-vw-aNZ" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="20" y="336" width="374" height="45"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="45" id="LjR-hm-rqC"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="pressedUpdateButton:" destination="U2U-Bo-n5y" eventType="touchUpInside" id="KKW-AO-fsX"/>
+                                                </connections>
+                                            </button>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="MOe-py-7bl">
+                                                <rect key="frame" x="0.0" y="23" width="414" height="278"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZaR-Lf-U3y" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="82.5"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ubi-Qk-1kO" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="97.5" width="414" height="83"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-aT-FoJ" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="195.5" width="414" height="82.5"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="278" id="koC-Iz-gT9"/>
+                                                </constraints>
+                                            </stackView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fWz-P8-1yb">
+                                                <rect key="frame" x="0.0" y="415.5" width="414" height="1"/>
+                                                <color key="backgroundColor" systemColor="systemPinkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="uAV-W7-bVH"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2o9-qH-Dds" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="20" y="426.5" width="374" height="45"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="45" id="iPK-eL-8aR"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="MOe-py-7bl" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" id="1KY-5b-vZT"/>
+                                            <constraint firstAttribute="trailing" secondItem="fWz-P8-1yb" secondAttribute="trailing" id="1xU-OM-EPT"/>
+                                            <constraint firstItem="fWz-P8-1yb" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" id="NZf-zF-MSU"/>
+                                            <constraint firstAttribute="trailing" secondItem="2o9-qH-Dds" secondAttribute="trailing" constant="20" id="OmF-48-xE6"/>
+                                            <constraint firstItem="S4H-vw-aNZ" firstAttribute="top" secondItem="MOe-py-7bl" secondAttribute="bottom" constant="35" id="R0W-18-2JJ"/>
+                                            <constraint firstItem="2o9-qH-Dds" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" constant="20" id="R6n-dB-Vvj"/>
+                                            <constraint firstItem="2o9-qH-Dds" firstAttribute="top" secondItem="fWz-P8-1yb" secondAttribute="bottom" constant="10" id="RRA-54-dwg"/>
+                                            <constraint firstItem="S4H-vw-aNZ" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" constant="20" id="RXK-6L-uCG"/>
+                                            <constraint firstItem="MOe-py-7bl" firstAttribute="top" secondItem="d32-Lh-2lY" secondAttribute="topMargin" constant="15" id="W8U-Hv-89X"/>
+                                            <constraint firstAttribute="trailing" secondItem="MOe-py-7bl" secondAttribute="trailing" id="dxD-Wv-EpM"/>
+                                            <constraint firstItem="fWz-P8-1yb" firstAttribute="top" secondItem="S4H-vw-aNZ" secondAttribute="bottom" constant="34.5" id="qwC-hd-ibt"/>
+                                            <constraint firstAttribute="trailing" secondItem="S4H-vw-aNZ" secondAttribute="trailing" constant="20" id="sB9-pw-eSS"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="d32-Lh-2lY" firstAttribute="trailing" secondItem="vKa-Za-ffa" secondAttribute="trailing" id="02e-lB-gbu"/>
+                                    <constraint firstItem="SsH-CS-oy1" firstAttribute="top" secondItem="vKa-Za-ffa" secondAttribute="top" id="8Xf-7X-mTN"/>
+                                    <constraint firstItem="BcY-V8-JnU" firstAttribute="bottom" secondItem="d32-Lh-2lY" secondAttribute="bottom" id="GYY-uH-MFg"/>
+                                    <constraint firstAttribute="bottom" secondItem="SsH-CS-oy1" secondAttribute="bottom" id="H5Z-0p-Zhe"/>
+                                    <constraint firstAttribute="width" secondItem="d32-Lh-2lY" secondAttribute="width" id="QYJ-Ns-YbL"/>
+                                    <constraint firstItem="d32-Lh-2lY" firstAttribute="top" secondItem="vKa-Za-ffa" secondAttribute="top" id="QZ3-fI-Rmv"/>
+                                    <constraint firstItem="d32-Lh-2lY" firstAttribute="leading" secondItem="vKa-Za-ffa" secondAttribute="leading" id="l1r-sL-XsT"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="SsH-CS-oy1"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="BcY-V8-JnU"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="ctr-sN-CNk"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="vKa-Za-ffa" firstAttribute="top" secondItem="ctr-sN-CNk" secondAttribute="top" id="ItD-pF-UzI"/>
+                            <constraint firstItem="ctr-sN-CNk" firstAttribute="trailing" secondItem="vKa-Za-ffa" secondAttribute="trailing" id="Iu2-H0-ZSQ"/>
+                            <constraint firstItem="ctr-sN-CNk" firstAttribute="bottom" secondItem="vKa-Za-ffa" secondAttribute="bottom" id="g81-BW-baN"/>
+                            <constraint firstItem="vKa-Za-ffa" firstAttribute="leading" secondItem="ctr-sN-CNk" secondAttribute="leading" id="oey-Rr-Hbc"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="contentUpdateButton" destination="S4H-vw-aNZ" id="Enh-oR-t7F"/>
+                        <outlet property="currentPasswordView" destination="ZaR-Lf-U3y" id="AfV-0Q-Qcr"/>
+                        <outlet property="firstLineView" destination="fWz-P8-1yb" id="XeM-Vj-w6f"/>
+                        <outlet property="logWithBiometricsView" destination="2o9-qH-Dds" id="r3S-5X-7A5"/>
+                        <outlet property="newPasswordView" destination="Ubi-Qk-1kO" id="U0I-NW-CNv"/>
+                        <outlet property="reTypePasswordView" destination="AuZ-aT-FoJ" id="Ujz-lj-zmY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tl6-bN-9mW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="128" y="-21"/>
+        </scene>
+    </scenes>
+    <designables>
+        <designable name="S4H-vw-aNZ">
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
+    </designables>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

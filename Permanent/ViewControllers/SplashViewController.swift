@@ -41,8 +41,9 @@ class SplashViewController: BaseViewController<SplashViewModel> {
         switch status {
         case .loggedIn:
             let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+            let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
             
-            if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode {
+            if (authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode)||(!biometricsAuthEnabled) {
                 AppDelegate.shared.rootViewController.setDrawerRoot()
             } else {
                 AppDelegate.shared.rootViewController.setRoot(named: .biometrics, from: .authentication)

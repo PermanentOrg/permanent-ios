@@ -25,7 +25,7 @@ struct TableViewData {
             //DrawerOption(icon: .power, title: .apps, isSelected: false),
             //DrawerOption(icon: .power, title: .logOut, isSelected: false),
             DrawerOption.members,
-            DrawerOption.activityFeed,
+            DrawerOption.security,
             DrawerOption.addStorage,
             DrawerOption.logOut
         ]
