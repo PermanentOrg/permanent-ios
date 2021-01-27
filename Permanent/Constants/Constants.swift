@@ -73,6 +73,7 @@ extension Constants.Design {
     static let bannerHeight: CGFloat = 45
     static let pickerHeight: CGFloat = 200
     static let numberOfGridItemsPerRow = 2
+    static let avatarRadius: CGFloat = 17.0
 }
 
 extension Constants.API {
