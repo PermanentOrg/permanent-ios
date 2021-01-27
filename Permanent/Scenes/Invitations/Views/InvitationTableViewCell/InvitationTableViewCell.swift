@@ -16,6 +16,9 @@ class InvitationTableViewCell: UITableViewCell {
     @IBOutlet var resendButton: RoundedButton!
     @IBOutlet var revokeButton: RoundedButton!
     
+    var resendAction: ButtonAction?
+    var revokeAction: ButtonAction?
+    
     var invite: Invite? {
         didSet {
             nameLabel.text = invite?.name
@@ -42,9 +45,11 @@ class InvitationTableViewCell: UITableViewCell {
     
     
     @IBAction func resendAction(_ sender: UIButton) {
+        resendAction?()
     }
     
     @IBAction func revokeAction(_ sender: UIButton) {
+        revokeAction?()
     }
     
 }

@@ -76,7 +76,7 @@
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
 		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
 		BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDB525BB116A0031B965 /* Invitations.storyboard */; };
-		BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */; };
+		BC42EDBE25BB11B80031B965 /* InvitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDBD25BB11B80031B965 /* InvitesViewController.swift */; };
 		BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */; };
 		BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */; };
 		BC42EDC725C011010031B965 /* Invite.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDC625C011010031B965 /* Invite.swift */; };
@@ -85,6 +85,7 @@
 		BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */; };
 		BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD525C0184D0031B965 /* InviteViewModelDelegate.swift */; };
 		BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDD825C0192C0031B965 /* InviteViewModel.swift */; };
+		BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42EDDC25C06D080031B965 /* InviteVOPayload.swift */; };
 		BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */; };
 		BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */; };
 		BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
@@ -156,6 +157,7 @@
 		BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */; };
 		BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */; };
 		BC752BCF253EE53000EF7941 /* FABView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCE253EE52F00EF7941 /* FABView.swift */; };
+		BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC76DAEA25C075E70041DCC3 /* ViewController.swift */; };
 		BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7A7944255ED27300DDFD4D /* SortActionSheet.swift */; };
 		BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */; };
 		BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
@@ -172,6 +174,8 @@
 		BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */; };
 		BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120CB2562C64300ECAD7B /* HighlightColor.swift */; };
 		BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */; };
+		BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAEED8325C175AF00A13C0F /* InviteOperation.swift */; };
+		BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAEED8625C1B96200A13C0F /* InviteStatus.swift */; };
 		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */; };
 		BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCB0725D2523565A003E2F66 /* WebKit.framework */; };
@@ -325,7 +329,7 @@
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
 		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
 		BC42EDB525BB116A0031B965 /* Invitations.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Invitations.storyboard; sourceTree = "<group>"; };
-		BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationsViewController.swift; sourceTree = "<group>"; };
+		BC42EDBD25BB11B80031B965 /* InvitesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitesViewController.swift; sourceTree = "<group>"; };
 		BC42EDC125BEE9310031B965 /* InvitationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationTableViewCell.swift; sourceTree = "<group>"; };
 		BC42EDC225BEE9310031B965 /* InvitationTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InvitationTableViewCell.xib; sourceTree = "<group>"; };
 		BC42EDC625C011010031B965 /* Invite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Invite.swift; sourceTree = "<group>"; };
@@ -334,6 +338,7 @@
 		BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteEndpoint.swift; sourceTree = "<group>"; };
 		BC42EDD525C0184D0031B965 /* InviteViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteViewModelDelegate.swift; sourceTree = "<group>"; };
 		BC42EDD825C0192C0031B965 /* InviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteViewModel.swift; sourceTree = "<group>"; };
+		BC42EDDC25C06D080031B965 /* InviteVOPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteVOPayload.swift; sourceTree = "<group>"; };
 		BC451D4A25B06AA600DC02DB /* SharedFileActionSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SharedFileActionSheet.xib; sourceTree = "<group>"; };
 		BC451D4F25B06ABA00DC02DB /* SharedFileActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedFileActionSheet.swift; sourceTree = "<group>"; };
 		BC4526DB251BE53900E24A51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -405,6 +410,7 @@
 		BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UploadFilesView.xib; sourceTree = "<group>"; };
 		BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadFilesView.swift; sourceTree = "<group>"; };
 		BC752BCE253EE52F00EF7941 /* FABView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABView.swift; sourceTree = "<group>"; };
+		BC76DAEA25C075E70041DCC3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BC7A7944255ED27300DDFD4D /* SortActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SortActionSheet.swift; sourceTree = "<group>"; };
 		BC83FDFB2559893200AEE10C /* FolderVOPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderVOPayload.swift; sourceTree = "<group>"; };
 		BC8945102524B24000FA8D7A /* SignUpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpResponse.swift; sourceTree = "<group>"; };
@@ -421,6 +427,8 @@
 		BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
 		BCA120CB2562C64300ECAD7B /* HighlightColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightColor.swift; sourceTree = "<group>"; };
 		BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewController.swift; sourceTree = "<group>"; };
+		BCAEED8325C175AF00A13C0F /* InviteOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteOperation.swift; sourceTree = "<group>"; };
+		BCAEED8625C1B96200A13C0F /* InviteStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteStatus.swift; sourceTree = "<group>"; };
 		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
 		BCB0725B25234993003E2F66 /* TermsConditionsPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsConditionsPopup.swift; sourceTree = "<group>"; };
 		BCB0725D2523565A003E2F66 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -848,7 +856,7 @@
 		BC42EDB925BB11910031B965 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				BC42EDBD25BB11B80031B965 /* InvitationsViewController.swift */,
+				BC42EDBD25BB11B80031B965 /* InvitesViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -867,6 +875,9 @@
 				BC42EDC625C011010031B965 /* Invite.swift */,
 				BC42EDC925C011130031B965 /* InviteVM.swift */,
 				BC42EDCC25C011290031B965 /* InviteVO.swift */,
+				BC42EDDC25C06D080031B965 /* InviteVOPayload.swift */,
+				BCAEED8325C175AF00A13C0F /* InviteOperation.swift */,
+				BCAEED8625C1B96200A13C0F /* InviteStatus.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1154,6 +1165,7 @@
 				BC42EDB825BB11860031B965 /* Invitations */,
 				BCEECDA825B058BF00A4520E /* Shares */,
 				BCEECD5825ADA60F00A4520E /* SharePreview */,
+				BC76DAEA25C075E70041DCC3 /* ViewController.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -1466,7 +1478,7 @@
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
-				BC42EDBE25BB11B80031B965 /* InvitationsViewController.swift in Sources */,
+				BC42EDBE25BB11B80031B965 /* InvitesViewController.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
@@ -1518,6 +1530,7 @@
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
 				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
@@ -1525,6 +1538,7 @@
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
+				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
@@ -1575,8 +1589,10 @@
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
+				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				BCEECD8725AE199E00A4520E /* ShareDetailsVM.swift in Sources */,
+				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,

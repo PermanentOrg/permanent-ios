@@ -180,7 +180,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             
         case .invitations:
             guard
-                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitationsViewController else {
+                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitesViewController else {
                 return
             }
             

@@ -9,8 +9,12 @@ import Foundation
 
 protocol Invite {
     
+    var id: Int { get }
+    
     var name: String { get }
     
     var email: String { get }
+    
+    var status: InviteStatus { get }
     
 }

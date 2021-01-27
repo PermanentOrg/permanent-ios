@@ -21,11 +21,17 @@ protocol InviteViewModelDelegate {
     
     func start()
     
+    func handleInvite(operation: InviteOperation)
+    
     var isBusy: Bool { get }
+    
+    var hasData: Bool { get }
     
 }
 
 protocol InviteViewModelViewDelegate: class {
+    
+    func refreshList(status: RequestStatus)
     
     func updateScreen(status: RequestStatus)
     

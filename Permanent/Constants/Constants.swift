@@ -38,6 +38,7 @@ struct Constants {
     struct API {
         struct FileType {}
         struct AccountStatus {}
+        struct InviteStatus {}
     }
 
     struct Design {}
@@ -110,6 +111,13 @@ extension Constants.URL {
 extension Constants.API.AccountStatus {
     static let STATUS_GENERIC_PENDING = "status.generic.pending"
     static let STATUS_GENERIC_OK = "status.generic.ok"
+}
+
+extension Constants.API.InviteStatus {
+    static let STATUS_INVITE_ACCEPTED = "status.invite.accepted"
+    static let STATUS_INVITE_REVOKED = "status.invite.revoked"
+    static let STATUS_INVITE_PENDING = "status.invite.pending"
+    static let STATUS_INVITE_REJECTED = "status.invite.rejected"
 }
 
 extension Constants.Keys.StorageKeys {

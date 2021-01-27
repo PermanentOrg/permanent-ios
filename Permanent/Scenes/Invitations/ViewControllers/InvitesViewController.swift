@@ -7,7 +7,7 @@
 
 import UIKit
 
-class InvitationsViewController: UIViewController {
+class InvitesViewController: ViewController {
     
     // MARK: - Properties
     
@@ -42,6 +42,8 @@ class InvitationsViewController: UIViewController {
         yourInvitationsLabel.style(withFont: Text.style3.font, textColor: .primary, text: .yourInvitations)
         
         inviteButton.configureActionButtonUI(title: .sendInvite)
+        
+        setupOverlayView()
     }
     
     fileprivate func setupTableView() {
@@ -53,11 +55,13 @@ class InvitationsViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func inviteAction(_ sender: UIButton) {
+        showActionDialog(styled: .simple, withTitle: "Hello", positiveButtonTitle: "OK") {
+            
+        }
     }
-
 }
 
-extension InvitationsViewController: UITableViewDelegate, UITableViewDataSource {
+extension InvitesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfItems
@@ -65,7 +69,17 @@ extension InvitationsViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeue(cellClass: InvitationTableViewCell.self, forIndexPath: indexPath)
-        cell.invite = viewModel.itemFor(row: indexPath.row)
+        
+        let invite = viewModel.itemFor(row: indexPath.row)
+        cell.invite = invite
+        
+        cell.resendAction = {
+            self.viewModel.handleInvite(operation: .resend(id: invite.id))
+        }
+        
+        cell.revokeAction = {
+            self.viewModel.handleInvite(operation: .revoke(id: invite.id))
+        }
         
         return cell
     }
@@ -76,11 +90,22 @@ extension InvitationsViewController: UITableViewDelegate, UITableViewDataSource 
     
 }
 
-extension InvitationsViewController: InviteViewModelViewDelegate {
+extension InvitesViewController: InviteViewModelViewDelegate {
+    
+    func refreshList(status: RequestStatus) {
+        switch status {
+        case .success:
+            viewModel.start()
+            
+        case .error(let message):
+            print(message)
+        }
+    }
     
     func updateScreen(status: RequestStatus) {
         switch status {
         case .success:
+            yourInvitationsLabel.isHidden = !viewModel.hasData
             self.tableView.reloadData()
             
         case .error(let message):

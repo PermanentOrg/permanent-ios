@@ -16,11 +16,15 @@ class InviteViewModel {
     
     fileprivate var invites: [Invite] = []
     
+    fileprivate var csrf: String = ""
+    
     var isBusy: Bool = false {
         didSet {
             viewDelegate?.updateSpinner(isLoading: isBusy)
         }
     }
+    
+    var hasData: Bool { !invites.isEmpty }
     
     // MARK: - Events
     
@@ -53,6 +57,7 @@ class InviteViewModel {
                     return
                 }
                 
+                self.csrf = model.csrf
                 self.populateData(inviteVOS)
                 self.viewDelegate?.updateScreen(status: .success)
                 
@@ -65,12 +70,52 @@ class InviteViewModel {
         }
     }
     
+    func handleInvite(operation: InviteOperation) {
+        isBusy = true
+        
+        let apiOperation = APIOperation(operation.apiOperation(csrf: self.csrf))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            self.isBusy = false
+            
+            switch result {
+            case .json(let response, _):
+                
+                guard
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<InviteVO>.decoder),
+                    
+                    model.isSuccessful
+                    
+                else {
+                    self.viewDelegate?.refreshList(status: .error(message: APIError.parseError(nil).message))
+                    return
+                }
+                
+                self.viewDelegate?.refreshList(status: .success)
+                
+            case .error(let error, _):
+                self.viewDelegate?.refreshList(status: .error(message: (error as? APIError)?.message))
+                
+            default:
+                fatalError()
+            }
+        }
+    }
+    
     fileprivate func populateData(_ invites: [InviteVO]) {
+        self.invites.removeAll()
+        
         invites.forEach {
             guard let invite = $0.invite else { return  }
         
             let inviteVM = InviteVM(invite: invite)
-            self.invites.append(inviteVM)
+            
+            // Show only items with `pending` status.
+            if inviteVM.status == .pending {
+                self.invites.append(inviteVM)
+            }
+            
         }
     }
 }
