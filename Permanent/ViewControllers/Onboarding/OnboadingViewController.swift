@@ -54,6 +54,7 @@ extension OnboadingViewController: OnboardingViewModelDelegate, UIScrollViewDele
     
     func goToLogin() {
         PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.isNewUserStorageKey)
+        PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled)
        
         let signUpController = UIViewController.create(withIdentifier: .signUp, from: .authentication)
         navigationController?.setViewControllers([signUpController], animated: true)

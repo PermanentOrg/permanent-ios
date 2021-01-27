@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -33,7 +34,7 @@
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoName" translatesAutoresizingMaskIntoConstraints="NO" id="hzm-Yk-EnS" userLabel="Logo Image View">
                                         <rect key="frame" x="20" y="0.0" width="196" height="50"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hjI-de-cWt" userLabel="Skip Button">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hjI-de-cWt" userLabel="Skip Button">
                                         <rect key="frame" x="357" y="0.0" width="37" height="50"/>
                                         <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="18"/>
                                         <state key="normal" title="Skip"/>
@@ -52,7 +53,7 @@
                                     <constraint firstAttribute="bottom" secondItem="hzm-Yk-EnS" secondAttribute="bottom" id="UC8-0Q-7h9"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kdb-sM-DVg" userLabel="Next Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kdb-sM-DVg" userLabel="Next Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                 <rect key="frame" x="45" y="797" width="324" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="0fz-1N-9Uw"/>
@@ -63,6 +64,7 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="og1-CT-NfY"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="4s2-84-NjO" firstAttribute="trailing" secondItem="og1-CT-NfY" secondAttribute="trailing" id="7gl-jc-2Ka"/>
@@ -77,7 +79,6 @@
                             <constraint firstItem="og1-CT-NfY" firstAttribute="trailing" secondItem="Kdb-sM-DVg" secondAttribute="trailing" constant="45" id="rYe-7p-Xy0"/>
                             <constraint firstItem="Kdb-sM-DVg" firstAttribute="leading" secondItem="og1-CT-NfY" secondAttribute="leading" constant="45" id="v8w-As-pu5"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="og1-CT-NfY"/>
                     </view>
                     <connections>
                         <outlet property="nextButtonLabel" destination="Kdb-sM-DVg" id="Vdy-4W-myJ"/>
@@ -124,7 +125,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemIndigoColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="1g6-Fl-2cq"/>
+                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
                         <constraints>
                             <constraint firstItem="cRs-Ki-3M0" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1g6-Fl-2cq" secondAttribute="leading" constant="10" id="2BP-kR-l8Y"/>
                             <constraint firstItem="cD6-yu-MJX" firstAttribute="top" secondItem="1g6-Fl-2cq" secondAttribute="top" constant="50" id="5vZ-sS-Ktz"/>
@@ -139,7 +141,6 @@
                             <constraint firstItem="Flw-Ci-rQg" firstAttribute="centerX" secondItem="6fn-5v-bdk" secondAttribute="centerX" id="xBq-7h-gsN"/>
                             <constraint firstItem="cD6-yu-MJX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1g6-Fl-2cq" secondAttribute="leading" constant="50" id="xee-pZ-wLn"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="1g6-Fl-2cq"/>
                     </view>
                     <connections>
                         <outlet property="labelOne" destination="Flw-Ci-rQg" id="Vtm-nT-dCK"/>
@@ -194,7 +195,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemIndigoColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="jaI-g2-e6o"/>
+                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
                         <constraints>
                             <constraint firstItem="HnP-m7-aCl" firstAttribute="centerX" secondItem="gEV-dN-VEi" secondAttribute="centerX" id="4Y0-EJ-dLK"/>
                             <constraint firstItem="jaI-g2-e6o" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Sil-MO-edk" secondAttribute="trailing" constant="50" id="Ext-he-GAO"/>
@@ -209,7 +211,6 @@
                             <constraint firstItem="Sil-MO-edk" firstAttribute="centerX" secondItem="gEV-dN-VEi" secondAttribute="centerX" id="x4l-kx-c0p"/>
                             <constraint firstItem="HnP-m7-aCl" firstAttribute="top" secondItem="Sil-MO-edk" secondAttribute="bottom" constant="20" id="y5b-VK-AxE"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="jaI-g2-e6o"/>
                     </view>
                     <connections>
                         <outlet property="labelOne" destination="HnP-m7-aCl" id="DGy-Gb-5K9"/>
@@ -256,7 +257,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemIndigoColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="qfz-c8-AxF"/>
+                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
                         <constraints>
                             <constraint firstItem="yP6-97-thk" firstAttribute="centerX" secondItem="fa4-IB-vD3" secondAttribute="centerX" id="06I-bk-aGp"/>
                             <constraint firstItem="yP6-97-thk" firstAttribute="top" secondItem="VfQ-S9-Ib7" secondAttribute="bottom" id="07a-Rp-0P3"/>
@@ -271,7 +273,6 @@
                             <constraint firstItem="qfz-c8-AxF" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RNT-9d-4Ju" secondAttribute="trailing" constant="50" id="s0m-5a-boK"/>
                             <constraint firstItem="qfz-c8-AxF" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="VfQ-S9-Ib7" secondAttribute="trailing" constant="10" id="vd1-Fc-Fuh"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="qfz-c8-AxF"/>
                     </view>
                     <connections>
                         <outlet property="labelOne" destination="VfQ-S9-Ib7" id="k7q-C1-srH"/>
@@ -283,10 +284,18 @@
             <point key="canvasLocation" x="-513" y="583"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="Kdb-sM-DVg">
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
+    </designables>
     <resources>
         <image name="1" width="157" height="89.5"/>
         <image name="2" width="134" height="132.5"/>
         <image name="3" width="144" height="143"/>
         <image name="LogoName" width="196" height="30"/>
+        <systemColor name="systemIndigoColor">
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>
