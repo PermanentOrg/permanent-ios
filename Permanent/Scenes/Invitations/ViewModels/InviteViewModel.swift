@@ -103,6 +103,17 @@ class InviteViewModel {
         }
     }
     
+    func sendInvite(info: [String]?) {
+        guard
+            let inviteInfo = info,
+            let name = inviteInfo.first,
+            let email = inviteInfo.last,
+            name.isNotEmpty, email.isNotEmpty else { return }
+     
+        viewDelegate?.dismissDialog()
+        handleInvite(operation: .send(name: name, email: email))
+    }
+    
     fileprivate func populateData(_ invites: [InviteVO]) {
         self.invites.removeAll()
         

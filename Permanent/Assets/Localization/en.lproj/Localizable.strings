@@ -150,7 +150,9 @@
 "Resend" = "Resend";
 "YourInvitations" = "Your Invitations";
 "Invitations" = "Invitations";
-
+"Send" = "Send";
+"SendInvitation" = "Send Invitation";
+"RecipientInfo" = "Recipient %@";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

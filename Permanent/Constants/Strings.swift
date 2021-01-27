@@ -154,7 +154,11 @@ extension String {
     static var resend: String { return "Resend".localized() }
     static var yourInvitations: String { return "YourInvitations".localized() }
     static var invitations: String { return "Invitations".localized() }
-    
+    static var send: String { return "Send".localized() }
+    static var sendInvitation: String { return "SendInvitation".localized() }
+    static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
+    static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
+
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }
     static var errorUnknown: String { return "ErrorUnknown".localized() }

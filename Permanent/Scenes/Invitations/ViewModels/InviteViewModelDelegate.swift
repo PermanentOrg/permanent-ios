@@ -23,6 +23,8 @@ protocol InviteViewModelDelegate {
     
     func handleInvite(operation: InviteOperation)
     
+    func sendInvite(info: [String]?)
+    
     var isBusy: Bool { get }
     
     var hasData: Bool { get }
@@ -36,5 +38,7 @@ protocol InviteViewModelViewDelegate: class {
     func updateScreen(status: RequestStatus)
     
     func updateSpinner(isLoading: Bool)
+    
+    func dismissDialog()
     
 }

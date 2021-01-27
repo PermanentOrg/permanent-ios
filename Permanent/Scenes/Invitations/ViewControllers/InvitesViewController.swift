@@ -1,4 +1,4 @@
-//  
+//
 //  InvitationsViewController.swift
 //  Permanent
 //
@@ -8,7 +8,6 @@
 import UIKit
 
 class InvitesViewController: ViewController {
-    
     // MARK: - Properties
     
     @IBOutlet private var titleLabel: UILabel!
@@ -55,14 +54,18 @@ class InvitesViewController: ViewController {
     // MARK: - Actions
     
     @IBAction func inviteAction(_ sender: UIButton) {
-        showActionDialog(styled: .simple, withTitle: "Hello", positiveButtonTitle: "OK") {
-            
-        }
+        showActionDialog(
+            styled: .multipleFields,
+            withTitle: .sendInvitation,
+            placeholders: [.recipientName, .recipientEmail],
+            positiveButtonTitle: .send,
+            positiveAction: {
+                self.viewModel.sendInvite(info: self.actionDialog?.fieldsInput)
+            })
     }
 }
 
 extension InvitesViewController: UITableViewDelegate, UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfItems
     }
@@ -87,11 +90,9 @@ extension InvitesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
 }
 
 extension InvitesViewController: InviteViewModelViewDelegate {
-    
     func refreshList(status: RequestStatus) {
         switch status {
         case .success:
@@ -106,7 +107,7 @@ extension InvitesViewController: InviteViewModelViewDelegate {
         switch status {
         case .success:
             yourInvitationsLabel.isHidden = !viewModel.hasData
-            self.tableView.reloadData()
+            tableView.reloadData()
             
         case .error(let message):
             print(message)
@@ -117,4 +118,7 @@ extension InvitesViewController: InviteViewModelViewDelegate {
         isLoading ? showSpinner() : hideSpinner()
     }
     
+    func dismissDialog() {
+        actionDialog?.dismiss()
+    }
 }
