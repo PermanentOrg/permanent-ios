@@ -158,7 +158,8 @@ extension String {
     static var sendInvitation: String { return "SendInvitation".localized() }
     static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
     static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
-
+    static var activityFeed: String { return "ActivityFeed".localized() }
+    
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }
     static var errorUnknown: String { return "ErrorUnknown".localized() }

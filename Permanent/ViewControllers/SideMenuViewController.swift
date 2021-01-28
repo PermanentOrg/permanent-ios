@@ -174,6 +174,11 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .activityFeed:
+            let newRootVC = ActivityFeedViewController()
+            newRootVC.viewModel = ActivityFeedViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         case .addStorage:
             guard let url = URL(string: Constants.URL.buyStorageURL) else { return }
             UIApplication.shared.open(url)

@@ -153,6 +153,8 @@
 "Send" = "Send";
 "SendInvitation" = "Send Invitation";
 "RecipientInfo" = "Recipient %@";
+"ActivityFeed" = "Activity Feed";
+
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";
