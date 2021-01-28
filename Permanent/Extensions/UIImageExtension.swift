@@ -20,6 +20,12 @@ extension UIImage {
 
 extension UIImage {
     static let `public` = UIImage(named: "public")!
+    
+    static let appsNotification = UIImage(named: "appsNotification")!
+    static let archiveNotification = UIImage(named: "archiveNotification")!
+    static let accountNotification = UIImage(named: "accountNotification")!
+    static let relationshipsNotification = UIImage(named: "relationshipsNotification")!
+    static let sharesNotification = UIImage(named: "sharesNotification")!
     static let alert = UIImage(named: "alert")!
     static let close = UIImage(named: "close")!
     static let cloud = UIImage(named: "cloud")!

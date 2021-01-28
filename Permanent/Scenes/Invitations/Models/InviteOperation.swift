@@ -26,4 +26,11 @@ enum InviteOperation {
         }
     }
     
+    var infoText: String {
+        switch self {
+        case .revoke: return .inviteRevoked
+        default: return .inviteSent
+        }
+    }
+    
 }

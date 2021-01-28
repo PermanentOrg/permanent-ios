@@ -173,6 +173,8 @@ extension String {
     static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
     static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
     static var activityFeed: String { return "ActivityFeed".localized() }
+    static var inviteSent: String { return "InviteSent".localized()}
+    static var inviteRevoked: String { return "InviteRevoked".localized()}
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

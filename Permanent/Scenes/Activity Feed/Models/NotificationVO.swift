@@ -40,9 +40,3 @@ struct NotificationVOData: Model {
         case thumbArchiveNbr, timesSent, lastSentDT, emailKVP, status, type, createdDT, updatedDT
     }
 }
-
-
-enum NotificationType: String {
-    case typeNotificationPaShare = "type.notification.pa_share"
-    case typeNotificationPaTransfer = "type.notification.pa_transfer"
-}

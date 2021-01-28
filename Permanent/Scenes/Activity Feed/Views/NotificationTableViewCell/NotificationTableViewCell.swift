@@ -10,8 +10,7 @@ import UIKit
 class NotificationTableViewCell: UITableViewCell {
     
     // MARK: - Properties
-    
-    @IBOutlet var archiveImageView: UIImageView!
+
     @IBOutlet var notificationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
     @IBOutlet var typeImageView: UIImageView!
@@ -20,6 +19,7 @@ class NotificationTableViewCell: UITableViewCell {
         didSet {
             notificationLabel.text = notification?.message
             dateLabel.text = notification?.date
+            typeImageView.image = notification?.type.icon
         }
     }
     
@@ -34,13 +34,6 @@ class NotificationTableViewCell: UITableViewCell {
         notificationLabel.font = Text.style8.font
         dateLabel.textColor = .textPrimary
         dateLabel.font = Text.style12.font
-
-        archiveImageView.layer.cornerRadius = Constants.Design.avatarRadius
-        archiveImageView.backgroundColor = .primary
-        
-        // TEST
-        typeImageView.image = UIImage.reply.templated
-        typeImageView.tintColor = .bilbaoGreen
     }
     
 }

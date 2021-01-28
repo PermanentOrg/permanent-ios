@@ -63,7 +63,7 @@ extension UIView {
         }, completion: completion)
     }
     
-    func showNotificationBanner(height: CGFloat, title: String) {
+    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String) {
         let initialBannerOrigin = CGPoint(x: 0, y: -height)
         let bannerView = UIView(frame: CGRect(origin: initialBannerOrigin,
                                               size: CGSize(width: self.bounds.width, height: height)))

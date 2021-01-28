@@ -10,6 +10,7 @@ import Foundation
 struct NotificationVM: Notification {
     var message: String
     var date: String
+    var type: NotificationType
 
     init(notification: NotificationVO) {
 
@@ -17,5 +18,6 @@ struct NotificationVM: Notification {
         
         self.message = data?.message ?? ""
         self.date = data?.lastSentDT?.dateOnly ?? ""
+        self.type = NotificationType.type(forValue: data?.type)
     }
 }
