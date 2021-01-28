@@ -146,6 +146,7 @@
 "PasswordMatchError" = "Passwords must match.";
 "PasswordChangedSuccessfully" = "Password updated.";
 "Security" = "Security";
+"AccountInfo" = "Account Info";
 "UpdatePassword" = "Update Password";
 "CurrentPassword" = "Current Password";
 "ReTypePassword" = "Re-type Password";
@@ -158,6 +159,16 @@
 "LogInFaceId" = "Face ID?";
 "LogInTouchId" = "Touch ID?";
 "TwoStepVerification" = "Two-Step Verification?";
+
+"AccountName" = "Account Name";
+"PrimaryEmail" = "Primary Email";
+"MobilePhone" = "Mobile Phone";
+"Address" = "Address";
+"City" = "City";
+"StateOrRegion" = "State or region";
+"PostalCode" = "Postal Code";
+"Country" = "Country";
+"SaveInfo" = "Save Info";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

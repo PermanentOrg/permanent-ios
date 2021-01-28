@@ -144,6 +144,7 @@ extension String {
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
     static var security: String { return "Security".localized() }
+    static var accountInfo: String { return "AccountInfo".localized() }
     static var updatePassword: String { return "UpdatePassword".localized()}
     static var currentPassword: String { return "CurrentPassword".localized()}
     static var reTypePassword: String { return "ReTypePassword".localized()}
@@ -162,6 +163,15 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     static var remove: String { return "Remove".localized() }
+    static var accountName: String { return "AccountName".localized() }
+    static var primaryEmail: String { return "PrimaryEmail".localized() }
+    static var mobilePhone: String { return "MobilePhone".localized() }
+    static var address: String { return "Address".localized() }
+    static var city: String { return "City".localized() }
+    static var stateOrRegion: String { return "StateOrRegion".localized() }
+    static var postalcode: String { return "PostalCode".localized() }
+    static var country: String { return "Country".localized() }
+    static var saveInfo: String { return "SaveInfo".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }
