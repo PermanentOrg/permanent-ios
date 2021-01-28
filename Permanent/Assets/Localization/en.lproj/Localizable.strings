@@ -170,6 +170,7 @@
 "TwoStepVerification" = "Two-Step Verification?";
 "InviteSent" = "Invite sent";
 "InviteRevoked" = "Invite revoked";
+"LinkNotAvailable" = "This link is no longer available";
 
 
 /// Errors

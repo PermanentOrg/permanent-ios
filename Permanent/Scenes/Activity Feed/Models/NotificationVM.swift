@@ -17,7 +17,7 @@ struct NotificationVM: Notification {
         let data = notification.notificationVO
         
         self.message = data?.message ?? ""
-        self.date = data?.lastSentDT?.dateOnly ?? ""
+        self.date = data?.createdDT?.dateOnly ?? ""
         self.type = NotificationType.type(forValue: data?.type)
     }
 }

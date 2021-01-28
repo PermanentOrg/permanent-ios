@@ -175,6 +175,7 @@ extension String {
     static var activityFeed: String { return "ActivityFeed".localized() }
     static var inviteSent: String { return "InviteSent".localized()}
     static var inviteRevoked: String { return "InviteRevoked".localized()}
+    static var linkNotAvailable: String { return "LinkNotAvailable".localized()}
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

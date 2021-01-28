@@ -27,6 +27,7 @@ extension UIImage {
     static let relationshipsNotification = UIImage(named: "relationshipsNotification")!
     static let sharesNotification = UIImage(named: "sharesNotification")!
     static let alert = UIImage(named: "alert")!
+    static let chicken = UIImage(named: "chicken")!
     static let close = UIImage(named: "close")!
     static let cloud = UIImage(named: "cloud")!
     static let delete = UIImage(named: "delete")!

@@ -1,4 +1,4 @@
-//  
+//
 //  SharePreviewViewController.swift
 //  Permanent
 //
@@ -8,7 +8,6 @@
 import UIKit
 
 class SharePreviewViewController: UIViewController {
-    
     // MARK: - Properties
     
     @IBOutlet var archiveImage: UIImageView!
@@ -64,7 +63,7 @@ class SharePreviewViewController: UIViewController {
                                 forCellWithReuseIdentifier: FileLargeCollectionViewCell.reuseIdentifier)
         
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.sectionInset = UIEdgeInsets.init(top: 5, left: 2, bottom: 5, right: 2)
+        flowLayout.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
         flowLayout.minimumInteritemSpacing = 0
         flowLayout.minimumLineSpacing = 0
         collectionView.collectionViewLayout = flowLayout
@@ -91,6 +90,10 @@ class SharePreviewViewController: UIViewController {
         viewModel.performAction()
     }
     
+    @objc
+    fileprivate func dismissScreen() {
+        navigationController?.popViewController(animated: true)
+    }
 }
 
 // MARK: - UICollectionView Delegates
@@ -101,10 +104,9 @@ extension SharePreviewViewController: UICollectionViewDelegate, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: FileLargeCollectionViewCell.reuseIdentifier,
-                for: indexPath
+            withReuseIdentifier: FileLargeCollectionViewCell.reuseIdentifier,
+            for: indexPath
         ) as? FileLargeCollectionViewCell else {
             fatalError()
         }
@@ -117,16 +119,13 @@ extension SharePreviewViewController: UICollectionViewDelegate, UICollectionView
 }
 
 extension SharePreviewViewController: UICollectionViewDelegateFlowLayout {
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         let noOfCellsInRow = Constants.Design.numberOfGridItemsPerRow
         let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
         
         let totalSpace = flowLayout.sectionInset.left
             + flowLayout.sectionInset.right
             + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
-        
         
         let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
         
@@ -137,9 +136,7 @@ extension SharePreviewViewController: UICollectionViewDelegateFlowLayout {
 // MARK: ViewModel Delegate
 
 extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
-    
     func updateShareAccess(status: RequestStatus, shareStatus: ShareStatus?) {
-        
         switch status {
         case .success:
             if let shareStatus = shareStatus {
@@ -149,14 +146,12 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             
         case .error(let message):
             print(message)
-            
         }
-        
     }
     
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?) {
         switch status {
-        case.success:
+        case .success:
             collectionView.reloadData()
             
             if let details = shareDetails {
@@ -170,8 +165,14 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
                 setupActionButton(forStatus: details.status)
             }
             
-        case .error(let error): print(error)
-            // TODO: Move showError alert to UIVC extension
+        case .error:
+            actionButton.isHidden = false
+            actionButton.configureActionButtonUI(title: .ok)
+            actionButton.addTarget(self, action: #selector(dismissScreen), for: .touchUpInside)
+            collectionView.backgroundView = EmptyFolderView(
+                title: .linkNotAvailable,
+                image: .chicken
+            )
         }
     }
     
@@ -180,10 +181,10 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
     }
     
     func viewInArchive() {
-
         guard let sharesVC = UIViewController.create(
-                withIdentifier: .shares,
-                from: .share) as? SharesViewController else {
+            withIdentifier: .shares,
+            from: .share
+        ) as? SharesViewController else {
             return
         }
         
