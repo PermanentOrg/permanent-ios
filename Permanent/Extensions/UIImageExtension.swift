@@ -20,6 +20,7 @@ extension UIImage {
 
 extension UIImage {
     static let `public` = UIImage(named: "public")!
+    static let alert = UIImage(named: "alert")!
     static let close = UIImage(named: "close")!
     static let cloud = UIImage(named: "cloud")!
     static let delete = UIImage(named: "delete")!
@@ -33,12 +34,14 @@ extension UIImage {
     static let group = UIImage(named: "group")!
     static let info = UIImage(named: "info")!
     static let hamburger = UIImage(named: "hamburger")!
+    static let mail = UIImage(named: "mail")!
     static let more = UIImage(named: "more")!
     static let moreAction = UIImage(named: "moreAction")!
     static let logOut = UIImage(named: "logOut")!
     static let placeholder = UIImage(named: "placeholder")!
     static let power = UIImage(named: "power")!
     static let profile = UIImage(named: "profile")!
+    static let reply = UIImage(named: "reply")!
     static let removeAction = UIImage(named: "removeAction")!
     static let relationships = UIImage(named: "relationships")!
     static let settings = UIImage(named: "settings")!

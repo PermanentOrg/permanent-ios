@@ -114,6 +114,12 @@ class ActionDialogView: UIView {
             
             initDropdown()
             
+        case .multipleFields:
+            
+            subtitleLabel.isHidden = true
+            let textField = TextField()
+            fieldsStackView.addArrangedSubview(textField)
+            
         default:
             break
         }

@@ -15,6 +15,7 @@ enum StoryboardName: String {
     case members
     case share
     case accountInfo
+    case invitations
     case settings
     
     var name: String {
@@ -40,6 +41,7 @@ enum ViewControllerId: String {
     case accountInfo
     case accountSettings
     case sharePreview
+    case invitations
 
     var value: String {
         switch self {

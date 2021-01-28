@@ -154,6 +154,16 @@
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
 "AddStorage" = "Add Storage";
+"GiveAGig" = "Give a gig, get a gig";
+"InviteInfo" = "Invite your friends and family and both of your accounts will be credited with one free gigabyte of storage when they sign up.\n\nOffer valid for the first 10 accepted invitations only.";
+"SendInvite" = "Send New Invite";
+"Resend" = "Resend";
+"YourInvitations" = "Your Invitations";
+"Invitations" = "Invitations";
+"Send" = "Send";
+"SendInvitation" = "Send Invitation";
+"RecipientInfo" = "Recipient %@";
+"ActivityFeed" = "Activity Feed";
 "LogInWithBiometrics" = "Log in with Fingerprint/Face ID?";
 "LogInWith" = "Log in with ";
 "LogInFaceId" = "Face ID?";

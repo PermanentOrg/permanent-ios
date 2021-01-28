@@ -172,6 +172,17 @@ extension String {
     static var postalcode: String { return "PostalCode".localized() }
     static var country: String { return "Country".localized() }
     static var saveInfo: String { return "SaveInfo".localized() }
+    static var giveAGig: String { return "GiveAGig".localized() }
+    static var inviteInfo: String { return "InviteInfo".localized() }
+    static var sendInvite: String { return "SendInvite".localized() }
+    static var resend: String { return "Resend".localized() }
+    static var yourInvitations: String { return "YourInvitations".localized() }
+    static var invitations: String { return "Invitations".localized() }
+    static var send: String { return "Send".localized() }
+    static var sendInvitation: String { return "SendInvitation".localized() }
+    static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
+    static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
+    static var activityFeed: String { return "ActivityFeed".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }
