@@ -13,18 +13,12 @@ struct TableViewData {
         DrawerSection.files: [
             DrawerOption.files,
             DrawerOption.shares
-            
-            //DrawerOption(icon: .folder, title: .myFiles, isSelected: true),
-            //DrawerOption(icon: .share, title: .shares, isSelected: false),
-            //DrawerOption(icon: .public, title: .public, isSelected: false)
         ],
         
         DrawerSection.others: [
-            //DrawerOption(icon: .relationships, title: .relationships, isSelected: false),
-            //DrawerOption(icon: .group, title: .members, isSelected: false),
-            //DrawerOption(icon: .power, title: .apps, isSelected: false),
-            //DrawerOption(icon: .power, title: .logOut, isSelected: false),
             DrawerOption.members,
+            DrawerOption.activityFeed,
+            DrawerOption.invitations,
             DrawerOption.security,
             DrawerOption.addStorage,
             DrawerOption.logOut

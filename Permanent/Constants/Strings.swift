@@ -162,6 +162,16 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     static var remove: String { return "Remove".localized() }
+    static var giveAGig: String { return "GiveAGig".localized() }
+    static var inviteInfo: String { return "InviteInfo".localized() }
+    static var sendInvite: String { return "SendInvite".localized() }
+    static var resend: String { return "Resend".localized() }
+    static var yourInvitations: String { return "YourInvitations".localized() }
+    static var invitations: String { return "Invitations".localized() }
+    static var send: String { return "Send".localized() }
+    static var sendInvitation: String { return "SendInvitation".localized() }
+    static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
+    static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
     static var activityFeed: String { return "ActivityFeed".localized() }
     
     /// Errors

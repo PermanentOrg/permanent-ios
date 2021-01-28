@@ -1,4 +1,4 @@
-//  
+//
 //  SideMenuViewController.swift
 //  Permanent
 //
@@ -38,6 +38,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         infoButton.setTitle(.manageArchives, for: [])
         infoButton.setFont(Text.style16.font)
         infoButton.setTitleColor(.white, for: [])
+        infoButton.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -48,15 +49,15 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
-        self.shouldDisplayLine = isOpening
-        self.titleLabel.isHidden = !isOpening
-        self.infoButton.isHidden = !isOpening
+        shouldDisplayLine = isOpening
+        titleLabel.isHidden = !isOpening
+        // self.infoButton.isHidden = !isOpening
         
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     fileprivate func showLogOutDialog() {
-        self.showActionDialog(
+        showActionDialog(
             styled: .simple,
             withTitle: "Are you sure you want to log out?",
             positiveButtonTitle: .logOut,
@@ -82,7 +83,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
 }
 
 extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return tableViewData.count
     }
@@ -107,7 +107,6 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
         guard
             let drawerSection = DrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
@@ -181,12 +180,31 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             guard let url = URL(string: Constants.URL.buyStorageURL) else { return }
             UIApplication.shared.open(url)
             
+        case .activityFeed:
+            let newRootVC = ActivityFeedViewController()
+            newRootVC.viewModel = ActivityFeedViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .invitations:
+            guard
+                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitesViewController
+            else {
+                return
+            }
+            
+            inviteVC.viewModel = InviteViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
+            
         case .logOut:
             logOut()
         }
     }
+    
+    fileprivate func navigateToController(_ id: ViewControllerId, from storyboard: StoryboardName) {
+        let newRootVC = UIViewController.create(withIdentifier: id, from: storyboard)
+        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+    }
 }
-
 
 enum DrawerSection: Int {
     case files
