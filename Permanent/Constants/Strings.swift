@@ -42,6 +42,10 @@ extension String {
     static var tokenIncorrect: String { return "TokenIncorrect".localized() }
     static var emailAlreadyUsed: String { return "EmailAlreadyUsed".localized() }
     static var invalidFields: String { return "InvalidFields".localized() }
+    static var incorrectOldPassword: String { return "IncorrectOldPassword".localized() }
+    static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
+    static var passwordMatchError: String { return "PasswordMatchError".localized() }
+    static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
@@ -139,6 +143,16 @@ extension String {
     static var viewerTooltipText: String { return "ViewerTooltipText".localized() }
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
+    static var security: String { return "Security".localized() }
+    static var updatePassword: String { return "UpdatePassword".localized()}
+    static var currentPassword: String { return "CurrentPassword".localized()}
+    static var reTypePassword: String { return "ReTypePassword".localized()}
+    static var newPassword: String { return "NewPassword".localized()}
+    static var logInWithBiometrics: String { return "LogInWithBiometrics".localized()}
+    static var logInWith: String { return "Log in with ".localized()}
+    static var LogInFaceId: String{ return "LogInFaceId".localized()}
+    static var LogInTouchId: String{ return "LogInTouchId".localized()}
+    static var twoStepVerification: String { return "TwoStepVerification".localized()}
     static var sharedBy: String { return "SharedBy".localized() }
     static var fromArchive: String { return "FromArchive".localized() }
     static var requestApproval: String { return "RequestApproval".localized() }

@@ -56,3 +56,20 @@ enum AccountUpdateError: String {
         }
     }
 }
+
+enum PasswordChangeError: String {
+    case incorrectOldPassword = "warning.auth.bad_old_password"
+    case lowPasswordComplexity = "warning.registration.password_complexity"
+    case passwordMatchError = "warning.registration.password_match"
+    
+    var description: String {
+        switch self {
+        case .incorrectOldPassword:
+            return .incorrectOldPassword
+        case .lowPasswordComplexity:
+            return .lowPasswordComplexity
+        case .passwordMatchError:
+            return .passwordMatchError
+        }
+    }
+}

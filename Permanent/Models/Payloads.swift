@@ -173,4 +173,25 @@ struct Payloads {
             ]
         ]
     }
+    static func updatePassword(accountId: String, updateData: ChangePasswordCredentials, csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId
+                    ],
+                    "AccountPasswordVO": [
+                        "password": updateData.password,
+                        "passwordVerify": updateData.passwordVerify,
+                        "passwordOld":updateData.passwordOld
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    static func getValidCsrf() -> RequestParameters  {
+        return ["data":"none"]
+    }
 }

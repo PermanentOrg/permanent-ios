@@ -131,4 +131,5 @@ extension Constants.Keys.StorageKeys {
     static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
+    static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
 }

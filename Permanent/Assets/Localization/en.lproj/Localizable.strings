@@ -141,6 +141,15 @@
 "RemoveMember" = "Remove member?";
 "Remove" = "Remove";
 "Pending" = "Pending";
+"IncorrectOldPassword" = " Old password entered is incorrect. Please try again.";
+"LowPasswordComplexity" = "Password must be at least 8 characters in length.";
+"PasswordMatchError" = "Passwords must match.";
+"PasswordChangedSuccessfully" = "Password updated.";
+"Security" = "Security";
+"UpdatePassword" = "Update Password";
+"CurrentPassword" = "Current Password";
+"ReTypePassword" = "Re-type Password";
+"NewPassword" = "New Password";
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
 "AddStorage" = "Add Storage";
@@ -154,7 +163,11 @@
 "SendInvitation" = "Send Invitation";
 "RecipientInfo" = "Recipient %@";
 "ActivityFeed" = "Activity Feed";
-
+"LogInWithBiometrics" = "Log in with Fingerprint/Face ID?";
+"LogInWith" = "Log in with ";
+"LogInFaceId" = "Face ID?";
+"LogInTouchId" = "Touch ID?";
+"TwoStepVerification" = "Two-Step Verification?";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";
