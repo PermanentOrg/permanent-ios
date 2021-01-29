@@ -88,14 +88,15 @@ class InviteViewModel {
                     model.isSuccessful
                     
                 else {
-                    self.viewDelegate?.refreshList(status: .error(message: APIError.parseError(nil).message))
+                    self.viewDelegate?.refreshList(afterOperation: operation, status: .error(message: APIError.parseError(nil).message))
                     return
                 }
                 
-                self.viewDelegate?.refreshList(status: .success)
+                self.viewDelegate?.refreshList(afterOperation: operation, status: .success)
                 
             case .error(let error, _):
-                self.viewDelegate?.refreshList(status: .error(message: (error as? APIError)?.message))
+                self.viewDelegate?.refreshList(afterOperation: operation,
+                                               status: .error(message: (error as? APIError)?.message))
                 
             default:
                 fatalError()

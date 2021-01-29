@@ -39,6 +39,7 @@ struct Constants {
         struct FileType {}
         struct AccountStatus {}
         struct InviteStatus {}
+        struct NotificationType {}
     }
 
     struct Design {}
@@ -119,6 +120,12 @@ extension Constants.API.InviteStatus {
     static let STATUS_INVITE_REVOKED = "status.invite.revoked"
     static let STATUS_INVITE_PENDING = "status.invite.pending"
     static let STATUS_INVITE_REJECTED = "status.invite.rejected"
+}
+
+extension Constants.API.NotificationType {
+    static let NOTIFICATION_TYPE_PA_SHARE = "type.notification.pa_share"
+    static let NOTIFICATION_TYPE_RELATIONSHIP = "type.notification.relationship"
+    static let NOTIFICATION_TYPE_ACCOUNT = "type.notification.cleanup_bad_upload"
 }
 
 extension Constants.Keys.StorageKeys {
