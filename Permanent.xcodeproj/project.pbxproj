@@ -1894,7 +1894,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1920,7 +1920,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2006,7 +2006,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2086,7 +2086,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";

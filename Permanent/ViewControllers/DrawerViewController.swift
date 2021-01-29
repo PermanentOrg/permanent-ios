@@ -70,6 +70,7 @@ class DrawerViewController: UIViewController {
     
     func toggleMenu() {
         isMenuExpanded.toggle()
+        rootViewController.view.hideKeyboard()
         
         let width: CGFloat = isMenuExpanded ? (view.bounds.width * 2 / 3) : 0
         
