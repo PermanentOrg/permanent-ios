@@ -194,4 +194,17 @@ struct Payloads {
     static func getValidCsrf() -> RequestParameters  {
         return ["data":"none"]
     }
+    static func getUserData(accountId: String,csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
 }

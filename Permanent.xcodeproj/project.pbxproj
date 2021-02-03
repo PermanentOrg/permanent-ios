@@ -31,8 +31,6 @@
 		5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217425C17CE2007642BE /* InfoViewModel.swift */; };
 		5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */; };
 		5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */; };
-		5E46218125C1B8A0007642BE /* SmallInputTextWithLabelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217F25C1B8A0007642BE /* SmallInputTextWithLabelViewController.swift */; };
-		5E46218225C1B8A0007642BE /* SmallInputTextWithLabelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E46218025C1B8A0007642BE /* SmallInputTextWithLabelViewController.xib */; };
 		5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E60451C251206F9002E47CB /* OnboardingViewModel.swift */; };
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */; };
@@ -297,8 +295,6 @@
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
 		5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextWithLabelElementViewViewController.swift; sourceTree = "<group>"; };
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
-		5E46217F25C1B8A0007642BE /* SmallInputTextWithLabelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallInputTextWithLabelViewController.swift; sourceTree = "<group>"; };
-		5E46218025C1B8A0007642BE /* SmallInputTextWithLabelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SmallInputTextWithLabelViewController.xib; sourceTree = "<group>"; };
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
@@ -754,8 +750,6 @@
 			children = (
 				5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */,
 				5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */,
-				5E46218025C1B8A0007642BE /* SmallInputTextWithLabelViewController.xib */,
-				5E46217F25C1B8A0007642BE /* SmallInputTextWithLabelViewController.swift */,
 			);
 			path = AccountInfo;
 			sourceTree = "<group>";
@@ -1336,25 +1330,9 @@
 				BC59BABF25C2B8BD005A45D3 /* Activity Feed */,
 				BC59BAA425C2B7D6005A45D3 /* Share Preview */,
 				BC42EDB825BB11860031B965 /* Invitations */,
-				BCEECDA825B058BF00A4520E /* Shares */,
 				BC76DAEA25C075E70041DCC3 /* ViewController.swift */,
 			);
 			path = Scenes;
-			sourceTree = "<group>";
-		};
-		BCEECDA825B058BF00A4520E /* Shares */ = {
-			isa = PBXGroup;
-			children = (
-				BCEECDA925B058CD00A4520E /* ViewControllers */,
-			);
-			path = Shares;
-			sourceTree = "<group>";
-		};
-		BCEECDA925B058CD00A4520E /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		BCEECDAD25B0591B00A4520E /* Download */ = {
@@ -1487,7 +1465,6 @@
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
-				5E46218225C1B8A0007642BE /* SmallInputTextWithLabelViewController.xib in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
 				BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */,
@@ -1704,7 +1681,6 @@
 				BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
-				5E46218125C1B8A0007642BE /* SmallInputTextWithLabelViewController.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
@@ -1922,7 +1898,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -1948,7 +1924,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2034,7 +2010,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2114,7 +2090,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";

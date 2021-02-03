@@ -18,7 +18,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="7ca-y1-DyF">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="104"/>
+            <rect key="frame" x="0.0" y="0.0" width="441" height="111"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXc-W7-Swq">
@@ -31,7 +31,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="ISZ-aJ-9WT">
-                    <rect key="frame" x="20" y="28" width="374" height="40"/>
+                    <rect key="frame" x="20" y="28" width="421" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="DBe-5w-4vl"/>
                     </constraints>
@@ -45,11 +45,11 @@
                 <constraint firstItem="HXc-W7-Swq" firstAttribute="leading" secondItem="7ca-y1-DyF" secondAttribute="leading" constant="20" id="IPM-YM-c2d"/>
                 <constraint firstItem="HXc-W7-Swq" firstAttribute="top" secondItem="7ca-y1-DyF" secondAttribute="top" id="Nhv-QE-iNQ"/>
                 <constraint firstItem="ISZ-aJ-9WT" firstAttribute="leading" secondItem="CZP-RJ-Crp" secondAttribute="leading" constant="20" id="cO1-ph-lQV"/>
-                <constraint firstItem="CZP-RJ-Crp" firstAttribute="trailing" secondItem="ISZ-aJ-9WT" secondAttribute="trailing" constant="20" id="iqL-zK-y4q"/>
+                <constraint firstItem="CZP-RJ-Crp" firstAttribute="trailing" secondItem="ISZ-aJ-9WT" secondAttribute="trailing" id="iqL-zK-y4q"/>
                 <constraint firstItem="ISZ-aJ-9WT" firstAttribute="top" secondItem="HXc-W7-Swq" secondAttribute="bottom" constant="9" id="pE3-ab-Txh"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-107" y="-387"/>
+            <point key="canvasLocation" x="-179" y="-383"/>
         </view>
     </objects>
     <resources>

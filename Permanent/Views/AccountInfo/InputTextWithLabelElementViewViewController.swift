@@ -49,4 +49,9 @@ class InputTextWithLabelElementViewViewController: UIView {
         self.textField.returnKeyType = returnKey
     }
     
+    func setTextFieldValue(text: String)
+    {
+        self.textField.text = text
+    }
+    
 }

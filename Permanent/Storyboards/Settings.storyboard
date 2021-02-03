@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -148,89 +148,65 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="top" axis="vertical" distribution="fillEqually" spacing="22" translatesAutoresizingMaskIntoConstraints="NO" id="c4L-J8-oIw">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="470"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="394" height="470"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2P9-DV-xhR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="60"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ogg-ze-DAE" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="82" width="414" height="60"/>
+                                                        <rect key="frame" x="0.0" y="82" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tvS-OK-oYe" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="164" width="414" height="60"/>
+                                                        <rect key="frame" x="0.0" y="164" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4cx-DB-j2J" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="246" width="414" height="60"/>
+                                                        <rect key="frame" x="0.0" y="246" width="394" height="60"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IGl-WT-65Q">
-                                                        <rect key="frame" x="0.0" y="328" width="414" height="60"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eyu-gu-hgn">
+                                                        <rect key="frame" x="0.0" y="328" width="394" height="60"/>
                                                         <subviews>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eyu-gu-hgn">
-                                                                <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
-                                                                <subviews>
-                                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o1Z-Ao-tzj" customClass="SmallInputTextWithLabelViewController" customModule="Permanent" customModuleProvider="target">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
-                                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                                    </view>
-                                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ekB-PT-q6z" customClass="SmallInputTextWithLabelViewController" customModule="Permanent" customModuleProvider="target">
-                                                                        <rect key="frame" x="197" y="0.0" width="197" height="60"/>
-                                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                                    </view>
-                                                                </subviews>
-                                                                <constraints>
-                                                                    <constraint firstItem="ekB-PT-q6z" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="ZEU-Y0-ojc"/>
-                                                                    <constraint firstItem="o1Z-Ao-tzj" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="cA6-4G-NCg"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="o1Z-Ao-tzj" secondAttribute="bottom" id="f4D-bW-aNK"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="ekB-PT-q6z" secondAttribute="bottom" id="it9-0K-ro2"/>
-                                                                </constraints>
-                                                            </stackView>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o1Z-Ao-tzj" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ekB-PT-q6z" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
                                                         </subviews>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
-                                                            <constraint firstItem="eyu-gu-hgn" firstAttribute="leading" secondItem="IGl-WT-65Q" secondAttribute="leading" id="MUd-xo-7bi"/>
-                                                            <constraint firstAttribute="bottom" secondItem="eyu-gu-hgn" secondAttribute="bottom" id="NH9-Bc-R4b"/>
-                                                            <constraint firstItem="eyu-gu-hgn" firstAttribute="top" secondItem="IGl-WT-65Q" secondAttribute="top" id="Qsx-iw-lc4"/>
-                                                            <constraint firstAttribute="trailing" secondItem="eyu-gu-hgn" secondAttribute="trailing" constant="20" id="eN7-Td-USP"/>
+                                                            <constraint firstItem="ekB-PT-q6z" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="ZEU-Y0-ojc"/>
+                                                            <constraint firstItem="o1Z-Ao-tzj" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="cA6-4G-NCg"/>
+                                                            <constraint firstAttribute="bottom" secondItem="o1Z-Ao-tzj" secondAttribute="bottom" id="f4D-bW-aNK"/>
+                                                            <constraint firstAttribute="bottom" secondItem="ekB-PT-q6z" secondAttribute="bottom" id="it9-0K-ro2"/>
                                                         </constraints>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kVo-sS-nd3">
-                                                        <rect key="frame" x="0.0" y="410" width="414" height="60"/>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZMe-dh-uGc">
+                                                        <rect key="frame" x="0.0" y="410" width="394" height="60"/>
                                                         <subviews>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZMe-dh-uGc">
-                                                                <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
-                                                                <subviews>
-                                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eX1-Fa-Ugn" customClass="SmallInputTextWithLabelViewController" customModule="Permanent" customModuleProvider="target">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
-                                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                                    </view>
-                                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-5h-O9O" customClass="SmallInputTextWithLabelViewController" customModule="Permanent" customModuleProvider="target">
-                                                                        <rect key="frame" x="197" y="0.0" width="197" height="60"/>
-                                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                                    </view>
-                                                                </subviews>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="bottom" secondItem="ZrA-5h-O9O" secondAttribute="bottom" id="X9z-zG-NoT"/>
-                                                                    <constraint firstItem="eX1-Fa-Ugn" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="eI3-ry-tie"/>
-                                                                    <constraint firstItem="ZrA-5h-O9O" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="gdv-af-a3b"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="eX1-Fa-Ugn" secondAttribute="bottom" id="nVg-hY-Iu0"/>
-                                                                </constraints>
-                                                            </stackView>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eX1-Fa-Ugn" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-5h-O9O" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
                                                         </subviews>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
-                                                            <constraint firstItem="ZMe-dh-uGc" firstAttribute="top" secondItem="kVo-sS-nd3" secondAttribute="top" id="2vd-1t-se1"/>
-                                                            <constraint firstAttribute="bottom" secondItem="ZMe-dh-uGc" secondAttribute="bottom" id="33f-Sw-xHp"/>
-                                                            <constraint firstItem="ZMe-dh-uGc" firstAttribute="leading" secondItem="kVo-sS-nd3" secondAttribute="leading" id="plr-mg-b4P"/>
-                                                            <constraint firstAttribute="trailing" secondItem="ZMe-dh-uGc" secondAttribute="trailing" constant="20" id="zPg-9h-PWS"/>
+                                                            <constraint firstAttribute="bottom" secondItem="ZrA-5h-O9O" secondAttribute="bottom" id="X9z-zG-NoT"/>
+                                                            <constraint firstItem="eX1-Fa-Ugn" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="eI3-ry-tie"/>
+                                                            <constraint firstItem="ZrA-5h-O9O" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="gdv-af-a3b"/>
+                                                            <constraint firstAttribute="bottom" secondItem="eX1-Fa-Ugn" secondAttribute="bottom" id="nVg-hY-Iu0"/>
                                                         </constraints>
-                                                    </view>
+                                                    </stackView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="470" id="RBj-wb-aCB"/>
@@ -241,7 +217,7 @@
                                         <constraints>
                                             <constraint firstItem="c4L-J8-oIw" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" id="2WF-j2-vup"/>
                                             <constraint firstItem="c4L-J8-oIw" firstAttribute="top" secondItem="XnC-Yc-DvG" secondAttribute="topMargin" constant="-13" id="Ben-7u-4TH"/>
-                                            <constraint firstAttribute="trailing" secondItem="c4L-J8-oIw" secondAttribute="trailing" id="Fhh-Mq-nJu"/>
+                                            <constraint firstAttribute="trailing" secondItem="c4L-J8-oIw" secondAttribute="trailing" constant="20" id="Fhh-Mq-nJu"/>
                                             <constraint firstItem="68J-lr-Pzv" firstAttribute="top" secondItem="c4L-J8-oIw" secondAttribute="bottom" constant="38" id="awa-UV-FFL"/>
                                             <constraint firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" constant="20" id="lj1-DM-mwb"/>
                                             <constraint firstItem="68J-lr-Pzv" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" constant="20" id="w6J-Xe-Zhb"/>
@@ -289,7 +265,7 @@
     </scenes>
     <designables>
         <designable name="68J-lr-Pzv">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="S4H-vw-aNZ">
             <size key="intrinsicContentSize" width="30" height="40"/>

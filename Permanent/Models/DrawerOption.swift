@@ -39,7 +39,6 @@ enum DrawerOption {
         case .members: return String.member.pluralized()
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed
-        case .security: return String.security
         case .addStorage: return String.addStorage
         case .accountInfo: return String.accountInfo
         case .security: return String.security

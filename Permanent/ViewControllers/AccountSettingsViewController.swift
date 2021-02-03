@@ -22,6 +22,7 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
     }
 
     private func initUI() {
+        
         title = .security
         view.backgroundColor = .white
         firstLineView.backgroundColor = .lightGray

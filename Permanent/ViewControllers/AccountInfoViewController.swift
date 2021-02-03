@@ -14,10 +14,10 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     @IBOutlet var primaryEmailView: InputTextWithLabelElementViewViewController!
     @IBOutlet var mobileEmailView: InputTextWithLabelElementViewViewController!
     @IBOutlet var addressView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var cityView: SmallInputTextWithLabelViewController!
-    @IBOutlet var stateView: SmallInputTextWithLabelViewController!
-    @IBOutlet var postalCodeView: SmallInputTextWithLabelViewController!
-    @IBOutlet var countryView: SmallInputTextWithLabelViewController!
+    @IBOutlet var cityView: InputTextWithLabelElementViewViewController!
+    @IBOutlet var stateView: InputTextWithLabelElementViewViewController!
+    @IBOutlet var postalCodeView: InputTextWithLabelElementViewViewController!
+    @IBOutlet var countryView: InputTextWithLabelElementViewViewController!
     @IBOutlet var contentUpdateButton: RoundedButton!
 
     override func viewDidLoad (){
@@ -27,6 +27,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     }
 
     private func initUI() {
+        
         title = .accountInfo
         view.backgroundColor = .white
         
@@ -48,10 +49,64 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         stateView.delegate = self
         postalCodeView.delegate = self
         countryView.delegate = self
+        
+        getUserDetails()
     }
     
     @IBAction func pressedUpdateButton(_ sender: RoundedButton) {
         attemptValuesChange()
+    }
+    
+    func getUserDetails() {
+
+        let groupAccountInfo = DispatchGroup()
+        
+        showSpinner()
+        guard
+            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            return
+        }
+            groupAccountInfo.enter()
+            viewModel?.getNewCsrf(then: { _ in
+                DispatchQueue.main.async {
+                    self.viewModel!.apiData["accountId"] = String(accountID)
+                   // self.viewModel?.accountID = String(accountID)
+                    groupAccountInfo.leave()
+                }
+            })
+
+
+        groupAccountInfo.notify(queue: DispatchQueue.global()) {
+            guard
+                let accountID: String = self.viewModel?.apiData["accountId"],
+                let csrf: String = self.viewModel?.apiData["csrf"] else {
+                return
+            }
+            self.viewModel?.getUserData(with: accountID, csrf: csrf, then: { status in
+                switch status {
+                case true:
+                    self.updateUserDetailsFields()
+                    print("test ",(self.viewModel?.apiData["primaryEmail"])!)
+                case false:
+                    self.showErrorAlert(message: .errorMessage)
+                    break
+                }
+            })
+            DispatchQueue.main.async {
+            self.hideSpinner()
+            }
+        }
+        
+    }
+    func updateUserDetailsFields() {
+        self.primaryEmailView.setTextFieldValue(text: self.viewModel?.apiData["primaryEmail"] ?? "")
+        self.accountNameView.setTextFieldValue(text: self.viewModel?.apiData["fullName"] ?? "")
+        self.addressView.setTextFieldValue(text: self.viewModel?.apiData["address"] ?? "")
+        self.cityView.setTextFieldValue(text: self.viewModel?.apiData["city"] ?? "")
+        self.stateView.setTextFieldValue(text: self.viewModel?.apiData["state"] ?? "")
+        self.postalCodeView.setTextFieldValue(text: self.viewModel?.apiData["zip"] ?? "")
+        self.countryView.setTextFieldValue(text: self.viewModel?.apiData["country"] ?? "")
+        self.mobileEmailView.setTextFieldValue(text: self.viewModel?.apiData["primaryPhone"] ?? "")
     }
     
     func attemptValuesChange() {
