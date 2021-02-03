@@ -93,11 +93,12 @@ extension InvitesViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension InvitesViewController: InviteViewModelViewDelegate {
-    func refreshList(status: RequestStatus) {
+    func refreshList(afterOperation operation: InviteOperation, status: RequestStatus) {
         switch status {
         case .success:
             viewModel.start()
-            
+            view.showNotificationBanner(title: operation.infoText)
+        
         case .error(let message):
             print(message)
         }

@@ -33,7 +33,7 @@ protocol InviteViewModelDelegate {
 
 protocol InviteViewModelViewDelegate: class {
     
-    func refreshList(status: RequestStatus)
+    func refreshList(afterOperation: InviteOperation, status: RequestStatus)
     
     func updateScreen(status: RequestStatus)
     

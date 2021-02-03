@@ -1,4 +1,4 @@
-//  
+//
 //  UIViewExtension.swift
 //  Permanent
 //
@@ -36,7 +36,6 @@ extension UIView {
         animations: @escaping () -> Void,
         completion: ((Bool) -> Void)? = nil
     ) {
-        
         UIView.animate(
             withDuration: duration,
             delay: delay,
@@ -46,7 +45,6 @@ extension UIView {
             animations: animations,
             completion: completion
         )
-        
     }
     
     func presentPopup(_ popupView: UIView?, overlayView: UIView?) {
@@ -63,7 +61,7 @@ extension UIView {
         }, completion: completion)
     }
     
-    func showNotificationBanner(height: CGFloat, title: String) {
+    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String) {
         let initialBannerOrigin = CGPoint(x: 0, y: -height)
         let bannerView = UIView(frame: CGRect(origin: initialBannerOrigin,
                                               size: CGSize(width: self.bounds.width, height: height)))
@@ -71,7 +69,7 @@ extension UIView {
         bannerView.backgroundColor = .paleGreen
         self.addSubview(bannerView)
         
-        let messageLabel = UILabel() //UILabel(frame: CGRect(origin: bannerView.center, size: CGSize(width: self.bounds.width, height: height / 2)))
+        let messageLabel = UILabel() // UILabel(frame: CGRect(origin: bannerView.center, size: CGSize(width: self.bounds.width, height: height / 2)))
         messageLabel.text = title
         messageLabel.textColor = .bilbaoGreen
         messageLabel.font = Text.style17.font
@@ -83,15 +81,15 @@ extension UIView {
             messageLabel.centerYAnchor.constraint(equalTo: bannerView.centerYAnchor)
         ])
         
-        UIView.animate(animations: {            
+        UIView.animate(animations: {
             bannerView.frame.origin = CGPoint(x: 0, y: 0)
         }, completion: { _ in
         
             UIView.animate(delay: 0.5,
                            animations: {
-                            bannerView.frame.origin = initialBannerOrigin
+                               bannerView.frame.origin = initialBannerOrigin
                            }, completion: { _ in
-                            bannerView.removeFromSuperview()
+                               bannerView.removeFromSuperview()
                            })
         })
     }
@@ -124,9 +122,7 @@ extension UIView {
 }
 
 extension UIView {
-    
     func addBlur(styled blurStyle: UIBlurEffect.Style = .light) {
-        
         let backView = UIView(frame: self.bounds)
         backView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         self.addSubview(backView)
@@ -146,8 +142,12 @@ extension UIView {
         
         // We have to remove the blur view, and the view underneath it (backView).
         // See `addBlur` method.
-        for _ in 0..<2 {
+        for _ in 0 ..< 2 {
             self.subviews.last?.removeFromSuperview()
         }
+    }
+    
+    func hideKeyboard() {
+        self.endEditing(true)
     }
 }

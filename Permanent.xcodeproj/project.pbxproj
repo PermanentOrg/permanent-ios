@@ -134,6 +134,7 @@
 		BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC59BACB25C2B8BD005A45D3 /* NotificationTableViewCell.xib */; };
 		BC59BAD425C2B8BD005A45D3 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BACC25C2B8BD005A45D3 /* NotificationTableViewCell.swift */; };
 		BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAE525C2B8DD005A45D3 /* NotificationsEndpoint.swift */; };
+		BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAE925C2CC8E005A45D3 /* NotificationType.swift */; };
 		BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */; };
 		BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */; };
 		BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */; };
@@ -405,6 +406,7 @@
 		BC59BACB25C2B8BD005A45D3 /* NotificationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationTableViewCell.xib; sourceTree = "<group>"; };
 		BC59BACC25C2B8BD005A45D3 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
 		BC59BAE525C2B8DD005A45D3 /* NotificationsEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationsEndpoint.swift; sourceTree = "<group>"; };
+		BC59BAE925C2CC8E005A45D3 /* NotificationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationType.swift; sourceTree = "<group>"; };
 		BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
 		BC600DF425B6D80900193C96 /* FileDownloadInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfo.swift; sourceTree = "<group>"; };
 		BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManagerGCD.swift; sourceTree = "<group>"; };
@@ -1118,6 +1120,7 @@
 				BC59BAC425C2B8BD005A45D3 /* NotificationVM.swift */,
 				BC59BAC525C2B8BD005A45D3 /* NotificationVO.swift */,
 				BC59BAC625C2B8BD005A45D3 /* Notification.swift */,
+				BC59BAE925C2CC8E005A45D3 /* NotificationType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1604,6 +1607,7 @@
 				BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
+				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,

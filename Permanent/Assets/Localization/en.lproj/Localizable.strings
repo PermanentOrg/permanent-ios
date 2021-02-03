@@ -169,6 +169,10 @@
 "LogInFaceId" = "Face ID?";
 "LogInTouchId" = "Touch ID?";
 "TwoStepVerification" = "Two-Step Verification?";
+"InviteSent" = "Invite sent";
+"InviteRevoked" = "Invite revoked";
+"LinkNotAvailable" = "This link is no longer available";
+
 
 "AccountName" = "Account Name";
 "PrimaryEmail" = "Primary Email";

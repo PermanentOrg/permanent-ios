@@ -11,4 +11,7 @@ protocol Notification {
     var message: String { get }
     
     var date: String { get }
+    
+    var type: NotificationType { get }
+    
 }
