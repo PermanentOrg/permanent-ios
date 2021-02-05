@@ -36,6 +36,9 @@ extension String {
     static var submit: String { return "Submit".localized() }
     static var enterEmail: String { return "EnterEmail".localized() }
     static var invalidPhone: String { return "InvalidPhone".localized() }
+    static var emptyNameField: String { return "EmptyNameField".localized() }
+    static var noDataModification: String { return "NoDataModification".localized() }
+    static var emailFieldIsEmpty: String { return "EmailFieldIsEmpty".localized() }
     static var MFARequired: String { return "MFARequired".localized() }
     static var incorrectCredentials: String { return "IncorrectCredentials".localized() }
     static var tokenExpired: String { return "TokenExpired".localized() }
@@ -46,6 +49,7 @@ extension String {
     static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
     static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
+    static var userDetailsChangedSuccessfully: String{ return "UserDetailsChangedSuccessfully".localized()}
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }

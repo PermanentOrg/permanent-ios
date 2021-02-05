@@ -172,8 +172,6 @@
 "InviteSent" = "Invite sent";
 "InviteRevoked" = "Invite revoked";
 "LinkNotAvailable" = "This link is no longer available";
-
-
 "AccountName" = "Account Name";
 "PrimaryEmail" = "Primary Email";
 "MobilePhone" = "Mobile Phone";
@@ -183,6 +181,10 @@
 "PostalCode" = "Postal Code";
 "Country" = "Country";
 "SaveInfo" = "Save Info";
+"UserDetailsChangedSuccessfully" = "Updates were saved";
+"EmptyNameField" = "Account name can't be empty.";
+"NoDataModification" = "No modifications were done";
+"EmailFieldIsEmpty" = "Email field is invalid";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

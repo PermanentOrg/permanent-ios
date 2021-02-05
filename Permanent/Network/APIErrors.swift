@@ -48,11 +48,20 @@ enum SignUpError: String {
 
 enum AccountUpdateError: String {
     case phoneInvalid = "warning.validation.phone"
+    case nameFieldIsEmpty = "error.empty.name"
+    case dataIsNotModified = "warning.same.data"
+    case emailIsEmpty = "warning.validation.empty"
 
     var description: String {
         switch self {
         case .phoneInvalid:
             return .invalidPhone
+        case .nameFieldIsEmpty:
+            return .emptyNameField
+        case .dataIsNotModified:
+            return .noDataModification
+        case .emailIsEmpty:
+            return .emailFieldIsEmpty
         }
     }
 }

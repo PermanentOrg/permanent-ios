@@ -252,9 +252,10 @@
                         <outlet property="cityView" destination="o1Z-Ao-tzj" id="bXS-g4-vVc"/>
                         <outlet property="contentUpdateButton" destination="68J-lr-Pzv" id="C8a-vd-tmQ"/>
                         <outlet property="countryView" destination="ZrA-5h-O9O" id="8Du-IW-NbV"/>
-                        <outlet property="mobileEmailView" destination="tvS-OK-oYe" id="Yqa-PI-k9d"/>
+                        <outlet property="mobilePhoneView" destination="tvS-OK-oYe" id="Yqa-PI-k9d"/>
                         <outlet property="postalCodeView" destination="eX1-Fa-Ugn" id="r16-pY-MRg"/>
                         <outlet property="primaryEmailView" destination="ogg-ze-DAE" id="xOp-Ux-BIN"/>
+                        <outlet property="scrollView" destination="aTq-KH-BV0" id="NtB-Ax-6Hf"/>
                         <outlet property="stateView" destination="ekB-PT-q6z" id="rsg-3R-td1"/>
                     </connections>
                 </viewController>

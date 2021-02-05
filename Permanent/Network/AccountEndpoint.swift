@@ -22,6 +22,8 @@ enum AccountEndpoint {
     case getValidCsrf
     /// Get user data
     case getUserData(accountId: String, csrf: String)
+    /// Updates user data
+    case updateUserData(accountId: String, updateData: UpdateUserData, csrf: String)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -39,6 +41,8 @@ extension AccountEndpoint: RequestProtocol {
             return "/auth/loggedIn"
         case .getUserData:
             return "/account/get"
+        case .updateUserData:
+            return "/account/update"
         }
     }
 
@@ -56,6 +60,8 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.getValidCsrf()
         case .getUserData(let id, let csrf):
             return Payloads.getUserData(accountId: id,csrf: csrf)
+        case .updateUserData(accountId: let accountId, updateData: let updateData, csrf: let csrf):
+            return Payloads.updateUserData(accountId: accountId,updateUserData: updateData,csrf: csrf)
         }
     }
 
