@@ -129,7 +129,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     func numberOfRowsInSection(_ section: Int) -> Int {
         // If the upload or download is not in progress, we have only one section.
         guard uploadOrDownloadInProgress else { return syncedViewModels.count }
-    
+
         switch section {
         case FileListType.downloading.rawValue: return downloadQueue.count
         case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count
@@ -144,7 +144,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         switch indexPath.section {
         case FileListType.downloading.rawValue:
             return downloadQueue[indexPath.row]
-        
+
         case FileListType.uploading.rawValue:
             let fileInfo = queueItemsForCurrentFolder[indexPath.row]
             var fileViewModel = FileViewModel(model: fileInfo)
@@ -199,7 +199,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 extension FilesViewModel: FilesViewModelDelegate {
     func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
         let parameters: RelocateParams = ((file, destination), fileAction, csrf)
-    
+
         let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -218,7 +218,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                 
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                    
+
             default:
                 break
             }
@@ -257,7 +257,7 @@ extension FilesViewModel: FilesViewModelDelegate {
                                 self.downloadInProgress = false
                                 self.downloadQueue.safeRemoveFirst()
                             })
-    
+
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
@@ -272,17 +272,17 @@ extension FilesViewModel: FilesViewModelDelegate {
                         with: APIResults<NoDataModel>.decoder
                     ),
                     model.isSuccessful
-                    
+
                 else {
                     handler(.error(message: .errorMessage))
                     return
                 }
                 
                 handler(.success)
-                    
+
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                    
+
             default:
                 break
             }
@@ -308,7 +308,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
-            
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -319,14 +319,14 @@ extension FilesViewModel: FilesViewModelDelegate {
                     handler(.error(message: .errorMessage))
                     return
                 }
-                    
+
                 let folder = FileViewModel(model: folderVO)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
-                    
+
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                    
+
             default:
                 break
             }
@@ -387,7 +387,7 @@ extension FilesViewModel: FilesViewModelDelegate {
             file.name,
             csrf
         )
-                    
+
         handleRecursiveFileUpload(
             file,
             withParams: params,
@@ -451,29 +451,15 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        getPresignedUrl(withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
-            print(result)
+        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
+
         }
-//        uploadFileMeta(file, withParams: params) { id, errorMessage in
-//
-//            guard let recordId = id else {
-//                return handler(.error(message: errorMessage))
-//            }
-//
-//            DispatchQueue.global(qos: .userInitiated).async {
-//                self.uploadFileData(
-//                    file,
-//                    recordId: recordId,
-//                    progressHandler: progressHandler,
-//                    then: handler
-//                )
-//            }
-//        }
+
     }
 
-    private func getPresignedUrl(withParams params: GetPresignedUrlParams, then handler: @escaping ServerResponse) {
+    private func getPresignedUrl(file: FileInfo, withParams params: GetPresignedUrlParams, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             switch result {
             case .json(let response, _):
                 guard let model: GetPresignedUrlResponse = JSONHelper.convertToModel(from: response) else {
@@ -481,8 +467,9 @@ extension FilesViewModel: FilesViewModelDelegate {
                     return
                 }
 
-                if model.isSuccessful == true {
-                    self.onGetPresignedUrlSuccess(model, handler)
+                if model.isSuccessful == true, let destinationUrl = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.url, let fields = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.fields {
+
+                    self?.uploadFileDataToS3(file, destinationUrl: destinationUrl, fields: fields, progressHandler: nil, then: handler)
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -493,16 +480,11 @@ extension FilesViewModel: FilesViewModelDelegate {
             }
         }
     }
-    // Uploads the file to the server.
-    private func uploadFileData(_ file: FileInfo, recordId: Int, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        let boundary = UploadManager.instance.createBoundary()
-        let apiOperation = APIOperation(FilesEndpoint.upload(
-            file: file,
-            usingBoundary: boundary,
-            recordId: recordId,
-            progressHandler: progressHandler
-        ))
 
+    // Uploads the file to the server.
+    private func uploadFileDataToS3(_ file: FileInfo, destinationUrl: String? ,fields: [String:String]?, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
+        let boundary = UploadManager.instance.createBoundary()
+        let apiOperation = APIOperation(FilesEndpoint.upload(destinationUrl: destinationUrl,file: file, fields: fields, progressHandler: progressHandler, usingBoundry: boundary))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
@@ -620,16 +602,6 @@ extension FilesViewModel: FilesViewModelDelegate {
         handler(.success)
     }
 
-    private func onGetPresignedUrlSuccess(_ model: GetPresignedUrlResponse, _ handler: @escaping ServerResponse) {
-        guard
-            let simpleVO = model.results?.first?.data?.first?.simpleVO
-        else {
-            handler(.error(message: .errorMessage))
-            return
-        }
-        handler(.success)
-    }
-    
     private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,

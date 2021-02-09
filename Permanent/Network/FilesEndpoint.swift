@@ -30,7 +30,7 @@ enum FilesEndpoint {
 
     case getPresignedUrl(params: GetPresignedUrlParams)
 
-    case upload(file: FileInfo, usingBoundary: String, recordId: Int, progressHandler: ProgressHandler?) // TODO: Remove boundary from here
+    case upload(destinationUrl: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
 
     case registerRecord(params: RegisterRecordParams)
     // DOWNLOAD
@@ -87,7 +87,7 @@ extension FilesEndpoint: RequestProtocol {
     
     var headers: RequestHeaders? {
         switch self {
-        case .upload(_, let boundary, _, _):
+        case .upload(_, _, _, _, let boundary):
             return [
                 "content-type": "multipart/form-data; boundary=\(boundary)"
             ]
@@ -102,8 +102,8 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.navigateMinPayload(for: params)
         case .getLeanItems(let params):
             return Payloads.getLeanItemsPayload(for: params)
-        case .upload(_, _, let recordId, _):
-            return ["recordid": recordId]
+        case .upload(_, _, let fields, _, _):
+            return fields
         case .getPresignedUrl(let params):
             return Payloads.getPresignedUrlPayload(for: params)
         case .registerRecord(let params):
@@ -112,7 +112,6 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.newFolderPayload(for: params)
         case .download(_, let filename, _):
             return ["filename": filename]
-
         default:
             return nil
         }
@@ -144,7 +143,7 @@ extension FilesEndpoint: RequestProtocol {
     var progressHandler: ProgressHandler? {
         get {
             switch self {
-            case .upload(_, _, _, let handler): return handler
+            case .upload(_, _, _, let handler, _): return handler
             case .download(_, _, let handler): return handler
             default: return nil
             }
@@ -154,11 +153,8 @@ extension FilesEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
-        case .upload(let file, let boundary, _, _):
-            return UploadManager.instance.getBodyData(parameters: parameters ?? [:],
-                                                      file: file,
-                                                      boundary: boundary)
-            
+        case .upload(_, let file, _, _, let boundary):
+            return UploadManager.instance.getBodyData(parameters: parameters ?? [:], file: file, boundary: boundary)
         case .delete(let parameters):
             if parameters.file.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
@@ -202,11 +198,12 @@ extension FilesEndpoint: RequestProtocol {
             return nil
         }
     }
+
     
     var customURL: String? {
         switch self {
-        case .upload:
-            return "https://staging.permanent.org:9000"
+        case .upload(let destinationUrl, _, _, _, _):
+            return destinationUrl
         case .download(let url, _, _):
             return url.absoluteString
         default:
