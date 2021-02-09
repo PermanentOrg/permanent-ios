@@ -10,6 +10,8 @@ import Photos.PHAsset
 
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
+typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, filename: String, fileSize: Int, csrf: String)
+typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String, csrf: String, destinationUrl: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
@@ -449,57 +451,49 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        uploadFileMeta(file, withParams: params) { id, errorMessage in
-            
-            guard let recordId = id else {
-                return handler(.error(message: errorMessage))
-            }
-            
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.uploadFileData(
-                    file,
-                    recordId: recordId,
-                    progressHandler: progressHandler,
-                    then: handler
-                )
-            }
+        getPresignedUrl(withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
+            print(result)
         }
+//        uploadFileMeta(file, withParams: params) { id, errorMessage in
+//
+//            guard let recordId = id else {
+//                return handler(.error(message: errorMessage))
+//            }
+//
+//            DispatchQueue.global(qos: .userInitiated).async {
+//                self.uploadFileData(
+//                    file,
+//                    recordId: recordId,
+//                    progressHandler: progressHandler,
+//                    then: handler
+//                )
+//            }
+//        }
     }
-    
-    // Uploads the file meta to the server.
-    // Must be executed before the actual upload of the file.
-    
-    private func uploadFileMeta(_ file: FileInfo, withParams params: FileMetaParams, then handler: @escaping FileMetaUploadResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.uploadFileMeta(params: params))
-        
+
+    private func getPresignedUrl(withParams params: GetPresignedUrlParams, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-                guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(nil, .errorMessage)
+                guard let model: GetPresignedUrlResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
                     return
                 }
-                
-                if model.isSuccessful == true,
-                    let recordId = model.results?.first?.data?.first?.recordVO?.recordID
-                {
-                    handler(recordId, nil)
-                    
+
+                if model.isSuccessful == true {
+                    self.onGetPresignedUrlSuccess(model, handler)
                 } else {
-                    handler(nil, .errorMessage)
+                    handler(.error(message: .errorMessage))
                 }
-                
             case .error(let error, _):
-                handler(nil, error?.localizedDescription)
-                
+                handler(.error(message: error?.localizedDescription))
             default:
                 break
             }
         }
     }
-    
     // Uploads the file to the server.
-    
     private func uploadFileData(_ file: FileInfo, recordId: Int, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
         let boundary = UploadManager.instance.createBoundary()
         let apiOperation = APIOperation(FilesEndpoint.upload(
@@ -508,15 +502,15 @@ extension FilesViewModel: FilesViewModelDelegate {
             recordId: recordId,
             progressHandler: progressHandler
         ))
-        
+
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json:
                 handler(.success)
-                
+
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
-                
+
             default:
                 break
             }
@@ -623,6 +617,16 @@ extension FilesViewModel: FilesViewModelDelegate {
             self.viewModels.append(file)
         }
         
+        handler(.success)
+    }
+
+    private func onGetPresignedUrlSuccess(_ model: GetPresignedUrlResponse, _ handler: @escaping ServerResponse) {
+        guard
+            let simpleVO = model.results?.first?.data?.first?.simpleVO
+        else {
+            handler(.error(message: .errorMessage))
+            return
+        }
         handler(.success)
     }
     

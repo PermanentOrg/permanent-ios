@@ -158,6 +158,52 @@ struct Payloads {
             ]
         ]
     }
+
+    static func getPresignedUrlPayload(for params: GetPresignedUrlParams) -> RequestParameters {
+        let dict = [
+            "RequestVO": [
+                "data": [[
+                    "RecordVO": [
+                        "parentFolderId": params.folderId,
+                        "parentFolder_linkId": params.folderLinkId,
+                        "displayName": params.filename,
+                        "uploadFileName": params.filename,
+                        "size": params.fileSize
+                    ],
+                    "SimpleVO": [
+                        "key": "type",
+                        "value": "application/octet-stream"
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+        return dict
+    }
+
+    static func registerRecord(for params: RegisterRecordParams) -> RequestParameters {
+        let dict = [
+            "RequestVO": [
+                "RecordVO": [
+                    "parentFolderId": params.folderId,
+                    "parentFolder_linkId": params.folderLinkId,
+                    "displayName": params.filename,
+                    "uploadFileName": params.filename,
+                    "derivedCreatedDT": params.derivedCreatedDT
+                ],
+                "SimpleVO": [
+                    "key": Constants.API.s3Url,
+                    "value": params.destinationUrl
+                ],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+
+        return dict
+    }
+
     
     static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
         return [
