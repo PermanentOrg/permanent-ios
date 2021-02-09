@@ -69,7 +69,7 @@ class UploadManager {
         var data = Data()
      
         let formattedFileInfo = ["--\(boundary)\r\n",
-                                 "Content-Disposition: form-data; name=\"thefile\"; filename=\"\(file.name)\"\r\n",
+                                 "Content-Disposition: form-data; name=\"file\"; filename=\"\(file.name)\"\r\n",
                                  "Content-Type: \(mimeType)\r\n\r\n"]
             
         if data.append(values: formattedFileInfo) {
