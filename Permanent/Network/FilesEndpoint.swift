@@ -92,7 +92,9 @@ extension FilesEndpoint: RequestProtocol {
                 "content-type": "multipart/form-data; boundary=\(boundary)"
             ]
         default:
-            return nil
+            return [
+                "content-type": "application/json"
+            ]
         }
     }
     

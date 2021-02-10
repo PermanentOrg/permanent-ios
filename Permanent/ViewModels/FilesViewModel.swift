@@ -493,11 +493,11 @@ extension FilesViewModel: FilesViewModelDelegate {
                     return
                 }
 
-//                if model.isSuccessful == true {
+                if model.isSuccessful == true {
                     handler(.success)
-//                } else {
-//                    handler(.error(message: .errorMessage))
-//                }
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
             default:

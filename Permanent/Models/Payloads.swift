@@ -186,15 +186,18 @@ struct Payloads {
     static func registerRecord(for params: RegisterRecordParams) -> RequestParameters {
         let dict = [
             "RequestVO": [
-                "RecordVO": [
-                    "parentFolderId": params.folderId,
-                    "parentFolder_linkId": params.folderLinkId,
-                    "displayName": params.filename,
-                    "uploadFileName": params.filename
-                ],
-                "SimpleVO": [
-                    "key": params.s3Url,
-                    "value": params.destinationUrl
+                "data": [
+                    "RecordVO": [
+                        "parentFolderId": params.folderId,
+                        "parentFolder_linkId": params.folderLinkId,
+                        "displayName": params.filename,
+                        "uploadFileName": params.filename,
+                        "derivedCreatedDT": "2020-11-23T09:31:38.000Z"
+                    ],
+                    "SimpleVO": [
+                        "key": params.s3Url,
+                        "value": params.destinationUrl
+                    ]
                 ],
                 "apiKey": Constants.API.apiKey,
                 "csrf": params.csrf
