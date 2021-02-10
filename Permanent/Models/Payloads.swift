@@ -172,7 +172,7 @@ struct Payloads {
                     ],
                     "SimpleVO": [
                         "key": "type",
-                        "value": "application/octet-stream"
+                        "value": params.fileMimeType ?? "application/octet-stream"
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,

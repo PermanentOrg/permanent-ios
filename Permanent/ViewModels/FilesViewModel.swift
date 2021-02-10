@@ -10,7 +10,7 @@ import Photos.PHAsset
 
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
-typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, filename: String, fileSize: Int, csrf: String)
+typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, csrf: String)
 typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String, csrf: String, destinationUrl: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
@@ -451,7 +451,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
+        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, file.mimeType, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
 
         }
 
