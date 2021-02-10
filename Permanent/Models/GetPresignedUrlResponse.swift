@@ -54,6 +54,7 @@ struct GetPresignedUrlVO: Codable {
 
 struct DestinationUrlVO: Codable {
     let presignedPost: PresignedPost?
+    let destinationUrl: String?
 }
 
 struct PresignedPost: Codable {

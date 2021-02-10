@@ -10,8 +10,8 @@ import Photos.PHAsset
 
 typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
-typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, csrf: String)
-typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String, csrf: String, destinationUrl: String)
+typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?, csrf: String)
+typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, csrf: String, s3Url: String, destinationUrl: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
@@ -451,13 +451,13 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, file.mimeType, params.filename, file.fileContents?.count ?? 0, params.csrf)) { result in
+        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, file.mimeType, params.filename, file.fileContents?.count ?? 0, nil, params.csrf), progressHandler: progressHandler) { result in
 
         }
 
     }
 
-    private func getPresignedUrl(file: FileInfo, withParams params: GetPresignedUrlParams, then handler: @escaping ServerResponse) {
+    private func getPresignedUrl(file: FileInfo, withParams params: GetPresignedUrlParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             switch result {
@@ -467,9 +467,11 @@ extension FilesViewModel: FilesViewModelDelegate {
                     return
                 }
 
-                if model.isSuccessful == true, let destinationUrl = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.url, let fields = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.fields {
-
-                    self?.uploadFileDataToS3(file, destinationUrl: destinationUrl, fields: fields, progressHandler: nil, then: handler)
+                if model.isSuccessful == true, let s3Url = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.url,
+                   let destinationUrl = model.results?.first?.data?.first?.simpleVO?.value?.destinationUrl, let fields = model.results?.first?.data?.first?.simpleVO?.value?.presignedPost?.fields {
+                    DispatchQueue.main.async {
+                        self?.uploadFileDataToS3(file, params: params, s3Url: s3Url, destinationUrl: destinationUrl, fields: fields, progressHandler: progressHandler, then: handler)
+                    }
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -481,15 +483,37 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
     }
 
+    private func registerRecord(file: FileInfo, withParams params: RegisterRecordParams, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            switch result {
+            case .json(let response, _):
+                guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+//                if model.isSuccessful == true {
+                    handler(.success)
+//                } else {
+//                    handler(.error(message: .errorMessage))
+//                }
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+            default:
+                break
+            }
+        }
+    }
+
     // Uploads the file to the server.
-    private func uploadFileDataToS3(_ file: FileInfo, destinationUrl: String? ,fields: [String:String]?, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
+    private func uploadFileDataToS3(_ file: FileInfo, params: GetPresignedUrlParams, s3Url: String, destinationUrl: String ,fields: [String:String]?, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
         let boundary = UploadManager.instance.createBoundary()
-        let apiOperation = APIOperation(FilesEndpoint.upload(destinationUrl: destinationUrl,file: file, fields: fields, progressHandler: progressHandler, usingBoundry: boundary))
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        let apiOperation = APIOperation(FilesEndpoint.upload(s3Url: s3Url, file: file, fields: fields, progressHandler: progressHandler, usingBoundry: boundary))
+        apiOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
             switch result {
             case .json:
-                handler(.success)
-
+                self?.registerRecord(file: file, withParams: RegisterRecordParams(folderId: params.folderId, folderLinkId: params.folderLinkId, filename: params.filename, derivedCreatedDT: nil, csrf: params.csrf, s3Url: s3Url, destinationUrl: destinationUrl), then: handler)
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
 

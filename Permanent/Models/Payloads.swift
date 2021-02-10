@@ -168,7 +168,8 @@ struct Payloads {
                         "parentFolder_linkId": params.folderLinkId,
                         "displayName": params.filename,
                         "uploadFileName": params.filename,
-                        "size": params.fileSize
+                        "size": params.fileSize,
+                        "derivedCreatedDT": params.derivedCreatedDT
                     ],
                     "SimpleVO": [
                         "key": "type",
@@ -189,11 +190,10 @@ struct Payloads {
                     "parentFolderId": params.folderId,
                     "parentFolder_linkId": params.folderLinkId,
                     "displayName": params.filename,
-                    "uploadFileName": params.filename,
-                    "derivedCreatedDT": params.derivedCreatedDT
+                    "uploadFileName": params.filename
                 ],
                 "SimpleVO": [
-                    "key": Constants.API.s3Url,
+                    "key": params.s3Url,
                     "value": params.destinationUrl
                 ],
                 "apiKey": Constants.API.apiKey,

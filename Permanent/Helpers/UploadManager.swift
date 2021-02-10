@@ -68,8 +68,6 @@ class UploadManager {
         status = false
         var data = Data()
 
-
-
         let formattedFileInfoPrefix = ["--\(boundary)\r\n",
                                        "Content-Disposition: form-data; name=\"Content-Type\"\r\n\r\n",
                                        mimeType,

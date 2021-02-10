@@ -30,7 +30,7 @@ enum FilesEndpoint {
 
     case getPresignedUrl(params: GetPresignedUrlParams)
 
-    case upload(destinationUrl: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
+    case upload(s3Url: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
 
     case registerRecord(params: RegisterRecordParams)
     // DOWNLOAD
