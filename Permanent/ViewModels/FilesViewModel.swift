@@ -451,10 +451,7 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     private func upload(_ file: FileInfo, withParams params: FileMetaParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, file.mimeType, params.filename, file.fileContents?.count ?? 0, nil, params.csrf), progressHandler: progressHandler) { result in
-
-        }
-
+        getPresignedUrl(file: file, withParams: GetPresignedUrlParams(params.folderId, params.folderLinkId, file.mimeType, params.filename, file.fileContents?.count ?? 0, nil, params.csrf), progressHandler: progressHandler, then: handler)
     }
 
     private func getPresignedUrl(file: FileInfo, withParams params: GetPresignedUrlParams, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
