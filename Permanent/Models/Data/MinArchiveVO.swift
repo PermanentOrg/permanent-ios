@@ -11,4 +11,6 @@ struct MinArchiveVO: Equatable {
     let name: String
     let thumbnail: String
     let shareStatus: String
+    let shareId: Int
+    let archiveID: Int
 }

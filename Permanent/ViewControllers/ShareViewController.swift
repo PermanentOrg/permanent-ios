@@ -154,14 +154,11 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.approveAction = {
            //TO DO - add approve api call
-        
-           
         }
         
         cell.denyAction = {
             //TO DO - add deny api call
         }
-        
         return cell
     }
     

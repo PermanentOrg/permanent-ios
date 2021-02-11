@@ -11,6 +11,7 @@ typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
 protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
+    func approveButtonAction(option: ShareLinkOption)
 }
 
 class ShareLinkViewModel: NSObject, ViewModelInterface {
@@ -222,6 +223,12 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
         }
     }
     
+    func approveButtonAction(option: ShareLinkOption) {
+        let endpoint = option.endpoint(for: fileViewModel, and: csrf)
+        
+        //TO DO API call
+    }
+   
     func prepareShareLinkUpdatePayload(forData data: ManageLinkData) -> SharebyURLVOData? {
         var payloadVO = shareVO
         payloadVO?.maxUses = data.maxUses
