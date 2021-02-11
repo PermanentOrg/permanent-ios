@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -30,7 +30,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HuO-Fl-83D" userLabel="Sheet View">
-                    <rect key="frame" x="0.0" y="476" width="414" height="420"/>
+                    <rect key="frame" x="0.0" y="546" width="414" height="350"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o7g-I7-EWb" userLabel="Title Label">
                             <rect key="frame" x="20" y="18" width="374" height="0.0"/>
@@ -39,40 +39,40 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Af9-e6-lW9">
-                            <rect key="frame" x="20" y="30" width="374" height="340"/>
+                            <rect key="frame" x="20" y="30" width="374" height="270"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X5x-QR-Ehp" userLabel="Download Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
                                     <connections>
                                         <action selector="downloadAction:" destination="-1" eventType="touchUpInside" id="mtS-M1-3HI"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DVb-dB-Ntj" userLabel="Copy Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="50" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="40" width="374" height="30"/>
                                     <connections>
                                         <action selector="copyAction:" destination="-1" eventType="touchUpInside" id="A8M-u6-K5l"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PMR-P5-ywn" userLabel="Move Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="100" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="80" width="374" height="30"/>
                                     <connections>
                                         <action selector="moveAction:" destination="-1" eventType="touchUpInside" id="oCw-HU-lni"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phf-dD-p8f" userLabel="Publish Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="150" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="120" width="374" height="30"/>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qMX-dZ-l1n" userLabel="Delete Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="200" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="160" width="374" height="30"/>
                                     <connections>
                                         <action selector="deleteAction:" destination="-1" eventType="touchUpInside" id="XGE-FP-g2v"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="thy-cA-9uj" userLabel="Edit Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="250" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="200" width="374" height="30"/>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fgi-ud-4Tw" userLabel="Share Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="300" width="374" height="40"/>
+                                    <rect key="frame" x="0.0" y="240" width="374" height="30"/>
                                     <connections>
                                         <action selector="shareAction:" destination="-1" eventType="touchUpInside" id="5xZ-ka-R9t"/>
                                     </connections>
@@ -80,7 +80,7 @@
                             </subviews>
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K43-JO-KKh" userLabel="Safe Area View">
-                            <rect key="frame" x="0.0" y="386" width="414" height="34"/>
+                            <rect key="frame" x="0.0" y="316" width="414" height="34"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         </view>
                     </subviews>
@@ -112,25 +112,25 @@
     </objects>
     <designables>
         <designable name="DVb-dB-Ntj">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="PMR-P5-ywn">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="X5x-QR-Ehp">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="fgi-ud-4Tw">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="phf-dD-p8f">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="qMX-dZ-l1n">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="thy-cA-9uj">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
     </designables>
     <resources>

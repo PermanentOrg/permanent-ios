@@ -10,4 +10,5 @@ import Foundation
 struct MinArchiveVO: Equatable {
     let name: String
     let thumbnail: String
+    let shareStatus: String
 }

@@ -152,6 +152,16 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         let model = sharedFile.minArchiveVOS[indexPath.row]
         cell.updateCell(model: model)
         
+        cell.approveAction = {
+           //TO DO - add approve api call
+        
+           
+        }
+        
+        cell.denyAction = {
+            //TO DO - add deny api call
+        }
+        
         return cell
     }
     

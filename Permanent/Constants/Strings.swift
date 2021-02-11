@@ -166,6 +166,8 @@ extension String {
     static var inviteInfo: String { return "InviteInfo".localized() }
     static var sendInvite: String { return "SendInvite".localized() }
     static var resend: String { return "Resend".localized() }
+    static var approve: String { return "Approve".localized() }
+    static var deny: String { return "Deny".localized() }
     static var yourInvitations: String { return "YourInvitations".localized() }
     static var invitations: String { return "Invitations".localized() }
     static var send: String { return "Send".localized() }
