@@ -52,6 +52,8 @@ extension UIImage {
     static let removeAction = UIImage(named: "removeAction")!
     static let relationships = UIImage(named: "relationships")!
     static let settings = UIImage(named: "settings")!
+    static let security = UIImage(named: "security")!
+    static let accountInfo = UIImage(named: "accountInfo")!
     static let share = UIImage(named: "share")!
     static let shares = UIImage(named: "shares")!
     static let storage = UIImage(named: "storage")!

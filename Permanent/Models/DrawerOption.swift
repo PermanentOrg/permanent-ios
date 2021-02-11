@@ -11,8 +11,9 @@ enum DrawerOption {
     case files
     case shares
     case members
-    case security
     case addStorage
+    case accountInfo
+    case security
     case activityFeed
     case invitations
     case logOut
@@ -22,8 +23,9 @@ enum DrawerOption {
         case .files: return .folder
         case .shares: return .share
         case .members: return .group
-        case .security: return .settings
         case .addStorage: return .storage
+        case .security: return .security
+        case .accountInfo: return .accountInfo
         case .invitations: return .mail
         case .activityFeed: return .alert
         case .logOut: return UIImage.logOut.templated
@@ -37,8 +39,9 @@ enum DrawerOption {
         case .members: return String.member.pluralized()
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed
-        case .security: return String.security
         case .addStorage: return String.addStorage
+        case .accountInfo: return String.accountInfo
+        case .security: return String.security
         case .logOut: return .logOut
         }
     }

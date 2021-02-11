@@ -14,6 +14,7 @@ enum StoryboardName: String {
     case onboarding
     case members
     case share
+    case accountInfo
     case invitations
     case settings
     
@@ -37,6 +38,7 @@ enum ViewControllerId: String {
     case shares
     case members
     case manageLink
+    case accountInfo
     case accountSettings
     case sharePreview
     case invitations
@@ -57,6 +59,8 @@ enum ViewControllerId: String {
             return "SideMenu"
         case .manageLink:
             return "ManageLink"
+        case .accountInfo:
+            return "AccountInfo"
         case .accountSettings:
             return "AccountSettings"
         case .sharePreview:
