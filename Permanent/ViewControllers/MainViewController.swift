@@ -8,6 +8,7 @@
 import BSImagePicker
 import MobileCoreServices
 import UIKit
+import Photos
 
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -19,6 +20,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
     
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
+    private let screenLockManager = ScreenLockManager()
+
     private var sortActionSheet: SortActionSheet?
     private var fileActionSheet: FileActionSheet?
     private var isSearchActive: Bool = false
@@ -46,7 +49,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         
         overlayView.frame = view.bounds
     }
-    
+
     // MARK: - UI Related
     
     fileprivate func initUI() {
@@ -266,7 +269,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         DispatchQueue.main.async {
             self.hideSpinner()
         }
-    
+
         switch status {
         case .success:
             DispatchQueue.main.async {
@@ -284,8 +287,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         guard
             let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken),
             let sharePreviewVC = UIViewController.create(
-                    withIdentifier: .sharePreview,
-                    from: .share
+                withIdentifier: .sharePreview,
+                from: .share
             ) as? SharePreviewViewController else {
             return
         }
@@ -312,6 +315,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         viewModel?.uploadFiles(
             files,
             onUploadStart: {
+                self.screenLockManager.disableIdleTimer(true)
                 DispatchQueue.main.async {
                     self.refreshTableView()
                 }
@@ -343,13 +347,16 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     }
                     
                     self.viewModel?.clearUploadQueue()
-                    
+                    self.screenLockManager.disableIdleTimer(false)
                     handler?()
                     
-                case .error(let message):
+                case .error(_):
                     DispatchQueue.main.async {
+                        self.screenLockManager.disableIdleTimer(false)
                         self.hideSpinner()
-                        self.showErrorAlert(message: message)
+                        self.viewModel = FilesViewModel()
+                        self.tableView.reloadData()
+                        self.getRootFolder()
                     }
                 }
             }
@@ -436,7 +443,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         guard let viewModel = self.viewModel else {
             fatalError()
         }
-       
+
         let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file, fileAction: viewModel.fileAction)
@@ -569,12 +576,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
             self.showActionDialog(styled: .simple,
-                             withTitle: title,
-                             positiveButtonTitle: .delete,
-                             positiveAction: {
-                                self.actionDialog?.dismiss()
-                                self.deleteFile(file, atIndexPath: indexPath)
-                             }, overlayView: self.overlayView)
+                                  withTitle: title,
+                                  positiveButtonTitle: .delete,
+                                  positiveAction: {
+                                    self.actionDialog?.dismiss()
+                                    self.deleteFile(file, atIndexPath: indexPath)
+                                  }, overlayView: self.overlayView)
         })
     }
     
@@ -740,7 +747,7 @@ extension MainViewController: FABActionSheetDelegate {
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
         let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
         let cancelAction = UIAlertAction(title: .cancel, style: .cancel, handler: nil)
-            
+
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
@@ -754,7 +761,14 @@ extension MainViewController: FABActionSheetDelegate {
     func openPhotoLibrary() {
         let imagePicker = ImagePickerController()
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
-        
+        let options = imagePicker.settings.fetch.album.options
+        imagePicker.settings.fetch.album.fetchResults = [
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options),
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options),
+            PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)]
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
@@ -769,7 +783,7 @@ extension MainViewController: FABActionSheetDelegate {
     
     func openFileBrowser() {
         let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String,
-                                                                        kUTTypeContent as String],
+                                                                       kUTTypeContent as String],
                                                        in: .import)
         docPicker.delegate = self
         docPicker.allowsMultipleSelection = true
@@ -793,7 +807,7 @@ extension MainViewController: FABActionSheetDelegate {
             folderName.isNotEmpty else {
             return
         }
-    
+
         actionDialog?.dismiss()
         createNewFolder(named: folderName)
     }
@@ -844,7 +858,7 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-    
+
         guard
             let viewModel = viewModel,
             let shareVC = UIViewController.create(

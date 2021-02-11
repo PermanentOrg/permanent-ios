@@ -264,6 +264,7 @@
 		BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
 		BD2403B02524978C00AE45B3 /* STAGING-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */; };
 		BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD736A50258B6A030003CE5C /* SharedURLSession.swift */; };
+		BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD95ECC025D53E58009B443F /* ScreenLockManager.swift */; };
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
@@ -540,6 +541,7 @@
 		BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		BD2403AF2524978C00AE45B3 /* STAGING-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "STAGING-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BD736A50258B6A030003CE5C /* SharedURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedURLSession.swift; sourceTree = "<group>"; };
+		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
@@ -1018,6 +1020,7 @@
 				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
 				BC581A4D255A98DB00171D7A /* MediaRecorder.swift */,
 				BCC5501E255AB31800CA1574 /* FileHelper.swift */,
+				BD95ECC025D53E58009B443F /* ScreenLockManager.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -1713,6 +1716,7 @@
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
 				BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */,
+				BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */,
 				BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
