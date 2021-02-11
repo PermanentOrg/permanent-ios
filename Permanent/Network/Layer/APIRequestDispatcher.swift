@@ -146,9 +146,9 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     /// Parses a `Data` object into a JSON object.
     /// - Parameter data: `Data` instance to be parsed.
     /// - Returns: A `Result` instance.
-    private func parse(data: Data?) -> Result<Any, Error> {
-        guard let data = data else {
-            return .failure(APIError.invalidResponse)
+    private func parse(data: Data?) -> Result<Any?, Error> {
+        guard let data = data, data.count > 0 else {
+            return .success(nil)
         }
 
         do {
@@ -172,11 +172,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     private func verify(data: Any?, urlResponse: HTTPURLResponse, error: Error?) -> Result<Any, Error> {
         switch urlResponse.statusCode {
         case 200...299:
-            if let data = data {
-                return .success(data)
-            } else {
-                return .failure(APIError.noData)
-            }
+            return .success(data)
         case 400...499:
             return .failure(APIError.badRequest(error?.localizedDescription))
         case 500...599:
