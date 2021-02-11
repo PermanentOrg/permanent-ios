@@ -11,6 +11,11 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
+
+struct Font {
+    
+}
+
 struct Text {
     static var style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
     static var style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
