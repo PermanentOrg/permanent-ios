@@ -277,4 +277,38 @@ struct Payloads {
             ]
         ]
     }
+    static func acceptShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "ShareVO": [
+                        "shareId": shareId,
+                        "folder_linkId": folderLinkId,
+                        "archiveId": archiveId,
+                        "accessRole": "access.role.viewer",
+                        "type": "type.share.record",
+                        "status": "status.generic.ok"
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    static func denyShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters{
+        return [
+            "RequestVO": [
+                "data": [[
+                    "ShareVO": [
+                        "shareId": shareId,
+                        "folder_linkId": folderLinkId,
+                        "archiveId": archiveId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+
+    }
 }

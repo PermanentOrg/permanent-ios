@@ -172,6 +172,8 @@
 "InviteSent" = "Invite sent";
 "InviteRevoked" = "Invite revoked";
 "LinkNotAvailable" = "This link is no longer available";
+"Approve" = "Approve";
+"Deny" = "Deny";
 "AccountName" = "Account Name";
 "PrimaryEmail" = "Primary Email";
 "MobilePhone" = "Mobile Phone";
@@ -185,6 +187,8 @@
 "EmptyNameField" = "Account name can't be empty.";
 "NoDataModification" = "No modifications were done";
 "EmailFieldIsEmpty" = "Email field is invalid";
+"ApproveShareRequest" = "Existing share updated";
+"DenyShareRequest" = "Share Deleted";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

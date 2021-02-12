@@ -24,6 +24,10 @@ enum AccountEndpoint {
     case getUserData(accountId: String, csrf: String)
     /// Updates user data
     case updateUserData(accountId: String, updateData: UpdateUserData, csrf: String)
+    /// Update Share request
+    case updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
+    /// Revoke Share request
+    case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -43,6 +47,10 @@ extension AccountEndpoint: RequestProtocol {
             return "/account/get"
         case .updateUserData:
             return "/account/update"
+        case .updateShareRequest:
+            return "/share/upsert"
+        case .deleteShareRequest:
+            return "/share/delete"
         }
     }
 
@@ -62,6 +70,10 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.getUserData(accountId: id,csrf: csrf)
         case .updateUserData(accountId: let accountId, updateData: let updateData, csrf: let csrf):
             return Payloads.updateUserData(accountId: accountId,updateUserData: updateData,csrf: csrf)
+        case .updateShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
+            return Payloads.acceptShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
+        case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
+            return Payloads.denyShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
         }
     }
 

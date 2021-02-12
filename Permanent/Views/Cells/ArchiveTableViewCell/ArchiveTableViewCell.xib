@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ArchiveTableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="79" id="KGk-i7-Jjw" customClass="ArchiveTableViewCell" customModule="Permanent" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="432" height="79"/>
+        <tableViewCell contentMode="scaleToFill" restorationIdentifier="ArchiveTableViewCell" selectionStyle="default" indentationWidth="10" rowHeight="233" id="KGk-i7-Jjw" customClass="ArchiveTableViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="432" height="233"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="432" height="79"/>
+                <rect key="frame" x="0.0" y="0.0" width="432" height="233"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="h0w-q0-XkC" userLabel="Archive Image View">
-                        <rect key="frame" x="20" y="22.5" width="34" height="34"/>
+                        <rect key="frame" x="20" y="82" width="34" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="Pdf-Ak-Vab"/>
                             <constraint firstAttribute="width" constant="34" id="xQz-gH-UNN"/>
@@ -31,16 +31,16 @@
                         </userDefinedRuntimeAttributes>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
-                        <rect key="frame" x="64" y="10" width="303" height="59"/>
+                        <rect key="frame" x="64" y="10" width="303" height="178"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="Archive Label">
-                                <rect key="frame" x="0.0" y="0.0" width="303" height="50"/>
+                                <rect key="frame" x="0.0" y="0.0" width="303" height="128"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tdl-In-Vb7" userLabel="Relationship Label">
-                                <rect key="frame" x="0.0" y="50" width="303" height="9"/>
+                                <rect key="frame" x="0.0" y="128" width="303" height="50"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -48,7 +48,7 @@
                         </subviews>
                     </stackView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KNW-4V-gMX" userLabel="More Button">
-                        <rect key="frame" x="387" y="27" width="25" height="25"/>
+                        <rect key="frame" x="387" y="104" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="25" id="OEz-2P-8tz"/>
                             <constraint firstAttribute="width" constant="25" id="PMz-Tj-Fd8"/>
@@ -59,28 +59,61 @@
                             <action selector="moreButtonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="qel-9x-RHd"/>
                         </connections>
                     </button>
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="6jh-Sm-L0U">
+                        <rect key="frame" x="64" y="193" width="212" height="30"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKI-ko-seh" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="101" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="approveAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="riT-2d-ODf"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tE3-Dy-rD8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="111" y="0.0" width="101" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="denyAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IW4-IM-jr8"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </stackView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="h0w-q0-XkC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="1FZ-17-D40"/>
+                    <constraint firstItem="h0w-q0-XkC" firstAttribute="centerY" secondItem="PO6-uJ-qlZ" secondAttribute="centerY" id="1FZ-17-D40"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="leading" secondItem="PO6-uJ-qlZ" secondAttribute="trailing" constant="20" id="1Vz-KX-qFG"/>
+                    <constraint firstAttribute="bottom" secondItem="6jh-Sm-L0U" secondAttribute="bottom" constant="10" id="QQH-6p-EGJ"/>
                     <constraint firstItem="h0w-q0-XkC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="TVq-59-fuJ"/>
-                    <constraint firstAttribute="bottom" secondItem="PO6-uJ-qlZ" secondAttribute="bottom" constant="10" id="WNS-Hl-fjH"/>
+                    <constraint firstItem="6jh-Sm-L0U" firstAttribute="width" secondItem="PO6-uJ-qlZ" secondAttribute="width" multiplier="0.7" id="VVU-Tf-7af"/>
+                    <constraint firstItem="6jh-Sm-L0U" firstAttribute="top" secondItem="PO6-uJ-qlZ" secondAttribute="bottom" constant="5" id="WNS-Hl-fjH"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="aKa-VN-a5Z"/>
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ap0-kV-sir"/>
+                    <constraint firstItem="6jh-Sm-L0U" firstAttribute="leading" secondItem="h0w-q0-XkC" secondAttribute="trailing" constant="10" id="awF-bg-ifL"/>
                     <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" constant="20" id="l0H-G5-od7"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="wTu-bW-Sut"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="approveButton" destination="iKI-ko-seh" id="ZeR-qB-A0a"/>
                 <outlet property="archiveImageView" destination="h0w-q0-XkC" id="pwW-1g-V06"/>
                 <outlet property="archiveNameLabel" destination="zU3-4p-PA7" id="ddE-zs-gWd"/>
+                <outlet property="bottomButtonsView" destination="6jh-Sm-L0U" id="Lkn-Q3-tUJ"/>
+                <outlet property="denyButton" destination="tE3-Dy-rD8" id="xav-Wr-lUQ"/>
                 <outlet property="moreButton" destination="KNW-4V-gMX" id="akn-ek-APh"/>
                 <outlet property="relationshipLabel" destination="Tdl-In-Vb7" id="nW8-tC-ibu"/>
             </connections>
-            <point key="canvasLocation" x="242.0289855072464" y="73.995535714285708"/>
+            <point key="canvasLocation" x="37.681159420289859" y="-71.316964285714278"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="iKI-ko-seh">
+            <size key="intrinsicContentSize" width="46" height="30"/>
+        </designable>
+        <designable name="tE3-Dy-rD8">
+            <size key="intrinsicContentSize" width="46" height="30"/>
+        </designable>
+    </designables>
     <resources>
         <image name="more" width="4" height="16"/>
     </resources>

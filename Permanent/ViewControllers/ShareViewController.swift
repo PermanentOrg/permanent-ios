@@ -1,4 +1,4 @@
-//  
+//
 //  ShareViewController.swift
 //  Permanent
 //
@@ -68,7 +68,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     fileprivate func setupTableView() {
         tableView.register(UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self))
-        tableView.tableFooterView = UIView()        
+        tableView.tableFooterView = UIView()
         tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ?
             UIView.tableViewBgView(withTitle: .noSharesMessage) :
             nil
@@ -99,7 +99,8 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             guard
                 let shareVO = shareVO,
                 shareVO.sharebyURLID != nil,
-                let shareURL = shareVO.shareURL else {
+                let shareURL = shareVO.shareURL
+            else {
                 return
             }
             
@@ -109,8 +110,8 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                 self.createLinkButton.isHidden = true
                 UIView.animate(
                     animations: {
-                    self.linkOptionsStackView.isHidden = false
-                })
+                        self.linkOptionsStackView.isHidden = false
+                    })
             }
         })
     }
@@ -152,6 +153,31 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         let model = sharedFile.minArchiveVOS[indexPath.row]
         cell.updateCell(model: model)
         
+        cell.approveAction = {
+            self.viewModel?.approveButtonAction(then: { status in
+                switch status {
+                case .success:
+                    self.view.showNotificationBanner(title: .approveShareRequest)
+                    cell.hideBottomButtons(status: true)
+                    
+                case .error(message: let message):
+                    self.showErrorAlert(message: message)
+                }
+            })
+        }
+        
+        cell.denyAction = {
+            self.viewModel?.denyButtonAction(then: { status in
+                switch status {
+                case .success:
+                    self.view.showNotificationBanner(title: .denyShareRequest)
+                    cell.hideBottomButtons(status: true)
+                    
+                case .error(message: let message):
+                    self.showErrorAlert(message: message)
+                }
+            })
+        }
         return cell
     }
     
@@ -167,18 +193,19 @@ extension ShareViewController: LinkOptionsViewDelegate {
         }
         
         let activityViewController = UIActivityViewController(activityItems: [link], applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = self.view
-        self.present(activityViewController, animated: true, completion: nil)
+        activityViewController.popoverPresentationController?.sourceView = view
+        present(activityViewController, animated: true, completion: nil)
     }
     
     func manageLinkAction() {
         guard
-            let manageLinkVC = UIViewController.create(withIdentifier: .manageLink, from: .share) as? ManageLinkViewController else {
+            let manageLinkVC = UIViewController.create(withIdentifier: .manageLink, from: .share) as? ManageLinkViewController
+        else {
             return
         }
         
-        manageLinkVC.shareViewModel = self.viewModel
-        self.navigationController?.display(viewController: manageLinkVC, modally: true)
+        manageLinkVC.shareViewModel = viewModel
+        navigationController?.display(viewController: manageLinkVC, modally: true)
     }
     
     func revokeLinkAction() {
@@ -186,9 +213,9 @@ extension ShareViewController: LinkOptionsViewDelegate {
                          withTitle: "\(String.revokeLink)?",
                          positiveButtonTitle: .revoke,
                          positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.revokeLink()
+                             self.actionDialog?.dismiss()
+                             self.revokeLink()
                          },
-                         overlayView: self.overlayView)
+                         overlayView: overlayView)
     }
 }

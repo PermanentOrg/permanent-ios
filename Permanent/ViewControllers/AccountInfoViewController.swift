@@ -176,13 +176,27 @@ extension AccountInfoViewController: UITextFieldDelegate {
             countryView.textField.becomeFirstResponder()
         default:
             countryView.textField.resignFirstResponder()
+            let point = CGPoint(x: 0, y: 0)
+            scrollView.setContentOffset(point, animated: true)
         }
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        var point = CGPoint(x: 0, y: 0)
+        let changePosition: [CGFloat] = [view.frame.height/10,view.frame.height/7]
         (textField as? TextField)?.toggleBorder(active: true)
-        
-        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
+        switch textField {
+        case cityView.textField:
+            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
+        case stateView.textField:
+            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
+        case postalCodeView.textField:
+            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
+        case countryView.textField:
+            point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
+        default:
+            point = CGPoint(x: 0, y: 0)
+        }
         scrollView.setContentOffset(point, animated: true)
     }
     

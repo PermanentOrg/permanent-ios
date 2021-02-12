@@ -157,10 +157,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="V1x-M9-TMR">
-                                <rect key="frame" x="20" y="782" width="374" height="40"/>
+                                <rect key="frame" x="20" y="792" width="374" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k9G-sI-qMW" userLabel="Save Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
                                         <connections>
                                             <action selector="saveAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="Ifa-ny-bNk"/>
                                         </connections>
@@ -384,7 +384,7 @@
             <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="eyh-Xi-naH">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="k9G-sI-qMW">
             <size key="intrinsicContentSize" width="30" height="30"/>

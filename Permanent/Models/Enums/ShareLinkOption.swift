@@ -12,7 +12,6 @@ enum ShareLinkOption {
     /// Used when creating a new share link.
     case create
     
-    
     func endpoint(for viewModel: FileViewModel, and csrf: String) -> RequestProtocol {
         switch self {
         case .retrieve: return ShareEndpoint.getLink(file: viewModel, csrf: csrf)
