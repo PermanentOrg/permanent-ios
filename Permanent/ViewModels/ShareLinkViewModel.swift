@@ -11,7 +11,8 @@ typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
 protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
-    func approveButtonAction(option: ShareLinkOption)
+    func approveButtonAction(then handler: @escaping (RequestStatus) -> Void)
+    func denyButtonAction(then handler: @escaping (RequestStatus) -> Void)
 }
 
 class ShareLinkViewModel: NSObject, ViewModelInterface {
@@ -68,7 +69,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
 }
 
 extension ShareLinkViewModel: ShareLinkViewModelDelegate {
-    
     func cancelDownload() {
         downloader.cancelDownload()
     }
@@ -222,13 +222,63 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
             }
         }
     }
-    
-    func approveButtonAction(option: ShareLinkOption) {
-        let endpoint = option.endpoint(for: fileViewModel, and: csrf)
+    func approveButtonAction(then handler: @escaping (RequestStatus) -> Void) {
         
-        //TO DO API call
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: self.fileViewModel.minArchiveVOS.first!.shareId, folderLinkId: self.fileViewModel.folderLinkId, archiveId: self.fileViewModel.minArchiveVOS.first!.archiveID, csrf: self.csrf))
+        
+    
+        acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                handler(.success)
+                return
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+            default:
+                break
+            }
+        }
     }
-   
+    
+    func denyButtonAction(then handler: @escaping (RequestStatus) -> Void) {
+        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: self.fileViewModel.minArchiveVOS.first!.shareId, folderLinkId: self.fileViewModel.folderLinkId, archiveId: self.fileViewModel.minArchiveVOS.first!.archiveID, csrf: self.csrf))
+        
+    
+        denyShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                handler(.success)
+                return
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+            default:
+                break
+            }
+        }
+    }
+    
     func prepareShareLinkUpdatePayload(forData data: ManageLinkData) -> SharebyURLVOData? {
         var payloadVO = shareVO
         payloadVO?.maxUses = data.maxUses

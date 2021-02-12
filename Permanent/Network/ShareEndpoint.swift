@@ -23,9 +23,6 @@ enum ShareEndpoint {
     
     case requestShareAccess(token: String, csrf: String)
     
-    case updateShareRequest(file: FileViewModel, csrf: String)
-    
-    case deleteShareRequest(file: FileViewModel, csrf: String)
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -38,8 +35,6 @@ extension ShareEndpoint: RequestProtocol {
         case .getShares: return "/share/getShares"
         case .checkLink: return "/share/checkShareLink"
         case .requestShareAccess: return "/share/requestShareAccess"
-        case .updateShareRequest: return "/share/upsert"
-        case .deleteShareRequest: return "/share/delete"
         }
     }
     

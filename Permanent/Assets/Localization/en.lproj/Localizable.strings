@@ -141,14 +141,15 @@
 "RemoveMember" = "Remove member?";
 "Remove" = "Remove";
 "Pending" = "Pending";
-"IncorrectOldPassword" = " Old password entered is incorrect. Please try again.";
+"IncorrectOldPassword" = " Current password is incorrect. Please try again.";
 "LowPasswordComplexity" = "Password must be at least 8 characters in length.";
 "PasswordMatchError" = "Passwords must match.";
 "PasswordChangedSuccessfully" = "Password updated.";
 "Security" = "Security";
+"AccountInfo" = "Account Info";
 "UpdatePassword" = "Update Password";
 "CurrentPassword" = "Current Password";
-"ReTypePassword" = "Re-type Password";
+"ReTypePassword" = "Re-type New Password";
 "NewPassword" = "New Password";
 "RequestAwaitingApproval" = "Your request is awaiting approval";
 "ViewInArchive" = "View in archive";
@@ -173,7 +174,21 @@
 "LinkNotAvailable" = "This link is no longer available";
 "Approve" = "Approve";
 "Deny" = "Deny";
-
+"AccountName" = "Account Name";
+"PrimaryEmail" = "Primary Email";
+"MobilePhone" = "Mobile Phone";
+"Address" = "Address";
+"City" = "City";
+"StateOrRegion" = "State or region";
+"PostalCode" = "Postal Code";
+"Country" = "Country";
+"SaveInfo" = "Save Info";
+"UserDetailsChangedSuccessfully" = "Updates were saved";
+"EmptyNameField" = "Account name can't be empty.";
+"NoDataModification" = "No modifications were done";
+"EmailFieldIsEmpty" = "Email field is invalid";
+"ApproveShareRequest" = "Existing share updated";
+"DenyShareRequest" = "Share Deleted";
 
 /// Errors
 "ErrorCancelled" = "Request has been cancelled.";

@@ -11,6 +11,11 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
+
+struct Font {
+    
+}
+
 struct Text {
     static var style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
     static var style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
@@ -80,6 +85,7 @@ extension Constants.Design {
 
 extension Constants.API {
     static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
+    static let s3Url = "https://s3.us-west-2.amazonaws.com/permanent-staging"
 
     static let TYPE_AUTH_CREATED_ACCOUNT_EMAIL = "type.auth.created_account_email"
     static let TYPE_AUTH_CREATED_ACCOUNT_TEXT = "type.auth.created_account_text"

@@ -27,11 +27,12 @@ enum FilesEndpoint {
     case relocate(params: RelocateParams)
     
     // UPLOAD
-    
-    case uploadFileMeta(params: FileMetaParams)
-    
-    case upload(file: FileInfo, usingBoundary: String, recordId: Int, progressHandler: ProgressHandler?) // TODO: Remove boundary from here
-    
+
+    case getPresignedUrl(params: GetPresignedUrlParams)
+
+    case upload(s3Url: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
+
+    case registerRecord(params: RegisterRecordParams)
     // DOWNLOAD
     
     case getRecord(itemInfo: GetRecordParams)
@@ -48,8 +49,10 @@ extension FilesEndpoint: RequestProtocol {
             return "/folder/navigateMin"
         case .getLeanItems:
             return "/folder/getLeanItems"
-        case .uploadFileMeta:
-            return "/record/postMetaBatch"
+        case .getPresignedUrl:
+            return "/record/getPresignedUrl"
+        case .registerRecord:
+            return "/record/registerRecord"
         case .newFolder:
             return "/folder/post"
         case .delete(let parameters):
@@ -67,7 +70,7 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
-  
+
         default:
             return ""
         }
@@ -84,12 +87,14 @@ extension FilesEndpoint: RequestProtocol {
     
     var headers: RequestHeaders? {
         switch self {
-        case .upload(_, let boundary, _, _):
+        case .upload(_, _, _, _, let boundary):
             return [
                 "content-type": "multipart/form-data; boundary=\(boundary)"
             ]
         default:
-            return nil
+            return [
+                "content-type": "application/json"
+            ]
         }
     }
     
@@ -99,15 +104,16 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.navigateMinPayload(for: params)
         case .getLeanItems(let params):
             return Payloads.getLeanItemsPayload(for: params)
-        case .upload(_, _, let recordId, _):
-            return ["recordid": recordId]
-        case .uploadFileMeta(let params):
-            return Payloads.uploadFileMetaPayload(for: params)
+        case .upload(_, _, let fields, _, _):
+            return fields
+        case .getPresignedUrl(let params):
+            return Payloads.getPresignedUrlPayload(for: params)
+        case .registerRecord(let params):
+            return Payloads.registerRecord(for: params)
         case .newFolder(let params):
             return Payloads.newFolderPayload(for: params)
         case .download(_, let filename, _):
             return ["filename": filename]
-            
         default:
             return nil
         }
@@ -139,7 +145,7 @@ extension FilesEndpoint: RequestProtocol {
     var progressHandler: ProgressHandler? {
         get {
             switch self {
-            case .upload(_, _, _, let handler): return handler
+            case .upload(_, _, _, let handler, _): return handler
             case .download(_, _, let handler): return handler
             default: return nil
             }
@@ -149,11 +155,8 @@ extension FilesEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
-        case .upload(let file, let boundary, _, _):
-            return UploadManager.instance.getBodyData(parameters: parameters ?? [:],
-                                                      file: file,
-                                                      boundary: boundary)
-            
+        case .upload(_, let file, _, _, let boundary):
+            return UploadManager.instance.getBodyData(parameters: parameters ?? [:], file: file, boundary: boundary)
         case .delete(let parameters):
             if parameters.file.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
@@ -180,14 +183,14 @@ extension FilesEndpoint: RequestProtocol {
         case .relocate(let parameters):
             if parameters.items.source.type.isFolder {
                 let copyVO = RelocateFolderPayload(folderLinkId: parameters.items.source.folderLinkId,
-                                                     folderDestLinkId: parameters.items.destination.folderLinkId)
+                                                   folderDestLinkId: parameters.items.destination.folderLinkId)
                 let requestVO = APIPayload.make(fromData: [copyVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
             } else {
                 let relocateVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
-                                                     folderDestLinkId: parameters.items.destination.folderLinkId,
-                                                     parentFolderLinkId: parameters.items.source.parentFolderLinkId)
+                                                       folderDestLinkId: parameters.items.destination.folderLinkId,
+                                                       parentFolderLinkId: parameters.items.source.parentFolderLinkId)
                 let requestVO = APIPayload.make(fromData: [relocateVO], csrf: parameters.csrf)
                 
                 return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
@@ -197,11 +200,12 @@ extension FilesEndpoint: RequestProtocol {
             return nil
         }
     }
+
     
     var customURL: String? {
         switch self {
-        case .upload:
-            return "https://staging.permanent.org:9000"
+        case .upload(let destinationUrl, _, _, _, _):
+            return destinationUrl
         case .download(let url, _, _):
             return url.absoluteString
         default:

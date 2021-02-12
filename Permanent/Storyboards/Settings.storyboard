@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -122,8 +122,152 @@
             </objects>
             <point key="canvasLocation" x="128" y="-21"/>
         </scene>
+        <!--Account Info View Controller-->
+        <scene sceneID="7ff-zy-13g">
+            <objects>
+                <viewController storyboardIdentifier="AccountInfo" id="DKX-Ce-nIb" customClass="AccountInfoViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xNr-He-yJG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="aTq-KH-BV0">
+                                <rect key="frame" x="0.0" y="39" width="414" height="818"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XnC-Yc-DvG">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="68J-lr-Pzv" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="20" y="508" width="374" height="45"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="45" id="hfB-wK-8FO"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="pressedUpdateButton:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="Xht-OY-5Ms"/>
+                                                    <action selector="pressedUpdateButton:" destination="U2U-Bo-n5y" eventType="touchUpInside" id="vfm-ZQ-BIP"/>
+                                                </connections>
+                                            </button>
+                                            <stackView opaque="NO" contentMode="top" axis="vertical" distribution="fillEqually" spacing="22" translatesAutoresizingMaskIntoConstraints="NO" id="c4L-J8-oIw">
+                                                <rect key="frame" x="0.0" y="0.0" width="394" height="470"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2P9-DV-xhR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ogg-ze-DAE" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="82" width="394" height="60"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tvS-OK-oYe" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="164" width="394" height="60"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4cx-DB-j2J" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="246" width="394" height="60"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eyu-gu-hgn">
+                                                        <rect key="frame" x="0.0" y="328" width="394" height="60"/>
+                                                        <subviews>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o1Z-Ao-tzj" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ekB-PT-q6z" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="ekB-PT-q6z" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="ZEU-Y0-ojc"/>
+                                                            <constraint firstItem="o1Z-Ao-tzj" firstAttribute="top" secondItem="eyu-gu-hgn" secondAttribute="top" id="cA6-4G-NCg"/>
+                                                            <constraint firstAttribute="bottom" secondItem="o1Z-Ao-tzj" secondAttribute="bottom" id="f4D-bW-aNK"/>
+                                                            <constraint firstAttribute="bottom" secondItem="ekB-PT-q6z" secondAttribute="bottom" id="it9-0K-ro2"/>
+                                                        </constraints>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZMe-dh-uGc">
+                                                        <rect key="frame" x="0.0" y="410" width="394" height="60"/>
+                                                        <subviews>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eX1-Fa-Ugn" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-5h-O9O" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            </view>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstAttribute="bottom" secondItem="ZrA-5h-O9O" secondAttribute="bottom" id="X9z-zG-NoT"/>
+                                                            <constraint firstItem="eX1-Fa-Ugn" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="eI3-ry-tie"/>
+                                                            <constraint firstItem="ZrA-5h-O9O" firstAttribute="top" secondItem="ZMe-dh-uGc" secondAttribute="top" id="gdv-af-a3b"/>
+                                                            <constraint firstAttribute="bottom" secondItem="eX1-Fa-Ugn" secondAttribute="bottom" id="nVg-hY-Iu0"/>
+                                                        </constraints>
+                                                    </stackView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="470" id="RBj-wb-aCB"/>
+                                                </constraints>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="c4L-J8-oIw" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" id="2WF-j2-vup"/>
+                                            <constraint firstItem="c4L-J8-oIw" firstAttribute="top" secondItem="XnC-Yc-DvG" secondAttribute="topMargin" constant="-13" id="Ben-7u-4TH"/>
+                                            <constraint firstAttribute="trailing" secondItem="c4L-J8-oIw" secondAttribute="trailing" constant="20" id="Fhh-Mq-nJu"/>
+                                            <constraint firstItem="68J-lr-Pzv" firstAttribute="top" secondItem="c4L-J8-oIw" secondAttribute="bottom" constant="38" id="awa-UV-FFL"/>
+                                            <constraint firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" constant="20" id="lj1-DM-mwb"/>
+                                            <constraint firstItem="68J-lr-Pzv" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" constant="20" id="w6J-Xe-Zhb"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="XnC-Yc-DvG" firstAttribute="top" secondItem="aTq-KH-BV0" secondAttribute="top" id="9Q3-wo-hgp"/>
+                                    <constraint firstAttribute="width" secondItem="XnC-Yc-DvG" secondAttribute="width" id="EZP-Oj-TgN"/>
+                                    <constraint firstItem="XnC-Yc-DvG" firstAttribute="trailing" secondItem="aTq-KH-BV0" secondAttribute="trailing" id="IyF-hq-xL4"/>
+                                    <constraint firstItem="9AC-nj-mUg" firstAttribute="bottom" secondItem="XnC-Yc-DvG" secondAttribute="bottom" id="OTb-uD-fWj"/>
+                                    <constraint firstItem="XnC-Yc-DvG" firstAttribute="leading" secondItem="aTq-KH-BV0" secondAttribute="leading" id="Tl7-7B-V8e"/>
+                                    <constraint firstItem="NO6-mn-yz6" firstAttribute="top" secondItem="aTq-KH-BV0" secondAttribute="top" id="hpA-pW-Upp"/>
+                                    <constraint firstAttribute="bottom" secondItem="XnC-Yc-DvG" secondAttribute="bottom" id="ikK-FY-Cq6"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="NO6-mn-yz6"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="9AC-nj-mUg"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="WPg-Ls-kUO"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aTq-KH-BV0" firstAttribute="centerX" secondItem="xNr-He-yJG" secondAttribute="centerX" id="J1R-5y-zbT"/>
+                            <constraint firstItem="aTq-KH-BV0" firstAttribute="centerY" secondItem="xNr-He-yJG" secondAttribute="centerY" id="QZt-ve-lFa"/>
+                            <constraint firstItem="aTq-KH-BV0" firstAttribute="leading" secondItem="WPg-Ls-kUO" secondAttribute="leading" id="jnK-xk-ih6"/>
+                            <constraint firstItem="WPg-Ls-kUO" firstAttribute="bottom" secondItem="aTq-KH-BV0" secondAttribute="bottom" constant="5" id="m3b-Av-JTV"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="accountNameView" destination="2P9-DV-xhR" id="0VZ-f9-XkZ"/>
+                        <outlet property="addressView" destination="4cx-DB-j2J" id="fAh-kf-dbU"/>
+                        <outlet property="cityView" destination="o1Z-Ao-tzj" id="bXS-g4-vVc"/>
+                        <outlet property="contentUpdateButton" destination="68J-lr-Pzv" id="C8a-vd-tmQ"/>
+                        <outlet property="countryView" destination="ZrA-5h-O9O" id="8Du-IW-NbV"/>
+                        <outlet property="mobilePhoneView" destination="tvS-OK-oYe" id="Yqa-PI-k9d"/>
+                        <outlet property="postalCodeView" destination="eX1-Fa-Ugn" id="r16-pY-MRg"/>
+                        <outlet property="primaryEmailView" destination="ogg-ze-DAE" id="xOp-Ux-BIN"/>
+                        <outlet property="scrollView" destination="aTq-KH-BV0" id="NtB-Ax-6Hf"/>
+                        <outlet property="stateView" destination="ekB-PT-q6z" id="rsg-3R-td1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ngB-Zy-X3D" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="128" y="686"/>
+        </scene>
     </scenes>
     <designables>
+        <designable name="68J-lr-Pzv">
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
         <designable name="S4H-vw-aNZ">
             <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>

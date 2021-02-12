@@ -132,7 +132,9 @@ extension APINetworkSession: NetworkSessionProtocol {
     }
 
     func uploadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? {
-        let uploadTask = session.uploadTask(with: request, from: nil) { data, urlResponse, error in
+        var req = request;
+        req.addValue("\(request.httpBody?.count ?? 0)", forHTTPHeaderField: "Content-Length")
+        let uploadTask = session.uploadTask(with: req, from: nil) { data, urlResponse, error in
             completion(data, urlResponse, error)
         }
 

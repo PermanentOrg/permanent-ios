@@ -22,6 +22,7 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
     }
 
     private func initUI() {
+        
         title = .security
         view.backgroundColor = .white
         firstLineView.backgroundColor = .lightGray
@@ -89,7 +90,8 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
                         self.currentPasswordView.clearPasswordField()
                         self.reTypePasswordView.clearPasswordField()
                         self.newPasswordView.clearPasswordField()
-                        self.showAlert(title: .success, message: message)
+                        self.view.showNotificationBanner(height: Constants.Design.bannerHeight,
+                                                         title: message!)
                     }
                 case .error(let message):
                     DispatchQueue.main.async {

@@ -158,6 +158,55 @@ struct Payloads {
             ]
         ]
     }
+
+    static func getPresignedUrlPayload(for params: GetPresignedUrlParams) -> RequestParameters {
+        let dict = [
+            "RequestVO": [
+                "data": [[
+                    "RecordVO": [
+                        "parentFolderId": params.folderId,
+                        "parentFolder_linkId": params.folderLinkId,
+                        "displayName": params.filename,
+                        "uploadFileName": params.filename,
+                        "size": params.fileSize,
+                        "derivedCreatedDT": params.derivedCreatedDT
+                    ],
+                    "SimpleVO": [
+                        "key": "type",
+                        "value": params.fileMimeType ?? "application/octet-stream"
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+        return dict
+    }
+
+    static func registerRecord(for params: RegisterRecordParams) -> RequestParameters {
+        let dict = [
+            "RequestVO": [
+                "data": [
+                    "RecordVO": [
+                        "parentFolderId": params.folderId,
+                        "parentFolder_linkId": params.folderLinkId,
+                        "displayName": params.filename,
+                        "uploadFileName": params.filename,
+                        "derivedCreatedDT": "2020-11-23T09:31:38.000Z"
+                    ],
+                    "SimpleVO": [
+                        "key": params.s3Url,
+                        "value": params.destinationUrl
+                    ]
+                ],
+                "apiKey": Constants.API.apiKey,
+                "csrf": params.csrf
+            ]
+        ]
+
+        return dict
+    }
+
     
     static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
         return [
@@ -193,5 +242,73 @@ struct Payloads {
     }
     static func getValidCsrf() -> RequestParameters  {
         return ["data":"none"]
+    }
+    static func getUserData(accountId: String,csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    static func updateUserData(accountId: String, updateUserData: UpdateUserData, csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId,
+                        "fullName": updateUserData.fullName,
+                        "primaryEmail": updateUserData.primaryEmail,
+                        "primaryPhone": updateUserData.primaryPhone,
+                        "address": updateUserData.address,
+                        "city": updateUserData.city,
+                        "state": updateUserData.state,
+                        "zip": updateUserData.zip,
+                        "country": updateUserData.country
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    static func acceptShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "ShareVO": [
+                        "shareId": shareId,
+                        "folder_linkId": folderLinkId,
+                        "archiveId": archiveId,
+                        "accessRole": "access.role.viewer",
+                        "type": "type.share.record",
+                        "status": "status.generic.ok"
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    static func denyShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters{
+        return [
+            "RequestVO": [
+                "data": [[
+                    "ShareVO": [
+                        "shareId": shareId,
+                        "folder_linkId": folderLinkId,
+                        "archiveId": archiveId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+
     }
 }

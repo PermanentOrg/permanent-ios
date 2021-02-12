@@ -31,9 +31,9 @@ class UploadManager {
         var uuid = UUID().uuidString
         uuid = uuid.replacingOccurrences(of: "-", with: "")
         uuid = uuid.map { $0.lowercased() }.joined()
-     
+
         let boundary = uuid + "\(Int(Date.timeIntervalSinceReferenceDate))"
-     
+
         return boundary
     }
     
@@ -51,7 +51,7 @@ class UploadManager {
             
             _ = body.append(values: values)
         }
-    
+
         return body
     }
     
@@ -64,29 +64,37 @@ class UploadManager {
         else {
             return
         }
-       
+
         status = false
         var data = Data()
-     
+
+        let formattedFileInfoPrefix = ["--\(boundary)\r\n",
+                                       "Content-Disposition: form-data; name=\"Content-Type\"\r\n\r\n",
+                                       mimeType,
+                                       "\r\n"]
+
         let formattedFileInfo = ["--\(boundary)\r\n",
-                                 "Content-Disposition: form-data; name=\"thefile\"; filename=\"\(file.name)\"\r\n",
+                                 "Content-Disposition: form-data; name=\"file\"; filename=\"\(file.name)\"\r\n",
                                  "Content-Type: \(mimeType)\r\n\r\n"]
-            
-        if data.append(values: formattedFileInfo) {
-            if data.append(values: [content]) {
-                if data.append(values: ["\r\n"]) {
-                    status = true
+
+        if data.append(values: formattedFileInfoPrefix) {
+            if data.append(values: formattedFileInfo) {
+                if data.append(values: [content]) {
+                    if data.append(values: ["\r\n"]) {
+                        status = true
+                    }
                 }
             }
         }
-     
+
         if status {
             body.append(data)
         }
     }
     
     private func close(body: inout Data, usingBoundary boundary: String) {
-        _ = body.append(values: ["\r\n--\(boundary)--\r\n"])
+        _ = body.append(values: ["--\(boundary)--"])
+        print(body)
     }
     
     func getBodyData(parameters: RequestParameters, file: FileInfo, boundary: String) -> Data? {

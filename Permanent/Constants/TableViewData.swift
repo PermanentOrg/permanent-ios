@@ -19,6 +19,7 @@ struct TableViewData {
             DrawerOption.members,
             DrawerOption.activityFeed,
             DrawerOption.invitations,
+            DrawerOption.accountInfo,
             DrawerOption.security,
             DrawerOption.addStorage,
             DrawerOption.logOut

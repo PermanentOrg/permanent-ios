@@ -36,6 +36,9 @@ extension String {
     static var submit: String { return "Submit".localized() }
     static var enterEmail: String { return "EnterEmail".localized() }
     static var invalidPhone: String { return "InvalidPhone".localized() }
+    static var emptyNameField: String { return "EmptyNameField".localized() }
+    static var noDataModification: String { return "NoDataModification".localized() }
+    static var emailFieldIsEmpty: String { return "EmailFieldIsEmpty".localized() }
     static var MFARequired: String { return "MFARequired".localized() }
     static var incorrectCredentials: String { return "IncorrectCredentials".localized() }
     static var tokenExpired: String { return "TokenExpired".localized() }
@@ -46,6 +49,7 @@ extension String {
     static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
     static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
+    static var userDetailsChangedSuccessfully: String{ return "UserDetailsChangedSuccessfully".localized()}
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
@@ -144,6 +148,7 @@ extension String {
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
     static var security: String { return "Security".localized() }
+    static var accountInfo: String { return "AccountInfo".localized() }
     static var updatePassword: String { return "UpdatePassword".localized()}
     static var currentPassword: String { return "CurrentPassword".localized()}
     static var reTypePassword: String { return "ReTypePassword".localized()}
@@ -162,6 +167,15 @@ extension String {
     static var viewInArchive: String { return "ViewInArchive".localized() }
     static var addStorage: String { return "AddStorage".localized() }
     static var remove: String { return "Remove".localized() }
+    static var accountName: String { return "AccountName".localized() }
+    static var primaryEmail: String { return "PrimaryEmail".localized() }
+    static var mobilePhone: String { return "MobilePhone".localized() }
+    static var address: String { return "Address".localized() }
+    static var city: String { return "City".localized() }
+    static var stateOrRegion: String { return "StateOrRegion".localized() }
+    static var postalcode: String { return "PostalCode".localized() }
+    static var country: String { return "Country".localized() }
+    static var saveInfo: String { return "SaveInfo".localized() }
     static var giveAGig: String { return "GiveAGig".localized() }
     static var inviteInfo: String { return "InviteInfo".localized() }
     static var sendInvite: String { return "SendInvite".localized() }
@@ -178,6 +192,8 @@ extension String {
     static var inviteSent: String { return "InviteSent".localized()}
     static var inviteRevoked: String { return "InviteRevoked".localized()}
     static var linkNotAvailable: String { return "LinkNotAvailable".localized()}
+    static var approveShareRequest: String { return "ApproveShareRequest".localized()}
+    static var denyShareRequest: String { return "DenyShareRequest".localized()}
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

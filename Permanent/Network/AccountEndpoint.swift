@@ -20,6 +20,14 @@ enum AccountEndpoint {
     case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials, csrf: String )
     /// Get valid CSRF parameter
     case getValidCsrf
+    /// Get user data
+    case getUserData(accountId: String, csrf: String)
+    /// Updates user data
+    case updateUserData(accountId: String, updateData: UpdateUserData, csrf: String)
+    /// Update Share request
+    case updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
+    /// Revoke Share request
+    case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -35,6 +43,14 @@ extension AccountEndpoint: RequestProtocol {
             return "/account/changePassword"
         case .getValidCsrf:
             return "/auth/loggedIn"
+        case .getUserData:
+            return "/account/get"
+        case .updateUserData:
+            return "/account/update"
+        case .updateShareRequest:
+            return "/share/upsert"
+        case .deleteShareRequest:
+            return "/share/delete"
         }
     }
 
@@ -50,6 +66,14 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.updatePassword(accountId: id,updateData: passData , csrf: csrf)
         case .getValidCsrf:
             return Payloads.getValidCsrf()
+        case .getUserData(let id, let csrf):
+            return Payloads.getUserData(accountId: id,csrf: csrf)
+        case .updateUserData(accountId: let accountId, updateData: let updateData, csrf: let csrf):
+            return Payloads.updateUserData(accountId: accountId,updateUserData: updateData,csrf: csrf)
+        case .updateShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
+            return Payloads.acceptShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
+        case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
+            return Payloads.denyShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
         }
     }
 
