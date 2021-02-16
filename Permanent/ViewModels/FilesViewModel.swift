@@ -52,7 +52,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var downloadQueue: [FileViewModel] = []
     var activeSortOption: SortOption = .nameAscending
     var uploadInProgress: Bool = false
-    var downloadInProgress: Bool = false
+    var downloadInProgress: Bool {
+        downloader != nil
+    }
     var uploadFolder: FolderInfo?
     var fileAction: FileAction = .none
     
@@ -60,7 +62,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var currentFolder: FileViewModel? { navigationStack.last }
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
-    private lazy var downloader: Downloader = DownloadManagerGCD(csrf: csrf)
+    private var downloader: Downloader?
     
     var isSearchActive: Bool = false
     
@@ -226,10 +228,10 @@ extension FilesViewModel: FilesViewModelDelegate {
     }
     
     func cancelDownload() {
-        downloadInProgress = false
         downloadQueue.safeRemoveFirst()
         
-        downloader.cancelDownload()
+        downloader?.cancelDownload()
+        downloader = nil
     }
     
     func download(_ file: FileViewModel,
@@ -242,19 +244,18 @@ extension FilesViewModel: FilesViewModelDelegate {
         downloadFile.fileStatus = .downloading
         downloadQueue.append(downloadFile)
         
-        downloadInProgress = true
-        
         let downloadInfo = FileDownloadInfoVM(
             folderLinkId: file.folderLinkId,
             parentFolderLinkId: file.parentFolderLinkId
         )
         
-        downloader.download(downloadInfo,
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.download(downloadInfo,
                             onDownloadStart: onDownloadStart,
                             onFileDownloaded: onFileDownloaded,
                             progressHandler: progressHandler,
                             completion: {
-                                self.downloadInProgress = false
+                                self.downloader = nil
                                 self.downloadQueue.safeRemoveFirst()
                             })
 
@@ -304,6 +305,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         }
         
         uploadQueue.remove(at: fileQueueIndex)
+        saveUploadProgressLocally(files: uploadQueue)
     }
     
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
