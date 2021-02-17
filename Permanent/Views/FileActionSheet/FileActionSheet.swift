@@ -32,17 +32,20 @@ class FileActionSheet: UIView {
     private var onDismiss: ButtonAction!
     private var file: FileViewModel!
     private var indexPath: IndexPath!
+    private var hasDownloadButton: Bool!
     
     convenience init(
         frame: CGRect,
         title: String?,
         file: FileViewModel,
         indexPath: IndexPath,
+        hasDownloadButton: Bool,
         onDismiss: @escaping ButtonAction
     ) {
         self.init(frame: frame)
         self.file = file
         self.indexPath = indexPath
+        self.hasDownloadButton = hasDownloadButton
         self.onDismiss = onDismiss
             
         initUI(title: title)
@@ -74,7 +77,7 @@ class FileActionSheet: UIView {
         styleActionButton(deleteButton, color: .destructive, text: .delete)
         styleActionButton(shareButton, color: .primary, text: .share)
         
-        if file.type.isFolder {
+        if file.type.isFolder || hasDownloadButton == false {
             downloadButton.isHidden = true
         } else {
             styleActionButton(downloadButton, color: .primary, text: .download)

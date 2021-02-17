@@ -10,17 +10,10 @@ import Foundation
 class DownloadManagerGCD: Downloader {
     fileprivate var csrf: String!
     
-    // fileprivate var downloadInProgress: Bool = false
-    
-    // fileprivate var downloadQueue: [SharedFileViewModel] = []
-    
-    fileprivate var serialQueue: DispatchQueue!
-    
     fileprivate var operation: APIOperation?
-    
+ 
     init(csrf: String) {
         self.csrf = csrf
-        serialQueue = DispatchQueue(label: "permanent.download.queue")
     }
     
     func download(_ file: FileDownloadInfo,
@@ -28,13 +21,7 @@ class DownloadManagerGCD: Downloader {
                   onFileDownloaded: @escaping DownloadResponse,
                   progressHandler: ProgressHandler?,
                   completion: VoidAction? = nil) {
-        serialQueue.async {
-            self.startDownload(file,
-                               onDownloadStart: onDownloadStart,
-                               onFileDownloaded: onFileDownloaded,
-                               progressHandler: progressHandler,
-                               completion: completion)
-        }
+        startDownload(file, onDownloadStart: onDownloadStart, onFileDownloaded: onFileDownloaded, progressHandler: progressHandler, completion: completion)
     }
     
     func cancelDownload() {
@@ -48,9 +35,8 @@ class DownloadManagerGCD: Downloader {
                                    completion: VoidAction? = nil) {
         onDownloadStart()
         
-        downloadFile(file, progressHandler: progressHandler) { url, error in
-            
-            self.operation = nil
+        downloadFile(file, progressHandler: progressHandler) { [weak self] url, error in
+            self?.operation = nil
                 
             if let url = url {
                 onFileDownloaded(url, nil)
@@ -65,15 +51,12 @@ class DownloadManagerGCD: Downloader {
     
     
     fileprivate func downloadFile(_ file: FileDownloadInfo, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
-        getRecord(file) { record, errorMessage in
-
+        getRecord(file) { [weak self] record, errorMessage in
             guard let record = record else {
                 return handler(nil, errorMessage)
             }
             
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.downloadFileData(record: record, progressHandler: progressHandler, then: handler)
-            }
+            self?.downloadFileData(record: record, progressHandler: progressHandler, then: handler)
         }
     }
     
@@ -120,7 +103,6 @@ class DownloadManagerGCD: Downloader {
         self.operation = apiOperation
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            
             switch result {
             case .file(let fileURL, _):
                 guard let url = fileURL else {
