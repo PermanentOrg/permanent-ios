@@ -42,6 +42,7 @@ enum ViewControllerId: String {
     case accountSettings
     case sharePreview
     case invitations
+    case webViewer
 
     var value: String {
         switch self {
@@ -65,6 +66,8 @@ enum ViewControllerId: String {
             return "AccountSettings"
         case .sharePreview:
             return "SharePreview"
+        case .webViewer:
+            return "WebViewer"
         
         default:
             return self.rawValue.capitalized

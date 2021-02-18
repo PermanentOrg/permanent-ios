@@ -50,7 +50,7 @@ class DownloadManagerGCD: Downloader {
     
     
     
-    fileprivate func downloadFile(_ file: FileDownloadInfo, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
+    func downloadFile(_ file: FileDownloadInfo, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         getRecord(file) { [weak self] record, errorMessage in
             guard let record = record else {
                 return handler(nil, errorMessage)
@@ -60,7 +60,7 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
-    fileprivate func getRecord(_ file: FileDownloadInfo, then handler: @escaping GetRecordResponse) {
+    func getRecord(_ file: FileDownloadInfo, then handler: @escaping GetRecordResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
         self.operation = apiOperation
         

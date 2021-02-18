@@ -7,8 +7,9 @@
 
 import BSImagePicker
 import MobileCoreServices
-import UIKit
 import Photos
+import UIKit
+import WebKit
 
 class MainViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -121,8 +122,8 @@ class MainViewController: BaseViewController<FilesViewModel> {
         fileActionBottomView.fileAction = {
             guard
                 let source = self.viewModel?.selectedFile,
-                let destination = self.viewModel?.currentFolder else {
-                
+                let destination = self.viewModel?.currentFolder
+            else {
                 self.showErrorAlert(message: .errorMessage)
                 return
             }
@@ -283,13 +284,13 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     fileprivate func checkForSavedUniversalLink() {
-        
         guard
             let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken),
             let sharePreviewVC = UIViewController.create(
                 withIdentifier: .sharePreview,
                 from: .share
-            ) as? SharePreviewViewController else {
+            ) as? SharePreviewViewController
+        else {
             return
         }
         
@@ -350,7 +351,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     self.screenLockManager.disableIdleTimer(false)
                     handler?()
                     
-                case .error(_):
+                case .error:
                     DispatchQueue.main.async {
                         self.screenLockManager.disableIdleTimer(false)
                         self.hideSpinner()
@@ -407,7 +408,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
     }
     
     func relocate(file: FileViewModel, to destination: FileViewModel) {
-        self.showSpinner()
+        showSpinner()
         viewModel?.relocate(file: file, to: destination, then: { status in
             self.hideSpinner()
             
@@ -465,18 +466,26 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
         guard
-            file.type.isFolder,
+            // file.type.isFolder,
             file.fileStatus == .synced
         else {
             return
         }
-
-        invalidateSearchBarIfNeeded()
-        let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-            self.backButton.isHidden = false
-            self.directoryLabel.text = file.name
-        })
+        if file.type.isFolder {
+            invalidateSearchBarIfNeeded()
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+        } else {
+            
+            
+            let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
+            newRootVC.file = file
+            newRootVC.csrf = viewModel.csrf
+            present(newRootVC, animated: true, completion: nil)
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -515,7 +524,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         guard let viewModel = viewModel else {
             fatalError()
         }
@@ -564,25 +572,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.tableView.reloadData()
             }
             
-            
         case .uploading, .waiting:
             cellRightButtonAction(atPosition: indexPath.row)
         }
     }
     
     private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.showActionDialog(styled: .simple,
                                   withTitle: title,
                                   positiveButtonTitle: .delete,
                                   positiveAction: {
-                                    self.actionDialog?.dismiss()
-                                    self.deleteFile(file, atIndexPath: indexPath)
+                                      self.actionDialog?.dismiss()
+                                      self.deleteFile(file, atIndexPath: indexPath)
                                   }, overlayView: self.overlayView)
-        })
+        }
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -594,9 +600,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          withTitle: title,
                          positiveButtonTitle: fileAction.title,
                          positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.relocate(file: source, to: destination)
-                         }, overlayView: self.overlayView)
+                             self.actionDialog?.dismiss()
+                             self.relocate(file: source, to: destination)
+                         }, overlayView: overlayView)
     }
     
     private func download(_ file: FileViewModel) {
@@ -624,8 +630,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
-        
-        self.refreshTableView()
+        refreshTableView()
         
         guard let shareURL = url else {
             let apiError = (error as? APIError) ?? .unknown
@@ -687,7 +692,7 @@ extension MainViewController: FABActionSheetDelegate {
             placeholders: [.folderName],
             positiveButtonTitle: .create,
             positiveAction: { self.newFolderAction() },
-            overlayView: self.overlayView
+            overlayView: overlayView
         )
     }
     
@@ -706,13 +711,14 @@ extension MainViewController: FABActionSheetDelegate {
                     completion: { _ in
                         self.sortActionSheet?.removeFromSuperview()
                         self.sortActionSheet = nil
-                    })
+                    }
+                )
             }
         )
         
         sortActionSheet?.delegate = self
         view.addSubview(sortActionSheet!)
-        self.view.presentPopup(sortActionSheet, overlayView: overlayView)        
+        view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
 
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -734,13 +740,14 @@ extension MainViewController: FABActionSheetDelegate {
                     completion: { _ in
                         self.fileActionSheet?.removeFromSuperview()
                         self.fileActionSheet = nil
-                    })
+                    }
+                )
             }
         )
         
         fileActionSheet?.delegate = self
         view.addSubview(fileActionSheet!)
-        self.view.presentPopup(fileActionSheet, overlayView: overlayView)
+        view.presentPopup(fileActionSheet, overlayView: overlayView)
     }
     
     func showActionSheet() {
@@ -769,7 +776,8 @@ extension MainViewController: FABActionSheetDelegate {
             PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
             PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
             PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)]
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        ]
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
@@ -802,10 +810,10 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     private func newFolderAction() {
-
         guard
             let folderName = actionDialog?.fieldsInput.first,
-            folderName.isNotEmpty else {
+            folderName.isNotEmpty
+        else {
             return
         }
 
@@ -859,21 +867,20 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
 
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-
         guard
             let viewModel = viewModel,
             let shareVC = UIViewController.create(
                 withIdentifier: .share,
-                from: .share) as? ShareViewController
+                from: .share
+            ) as? ShareViewController
         else {
             return
         }
 
         shareVC.sharedFile = file
         shareVC.csrf = viewModel.csrf
-        self.navigationController?.display(viewController: shareVC)
+        navigationController?.display(viewController: shareVC)
     }
-    
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
@@ -894,6 +901,6 @@ extension MainViewController: FileActionSheetDelegate {
 extension MainViewController: SortActionSheetDelegate {
     func didSelectOption(_ option: SortOption) {
         viewModel?.activeSortOption = option
-        self.refreshCurrentFolder()
+        refreshCurrentFolder()
     }
 }
