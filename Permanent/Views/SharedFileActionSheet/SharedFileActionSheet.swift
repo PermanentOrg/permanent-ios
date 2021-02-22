@@ -8,7 +8,7 @@
 import UIKit
 
 protocol SharedFileActionSheetDelegate: class {
-    func downloadAction(file: SharedFileViewModel)
+    func downloadAction(file: FileViewModel)
 }
 
 class SharedFileActionSheet: UIView {
@@ -21,13 +21,13 @@ class SharedFileActionSheet: UIView {
     weak var delegate: SharedFileActionSheetDelegate?
     
     private var onDismiss: ButtonAction!
-    private var file: SharedFileViewModel!
+    private var file: FileViewModel!
     private var indexPath: IndexPath!
     
     convenience init(
         frame: CGRect,
         title: String?,
-        file: SharedFileViewModel,
+        file: FileViewModel,
         indexPath: IndexPath,
         onDismiss: @escaping ButtonAction
     ) {

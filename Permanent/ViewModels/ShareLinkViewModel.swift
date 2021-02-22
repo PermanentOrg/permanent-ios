@@ -9,82 +9,13 @@ import Foundation
 
 typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
-protocol ShareLinkViewModelDelegate: ViewModelDelegateInterface {
-    func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
-    func approveButtonAction(then handler: @escaping (RequestStatus) -> Void)
-    func denyButtonAction(then handler: @escaping (RequestStatus) -> Void)
-}
-
 class ShareLinkViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
-    
-    var shareListType: ShareListType = .sharedByMe
-    
-    var sharedByMeViewModels: [SharedFileViewModel] = []
-    var sharedWithMeViewModels: [SharedFileViewModel] = []
-    
-    weak var delegate: ShareLinkViewModelDelegate?
-    
-    private lazy var downloader: Downloader = DownloadManagerGCD(csrf: csrf)
-    
-    var items: [SharedFileViewModel] {
-        switch shareListType {
-        case .sharedByMe: return sharedByMeViewModels
-        case .sharedWithMe: return sharedWithMeViewModels
-        }
-    }
-    
-    func changeStatus(forFile file: FileDownloadInfo, status: FileStatus) {
-//        guard
-//            let item = items.first(where: { $0 == file} ) else {
-//            return
-//        }
-        
-        switch shareListType {
-        case .sharedByMe:
-            sharedByMeViewModels = sharedByMeViewModels.map {
-                var mutableVM = $0
-                
-                if mutableVM.folderLinkId == file.folderLinkId {
-                    mutableVM.status = status
-                }
-                
-                return mutableVM
-            }
-            
-        case .sharedWithMe:
-            sharedWithMeViewModels = sharedWithMeViewModels.map {
-                var mutableVM = $0
-                
-                if mutableVM.folderLinkId == file.folderLinkId {
-                    mutableVM.status = status
-                }
-                
-                return mutableVM
-            }
-        }
-    }
 }
 
-extension ShareLinkViewModel: ShareLinkViewModelDelegate {
-    func cancelDownload() {
-        downloader.cancelDownload()
-    }
-    
-    
-    func download(_ file: FileDownloadInfo,
-                  onDownloadStart: @escaping VoidAction,
-                  onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?)
-    {
-        downloader.download(file,
-                            onDownloadStart: onDownloadStart,
-                            onFileDownloaded: onFileDownloaded,
-                            progressHandler: progressHandler,
-                            completion: nil)
-    }
+extension ShareLinkViewModel {
     
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: fileViewModel, and: csrf)
@@ -182,46 +113,6 @@ extension ShareLinkViewModel: ShareLinkViewModelDelegate {
         }
     }
     
-    func getShares(then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(ShareEndpoint.getShares)
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                
-                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding(
-                    from: response,
-                    with: APIResults<ArchiveVO>.decoder
-                ) else {
-                    return handler(.error(message: .errorMessage))
-                }
-                
-                let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
-                
-                model.results.first?.data?.forEach { archive in
-                    let itemVOS = archive.archiveVO?.itemVOS
-                    
-                    itemVOS?.forEach {
-                        let sharedFileVM = SharedFileViewModel(model: $0, thumbURL: archive.archiveVO?.thumbURL200)
-                        
-                        if $0.archiveID == currentArchiveId {
-                            self.sharedByMeViewModels.append(sharedFileVM)
-                        } else {
-                            self.sharedWithMeViewModels.append(sharedFileVM)
-                        }
-                    }
-                }
-                
-                handler(.success)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
-        }
-    }
     func approveButtonAction(then handler: @escaping (RequestStatus) -> Void) {
         
         let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: self.fileViewModel.minArchiveVOS.first!.shareId, folderLinkId: self.fileViewModel.folderLinkId, archiveId: self.fileViewModel.minArchiveVOS.first!.archiveID, csrf: self.csrf))

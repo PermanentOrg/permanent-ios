@@ -42,7 +42,7 @@ struct FolderVOData: Model {
     let folderLinkVOS: [FolderLinkVO]?
     let accessRole: String?
     let position: Int?
-    let pathAsFolderLinkID: [Int]?
+    let pathAsFolderLinkID: [Int?]?
     let shareDT: JSONAny?
     let pathAsText: [String]?
     let folderLinkID: Int?

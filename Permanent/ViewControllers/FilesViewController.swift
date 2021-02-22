@@ -1,8 +1,9 @@
 //
-//  MainViewController.swift
+//  FilesViewController.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 24/09/2020.
+//  Created by Vlad Alexandru Rusu on 22.02.2021.
+//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import BSImagePicker
@@ -10,7 +11,7 @@ import MobileCoreServices
 import UIKit
 import Photos
 
-class MainViewController: BaseViewController<MyFilesViewModel> {
+class FilesViewController: BaseViewController<FilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
     @IBOutlet var tableView: UITableView!
@@ -236,13 +237,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     // MARK: - Network Related
     
     private func getRootFolder() {
-        showSpinner()
-        
-        viewModel?.getRoot(then: { status in
-            self.onFilesFetchCompletion(status)
-            self.retryUnfinishedUploadsIfNeeded()
-            self.checkForSavedUniversalLink()
-        })
+//        showSpinner()
+//
+//        viewModel?.getRoot(then: { status in
+//            self.onFilesFetchCompletion(status)
+//            self.retryUnfinishedUploadsIfNeeded()
+//            self.checkForSavedUniversalLink()
+//        })
     }
     
     private func navigateToFolder(withParams params: NavigateMinParams,
@@ -431,7 +432,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
 // MARK: - Table View Delegates
 
-extension MainViewController: UITableViewDelegate, UITableViewDataSource {
+extension FilesViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel?.numberOfSections ?? 0
     }
@@ -642,7 +643,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension MainViewController: UISearchBarDelegate {
+extension FilesViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         view.endEditing(true)
     }
@@ -659,7 +660,7 @@ extension MainViewController: UISearchBarDelegate {
     }
 }
 
-extension MainViewController: FABViewDelegate {
+extension FilesViewController: FABViewDelegate {
     func didTap() {
         guard let actionSheet = UIViewController.create(
             withIdentifier: .fabActionSheet,
@@ -674,7 +675,7 @@ extension MainViewController: FABViewDelegate {
     }
 }
 
-extension MainViewController: FABActionSheetDelegate {
+extension FilesViewController: FABActionSheetDelegate {
     func didTapUpload() {
         showActionSheet()
     }
@@ -711,7 +712,7 @@ extension MainViewController: FABActionSheetDelegate {
         
         sortActionSheet?.delegate = self
         view.addSubview(sortActionSheet!)
-        self.view.presentPopup(sortActionSheet, overlayView: overlayView)        
+        self.view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
 
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -815,7 +816,7 @@ extension MainViewController: FABActionSheetDelegate {
 
 // MARK: - Document Picker Delegate
 
-extension MainViewController: UIDocumentPickerDelegate {
+extension FilesViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let currentFolder = viewModel?.currentFolder else {
             return showErrorAlert(message: .cannotUpload)
@@ -825,7 +826,7 @@ extension MainViewController: UIDocumentPickerDelegate {
     }
 }
 
-extension MainViewController: MediaRecorderDelegate {
+extension FilesViewController: MediaRecorderDelegate {
     func didSelect(url: URL?) {
         guard
             let mediaUrl = url,
@@ -840,7 +841,7 @@ extension MainViewController: MediaRecorderDelegate {
     }
 }
 
-extension MainViewController: UIDocumentInteractionControllerDelegate {
+extension FilesViewController: UIDocumentInteractionControllerDelegate {
     func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
         return self
     }
@@ -856,7 +857,7 @@ extension MainViewController: UIDocumentInteractionControllerDelegate {
     }
 }
 
-extension MainViewController: FileActionSheetDelegate {
+extension FilesViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
 
         guard
@@ -890,7 +891,7 @@ extension MainViewController: FileActionSheetDelegate {
     }
 }
 
-extension MainViewController: SortActionSheetDelegate {
+extension FilesViewController: SortActionSheetDelegate {
     func didSelectOption(_ option: SortOption) {
         viewModel?.activeSortOption = option
         self.refreshCurrentFolder()

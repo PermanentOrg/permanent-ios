@@ -42,7 +42,7 @@ class SharedFileTableViewCell: UITableViewCell {
         archiveImageView.clipsToBounds = true
     }
     
-    func updateCell(model: SharedFileViewModel) {
+    func updateCell(model: FileViewModel) {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         sharesImageView.isHidden = false
@@ -55,7 +55,7 @@ class SharedFileTableViewCell: UITableViewCell {
             fileImageView.sd_setImage(with: URL(string: model.thumbnailURL))
         }
         
-        handleUI(forStatus: model.status)
+        handleUI(forStatus: model.fileStatus)
         
         moreButton.isEnabled = !model.type.isFolder
         rightButtonImageView.isHidden = model.type.isFolder
