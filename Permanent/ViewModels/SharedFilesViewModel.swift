@@ -10,42 +10,23 @@ import Foundation
 
 class SharedFilesViewModel: FilesViewModel {
     
+    override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
+    
     var shareListType: ShareListType = .sharedByMe {
         didSet {
             viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels
+            navigationStack.removeAll()
         }
     }
     
     var sharedByMeViewModels: [FileViewModel] = []
     var sharedWithMeViewModels: [FileViewModel] = []
     
-    func changeStatus(forFile file: FileDownloadInfo, status: FileStatus) {
-        switch shareListType {
-        case .sharedByMe:
-            sharedByMeViewModels = sharedByMeViewModels.map {
-                var mutableVM = $0
-                
-                if mutableVM.folderLinkId == file.folderLinkId {
-                    mutableVM.fileStatus = status
-                }
-                
-                return mutableVM
-            }
-            
-        case .sharedWithMe:
-            sharedWithMeViewModels = sharedWithMeViewModels.map {
-                var mutableVM = $0
-                
-                if mutableVM.folderLinkId == file.folderLinkId {
-                    mutableVM.fileStatus = status
-                }
-                
-                return mutableVM
-            }
-        }
-    }
-    
     func getShares(then handler: @escaping ServerResponse) {
+        viewModels.removeAll()
+        sharedByMeViewModels.removeAll()
+        sharedWithMeViewModels.removeAll()
+        
         let apiOperation = APIOperation(ShareEndpoint.getShares)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

@@ -29,7 +29,7 @@ typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Voi
 class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var viewModels: [FileViewModel] = []
-    fileprivate var navigationStack: [FileViewModel] = []
+    var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var downloadQueue: [FileViewModel] = []
     var activeSortOption: SortOption = .nameAscending
@@ -50,7 +50,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     // MARK: - Table View Logic
     
-    var currentFolderIsRoot: Bool { navigationStack.count == 1 }
+    var currentFolderIsRoot: Bool { true }
     
     func removeCurrentFolderFromHierarchy() -> FileViewModel? {
         navigationStack.popLast()
@@ -214,12 +214,7 @@ extension FilesViewModel {
         downloader = nil
     }
     
-    func download(_ file: FileViewModel,
-                  onDownloadStart: @escaping VoidAction,
-                  onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?)
-    {
-        
+    func download(_ file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse, progressHandler: ProgressHandler?) {
         var downloadFile = file
         downloadFile.fileStatus = .downloading
         downloadQueue.append(downloadFile)

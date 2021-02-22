@@ -10,6 +10,8 @@ import Foundation
 
 class MyFilesViewModel: FilesViewModel {
     
+    override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
+    
     func getRoot(then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getRoot)
         

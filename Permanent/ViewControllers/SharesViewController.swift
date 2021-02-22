@@ -8,8 +8,11 @@
 import UIKit
 
 class SharesViewController: BaseViewController<SharedFilesViewModel> {
+    @IBOutlet var directoryLabel: UILabel!
+    @IBOutlet var backButton: UIButton!
     @IBOutlet var segmentedControl: UISegmentedControl!
     @IBOutlet var tableView: UITableView!
+    private let refreshControl = UIRefreshControl()
     
     private var fileActionSheet: SharedFileActionSheet?
     
@@ -57,6 +60,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             segmentedControl.selectedSegmentTintColor = .primary
         }
         
+        directoryLabel.font = Text.style3.font
+        directoryLabel.textColor = .primary
+        backButton.tintColor = .primary
+        backButton.isHidden = true
+        
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
@@ -66,6 +74,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         tableView.registerNib(cellClass: SharedFileTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.separatorInset = .zero
+        
+        tableView.refreshControl = refreshControl
+        
+        refreshControl.tintColor = .primary
+        refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
     }
     
     fileprivate func configureTableViewBgView() {
@@ -81,13 +94,61 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         configureTableViewBgView()
     }
     
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+        guard let viewModel = viewModel else { return }
+        
+        if let currentFolder = viewModel.currentFolder {
+            let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf)
+            
+            // Back navigation set to `true` so it's not considered a in-depth navigation.
+            navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
+        } else {
+            getShares(shouldShowSpinner: false, completion: handler)
+        }
+    }
+    
+    @objc private func pullToRefreshAction() {
+        refreshCurrentFolder(
+            shouldDisplaySpinner: false,
+            then: {
+                self.refreshControl.endRefreshing()
+            }
+        )
+    }
+    
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         guard let listType = ShareListType(rawValue: sender.selectedSegmentIndex) else {
             return
         }
         
+        self.directoryLabel.text = listType == .sharedByMe ? .sharedByMe : .sharedWithMe
+        self.backButton.isHidden = true
+        
         viewModel?.shareListType = listType
         refreshTableView()
+    }
+    
+    @IBAction func backButtonAction(_ sender: UIButton) {
+        guard
+            let viewModel = viewModel,
+            let _ = viewModel.removeCurrentFolderFromHierarchy()
+        else {
+            return
+        }
+        
+        if let destinationFolder = viewModel.currentFolder {
+            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
+            navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
+                self.directoryLabel.text = destinationFolder.name
+                
+                // If we got to the root, hide the back button.
+                if viewModel.currentFolderIsRoot {
+                    self.backButton.isHidden = true
+                }
+            })
+        } else {
+            getShares()
+        }
     }
     
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -118,8 +179,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(fileActionSheet, overlayView: overlayView)
     }
 
-    fileprivate func getShares() {
-        showSpinner()
+    fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
+        if shouldShowSpinner {
+            showSpinner()
+        }
+        
         viewModel?.getShares(then: { status in
             self.hideSpinner()
             switch status {
@@ -127,6 +191,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 DispatchQueue.main.async {
                     self.refreshTableView {
                         self.scrollToFileIfNeeded()
+                        
+                        self.directoryLabel.text = self.viewModel?.shareListType == .sharedByMe ? .sharedByMe : .sharedWithMe
+                        self.backButton.isHidden = true
                     }
                 }
             case .error(let message):
@@ -134,31 +201,35 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self.showErrorAlert(message: message)
                 }
             }
+            
+            if let completion = completion {
+                completion()
+            }
         })
     }
     
     private func download(_ file: FileViewModel) {
-        viewModel?.download(
-            file,
-
-            onDownloadStart: {
-                DispatchQueue.main.async {
-                    self.refreshTableView()
+        viewModel?.download(file, onDownloadStart: {
+            DispatchQueue.main.async {
+                if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
+                    self.viewModel?.viewModels[index].fileStatus = .downloading
                 }
-            },
-
-            onFileDownloaded: { url, error in
-                DispatchQueue.main.async {
-                    self.onFileDownloaded(url: url, error: error)
-                }
-            },
-
-            progressHandler: { progress in
-                DispatchQueue.main.async {
-                    self.handleProgress(forFile: file, withValue: progress)
-                }
+                
+                self.refreshTableView()
             }
-        )
+        }, onFileDownloaded: { url, error in
+            DispatchQueue.main.async {
+                if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
+                    self.viewModel?.viewModels[index].fileStatus = .synced
+                }
+                
+                self.onFileDownloaded(url: url, error: error)
+            }
+        }, progressHandler: { progress in
+            DispatchQueue.main.async {
+                self.handleProgress(forFile: file, withValue: progress)
+            }
+        })
     }
     
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
@@ -188,6 +259,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         case .downloading:
             viewModel?.cancelDownload()
             
+            if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
+                self.viewModel?.viewModels[index].fileStatus = .synced
+            }
+            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -198,10 +273,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     private func handleProgress(forFile file: FileViewModel, withValue value: Float) {
-        guard
-            
-            let index = viewModel?.viewModels.firstIndex(of: file),
-            let downloadingCell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SharedFileTableViewCell
+        guard let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }),
+              let downloadingCell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SharedFileTableViewCell
         else {
             return
         }
@@ -274,8 +347,8 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
 
         let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
         navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-//            self.backButton.isHidden = false
-//            self.directoryLabel.text = file.name
+            self.backButton.isHidden = false
+            self.directoryLabel.text = file.name
         })
     }
     
