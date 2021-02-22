@@ -24,17 +24,21 @@ class SharedFileActionSheet: UIView {
     private var file: FileViewModel!
     private var indexPath: IndexPath!
     
+    var hasDownloadButton: Bool!
+    
     convenience init(
         frame: CGRect,
         title: String?,
         file: FileViewModel,
         indexPath: IndexPath,
+        hasDownloadButton: Bool,
         onDismiss: @escaping ButtonAction
     ) {
         self.init(frame: frame)
         self.file = file
         self.indexPath = indexPath
         self.onDismiss = onDismiss
+        self.hasDownloadButton = hasDownloadButton
             
         initUI(title: title)
     }
@@ -56,7 +60,7 @@ class SharedFileActionSheet: UIView {
     }
     
     fileprivate func configureButtons() {
-        if file.type.isFolder {
+        if file.type.isFolder || hasDownloadButton == false {
             downloadButton.isHidden = true
         } else {
             styleActionButton(downloadButton, color: .primary, text: .download)

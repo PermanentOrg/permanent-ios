@@ -161,6 +161,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             title: file.name,
             file: file,
             indexPath: indexPath,
+            hasDownloadButton: viewModel?.downloadInProgress == false,
             onDismiss: {
                 self.tableView.deselectRow(at: indexPath, animated: true)
                 self.view.dismissPopup(
