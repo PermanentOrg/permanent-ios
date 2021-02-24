@@ -479,8 +479,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            
-            
             let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
             newRootVC.file = file
             newRootVC.csrf = viewModel.csrf

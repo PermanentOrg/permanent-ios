@@ -8,60 +8,41 @@
 import UIKit
 import WebKit
 
-class WebViewController: UIViewController {
+class WebViewController: BaseViewController<WebViewModel> {
     var webView = WKWebView()
     var file : FileViewModel!
     var csrf : String!
     var operation : APIOperation?
     override func loadView() {
         self.view = webView
+        webView.navigationDelegate = self
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let downloadInfo = FileDownloadInfoVM(
-            folderLinkId: file.folderLinkId,
-            parentFolderLinkId: file.parentFolderLinkId
-        )
-        
-        getRecord(downloadInfo) { (record, error) in
-            let downloadURL = record?.recordVO?.fileVOS?.first?.downloadURL
-            if let url = URL(string: downloadURL) {
-                let request = URLRequest(url: url)
-                self.webView.load(request)
+        viewModel = WebViewModel()
+        viewModel?.downloadFile(csrf: csrf, file: file, then: { (result,request) in
+            if result {
+                self.webView.load(request!)
+                
+            } else {
+                showErrorAlert(message: .errorMessage)
             }
-        }
-        
-
+        })
     }
-    
-    fileprivate func getRecord(_ file: FileDownloadInfo, then handler: @escaping GetRecordResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
-        self.operation = apiOperation
+}
+
+extension WebViewController: WKNavigationDelegate {
+//    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+//
+//    }
+    private func webView(webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: NSError)
+    {
+       if(error.code == NSURLErrorNotConnectedToInternet)
+       {
+           print("error")
+       }
+    }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<RecordVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<RecordVO>.decoder
-                    ),
-                    model.isSuccessful
-                    
-                else {
-                    handler(nil, APIError.parseError(nil))
-                    return
-                }
-                 
-                handler(model.results.first?.data?.first, nil)
-                    
-            case .error(let error, _):
-                handler(nil, error)
-                    
-            default:
-                break
-            }
-        }
     }
 }
