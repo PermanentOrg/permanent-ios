@@ -482,7 +482,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
             newRootVC.file = file
             newRootVC.csrf = viewModel.csrf
-            present(newRootVC, animated: true, completion: nil)
+            let tapNavigationController = UINavigationController(rootViewController: newRootVC)
+            navigationController?.display(viewController: tapNavigationController,modally: true)
+            
+            //present(newRootVC, animated: true, completion: nil)
         }
     }
     

@@ -10,39 +10,51 @@ import WebKit
 
 class WebViewController: BaseViewController<WebViewModel> {
     var webView = WKWebView()
-    var file : FileViewModel!
-    var csrf : String!
-    var operation : APIOperation?
+    var file: FileViewModel!
+    var csrf: String!
+    var operation: APIOperation?
+
     override func loadView() {
-        self.view = webView
+        view = webView
         webView.navigationDelegate = self
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        initUI()
         viewModel = WebViewModel()
-        viewModel?.downloadFile(csrf: csrf, file: file, then: { (result,request) in
+        viewModel?.downloadFile(csrf: csrf, file: file, then: { result, request in
             if result {
                 self.webView.load(request!)
-                
+
             } else {
-                showErrorAlert(message: .errorMessage)
+                self.showErrorAlert(message: .errorMessage)
             }
         })
     }
+
+    func initUI() {
+        styleNavBar()
+        let rightButtonImage = UIBarButtonItem.SystemItem.action
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
+
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+    }
+
+    @objc private func shareButtonAction(_ sender: Any) {
+        print("share tapped")
+    }
+
+    @objc private func closeButtonAction(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
 }
 
-extension WebViewController: WKNavigationDelegate {
-//    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-//
-//    }
-    private func webView(webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: NSError)
-    {
-       if(error.code == NSURLErrorNotConnectedToInternet)
-       {
-           print("error")
-       }
-    }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        
-    }
-}
+extension WebViewController: WKNavigationDelegate {}
