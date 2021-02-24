@@ -13,41 +13,23 @@ typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, 
 typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?, csrf: String)
 typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, csrf: String, s3Url: String, destinationUrl: String)
 typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
-typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String)
+typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String, folderLinkId: Int)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
-typealias UploadQueue = [FolderInfo: [FileInfo]]
 typealias ItemInfoParams = (file: FileViewModel, csrf: String)
 typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: String)
-
-
 
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
 
-protocol FilesViewModelDelegate: ViewModelDelegateInterface {
-    func getRoot(then handler: @escaping ServerResponse)
-    func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping ServerResponse)
-    func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse)
-    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void)
-    func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse)
-    func uploadFiles(_ files: [FileInfo],
-                     onUploadStart: @escaping VoidAction,
-                     onFileUploaded: @escaping FileUploadResponse,
-                     progressHandler: ProgressHandler?,
-                     then handler: @escaping ServerResponse)
-    func removeFromQueue(_ position: Int)
-    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse)
-}
-
 class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var viewModels: [FileViewModel] = []
-    fileprivate var navigationStack: [FileViewModel] = []
+    var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
     var downloadQueue: [FileViewModel] = []
     var activeSortOption: SortOption = .nameAscending
@@ -66,11 +48,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     var isSearchActive: Bool = false
     
-    weak var delegate: FilesViewModelDelegate?
-    
     // MARK: - Table View Logic
     
-    var currentFolderIsRoot: Bool { navigationStack.count == 1 }
+    var currentFolderIsRoot: Bool { true }
     
     func removeCurrentFolderFromHierarchy() -> FileViewModel? {
         navigationStack.popLast()
@@ -198,7 +178,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
 }
 
-extension FilesViewModel: FilesViewModelDelegate {
+extension FilesViewModel {
     func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
         let parameters: RelocateParams = ((file, destination), fileAction, csrf)
 
@@ -234,12 +214,7 @@ extension FilesViewModel: FilesViewModelDelegate {
         downloader = nil
     }
     
-    func download(_ file: FileViewModel,
-                  onDownloadStart: @escaping VoidAction,
-                  onFileDownloaded: @escaping DownloadResponse,
-                  progressHandler: ProgressHandler?)
-    {
-        
+    func download(_ file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse, progressHandler: ProgressHandler?) {
         var downloadFile = file
         downloadFile.fileStatus = .downloading
         downloadQueue.append(downloadFile)
@@ -543,34 +518,6 @@ extension FilesViewModel: FilesViewModelDelegate {
                 
                 if model.isSuccessful == true {
                     self.onGetLeanItemsSuccess(model, handler)
-                    
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
-        }
-    }
-    
-    func getRoot(then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRoot)
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                if model.isSuccessful == true {
-                    self.onGetRootSuccess(model, handler)
-                    
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -630,53 +577,21 @@ extension FilesViewModel: FilesViewModelDelegate {
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
             let archiveNo = folderVO.archiveNbr,
+            let folderLinkId = folderVO.folderLinkID,
             let csrf = model.csrf
         else {
             handler(.error(message: .errorMessage))
             return
         }
         
-        let folderLinkIds: [Int] = childItems
-            .compactMap { $0.folderLinkID }
+        let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
             let file = FileViewModel(model: folderVO)
             navigationStack.append(file)
         }
         
-        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, csrf)
+        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, csrf, folderLinkId)
         getLeanItems(params: params, then: handler)
-    }
-    
-    private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ServerResponse) {
-        guard
-            let folderVO = model.results?.first?.data?.first?.folderVO,
-            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
-            let archiveNo = myFilesFolder.archiveNbr,
-            let folderLinkId = myFilesFolder.folderLinkID,
-            let csrf = model.csrf
-        else {
-            handler(.error(message: .errorMessage))
-            return
-        }
-        
-        self.csrf = csrf
-        
-        let archiveId = myFilesFolder.archiveID
-        PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
-        
-        // Workaround until we implement multiple archives
-        // Modify `archiveNbr` received from server and add '0000'
-        
-        if let rootArchiveNbr = myFilesFolder.archiveNbr {
-            let archiveNbrPrefix = String(rootArchiveNbr.prefix(5))
-            let archiveNbr = archiveNbrPrefix + "0000"
-            
-            PreferencesManager.shared.set(archiveNbr, forKey: Constants.Keys.StorageKeys.archiveNbrStorageKey)
-        }
-        
-        
-        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
-        navigateMin(params: params, backNavigation: false, then: handler)
     }
 }
