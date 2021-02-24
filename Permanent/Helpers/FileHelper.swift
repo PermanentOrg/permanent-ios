@@ -24,7 +24,6 @@ class FileHelper {
         }
     }
     
-    // create protocol for these
     func saveFile(_ data: Data, named name: String, withExtension extension: String) -> URL? {
         do {
             let fileURL = self.defaultDirectoryURL!
@@ -60,5 +59,20 @@ class FileHelper {
         DispatchQueue.global(qos: .utility).async {
             try? FileManager.default.removeItem(at: location)
         }
+    }
+    
+    func hasFile(named name: String) -> Bool {
+        let fileURL = self.defaultDirectoryURL!.appendingPathComponent(name)
+        let filePath = fileURL.path
+        
+        return FileManager.default.fileExists(atPath: filePath)
+    }
+    
+    func url(forFileNamed name: String) -> URL? {
+        if hasFile(named: name) {
+            return self.defaultDirectoryURL!.appendingPathComponent(name)
+        }
+        
+        return nil
     }
 }

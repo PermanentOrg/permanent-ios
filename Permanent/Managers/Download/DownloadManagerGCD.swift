@@ -90,7 +90,7 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
-    fileprivate func downloadFileData(record: RecordVO, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
+    func downloadFileData(record: RecordVO, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         guard
             let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
             let url = URL(string: downloadURL),

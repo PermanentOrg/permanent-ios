@@ -10,60 +10,34 @@ import UIKit
 import WebKit
 
 class WebViewModel: ViewModelInterface {
-    var csrf : String!
+    let csrf : String
+    var downloader: DownloadManagerGCD? = nil
     
-
-//protocol WebViewModelDelegate: ViewModelDelegateInterface {
-//    func downloadFile(csrf: String,file: FileViewModel, then handler: @escaping (Bool,URLRequest) -> Void)
-//}
-    func downloadFile(csrf: String, file: FileViewModel, then handler: @escaping (Bool,URLRequest?) -> Void) {
-        
-         let downloadInfo = FileDownloadInfoVM(
+    init(csrf: String) {
+        self.csrf = csrf
+    }
+    
+    func getRecord(file: FileViewModel, then handler: @escaping (RecordVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
             folderLinkId: file.folderLinkId,
             parentFolderLinkId: file.parentFolderLinkId
         )
-         getRecord(downloadInfo,csrf) { (record, error) in
-
-            let downloadURL = record?.recordVO?.fileVOS?.first?.downloadURL
-            if let url = URL(string: downloadURL) {
-                //self.request = URLRequest(url: url)
-                handler(true,URLRequest(url: url))
-            } else {
-                handler(false,nil)
-            }
-            return
+        
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.getRecord(downloadInfo) { (record, error) in
+            handler(record)
         }
     }
     
-    func getRecord(_ file: FileDownloadInfo,_ csrf: String, then handler: @escaping GetRecordResponse) {
-        var operation : APIOperation?
-        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
-        operation = apiOperation
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<RecordVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<RecordVO>.decoder
-                    ),
-                    model.isSuccessful
-                    
-                else {
-                    handler(nil, APIError.parseError(nil))
-                    return
-                }
-                 
-                handler(model.results.first?.data?.first, nil)
-                    
-            case .error(let error, _):
-                handler(nil, error)
-                    
-            default:
-                break
-            }
-        }
+    func download(_ record: RecordVO, onFileDownloaded: @escaping DownloadResponse) {
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.downloadFileData(record: record, progressHandler: nil, then: onFileDownloaded)
     }
+    
+    func cancelDownload() {
+        downloader?.cancelDownload()
+        downloader = nil
+    }
+    
 }
 
