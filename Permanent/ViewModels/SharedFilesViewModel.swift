@@ -44,7 +44,7 @@ class SharedFilesViewModel: FilesViewModel {
                     let itemVOS = archive.archiveVO?.itemVOS
                     
                     itemVOS?.forEach {
-                        let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
+                        let sharedFileVM = FileViewModel(model: $0, csrf: model.csrf, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
                         
                         if $0.archiveID == currentArchiveId {
                             self.sharedByMeViewModels.append(sharedFileVM)

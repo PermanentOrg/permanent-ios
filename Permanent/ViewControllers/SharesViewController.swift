@@ -344,13 +344,21 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.type.isFolder, file.fileStatus == .synced else { return }
-
-        let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-            self.backButton.isHidden = false
-            self.directoryLabel.text = file.name
-        })
+        guard file.fileStatus == .synced else { return }
+        
+        if file.type.isFolder {
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+        } else {
+            let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
+            newRootVC.file = file
+            
+            let tapNavigationController = UINavigationController(rootViewController: newRootVC)
+            navigationController?.display(viewController: tapNavigationController,modally: true)
+        }
     }
     
     func scrollToFileIfNeeded() {

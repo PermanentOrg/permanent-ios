@@ -8,6 +8,8 @@
 import Foundation
 
 struct FileViewModel: Equatable {
+    let csrf: String?
+    
     let thumbnailURL: String?
     let name: String
     let date: String
@@ -27,6 +29,8 @@ struct FileViewModel: Equatable {
     var minArchiveVOS: [MinArchiveVO] = []
     
     init(model: FileInfo, archiveThumbnailURL: String? = nil) {
+        self.csrf = nil
+        
         self.name = model.name
         self.date = DateUtils.currentDate
         
@@ -43,7 +47,9 @@ struct FileViewModel: Equatable {
         self.fileStatus = .uploading
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil) {
+    init(model: ItemVO, csrf: String?, archiveThumbnailURL: String? = nil) {
+        self.csrf = csrf
+        
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -75,7 +81,9 @@ struct FileViewModel: Equatable {
         }
     }
     
-    init(model: MinFolderVO, archiveThumbnailURL: String? = nil) {
+    init(model: MinFolderVO, csrf: String?, archiveThumbnailURL: String? = nil) {
+        self.csrf = csrf
+        
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             

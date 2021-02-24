@@ -11,7 +11,6 @@ import WebKit
 class WebViewController: BaseViewController<WebViewModel> {
     var webView = WKWebView()
     var file: FileViewModel!
-    var csrf: String!
     var operation: APIOperation?
 
     override func loadView() {
@@ -23,7 +22,7 @@ class WebViewController: BaseViewController<WebViewModel> {
         super.viewDidLoad()
         initUI()
         viewModel = WebViewModel()
-        viewModel?.downloadFile(csrf: csrf, file: file, then: { result, request in
+        viewModel?.downloadFile(csrf: file.csrf ?? "", file: file, then: { result, request in
             if result {
                 self.webView.load(request!)
 

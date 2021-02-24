@@ -464,12 +464,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard
-            // file.type.isFolder,
-            file.fileStatus == .synced
-        else {
-            return
-        }
+        guard file.fileStatus == .synced else { return }
+        
         if file.type.isFolder {
             invalidateSearchBarIfNeeded()
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
@@ -480,11 +476,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
             newRootVC.file = file
-            newRootVC.csrf = viewModel.csrf
+            
             let tapNavigationController = UINavigationController(rootViewController: newRootVC)
             navigationController?.display(viewController: tapNavigationController,modally: true)
-            
-            //present(newRootVC, animated: true, completion: nil)
         }
     }
     

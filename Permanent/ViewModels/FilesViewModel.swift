@@ -297,7 +297,7 @@ extension FilesViewModel {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO)
+                let folder = FileViewModel(model: folderVO, csrf: model.csrf)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
 
@@ -565,7 +565,7 @@ extension FilesViewModel {
         viewModels.removeAll()
         
         childItems.forEach {
-            let file = FileViewModel(model: $0)
+            let file = FileViewModel(model: $0, csrf: model.csrf)
             self.viewModels.append(file)
         }
         
@@ -587,7 +587,7 @@ extension FilesViewModel {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
-            let file = FileViewModel(model: folderVO)
+            let file = FileViewModel(model: folderVO, csrf: csrf)
             navigationStack.append(file)
         }
         
