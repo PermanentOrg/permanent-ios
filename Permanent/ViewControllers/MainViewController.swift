@@ -10,7 +10,7 @@ import MobileCoreServices
 import UIKit
 import Photos
 
-class MainViewController: BaseViewController<FilesViewModel> {
+class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
     @IBOutlet var tableView: UITableView!
@@ -36,7 +36,7 @@ class MainViewController: BaseViewController<FilesViewModel> {
         setupTableView()
         setupBottomActionSheet()
         
-        viewModel = FilesViewModel()
+        viewModel = MyFilesViewModel()
         fabView.delegate = self
         searchBar.delegate = self
         documentInteractionController.delegate = self
@@ -352,9 +352,10 @@ class MainViewController: BaseViewController<FilesViewModel> {
                     
                 case .error(_):
                     DispatchQueue.main.async {
+                        // TODO: This logic is definitely buggy and this is causing the multiple upload bug
                         self.screenLockManager.disableIdleTimer(false)
                         self.hideSpinner()
-                        self.viewModel = FilesViewModel()
+                        self.viewModel = MyFilesViewModel()
                         self.tableView.reloadData()
                         self.getRootFolder()
                     }
@@ -458,9 +459,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let viewModel = viewModel else {
-            fatalError()
-        }
+        guard let viewModel = viewModel else { return }
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         

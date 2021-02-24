@@ -48,7 +48,8 @@ struct ItemVO: Model {
     let shareVOS: [ShareVOData]?
     let accessVOS: JSONAny?
     let archiveArchiveNbr: String?
-    let returnDataSize, posStart, posLimit, recordID: JSONAny?
+    let recordID: Int?
+    let returnDataSize, posStart, posLimit: JSONAny?
     let uploadFileName, uploadAccountID, size, derivedCreatedDT: JSONAny?
     let metaToken, refArchiveNbr, fileStatus, processedDT: JSONAny?
     let folderArchiveID, fileVOS, textDataVOS, archiveVOS: JSONAny?

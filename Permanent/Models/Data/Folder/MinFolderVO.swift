@@ -34,7 +34,7 @@ struct MinFolderVO: Codable {
     let folderLinkVOS: [FolderLinkVO]?
     let accessRole: String?
     let position: Int?
-    let pathAsFolderLinkID: [Int]?
+    let pathAsFolderLinkID: [Int?]?
     let shareDT: JSONAny?
     let pathAsText: [String]?
     let folderLinkID: Int?
@@ -49,7 +49,7 @@ struct MinFolderVO: Codable {
     let folderSizeVO: FolderSizeVO?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?
-    let childItemVOS: [ChildItemVO]?
+    let childItemVOS: [ItemVO]?
     let shareVOS: [ShareVOData]?
     let accessVO, returnDataSize: JSONAny?
     let archiveArchiveNbr: String?

@@ -150,7 +150,6 @@
 		BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */; };
 		BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */; };
 		BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */; };
-		BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B12536FD6400EEC48C /* ChildItemVO.swift */; };
 		BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B42536FD9200EEC48C /* FolderVO.swift */; };
 		BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */; };
 		BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BB25371FCB00EEC48C /* FileViewModel.swift */; };
@@ -229,7 +228,6 @@
 		BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
 		BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E72580BFFE0019548F /* ShareLinkOption.swift */; };
 		BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD948D3258BA54600089F86 /* ItemVO.swift */; };
-		BCD948D7258BB02C00089F86 /* SharedFileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD948D6258BB02C00089F86 /* SharedFileViewModel.swift */; };
 		BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD948D9258CAF6300089F86 /* ShareListType.swift */; };
 		BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */; };
 		BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
@@ -268,6 +266,8 @@
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
+		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
+		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -425,7 +425,6 @@
 		BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderSizeVO.swift; sourceTree = "<group>"; };
 		BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderLinkVO.swift; sourceTree = "<group>"; };
 		BC6358AE2536FD1700EEC48C /* TimezoneVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimezoneVO.swift; sourceTree = "<group>"; };
-		BC6358B12536FD6400EEC48C /* ChildItemVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildItemVO.swift; sourceTree = "<group>"; };
 		BC6358B42536FD9200EEC48C /* FolderVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderVO.swift; sourceTree = "<group>"; };
 		BC6358B72536FDAC00EEC48C /* NavigateMinResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigateMinResponse.swift; sourceTree = "<group>"; };
 		BC6358BB25371FCB00EEC48C /* FileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileViewModel.swift; sourceTree = "<group>"; };
@@ -506,7 +505,6 @@
 		BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharebyURLVOPayload.swift; sourceTree = "<group>"; };
 		BCD414E72580BFFE0019548F /* ShareLinkOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLinkOption.swift; sourceTree = "<group>"; };
 		BCD948D3258BA54600089F86 /* ItemVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemVO.swift; sourceTree = "<group>"; };
-		BCD948D6258BB02C00089F86 /* SharedFileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFileViewModel.swift; sourceTree = "<group>"; };
 		BCD948D9258CAF6300089F86 /* ShareListType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareListType.swift; sourceTree = "<group>"; };
 		BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFolderView.xib; sourceTree = "<group>"; };
@@ -544,6 +542,8 @@
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
+		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -694,6 +694,8 @@
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
 				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
+				F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */,
+				F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 				BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */,
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
@@ -1177,7 +1179,6 @@
 			children = (
 				BC6358A82536FC8A00EEC48C /* FolderSizeVO.swift */,
 				BC6358AB2536FCDA00EEC48C /* FolderLinkVO.swift */,
-				BC6358B12536FD6400EEC48C /* ChildItemVO.swift */,
 				BC6358B42536FD9200EEC48C /* FolderVO.swift */,
 				BC6358BE2537414300EEC48C /* MinFolderVO.swift */,
 			);
@@ -1191,7 +1192,6 @@
 				BCC1E31E2549861C00B71866 /* FileStatus.swift */,
 				BCC1E3212549866300B71866 /* FileListType.swift */,
 				BCE8DA7725655E8F00842ABD /* FileState.swift */,
-				BCD948D6258BB02C00089F86 /* SharedFileViewModel.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1578,7 +1578,6 @@
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */,
 				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
-				BCD948D7258BB02C00089F86 /* SharedFileViewModel.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
 				BC59BAB825C2B7D6005A45D3 /* ShareDetails.swift in Sources */,
 				BC7A7945255ED27300DDFD4D /* SortActionSheet.swift in Sources */,
@@ -1614,7 +1613,6 @@
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
-				BC6358B22536FD6400EEC48C /* ChildItemVO.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
@@ -1644,6 +1642,7 @@
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
+				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC59BAD125C2B8BD005A45D3 /* Notification.swift in Sources */,
@@ -1747,6 +1746,7 @@
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
+				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
@@ -2024,8 +2024,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
@@ -2038,7 +2038,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME) Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "Staging DEV";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

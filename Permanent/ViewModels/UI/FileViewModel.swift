@@ -13,6 +13,7 @@ struct FileViewModel: Equatable {
     let date: String
     let type: FileType
     
+    let archiveThumbnailURL: String?
     let archiveId: Int
     let archiveNo: String
     let recordId: Int
@@ -25,10 +26,11 @@ struct FileViewModel: Equatable {
     var fileState: FileState = .enabled
     var minArchiveVOS: [MinArchiveVO] = []
     
-    init(model: FileInfo) {
+    init(model: FileInfo, archiveThumbnailURL: String? = nil) {
         self.name = model.name
         self.date = DateUtils.currentDate
         
+        self.archiveThumbnailURL = archiveThumbnailURL
         self.thumbnailURL = nil
         self.type = .image // TODO:
         self.archiveId = -1
@@ -41,14 +43,14 @@ struct FileViewModel: Equatable {
         self.fileStatus = .uploading
     }
     
-    init(model: ChildItemVO) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil) {
         self.name = model.displayName ?? "-"
-        self.date = model.displayDT != nil ?
-            model.displayDT!.dateOnly : "-"
+        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
+        self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1
         self.archiveNo = model.archiveNbr ?? ""
         
@@ -73,14 +75,14 @@ struct FileViewModel: Equatable {
         }
     }
     
-    init(model: MinFolderVO) {
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil) {
         self.name = model.displayName ?? "-"
-        self.date = model.displayDT != nil ?
-            model.displayDT!.dateOnly : "-"
+        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
+        self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1
         self.archiveNo = model.archiveNbr ?? ""
         
