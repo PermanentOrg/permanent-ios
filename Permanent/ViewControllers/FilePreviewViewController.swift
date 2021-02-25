@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-class WebViewController: BaseViewController<WebViewModel> {
+class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     let webView = WKWebView()
     let fileHelper = FileHelper()
     
@@ -28,7 +28,7 @@ class WebViewController: BaseViewController<WebViewModel> {
         super.viewDidLoad()
         initUI()
         
-        viewModel = WebViewModel(csrf: file.csrf ?? "")
+        viewModel = FilePreviewViewModel(csrf: file.csrf ?? "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -134,7 +134,7 @@ class WebViewController: BaseViewController<WebViewModel> {
     }
 }
 
-extension WebViewController: WKNavigationDelegate {
+extension FilePreviewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideSpinner()
     }

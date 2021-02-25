@@ -28,8 +28,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
-    let documentInteractionController = UIDocumentInteractionController()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,7 +38,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel = MyFilesViewModel()
         fabView.delegate = self
         searchBar.delegate = self
-        documentInteractionController.delegate = self
         
         getRootFolder()
     }
@@ -474,11 +471,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            let newRootVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! WebViewController
-            newRootVC.file = file
+            let filePreviewVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! FilePreviewViewController
+            filePreviewVC.file = file
             
-            let tapNavigationController = UINavigationController(rootViewController: newRootVC)
-            navigationController?.display(viewController: tapNavigationController,modally: true)
+            let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)
+            navigationController?.display(viewController: previewNavigationController,modally: true)
         }
     }
     
@@ -626,7 +623,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
         refreshTableView()
         
-        guard let shareURL = url else {
+        guard let _ = url else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -637,8 +634,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
             return
         }
-        
-        share(url: shareURL)
     }
 }
 
@@ -840,22 +835,6 @@ extension MainViewController: MediaRecorderDelegate {
         processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
             self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
         })
-    }
-}
-
-extension MainViewController: UIDocumentInteractionControllerDelegate {
-    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        return self
-    }
-    
-    func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
-        
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
 }
 

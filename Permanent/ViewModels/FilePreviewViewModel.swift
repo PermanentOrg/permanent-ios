@@ -9,7 +9,7 @@
 import UIKit
 import WebKit
 
-class WebViewModel: ViewModelInterface {
+class FilePreviewViewModel: ViewModelInterface {
     let csrf : String
     var downloader: DownloadManagerGCD? = nil
     
