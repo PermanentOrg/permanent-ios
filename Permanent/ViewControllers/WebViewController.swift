@@ -42,10 +42,14 @@ class WebViewController: BaseViewController<WebViewModel> {
             if let localURL = self.fileHelper.url(forFileNamed: record?.recordVO?.uploadFileName ?? "") {
                 self.webView.loadFileURL(localURL, allowingReadAccessTo: localURL)
             } else if let downloadURLString = record?.recordVO?.fileVOS?.first?.downloadURL,
+                      let contentType = record?.recordVO?.fileVOS?.first?.contentType,
                       let downloadURL = URL(string: downloadURLString) {
                 let request = URLRequest(url: downloadURL)
                 
-                self.webView.load(request)
+                let videoTag = "<video style=\"max-width:100%;max-height:100%;margin:50% auto 0 auto;padding:0;\" controls autoplay> <source src=\"\(downloadURLString)\" type=\"\(contentType)\">Your browser does not support the video tag.</video>"
+                
+                let htmlBody = "<html><body style=\"width:100%;height:100%;background-color:#000000;margin:0;padding:0;\">\(videoTag)</body></html>"
+                self.webView.loadHTMLString(htmlBody, baseURL: nil)
             } else {
                 self.showErrorAlert(message: .errorMessage)
             }
