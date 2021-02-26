@@ -18,8 +18,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     private let overlayView = UIView()
     
-    let documentInteractionController = UIDocumentInteractionController()
-    
     var selectedIndex: Int = 0
     
     var selectedFileId: Int?
@@ -236,7 +234,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
         self.refreshTableView()
         
-        guard let shareURL = url else {
+        guard let _ = url else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -247,8 +245,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
             return
         }
-        
-        share(url: shareURL)
     }
     
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -344,13 +340,21 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.type.isFolder, file.fileStatus == .synced else { return }
-
-        let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-            self.backButton.isHidden = false
-            self.directoryLabel.text = file.name
-        })
+        guard file.fileStatus == .synced else { return }
+        
+        if file.type.isFolder {
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+        } else {
+            let filePreviewVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! FilePreviewViewController
+            filePreviewVC.file = file
+            
+            let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)
+            navigationController?.display(viewController: previewNavigationController,modally: true)
+        }
     }
     
     func scrollToFileIfNeeded() {
@@ -369,21 +373,5 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: FileViewModel) {
         download(file)
-    }
-}
-
-extension SharesViewController: UIDocumentInteractionControllerDelegate {
-    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        return self
-    }
-    
-    func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
-        
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
 }

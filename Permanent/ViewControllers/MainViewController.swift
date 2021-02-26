@@ -7,8 +7,9 @@
 
 import BSImagePicker
 import MobileCoreServices
-import UIKit
 import Photos
+import UIKit
+import WebKit
 
 class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -27,8 +28,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
-    let documentInteractionController = UIDocumentInteractionController()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,7 +38,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel = MyFilesViewModel()
         fabView.delegate = self
         searchBar.delegate = self
-        documentInteractionController.delegate = self
         
         getRootFolder()
     }
@@ -121,8 +119,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         fileActionBottomView.fileAction = {
             guard
                 let source = self.viewModel?.selectedFile,
-                let destination = self.viewModel?.currentFolder else {
-                
+                let destination = self.viewModel?.currentFolder
+            else {
                 self.showErrorAlert(message: .errorMessage)
                 return
             }
@@ -283,13 +281,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func checkForSavedUniversalLink() {
-        
         guard
             let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.shareURLToken),
             let sharePreviewVC = UIViewController.create(
                 withIdentifier: .sharePreview,
                 from: .share
-            ) as? SharePreviewViewController else {
+            ) as? SharePreviewViewController
+        else {
             return
         }
         
@@ -350,7 +348,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self.screenLockManager.disableIdleTimer(false)
                     handler?()
                     
-                case .error(_):
+                case .error:
                     DispatchQueue.main.async {
                         // TODO: This logic is definitely buggy and this is causing the multiple upload bug
                         self.screenLockManager.disableIdleTimer(false)
@@ -408,7 +406,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func relocate(file: FileViewModel, to destination: FileViewModel) {
-        self.showSpinner()
+        showSpinner()
         viewModel?.relocate(file: file, to: destination, then: { status in
             self.hideSpinner()
             
@@ -463,19 +461,22 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard
-            file.type.isFolder,
-            file.fileStatus == .synced
-        else {
-            return
+        guard file.fileStatus == .synced else { return }
+        
+        if file.type.isFolder {
+            invalidateSearchBarIfNeeded()
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+        } else {
+            let filePreviewVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! FilePreviewViewController
+            filePreviewVC.file = file
+            
+            let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)
+            navigationController?.display(viewController: previewNavigationController,modally: true)
         }
-
-        invalidateSearchBarIfNeeded()
-        let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
-        navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-            self.backButton.isHidden = false
-            self.directoryLabel.text = file.name
-        })
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -514,7 +515,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         guard let viewModel = viewModel else {
             fatalError()
         }
@@ -563,25 +563,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.tableView.reloadData()
             }
             
-            
         case .uploading, .waiting:
             cellRightButtonAction(atPosition: indexPath.row)
         }
     }
     
     private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.showActionDialog(styled: .simple,
                                   withTitle: title,
                                   positiveButtonTitle: .delete,
                                   positiveAction: {
-                                    self.actionDialog?.dismiss()
-                                    self.deleteFile(file, atIndexPath: indexPath)
+                                      self.actionDialog?.dismiss()
+                                      self.deleteFile(file, atIndexPath: indexPath)
                                   }, overlayView: self.overlayView)
-        })
+        }
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -593,9 +591,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                          withTitle: title,
                          positiveButtonTitle: fileAction.title,
                          positiveAction: {
-                            self.actionDialog?.dismiss()
-                            self.relocate(file: source, to: destination)
-                         }, overlayView: self.overlayView)
+                             self.actionDialog?.dismiss()
+                             self.relocate(file: source, to: destination)
+                         }, overlayView: overlayView)
     }
     
     private func download(_ file: FileViewModel) {
@@ -623,10 +621,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
+        refreshTableView()
         
-        self.refreshTableView()
-        
-        guard let shareURL = url else {
+        guard let _ = url else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -637,8 +634,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
             return
         }
-        
-        share(url: shareURL)
     }
 }
 
@@ -686,7 +681,7 @@ extension MainViewController: FABActionSheetDelegate {
             placeholders: [.folderName],
             positiveButtonTitle: .create,
             positiveAction: { self.newFolderAction() },
-            overlayView: self.overlayView
+            overlayView: overlayView
         )
     }
     
@@ -705,13 +700,14 @@ extension MainViewController: FABActionSheetDelegate {
                     completion: { _ in
                         self.sortActionSheet?.removeFromSuperview()
                         self.sortActionSheet = nil
-                    })
+                    }
+                )
             }
         )
         
         sortActionSheet?.delegate = self
         view.addSubview(sortActionSheet!)
-        self.view.presentPopup(sortActionSheet, overlayView: overlayView)        
+        view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
 
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -733,13 +729,14 @@ extension MainViewController: FABActionSheetDelegate {
                     completion: { _ in
                         self.fileActionSheet?.removeFromSuperview()
                         self.fileActionSheet = nil
-                    })
+                    }
+                )
             }
         )
         
         fileActionSheet?.delegate = self
         view.addSubview(fileActionSheet!)
-        self.view.presentPopup(fileActionSheet, overlayView: overlayView)
+        view.presentPopup(fileActionSheet, overlayView: overlayView)
     }
     
     func showActionSheet() {
@@ -768,7 +765,8 @@ extension MainViewController: FABActionSheetDelegate {
             PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
             PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
             PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)]
+            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        ]
         presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
             self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
                 
@@ -801,10 +799,10 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     private func newFolderAction() {
-
         guard
             let folderName = actionDialog?.fieldsInput.first,
-            folderName.isNotEmpty else {
+            folderName.isNotEmpty
+        else {
             return
         }
 
@@ -840,39 +838,22 @@ extension MainViewController: MediaRecorderDelegate {
     }
 }
 
-extension MainViewController: UIDocumentInteractionControllerDelegate {
-    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-        return self
-    }
-    
-    func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
-        
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
-    }
-}
-
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
-
         guard
             let viewModel = viewModel,
             let shareVC = UIViewController.create(
                 withIdentifier: .share,
-                from: .share) as? ShareViewController
+                from: .share
+            ) as? ShareViewController
         else {
             return
         }
 
         shareVC.sharedFile = file
         shareVC.csrf = viewModel.csrf
-        self.navigationController?.display(viewController: shareVC)
+        navigationController?.display(viewController: shareVC)
     }
-    
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
@@ -893,6 +874,6 @@ extension MainViewController: FileActionSheetDelegate {
 extension MainViewController: SortActionSheetDelegate {
     func didSelectOption(_ option: SortOption) {
         viewModel?.activeSortOption = option
-        self.refreshCurrentFolder()
+        refreshCurrentFolder()
     }
 }

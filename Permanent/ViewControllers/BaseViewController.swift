@@ -47,6 +47,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             .foregroundColor: UIColor.white,
             .font: Text.style14.font
         ]
+        navigationController?.navigationBar.tintColor = .white
     }
     
     func closeKeyboard() {
