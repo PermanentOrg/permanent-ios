@@ -9,7 +9,6 @@ import UIKit
 import WebKit
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
-    let webView = WKWebView()
     let fileHelper = FileHelper()
     
     var file: FileViewModel!
@@ -18,11 +17,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVO?
     
     let documentInteractionController = UIDocumentInteractionController()
-
-    override func loadView() {
-        view = webView
-        webView.navigationDelegate = self
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +41,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 case FileType.video:
                     self.loadVideo(withURL: localURL, contentType: contentType)
                 default:
-                    self.webView.loadFileURL(localURL, allowingReadAccessTo: localURL)
+                    self.loadMisc(withURL: localURL)
                 }
             } else if let downloadURLString = record?.recordVO?.fileVOS?.first?.downloadURL,
                       let contentType = record?.recordVO?.fileVOS?.first?.contentType,
@@ -58,8 +52,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 case FileType.video:
                     self.loadVideo(withURL: downloadURL, contentType: contentType)
                 default:
-                    let request = URLRequest(url: downloadURL)
-                    self.webView.load(request)
+                    self.loadMisc(withURL: downloadURL)
                 }
             } else {
                 self.showErrorAlert(message: .errorMessage)
@@ -83,19 +76,51 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         navigationItem.title = file.name
     }
     
-    func htmlBody(withContent content: String) -> String {
-        return "<html><body style=\"width:100%;height:100%;background-color:#000000;margin:0;padding:0;\">\(content)</body></html>"
+    func setupWebView() -> WKWebView {
+        let webView = WKWebView(frame: view.bounds)
+        webView.backgroundColor = .black
+        webView.navigationDelegate = self
+        webView.frame = view.bounds
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(webView, at: 0)
+        
+        return webView
     }
     
-    func loadImage(withURL url: URL, contentType: String) {
-        let imageTag = "<body style=\"width:100%;height:100%;background-color:#000000;\"><img src=\"\(url)\" style=\"max-width:100%;max-height:100%;margin:50% auto 0 auto;padding:0;\"/></body>"
+    func htmlBody(withContent content: String) -> String {
+        return "<html><body style=\"width:\(UIScreen.main.scale * view.frame.width);height:\(UIScreen.main.scale * view.frame.height);background-color:#000000;margin:0;padding:0;\">\(content)</body></html>"
+    }
+    
+    func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
+        let imagePreviewVC = ImagePreviewViewController()
+        addChild(imagePreviewVC)
+        imagePreviewVC.view.frame = view.bounds
+        // Insert view under the spinner
+        view.insertSubview(imagePreviewVC.view, at: 0)
+        imagePreviewVC.didMove(toParent: self)
         
-        webView.loadHTMLString(htmlBody(withContent: imageTag), baseURL: url)
+        viewModel?.fileData(withURL: url, onCompletion: { (data, error) in
+            if let data = data {
+                imagePreviewVC.image = UIImage(data: data)
+                self.hideSpinner()
+            } else {
+                self.showAlert(title: .error, message: .errorMessage)
+            }
+        })
     }
     
     func loadVideo(withURL url: URL, contentType: String) {
-        let videoTag = "<video style=\"max-width:100%;max-height:100%;margin:50% auto 0 auto;padding:0;\" controls autoplay> <source src=\"\(url)\" type=\"\(contentType)\">Your browser does not support the video tag.</video>"
+        let webView = setupWebView()
+        
+        let videoTag = "<video style=\"display:block;max-width:100%;max-height:100%;margin:50% auto;padding:0;\" controls autoplay> <source src=\"\(url)\" type=\"\(contentType)\">Your browser does not support the video tag.</video>"
         webView.loadHTMLString(htmlBody(withContent: videoTag), baseURL: url)
+    }
+    
+    func loadMisc(withURL url: URL) {
+        let webView = setupWebView()
+        
+        let request = URLRequest(url: url)
+        webView.load(request)
     }
     
     func share(url: URL) {

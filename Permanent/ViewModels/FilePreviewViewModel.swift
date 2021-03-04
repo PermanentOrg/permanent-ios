@@ -34,6 +34,15 @@ class FilePreviewViewModel: ViewModelInterface {
         downloader?.downloadFileData(record: record, progressHandler: nil, then: onFileDownloaded)
     }
     
+    func fileData(withURL url: URL, onCompletion completion: @escaping (Data?, Error?) -> Void) {
+        let dataTask = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            DispatchQueue.main.async {
+                completion(data, error)
+            }
+        }
+        dataTask.resume()
+    }
+    
     func cancelDownload() {
         downloader?.cancelDownload()
         downloader = nil
