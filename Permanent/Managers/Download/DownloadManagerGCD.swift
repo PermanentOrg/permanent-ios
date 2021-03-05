@@ -16,6 +16,29 @@ class DownloadManagerGCD: Downloader {
         self.csrf = csrf
     }
     
+    func fileVO(forRecordVO recordVO: RecordVO, fileType: FileType) -> FileVO? {
+        if fileType == .video,
+           let fileVO = recordVO.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
+            return fileVO
+        } else {
+            return recordVO.recordVO?.fileVOS?.first
+        }
+    }
+    
+    func download(_ file: FileViewModel,
+                  onDownloadStart: @escaping VoidAction,
+                  onFileDownloaded: @escaping DownloadResponse,
+                  progressHandler: ProgressHandler?,
+                  completion: VoidAction?) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: file.type,
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
+        )
+        
+        startDownload(downloadInfo, onDownloadStart: onDownloadStart, onFileDownloaded: onFileDownloaded, progressHandler: progressHandler, completion: completion)
+    }
+    
     func download(_ file: FileDownloadInfo,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
@@ -56,7 +79,7 @@ class DownloadManagerGCD: Downloader {
                 return handler(nil, errorMessage)
             }
             
-            self?.downloadFileData(record: record, progressHandler: progressHandler, then: handler)
+            self?.downloadFileData(record: record, fileType: file.fileType, progressHandler: progressHandler, then: handler)
         }
     }
     
@@ -90,13 +113,24 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
-    func downloadFileData(record: RecordVO, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
+    func downloadFileData(record: RecordVO, fileType: FileType, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         guard
-            let downloadURL = record.recordVO?.fileVOS?.first?.downloadURL,
+            let fileVO = fileVO(forRecordVO: record, fileType: fileType),
+            let downloadURL = fileVO.downloadURL,
             let url = URL(string: downloadURL),
-            let fileName = record.recordVO?.uploadFileName
+            let uploadFileName = record.recordVO?.uploadFileName,
+            let displayName = record.recordVO?.displayName
         else {
             return handler(nil, APIError.invalidResponse)
+        }
+        
+        // If the file was converted, then it most certainly is an mp4
+        // Otherwise, the file was not converted, we use the original filename + extension
+        let fileName: String
+        if fileType == .video && fileVO.contentType == "video/mp4" {
+            fileName = displayName + ".mp4"
+        } else {
+            fileName = uploadFileName
         }
         
         let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))

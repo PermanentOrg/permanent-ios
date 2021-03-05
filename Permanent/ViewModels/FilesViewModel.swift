@@ -220,6 +220,7 @@ extension FilesViewModel {
         downloadQueue.append(downloadFile)
         
         let downloadInfo = FileDownloadInfoVM(
+            fileType: file.type,
             folderLinkId: file.folderLinkId,
             parentFolderLinkId: file.parentFolderLinkId
         )

@@ -7,22 +7,26 @@
 
 import UIKit
 import WebKit
+import AVKit
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     let fileHelper = FileHelper()
     
     var file: FileViewModel!
-    var operation: APIOperation?
     
-    var recordVO: RecordVO?
+    var playerItem: AVPlayerItem?
     
     let documentInteractionController = UIDocumentInteractionController()
 
+    deinit {
+        playerItem?.removeObserver(self, forKeyPath: "status")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
         
-        viewModel = FilePreviewViewModel(csrf: file.csrf ?? "")
+        viewModel = FilePreviewViewModel(file: file)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -31,10 +35,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         showSpinner()
         
         viewModel?.getRecord(file: file, then: { record in
-            self.recordVO = record
-            
-            if let localURL = self.fileHelper.url(forFileNamed: record?.recordVO?.uploadFileName ?? ""),
-               let contentType = record?.recordVO?.fileVOS?.first?.contentType {
+            guard let fileVO = self.viewModel?.fileVO(),
+                  let fileName = self.viewModel?.fileName()
+            else {
+                return
+            }
+                  
+            if let localURL = self.fileHelper.url(forFileNamed: fileName),
+               let contentType = fileVO.contentType {
                 switch self.file.type {
                 case FileType.image:
                     self.loadImage(withURL: localURL, contentType: contentType)
@@ -43,8 +51,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 default:
                     self.loadMisc(withURL: localURL)
                 }
-            } else if let downloadURLString = record?.recordVO?.fileVOS?.first?.downloadURL,
-                      let contentType = record?.recordVO?.fileVOS?.first?.contentType,
+            } else if let downloadURLString = fileVO.downloadURL,
+                      let contentType = fileVO.contentType,
                       let downloadURL = URL(string: downloadURLString) {
                 switch self.file.type {
                 case FileType.image:
@@ -87,10 +95,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return webView
     }
     
-    func htmlBody(withContent content: String) -> String {
-        return "<html><body style=\"width:\(UIScreen.main.scale * view.frame.width);height:\(UIScreen.main.scale * view.frame.height);background-color:#000000;margin:0;padding:0;\">\(content)</body></html>"
-    }
-    
+    // MARK: - Load methods
     func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
         let imagePreviewVC = ImagePreviewViewController()
         addChild(imagePreviewVC)
@@ -110,10 +115,21 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadVideo(withURL url: URL, contentType: String) {
-        let webView = setupWebView()
+        let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
+        playerItem = AVPlayerItem(asset: asset)
+        playerItem?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
         
-        let videoTag = "<video style=\"display:block;max-width:100%;max-height:100%;margin:50% auto;padding:0;\" controls autoplay> <source src=\"\(url)\" type=\"\(contentType)\">Your browser does not support the video tag.</video>"
-        webView.loadHTMLString(htmlBody(withContent: videoTag), baseURL: url)
+        let player = AVPlayer(playerItem: playerItem)
+        let videoPlayer = AVPlayerViewController()
+        videoPlayer.player = player
+        player.play()
+        
+        addChild(videoPlayer)
+        videoPlayer.view.frame = view.bounds
+        view.insertSubview(videoPlayer.view, at: 0)
+        videoPlayer.didMove(toParent: self)
+        
+        hideSpinner()
     }
     
     func loadMisc(withURL url: URL) {
@@ -123,28 +139,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         webView.load(request)
     }
     
-    func share(url: URL) {
-        // For now, dismiss the menu in case another one opens so we avoid crash.
-        documentInteractionController.dismissMenu(animated: true)
-        
-        documentInteractionController.url = url
-        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
-    }
-
+    // MARK: - Actions
     @objc private func shareButtonAction(_ sender: Any) {
-        if let localURL = fileHelper.url(forFileNamed: recordVO?.recordVO?.uploadFileName ?? "") {
+        if let fileName = self.viewModel?.fileName(),
+            let localURL = fileHelper.url(forFileNamed: fileName) {
             share(url: localURL)
         } else {
-            let preparingAlert = UIAlertController(title: "Preparing File..", message: nil, preferredStyle: .alert)
-            preparingAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
                 self.viewModel?.cancelDownload()
             }))
             
             present(preparingAlert, animated: true) {
-                if let record = self.recordVO {
-                    self.viewModel?.download(record, onFileDownloaded: { url, _ in
+                if let record = self.viewModel?.recordVO {
+                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, _ in
                         if let url = url {
                             self.dismiss(animated: true) {
                                 self.share(url: url)
@@ -161,8 +169,37 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     @objc private func closeButtonAction(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
+    
+    // MARK: - KVO
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard keyPath == "status", let item = object as? AVPlayerItem else {
+            return
+        }
+        
+        hideSpinner()
+        
+        if item.status == .failed {
+            showAlert(title: .error, message: "Sorry, can't play this video format.".localized())
+        }
+    }
+    
+    //MARK: -
+    private func share(url: URL) {
+        // For now, dismiss the menu in case another one opens so we avoid crash.
+        documentInteractionController.dismissMenu(animated: true)
+        
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+    }
+    
+    private func htmlBody(withContent content: String) -> String {
+        return "<html><body style=\"width:\(UIScreen.main.scale * view.frame.width);height:\(UIScreen.main.scale * view.frame.height);background-color:#000000;margin:0;padding:0;\">\(content)</body></html>"
+    }
 }
 
+// MARK: - WKNavigationDelegate
 extension FilePreviewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideSpinner()
