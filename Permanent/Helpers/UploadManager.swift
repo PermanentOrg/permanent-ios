@@ -39,6 +39,8 @@ class UploadManager {
     
     private func getHttpBody(forParameters parameters: RequestParameters, withBoundary boundary: String) -> Data {
         var body = Data()
+        
+        guard let parameters = parameters as? [String: Any?] else { return body }
 
         for (key, value) in parameters {
             guard let value = value else {

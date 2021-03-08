@@ -33,7 +33,7 @@ enum RequestMethod: String {
 }
 
 typealias RequestHeaders = [String: String]
-typealias RequestParameters = [String: Any?]
+typealias RequestParameters = Any
 typealias ProgressHandler = (Float) -> Void
 
 /// Protocol to which the HTTP requests must conform.
@@ -108,7 +108,7 @@ extension RequestProtocol {
     /// Returns the URLRequest `URLQueryItem`
     private var queryItems: [URLQueryItem]? {
         // Chek if it is a GET method.
-        guard method == .get, let parameters = parameters else {
+        guard method == .get, let parameters = parameters as? [String: Any?] else {
             return nil
         }
         // Convert parameters to query items.

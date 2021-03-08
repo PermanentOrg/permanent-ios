@@ -594,4 +594,22 @@ extension FilesViewModel {
         let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, csrf, folderLinkId)
         getLeanItems(params: params, then: handler)
     }
+    
+    func update(file: FileViewModel) {
+        let params: UpdateRecordParams = (file.name + " Update", "Test Description", Date(), nil, file.recordId, file.folderLinkId, file.archiveNo, csrf)
+        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json( _, _):
+                print("done")
+                
+            case .error(let error, _):
+                print(error?.localizedDescription)
+                
+            default:
+                break
+            }
+        }
+    }
 }
