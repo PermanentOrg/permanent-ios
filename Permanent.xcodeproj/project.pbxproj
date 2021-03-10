@@ -277,6 +277,7 @@
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
+		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -564,6 +565,7 @@
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
@@ -648,6 +650,7 @@
 				5E46217125C17C5A007642BE /* AccountInfoViewController.swift */,
 				5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */,
 				5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */,
+				F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1806,6 +1809,7 @@
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
+				F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				BC59BACD25C2B8BD005A45D3 /* ActivityFeedViewModel.swift in Sources */,
