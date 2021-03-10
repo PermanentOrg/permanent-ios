@@ -8,6 +8,7 @@
 import Foundation
 
 struct FileDownloadInfoVM: FileDownloadInfo {
+    var fileType: FileType
     var folderLinkId: Int
     var parentFolderLinkId: Int
 }

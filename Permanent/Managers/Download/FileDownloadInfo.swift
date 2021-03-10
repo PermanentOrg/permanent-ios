@@ -13,4 +13,6 @@ protocol FileDownloadInfo {
     
     var parentFolderLinkId: Int { get }
     
+    var fileType: FileType { get }
+    
 }
