@@ -13,7 +13,8 @@ struct ItemVO: Model {
     let displayEndDT: String?
     let derivedDT: String?
     let derivedEndDT: String?
-    let note, itemVODescription, special: JSONAny?
+    let note, special: JSONAny?
+    let itemVODescription: String?
     let sort: String?
     let locnID: JSONAny?
     let timeZoneID: Int?
@@ -40,7 +41,8 @@ struct ItemVO: Model {
     let locnVO: JSONAny?
     let timezoneVO: TimezoneVO?
     let directiveVOS: JSONAny?
-    let tagVOS, sharedArchiveVOS: [JSONAny]?
+    let sharedArchiveVOS: [JSONAny]?
+    let tagVOS: [TagVOData]?
     let folderSizeVO: JSONAny?
     let attachmentRecordVOS: [JSONAny]?
     let hasAttachments: JSONAny?
@@ -50,7 +52,8 @@ struct ItemVO: Model {
     let archiveArchiveNbr: String?
     let recordID: Int?
     let returnDataSize, posStart, posLimit: JSONAny?
-    let uploadFileName, uploadAccountID, size, derivedCreatedDT: JSONAny?
+    let uploadFileName, uploadAccountID, derivedCreatedDT: JSONAny?
+    let size: Int64?
     let metaToken, refArchiveNbr, fileStatus, processedDT: JSONAny?
     let folderArchiveID, fileVOS, textDataVOS, archiveVOS: JSONAny?
     let saveAs, isAttachment, uploadURI, fileDurationInSecs: JSONAny?

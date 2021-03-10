@@ -11,9 +11,12 @@ struct FileViewModel: Equatable {
     let csrf: String?
     
     let thumbnailURL: String?
+    let thumbnailURL2000: String?
     let name: String
     let date: String
     let type: FileType
+    let description: String
+    let size: Int64
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -27,15 +30,18 @@ struct FileViewModel: Equatable {
     var fileStatus: FileStatus = .synced
     var fileState: FileState = .enabled
     var minArchiveVOS: [MinArchiveVO] = []
+    var tagVOS: [TagVOsaved] = []
     
     init(model: FileInfo, archiveThumbnailURL: String? = nil) {
         self.csrf = nil
         
         self.name = model.name
         self.date = DateUtils.currentDate
-        
+        self.description = ""
+        self.size = -1
         self.archiveThumbnailURL = archiveThumbnailURL
         self.thumbnailURL = nil
+        self.thumbnailURL2000 = nil
         self.type = .image // TODO:
         self.archiveId = -1
         self.archiveNo = ""
@@ -54,6 +60,10 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL2000 = model.thumbURL2000
+        self.description = model.itemVODescription ?? ""
+        self.size = model.size ?? -1
+        
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveThumbnailURL = archiveThumbnailURL
@@ -79,6 +89,13 @@ struct FileViewModel: Equatable {
                 
             }
         }
+        
+        model.tagVOS?.forEach {
+            if let name = $0.name {
+                let tag = TagVOsaved(name: name, status: "", tagId: -1, type: "", createdDT: "", updatedDT: "")
+                self.tagVOS.append(tag)
+            }
+        }
     }
     
     init(model: MinFolderVO, csrf: String?, archiveThumbnailURL: String? = nil) {
@@ -88,7 +105,10 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL2000 = model.thumbURL2000
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
+        self.description = model.childFolderVOS?.description ?? ""
+        self.size = -1
         
         self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1

@@ -50,6 +50,16 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         navigationController?.navigationBar.tintColor = .white
     }
     
+    func styleFileDetailsNavBar() {
+        navigationController?.navigationBar.barTintColor = .black
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: Text.style16.font
+        ]
+        navigationController?.navigationBar.tintColor = .white
+    }
+    
     func closeKeyboard() {
         view.endEditing(true)
     }
