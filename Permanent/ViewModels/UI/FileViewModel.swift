@@ -17,6 +17,7 @@ struct FileViewModel: Equatable {
     let type: FileType
     let description: String
     let size: Int64
+    let uploadFileName: String
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -39,6 +40,7 @@ struct FileViewModel: Equatable {
         self.date = DateUtils.currentDate
         self.description = ""
         self.size = -1
+        self.uploadFileName = ""
         self.archiveThumbnailURL = archiveThumbnailURL
         self.thumbnailURL = nil
         self.thumbnailURL2000 = nil
@@ -63,6 +65,7 @@ struct FileViewModel: Equatable {
         self.thumbnailURL2000 = model.thumbURL2000
         self.description = model.itemVODescription ?? ""
         self.size = model.size ?? -1
+        self.uploadFileName = model.uploadFileName ?? ""
         
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
@@ -109,6 +112,7 @@ struct FileViewModel: Equatable {
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         self.description = model.childFolderVOS?.description ?? ""
         self.size = -1
+        self.uploadFileName = ""
         
         self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1

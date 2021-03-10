@@ -23,7 +23,7 @@ class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
         initUI()
         
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.7)
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.5)
         
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .black
@@ -174,6 +174,8 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             } else {
                 details = ByteCountFormatter.string(fromByteCount: self.file.size, countStyle: .file)
             }
+        case 6:
+            details = self.file.uploadFileName
         default:
             details = ""
         }
@@ -185,7 +187,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath[0] == 0 {
             if indexPath.item == 0 {
-                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.7)
+                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.5)
             } else if indexPath.item == 1 {
                 return CGSize(width: UIScreen.main.bounds.width, height: 40)
             }

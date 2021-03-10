@@ -52,7 +52,8 @@ struct ItemVO: Model {
     let archiveArchiveNbr: String?
     let recordID: Int?
     let returnDataSize, posStart, posLimit: JSONAny?
-    let uploadFileName, uploadAccountID, derivedCreatedDT: JSONAny?
+    let uploadAccountID, derivedCreatedDT: JSONAny?
+    let uploadFileName: String?
     let size: Int64?
     let metaToken, refArchiveNbr, fileStatus, processedDT: JSONAny?
     let folderArchiveID, fileVOS, textDataVOS, archiveVOS: JSONAny?

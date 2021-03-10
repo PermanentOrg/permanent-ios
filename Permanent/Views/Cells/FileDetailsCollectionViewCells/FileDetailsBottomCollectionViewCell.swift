@@ -23,11 +23,11 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         
         titleLabelField.text = title
         titleLabelField.textColor = .white
-        titleLabelField.font = Text.style.font
+        titleLabelField.font = Text.style9.font
         detailsTextField.text = details
         detailsTextField.backgroundColor = .clear
         detailsTextField.textColor = .white
-        detailsTextField.font = Text.style5.font
+        detailsTextField.font = Text.style8.font
         
     }
         
