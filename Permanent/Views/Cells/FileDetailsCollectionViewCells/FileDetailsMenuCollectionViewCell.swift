@@ -34,7 +34,7 @@ class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
         }
         
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.black, .font: Text.style9.font], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .normal)
         
      //   segmentedControl.layer.cornerRadius = 5.0
      //   segmentedControl.tintColor = .black

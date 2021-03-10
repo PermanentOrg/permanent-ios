@@ -45,7 +45,6 @@
 		5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
 		5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
 		5ED581B825EE4AB100A5A79E /* FileDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */; };
-		5ED581BB25EE4AC900A5A79E /* FileDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED581BA25EE4AC900A5A79E /* FileDetailsViewModel.swift */; };
 		5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED581BE25EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift */; };
 		5ED581C125EF802000A5A79E /* FileDetailsTopCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED581BF25EF802000A5A79E /* FileDetailsTopCollectionViewCell.xib */; };
 		5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED581C425EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift */; };
@@ -330,7 +329,6 @@
 		5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsViewController.swift; sourceTree = "<group>"; };
-		5ED581BA25EE4AC900A5A79E /* FileDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsViewModel.swift; sourceTree = "<group>"; };
 		5ED581BE25EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsTopCollectionViewCell.swift; sourceTree = "<group>"; };
 		5ED581BF25EF802000A5A79E /* FileDetailsTopCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsTopCollectionViewCell.xib; sourceTree = "<group>"; };
 		5ED581C425EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMenuCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -728,7 +726,6 @@
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
 				5E46217425C17CE2007642BE /* InfoViewModel.swift */,
 				5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */,
-				5ED581BA25EE4AC900A5A79E /* FileDetailsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1656,7 +1653,6 @@
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
-				5ED581BB25EE4AC900A5A79E /* FileDetailsViewModel.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,

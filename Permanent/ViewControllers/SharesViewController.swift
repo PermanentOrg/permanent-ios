@@ -349,7 +349,7 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            let filePreviewVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! FilePreviewViewController
+            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
             filePreviewVC.file = file
             
             let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)

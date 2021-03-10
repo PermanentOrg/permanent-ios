@@ -83,5 +83,23 @@ class FilePreviewViewModel: ViewModelInterface {
         return fileName
     }
     
+    func update(file: FileViewModel) {
+        let params: UpdateRecordParams = (file.name + " Update", "Test Description", Date(), nil, file.recordId, file.folderLinkId, file.archiveNo, csrf)
+        let apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json( _, _):
+                print("done")
+                
+            case .error(let error, _):
+                print(error?.localizedDescription)
+                
+            default:
+                break
+            }
+        }
+    }
+    
 }
 

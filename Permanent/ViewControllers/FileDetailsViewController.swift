@@ -9,7 +9,7 @@ import UIKit
 
 let reuseIdentifier = "CellIdentifer";
 
-class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
+class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
     let infoSubmenuItems: [String] = ["Name", "Description", "Date", "Location", "Tags"]
@@ -21,6 +21,8 @@ class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        
+        viewModel = FilePreviewViewModel(file: file)
         
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.5)
@@ -45,7 +47,9 @@ class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
     
     func initUI() {
         view.backgroundColor = .black
-        styleFileDetailsNavBar()
+       
+        styleNavBar()
+    
         let rightButtonImage = UIBarButtonItem.SystemItem.action
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
 
@@ -62,6 +66,12 @@ class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
         infoDetailsCellNumber = [infoSubmenuItems.count,detailsSubmenuItems.count]
     }
     
+    override func styleNavBar() {
+        super.styleNavBar()
+        
+        navigationController?.navigationBar.barTintColor = .black
+    }
+    
     @objc private func closeButtonAction(_ sender: Any) {
         updateSpinner(isLoading: false)
         dismiss(animated: true, completion: nil)
@@ -75,17 +85,6 @@ class FileDetailsViewController: BaseViewController<FileDetailsViewModel> {
     func updateSpinner(isLoading: Bool) {
         isLoading ? showSpinner() : hideSpinner()
     }
-}
-extension FileDetailsViewController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        
-        print("you tapped me.")
-        
-    }
-    
-
 }
 
 extension FileDetailsViewController: UICollectionViewDataSource {
@@ -184,6 +183,17 @@ extension FileDetailsViewController: UICollectionViewDataSource {
 }
 
 extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        if indexPath == [0,0] {
+            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+            fileDetailsVC.file = file
+            
+            navigationController?.setViewControllers([fileDetailsVC], animated: false)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath[0] == 0 {
             if indexPath.item == 0 {
