@@ -327,7 +327,10 @@ struct Payloads {
             recordVO["description"] = description
         }
         if let date = params.date {
-            recordVO["displayDT"] = date.timeIntervalSince1970
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            
+            recordVO["displayDT"] = dateFormatter.string(from: date)
         }
         
         return [ "RequestVO":

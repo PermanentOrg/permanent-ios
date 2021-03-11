@@ -15,7 +15,7 @@ protocol ActivityFeedViewModelDelegate {
     
     var numberOfItems: Int { get }
     
-    func itemFor(row: Int) -> Notification
+    func itemFor(row: Int) -> NotificationProtocol
     
     // Events
     

@@ -12,7 +12,7 @@ class ActivityFeedViewModel: ActivityFeedViewModelDelegate {
     
     weak var viewDelegate: ActivityFeedViewModelViewDelegate?
     
-    fileprivate var notifications: [Notification] = []
+    fileprivate var notifications: [NotificationProtocol] = []
     
     // MARK: - Properties
     
@@ -26,7 +26,7 @@ class ActivityFeedViewModel: ActivityFeedViewModelDelegate {
         return notifications.count
     }
     
-    func itemFor(row: Int) -> Notification {
+    func itemFor(row: Int) -> NotificationProtocol {
         return notifications[row]
     }
     

@@ -141,7 +141,7 @@
 		BC59BACE25C2B8BD005A45D3 /* ActivityFeedViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC225C2B8BD005A45D3 /* ActivityFeedViewModelDelegate.swift */; };
 		BC59BACF25C2B8BD005A45D3 /* NotificationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC425C2B8BD005A45D3 /* NotificationVM.swift */; };
 		BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC525C2B8BD005A45D3 /* NotificationVO.swift */; };
-		BC59BAD125C2B8BD005A45D3 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC625C2B8BD005A45D3 /* Notification.swift */; };
+		BC59BAD125C2B8BD005A45D3 /* NotificationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC625C2B8BD005A45D3 /* NotificationProtocol.swift */; };
 		BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BAC825C2B8BD005A45D3 /* ActivityFeedViewController.swift */; };
 		BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC59BACB25C2B8BD005A45D3 /* NotificationTableViewCell.xib */; };
 		BC59BAD425C2B8BD005A45D3 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59BACC25C2B8BD005A45D3 /* NotificationTableViewCell.swift */; };
@@ -429,7 +429,7 @@
 		BC59BAC225C2B8BD005A45D3 /* ActivityFeedViewModelDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewModelDelegate.swift; sourceTree = "<group>"; };
 		BC59BAC425C2B8BD005A45D3 /* NotificationVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationVM.swift; sourceTree = "<group>"; };
 		BC59BAC525C2B8BD005A45D3 /* NotificationVO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationVO.swift; sourceTree = "<group>"; };
-		BC59BAC625C2B8BD005A45D3 /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		BC59BAC625C2B8BD005A45D3 /* NotificationProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationProtocol.swift; sourceTree = "<group>"; };
 		BC59BAC825C2B8BD005A45D3 /* ActivityFeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewController.swift; sourceTree = "<group>"; };
 		BC59BACB25C2B8BD005A45D3 /* NotificationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationTableViewCell.xib; sourceTree = "<group>"; };
 		BC59BACC25C2B8BD005A45D3 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
@@ -1176,7 +1176,7 @@
 			children = (
 				BC59BAC425C2B8BD005A45D3 /* NotificationVM.swift */,
 				BC59BAC525C2B8BD005A45D3 /* NotificationVO.swift */,
-				BC59BAC625C2B8BD005A45D3 /* Notification.swift */,
+				BC59BAC625C2B8BD005A45D3 /* NotificationProtocol.swift */,
 				BC59BAE925C2CC8E005A45D3 /* NotificationType.swift */,
 			);
 			path = Models;
@@ -1699,7 +1699,7 @@
 				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
-				BC59BAD125C2B8BD005A45D3 /* Notification.swift in Sources */,
+				BC59BAD125C2B8BD005A45D3 /* NotificationProtocol.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,

@@ -12,10 +12,10 @@ struct FileViewModel: Equatable {
     
     let thumbnailURL: String?
     let thumbnailURL2000: String?
-    let name: String
+    var name: String
     let date: String
     let type: FileType
-    let description: String
+    var description: String
     let size: Int64
     let uploadFileName: String
     

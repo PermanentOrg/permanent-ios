@@ -7,8 +7,6 @@
 
 import UIKit
 
-let reuseIdentifier = "CellIdentifer";
-
 class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
@@ -17,16 +15,17 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     let detailsSubmenuItems: [String] = ["Uploaded", "Uploaded By","Last Modified","Created","File Created","Size","File Type","Original File Name:","Original File Type"]
     var infoDetailsCellNumber: [Int]!
     var currentSubmenuSelection = 0
+    
     @IBOutlet var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         showSpinner()
         self.initUI()
-
-let layout = UICollectionViewFlowLayout()
-layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
-
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
+        
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .black
 
@@ -38,20 +37,27 @@ layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.mai
         viewModel = FilePreviewViewModel(file: file)
         viewModel?.getRecord(file: file, then: { record in
             self.recordVO = record?.recordVO
-                self.hideSpinner()
-
-        
+            self.hideSpinner()
 
             self.collectionView.delegate = self
             self.collectionView.dataSource = self
             
         })
 
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         updateSpinner(isLoading: true)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        view.endEditing(true)
     }
     
     func initUI() {
@@ -93,12 +99,50 @@ layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.mai
     func updateSpinner(isLoading: Bool) {
         isLoading ? showSpinner() : hideSpinner()
     }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let collectionView = collectionView,
+              let keyBoardInfo = notification.userInfo,
+              let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let window = collectionView.window
+        else { return }
+        
+        let keyBoardFrame = window.convert(endFrame.cgRectValue, to: collectionView.superview)
+        let newBottomInset = collectionView.frame.origin.y + collectionView.frame.size.height - keyBoardFrame.origin.y
+        var tableInsets = collectionView.contentInset
+        var scrollIndicatorInsets = collectionView.scrollIndicatorInsets
+        let oldBottomInset = tableInsets.bottom
+        if newBottomInset > oldBottomInset {
+            tableInsets.bottom = newBottomInset
+            scrollIndicatorInsets.bottom = tableInsets.bottom
+            
+            UIView.beginAnimations(nil, context: nil)
+            UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
+            UIView.setAnimationCurve(UIView.AnimationCurve(rawValue: (keyBoardInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int))!)
+            collectionView.contentInset = tableInsets
+            collectionView.scrollIndicatorInsets = scrollIndicatorInsets
+            UIView.commitAnimations()
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        let keyBoardInfo = notification.userInfo!
+        var tableInsets = collectionView.contentInset
+        var scrollIndicatorInsets = collectionView.scrollIndicatorInsets
+        tableInsets.bottom = 0
+        scrollIndicatorInsets.bottom = tableInsets.bottom
+        UIView.beginAnimations(nil, context: nil)
+        UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
+        UIView.setAnimationCurve(UIView.AnimationCurve(rawValue: (keyBoardInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int))!)
+        collectionView.contentInset = tableInsets
+        collectionView.scrollIndicatorInsets = scrollIndicatorInsets
+        UIView.commitAnimations()
+    }
 }
 
 extension FileDetailsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 1
-        {
+        if section == 1 {
            return infoDetailsCellNumber[currentSubmenuSelection]
         }
         return 2
@@ -109,9 +153,6 @@ extension FileDetailsViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-       // let cell: UICollectionViewCell!
-        
         updateSpinner(isLoading: false)
         
         if indexPath.section == 0 {
@@ -131,26 +172,46 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             }
         } else {
             if indexPath.item < 5 || currentSubmenuSelection == 1 {
-            let cell3 = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            if currentSubmenuSelection == 0 && indexPath.item < 2 {
-                cell3.configure(title: cellTitle(itemNumber: indexPath.item), details: cellDetails(itemNumber: indexPath.item),isDetailsFieldEditable: true)
-            } else {
-                cell3.configure(title: cellTitle(itemNumber: indexPath.item), details: cellDetails(itemNumber: indexPath.item))
-            }
-            return cell3
+                let cell3 = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
+                if currentSubmenuSelection == 0 && indexPath.item < 3 {
+                    if indexPath.item == 2 {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                        let date = dateFormatter.date(from: recordVO.displayDT ?? "")
+                        cell3.configure(title: cellTitle(itemNumber: indexPath.item), details: cellDetails(itemNumber: indexPath.item), isDetailsFieldEditable: true, isDatePicker: true, date: date)
+                    } else {
+                        cell3.configure(title: cellTitle(itemNumber: indexPath.item), details: cellDetails(itemNumber: indexPath.item), isDetailsFieldEditable: true)
+                    }
+                } else {
+                    cell3.configure(title: cellTitle(itemNumber: indexPath.item), details: cellDetails(itemNumber: indexPath.item))
+                }
+                return cell3
             } else {
                 let cell4 = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell
                 cell4.configure(title: .save)
+                cell4.action = { [weak self] cell in
+                    guard let file = self?.file else { return }
+                    
+                    let name = (self?.collectionView.cellForItem(at: [1,0]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
+                    let description = (self?.collectionView.cellForItem(at: [1,1]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
+                    let date = (self?.collectionView.cellForItem(at: [1,2]) as? FileDetailsBottomCollectionViewCell)?.date
+                    
+                    cell.isSaving = true
+                    self?.viewModel?.update(file: file, name: name, description: description, date: date, completion: { (success) in
+                        cell.isSaving = false
+                        
+                        if success, let strongSelf = self {
+                            strongSelf.file.name = name ?? ""
+                            strongSelf.file.description = description ?? ""
+                            strongSelf.title = name
+                        }
+                        print(success)
+                    })
+                }
                 return cell4
             }
         }
-        
-        
-//        cell.rightButtonTapAction = { _ in
-//            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
-//        }
     }
-    
     
     func cellTitle(itemNumber: Int) -> String {
         if currentSubmenuSelection == 0 {
@@ -158,6 +219,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         }
         return detailsSubmenuItems[itemNumber]
     }
+    
     func cellDetails(itemNumber: Int) -> String {
         var details: String!
         switch itemNumber {
@@ -212,6 +274,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         }
         return details
     }
+    
     func convertDateFormater(_ date: String) -> String {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -250,17 +313,6 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 10)
         }
-        
-//        if indexPath[0] == 0 {
-//            if indexPath.item == 0 {
-//                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
-//            } else if indexPath.item == 1 {
-//                return CGSize(width: UIScreen.main.bounds.width, height: 40)
-//            }
-//        } else if indexPath[0] == 1 {
-//            return CGSize(width: UIScreen.main.bounds.width, height: 100)
-//        }
-//        return CGSize(width: UIScreen.main.bounds.width, height: 10)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -275,6 +327,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         return UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
     }
 }
+
 extension FileDetailsViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: false)

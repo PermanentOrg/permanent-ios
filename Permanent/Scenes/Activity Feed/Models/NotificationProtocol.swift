@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Notification {
+protocol NotificationProtocol {
     var message: String { get }
     
     var date: String { get }
