@@ -11,9 +11,13 @@ let reuseIdentifier = "CellIdentifer"
 
 class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     var file: FileViewModel!
+    let fileHelper = FileHelper()
     var recordVO: RecordVOData!
     let infoSubmenuItems: [String] = ["Name", "Description", "Date", "Location", "Tags"]
     let detailsSubmenuItems: [String] = ["Uploaded", "Last Modified", "Created", "File Created", "Size", "File Type", "Original File Name:", "Original File Type"]
+    
+    let documentInteractionController = UIDocumentInteractionController()
+    
     var infoDetailsCellNumber: [Int]!
     var currentSubmenuSelection = 0
     @IBOutlet var collectionView: UICollectionView!
@@ -38,11 +42,9 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         viewModel = FilePreviewViewModel(file: file)
         viewModel?.getRecord(file: file, then: { record in
             self.recordVO = record?.recordVO
-            self.hideSpinner()
 
             self.collectionView.delegate = self
             self.collectionView.dataSource = self
-            
         })
     }
 
@@ -82,12 +84,44 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
-        updateSpinner(isLoading: false)
-        dismiss(animated: true, completion: nil)
+        if let fileName = viewModel?.fileName(),
+           let localURL = fileHelper.url(forFileNamed: fileName)
+        {
+            share(url: localURL)
+        } else {
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                self.viewModel?.cancelDownload()
+            }))
+            
+            present(preparingAlert, animated: true) {
+                if let record = self.viewModel?.recordVO {
+                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, _ in
+                        if let url = url {
+                            self.dismiss(animated: true) {
+                                self.share(url: url)
+                            }
+                        } else {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    })
+                }
+            }
+        }
     }
     
     func updateSpinner(isLoading: Bool) {
         isLoading ? showSpinner() : hideSpinner()
+    }
+
+    private func share(url: URL) {
+        // For now, dismiss the menu in case another one opens so we avoid crash.
+        documentInteractionController.dismissMenu(animated: true)
+        
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
 }
 
@@ -104,13 +138,11 @@ extension FileDetailsViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // let cell: UICollectionViewCell!
-        
-        updateSpinner(isLoading: false)
         
         if indexPath.section == 0 {
             if indexPath.item == 0 {
                 let cell1 = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsTopCollectionViewCell.identifier, for: indexPath) as! FileDetailsTopCollectionViewCell
+
                 cell1.configure(with: recordVO.thumbURL2000 ?? "")
                 return cell1
             } else {
@@ -121,6 +153,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
                     let indexSet = IndexSet(integer: indexPath[1])
                     self.collectionView.reloadSections(indexSet)
                 }
+                hideSpinner()
                 return cell2
             }
         } else {
@@ -138,10 +171,6 @@ extension FileDetailsViewController: UICollectionViewDataSource {
                 return cell4
             }
         }
-        
-//        cell.rightButtonTapAction = { _ in
-//            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
-//        }
     }
     
     func cellTitle(itemNumber: Int) -> String {
@@ -157,31 +186,33 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case (0, 0):
             details = recordVO.displayName
         case (0, 1):
-            details = convertDateFormater(recordVO.createdDT ?? "")
+            details = convertDateFormater(recordVO.createdDT ?? "-")
         case (1, 0):
             details = recordVO.recordVODescription ?? ""
         case (1, 1):
-            details = convertDateFormater(recordVO.updatedDT ?? "")
+            details = convertDateFormater(recordVO.updatedDT ?? "-")
         case (2, 0):
             details = convertDateFormater(recordVO.displayDT ?? "")
         case (2, 1):
-            details = convertDateFormater(recordVO.derivedDT ?? "")
+            details = convertDateFormater(recordVO.derivedDT ?? "-")
         case (3, 0):
             if
-                let street = recordVO.locnVO?.streetName,
-                // let city = self.recordVO.locnVO?.locality,
                 let country = recordVO.locnVO?.country
             {
-                details = "\(street),\(country)"
+                details = "\(country)"
             } else {
-                details = ""
+                details = "(none)"
             }
         case (3, 1):
-            details = convertDateFormater(recordVO.derivedCreatedDT ?? "")
+            details = convertDateFormater(recordVO.derivedCreatedDT ?? "-")
         case (4, 0):
-
+            details = ""
             if recordVO.tagVOS?.count != 0 {
-                details = ""
+                recordVO.tagVOS?.forEach { element in
+                    if let name = element.name {
+                        details += name + " "
+                    }
+                }
             } else {
                 details = "(none)"
             }
@@ -192,11 +223,11 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case (6, _):
             details = URL(string: recordVO.uploadFileName)?.deletingPathExtension().absoluteString
         case (7, _):
-            details = URL(string: recordVO.uploadFileName)?.pathExtension
+            details = URL(string: recordVO.uploadFileName?.uppercased())?.pathExtension
         case (8, _):
-            details = ""
+            details = "-"
         default:
-            details = ""
+            details = "-"
         }
         return details
     }
