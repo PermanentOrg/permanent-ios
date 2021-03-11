@@ -37,7 +37,7 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         if let date = date {
             let dateFormatter = DateFormatter()
             
-            dateFormatter.dateFormat = "yyyy-MM-dd h:mm:ss a"
+            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
             detailsTextField.text = dateFormatter.string(from: date)
         } else {
             detailsTextField.text = details
@@ -93,7 +93,7 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         if let date = date {
             let dateFormatter = DateFormatter()
             
-            dateFormatter.dateFormat = "yyyy-MM-dd h:mm:ss a"
+            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
             detailsTextField.text = dateFormatter.string(from: date)
         }
     }
