@@ -19,7 +19,7 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
     static let identifier = "FileDetailsBottomCollectionViewCell"
     
 
-    func configure(title: String,details: String) {
+    func configure(title: String,details: String, isDetailsFieldEditable: Bool = false) {
         
         titleLabelField.text = title
         titleLabelField.textColor = .white
@@ -28,6 +28,11 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         detailsTextField.backgroundColor = .clear
         detailsTextField.textColor = .white
         detailsTextField.font = Text.style8.font
+        detailsTextField.isUserInteractionEnabled = isDetailsFieldEditable
+        if isDetailsFieldEditable {
+            detailsTextField.backgroundColor = .darkGray
+        }
+        
         
     }
         

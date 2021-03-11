@@ -38,6 +38,8 @@
 		5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */; };
 		5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */; };
 		5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */; };
+		5EC15EA125F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC15E9F25F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift */; };
+		5EC15EA225F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC15EA025F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
 		5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */; };
 		5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */; };
@@ -316,6 +318,8 @@
 		5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelInterface.swift; sourceTree = "<group>"; };
 		5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelDelegateInterface.swift; sourceTree = "<group>"; };
 		5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
+		5EC15E9F25F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveButtonCollectionViewCell.swift; sourceTree = "<group>"; };
+		5EC15EA025F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SaveButtonCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
 		5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
@@ -825,6 +829,8 @@
 				5ED581C525EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib */,
 				5ED581C925EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift */,
 				5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */,
+				5EC15E9F25F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift */,
+				5EC15EA025F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib */,
 			);
 			path = FileDetailsCollectionViewCells;
 			sourceTree = "<group>";
@@ -1527,6 +1533,7 @@
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
+				5EC15EA225F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib in Resources */,
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
@@ -1607,6 +1614,7 @@
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
+				5EC15EA125F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
