@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String, csrf: String)
+
 enum FilesEndpoint {
     
     // NAVIGATION
@@ -25,6 +27,8 @@ enum FilesEndpoint {
     case delete(params: ItemInfoParams)
 
     case relocate(params: RelocateParams)
+    
+    case update(params: UpdateRecordParams)
     
     // UPLOAD
 
@@ -70,6 +74,9 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
+            
+        case .update:
+            return "/record/update"
 
         default:
             return ""
@@ -114,6 +121,8 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.newFolderPayload(for: params)
         case .download(_, let filename, _):
             return ["filename": filename]
+        case .update(let params):
+            return Payloads.updateRecordRequest(params: params)
         default:
             return nil
         }

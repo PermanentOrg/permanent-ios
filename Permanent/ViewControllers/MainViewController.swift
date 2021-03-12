@@ -471,11 +471,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            let filePreviewVC = UIViewController.create(withIdentifier: .webViewer, from: .main) as! FilePreviewViewController
-            filePreviewVC.file = file
+            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+            fileDetailsVC.file = file
             
-            let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)
-            navigationController?.display(viewController: previewNavigationController,modally: true)
+            let fileDetailsNavigationController = UINavigationController(rootViewController: fileDetailsVC)
+            
+            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+            present(fileDetailsNavigationController, animated: true)
         }
     }
     

@@ -311,6 +311,38 @@ struct Payloads {
                 "csrf": csrf
             ]
         ]
-
+    }
+    
+    static func updateRecordRequest(params: UpdateRecordParams) -> RequestParameters {
+        var recordVO: [String: Any] = [
+            "recordId": params.recordId,
+            "archiveNbr": params.archiveNbr,
+            "folder_linkId": params.folderLinkId
+        ]
+        
+        if let name = params.name {
+            recordVO["displayName"] = name
+        }
+        if let description = params.description {
+            recordVO["description"] = description
+        }
+        if let date = params.date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            
+            recordVO["displayDT"] = dateFormatter.string(from: date)
+        }
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "RecordVO": recordVO
+                            ]
+                        ]
+                    ]
+        ]
     }
 }

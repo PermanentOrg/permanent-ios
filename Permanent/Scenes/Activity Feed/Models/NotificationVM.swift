@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NotificationVM: Notification {
+struct NotificationVM: NotificationProtocol {
     var message: String
     var date: String
     var type: NotificationType

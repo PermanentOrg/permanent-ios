@@ -55,7 +55,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
 
         case .download: // TODO: [weak self]
             guard
-                let fileName = request.parameters?["filename"] as? String
+                let parameters = request.parameters as? [String: Any?],
+                let fileName = parameters["filename"] as? String
             else {
                 return nil
             }

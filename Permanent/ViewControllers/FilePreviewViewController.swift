@@ -15,12 +15,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     var file: FileViewModel!
     
     var playerItem: AVPlayerItem?
+    var videoPlayer: AVPlayerViewController?
+    var playerItemContext = 0
     
     let documentInteractionController = UIDocumentInteractionController()
-
-    deinit {
-        playerItem?.removeObserver(self, forKeyPath: "status")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,8 +68,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 
     func initUI() {
         styleNavBar()
-        let rightButtonImage = UIBarButtonItem.SystemItem.action
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
+        let shareButtonImage = UIBarButtonItem.SystemItem.action
+        let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
+        
+        let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
+        navigationItem.rightBarButtonItems = [shareButton, infoButton]
 
         let leftButtonImage: UIImage!
         if #available(iOS 13.0, *) {
@@ -82,6 +83,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         
         navigationItem.title = file.name
+    }
+    
+    override func styleNavBar() {
+        super.styleNavBar()
+        
+        navigationController?.navigationBar.barTintColor = .black
     }
     
     func setupWebView() -> WKWebView {
@@ -116,18 +123,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     func loadVideo(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
-        playerItem = AVPlayerItem(asset: asset)
-        playerItem?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
+        let playerItem = AVPlayerItem(asset: asset)
+        playerItem.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
         
         let player = AVPlayer(playerItem: playerItem)
-        let videoPlayer = AVPlayerViewController()
-        videoPlayer.player = player
+        videoPlayer = AVPlayerViewController()
+        videoPlayer!.player = player
         player.play()
         
-        addChild(videoPlayer)
-        videoPlayer.view.frame = view.bounds
-        view.insertSubview(videoPlayer.view, at: 0)
-        videoPlayer.didMove(toParent: self)
+        self.playerItem = playerItem
+        
+        addChild(videoPlayer!)
+        videoPlayer!.view.frame = view.bounds
+        view.insertSubview(videoPlayer!.view, at: 0)
+        videoPlayer!.didMove(toParent: self)
         
         hideSpinner()
     }
@@ -137,6 +146,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         let request = URLRequest(url: url)
         webView.load(request)
+    }
+    
+    func removeVideoPlayer() {
+        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
+        videoPlayer?.player?.replaceCurrentItem(with: nil)
+        
+        videoPlayer?.willMove(toParent: nil)
+        videoPlayer?.view.removeFromSuperview()
+        videoPlayer?.removeFromParent()
     }
     
     // MARK: - Actions
@@ -165,21 +183,42 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
+    
+    @objc private func infoButtonAction(_ sender: Any) {
+        removeVideoPlayer()
+        
+        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+        fileDetailsVC.file = file
+        
+        navigationController?.setViewControllers([fileDetailsVC], animated: true)
+    }
 
     @objc private func closeButtonAction(_ sender: Any) {
+        removeVideoPlayer()
+        
         dismiss(animated: true, completion: nil)
     }
     
     // MARK: - KVO
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard keyPath == "status", let item = object as? AVPlayerItem else {
+        guard context == &playerItemContext else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
         
         hideSpinner()
         
-        if item.status == .failed {
-            showAlert(title: .error, message: "Sorry, can't play this video format.".localized())
+        if keyPath == #keyPath(AVPlayerItem.status) {
+            let status: AVPlayerItem.Status
+            if let statusNumber = change?[.newKey] as? NSNumber {
+                status = AVPlayerItem.Status(rawValue: statusNumber.intValue)!
+            } else {
+                status = .unknown
+            }
+            
+            if status == .failed {
+                showAlert(title: .error, message: "Sorry, can't play this video format.".localized())
+            }
         }
     }
     

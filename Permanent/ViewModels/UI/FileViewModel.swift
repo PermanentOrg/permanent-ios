@@ -11,9 +11,13 @@ struct FileViewModel: Equatable {
     let csrf: String?
     
     let thumbnailURL: String?
+    let thumbnailURL2000: String?
     let name: String
     let date: String
     let type: FileType
+    let description: String
+    let size: Int64
+    let uploadFileName: String
     
     let archiveThumbnailURL: String?
     let archiveId: Int
@@ -33,9 +37,12 @@ struct FileViewModel: Equatable {
         
         self.name = model.name
         self.date = DateUtils.currentDate
-        
+        self.description = ""
+        self.size = -1
+        self.uploadFileName = ""
         self.archiveThumbnailURL = archiveThumbnailURL
         self.thumbnailURL = nil
+        self.thumbnailURL2000 = nil
         self.type = .image // TODO:
         self.archiveId = -1
         self.archiveNo = ""
@@ -54,6 +61,11 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL2000 = model.thumbURL2000
+        self.description = model.itemVODescription ?? ""
+        self.size = model.size ?? -1
+        self.uploadFileName = model.uploadFileName ?? ""
+        
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         
         self.archiveThumbnailURL = archiveThumbnailURL
@@ -88,7 +100,11 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL2000 = model.thumbURL2000
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
+        self.description = model.childFolderVOS?.description ?? ""
+        self.size = -1
+        self.uploadFileName = ""
         
         self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1
