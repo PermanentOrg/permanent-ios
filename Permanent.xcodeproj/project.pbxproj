@@ -278,6 +278,8 @@
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
+		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
+		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
 		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
@@ -567,6 +569,8 @@
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
+		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
 		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
@@ -829,6 +833,8 @@
 				5ED581C525EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib */,
 				5ED581C925EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift */,
 				5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */,
+				F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */,
+				F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */,
 				5EC15E9F25F96BE100CD98B2 /* SaveButtonCollectionViewCell.swift */,
 				5EC15EA025F96BE100CD98B2 /* SaveButtonCollectionViewCell.xib */,
 			);
@@ -1540,6 +1546,7 @@
 				5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
+				F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
@@ -1778,6 +1785,7 @@
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
+				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,

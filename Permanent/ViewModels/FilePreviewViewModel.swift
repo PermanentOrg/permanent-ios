@@ -90,7 +90,9 @@ class FilePreviewViewModel: ViewModelInterface {
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json( _, _):
-                completion(true)
+                self.getRecord(file: file) { (record) in
+                    completion(true)
+                }
                 
             case .error(_, _):
                 completion(false)

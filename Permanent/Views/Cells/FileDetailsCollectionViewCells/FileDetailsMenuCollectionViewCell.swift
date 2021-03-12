@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 03.03.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
@@ -17,7 +16,7 @@ class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var segmentedControl: UISegmentedControl!
         
-    var segmentedControlAction: SegmentedViewValueChanged?
+    var segmentedControlAction: ((FileDetailsMenuCollectionViewCell) -> Void)?
     
     static let identifier = "FileDetailsMenuCollectionViewCell"
 
@@ -29,19 +28,15 @@ class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
         segmentedControl.tintColor = .clear
         if #available(iOS 13.0, *) {
             segmentedControl.selectedSegmentTintColor = .black
-        } else {
-            // Fallback on earlier versions
         }
         
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .normal)
-        
-     //   segmentedControl.layer.cornerRadius = 5.0
-     //   segmentedControl.tintColor = .black
-
     }
     @IBAction func segmentedControlAction(_ sender: Any) {
-        segmentedControlAction?(self)
+        if let segmentedControlAction = segmentedControlAction {
+            segmentedControlAction(self)
+        }
     }
     
     static func nib() -> UINib {
