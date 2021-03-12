@@ -27,11 +27,3 @@ struct TagVOData: Model {
         case name, status, tagId, type, createdDT, updatedDT
     }
 }
-
-struct TagVOsaved: Equatable {
-    let name: String?
-    let status: String?
-    let tagId: Int?
-    let type: String?
-    let createdDT, updatedDT: String?
-}

@@ -31,7 +31,6 @@ struct FileViewModel: Equatable {
     var fileStatus: FileStatus = .synced
     var fileState: FileState = .enabled
     var minArchiveVOS: [MinArchiveVO] = []
-    var tagVOS: [TagVOsaved] = []
     
     init(model: FileInfo, archiveThumbnailURL: String? = nil) {
         self.csrf = nil
@@ -90,13 +89,6 @@ struct FileViewModel: Equatable {
                 let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
                 self.minArchiveVOS.append(minArchive)
                 
-            }
-        }
-        
-        model.tagVOS?.forEach {
-            if let name = $0.name {
-                let tag = TagVOsaved(name: name, status: "", tagId: -1, type: "", createdDT: "", updatedDT: "")
-                self.tagVOS.append(tag)
             }
         }
     }
