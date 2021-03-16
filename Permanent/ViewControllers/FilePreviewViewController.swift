@@ -10,6 +10,10 @@ import WebKit
 import AVKit
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all]
+    }
+    
     let fileHelper = FileHelper()
     
     var file: FileViewModel!
@@ -24,46 +28,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         super.viewDidLoad()
         initUI()
         
-        viewModel = FilePreviewViewModel(file: file)
+        showSpinner()
+        if viewModel == nil {
+            viewModel = FilePreviewViewModel(file: file)
+            
+            viewModel?.getRecord(file: file, then: { record in
+                self.loadRecord()
+            })
+        } else {
+            loadRecord()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        showSpinner()
-        
-        viewModel?.getRecord(file: file, then: { record in
-            guard let fileVO = self.viewModel?.fileVO(),
-                  let fileName = self.viewModel?.fileName()
-            else {
-                return
-            }
-                  
-            if let localURL = self.fileHelper.url(forFileNamed: fileName),
-               let contentType = fileVO.contentType {
-                switch self.file.type {
-                case FileType.image:
-                    self.loadImage(withURL: localURL, contentType: contentType)
-                case FileType.video:
-                    self.loadVideo(withURL: localURL, contentType: contentType)
-                default:
-                    self.loadMisc(withURL: localURL)
-                }
-            } else if let downloadURLString = fileVO.downloadURL,
-                      let contentType = fileVO.contentType,
-                      let downloadURL = URL(string: downloadURLString) {
-                switch self.file.type {
-                case FileType.image:
-                    self.loadImage(withURL: downloadURL, contentType: contentType)
-                case FileType.video:
-                    self.loadVideo(withURL: downloadURL, contentType: contentType)
-                default:
-                    self.loadMisc(withURL: downloadURL)
-                }
-            } else {
-                self.showErrorAlert(message: .errorMessage)
-            }
-        })
     }
 
     func initUI() {
@@ -73,14 +51,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
-
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         
         navigationItem.title = file.name
     }
@@ -102,7 +72,44 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return webView
     }
     
+    func willClose() {
+        removeVideoPlayer()
+    }
+    
     // MARK: - Load methods
+    func loadRecord() {
+        guard let fileVO = self.viewModel?.fileVO(),
+              let fileName = self.viewModel?.fileName()
+        else {
+            return
+        }
+        
+        if let localURL = self.fileHelper.url(forFileNamed: fileName),
+           let contentType = fileVO.contentType {
+            switch self.file.type {
+            case FileType.image:
+                self.loadImage(withURL: localURL, contentType: contentType)
+            case FileType.video:
+                self.loadVideo(withURL: localURL, contentType: contentType)
+            default:
+                self.loadMisc(withURL: localURL)
+            }
+        } else if let downloadURLString = fileVO.downloadURL,
+                  let contentType = fileVO.contentType,
+                  let downloadURL = URL(string: downloadURLString) {
+            switch self.file.type {
+            case FileType.image:
+                self.loadImage(withURL: downloadURL, contentType: contentType)
+            case FileType.video:
+                self.loadVideo(withURL: downloadURL, contentType: contentType)
+            default:
+                self.loadMisc(withURL: downloadURL)
+            }
+        } else {
+            self.showErrorAlert(message: .errorMessage)
+        }
+    }
+    
     func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
         let imagePreviewVC = ImagePreviewViewController()
         addChild(imagePreviewVC)
@@ -189,16 +196,17 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
         fileDetailsVC.file = file
+        fileDetailsVC.viewModel = viewModel
         
-        navigationController?.setViewControllers([fileDetailsVC], animated: true)
+        /*
+         supportedInterfaceOrientations is not queried on setVC or push, because it assumes it will be the same as the previous view controller.
+         However, on pop, it will query it.
+         This is an elegant hack to tie everything together.
+         */
+        navigationController?.setViewControllers([fileDetailsVC, self], animated: false)
+        navigationController?.popViewController(animated: false)
     }
 
-    @objc private func closeButtonAction(_ sender: Any) {
-        removeVideoPlayer()
-        
-        dismiss(animated: true, completion: nil)
-    }
-    
     // MARK: - KVO
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &playerItemContext else {
