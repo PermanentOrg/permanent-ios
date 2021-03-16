@@ -312,6 +312,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
 extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel?.viewModels.count ?? 0
@@ -352,8 +353,10 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
             let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
             filePreviewVC.file = file
             
-            let previewNavigationController = UINavigationController(rootViewController: filePreviewVC)
-            navigationController?.display(viewController: previewNavigationController,modally: true)
+            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+            fileDetailsNavigationController.filePreviewNavDelegate = self
+            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+            present(fileDetailsNavigationController, animated: true)
         }
     }
     
@@ -370,8 +373,18 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - SharedFileActionSheetDelegate
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: FileViewModel) {
         download(file)
+    }
+}
+
+// MARK: - FilePreviewNavigationControllerDelegate
+extension SharesViewController: FilePreviewNavigationControllerDelegate {
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: FilePreviewNavigationController, hasChanges: Bool) {
+        if hasChanges {
+            refreshCurrentFolder()
+        }
     }
 }

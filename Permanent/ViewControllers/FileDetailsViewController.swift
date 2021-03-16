@@ -42,8 +42,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        showSpinner()
+
         initUI()
         
         let layout = UICollectionViewFlowLayout()
@@ -58,11 +57,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         collectionView.register(FileDetailsDateCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsDateCollectionViewCell.identifier)
         collectionView.register(SaveButtonCollectionViewCell.nib(), forCellWithReuseIdentifier: SaveButtonCollectionViewCell.identifier)
         
-        viewModel = FilePreviewViewModel(file: file)
-        viewModel?.getRecord(file: file, then: { record in
-            self.title = record?.recordVO?.displayName
-            self.collectionView.reloadData()
-        })
+        if viewModel == nil {
+            viewModel = FilePreviewViewModel(file: file)
+            viewModel?.getRecord(file: file, then: { record in
+                self.title = record?.recordVO?.displayName
+                self.collectionView.reloadData()
+            })
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -84,14 +85,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
         let rightButtonImage = UIBarButtonItem.SystemItem.action
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
-
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         
         title = file.name
     }
@@ -102,9 +95,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         navigationController?.navigationBar.barTintColor = .black
     }
     
-    @objc private func closeButtonAction(_ sender: Any) {
-        updateSpinner(isLoading: false)
-        dismiss(animated: true, completion: nil)
+    func willClose() {
+        
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
@@ -132,10 +124,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 }
             }
         }
-    }
-    
-    func updateSpinner(isLoading: Bool) {
-        isLoading ? showSpinner() : hideSpinner()
     }
     
     @objc func keyboardWillShow(_ notification: Notification) {
@@ -199,6 +187,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             if success {
                 self.title = name
                 self.collectionView.reloadSections([1])
+                (self.navigationController as? FilePreviewNavigationController)?.hasChanges = true
             }
             print(success)
         })
@@ -241,9 +230,6 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsTopCollectionViewCell.identifier, for: indexPath) as! FileDetailsTopCollectionViewCell
 
             cell.configure(with: recordVO?.thumbURL2000 ?? "")
-            cell.imageLoadedCallback = { [weak self] _ in
-                self?.hideSpinner()
-            }
             
             returnedCell = cell
         case .segmentedControl:
@@ -394,6 +380,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         if currentCellType == .thumbnail {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
             fileDetailsVC.file = file
+            fileDetailsVC.viewModel = viewModel
             
             navigationController?.setViewControllers([fileDetailsVC], animated: false)
         }

@@ -474,8 +474,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
             fileDetailsVC.file = file
             
-            let fileDetailsNavigationController = UINavigationController(rootViewController: fileDetailsVC)
-            
+            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+            fileDetailsNavigationController.filePreviewNavDelegate = self
             fileDetailsNavigationController.modalPresentationStyle = .fullScreen
             present(fileDetailsNavigationController, animated: true)
         }
@@ -814,7 +814,6 @@ extension MainViewController: FABActionSheetDelegate {
 }
 
 // MARK: - Document Picker Delegate
-
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let currentFolder = viewModel?.currentFolder else {
@@ -825,6 +824,7 @@ extension MainViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - MediaRecorderDelegate
 extension MainViewController: MediaRecorderDelegate {
     func didSelect(url: URL?) {
         guard
@@ -840,6 +840,7 @@ extension MainViewController: MediaRecorderDelegate {
     }
 }
 
+// MARK: - FileActionSheetDelegate
 extension MainViewController: FileActionSheetDelegate {
     func share(file: FileViewModel) {
         guard
@@ -873,9 +874,20 @@ extension MainViewController: FileActionSheetDelegate {
     }
 }
 
+// MARK: - SortActionSheetDelegate
 extension MainViewController: SortActionSheetDelegate {
     func didSelectOption(_ option: SortOption) {
         viewModel?.activeSortOption = option
         refreshCurrentFolder()
     }
 }
+
+// MARK: - FilePreviewNavigationControllerDelegate
+extension MainViewController: FilePreviewNavigationControllerDelegate {
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: FilePreviewNavigationController, hasChanges: Bool) {
+        if hasChanges {
+            refreshCurrentFolder()
+        }
+    }
+}
+

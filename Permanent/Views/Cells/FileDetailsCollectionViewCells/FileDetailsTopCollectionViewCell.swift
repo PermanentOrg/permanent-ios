@@ -10,6 +10,7 @@ import UIKit
 class FileDetailsTopCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet var imageView: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var imageLoadedCallback: ((FileDetailsTopCollectionViewCell) -> Void)?
     
@@ -20,11 +21,15 @@ class FileDetailsTopCollectionViewCell: UICollectionViewCell {
     }
 
     func configure(with urlString: String) {
-        imageView.image = .placeholder
+        activityIndicator.startAnimating()
+        
+        imageView.image = nil
         imageView.load(urlString: urlString) { _ in
             if let imageLoadedCallback = self.imageLoadedCallback {
                 imageLoadedCallback(self)
             }
+            
+            self.activityIndicator.stopAnimating()
         }
     }
     
