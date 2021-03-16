@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FileDetailsMapViewCellCollectionViewCell" id="gTV-IL-0wX" customClass="FileDetailsMapViewCellCollectionViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="309" height="247"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="309" height="247"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jsF-r3-PIq">
+                        <rect key="frame" x="20" y="0.0" width="269" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dfB-y2-dRY">
+                        <rect key="frame" x="20" y="213" width="269" height="34"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                    </textField>
+                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PYs-7t-2UV">
+                        <rect key="frame" x="20" y="26" width="269" height="182"/>
+                    </mapView>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="dfB-y2-dRY" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="0Lh-hx-qOi"/>
+                <constraint firstItem="jsF-r3-PIq" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="62Z-qK-gFr"/>
+                <constraint firstItem="PYs-7t-2UV" firstAttribute="top" secondItem="jsF-r3-PIq" secondAttribute="bottom" constant="5" id="DmC-9w-lxt"/>
+                <constraint firstAttribute="trailing" secondItem="PYs-7t-2UV" secondAttribute="trailing" constant="20" id="TFl-Tu-FLp"/>
+                <constraint firstAttribute="bottom" secondItem="dfB-y2-dRY" secondAttribute="bottom" id="UWz-m6-bjG"/>
+                <constraint firstItem="PYs-7t-2UV" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="WKM-Jj-NaH"/>
+                <constraint firstAttribute="trailing" secondItem="dfB-y2-dRY" secondAttribute="trailing" constant="20" id="WMO-c2-IGr"/>
+                <constraint firstItem="dfB-y2-dRY" firstAttribute="top" secondItem="PYs-7t-2UV" secondAttribute="bottom" constant="5" id="ZC9-DC-6UK"/>
+                <constraint firstAttribute="trailing" secondItem="jsF-r3-PIq" secondAttribute="trailing" constant="20" id="l71-oA-Uxy"/>
+                <constraint firstItem="jsF-r3-PIq" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="xYf-0g-TsV"/>
+            </constraints>
+            <size key="customSize" width="309" height="247"/>
+            <connections>
+                <outlet property="detailsTextField" destination="dfB-y2-dRY" id="FjV-83-LyP"/>
+                <outlet property="locationMapView" destination="PYs-7t-2UV" id="s6O-UA-D9P"/>
+                <outlet property="titleLabelField" destination="jsF-r3-PIq" id="gtR-lh-aMp"/>
+            </connections>
+            <point key="canvasLocation" x="2" y="-37"/>
+        </collectionViewCell>
+    </objects>
+</document>

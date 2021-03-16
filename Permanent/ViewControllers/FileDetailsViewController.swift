@@ -57,6 +57,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         collectionView.register(FileDetailsBottomCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier)
         collectionView.register(FileDetailsDateCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsDateCollectionViewCell.identifier)
         collectionView.register(SaveButtonCollectionViewCell.nib(), forCellWithReuseIdentifier: SaveButtonCollectionViewCell.identifier)
+        collectionView.register(FileDetailsMapViewCellCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier)
         
         viewModel = FilePreviewViewModel(file: file)
         viewModel?.getRecord(file: file, then: { record in
@@ -264,10 +265,16 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             
             returnedCell = cell
         case .location:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
+            if getLocationDetails(cellType: currentCellType) == (0,0) {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: true)
+                returnedCell = cell
+            } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
-
-            returnedCell = cell
+                cell.setLocation(getLocationDetails(cellType: currentCellType).latitude,getLocationDetails(cellType: currentCellType).longitude)
+                returnedCell = cell
+            }
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
@@ -292,6 +299,15 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         }
         
         return returnedCell
+    }
+    
+    func getLocationDetails(cellType: CellType) -> (latitude: Double, longitude: Double) {
+        if let latitude = recordVO?.locnVO?.latitude,
+           let longitude = recordVO?.locnVO?.longitude {
+            return (latitude,longitude)
+        } else {
+            return (0,0)
+        }
     }
     
     func stringCellDetails(cellType: CellType) -> String {
@@ -410,6 +426,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .saveButton:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
+        case .location:
+            if getLocationDetails(cellType: currentCellType) == (0,0) {
+                return CGSize(width: UIScreen.main.bounds.width, height: 65)
+            } else {
+                return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
+            }
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
         }
