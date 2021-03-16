@@ -8,6 +8,10 @@
 import UIKit
 
 class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.userInterfaceIdiom == .phone ? [.portrait] : [.all]
+    }
+    
     enum CellType {
         case thumbnail
         case segmentedControl

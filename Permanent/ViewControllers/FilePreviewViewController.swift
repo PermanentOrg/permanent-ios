@@ -10,6 +10,10 @@ import WebKit
 import AVKit
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all]
+    }
+    
     let fileHelper = FileHelper()
     
     var file: FileViewModel!
@@ -194,7 +198,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         fileDetailsVC.file = file
         fileDetailsVC.viewModel = viewModel
         
-        navigationController?.setViewControllers([fileDetailsVC], animated: false)
+        /*
+         supportedInterfaceOrientations is not queried on setVC or push, because it assumes it will be the same as the previous view controller.
+         However, on pop, it will query it.
+         This is an elegant hack to tie everything together.
+         */
+        navigationController?.setViewControllers([fileDetailsVC, self], animated: false)
+        navigationController?.popViewController(animated: false)
     }
 
     // MARK: - KVO

@@ -8,6 +8,15 @@
 import UIKit
 
 class RootViewController: UIViewController {
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return [.portrait]
+        } else {
+            return [.all]
+        }
+    }
+    
     private var current: UIViewController
     
     init() {

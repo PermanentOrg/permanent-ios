@@ -13,6 +13,14 @@ protocol FilePreviewNavigationControllerDelegate: class {
 
 class FilePreviewNavigationController: UINavigationController {
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return topViewController?.supportedInterfaceOrientations ?? (UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all])
+    }
+    
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return .portrait
+    }
+    
     weak var filePreviewNavDelegate: FilePreviewNavigationControllerDelegate?
     
     var hasChanges: Bool = false
