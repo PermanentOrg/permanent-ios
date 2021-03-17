@@ -11,6 +11,7 @@ import MapKit
 class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
 
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
+    let regionInMeters: Double = 5000
     
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsTextField: UITextField!
@@ -45,8 +46,10 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         let currentLocation = MKPointAnnotation()
         currentLocation.coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
         locationMapView.addAnnotation(currentLocation)
-        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 10000, longitudinalMeters: 10000)
+        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
         locationMapView.setRegion(region, animated: false)
+        locationMapView.showsPointsOfInterest = true
+        locationMapView.isUserInteractionEnabled = false
     }
 }
 

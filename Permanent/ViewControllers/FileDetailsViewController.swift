@@ -262,6 +262,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
+
                 cell.setLocation(getLocationDetails(cellType: currentCellType).latitude,getLocationDetails(cellType: currentCellType).longitude)
                 returnedCell = cell
             }
@@ -308,11 +309,9 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .description:
             details = recordVO?.recordVODescription ?? ""
         case .location:
-            if let country = recordVO?.locnVO?.country {
-                details = "\(country)"
-            } else {
-                details = "(none)"
-            }
+            let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
+            let address = addressElements.compactMap { $0 }.joined(separator: ", ")
+            address == "" ? (details = "(none)") : (details = address)
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:

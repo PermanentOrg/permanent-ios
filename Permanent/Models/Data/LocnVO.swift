@@ -11,12 +11,11 @@ struct LocnVO: Model {
     let locnID: Int?
     let displayName: String?
     let geoCodeLookup: String?
-    let streetNumber: JSONAny? // TODO
-    let streetName: String?
-    let postalCode, locality, adminOneName, adminOneCode: JSONAny? // TODO
+    let streetName, streetNumber, locality: String?
+    let postalCode, adminOneName, adminOneCode: JSONAny? // TODO
     let adminTwoName, adminTwoCode: JSONAny? // TODO
     let country, countryCode, geometryType: String?
-    let latitude, longitude, boundSouth, boundWest: Double?
+    let latitude,longitude, boundSouth, boundWest: Double?
     let boundNorth, boundEast: Double?
     let geometryAsArray, geoCodeType, geoCodeResponseAsXML: String?
     let timeZoneID: Int?
