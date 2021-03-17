@@ -46,10 +46,3 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         locationMapView.isUserInteractionEnabled = false
     }
 }
-
-extension FileDetailsMapViewCellCollectionViewCell: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-}
