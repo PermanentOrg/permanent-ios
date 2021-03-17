@@ -15,7 +15,7 @@ struct LocnVO: Model {
     let postalCode, adminOneName, adminOneCode: JSONAny? // TODO
     let adminTwoName, adminTwoCode: JSONAny? // TODO
     let country, countryCode, geometryType: String?
-    let latitude,longitude, boundSouth, boundWest: Double?
+    let latitude, longitude, boundSouth, boundWest: Double?
     let boundNorth, boundEast: Double?
     let geometryAsArray, geoCodeType, geoCodeResponseAsXML: String?
     let timeZoneID: Int?

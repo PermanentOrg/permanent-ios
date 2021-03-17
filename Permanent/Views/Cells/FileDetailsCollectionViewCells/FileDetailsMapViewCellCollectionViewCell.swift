@@ -14,7 +14,7 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
     let regionInMeters: Double = 5000
     
     @IBOutlet weak var titleLabelField: UILabel!
-    @IBOutlet weak var detailsTextField: UITextField!
+    @IBOutlet weak var detailsLabelField: UILabel!
     @IBOutlet weak var locationMapView: MKMapView!
     
     static func nib() -> UINib {
@@ -23,23 +23,17 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        detailsTextField.delegate = self
     }
 
-    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false) {
+    func configure(title: String, details: String) {
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
 
-        detailsTextField.text = details
-        detailsTextField.backgroundColor = .clear
-        detailsTextField.textColor = .white
-        detailsTextField.font = Text.style8.font
-        detailsTextField.isUserInteractionEnabled = isDetailsFieldEditable
-        if isDetailsFieldEditable {
-            detailsTextField.backgroundColor = .darkGray
-        }
+        detailsLabelField.text = details
+        detailsLabelField.backgroundColor = .clear
+        detailsLabelField.textColor = .white
+        detailsLabelField.font = Text.style8.font
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {
