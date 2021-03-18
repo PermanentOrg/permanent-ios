@@ -14,6 +14,13 @@ class FilePreviewViewModel: ViewModelInterface {
     var csrf: String { file.csrf ?? "" }
     
     var recordVO: RecordVO?
+    var isEditable: Bool {
+        let accessRole = recordVO?.recordVO?.accessRole?.lowercased() ?? ""
+        return accessRole.contains("editor") ||
+            accessRole.contains("curator") ||
+            accessRole.contains("manager") ||
+            accessRole.contains("owner")
+    }
     
     var downloader: DownloadManagerGCD? = nil
     
