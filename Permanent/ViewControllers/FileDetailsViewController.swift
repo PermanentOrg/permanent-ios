@@ -257,7 +257,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .location:
             if getLocationDetails(cellType: currentCellType) == (0,0) {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: false)
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: true, isLocationField: true)
                 returnedCell = cell
             } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
@@ -311,7 +311,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .location:
             let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
             let address = addressElements.compactMap { $0 }.joined(separator: ", ")
-            address == "" ? (details = "(none)") : (details = address)
+            address == "" ? (details = "(tap to set)") : (details = address)
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:
@@ -402,6 +402,19 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             fileDetailsVC.viewModel = viewModel
             
             navigationController?.setViewControllers([fileDetailsVC], animated: false)
+        }
+        
+        if currentCellType == .location {
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
+
+            present(locationSetVC, animated: true)
+            //navigationController?.setViewControllers([locationSetVC], animated: true)
+            
+            
+//            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+//            fileDetailsNavigationController.filePreviewNavDelegate = self
+//            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+//            present(fileDetailsNavigationController, animated: true)
         }
     }
     

@@ -31,7 +31,7 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         titleLabelField.font = Text.style9.font
 
         detailsLabelField.text = details
-        detailsLabelField.backgroundColor = .clear
+        detailsLabelField.backgroundColor = .darkGray
         detailsLabelField.textColor = .white
         detailsLabelField.font = Text.style8.font
     }

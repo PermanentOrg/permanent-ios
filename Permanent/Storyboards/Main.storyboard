@@ -287,6 +287,43 @@
             </objects>
             <point key="canvasLocation" x="779.71014492753625" y="1631.9196428571429"/>
         </scene>
+        <!--Location Set View Controller-->
+        <scene sceneID="num-ik-MKU">
+            <objects>
+                <viewController storyboardIdentifier="LocationSetOnTap" id="61A-JB-XMj" customClass="LocationSetViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="l7P-No-FPb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="y2M-Jn-8xg">
+                                <rect key="frame" x="0.0" y="100" width="414" height="762"/>
+                            </mapView>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="3B9-9t-DQa">
+                                <rect key="frame" x="0.0" y="44" width="414" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="w6z-6W-Oeg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="3B9-9t-DQa" firstAttribute="trailing" secondItem="w6z-6W-Oeg" secondAttribute="trailing" id="0ug-m1-xpv"/>
+                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="top" secondItem="3B9-9t-DQa" secondAttribute="bottom" id="4JZ-Np-Maz"/>
+                            <constraint firstItem="3B9-9t-DQa" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" id="G1a-2m-agh"/>
+                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" id="GXq-86-aco"/>
+                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="bottom" secondItem="y2M-Jn-8xg" secondAttribute="bottom" id="HOI-L2-N21"/>
+                            <constraint firstItem="3B9-9t-DQa" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" id="Myq-to-CcS"/>
+                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="trailing" secondItem="y2M-Jn-8xg" secondAttribute="trailing" id="zBF-UY-Ins"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="locationSetMapView" destination="y2M-Jn-8xg" id="ekr-La-99I"/>
+                        <outlet property="searchBar" destination="3B9-9t-DQa" id="EOi-HW-Gc1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zeM-m1-BV1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1789.8550724637682" y="1631.9196428571429"/>
+        </scene>
     </scenes>
     <designables>
         <designable name="POQ-5N-4NZ">

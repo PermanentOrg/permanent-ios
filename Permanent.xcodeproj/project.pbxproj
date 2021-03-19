@@ -63,6 +63,7 @@
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
+		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
 		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
 		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
@@ -354,6 +355,7 @@
 		5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageThree.swift; sourceTree = "<group>"; };
 		5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
+		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
 		864293632D1F8008599F3A97 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 				5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */,
 				5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */,
 				F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */,
+				5EE46D06260368B900FD756D /* LocationSetViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1830,6 +1833,7 @@
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
+				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
