@@ -245,13 +245,13 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             returnedCell = cell
         case .name, .description:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: true)
+            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
 
             returnedCell = cell
         case .date:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
-            cell.configure(title: title(forCellType: currentCellType), date: dateCellDetails(cellType: currentCellType), isDetailsFieldEditable: true)
+            cell.configure(title: title(forCellType: currentCellType), date: dateCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
             
             returnedCell = cell
         case .location:
