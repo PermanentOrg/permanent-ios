@@ -103,5 +103,28 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
+    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
+        let params: GeomapLatLongParams = (lat, long, csrf)
+        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
+                completion(locnVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
 }
 

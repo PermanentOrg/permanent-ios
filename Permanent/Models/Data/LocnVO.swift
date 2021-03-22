@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct LocnVOData: Model {
+    let locnVO: LocnVO?
+    
+    enum CodingKeys: String, CodingKey {
+        case locnVO = "LocnVO"
+    }
+}
+
 struct LocnVO: Model {
     let locnID: Int?
     let displayName: String?

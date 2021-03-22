@@ -345,4 +345,23 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func geomapLatLong(params: GeomapLatLongParams) -> RequestParameters {
+        let locnVO: [String: Any] = [
+            "latitude": params.lat,
+            "longitude": params.long
+        ]
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "LocnVO": locnVO
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }
