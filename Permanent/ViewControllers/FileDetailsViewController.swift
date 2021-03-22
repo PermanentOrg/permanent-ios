@@ -255,7 +255,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             
             returnedCell = cell
         case .location:
-            if getLocationDetails(cellType: currentCellType) == (0,0) {
+            if getLocationDetails() == (0,0) {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
                 cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: true, isLocationField: true)
                 returnedCell = cell
@@ -263,7 +263,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
 
-                cell.setLocation(getLocationDetails(cellType: currentCellType).latitude,getLocationDetails(cellType: currentCellType).longitude)
+                cell.setLocation(getLocationDetails().latitude,getLocationDetails().longitude)
                 returnedCell = cell
             }
         case .tags:
@@ -292,7 +292,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         return returnedCell
     }
     
-    func getLocationDetails(cellType: CellType) -> (latitude: Double, longitude: Double) {
+    func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             return (latitude,longitude)
@@ -406,15 +406,10 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         
         if currentCellType == .location {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
-
-            present(locationSetVC, animated: true)
-            //navigationController?.setViewControllers([locationSetVC], animated: true)
+            locationSetVC.file = file
+            locationSetVC.viewModel = viewModel
             
-            
-//            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-//            fileDetailsNavigationController.filePreviewNavDelegate = self
-//            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-//            present(fileDetailsNavigationController, animated: true)
+            navigationController?.present(locationSetVC, animated: true, completion: nil)
         }
     }
     
@@ -430,7 +425,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         case .saveButton:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .location:
-            if getLocationDetails(cellType: currentCellType) == (0,0) {
+            if getLocationDetails() == (0,0) {
                 return CGSize(width: UIScreen.main.bounds.width, height: 65)
             } else {
                 return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
