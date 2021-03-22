@@ -60,11 +60,13 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
             let touchPoint = sender.location(in: self.locationSetMapView)
             let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
             
-            viewModel?.validateLocation(lat: touchLocation.latitude, long: touchLocation.longitude, completion: { status in
-                
+            viewModel?.validateLocation(lat: Double(touchLocation.latitude), long: Double(touchLocation.longitude), completion: { status in
+                if let locnVO = status {
+                    self.setMapAnnotation(touchLocation)
+                } else {
+                    self.view.showNotificationBanner(title: "Location not found", backgroundColor: .deepRed, textColor: .white)
+                }
             })
-            
-            setMapAnnotation(touchLocation)
         }
     }
     
