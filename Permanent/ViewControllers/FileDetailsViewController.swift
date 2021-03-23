@@ -186,7 +186,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let date = (collectionView.cellForItem(at: [1,2]) as? FileDetailsDateCollectionViewCell)?.date
         
         cell.isSaving = true
-        viewModel?.update(file: file, name: name, description: description, date: date, completion: { (success) in
+        viewModel?.update(file: file, name: name, description: description, date: date, location: nil, completion: { (success) in
             cell.isSaving = false
             
             if success {
@@ -209,6 +209,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension FileDetailsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
@@ -389,6 +390,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
@@ -406,10 +408,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         
         if currentCellType == .location {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
+            locationSetVC.delegate = self
             locationSetVC.file = file
             locationSetVC.viewModel = viewModel
             
-            navigationController?.present(locationSetVC, animated: true, completion: nil)
+            let navigationVC = UINavigationController(rootViewController: locationSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
         }
     }
     
@@ -445,5 +450,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
+    }
+}
+
+// MARK: - LocationSetViewControllerDelegate
+extension FileDetailsViewController: LocationSetViewControllerDelegate {
+    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
+        collectionView.reloadSections([1])
     }
 }

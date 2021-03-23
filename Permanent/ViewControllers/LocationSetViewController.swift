@@ -8,6 +8,10 @@
 import UIKit
 import MapKit
 
+protocol LocationSetViewControllerDelegate: class {
+    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController)
+}
+
 class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
@@ -16,13 +20,17 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     }
     var currentLocation = MKPointAnnotation()
     
+    weak var delegate: LocationSetViewControllerDelegate?
+    
     @IBOutlet weak var locationSetMapView: MKMapView!
     @IBOutlet weak var searchBar: UISearchBar!
     
+    var pickedLocation: LocnVO? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        styleNavBar()
         initUI()
         
         locationSetMapView.delegate = self
@@ -41,6 +49,12 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         view.endEditing(true)
     }
     
+    override func styleNavBar() {
+        super.styleNavBar()
+        
+        navigationController?.navigationBar.barTintColor = .black
+    }
+    
     func initUI() {
         view.backgroundColor = .black
         
@@ -51,10 +65,29 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
            let longitude = recordVO?.locnVO?.longitude {
             setLocation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
         }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonPressed(_:)))
+    }
+    
+    @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
+        showSpinner()
+        viewModel?.update(file: file, name: nil, description: nil, date: nil, location: pickedLocation, completion: { (success) in
+            self.hideSpinner()
+            if success {
+                self.delegate?.locationSetViewControllerDidUpdate(self)
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                self.showErrorAlert(message: .errorMessage)
+            }
+        })
     }
     
     @objc func longPressed(sender: UILongPressGestureRecognizer) {
-        
         if sender.state == .began  {
             let touchPoint = sender.location(in: self.locationSetMapView)
             let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
@@ -62,6 +95,8 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
             viewModel?.validateLocation(lat: Double(touchLocation.latitude), long: Double(touchLocation.longitude), completion: { status in
                 if let locnVO = status {
                     self.setMapAnnotation(touchLocation)
+                    
+                    self.pickedLocation = locnVO
                 } else {
                     self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
                 }

@@ -332,6 +332,11 @@ struct Payloads {
             
             recordVO["displayDT"] = dateFormatter.string(from: date)
         }
+        if let location = params.location,
+           let locationJson = try? JSONEncoder().encode(location),
+           let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
+            recordVO["locnVO"] = locationDict
+        }
         
         return [ "RequestVO":
                     [

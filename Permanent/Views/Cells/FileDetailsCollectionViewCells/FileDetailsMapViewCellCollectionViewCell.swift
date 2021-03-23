@@ -24,6 +24,12 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        locationMapView.removeAnnotations(locationMapView.annotations)
+    }
 
     func configure(title: String, details: String) {
         titleLabelField.text = title
