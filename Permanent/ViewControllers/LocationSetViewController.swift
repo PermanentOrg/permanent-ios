@@ -45,9 +45,8 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         view.backgroundColor = .black
         
         searchBar.setDefaultStyle(placeholder: "Search location")
-        searchBar.backgroundColor = .clear
-        searchBar.showsCancelButton = true
-        
+        searchBar.backgroundColor = .darkGray
+
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             setLocation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
@@ -64,7 +63,7 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
                 if let locnVO = status {
                     self.setMapAnnotation(touchLocation)
                 } else {
-                    self.view.showNotificationBanner(title: "Location not found", backgroundColor: .deepRed, textColor: .white)
+                    self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
                 }
             })
         }
