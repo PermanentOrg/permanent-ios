@@ -1,4 +1,5 @@
 PODS:
+  - AutoCompletion (1.2.1)
   - BSImagePicker (3.3.1)
   - Firebase/Analytics (6.32.2):
     - Firebase/Core
@@ -78,6 +79,7 @@ PODS:
   - SDWebImage/Core (5.10.0)
 
 DEPENDENCIES:
+  - AutoCompletion (= 1.2.1)
   - BSImagePicker (= 3.3.1)
   - Firebase/Analytics (= 6.32.2)
   - Firebase/Crashlytics (= 6.32.2)
@@ -86,6 +88,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AutoCompletion
     - BSImagePicker
     - Firebase
     - FirebaseAnalytics
@@ -102,6 +105,7 @@ SPEC REPOS:
     - SDWebImage
 
 SPEC CHECKSUMS:
+  AutoCompletion: ef2aef06b77e8f82dc49bff7e16860eacd891249
   BSImagePicker: 0fe04b574d4d6b81093785d2af6c26227efc8428
   Firebase: 47176280bfba198e531f909cfb1612dad216cb96
   FirebaseAnalytics: 3c2fee6a922023ccfda7af87e4e641bad1fc11ba
@@ -117,6 +121,6 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
 
-PODFILE CHECKSUM: 15bb9257b370d520cd87e096e91de4a0b0359ac1
+PODFILE CHECKSUM: 37eaa006a0ccba811a98178b87e84917cf49c128
 
 COCOAPODS: 1.10.1

@@ -40,6 +40,9 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         detailsLabelField.backgroundColor = .darkGray
         detailsLabelField.textColor = .white
         detailsLabelField.font = Text.style8.font
+        detailsLabelField.layer.cornerRadius = 5
+        detailsLabelField.layer.masksToBounds = true
+        detailsLabelField.baselineAdjustment = .alignCenters
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {

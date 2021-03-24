@@ -7,6 +7,8 @@
 
 import UIKit
 import MapKit
+import AutoCompletion
+import CoreLocation
 
 protocol LocationSetViewControllerDelegate: class {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController)
@@ -18,12 +20,16 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
-    var currentLocation = MKPointAnnotation()
+    //var currentLocation = MKPointAnnotation()
+    var searchedLocations: [String: (CLLocationCoordinate2D, Double)] = ["none": (CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0) ,0.0)]
     
     weak var delegate: LocationSetViewControllerDelegate?
     
+    let address = "1 Infinite Loop, CA, USA"
+    let geocoder = CLGeocoder()
+
+    @IBOutlet weak var searchBar: AutoCompletionTextField!
     @IBOutlet weak var locationSetMapView: MKMapView!
-    @IBOutlet weak var searchBar: UISearchBar!
     
     var pickedLocation: LocnVO? = nil
     
@@ -34,6 +40,10 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         initUI()
         
         locationSetMapView.delegate = self
+        
+        searchBar.suggestionsResultDataSource = self
+        searchBar.suggestionsResultDelegate = self
+        searchBar.delegate = self
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         locationSetMapView.addGestureRecognizer(longPressRecognizer)
@@ -58,12 +68,20 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     func initUI() {
         view.backgroundColor = .black
         
-        searchBar.setDefaultStyle(placeholder: "Search location")
-        searchBar.backgroundColor = .darkGray
+        searchBar.backgroundColor = .white
+        searchBar.textColor = .black
+        
+        searchBar.tableCornerRadius = 5
+        searchBar.tableBorderColor = .white
+        searchBar.selectedBorderColor = .white
+        searchBar.placeholder = "Search address"
+        searchBar.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: searchBar.frame.height))
+       // searchBar.leftViewMode = .always
 
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
-            setLocation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+            setMapRegion(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
@@ -91,35 +109,99 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         if sender.state == .began  {
             let touchPoint = sender.location(in: self.locationSetMapView)
             let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
-            
-            viewModel?.validateLocation(lat: Double(touchLocation.latitude), long: Double(touchLocation.longitude), completion: { status in
-                if let locnVO = status {
-                    self.setMapAnnotation(touchLocation)
-                    
-                    self.pickedLocation = locnVO
-                } else {
-                    self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
-                }
-            })
+            let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: touchLocation.latitude, longitude: touchLocation.longitude)
+            saveLocation(coordinates)
         }
     }
     
-    func setLocation(_ coordinates: CLLocationCoordinate2D) {
+    func setMapRegion(_ coordinates: CLLocationCoordinate2D,_ radiusMeters: Double = 2000) {
+        let currentLocation = MKPointAnnotation()
         currentLocation.coordinate = coordinates
-        locationSetMapView.addAnnotation(currentLocation)
-        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 2000, longitudinalMeters: 2000)
+        let radius = (radiusMeters < 2000) ? ( 2000 ) : ( radiusMeters )
+        
+        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
+        
         locationSetMapView.setRegion(region, animated: true)
         locationSetMapView.showsPointsOfInterest = true
         locationSetMapView.isUserInteractionEnabled = true
     }
     
     func setMapAnnotation(_ coordinates: CLLocationCoordinate2D) {
+        let currentLocation = MKPointAnnotation()
         currentLocation.coordinate = coordinates
+        locationSetMapView.removeAnnotations(locationSetMapView.annotations)
         locationSetMapView.addAnnotation(currentLocation)
+    }
+    
+    func saveLocation(_ location: CLLocationCoordinate2D) {
+        viewModel?.validateLocation(lat: location.latitude, long: location.longitude, completion: { status in
+            if let locnVO = status {
+                self.setMapAnnotation(location)
+                
+                self.pickedLocation = locnVO
+            } else {
+                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
+            }
+        })
     }
 }
 extension LocationSetViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         
+    }
+}
+extension LocationSetViewController: AutoCompletionTextFieldDataSource {
+    func fetchSuggestions(forIncompleteString incompleteString: String!, withCompletionBlock completion: FetchCompletionBlock!) {
+        if incompleteString.count > 2 {
+            geocoder.geocodeAddressString(incompleteString,
+                                          completionHandler: { (result, error) in
+                                            if let placemarks = result {
+                                                let placemarksDictionary = placemarks.map { placemark -> [String:String] in
+                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality, placemark.administrativeArea, placemark.country]
+                                                    let addressString = addressElements.compactMap { $0 }.joined(separator: ", ")
+                                                    
+                                                    if let coordinate = placemark.location?.coordinate,
+                                                       let radius = placemark.region as? CLCircularRegion {
+                                                        self.searchedLocations[addressString] = (coordinate,radius.radius)
+                                                    }
+                                                    return ["title": addressString]
+                                                }
+                                                completion(placemarksDictionary, "title")
+                                            }
+                                          })
+        }
+    }
+}
+
+extension LocationSetViewController: AutoCompletionTextFieldDelegate {
+    func textField(_ textField: AutoCompletionTextField!, didSelectItem selectedItem: Any!) {
+        if let item = selectedItem as? [String: String] {
+            let itemTitle: String = item["title"] ?? ""
+            searchBar.text = itemTitle
+            if let location: CLLocationCoordinate2D = self.searchedLocations[itemTitle]?.0,
+               let radius: Double = self.searchedLocations[itemTitle]?.1 {
+                setMapRegion(location,radius)
+                saveLocation(location)
+            }
+            self.view.endEditing(true)
+        }
+    }
+}
+
+extension LocationSetViewController: AutoCompletionAnimator {
+    func showSuggestions(for textField: AutoCompletionTextField!, table: UITableView!, numberOfItems count: Int) {
+        print("show tableview")
+    }
+    
+    func hideSuggestions(for textField: AutoCompletionTextField!, table: UITableView!) {
+        print("hide tableview")
+    }
+    
+}
+
+extension LocationSetViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return true
     }
 }

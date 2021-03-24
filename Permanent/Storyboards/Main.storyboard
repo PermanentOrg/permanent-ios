@@ -179,17 +179,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
+                                <rect key="frame" x="0.0" y="720" width="414" height="142"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
+                                        <rect key="frame" x="20" y="26" width="374" height="90"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="50" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -296,28 +296,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="y2M-Jn-8xg">
-                                <rect key="frame" x="0.0" y="100" width="414" height="762"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
                             </mapView>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="3B9-9t-DQa">
-                                <rect key="frame" x="0.0" y="44" width="414" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </searchBar>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="hYK-Iv-vz3" customClass="AutoCompletionTextField">
+                                <rect key="frame" x="16" y="60" width="382" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done" smartInsertDeleteType="no"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="tableCornerRadius">
+                                        <real key="value" value="30"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="w6z-6W-Oeg"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="3B9-9t-DQa" firstAttribute="trailing" secondItem="w6z-6W-Oeg" secondAttribute="trailing" id="0ug-m1-xpv"/>
-                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="top" secondItem="3B9-9t-DQa" secondAttribute="bottom" id="4JZ-Np-Maz"/>
-                            <constraint firstItem="3B9-9t-DQa" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" id="G1a-2m-agh"/>
+                            <constraint firstItem="hYK-Iv-vz3" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" constant="16" id="Drm-Tl-NiY"/>
                             <constraint firstItem="y2M-Jn-8xg" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" id="GXq-86-aco"/>
-                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="bottom" secondItem="y2M-Jn-8xg" secondAttribute="bottom" id="HOI-L2-N21"/>
-                            <constraint firstItem="3B9-9t-DQa" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" id="Myq-to-CcS"/>
+                            <constraint firstAttribute="bottom" secondItem="y2M-Jn-8xg" secondAttribute="bottom" id="HOI-L2-N21"/>
+                            <constraint firstItem="hYK-Iv-vz3" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" constant="16" id="d2X-8T-54F"/>
+                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" id="tHd-mg-7Dh"/>
+                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="trailing" secondItem="hYK-Iv-vz3" secondAttribute="trailing" constant="16" id="tND-n4-Cp4"/>
                             <constraint firstItem="w6z-6W-Oeg" firstAttribute="trailing" secondItem="y2M-Jn-8xg" secondAttribute="trailing" id="zBF-UY-Ins"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="locationSetMapView" destination="y2M-Jn-8xg" id="ekr-La-99I"/>
-                        <outlet property="searchBar" destination="3B9-9t-DQa" id="EOi-HW-Gc1"/>
+                        <outlet property="locationSetMapView" destination="y2M-Jn-8xg" id="eTd-55-cW4"/>
+                        <outlet property="searchBar" destination="hYK-Iv-vz3" id="zad-Gh-1Dz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zeM-m1-BV1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -327,10 +333,13 @@
     </scenes>
     <designables>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
+        <designable name="hYK-Iv-vz3">
+            <size key="intrinsicContentSize" width="32" height="34"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>
