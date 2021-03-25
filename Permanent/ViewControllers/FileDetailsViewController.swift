@@ -310,9 +310,10 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .description:
             details = recordVO?.recordVODescription ?? ""
         case .location:
-            let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
-            let address = addressElements.compactMap { $0 }.joined(separator: ", ")
-            address == "" ? (details = "(tap to set)") : (details = address)
+              details = getAddressString()
+//            let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
+//            let address = addressElements.compactMap { $0 }.joined(separator: ", ")
+//            address == "" ? (details = "(tap to set)") : (details = address)
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:
@@ -388,6 +389,13 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             return "Original File Type".localized()
         }
     }
+    
+    func getAddressString() -> String {
+        let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
+        var address = addressElements.compactMap { $0 }.joined(separator: ", ")
+        address == "" ? (address = "(tap to set)") : ()
+        return address
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
@@ -410,9 +418,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
             locationSetVC.delegate = self
             locationSetVC.file = file
+            if getAddressString() != "(tap to set)" {
+                locationSetVC.locationDetails = getAddressString()
+            }
             locationSetVC.viewModel = viewModel
             
-            let navigationVC = UINavigationController(rootViewController: locationSetVC)
+            let navigationVC = NavigationController(rootViewController: locationSetVC)
             navigationVC.modalPresentationStyle = .fullScreen
             present(navigationVC, animated: true)
         }

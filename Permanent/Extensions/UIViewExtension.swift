@@ -85,7 +85,7 @@ extension UIView {
             bannerView.frame.origin = CGPoint(x: 0, y: 0)
         }, completion: { _ in
         
-            UIView.animate(delay: 0.5,
+            UIView.animate(delay: 0.8,
                            animations: {
                                bannerView.frame.origin = initialBannerOrigin
                            }, completion: { _ in

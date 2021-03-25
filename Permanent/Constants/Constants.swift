@@ -36,6 +36,7 @@ struct Text {
     static let style18 = TextStyle(UIFont(name: "OpenSans-Bold", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
     static let style19 = TextStyle(UIFont(name: "OpenSans-Italic", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
     static let style20 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
+    static let style29 = TextStyle(UIFont(name: "OpenSans-Regular", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(45)), NSTextAlignment.center)
 }
 
 struct Constants {

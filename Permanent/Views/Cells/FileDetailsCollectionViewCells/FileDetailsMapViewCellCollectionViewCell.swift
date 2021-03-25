@@ -11,7 +11,7 @@ import MapKit
 class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
 
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
-    let regionInMeters: Double = 5000
+    let regionInMeters: Double = 1500
     
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsLabelField: UILabel!

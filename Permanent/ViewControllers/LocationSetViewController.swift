@@ -20,12 +20,11 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
-    //var currentLocation = MKPointAnnotation()
+    var locationDetails: String = ""
     var searchedLocations: [String: (CLLocationCoordinate2D, Double)] = ["none": (CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0) ,0.0)]
     
     weak var delegate: LocationSetViewControllerDelegate?
     
-    let address = "1 Infinite Loop, CA, USA"
     let geocoder = CLGeocoder()
 
     @IBOutlet weak var searchBar: AutoCompletionTextField!
@@ -63,29 +62,35 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         super.styleNavBar()
         
         navigationController?.navigationBar.barTintColor = .black
+       // self.title = "Set Location"
     }
     
     func initUI() {
         view.backgroundColor = .black
         
+        locationSetMapView.isRotateEnabled = false
+        
         searchBar.backgroundColor = .white
         searchBar.textColor = .black
+        searchBar.font = Text.style29.font
+        searchBar.tableOffset = UIOffset(horizontal: 0, vertical: 0)
         
-        searchBar.tableCornerRadius = 5
+        searchBar.tableCornerRadius = 0
+        searchBar.tableHeight = 45
         searchBar.tableBorderColor = .white
-        searchBar.selectedBorderColor = .white
-        searchBar.placeholder = "Search address"
-        searchBar.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: searchBar.frame.height))
-       // searchBar.leftViewMode = .always
+        searchBar.placeholder = "Search address".localized()
+        searchBar.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 13, height: searchBar.frame.height))
+        searchBar.leftViewMode = .always
 
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             setMapRegion(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
-            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),locationDetails)
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonPressed(_:)))
+        navigationItem.title = "Set Location".localized()
     }
     
     @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
@@ -110,6 +115,7 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
             let touchPoint = sender.location(in: self.locationSetMapView)
             let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
             let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: touchLocation.latitude, longitude: touchLocation.longitude)
+            locationDetails = ""
             saveLocation(coordinates)
         }
     }
@@ -117,18 +123,18 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     func setMapRegion(_ coordinates: CLLocationCoordinate2D,_ radiusMeters: Double = 2000) {
         let currentLocation = MKPointAnnotation()
         currentLocation.coordinate = coordinates
-        let radius = (radiusMeters < 2000) ? ( 2000 ) : ( radiusMeters )
+        let radius = (radiusMeters < 1000) ? ( 1000 ) : ( radiusMeters )
         
         let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
         
         locationSetMapView.setRegion(region, animated: true)
-        locationSetMapView.showsPointsOfInterest = true
         locationSetMapView.isUserInteractionEnabled = true
     }
     
-    func setMapAnnotation(_ coordinates: CLLocationCoordinate2D) {
+    func setMapAnnotation(_ coordinates: CLLocationCoordinate2D, _ addressText: String) {
         let currentLocation = MKPointAnnotation()
         currentLocation.coordinate = coordinates
+        currentLocation.title = addressText
         locationSetMapView.removeAnnotations(locationSetMapView.annotations)
         locationSetMapView.addAnnotation(currentLocation)
     }
@@ -136,18 +142,27 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     func saveLocation(_ location: CLLocationCoordinate2D) {
         viewModel?.validateLocation(lat: location.latitude, long: location.longitude, completion: { status in
             if let locnVO = status {
-                self.setMapAnnotation(location)
-                
+                let streetNumber: String? = locnVO.streetNumber
+                let streetName: String? = locnVO.streetName
+                let locality: String? = locnVO.locality
+                let country: String? = locnVO.country
+                self.setMapAnnotation(location, self.getLocationString([streetNumber,streetName,locality,country]))
                 self.pickedLocation = locnVO
             } else {
-                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
+                self.view.showNotificationBanner(title: "There was a problem saving the location.".localized(), backgroundColor: .deepRed, textColor: .white)
             }
         })
     }
+    
+    func getLocationString(_ items: [String?]) -> String {
+        return items.compactMap { $0 }.joined(separator: ", ")
+    }
 }
 extension LocationSetViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        
+    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
+        for item in views {
+            item.isEnabled = false
+        }
     }
 }
 extension LocationSetViewController: AutoCompletionTextFieldDataSource {
@@ -157,9 +172,9 @@ extension LocationSetViewController: AutoCompletionTextFieldDataSource {
                                           completionHandler: { (result, error) in
                                             if let placemarks = result {
                                                 let placemarksDictionary = placemarks.map { placemark -> [String:String] in
-                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality, placemark.administrativeArea, placemark.country]
-                                                    let addressString = addressElements.compactMap { $0 }.joined(separator: ", ")
-                                                    
+                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality, placemark.country]
+                                                    let addressString = self.getLocationString(addressElements)
+                                                    self.locationDetails = addressString
                                                     if let coordinate = placemark.location?.coordinate,
                                                        let radius = placemark.region as? CLCircularRegion {
                                                         self.searchedLocations[addressString] = (coordinate,radius.radius)

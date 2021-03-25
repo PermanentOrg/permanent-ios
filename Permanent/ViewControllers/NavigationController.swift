@@ -12,4 +12,8 @@ class NavigationController: UINavigationController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return viewControllers.last?.preferredStatusBarStyle ?? .default
     }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.userInterfaceIdiom == .phone ? [.portrait] : [.all]
+    }
 }
