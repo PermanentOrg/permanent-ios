@@ -311,9 +311,6 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             details = recordVO?.recordVODescription ?? ""
         case .location:
               details = getAddressString()
-//            let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
-//            let address = addressElements.compactMap { $0 }.joined(separator: ", ")
-//            address == "" ? (details = "(tap to set)") : (details = address)
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:

@@ -62,7 +62,6 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         super.styleNavBar()
         
         navigationController?.navigationBar.barTintColor = .black
-       // self.title = "Set Location"
     }
     
     func initUI() {
@@ -158,6 +157,7 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         return items.compactMap { $0 }.joined(separator: ", ")
     }
 }
+
 extension LocationSetViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
         for item in views {
@@ -165,6 +165,7 @@ extension LocationSetViewController: MKMapViewDelegate {
         }
     }
 }
+
 extension LocationSetViewController: AutoCompletionTextFieldDataSource {
     func fetchSuggestions(forIncompleteString incompleteString: String!, withCompletionBlock completion: FetchCompletionBlock!) {
         if incompleteString.count > 2 {
@@ -201,17 +202,6 @@ extension LocationSetViewController: AutoCompletionTextFieldDelegate {
             self.view.endEditing(true)
         }
     }
-}
-
-extension LocationSetViewController: AutoCompletionAnimator {
-    func showSuggestions(for textField: AutoCompletionTextField!, table: UITableView!, numberOfItems count: Int) {
-        print("show tableview")
-    }
-    
-    func hideSuggestions(for textField: AutoCompletionTextField!, table: UITableView!) {
-        print("hide tableview")
-    }
-    
 }
 
 extension LocationSetViewController: UITextFieldDelegate {
