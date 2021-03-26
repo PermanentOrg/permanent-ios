@@ -20,7 +20,6 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
-    var locationDetails: String = ""
     var searchedLocations: [String: (CLLocationCoordinate2D, Double)] = ["none": (CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0) ,0.0)]
     
     weak var delegate: LocationSetViewControllerDelegate?
@@ -84,7 +83,7 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             setMapRegion(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
-            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),locationDetails)
+            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),viewModel?.getAddressString([recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]) ?? "")
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
@@ -114,7 +113,6 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
             let touchPoint = sender.location(in: self.locationSetMapView)
             let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
             let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: touchLocation.latitude, longitude: touchLocation.longitude)
-            locationDetails = ""
             saveLocation(coordinates)
         }
     }
@@ -173,9 +171,8 @@ extension LocationSetViewController: AutoCompletionTextFieldDataSource {
                                           completionHandler: { (result, error) in
                                             if let placemarks = result {
                                                 let placemarksDictionary = placemarks.map { placemark -> [String:String] in
-                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality, placemark.country]
+                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality,placemark.administrativeArea, placemark.country]
                                                     let addressString = self.getLocationString(addressElements)
-                                                    self.locationDetails = addressString
                                                     if let coordinate = placemark.location?.coordinate,
                                                        let radius = placemark.region as? CLCircularRegion {
                                                         self.searchedLocations[addressString] = (coordinate,radius.radius)

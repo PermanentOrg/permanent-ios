@@ -133,5 +133,13 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
+    func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {
+        var address = items.compactMap { $0 }.joined(separator: ", ")
+        if inMetadataScreen {
+            address == "" ? (address = "(tap to set)") : ()
+        }
+        return address
+    }
+    
 }
 

@@ -310,7 +310,11 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .description:
             details = recordVO?.recordVODescription ?? ""
         case .location:
-              details = getAddressString()
+            if let address = viewModel?.getAddressString([recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]) {
+                    details = address
+            } else {
+                details = ""
+            }
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:
@@ -386,13 +390,6 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             return "Original File Type".localized()
         }
     }
-    
-    func getAddressString() -> String {
-        let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
-        var address = addressElements.compactMap { $0 }.joined(separator: ", ")
-        address == "" ? (address = "(tap to set)") : ()
-        return address
-    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
@@ -415,9 +412,6 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
             locationSetVC.delegate = self
             locationSetVC.file = file
-            if getAddressString() != "(tap to set)" {
-                locationSetVC.locationDetails = getAddressString()
-            }
             locationSetVC.viewModel = viewModel
             
             let navigationVC = NavigationController(rootViewController: locationSetVC)
