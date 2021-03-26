@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.02.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
@@ -135,8 +134,8 @@ class FilePreviewViewModel: ViewModelInterface {
     
     func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {
         var address = items.compactMap { $0 }.joined(separator: ", ")
-        if inMetadataScreen {
-            address == "" ? (address = "(tap to set)") : ()
+        if inMetadataScreen && isEditable {
+            address == "" ? (address = "Tap to set".localized()) : ()
         }
         return address
     }

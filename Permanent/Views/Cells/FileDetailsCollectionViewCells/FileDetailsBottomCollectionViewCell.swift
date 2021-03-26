@@ -24,7 +24,7 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         detailsTextField.delegate = self
     }
 
-    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false, isLocationField: Bool = false) {
+    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false) {
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
@@ -34,10 +34,9 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         detailsTextField.textColor = .white
         detailsTextField.font = Text.style8.font
         detailsTextField.isUserInteractionEnabled = isDetailsFieldEditable
-        if isDetailsFieldEditable || isLocationField {
+        if isDetailsFieldEditable {
             detailsTextField.backgroundColor = .darkGray
         }
-        if isLocationField { detailsTextField.isUserInteractionEnabled = false}
     }
 }
 

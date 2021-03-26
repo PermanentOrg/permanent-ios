@@ -256,17 +256,14 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             
             returnedCell = cell
         case .location:
-            if getLocationDetails() == (0,0) {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: true, isLocationField: true)
-                returnedCell = cell
-            } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
-
+            if getLocationDetails() == (0,0) {
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isMapHidden: true, isDetailsFieldEditable: viewModel?.isEditable ?? false)
+            } else {
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
                 cell.setLocation(getLocationDetails().latitude,getLocationDetails().longitude)
-                returnedCell = cell
             }
+            returnedCell = cell
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
@@ -408,7 +405,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             navigationController?.setViewControllers([fileDetailsVC], animated: false)
         }
         
-        if currentCellType == .location {
+        if currentCellType == .location && viewModel?.isEditable ?? false {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
             locationSetVC.delegate = self
             locationSetVC.file = file
