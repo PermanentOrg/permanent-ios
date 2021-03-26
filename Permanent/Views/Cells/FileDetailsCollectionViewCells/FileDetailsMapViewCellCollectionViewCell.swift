@@ -11,8 +11,9 @@ import MapKit
 class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
 
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
-    let regionInMeters: Double = 5000
+    let regionInMeters: Double = 1500
     
+ 
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsLabelField: UILabel!
     @IBOutlet weak var locationMapView: MKMapView!
@@ -24,8 +25,14 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        locationMapView.removeAnnotations(locationMapView.annotations)
+    }
 
-    func configure(title: String, details: String) {
+    func configure(title: String, details: String, isMapHidden: Bool = false, isDetailsFieldEditable: Bool = false) {
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
@@ -34,6 +41,14 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         detailsLabelField.backgroundColor = .clear
         detailsLabelField.textColor = .white
         detailsLabelField.font = Text.style8.font
+        detailsLabelField.layer.cornerRadius = 5
+        detailsLabelField.layer.masksToBounds = true
+        detailsLabelField.baselineAdjustment = .alignCenters
+        locationMapView.isHidden = isMapHidden
+        if isDetailsFieldEditable {
+            detailsLabelField.backgroundColor = .darkGray
+        }
+
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {

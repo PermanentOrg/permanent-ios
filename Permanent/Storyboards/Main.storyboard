@@ -287,13 +287,62 @@
             </objects>
             <point key="canvasLocation" x="779.71014492753625" y="1631.9196428571429"/>
         </scene>
+        <!--Location Set View Controller-->
+        <scene sceneID="num-ik-MKU">
+            <objects>
+                <viewController storyboardIdentifier="LocationSetOnTap" id="61A-JB-XMj" customClass="LocationSetViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="l7P-No-FPb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="y2M-Jn-8xg">
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
+                            </mapView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="hYK-Iv-vz3" customClass="AutoCompletionTextField">
+                                <rect key="frame" x="5" y="49" width="404" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="GfC-be-zGR"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done" smartInsertDeleteType="no"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="tableCornerRadius">
+                                        <real key="value" value="30"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </textField>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="w6z-6W-Oeg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="hYK-Iv-vz3" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" constant="5" id="Drm-Tl-NiY"/>
+                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="leading" secondItem="w6z-6W-Oeg" secondAttribute="leading" id="GXq-86-aco"/>
+                            <constraint firstAttribute="bottom" secondItem="y2M-Jn-8xg" secondAttribute="bottom" id="HOI-L2-N21"/>
+                            <constraint firstItem="hYK-Iv-vz3" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" constant="5" id="d2X-8T-54F"/>
+                            <constraint firstItem="y2M-Jn-8xg" firstAttribute="top" secondItem="w6z-6W-Oeg" secondAttribute="top" id="tHd-mg-7Dh"/>
+                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="trailing" secondItem="hYK-Iv-vz3" secondAttribute="trailing" constant="5" id="tND-n4-Cp4"/>
+                            <constraint firstItem="w6z-6W-Oeg" firstAttribute="trailing" secondItem="y2M-Jn-8xg" secondAttribute="trailing" id="zBF-UY-Ins"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="locationSetMapView" destination="y2M-Jn-8xg" id="eTd-55-cW4"/>
+                        <outlet property="searchBar" destination="hYK-Iv-vz3" id="zad-Gh-1Dz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zeM-m1-BV1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1789.8550724637682" y="1631.9196428571429"/>
+        </scene>
     </scenes>
     <designables>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
+        <designable name="hYK-Iv-vz3">
+            <size key="intrinsicContentSize" width="32" height="34"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>

@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 22.02.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
@@ -90,8 +89,8 @@ class FilePreviewViewModel: ViewModelInterface {
         return fileName
     } 
     
-    func update(file: FileViewModel, name: String?, description: String?, date: Date?, completion: @escaping ((Bool) -> Void)) {
-        let params: UpdateRecordParams = (name, description, date, nil, file.recordId, file.folderLinkId, file.archiveNo, csrf)
+    func update(file: FileViewModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo, csrf)
         let apiOperation = APIOperation(FilesEndpoint.update(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -108,6 +107,37 @@ class FilePreviewViewModel: ViewModelInterface {
                 completion(false)
             }
         }
+    }
+    
+    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
+        let params: GeomapLatLongParams = (lat, long, csrf)
+        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
+                completion(locnVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
+    func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {
+        var address = items.compactMap { $0 }.joined(separator: ", ")
+        if inMetadataScreen && isEditable {
+            address == "" ? (address = "Tap to set".localized()) : ()
+        }
+        return address
     }
     
 }

@@ -186,7 +186,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let date = (collectionView.cellForItem(at: [1,2]) as? FileDetailsDateCollectionViewCell)?.date
         
         cell.isSaving = true
-        viewModel?.update(file: file, name: name, description: description, date: date, completion: { (success) in
+        viewModel?.update(file: file, name: name, description: description, date: date, location: nil, completion: { (success) in
             cell.isSaving = false
             
             if success {
@@ -209,6 +209,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension FileDetailsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
@@ -255,17 +256,14 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             
             returnedCell = cell
         case .location:
-            if getLocationDetails(cellType: currentCellType) == (0,0) {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: false)
-                returnedCell = cell
-            } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
-
-                cell.setLocation(getLocationDetails(cellType: currentCellType).latitude,getLocationDetails(cellType: currentCellType).longitude)
-                returnedCell = cell
+            if getLocationDetails() == (0,0) {
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isMapHidden: true, isDetailsFieldEditable: viewModel?.isEditable ?? false)
+            } else {
+                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
+                cell.setLocation(getLocationDetails().latitude,getLocationDetails().longitude)
             }
+            returnedCell = cell
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
             cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
@@ -292,7 +290,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         return returnedCell
     }
     
-    func getLocationDetails(cellType: CellType) -> (latitude: Double, longitude: Double) {
+    func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
             return (latitude,longitude)
@@ -309,9 +307,11 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .description:
             details = recordVO?.recordVODescription ?? ""
         case .location:
-            let addressElements: [String?] = [recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]
-            let address = addressElements.compactMap { $0 }.joined(separator: ", ")
-            address == "" ? (details = "(none)") : (details = address)
+            if let address = viewModel?.getAddressString([recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]) {
+                    details = address
+            } else {
+                details = ""
+            }
         case .tags:
             details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
         case .size:
@@ -389,6 +389,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
@@ -402,6 +403,17 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             fileDetailsVC.viewModel = viewModel
             
             navigationController?.setViewControllers([fileDetailsVC], animated: false)
+        }
+        
+        if currentCellType == .location && viewModel?.isEditable ?? false {
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
+            locationSetVC.delegate = self
+            locationSetVC.file = file
+            locationSetVC.viewModel = viewModel
+            
+            let navigationVC = NavigationController(rootViewController: locationSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
         }
     }
     
@@ -417,7 +429,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         case .saveButton:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .location:
-            if getLocationDetails(cellType: currentCellType) == (0,0) {
+            if getLocationDetails() == (0,0) {
                 return CGSize(width: UIScreen.main.bounds.width, height: 65)
             } else {
                 return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
@@ -437,5 +449,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
+    }
+}
+
+// MARK: - LocationSetViewControllerDelegate
+extension FileDetailsViewController: LocationSetViewControllerDelegate {
+    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
+        collectionView.reloadSections([1])
     }
 }

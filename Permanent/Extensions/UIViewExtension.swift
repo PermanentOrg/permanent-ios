@@ -61,17 +61,17 @@ extension UIView {
         }, completion: completion)
     }
     
-    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String) {
+    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String, backgroundColor: UIColor = .paleGreen, textColor: UIColor = .bilbaoGreen) {
         let initialBannerOrigin = CGPoint(x: 0, y: -height)
         let bannerView = UIView(frame: CGRect(origin: initialBannerOrigin,
                                               size: CGSize(width: self.bounds.width, height: height)))
         
-        bannerView.backgroundColor = .paleGreen
+        bannerView.backgroundColor = backgroundColor
         self.addSubview(bannerView)
         
         let messageLabel = UILabel() // UILabel(frame: CGRect(origin: bannerView.center, size: CGSize(width: self.bounds.width, height: height / 2)))
         messageLabel.text = title
-        messageLabel.textColor = .bilbaoGreen
+        messageLabel.textColor = textColor
         messageLabel.font = Text.style17.font
         
         bannerView.addSubview(messageLabel)
@@ -85,7 +85,7 @@ extension UIView {
             bannerView.frame.origin = CGPoint(x: 0, y: 0)
         }, completion: { _ in
         
-            UIView.animate(delay: 0.5,
+            UIView.animate(delay: 0.8,
                            animations: {
                                bannerView.frame.origin = initialBannerOrigin
                            }, completion: { _ in

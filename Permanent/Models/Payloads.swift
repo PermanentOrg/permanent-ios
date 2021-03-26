@@ -332,6 +332,11 @@ struct Payloads {
             
             recordVO["displayDT"] = dateFormatter.string(from: date)
         }
+        if let location = params.location,
+           let locationJson = try? JSONEncoder().encode(location),
+           let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
+            recordVO["locnVO"] = locationDict
+        }
         
         return [ "RequestVO":
                     [
@@ -340,6 +345,25 @@ struct Payloads {
                         "data": [
                             [
                                 "RecordVO": recordVO
+                            ]
+                        ]
+                    ]
+        ]
+    }
+    
+    static func geomapLatLong(params: GeomapLatLongParams) -> RequestParameters {
+        let locnVO: [String: Any] = [
+            "latitude": params.lat,
+            "longitude": params.long
+        ]
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "LocnVO": locnVO
                             ]
                         ]
                     ]
