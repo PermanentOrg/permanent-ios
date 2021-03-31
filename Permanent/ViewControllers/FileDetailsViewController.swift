@@ -415,6 +415,10 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             navigationVC.modalPresentationStyle = .fullScreen
             present(navigationVC, animated: true)
         }
+        
+        if currentCellType == .tags && viewModel?.isEditable ?? false {
+            viewModel?.showAlertWithTextField(controller: self)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

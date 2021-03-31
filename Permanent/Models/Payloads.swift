@@ -369,4 +369,25 @@ struct Payloads {
                     ]
         ]
     }
+    static func tagParams(params: TagParams) -> RequestParameters {
+        let tagLinkVO: [String: Any] = [
+            "refId": params.refID,
+            "refTable": "record"
+        ]
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "TagLinkVO": tagLinkVO,
+                                "TagVO": [
+                                    "name": params.name
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }

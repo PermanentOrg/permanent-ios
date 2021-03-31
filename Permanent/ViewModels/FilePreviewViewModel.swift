@@ -140,5 +140,45 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
+    func showAlertWithTextField(controller: UIViewController) {
+        let alertController = UIAlertController(title: "Add new tag", message: nil, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "Add", style: .default) { (_) in
+            if let txtField = alertController.textFields?.first, let text = txtField.text {
+                self.addTag(tagName: text,refId: self.file.recordId) { (status) in
+                }
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Tag"
+        }
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        controller.present(alertController, animated: true, completion: nil)
+    }
+    
+    func addTag(tagName: String,refId: Int, completion: @escaping ((TagLinkVOData?) -> Void)) {
+
+        let params: TagParams = (tagName,refId,csrf)
+        let apiOperation = APIOperation(TagEndpoint.tagParams(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<TagLinkVO> = JSONHelper.decoding(from: json, with: APIResults<TagLinkVO>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let tagLinkVO: TagLinkVOData? =  model.results.first?.data?.first?.tagLinkVO
+                completion(tagLinkVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
 }
 
