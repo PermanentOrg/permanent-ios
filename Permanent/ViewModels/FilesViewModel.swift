@@ -346,8 +346,16 @@ extension FilesViewModel {
             return handler(.error(message: .errorMessage))
         }
         
-        uploadQueue.append(contentsOf: files)
-        saveUploadProgressLocally(files: uploadQueue)
+        var hasToSave: Bool = false
+        files.forEach { (file) in
+            if uploadQueue.contains(file) == false {
+                uploadQueue.append(file)
+                hasToSave = true
+            }
+        }
+        if hasToSave {
+            saveUploadProgressLocally(files: uploadQueue)
+        }
         
         onUploadStart()
         
