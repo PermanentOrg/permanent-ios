@@ -350,11 +350,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     
                 case .error:
                     DispatchQueue.main.async {
-                        // TODO: This logic is definitely buggy and this is causing the multiple upload bug
                         self.screenLockManager.disableIdleTimer(false)
-                        self.hideSpinner()
-                        self.viewModel = MyFilesViewModel()
-                        self.tableView.reloadData()
                         self.getRootFolder()
                     }
                 }

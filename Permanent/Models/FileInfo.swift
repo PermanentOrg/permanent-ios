@@ -13,6 +13,15 @@ class FileInfo: NSObject, NSCoding {
     var name: String
     var url: URL
     var folder: FolderInfo
+    
+    static func == (lhs: FileInfo, rhs: FileInfo) -> Bool {
+        return lhs.name == rhs.name && lhs.url == rhs.url && lhs.folder.folderId == rhs.folder.folderId
+    }
+    
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let rhs = object as? FileInfo else { return false }
+        return name == rhs.name && url == rhs.url && folder.folderId == rhs.folder.folderId
+    }
 
     init(withURL url: URL, named name: String, folder: FolderInfo) {
         fileContents = try? Data(contentsOf: url)
