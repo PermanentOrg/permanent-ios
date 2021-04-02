@@ -417,7 +417,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         }
         
         if currentCellType == .tags && viewModel?.isEditable ?? false {
-            viewModel?.showAlertWithTextField(controller: self)
+//TODO: present tag viewcontroller
         }
     }
     

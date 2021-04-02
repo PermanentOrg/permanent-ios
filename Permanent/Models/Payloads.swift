@@ -395,14 +395,9 @@ struct Payloads {
             "refId": params.refID,
             "refTable": "record"
         ]
-        let tagVO: [String: Any] = [
-            "createdDT": "",
-            "name": params.name,
-            "status": "status.generic.ok",
-            "tagId": params.tagId,
-            "type": "type.generic.placeholder",
-            "updatedDT": ""
-        ]
+        let tagVO = params.tagVO
+        let tagJson = (try? JSONEncoder().encode(tagVO)) ?? Data()
+        let tagDict = (try? JSONSerialization.jsonObject(with: tagJson, options: [])) as? [String:Any] ?? [String:Any]()
         
         return [ "RequestVO":
                     [
@@ -411,7 +406,7 @@ struct Payloads {
                         "data": [
                             [
                                 "TagLinkVO": tagLinkVO,
-                                "TagVO": tagVO
+                                "TagVO": tagDict["TagVO"]
                             ]
                         ]
                     ]

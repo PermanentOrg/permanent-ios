@@ -140,27 +140,8 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
-    func showAlertWithTextField(controller: UIViewController) {
-        let alertController = UIAlertController(title: "Add new tag", message: nil, preferredStyle: .alert)
-        let confirmAction = UIAlertAction(title: "Add", style: .default) { (_) in
-            if let txtField = alertController.textFields?.first, let text = txtField.text {
-                self.addTag(tagName: text,refId: self.file.recordId) { (status) in
-                    
-                }
-            }
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
-        alertController.addTextField { (textField) in
-            textField.placeholder = "Tag"
-        }
-        alertController.addAction(confirmAction)
-        alertController.addAction(cancelAction)
-        controller.present(alertController, animated: true, completion: nil)
-    }
-    
-    func addTag(tagName: String,refId: Int, completion: @escaping ((TagLinkVOData?) -> Void)) {
-        
-        let params: TagParams = (tagName,refId,csrf)
+    func addTag(tagName: String, completion: @escaping ((TagLinkVOData?) -> Void)) {
+        let params: TagParams = (tagName, recordVO?.recordVO?.recordID ?? 0, csrf)
         let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -182,15 +163,14 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    func deleteTag(name: String, refId: Int, tagId: Int, completion: @escaping ((String?) -> Void)) {
-        
-        let params: DeleteTagParams = (name,refId,tagId,csrf)
+    func deleteTag(tagVO: TagVO, completion: @escaping ((String?) -> Void)) {
+        let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0, csrf)
         let apiOperation = APIOperation(TagEndpoint.tagDelete(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let json, _):
-                guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
+                guard let model: APIResults<NoDataModel> = JSONHelper.decoding(from: json, with: APIResults<NoDataModel>.decoder), model.isSuccessful else {
                     completion(nil)
                     return
                 }
@@ -207,8 +187,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
-        
-        let params: GetTagsByArchiveParams = (archiveId,csrf)
+        let params: GetTagsByArchiveParams = (archiveId, csrf)
         let apiOperation = APIOperation(TagEndpoint.getTagsByArchive(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -229,8 +208,5 @@ class FilePreviewViewModel: ViewModelInterface {
             }
         }
     }
-    
-    
-    
 }
 
