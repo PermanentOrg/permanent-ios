@@ -6,6 +6,7 @@
 //
 
 import Firebase
+import FirebaseMessaging
 import UIKit
 
 @UIApplicationMain
@@ -51,6 +52,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         FirebaseApp.configure(options: fileOpts)
+        
+        UNUserNotificationCenter.current().delegate = self
+        
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: {_, _ in })
+        
+        Messaging.messaging().delegate = self
+        
+        UIApplication.shared.registerForRemoteNotifications()
     }
     
     fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
@@ -82,4 +94,14 @@ extension AppDelegate {
     var rootViewController: RootViewController {
         return window!.rootViewController as! RootViewController
     }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+        
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
 }
