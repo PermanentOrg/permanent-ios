@@ -947,8 +947,8 @@
 				BC59BAE525C2B8DD005A45D3 /* NotificationsEndpoint.swift */,
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
-				BC6D3B582514F61400390927 /* Layer */,
 				5ED73B242613C30E002F9861 /* TagEndpoint.swift */,
+				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
 			sourceTree = "<group>";

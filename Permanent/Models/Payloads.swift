@@ -369,7 +369,7 @@ struct Payloads {
                     ]
         ]
     }
-    static func tagParams(params: TagParams) -> RequestParameters {
+    static func tagPost(params: TagParams) -> RequestParameters {
         let tagLinkVO: [String: Any] = [
             "refId": params.refID,
             "refTable": "record"
@@ -384,6 +384,49 @@ struct Payloads {
                                 "TagLinkVO": tagLinkVO,
                                 "TagVO": [
                                     "name": params.name
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
+    static func deletePost(params: DeleteTagParams) -> RequestParameters {
+        let tagLinkVO: [String: Any] = [
+            "refId": params.refID,
+            "refTable": "record"
+        ]
+        let tagVO: [String: Any] = [
+            "createdDT": "",
+            "name": params.name,
+            "status": "status.generic.ok",
+            "tagId": params.tagId,
+            "type": "type.generic.placeholder",
+            "updatedDT": ""
+        ]
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "TagLinkVO": tagLinkVO,
+                                "TagVO": tagVO
+                            ]
+                        ]
+                    ]
+        ]
+    }
+    static func getTagsByArchive(params: GetTagsByArchiveParams) -> RequestParameters {
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "ArchiveVO": [
+                                    "archiveId": params.archiveId
                                 ]
                             ]
                         ]

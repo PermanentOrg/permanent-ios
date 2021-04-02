@@ -8,29 +8,37 @@
 import Foundation
 
 typealias TagParams = (name: String, refID: Int, csrf: String)
+typealias DeleteTagParams = (name: String, refID: Int, tagId: Int, csrf: String)
+typealias GetTagsByArchiveParams = (archiveId: Int, csrf: String)
 
 enum TagEndpoint {
-    case tagParams(params: TagParams)
+    case tagPost(params: TagParams)
+    case tagDelete(params: DeleteTagParams)
+    case getTagsByArchive(params: GetTagsByArchiveParams)
 }
 
 extension TagEndpoint: RequestProtocol {
     var path: String {
         switch self {
-        case .tagParams:
+        case .tagPost:
             return "/tag/post"
+        case .tagDelete:
+            return "/tag/delete"
+        case .getTagsByArchive:
+            return "/tag/getTagsByArchive"
         }
     }
     
     var method: RequestMethod {
         switch self {
-        case .tagParams:
+        case .tagPost,.tagDelete,.getTagsByArchive:
             return .post
         }
     }
     
     var headers: RequestHeaders? {
         switch self {
-        case .tagParams:
+        case .tagPost,.tagDelete,.getTagsByArchive:
             return [
                 "content-type": "application/json"
             ]
@@ -39,22 +47,26 @@ extension TagEndpoint: RequestProtocol {
     
     var requestType: RequestType {
         switch self {
-        case .tagParams:
+        case .tagPost,.tagDelete,.getTagsByArchive:
             return .data
         }
     }
     
     var responseType: ResponseType {
         switch self {
-        case .tagParams:
+        case .tagPost,.tagDelete,.getTagsByArchive:
             return .json
         }
     }
     
     var parameters: RequestParameters? {
         switch self {
-        case .tagParams(let params):
-            return Payloads.tagParams(params: params)
+        case .tagPost(let params):
+            return Payloads.tagPost(params: params)
+        case .tagDelete(let params):
+            return Payloads.deletePost(params: params)
+        case .getTagsByArchive(let params):
+            return Payloads.getTagsByArchive(params: params)
         }
     }
     
