@@ -140,5 +140,73 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
+    func addTag(tagName: String, completion: @escaping ((TagLinkVOData?) -> Void)) {
+        let params: TagParams = (tagName, recordVO?.recordVO?.recordID ?? 0, csrf)
+        let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<TagLinkVO> = JSONHelper.decoding(from: json, with: APIResults<TagLinkVO>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let tagLinkVO: TagLinkVOData? =  model.results.first?.data?.first?.tagLinkVO
+                completion(tagLinkVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
+    func deleteTag(tagVO: TagVO, completion: @escaping ((String?) -> Void)) {
+        let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0, csrf)
+        let apiOperation = APIOperation(TagEndpoint.tagDelete(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<NoDataModel> = JSONHelper.decoding(from: json, with: APIResults<NoDataModel>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let message: String? =  model.results.first?.message.first
+                completion(message)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
+    func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
+        let params: GetTagsByArchiveParams = (archiveId, csrf)
+        let apiOperation = APIOperation(TagEndpoint.getTagsByArchive(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let tagVO: [TagVO]? =  model.results.first?.data
+                completion(tagVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
 }
 
