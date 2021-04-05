@@ -24,8 +24,4 @@ struct TagLinkVOData: Model {
     let tagId: Int?
     let tag_linkId: Int?
     let type: String?
-
-    enum CodingKeys: String, CodingKey {
-        case refId, refTable, status, tagId, tag_linkId, type, createdDT, updatedDT
-    }
 }
