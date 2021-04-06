@@ -179,17 +179,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
+                                <rect key="frame" x="0.0" y="720" width="414" height="142"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
+                                        <rect key="frame" x="20" y="26" width="374" height="90"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="50" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -333,8 +333,63 @@
             </objects>
             <point key="canvasLocation" x="1789.8550724637682" y="1631.9196428571429"/>
         </scene>
+        <!--Tag Details View Controller-->
+        <scene sceneID="yyd-rq-m2u">
+            <objects>
+                <viewController storyboardIdentifier="TagDetails" id="WQn-ZB-hag" customClass="TagDetailsViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Dsi-v7-9aG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="sal-mZ-q0y">
+                                <rect key="frame" x="10" y="44" width="294" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="YJ0-am-f1E"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ern-RS-tpK" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="309" y="48" width="90" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="TWt-K2-FtU"/>
+                                    <constraint firstAttribute="width" constant="90" id="jrb-pb-yfL"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="6DF-uF-clr">
+                                <rect key="frame" x="0.0" y="110" width="414" height="752"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="o7j-hp-D82"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Ern-RS-tpK" firstAttribute="top" secondItem="o7j-hp-D82" secondAttribute="top" constant="4" id="1vI-a5-plx"/>
+                            <constraint firstItem="6DF-uF-clr" firstAttribute="leading" secondItem="o7j-hp-D82" secondAttribute="leading" id="4KD-SR-WbN"/>
+                            <constraint firstItem="o7j-hp-D82" firstAttribute="bottom" secondItem="6DF-uF-clr" secondAttribute="bottom" id="7BL-3q-JKH"/>
+                            <constraint firstItem="o7j-hp-D82" firstAttribute="trailing" secondItem="Ern-RS-tpK" secondAttribute="trailing" constant="15" id="DpG-fM-eQf"/>
+                            <constraint firstItem="Ern-RS-tpK" firstAttribute="leading" secondItem="sal-mZ-q0y" secondAttribute="trailing" constant="5" id="GmR-Dm-9ag"/>
+                            <constraint firstItem="o7j-hp-D82" firstAttribute="trailing" secondItem="6DF-uF-clr" secondAttribute="trailing" id="SAK-6d-Dks"/>
+                            <constraint firstItem="sal-mZ-q0y" firstAttribute="top" secondItem="o7j-hp-D82" secondAttribute="top" id="Uyp-PO-CGp"/>
+                            <constraint firstItem="6DF-uF-clr" firstAttribute="top" secondItem="sal-mZ-q0y" secondAttribute="bottom" constant="10" id="kvu-tV-M7q"/>
+                            <constraint firstItem="sal-mZ-q0y" firstAttribute="leading" secondItem="o7j-hp-D82" secondAttribute="leading" constant="10" id="ted-24-nSG"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="AddTagButton" destination="Ern-RS-tpK" id="cfS-8p-nkG"/>
+                        <outlet property="tagFindSearchBar" destination="sal-mZ-q0y" id="zz6-Iz-hM8"/>
+                        <outlet property="tagsTableView" destination="6DF-uF-clr" id="zuH-tC-wva"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="48m-Rh-ePI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2823" y="1632"/>
+        </scene>
     </scenes>
     <designables>
+        <designable name="Ern-RS-tpK">
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
         <designable name="POQ-5N-4NZ">
             <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>

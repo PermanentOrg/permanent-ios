@@ -417,7 +417,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         }
         
         if currentCellType == .tags && viewModel?.isEditable ?? false {
-//TODO: present tag viewcontroller
+            let tagSetVC = UIViewController.create(withIdentifier: .tagDetails, from: .main) as! TagDetailsViewController
+            tagSetVC.viewModel = viewModel
+
+            let navigationVC = NavigationController(rootViewController: tagSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
         }
     }
     
