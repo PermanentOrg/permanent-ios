@@ -15,9 +15,19 @@ class PreferencesManager {
     func getValue<T>(forKey key: String) -> T? {
         return userDefaults.value(forKey: key) as? T
     }
+    
+    func getNonPlistObject<T: NSCoding>(forKey key: String) throws -> T? {
+        guard let data = userDefaults.value(forKey: key) as? Data else { return nil }
+        return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? T
+    }
 
     func set<T>(_ value: T, forKey key: String) {
         userDefaults.set(value, forKey: key)
+    }
+    
+    func setNonPlistObject<T: NSCoding>(_ value: T, forKey key: String) throws {
+        let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
+        userDefaults.setValue(data, forKey: key)
     }
     
     func removeValue(forKey key: String) {

@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
 
         initFirebase()
+        initNotifications()
 
         return true
     }
@@ -41,18 +42,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     fileprivate func initFirebase() {
-        guard
-            let infoDict = Bundle.main.infoDictionary,
-            let fileName = infoDict["GOOGLE_PLIST_NAME"] as? String,
-            let filePath = Bundle.main.path(forResource: fileName, ofType: "plist"),
-            let fileOpts = FirebaseOptions(contentsOfFile: filePath)
-        else {
-            assert(false, "Cannot load config file")
-            return
-        }
+        let firebaseOpts = FirebaseOptions(googleAppID: googleServiceInfo.googleAppId, gcmSenderID: googleServiceInfo.gcmSenderId)
+        firebaseOpts.clientID = googleServiceInfo.clientId
+        firebaseOpts.apiKey = googleServiceInfo.apiKey
+        firebaseOpts.projectID = googleServiceInfo.projectId
+        firebaseOpts.storageBucket = googleServiceInfo.storageBucket
 
-        FirebaseApp.configure(options: fileOpts)
-        
+        FirebaseApp.configure(options: firebaseOpts)
+    }
+    
+    fileprivate func initNotifications() {
         UNUserNotificationCenter.current().delegate = self
         
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -98,10 +97,57 @@ extension AppDelegate {
 
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
-        
+        print("\n\npush token:" + fcmToken + "\n\n")
     }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    
+    // Called when app is in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if #available(iOS 14.0, *) {
+            completionHandler([.list, .banner])
+        } else {
+            completionHandler(.alert)
+        }
+    }
+
+    // Called after the user interacts with the notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
+        
+        let userInfo = response.notification.request.content.userInfo
+        if let notificationType = userInfo["notificationType"] as? String {
+            switch notificationType {
+            case "share-notification":
+                guard let name: String = userInfo["sharedItemName"] as? String,
+                      let recordId: Int = Int(userInfo["recordId"] as? String ?? ""),
+                      let folderLinkId: Int = Int(userInfo["folder_linkId"] as? String ?? ""),
+                      let archiveNbr: String = userInfo["archiveNbr"] as? String,
+                      let type: String = userInfo["type"] as? String,
+                      let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+                    break
+                }
+                DispatchQueue.main.async {
+                    if self.rootViewController.isDrawerRootActive {
+                        let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                        self.rootViewController.changeDrawerRoot(viewController: newRootVC)
+                        
+                        let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: type, csrf: csrf)
+                        let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+                        filePreviewVC.file = fileVM
+                        
+                        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                        fileDetailsNavigationController.filePreviewNavDelegate = newRootVC
+                        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+                        newRootVC.present(fileDetailsNavigationController, animated: true)
+                    } else {
+                        let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: type)
+                        try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
+                    }
+                }
+            default:
+                break
+            }
+        }
+    }
 }

@@ -64,8 +64,6 @@
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
-		BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */; };
-		BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -284,11 +282,39 @@
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
 		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
+		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
+		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
+		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
-		F5A2A03A2615B76C003AAF36 /* STAGING-GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F5A2A0392615B76C003AAF36 /* STAGING-GoogleService-Info.plist */; };
+		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
+		F5A2A07D26161AE6003AAF36 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F5A2A07B26161AE6003AAF36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E2C5D0F24D98EE100E2B95F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5A2A07526161AE6003AAF36;
+			remoteInfo = PushExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F5A2A07E26161AE6003AAF36 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F5A2A07D26161AE6003AAF36 /* PushExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelInterface.swift; sourceTree = "<group>"; };
@@ -359,8 +385,6 @@
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
 		864293632D1F8008599F3A97 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
-		BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DEV-GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
 		BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelocateFolderPayload.swift; sourceTree = "<group>"; };
 		BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelocateRecordPayload.swift; sourceTree = "<group>"; };
@@ -580,10 +604,15 @@
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
 		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
 		F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewNavigationController.swift; sourceTree = "<group>"; };
+		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
+		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
+		F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareNotificationPayload.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
-		F5A2A0392615B76C003AAF36 /* STAGING-GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "STAGING-GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5A2A07826161AE6003AAF36 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		F5A2A07A26161AE6003AAF36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -595,6 +624,13 @@
 			files = (
 				BCB0725E2523565A003E2F66 /* WebKit.framework in Frameworks */,
 				D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A2A07326161AE6003AAF36 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -763,6 +799,7 @@
 			isa = PBXGroup;
 			children = (
 				5E2C5D1924D98EE100E2B95F /* Permanent */,
+				F5A2A07726161AE6003AAF36 /* PushExtension */,
 				5E2C5D1824D98EE100E2B95F /* Products */,
 				D01BC0154B74CFCC3532CF7E /* Pods */,
 				5E60451B25120685002E47CB /* Recovered References */,
@@ -776,6 +813,7 @@
 			isa = PBXGroup;
 			children = (
 				5E2C5D1724D98EE100E2B95F /* Permanent.app */,
+				F5A2A07626161AE6003AAF36 /* PushExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -788,6 +826,8 @@
 				BC6E70EC252C6F0100113D5F /* Security */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
+				F5551D87261C559B00A7C540 /* EnvVars.stencil */,
+				F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */,
 				BC1BDF162513558800F2D239 /* Assets */,
 				BC1BDF192513561800F2D239 /* Constants */,
 				06B0EB2624E67E52003D90C6 /* Extensions */,
@@ -908,9 +948,6 @@
 				5ED0856524E3E5CA00CDB4D3 /* Fonts */,
 				5E2C5D2324D98EE300E2B95F /* Assets.xcassets */,
 				5E2C5D2824D98EE300E2B95F /* Info.plist */,
-				BC0108872511ED88002F9FD6 /* DEV-GoogleService-Info.plist */,
-				F5A2A0392615B76C003AAF36 /* STAGING-GoogleService-Info.plist */,
-				BC0108812510E03C002F9FD6 /* GoogleService-Info.plist */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -1077,6 +1114,7 @@
 				BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */,
 				BCD948D3258BA54600089F86 /* ItemVO.swift */,
 				5EE0ADB225F8216D008ABDC6 /* TagVO.swift */,
+				F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1464,6 +1502,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		F5A2A07726161AE6003AAF36 /* PushExtension */ = {
+			isa = PBXGroup;
+			children = (
+				F5A2A07826161AE6003AAF36 /* NotificationService.swift */,
+				F5A2A07A26161AE6003AAF36 /* Info.plist */,
+			);
+			path = PushExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1472,19 +1519,39 @@
 			buildConfigurationList = 5E2C5D2B24D98EE300E2B95F /* Build configuration list for PBXNativeTarget "Permanent" */;
 			buildPhases = (
 				93709BB8B61DC1F8A5E0ACDC /* [CP] Check Pods Manifest.lock */,
+				F5551D86261C54D500A7C540 /* ShellScript */,
 				5E2C5D1324D98EE100E2B95F /* Sources */,
 				5E2C5D1424D98EE100E2B95F /* Frameworks */,
 				5E2C5D1524D98EE100E2B95F /* Resources */,
 				5DADAF29849335C8A16FEF12 /* [CP] Embed Pods Frameworks */,
+				F5A2A07E26161AE6003AAF36 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F5A2A07C26161AE6003AAF36 /* PBXTargetDependency */,
 			);
 			name = Permanent;
 			productName = Permanent;
 			productReference = 5E2C5D1724D98EE100E2B95F /* Permanent.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F5A2A07526161AE6003AAF36 /* PushExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5A2A08326161AE6003AAF36 /* Build configuration list for PBXNativeTarget "PushExtension" */;
+			buildPhases = (
+				F5A2A07226161AE6003AAF36 /* Sources */,
+				F5A2A07326161AE6003AAF36 /* Frameworks */,
+				F5A2A07426161AE6003AAF36 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PushExtension;
+			productName = PushExtension;
+			productReference = F5A2A07626161AE6003AAF36 /* PushExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -1492,12 +1559,15 @@
 		5E2C5D0F24D98EE100E2B95F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1160;
+				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1160;
 				ORGANIZATIONNAME = "Victory Square Partners";
 				TargetAttributes = {
 					5E2C5D1624D98EE100E2B95F = {
 						CreatedOnToolsVersion = 11.6;
+					};
+					F5A2A07526161AE6003AAF36 = {
+						CreatedOnToolsVersion = 12.4;
 					};
 				};
 			};
@@ -1515,6 +1585,7 @@
 			projectRoot = "";
 			targets = (
 				5E2C5D1624D98EE100E2B95F /* Permanent */,
+				F5A2A07526161AE6003AAF36 /* PushExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1530,8 +1601,6 @@
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */,
-				BC0108822510E03C002F9FD6 /* GoogleService-Info.plist in Resources */,
-				BC0108882511ED88002F9FD6 /* DEV-GoogleService-Info.plist in Resources */,
 				5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
@@ -1542,7 +1611,6 @@
 				BC59BABD25C2B7D6005A45D3 /* FileLargeCollectionViewCell.xib in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
-				F5A2A03A2615B76C003AAF36 /* STAGING-GoogleService-Info.plist in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
@@ -1566,6 +1634,13 @@
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A2A07426161AE6003AAF36 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1685,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		F5551D86261C54D500A7C540 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1680,6 +1772,7 @@
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
+				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
@@ -1706,6 +1799,7 @@
 				BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
+				F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
@@ -1837,6 +1931,7 @@
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
+				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
@@ -1858,7 +1953,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5A2A07226161AE6003AAF36 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F5A2A07C26161AE6003AAF36 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5A2A07526161AE6003AAF36 /* PushExtension */;
+			targetProxy = F5A2A07B26161AE6003AAF36 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		5E2C5D2524D98EE300E2B95F /* Launch.storyboard */ = {
@@ -1998,13 +2109,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FF15C97404C223018EBC290C /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				GOOGLE_PLIST_NAME = "GoogleService-Info";
+				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2024,13 +2136,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F8E2C57314DE2C2792A40D54 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				GOOGLE_PLIST_NAME = "GoogleService-Info";
+				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2110,13 +2223,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9C912B8D215FC9DBB5D4652C /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
+				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2190,13 +2304,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4555EA2FF4726D00ABFEBD19 /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
-				GOOGLE_PLIST_NAME = "STAGING-GoogleService-Info";
+				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2209,6 +2324,94 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = "DEV-Release";
+		};
+		F5A2A07F26161AE6003AAF36 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				INFOPLIST_FILE = PushExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.PushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F5A2A08026161AE6003AAF36 /* DEV-Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				INFOPLIST_FILE = PushExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "DEV-Debug";
+		};
+		F5A2A08126161AE6003AAF36 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				INFOPLIST_FILE = PushExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.PushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F5A2A08226161AE6003AAF36 /* DEV-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				INFOPLIST_FILE = PushExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "DEV-Release";
 		};
@@ -2233,6 +2436,17 @@
 				BC0108842511E8D7002F9FD6 /* DEV-Debug */,
 				5E2C5D2D24D98EE300E2B95F /* Release */,
 				BC0108862511E96A002F9FD6 /* DEV-Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5A2A08326161AE6003AAF36 /* Build configuration list for PBXNativeTarget "PushExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5A2A07F26161AE6003AAF36 /* Debug */,
+				F5A2A08026161AE6003AAF36 /* DEV-Debug */,
+				F5A2A08126161AE6003AAF36 /* Release */,
+				F5A2A08226161AE6003AAF36 /* DEV-Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
