@@ -342,37 +342,37 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="sal-mZ-q0y">
-                                <rect key="frame" x="10" y="44" width="294" height="56"/>
+                                <rect key="frame" x="12" y="44" width="292" height="56"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="YJ0-am-f1E"/>
                                 </constraints>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ern-RS-tpK" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="309" y="48" width="90" height="45"/>
+                                <rect key="frame" x="309" y="54" width="90" height="36"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="45" id="TWt-K2-FtU"/>
+                                    <constraint firstAttribute="height" constant="36" id="TWt-K2-FtU"/>
                                     <constraint firstAttribute="width" constant="90" id="jrb-pb-yfL"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="6DF-uF-clr">
-                                <rect key="frame" x="0.0" y="110" width="414" height="752"/>
+                                <rect key="frame" x="0.0" y="100" width="394" height="762"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="o7j-hp-D82"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Ern-RS-tpK" firstAttribute="top" secondItem="o7j-hp-D82" secondAttribute="top" constant="4" id="1vI-a5-plx"/>
+                            <constraint firstItem="Ern-RS-tpK" firstAttribute="top" secondItem="o7j-hp-D82" secondAttribute="top" constant="10" id="1vI-a5-plx"/>
                             <constraint firstItem="6DF-uF-clr" firstAttribute="leading" secondItem="o7j-hp-D82" secondAttribute="leading" id="4KD-SR-WbN"/>
                             <constraint firstItem="o7j-hp-D82" firstAttribute="bottom" secondItem="6DF-uF-clr" secondAttribute="bottom" id="7BL-3q-JKH"/>
                             <constraint firstItem="o7j-hp-D82" firstAttribute="trailing" secondItem="Ern-RS-tpK" secondAttribute="trailing" constant="15" id="DpG-fM-eQf"/>
                             <constraint firstItem="Ern-RS-tpK" firstAttribute="leading" secondItem="sal-mZ-q0y" secondAttribute="trailing" constant="5" id="GmR-Dm-9ag"/>
-                            <constraint firstItem="o7j-hp-D82" firstAttribute="trailing" secondItem="6DF-uF-clr" secondAttribute="trailing" id="SAK-6d-Dks"/>
+                            <constraint firstItem="o7j-hp-D82" firstAttribute="trailing" secondItem="6DF-uF-clr" secondAttribute="trailing" constant="20" id="SAK-6d-Dks"/>
                             <constraint firstItem="sal-mZ-q0y" firstAttribute="top" secondItem="o7j-hp-D82" secondAttribute="top" id="Uyp-PO-CGp"/>
-                            <constraint firstItem="6DF-uF-clr" firstAttribute="top" secondItem="sal-mZ-q0y" secondAttribute="bottom" constant="10" id="kvu-tV-M7q"/>
-                            <constraint firstItem="sal-mZ-q0y" firstAttribute="leading" secondItem="o7j-hp-D82" secondAttribute="leading" constant="10" id="ted-24-nSG"/>
+                            <constraint firstItem="6DF-uF-clr" firstAttribute="top" secondItem="sal-mZ-q0y" secondAttribute="bottom" id="kvu-tV-M7q"/>
+                            <constraint firstItem="sal-mZ-q0y" firstAttribute="leading" secondItem="o7j-hp-D82" secondAttribute="leading" constant="12" id="ted-24-nSG"/>
                         </constraints>
                     </view>
                     <connections>

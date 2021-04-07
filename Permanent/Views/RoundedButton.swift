@@ -43,9 +43,10 @@ class RoundedButton: CustomButton {
         heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.Design.customButtonHeight).isActive = true
     }
     
-    func configureActionButtonUI(title: String, bgColor: UIColor = .primary) {
+    func configureActionButtonUI(title: String, bgColor: UIColor = .primary, buttonHeight: CGFloat = Constants.Design.customButtonHeight) {
         self.bgColor = bgColor
         self.setTitle(title, for: [])
         self.radius = Constants.Design.actionButtonRadius
+        heightAnchor.constraint(greaterThanOrEqualToConstant: buttonHeight).isActive = true
     }
 }
