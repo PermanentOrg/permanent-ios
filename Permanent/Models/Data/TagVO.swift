@@ -22,8 +22,4 @@ struct TagVOData: Model {
     let tagId: Int?
     let type: String?
     let createdDT, updatedDT: String?
-
-    enum CodingKeys: String, CodingKey {
-        case name, status, tagId, type, createdDT, updatedDT
-    }
 }

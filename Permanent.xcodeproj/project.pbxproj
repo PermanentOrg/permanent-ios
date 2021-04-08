@@ -55,6 +55,8 @@
 		5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED581C525EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib */; };
 		5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED581C925EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift */; };
 		5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */; };
+		5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
+		5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B3726143ED5002F9861 /* TagLinkVO.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
 		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
 		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
@@ -375,6 +377,8 @@
 		5ED581C525EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMenuCollectionViewCell.xib; sourceTree = "<group>"; };
 		5ED581C925EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBottomCollectionViewCell.swift; sourceTree = "<group>"; };
 		5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsBottomCollectionViewCell.xib; sourceTree = "<group>"; };
+		5ED73B242613C30E002F9861 /* TagEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEndpoint.swift; sourceTree = "<group>"; };
+		5ED73B3726143ED5002F9861 /* TagLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLinkVO.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
 		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
@@ -983,6 +987,7 @@
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */,
+				5ED73B242613C30E002F9861 /* TagEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -1118,6 +1123,7 @@
 				BCD948D3258BA54600089F86 /* ItemVO.swift */,
 				5EE0ADB225F8216D008ABDC6 /* TagVO.swift */,
 				F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */,
+				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1748,6 +1754,7 @@
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
+				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
 				5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */,
 				BC0D99B4256D0FA600D29041 /* DrawerViewController.swift in Sources */,
 				BC4526EA251CADF600E24A51 /* ArchiveVO.swift in Sources */,
@@ -1766,6 +1773,7 @@
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
 				BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */,
 				BC6AF9A32590E6EC00483BBA /* UILabelExtension.swift in Sources */,
+				5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */,
 				BC326AB32527393400A69597 /* AccountUpdateVO.swift in Sources */,
 				06644A8724EA772D003CD359 /* CustomButton.swift in Sources */,
 				BC6358BC25371FCB00EEC48C /* FileViewModel.swift in Sources */,
@@ -2230,8 +2238,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
@@ -2244,7 +2252,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME) Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Permanent Mobile Staging";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -2311,8 +2319,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
@@ -2325,7 +2333,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME) Dev";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Permanent Mobile Staging";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

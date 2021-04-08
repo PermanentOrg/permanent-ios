@@ -381,4 +381,64 @@ struct Payloads {
                 ]
             ]
     }
+    
+    static func tagPost(params: TagParams) -> RequestParameters {
+        let tagLinkVO: [String: Any] = [
+            "refId": params.refID,
+            "refTable": "record"
+        ]
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "TagLinkVO": tagLinkVO,
+                                "TagVO": [
+                                    "name": params.name
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
+    static func deletePost(params: DeleteTagParams) -> RequestParameters {
+        let tagLinkVO: [String: Any] = [
+            "refId": params.refID,
+            "refTable": "record"
+        ]
+        let tagVO = params.tagVO
+        let tagJson = (try? JSONEncoder().encode(tagVO)) ?? Data()
+        let tagDict = (try? JSONSerialization.jsonObject(with: tagJson, options: [])) as? [String:Any] ?? [String:Any]()
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "TagLinkVO": tagLinkVO,
+                                "TagVO": tagDict["TagVO"]
+                            ]
+                        ]
+                    ]
+        ]
+    }
+    
+    static func getTagsByArchive(params: GetTagsByArchiveParams) -> RequestParameters {
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "ArchiveVO": [
+                                    "archiveId": params.archiveId
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }
