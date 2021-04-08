@@ -145,4 +145,5 @@ extension Constants.Keys.StorageKeys {
     static let shareURLToken = "shareURLTokenStorageKey"
     static let sharedFileKey = "sharedFileKey"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
+    static let fcmPushTokenKey = "fcmPushTokenKey"
 }

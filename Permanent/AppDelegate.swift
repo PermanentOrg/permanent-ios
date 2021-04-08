@@ -97,7 +97,8 @@ extension AppDelegate {
 
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
-        print("\n\npush token:" + fcmToken + "\n\n")
+        print("Saving push token: " + fcmToken)
+        PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
     }
 }
 

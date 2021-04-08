@@ -369,4 +369,16 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func newDevice(token: String) -> RequestParameters {
+        return
+            [
+                [
+                    "SimpleVO": [
+                        "key": "deviceToken",
+                        "value": token
+                    ]
+                ]
+            ]
+    }
 }

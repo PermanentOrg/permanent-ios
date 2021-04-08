@@ -286,6 +286,7 @@
 		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
+		F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
@@ -608,6 +609,7 @@
 		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareNotificationPayload.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
+		F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceEndpoint.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -980,6 +982,7 @@
 				BC59BAE525C2B8DD005A45D3 /* NotificationsEndpoint.swift */,
 				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
+				F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -1827,6 +1830,7 @@
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
+				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,

@@ -22,7 +22,7 @@ class NotificationService: UNNotificationServiceExtension {
                 contentHandler(bestAttemptContent)
                 return
             }
-            
+
             switch notificationType {
             case "share-notification":
                 guard let targetArchiveName = userInfo["targetArchiveName"] as? String,
@@ -34,8 +34,11 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 bestAttemptContent.title = sourceArchiveName
                 bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with \(targetArchiveName)"
-            //                bestAttemptContent.attachments = [UNNotificationAttachment(identifier: sharedItemName, url: <#T##URL#>, options: nil)]
             
+            case "upload-reminder":
+                bestAttemptContent.title = ""
+                bestAttemptContent.body = "Preserve your most important documents with peace of mind. We will never mine your data, claim your copyright or invade your privacy."
+                
             default: break
             }
             
