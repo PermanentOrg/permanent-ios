@@ -13,7 +13,7 @@ class TagTableViewCell: UITableViewCell {
     @IBOutlet weak var tagNameLabel: UILabel!
     
     static let identifier = "TagTableViewCell"
- 
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -37,7 +37,7 @@ class TagTableViewCell: UITableViewCell {
         tagNameLabel.textColor = .white
         tagNameLabel.font = Text.style9.font
         tagNameLabel.text = name
-
+        
         
     }
 }

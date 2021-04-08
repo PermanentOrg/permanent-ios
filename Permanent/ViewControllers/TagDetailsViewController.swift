@@ -13,7 +13,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     var tagVOS: [TagVOData]?
     var archiveTagVOS: [TagVO] = []
     var checked: [Bool]!
-    var filteredData: [String]!
+    var filteredTagVO: [TagVO] = []
     var isSearching: Bool = false
     
     @IBOutlet weak var tagFindSearchBar: UISearchBar!
@@ -86,22 +86,34 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 return
             }
             self.archiveTagVOS = tagsArchive
+            self.filteredTagVO = tagsArchive
             self.checked = [Bool].init(repeating: false, count: tagsArchive.count)
+            self.getCheckedTags()
             self.tagsTableView.reloadData()
         })
     }
+    
+    func getCheckedTags() {
+        if let tags = tagVOS {
+            for tagItem in tags {
+                var idx : Int?
+                idx = archiveTagVOS.firstIndex(where: { $0.tagVO.name == tagItem.name })
+                if idx != nil { checked[idx!] = true }
+            }
+        }
+    }
 }
 
-extension TagDetailsViewController: UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+extension TagDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return archiveTagVOS.count
+        return filteredTagVO.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: TagTableViewCell.identifier) as! TagTableViewCell
         
-        if let tagName = archiveTagVOS[indexPath.row].tagVO.name {
+        if let tagName = filteredTagVO[indexPath.row].tagVO.name {
             cell.configure(name: tagName)
         }
         
@@ -118,26 +130,29 @@ extension TagDetailsViewController: UITableViewDelegate, UITableViewDataSource, 
         checked[indexPath.row] = !checked[indexPath.row]
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
-    
+}
+
+extension TagDetailsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        filteredData = searchText.isEmpty ? data : data.filter { (item: String) -> Bool in
-//            return item.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
-//        }
+        filteredTagVO = searchText.isEmpty ? archiveTagVOS : archiveTagVOS.filter({ (tag) -> Bool in
+            return tag.tagVO.name?.lowercased().contains(searchText.lowercased()) ?? false
+        })
+        
         tagsTableView.reloadData()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearching = true
     }
-
+    
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         isSearching = false
     }
-
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
     }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
     }
