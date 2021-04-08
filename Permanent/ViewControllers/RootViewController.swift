@@ -17,7 +17,7 @@ class RootViewController: UIViewController {
         }
     }
     
-    private var current: UIViewController
+    var current: UIViewController
     
     init() {
         self.current = SplashViewController()

@@ -128,18 +128,26 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     break
                 }
                 DispatchQueue.main.async {
-                    if self.rootViewController.isDrawerRootActive {
-                        let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-                        self.rootViewController.changeDrawerRoot(viewController: newRootVC)
+                    if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                        let rootVC: UIViewController
+                        
+                        if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
+                            rootVC = drawerVC.rootViewController.visibleViewController!
+                        } else {
+                            rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                            self.rootViewController.changeDrawerRoot(viewController: rootVC)
+                        }
                         
                         let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: type, csrf: csrf)
                         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
                         filePreviewVC.file = fileVM
                         
-                        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
-                        fileDetailsNavigationController.filePreviewNavDelegate = newRootVC
-                        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                        newRootVC.present(fileDetailsNavigationController, animated: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                            fileDetailsNavigationController.filePreviewNavDelegate = rootVC as? FilePreviewNavigationControllerDelegate
+                            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+                            rootVC.present(fileDetailsNavigationController, animated: true)
+                        }
                     } else {
                         let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: type)
                         try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
