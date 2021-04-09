@@ -17,7 +17,7 @@ class RootViewController: UIViewController {
         }
     }
     
-    private var current: UIViewController
+    var current: UIViewController
     
     init() {
         self.current = SplashViewController()
@@ -48,6 +48,8 @@ class RootViewController: UIViewController {
     }
     
     func setDrawerRoot() {
+        sendPushNotificationToken()
+        
         let mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
         let sideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main)
         
@@ -83,5 +85,15 @@ class RootViewController: UIViewController {
         viewController.willMove(toParent: nil)
         viewController.view.removeFromSuperview()
         viewController.removeFromParent()
+    }
+    
+    private func sendPushNotificationToken() {
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey) else { return }
+        
+        let apiOperation = APIOperation(DeviceEndpoint.new(token: token))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+
+        }
     }
 }
