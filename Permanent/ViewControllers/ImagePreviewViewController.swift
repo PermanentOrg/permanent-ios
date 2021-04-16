@@ -7,13 +7,21 @@
 
 import UIKit
 
+protocol ImagePreviewViewControllerDelegate: class {
+    func imagePreviewViewControllerDidZoom(_ vc: ImagePreviewViewController, scale: CGFloat)
+}
+
 class ImagePreviewViewController: UIViewController {
 
     var scrollView: UIScrollView!
     var imageView = UIImageView(frame: CGRect.zero)
+    var initialZoomScale: CGFloat?
+
+    weak var delegate: ImagePreviewViewControllerDelegate?
     
     var image: UIImage? {
         didSet {
+            initialZoomScale = nil
             imageView.image = image
             imageView.sizeToFit()
             
@@ -31,6 +39,7 @@ class ImagePreviewViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         scrollView.backgroundColor = .black
+        scrollView.contentInsetAdjustmentBehavior = .never
 
         imageView.sizeToFit()
         scrollView.addSubview(imageView)
@@ -44,11 +53,15 @@ class ImagePreviewViewController: UIViewController {
     }
     
     func setZoomScale() {
-        let widthScale = scrollView.frame.size.width / imageView.bounds.width
-        let heightScale = scrollView.frame.size.height / imageView.bounds.height
-        let minScale = min(widthScale, heightScale)
-        scrollView.minimumZoomScale = minScale
-        scrollView.zoomScale = minScale
+        if initialZoomScale == nil {
+            let widthScale = scrollView.frame.size.width / imageView.bounds.width
+            let heightScale = scrollView.frame.size.height / imageView.bounds.height
+            let minScale = min(widthScale, heightScale)
+            scrollView.minimumZoomScale = minScale
+            scrollView.zoomScale = minScale
+            
+            initialZoomScale = minScale
+        }
     }
 }
 
@@ -62,5 +75,9 @@ extension ImagePreviewViewController: UIScrollViewDelegate {
         let verticalOffset = (scrollView.bounds.height > scrollView.contentSize.height) ? ((scrollView.bounds.height - scrollView.contentSize.height) * 0.5): 0.0
         
         imageView.center = CGPoint(x: scrollView.contentSize.width * 0.5 + horizontalOffest,  y: scrollView.contentSize.height * 0.5 + verticalOffset)
+    }
+    
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        delegate?.imagePreviewViewControllerDidZoom(self, scale: scale / (initialZoomScale ?? scale))
     }
 }
