@@ -44,6 +44,7 @@ class FileInfo: NSObject, NSCoding {
         coder.encode(name, forKey: "name")
         coder.encode(url, forKey: "url")
         coder.encode(folder, forKey: "folder")
+        coder.encode(fileContents, forKey: "fileContents")
     }
     
     required convenience init?(coder: NSCoder) {
@@ -52,5 +53,7 @@ class FileInfo: NSObject, NSCoding {
         let folder = coder.decodeObject(forKey: "folder") as! FolderInfo
         
         self.init(withURL: url, named: name, folder: folder)
+        
+        fileContents = coder.decodeObject(forKey: "fileContents") as? Data
     }
 }
