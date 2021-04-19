@@ -140,7 +140,7 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
-    func addTag(tagName: String, completion: @escaping ((TagLinkVOData?) -> Void)) {
+    func addTag(tagName: String, completion: @escaping ((TagLinkVO?) -> Void)) {
         let params: TagParams = (tagName, recordVO?.recordVO?.recordID ?? 0, csrf)
         let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
         
@@ -151,7 +151,7 @@ class FilePreviewViewModel: ViewModelInterface {
                     completion(nil)
                     return
                 }
-                let tagLinkVO: TagLinkVOData? =  model.results.first?.data?.first?.tagLinkVO
+                let tagLinkVO: TagLinkVO? =  model.results.first?.data?.first
                 completion(tagLinkVO)
                 
             case .error(_, _):
