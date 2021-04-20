@@ -24,6 +24,10 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     weak var delegate: TagDetailsViewControllerDelegate?
     
+    var recordVO: RecordVOData? {
+        return viewModel?.recordVO?.recordVO
+    }
+    
     @IBOutlet weak var tagFindSearchBar: UISearchBar!
     @IBOutlet weak var AddTagButton: RoundedButton!
     @IBOutlet weak var tagsCollectionView: UICollectionView!
@@ -42,12 +46,6 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         self.tagsCollectionView.dataSource = self
         self.tagsCollectionView.delegate = self
         self.tagFindSearchBar.delegate = self
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
-        layout.minimumLineSpacing = spacing
-        layout.minimumInteritemSpacing = spacing
-        self.tagsCollectionView?.collectionViewLayout = layout
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,6 +82,12 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         
         tagsCollectionView.backgroundColor = .clear
         tagsCollectionView.indicatorStyle = .white
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
+        layout.minimumLineSpacing = spacing
+        layout.minimumInteritemSpacing = spacing
+        self.tagsCollectionView?.collectionViewLayout = layout
     }
     
     @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
@@ -91,25 +95,37 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
+        let dispatchGroup = DispatchGroup()
         showSpinner()
-        for itemNumber in 0...forAdd.count - 1 {
-            if forAdd[itemNumber] {
-                if let name = archiveTagVOS[itemNumber].tagVO.name {
-                    viewModel?.addTag(tagName: name, completion: { (result) in
-                        
-                    })
-                }
-            }
+        var tempName: [String] = []
+        archiveTagVOS.forEach { (result) in
+            if let name = result.tagVO.name {
+                tempName.append(name) }
         }
+
+        let addedNames: [String] = zip(forAdd, tempName).filter { $0.0 }.map { $1 }
+        dispatchGroup.enter()
+        viewModel?.addTag(tagNames: addedNames, completion: { (result) in
+            dispatchGroup.leave()
+        })
+        
+        var removedTags: [TagVO] = []
         for itemNumber in 0...forRemoval.count - 1 {
             if forRemoval[itemNumber] {
-                viewModel?.deleteTag(tagVO: archiveTagVOS[itemNumber], completion: { (result) in
-                    })
+                removedTags.append(archiveTagVOS[itemNumber])
             }
         }
-        hideSpinner()
-        self.delegate?.tagDetailsViewControllerDidUpdate(self)
-        dismiss(animated: true, completion: nil)
+        dispatchGroup.enter()
+        viewModel?.deleteTag(tagVO: removedTags, completion: { (result) in
+            dispatchGroup.leave()
+            })   
+       
+        dispatchGroup.notify(queue: .main) {
+            self.hideSpinner()
+            self.delegate?.tagDetailsViewControllerDidUpdate(self)
+            self.dismiss(animated: true, completion: nil)
+        }
+
     }
     
     @IBAction func AddTagButtonAction(_ sender: Any) {
