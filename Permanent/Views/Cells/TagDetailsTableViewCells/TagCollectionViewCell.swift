@@ -14,7 +14,6 @@ class TagCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var tagLabel: UILabel!
     @IBOutlet weak var checkMarkImage: UIImageView!
     
-    
     static let identifier = "TagCollectionViewCell"
     
     override func awakeFromNib() {
@@ -45,5 +44,18 @@ class TagCollectionViewCell: UICollectionViewCell {
     func setBackgroudColor(color: UIColor = .white) {
         self.tagBackgroundView.backgroundColor = color
     }
+}
 
+extension TagCollectionViewCell: CollectionCellAutoLayout {
+    var cachedSize: CGSize? {
+        get {
+            return frame.size
+        }
+        set {
+        }
+    }
+
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return preferredLayoutAttributes(layoutAttributes)
+    }
 }

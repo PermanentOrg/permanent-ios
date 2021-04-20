@@ -41,8 +41,6 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
 
         tagsCollectionView.register(UINib(nibName: TagCollectionViewCell.identifier, bundle: nil), forCellWithReuseIdentifier: TagCollectionViewCell.identifier)
         
-        getTags()
-        
         self.tagsCollectionView.dataSource = self
         self.tagsCollectionView.delegate = self
         self.tagFindSearchBar.delegate = self
@@ -83,11 +81,10 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         tagsCollectionView.backgroundColor = .clear
         tagsCollectionView.indicatorStyle = .white
         
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
-        layout.minimumLineSpacing = spacing
-        layout.minimumInteritemSpacing = spacing
-        self.tagsCollectionView?.collectionViewLayout = layout
+        initTagsState()
+    
+        let columnLayout = CustomViewFlowLayout()
+        tagsCollectionView.collectionViewLayout = columnLayout
     }
     
     @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
@@ -159,8 +156,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    
-    func getTags()
+    func initTagsState()
     {
         viewModel?.getTagsByArchive(archiveId: viewModel?.file.archiveId ?? 0, completion: { result in
             guard let tagsArchive = result else {
@@ -193,38 +189,27 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
         
         if let tagName = filteredTagVO[indexPath.row].tagVO.name {
             cell.configure(name: tagName, isVisible: checked[indexPath.row])
         }
-        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! TagCollectionViewCell
-        UIView.animate(withDuration: 0.05,
-                       animations: {
-                        cell.alpha = 0.5
-        }) { (completed) in
-            UIView.animate(withDuration: 0.05,
-                           animations: {
-                            cell.alpha = 1
-            })  { (completed) in
+        
+        UIView.animate(withDuration: 0.05, animations: { cell.alpha = 0.5 }) { (completed) in
+            UIView.animate(withDuration: 0.05, animations: { cell.alpha = 1 })  { (completed) in
                 collectionView.reloadData()
-                
             }
         }
+        
         checked[indexPath.row] = !checked[indexPath.row]
-        if checked[indexPath.row] {
-            forAdd[indexPath.row] = true
-            forRemoval[indexPath.row] = false
-        } else {
-            forAdd[indexPath.row] = false
-            forRemoval[indexPath.row] = true
-        }
+
+        forAdd[indexPath.row] = checked[indexPath.row]
+        forRemoval[indexPath.row] = !checked[indexPath.row]
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -234,18 +219,20 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 7, bottom: 5, right: 5)
-    }
-    
+   
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let leftSpace: Int
-        (checked[indexPath.row] == true) ? (leftSpace = 40) : (leftSpace = 22)
-        if let lettersNumber = filteredTagVO[indexPath.row].tagVO.name?.count { return CGSize(width: leftSpace + (lettersNumber * 8) + 22 , height: 40) }
+        let additionalSpace: CGFloat = (checked[indexPath.row] == true) ? ( 45 ) : ( 35 )
+        
+        if  let name = filteredTagVO[indexPath.row].tagVO.name {
+            let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
+            let width = attributedName.boundingRect(with: CGSize(width: 300, height: 30), options: [], context: nil).size.width
+            return CGSize(width: additionalSpace + width , height: 40)
+            }
+        
         return CGSize(width: 0, height: 0)
     }
 }
+
 extension TagDetailsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filteredTagVO = searchText.isEmpty ? archiveTagVOS : archiveTagVOS.filter({ (tag) -> Bool in

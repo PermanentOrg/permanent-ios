@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 13.04.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
@@ -34,6 +33,10 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         cellTitleLabel.text = "Tags".localized()
         cellTitleLabel.textColor = .white
         cellTitleLabel.font = Text.style9.font
+        
+        let columnLayout = CustomViewFlowLayout()
+        columnLayout.cellSpacing = 5
+        self.tagsNameCollectionView.collectionViewLayout = columnLayout
     }
     
     static func nib() -> UINib {
@@ -79,29 +82,13 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
         return 5
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-                let cellWidth : CGFloat = 50;
-        
-                let numberOfCells = floor(self.frame.width / cellWidth);
-                let edgeInsets = (self.frame.width - (numberOfCells * cellWidth)) / (numberOfCells + 1);
-        
-                return UIEdgeInsets(top: 0, left: 0, bottom: 60.0, right: 2 * edgeInsets);
-  //      return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if let letter_number = tagNames?[indexPath.row].count { return CGSize(width: 30 + (letter_number * 8) , height: 30) }
+        if  let name = tagNames?[indexPath.row] {
+            
+            let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: cellTitleLabel.font as Any])
+            let width = attributedName.boundingRect(with: CGSize(width: 300, height: 30), options: [], context: nil).size.width
+            return CGSize(width: 15 + width , height: 30)
+        }
         return CGSize(width: 0, height: 0)
     }
-        
-//    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-//
-//        let cellWidth : CGFloat = 110;
-//
-//        let numberOfCells = floor(self.frame.width / cellWidth);
-//        let edgeInsets = (self.frame.width - (numberOfCells * cellWidth)) / (numberOfCells + 1);
-//
-//        return UIEdgeInsets(top: 0, left: edgeInsets, bottom: 60.0, right: edgeInsets);
-//    }
-
 }

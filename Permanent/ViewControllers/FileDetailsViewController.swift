@@ -455,8 +455,9 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
                 return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
             }
         case .tags:
+            let cellHeight: CGFloat = 40
             let countTags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").count
-            let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 16 ) ? ( 180 ) : ( 80 + (countTags/4) * 30 ))
+            let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 3 ) ? ( (cellHeight * 3) + 13 ) : ( cellHeight * 2 ))
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
