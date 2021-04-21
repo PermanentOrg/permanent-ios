@@ -11,13 +11,20 @@ protocol TagDetailsViewControllerDelegate: class {
     func tagDetailsViewControllerDidUpdate(_ tagVC: TagDetailsViewController)
 }
 
+struct SortedTagVO {
+    var tagVO: TagVO
+    var checked: Bool = false
+    var forAdding: Bool = false
+    var forRemoval: Bool = false
+}
+
 class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
     var tagVOS: [TagVOData]?
     var archiveTagVOS: [TagVO] = []
     var addTagVOS: TagVO = TagVO(tagVO: TagVOData(name: "", status: "", tagId: 0, type: "", createdDT: "", updatedDT: ""))
-    var checked,forRemoval,forAdd: [Bool]!
+    var sortedArray: [SortedTagVO] = []
     var filteredTagVO: [TagVO] = []
     var isSearching: Bool = false
     private let spacing: CGFloat = 16.0
@@ -93,25 +100,30 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
         let dispatchGroup = DispatchGroup()
-        showSpinner()
-        var tempName: [String] = []
-        archiveTagVOS.forEach { (result) in
-            if let name = result.tagVO.name {
-                tempName.append(name) }
+        showSpinner(colored: .lightGray)
+        
+        let forAddingBool = sortedArray.map({ (SortedTagVO) in
+            return SortedTagVO.forAdding
+         })
+        let forAddingNames = sortedArray.map { (item) -> String in
+            return item.tagVO.tagVO.name ?? ""
         }
-
-        let addedNames: [String] = zip(forAdd, tempName).filter { $0.0 }.map { $1 }
+        
+        let addedNames: [String] = zip(forAddingBool, forAddingNames).filter{ $0.0 }.map{ $1 }
+        
         dispatchGroup.enter()
         viewModel?.addTag(tagNames: addedNames, completion: { (result) in
             dispatchGroup.leave()
         })
         
-        var removedTags: [TagVO] = []
-        for itemNumber in 0...forRemoval.count - 1 {
-            if forRemoval[itemNumber] {
-                removedTags.append(archiveTagVOS[itemNumber])
-            }
+        let forRemovalBool = sortedArray.map { (item) -> Bool in
+            return item.forRemoval
         }
+        let forRemovalTags = sortedArray.map { (item) -> TagVO in
+            return item.tagVO
+        }
+        let removedTags: [TagVO] = zip(forRemovalBool, forRemovalTags).filter{ $0.0 }.map{ $1 }
+        
         dispatchGroup.enter()
         viewModel?.deleteTag(tagVO: removedTags, completion: { (result) in
             dispatchGroup.leave()
@@ -144,42 +156,49 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
             }
             addTagVOS.tagVO.name = findTag.lowercased()
             archiveTagVOS.insert(addTagVOS , at: 0)
-            checked.insert(true, at: 0)
-            forRemoval.insert(false, at: 0)
-            forAdd.insert(true, at: 0)
+            
+            sortedArray.insert(SortedTagVO(tagVO: addTagVOS, checked: true, forAdding: true, forRemoval: false), at: 0)
             
             self.tagFindSearchBar.text = ""
-            filteredTagVO = archiveTagVOS
+            
+            filteredTagVO = sortedArray.map({ (item) -> TagVO in
+                return item.tagVO
+            })
             
             self.tagsCollectionView.reloadData()
-            print()
+            self.view.endEditing(true)
         }
     }
     
     func initTagsState()
     {
+        showSpinner(colored: .lightGray)
         viewModel?.getTagsByArchive(archiveId: viewModel?.file.archiveId ?? 0, completion: { result in
             guard let tagsArchive = result else {
                 return
             }
             self.archiveTagVOS = tagsArchive
-            self.filteredTagVO = tagsArchive
-            self.checked = [Bool].init(repeating: false, count: tagsArchive.count)
-            self.forRemoval = [Bool].init(repeating: false, count: tagsArchive.count)
-            self.forAdd = [Bool].init(repeating: false, count: tagsArchive.count)
-            self.getCheckedTags()
-            self.tagsCollectionView.reloadData()
-        })
-    }
-    
-    func getCheckedTags() {
-        if let tags = tagVOS {
-            for tagItem in tags {
-                var idx : Int?
-                idx = archiveTagVOS.firstIndex(where: { $0.tagVO.name == tagItem.name })
-                if idx != nil { checked[idx!] = true }
+            
+            for (index,_) in self.archiveTagVOS.enumerated() {
+                self.sortedArray.append(SortedTagVO(tagVO: self.archiveTagVOS[index]))
             }
-        }
+            
+            if let tags = self.tagVOS {
+                for tagItem in tags {
+                    var idx : Int?
+                    idx = self.archiveTagVOS.firstIndex(where: { $0.tagVO.name == tagItem.name })
+                    if idx != nil { self.sortedArray[idx!].checked = true }
+                }
+            }
+            
+            self.sortedArray.sort { (_, arg0) -> Bool in !arg0.checked }
+            self.filteredTagVO = self.sortedArray.map({ (item) -> TagVO in
+                return item.tagVO
+            })
+
+            self.tagsCollectionView.reloadData()
+            self.hideSpinner()
+        })
     }
 }
 
@@ -192,7 +211,7 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
         
         if let tagName = filteredTagVO[indexPath.row].tagVO.name {
-            cell.configure(name: tagName, isVisible: checked[indexPath.row])
+            cell.configure(name: tagName, isVisible: sortedArray[indexPath.row].checked)
         }
         return cell
     }
@@ -206,10 +225,9 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
             }
         }
         
-        checked[indexPath.row] = !checked[indexPath.row]
-
-        forAdd[indexPath.row] = checked[indexPath.row]
-        forRemoval[indexPath.row] = !checked[indexPath.row]
+        sortedArray[indexPath.row].checked = !sortedArray[indexPath.row].checked
+        sortedArray[indexPath.row].forAdding = sortedArray[indexPath.row].checked
+        sortedArray[indexPath.row].forRemoval = !sortedArray[indexPath.row].checked
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -221,7 +239,7 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let additionalSpace: CGFloat = (checked[indexPath.row] == true) ? ( 45 ) : ( 35 )
+        let additionalSpace: CGFloat = (sortedArray[indexPath.row].checked == true) ? ( 45 ) : ( 35 )
         
         if  let name = filteredTagVO[indexPath.row].tagVO.name {
             let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
@@ -235,7 +253,12 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
 
 extension TagDetailsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredTagVO = searchText.isEmpty ? archiveTagVOS : archiveTagVOS.filter({ (tag) -> Bool in
+        
+        let currentTagVO = sortedArray.map({ (item) -> TagVO in
+            return item.tagVO
+        })
+        
+        filteredTagVO = searchText.isEmpty ? currentTagVO  : currentTagVO.filter({ (tag) -> Bool in
             return tag.tagVO.name?.lowercased().contains(searchText.lowercased()) ?? false
         })
         
