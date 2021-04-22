@@ -100,10 +100,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         navigationController?.navigationBar.barTintColor = .black
     }
     
-    func willClose() {
-        
-    }
-    
     @objc private func shareButtonAction(_ sender: Any) {
         if let fileName = viewModel?.fileName(),
            let localURL = fileHelper.url(forFileNamed: fileName)
@@ -460,5 +456,19 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
 extension FileDetailsViewController: LocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
         collectionView.reloadSections([1])
+    }
+}
+
+extension FileDetailsViewController: FilePreviewNavigatable {
+    func willMoveOffScreen() {
+        
+    }
+    
+    func willMoveOnScreen() {
+        
+    }
+    
+    func willClose() {
+        
     }
 }

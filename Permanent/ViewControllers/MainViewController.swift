@@ -488,13 +488,17 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
-            fileDetailsVC.file = file
-            
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-            fileDetailsNavigationController.filePreviewNavDelegate = self
-            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-            present(fileDetailsNavigationController, animated: true)
+//            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+//            fileDetailsVC.file = file
+//
+//            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+//            fileDetailsNavigationController.filePreviewNavDelegate = self
+//            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+            listPreviewVC.modalPresentationStyle = .fullScreen
+            listPreviewVC.viewModel = viewModel
+            listPreviewVC.initialFile = file
+            present(listPreviewVC, animated: true)
         }
     }
     

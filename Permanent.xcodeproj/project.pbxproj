@@ -280,6 +280,7 @@
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
 		D269D9C8C1E18A5CE8E1491A /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864293632D1F8008599F3A97 /* Pods_Permanent.framework */; };
+		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
 		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
@@ -605,6 +606,7 @@
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
 		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				BCF906632587B0C200DF1B64 /* MembersViewController.swift */,
 				5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */,
 				5E46217125C17C5A007642BE /* AccountInfoViewController.swift */,
+				F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */,
 				F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */,
 				5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */,
 				5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */,
@@ -1846,6 +1849,7 @@
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
+				F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */,
 				BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */,
 				BCD414DD257F828E0019548F /* SharebyURLVO.swift in Sources */,
 				BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */,

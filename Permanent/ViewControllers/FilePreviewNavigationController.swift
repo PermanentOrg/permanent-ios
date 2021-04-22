@@ -7,6 +7,12 @@
 
 import UIKit
 
+protocol FilePreviewNavigatable {
+    func willMoveOffScreen()
+    func willMoveOnScreen()
+    func willClose()
+}
+
 protocol FilePreviewNavigationControllerDelegate: class {
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: FilePreviewNavigationController, hasChanges: Bool)
 }
@@ -37,6 +43,8 @@ class FilePreviewNavigationController: UINavigationController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
@@ -61,13 +69,23 @@ class FilePreviewNavigationController: UINavigationController {
     @objc private func closeButtonAction(_ sender: Any) {
         filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         
-        if let topVC = topViewController as? FilePreviewViewController {
-            topVC.willClose()
-        } else if let topVC = topViewController as? FileDetailsViewController {
-            topVC.willClose()
-        }
+        (topViewController as! FilePreviewNavigatable).willClose()
         
         dismiss(animated: true, completion: nil)
     }
 
+}
+
+extension FilePreviewNavigationController: FilePreviewNavigatable {
+    func willMoveOffScreen() {
+        (topViewController as! FilePreviewNavigatable).willMoveOffScreen()
+    }
+    
+    func willMoveOnScreen() {
+        (topViewController as! FilePreviewNavigatable).willMoveOnScreen()
+    }
+    
+    func willClose() {
+        (topViewController as! FilePreviewNavigatable).willClose()
+    }
 }

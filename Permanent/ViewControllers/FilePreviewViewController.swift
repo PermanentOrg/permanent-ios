@@ -73,10 +73,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return webView
     }
     
-    func willClose() {
-        removeVideoPlayer()
-    }
-    
     // MARK: - Load methods
     func loadRecord() {
         guard let fileVO = self.viewModel?.fileVO(),
@@ -133,7 +129,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadVideo(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
         let playerItem = AVPlayerItem(asset: asset)
-        playerItem.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
+//        playerItem.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
         
         let player = AVPlayer(playerItem: playerItem)
         videoPlayer = AVPlayerViewController()
@@ -158,7 +154,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func removeVideoPlayer() {
-        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
+//        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
         videoPlayer?.player?.replaceCurrentItem(with: nil)
         
         videoPlayer?.willMove(toParent: nil)
@@ -272,5 +268,23 @@ extension FilePreviewViewController: ImagePreviewViewControllerDelegate {
 extension FilePreviewViewController: UIScrollViewDelegate {
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         navigationController?.setNavigationBarHidden(scale > 1, animated: true)
+    }
+}
+
+extension FilePreviewViewController: FilePreviewNavigatable {
+    func willMoveOffScreen() {
+        videoPlayer?.player?.pause()
+//        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
+    }
+    
+    func willMoveOnScreen() {
+        if videoPlayer?.player?.rate == 0 {
+//            playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
+            videoPlayer?.player?.play()
+        }
+    }
+    
+    func willClose() {
+        removeVideoPlayer()
     }
 }
