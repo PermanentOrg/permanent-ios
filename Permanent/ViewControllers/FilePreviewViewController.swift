@@ -65,6 +65,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         let webView = WKWebView(frame: view.bounds)
         webView.backgroundColor = .black
         webView.navigationDelegate = self
+        webView.scrollView.delegate = self
         webView.frame = view.bounds
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.insertSubview(webView, at: 0)
@@ -112,6 +113,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
         let imagePreviewVC = ImagePreviewViewController()
+        imagePreviewVC.delegate = self
         addChild(imagePreviewVC)
         imagePreviewVC.view.frame = view.bounds
         // Insert view under the spinner
@@ -254,5 +256,21 @@ extension FilePreviewViewController: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         hideSpinner()
+    }
+}
+
+// MARK: - ImagePreviewViewControllerDelegate
+// Used to hide the navigation bar in an image environment
+extension FilePreviewViewController: ImagePreviewViewControllerDelegate {
+    func imagePreviewViewControllerDidZoom(_ vc: ImagePreviewViewController, scale: CGFloat) {
+        navigationController?.setNavigationBarHidden(scale > 1, animated: true)
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+// Used to hide the navigation bar in a webview environment
+extension FilePreviewViewController: UIScrollViewDelegate {
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        navigationController?.setNavigationBarHidden(scale > 1, animated: true)
     }
 }

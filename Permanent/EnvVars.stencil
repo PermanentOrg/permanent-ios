@@ -1,0 +1,20 @@
+//
+//  EnvVars.swift.stencil
+//  Permanent
+//
+//  Created by Vlad Alexandru Rusu on 06.04.2021.
+//
+
+import Foundation
+
+public struct GoogleServiceInfo {
+    let clientId: String
+    let reversedClientId: String
+    let apiKey: String
+    let gcmSenderId: String
+    let projectId: String
+    let storageBucket: String
+    let googleAppId: String
+}
+
+public let googleServiceInfo = GoogleServiceInfo(clientId: "{{ argument.clientId }}", reversedClientId: "{{ argument.reversedClientId }}", apiKey: "{{ argument.apiKey }}", gcmSenderId: "{{ argument.gcmSenderId }}", projectId: "{{ argument.projectId }}", storageBucket: "{{ argument.storageBucket }}", googleAppId: "{{ argument.googleAppId }}")

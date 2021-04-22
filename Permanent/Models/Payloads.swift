@@ -370,6 +370,18 @@ struct Payloads {
         ]
     }
     
+    static func newDevice(token: String) -> RequestParameters {
+        return
+            [
+                [
+                    "SimpleVO": [
+                        "key": "deviceToken",
+                        "value": token
+                    ]
+                ]
+            ]
+    }
+    
     static func tagPost(params: TagParams) -> RequestParameters {
         let tagLinkVO: [String: Any] = [
             "refId": params.refID,
@@ -419,7 +431,6 @@ struct Payloads {
     }
     
     static func getTagsByArchive(params: GetTagsByArchiveParams) -> RequestParameters {
-        
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,

@@ -82,6 +82,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         tagFindSearchBar.setBackgroundColor(.darkGray)
         tagFindSearchBar.tintColor = .lightGray
         tagFindSearchBar.barTintColor = .lightGray
+        tagFindSearchBar.autocapitalizationType = .none
         
         AddTagButton.configureActionButtonUI(title: "Add".localized(), bgColor: .barneyPurple, buttonHeight: CGFloat(30))
         
@@ -141,12 +142,12 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         var tagsList: [String] = []
         for item in archiveTagVOS {
             if let itemName = item.tagVO.name {
-                tagsList.append(itemName.lowercased())
+                tagsList.append(itemName)
             }
         }
         if let findTag = tagFindSearchBar.text,
            !findTag.isEmpty,
-           !tagsList.contains(findTag.lowercased())
+           !tagsList.contains(findTag)
         {
             let processedElements = archiveTagVOS.compactMap { (result) -> TagVOData in
                 return result.tagVO
@@ -154,7 +155,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
             if let currentTag = processedElements.first {
                 addTagVOS.tagVO = currentTag
             }
-            addTagVOS.tagVO.name = findTag.lowercased()
+            addTagVOS.tagVO.name = findTag
             archiveTagVOS.insert(addTagVOS , at: 0)
             
             sortedArray.insert(SortedTagVO(tagVO: addTagVOS, checked: true, forAdding: true, forRemoval: false), at: 0)

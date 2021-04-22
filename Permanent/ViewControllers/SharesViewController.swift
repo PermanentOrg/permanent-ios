@@ -187,18 +187,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
-                DispatchQueue.main.async {
-                    self.refreshTableView {
-                        self.scrollToFileIfNeeded()
-                        
-                        self.directoryLabel.text = self.viewModel?.shareListType == .sharedByMe ? .sharedByMe : .sharedWithMe
-                        self.backButton.isHidden = true
-                    }
+                self.refreshTableView {
+                    self.scrollToFileIfNeeded()
+                    
+                    self.directoryLabel.text = self.viewModel?.shareListType == .sharedByMe ? .sharedByMe : .sharedWithMe
+                    self.backButton.isHidden = true
                 }
             case .error(let message):
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: message)
-                }
+                self.showErrorAlert(message: message)
             }
             
             if let completion = completion {

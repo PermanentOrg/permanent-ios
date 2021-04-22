@@ -29,40 +29,42 @@ class SharedFilesViewModel: FilesViewModel {
         let apiOperation = APIOperation(ShareEndpoint.getShares)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding( from: response, with: APIResults<ArchiveVO>.decoder)
-                else {
-                    return handler(.error(message: .errorMessage))
-                }
-                
-                self.csrf = model.csrf
-                
-                let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
-                
-                model.results.first?.data?.forEach { archive in
-                    let itemVOS = archive.archiveVO?.itemVOS
-                    
-                    itemVOS?.forEach {
-                        let sharedFileVM = FileViewModel(model: $0, csrf: model.csrf, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
-                        
-                        if $0.archiveID == currentArchiveId {
-                            self.sharedByMeViewModels.append(sharedFileVM)
-                        } else {
-                            self.sharedWithMeViewModels.append(sharedFileVM)
-                        }
+            DispatchQueue.main.async {
+                switch result {
+                case .json(let response, _):
+                    guard let model: APIResults<ArchiveVO> = JSONHelper.decoding( from: response, with: APIResults<ArchiveVO>.decoder)
+                    else {
+                        return handler(.error(message: .errorMessage))
                     }
                     
-                    self.viewModels = self.shareListType == .sharedByMe ? self.sharedByMeViewModels : self.sharedWithMeViewModels
+                    self.csrf = model.csrf
+                    
+                    let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
+                    
+                    model.results.first?.data?.forEach { archive in
+                        let itemVOS = archive.archiveVO?.itemVOS
+                        
+                        itemVOS?.forEach {
+                            let sharedFileVM = FileViewModel(model: $0, csrf: model.csrf, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
+                            
+                            if $0.archiveID == currentArchiveId {
+                                self.sharedByMeViewModels.append(sharedFileVM)
+                            } else {
+                                self.sharedWithMeViewModels.append(sharedFileVM)
+                            }
+                        }
+                        
+                        self.viewModels = self.shareListType == .sharedByMe ? self.sharedByMeViewModels : self.sharedWithMeViewModels
+                    }
+                    
+                    handler(.success)
+                    
+                case .error(let error, _):
+                    handler(.error(message: error?.localizedDescription))
+                    
+                default:
+                    break
                 }
-                
-                handler(.success)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
             }
         }
     }

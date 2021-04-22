@@ -240,6 +240,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self.onFilesFetchCompletion(status)
             self.retryUnfinishedUploadsIfNeeded()
             self.checkForSavedUniversalLink()
+            self.checkForSavedShareFile()
         })
     }
     
@@ -296,6 +297,26 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         sharePreviewVC.viewModel = viewModel
         
         navigationController?.display(viewController: sharePreviewVC)
+    }
+    
+    fileprivate func checkForSavedShareFile() {
+        guard
+            let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey),
+            let sharePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController,
+            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        else {
+            return
+        }
+        
+        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, csrf: csrf)
+        sharePreviewVC.file = fileVM
+        
+        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: sharePreviewVC)
+        fileDetailsNavigationController.filePreviewNavDelegate = self
+        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+        present(fileDetailsNavigationController, animated: true)
+        
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
     }
     
     private func retryUnfinishedUploadsIfNeeded() {

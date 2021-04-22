@@ -54,6 +54,27 @@ struct FileViewModel: Equatable {
         self.fileStatus = .uploading
     }
     
+    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, csrf: String) {
+        self.csrf = csrf
+        
+        self.name = name
+        self.date = DateUtils.currentDate
+        self.description = ""
+        self.size = -1
+        self.uploadFileName = ""
+        self.archiveThumbnailURL = ""
+        self.thumbnailURL = nil
+        self.thumbnailURL2000 = nil
+        self.type = FileType(rawValue: type) ?? .miscellaneous
+        self.archiveId = -1
+        self.archiveNo = archiveNbr
+        self.recordId = -1
+        self.folderId = -1
+        self.parentFolderId = -1
+        self.parentFolderLinkId = -1
+        self.folderLinkId = folderLinkId
+    }
+    
     init(model: ItemVO, csrf: String?, archiveThumbnailURL: String? = nil) {
         self.csrf = csrf
         
