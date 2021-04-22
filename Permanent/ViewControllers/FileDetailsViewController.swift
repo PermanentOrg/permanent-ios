@@ -269,7 +269,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             if stringCellDetails(cellType: currentCellType) == ""
             {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-                cell.configure(title: title(forCellType: currentCellType), details: "(not present)".localized())
+                cell.configure(title: title(forCellType: currentCellType), details: "(tap to add)".localized())
                 returnedCell = cell
             } else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
