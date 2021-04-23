@@ -497,7 +497,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
             listPreviewVC.modalPresentationStyle = .fullScreen
             listPreviewVC.viewModel = viewModel
-            listPreviewVC.initialFile = file
+            listPreviewVC.currentFile = file
             present(listPreviewVC, animated: true)
         }
     }

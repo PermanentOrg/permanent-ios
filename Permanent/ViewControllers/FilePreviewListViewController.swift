@@ -18,16 +18,16 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
             viewModel?.viewModels.filter({ $0.type.isFolder == false }) ?? []
         }
     }
-    var initialFile: FileViewModel!
-    
-    var initialScrollDone: Bool = false
-    
+
+    var currentFile: FileViewModel!
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         collectionView.isPagingEnabled = true
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         layout.scrollDirection = .horizontal
         layout.sectionInset = .zero
@@ -44,11 +44,14 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        if (!initialScrollDone) {
-            initialScrollDone = true
-            let selectedIndex: Int = filteredFiles.firstIndex(of: initialFile) ?? 0
-            collectionView.scrollToItem(at: [0, selectedIndex], at: .centeredHorizontally, animated: false)
-        }
+        let selectedIndex: Int = filteredFiles.firstIndex(of: currentFile) ?? 0
+        collectionView.scrollToItem(at: [0, selectedIndex], at: .centeredHorizontally, animated: false)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        collectionView.reloadData()
     }
 }
 
@@ -95,6 +98,10 @@ extension FilePreviewListViewController: UICollectionViewDelegateFlowLayout, UIC
             fileDetailsNavigationController.removeFromParent()
             fileDetailsNavigationController.didMove(toParent: nil)
             fileDetailsNavigationController.willMoveOffScreen()
+        }
+        
+        if let currentIndex = collectionView.indexPathsForVisibleItems.first {
+            currentFile = filteredFiles[currentIndex.item]
         }
     }
     

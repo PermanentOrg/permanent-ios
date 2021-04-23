@@ -134,7 +134,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         let player = AVPlayer(playerItem: playerItem)
         videoPlayer = AVPlayerViewController()
         videoPlayer!.player = player
-        player.play()
+//        player.play()
         
         self.playerItem = playerItem
         
@@ -280,7 +280,7 @@ extension FilePreviewViewController: FilePreviewNavigatable {
     func willMoveOnScreen() {
         if videoPlayer?.player?.rate == 0 {
 //            playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
-            videoPlayer?.player?.play()
+//            videoPlayer?.player?.play()
         }
     }
     
