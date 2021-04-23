@@ -409,9 +409,6 @@ struct Payloads {
             "refId": params.refID,
             "refTable": "record"
         ]
-//        let tagVO = params.tagVO
-//        let tagJson = (try? JSONEncoder().encode(tagVO)) ?? Data()
-//        let tagDict = (try? JSONSerialization.jsonObject(with: tagJson, options: [])) as? [String:Any] ?? [String:Any]()
         
         let data = params.tagVO.map {[
             "TagLinkVO": tagLinkVO,

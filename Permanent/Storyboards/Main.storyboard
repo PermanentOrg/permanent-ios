@@ -346,7 +346,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="YJ0-am-f1E"/>
                                 </constraints>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
                             </searchBar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ern-RS-tpK" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                 <rect key="frame" x="309" y="54" width="90" height="36"/>

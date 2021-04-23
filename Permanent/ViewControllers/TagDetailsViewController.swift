@@ -22,23 +22,19 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
     var tagVOS: [TagVOData]?
-    var archiveTagVOS: [TagVO] = []
-    var addTagVOS: TagVO = TagVO(tagVO: TagVOData(name: "", status: "", tagId: 0, type: "", createdDT: "", updatedDT: ""))
-    var sortedArray: [SortedTagVO] = []
-    var filteredTagVO: [TagVO] = []
-    var isSearching: Bool = false
-    private let spacing: CGFloat = 16.0
-    
+
     weak var delegate: TagDetailsViewControllerDelegate?
     
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
     
+    var sortedArray: [SortedTagVO] = []
+    var filteredTagVO: [TagVO] = []
+    
     @IBOutlet weak var tagFindSearchBar: UISearchBar!
     @IBOutlet weak var AddTagButton: RoundedButton!
     @IBOutlet weak var tagsCollectionView: UICollectionView!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,25 +136,18 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     @IBAction func AddTagButtonAction(_ sender: Any) {
         var tagsList: [String] = []
-        for item in archiveTagVOS {
-            if let itemName = item.tagVO.name {
+        
+        for item in sortedArray {
+            if let itemName = item.tagVO.tagVO.name {
                 tagsList.append(itemName)
             }
         }
+        
         if let findTag = tagFindSearchBar.text,
            !findTag.isEmpty,
            !tagsList.contains(findTag)
         {
-            let processedElements = archiveTagVOS.compactMap { (result) -> TagVOData in
-                return result.tagVO
-            }
-            if let currentTag = processedElements.first {
-                addTagVOS.tagVO = currentTag
-            }
-            addTagVOS.tagVO.name = findTag
-            archiveTagVOS.insert(addTagVOS , at: 0)
-            
-            sortedArray.insert(SortedTagVO(tagVO: addTagVOS, checked: true, forAdding: true, forRemoval: false), at: 0)
+            sortedArray.insert(SortedTagVO(tagVO: TagVO(tagVO: TagVOData(name: findTag, status: String(), tagId: Int(), type: String(), createdDT: String(), updatedDT: String())), checked: true, forAdding: true, forRemoval: false), at: 0)
             
             self.tagFindSearchBar.text = ""
             
@@ -178,20 +167,20 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
             guard let tagsArchive = result else {
                 return
             }
-            self.archiveTagVOS = tagsArchive
             
-            for (index,_) in self.archiveTagVOS.enumerated() {
-                self.sortedArray.append(SortedTagVO(tagVO: self.archiveTagVOS[index]))
+            for (index,_) in tagsArchive.enumerated() {
+                self.sortedArray.append(SortedTagVO(tagVO: tagsArchive[index]))
+                
             }
             
             if let tags = self.tagVOS {
                 for tagItem in tags {
                     var idx : Int?
-                    idx = self.archiveTagVOS.firstIndex(where: { $0.tagVO.name == tagItem.name })
+                    idx = self.sortedArray.firstIndex(where: { $0.tagVO.tagVO.name == tagItem.name})
+
                     if idx != nil { self.sortedArray[idx!].checked = true }
                 }
             }
-            
             self.sortedArray.sort { (_, arg0) -> Bool in !arg0.checked }
             self.filteredTagVO = self.sortedArray.map({ (item) -> TagVO in
                 return item.tagVO
@@ -247,7 +236,6 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
             let width = attributedName.boundingRect(with: CGSize(width: 300, height: 30), options: [], context: nil).size.width
             return CGSize(width: additionalSpace + width , height: 40)
             }
-        
         return CGSize(width: 0, height: 0)
     }
 }
@@ -266,19 +254,7 @@ extension TagDetailsViewController: UISearchBarDelegate {
         tagsCollectionView.reloadData()
     }
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        isSearching = true
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        isSearching = false
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        isSearching = false
-    }
-    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        isSearching = false
+        AddTagButtonAction(searchBar)
     }
 }
