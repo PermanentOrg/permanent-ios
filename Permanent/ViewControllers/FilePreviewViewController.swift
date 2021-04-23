@@ -52,7 +52,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
         
-        navigationItem.title = file.name
+        title = file.name
     }
     
     override func styleNavBar() {
@@ -139,7 +139,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         self.playerItem = playerItem
         
         addChild(videoPlayer!)
-        videoPlayer!.view.frame = view.bounds
+        videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
         view.insertSubview(videoPlayer!.view, at: 0)
         videoPlayer!.didMove(toParent: self)
         
@@ -163,7 +163,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     // MARK: - Actions
-    @objc private func shareButtonAction(_ sender: Any) {
+    @objc func shareButtonAction(_ sender: Any) {
         if let fileName = self.viewModel?.fileName(),
             let localURL = fileHelper.url(forFileNamed: fileName) {
             share(url: localURL)
@@ -189,7 +189,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    @objc private func infoButtonAction(_ sender: Any) {
+    @objc func infoButtonAction(_ sender: Any) {
         removeVideoPlayer()
         
         let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController

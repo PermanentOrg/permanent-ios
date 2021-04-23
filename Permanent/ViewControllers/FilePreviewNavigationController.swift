@@ -14,13 +14,14 @@ protocol FilePreviewNavigatable {
 }
 
 protocol FilePreviewNavigationControllerDelegate: class {
-    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: FilePreviewNavigationController, hasChanges: Bool)
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
 }
 
 class FilePreviewNavigationController: UINavigationController {
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return topViewController?.supportedInterfaceOrientations ?? (UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all])
+        return [.portrait] //topViewController?.supportedInterfaceOrientations ?? (UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all])
     }
     
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
@@ -43,8 +44,6 @@ class FilePreviewNavigationController: UINavigationController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
@@ -63,13 +62,11 @@ class FilePreviewNavigationController: UINavigationController {
             leftButtonImage = UIImage(named: "close")
         }
         
-        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+//        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     }
     
     @objc private func closeButtonAction(_ sender: Any) {
         filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
-        
-        (topViewController as! FilePreviewNavigatable).willClose()
         
         dismiss(animated: true, completion: nil)
     }

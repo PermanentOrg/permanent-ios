@@ -63,6 +63,17 @@ class ImagePreviewViewController: UIViewController {
             initialZoomScale = minScale
         }
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        coordinator.animate { (ctx) in
+        } completion: { (ctx) in
+            self.initialZoomScale = nil
+            self.scrollView.contentSize = self.imageView.bounds.size
+            self.setZoomScale()
+        }
+    }
 }
 
 extension ImagePreviewViewController: UIScrollViewDelegate {

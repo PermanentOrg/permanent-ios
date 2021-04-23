@@ -94,17 +94,19 @@ class FilePreviewViewModel: ViewModelInterface {
         let apiOperation = APIOperation(FilesEndpoint.update(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json( _, _):
-                self.getRecord(file: file) { (record) in
-                    completion(true)
+            DispatchQueue.main.async {
+                switch result {
+                case .json( _, _):
+                    self.getRecord(file: file) { (record) in
+                        completion(true)
+                    }
+                    
+                case .error(_, _):
+                    completion(false)
+                    
+                default:
+                    completion(false)
                 }
-                
-            case .error(_, _):
-                completion(false)
-                
-            default:
-                completion(false)
             }
         }
     }

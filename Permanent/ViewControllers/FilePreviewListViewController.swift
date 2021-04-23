@@ -11,7 +11,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     
     var collectionView: UICollectionView!
     
-    let controllersCache: NSCache<NSNumber, FilePreviewNavigationController> = NSCache<NSNumber, FilePreviewNavigationController>()
+    let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
     
     var filteredFiles: [FileViewModel] {
         get {
@@ -20,9 +20,13 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
 
     var currentFile: FileViewModel!
+    
+    var deviceInRotation: Bool = false
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = currentFile.name
         
         let layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
@@ -39,33 +43,87 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: UICollectionViewCell.reuseIdentifier)
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        let shareButtonImage = UIBarButtonItem.SystemItem.action
+        let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
+        
+        let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
+        navigationItem.rightBarButtonItems = [shareButton, infoButton]
+        
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     }
     
-    override func viewWillLayoutSubviews() {
+    public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
-        let selectedIndex: Int = filteredFiles.firstIndex(of: currentFile) ?? 0
-        collectionView.scrollToItem(at: [0, selectedIndex], at: .centeredHorizontally, animated: false)
+        let selectedIndex: CGFloat = CGFloat(filteredFiles.firstIndex(of: currentFile) ?? 0)
+
+        collectionView.scrollRectToVisible(CGRect(x: view.bounds.width * selectedIndex, y: 0, width: view.bounds.width, height: view.bounds.height), animated: false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        collectionView.reloadData()
+        deviceInRotation = true
+        coordinator.animate { (ctx) in
+            
+        } completion: { (ctx) in
+            self.collectionView.reloadData()
+            self.deviceInRotation = false
+        }
+    }
+    
+    @objc func closeButtonAction(_ sender: Any) {
+//        filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func shareButtonAction(_ sender: Any) {
+        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
+            let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: currentIndex.row)) {
+            fileDetailsNavigationController.shareButtonAction(sender)
+        }
+    }
+    
+    @objc private func infoButtonAction(_ sender: Any) {
+        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
+            let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: currentIndex.row)) {
+            let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+            fileDetailsVC.file = fileDetailsNavigationController.file
+            fileDetailsVC.viewModel = fileDetailsNavigationController.viewModel
+            fileDetailsVC.delegate = self
+            
+            let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+            navControl.modalPresentationStyle = .fullScreen
+            present(navControl, animated: false, completion: nil)
+            
+            fileDetailsVC.title = title ?? fileDetailsNavigationController.file.name
+        }
     }
 }
 
 extension FilePreviewListViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel?.viewModels.count ?? 0
+        filteredFiles.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UICollectionViewCell.reuseIdentifier, for: indexPath)
-        
-        guard let viewModel = viewModel else { return cell }
 
-        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        let file = filteredFiles[indexPath.row]
         
         guard file.fileStatus == .synced else { return cell }
         
@@ -74,8 +132,7 @@ extension FilePreviewListViewController: UICollectionViewDelegateFlowLayout, UIC
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
             fileDetailsVC.file = file
             
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-            controllersCache.setObject(fileDetailsNavigationController, forKey: NSNumber(value: indexPath.row))
+            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: indexPath.row))
         }
         
         return cell
@@ -100,12 +157,32 @@ extension FilePreviewListViewController: UICollectionViewDelegateFlowLayout, UIC
             fileDetailsNavigationController.willMoveOffScreen()
         }
         
-        if let currentIndex = collectionView.indexPathsForVisibleItems.first {
+        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
+           deviceInRotation == false {
             currentFile = filteredFiles[currentIndex.item]
+            
+            let currentVC = controllersCache.object(forKey: NSNumber(value: currentIndex.item))
+            title = currentVC?.title
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return view.bounds.size
+    }
+}
+
+extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate {
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        dismiss(animated: true) {
+            (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        }
+    }
+    
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        if let currentIndex = collectionView.indexPathsForVisibleItems.first {
+            let currentVC = controllersCache.object(forKey: NSNumber(value: currentIndex.item))
+            currentVC?.title = filePreviewNavigationVC.title
+            title = currentVC?.title
+        }
     }
 }
