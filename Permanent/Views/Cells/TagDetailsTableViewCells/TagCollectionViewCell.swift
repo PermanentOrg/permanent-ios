@@ -27,21 +27,17 @@ class TagCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
     }
       
-    func configure(name: String, isVisible: Bool = false, font: UIFont = Text.style2.font, fontColor: UIColor = .black, cornerRadius: CGFloat = 10.0) {
+    func configure(name: String, isVisible: Bool = false, font: UIFont = Text.style2.font, fontColor: UIColor = .black, cornerRadius: CGFloat = 10.0, backgroundColor: UIColor = .white) {
         checkMarkImage.isHidden = !isVisible
         checkMarkImage.tintColor = .black
         
-        setBackgroudColor()
+        tagBackgroundView.backgroundColor = backgroundColor
         tagBackgroundView.tintColor = .white
         tagBackgroundView.layer.cornerRadius = cornerRadius
         
         tagLabel.textColor = fontColor
         tagLabel.font = font
         tagLabel.text = name
-    }
-    
-    func setBackgroudColor(color: UIColor = .white) {
-        self.tagBackgroundView.backgroundColor = color
     }
 }
 

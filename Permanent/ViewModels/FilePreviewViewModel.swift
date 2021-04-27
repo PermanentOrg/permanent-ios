@@ -99,10 +99,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 self.getRecord(file: file) { (record) in
                     completion(true)
                 }
-                
             case .error(_, _):
                 completion(false)
-                
             default:
                 completion(false)
             }
@@ -122,10 +120,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 }
                 let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
                 completion(locnVO)
-                
             case .error(_, _):
                 completion(nil)
-                
             default:
                 completion(nil)
             }
@@ -153,9 +149,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 }
                 let tagLinkVO: TagLinkVO? =  model.results.first?.data?.first
                 self.getRecord(file: self.file) { (record) in
-                completion(tagLinkVO)
+                    completion(tagLinkVO)
                 }
-                
             case .error(_, _):
                 completion(nil)
                 
@@ -180,7 +175,6 @@ class FilePreviewViewModel: ViewModelInterface {
                 self.getRecord(file: self.file) { (record) in
                     completion(message)
                 }
-                
             case .error(_, _):
                 completion(nil)
                 
@@ -203,10 +197,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 }
                 let tagVO: [TagVO]? =  model.results.first?.data
                 completion(tagVO)
-                
             case .error(_, _):
                 completion(nil)
-                
             default:
                 completion(nil)
             }

@@ -457,6 +457,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         case .tags:
             let cellHeight: CGFloat = 40
             let countTags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").count
+            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current file
             let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 3 ) ? ( (cellHeight * 3) + 13 ) : ( cellHeight * 2 ))
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)
         default:

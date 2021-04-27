@@ -26,7 +26,7 @@ public extension CollectionCellAutoLayout where Self: UICollectionViewCell {
     }
 }
 
-class CustomViewFlowLayout: UICollectionViewFlowLayout {
+class TagsCollectionViewLayout: UICollectionViewFlowLayout {
     var cellSpacing: CGFloat = 10
   
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

@@ -32,8 +32,8 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     var sortedArray: [SortedTagVO] = []
     var filteredTagVO: [TagVO] = []
     
-    @IBOutlet weak var tagFindSearchBar: UISearchBar!
-    @IBOutlet weak var AddTagButton: RoundedButton!
+    @IBOutlet weak var tagSearchBar: UISearchBar!
+    @IBOutlet weak var addTagButton: RoundedButton!
     @IBOutlet weak var tagsCollectionView: UICollectionView!
     
     override func viewDidLoad() {
@@ -46,7 +46,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         
         self.tagsCollectionView.dataSource = self
         self.tagsCollectionView.delegate = self
-        self.tagFindSearchBar.delegate = self
+        self.tagSearchBar.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -71,23 +71,23 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonPressed(_:)))
         
-        tagFindSearchBar.setDefaultStyle(placeholder: "Add new tag".localized())
-        tagFindSearchBar.setFont(Text.style2.font)
-        tagFindSearchBar.setPlaceholderTextColor(.lightGray)
-        tagFindSearchBar.setTextColor(.lightGray)
-        tagFindSearchBar.setBackgroundColor(.darkGray)
-        tagFindSearchBar.tintColor = .lightGray
-        tagFindSearchBar.barTintColor = .lightGray
-        tagFindSearchBar.autocapitalizationType = .none
+        tagSearchBar.setDefaultStyle(placeholder: "Add new tag".localized())
+        tagSearchBar.setFont(Text.style2.font)
+        tagSearchBar.setPlaceholderTextColor(.lightGray)
+        tagSearchBar.setTextColor(.lightGray)
+        tagSearchBar.setBackgroundColor(.darkGray)
+        tagSearchBar.tintColor = .lightGray
+        tagSearchBar.barTintColor = .lightGray
+        tagSearchBar.autocapitalizationType = .none
         
-        AddTagButton.configureActionButtonUI(title: "Add".localized(), bgColor: .barneyPurple, buttonHeight: CGFloat(30))
+        addTagButton.configureActionButtonUI(title: "Add".localized(), bgColor: .barneyPurple, buttonHeight: CGFloat(30))
         
         tagsCollectionView.backgroundColor = .clear
         tagsCollectionView.indicatorStyle = .white
         
         initTagsState()
     
-        let columnLayout = CustomViewFlowLayout()
+        let columnLayout = TagsCollectionViewLayout()
         tagsCollectionView.collectionViewLayout = columnLayout
     }
     
@@ -99,79 +99,53 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         let dispatchGroup = DispatchGroup()
         showSpinner(colored: .lightGray)
         
-        let forAddingBool = sortedArray.map({ (SortedTagVO) in
-            return SortedTagVO.forAdding
-         })
-        let forAddingNames = sortedArray.map { (item) -> String in
-            return item.tagVO.tagVO.name ?? ""
-        }
-        
-        let addedNames: [String] = zip(forAddingBool, forAddingNames).filter{ $0.0 }.map{ $1 }
+        let addedTags: [String] = sortedArray.filter({ $0.forAdding }).map({ $0.tagVO.tagVO.name ?? "" })
         
         dispatchGroup.enter()
-        viewModel?.addTag(tagNames: addedNames, completion: { (result) in
+        viewModel?.addTag(tagNames: addedTags, completion: { (result) in
             dispatchGroup.leave()
         })
         
-        let forRemovalBool = sortedArray.map { (item) -> Bool in
-            return item.forRemoval
-        }
-        let forRemovalTags = sortedArray.map { (item) -> TagVO in
-            return item.tagVO
-        }
-        let removedTags: [TagVO] = zip(forRemovalBool, forRemovalTags).filter{ $0.0 }.map{ $1 }
+        let removedTags: [TagVO] = sortedArray.filter({ $0.forRemoval }).map({ $0.tagVO })
         
         dispatchGroup.enter()
         viewModel?.deleteTag(tagVO: removedTags, completion: { (result) in
             dispatchGroup.leave()
-            })   
-       
+        })
+        
         dispatchGroup.notify(queue: .main) {
             self.hideSpinner()
             self.delegate?.tagDetailsViewControllerDidUpdate(self)
             self.dismiss(animated: true, completion: nil)
         }
-
+        
     }
     
-    @IBAction func AddTagButtonAction(_ sender: Any) {
-        var tagsList: [String] = []
+    @IBAction func addTagButtonAction(_ sender: Any) {
         
-        for item in sortedArray {
-            if let itemName = item.tagVO.tagVO.name {
-                tagsList.append(itemName)
-            }
-        }
-        
-        if let findTag = tagFindSearchBar.text,
+        if let findTag = tagSearchBar.text,
            !findTag.isEmpty,
-           !tagsList.contains(findTag)
-        {
+           sortedArray.first(where: { $0.tagVO.tagVO.name == findTag }) == nil {
             sortedArray.insert(SortedTagVO(tagVO: TagVO(tagVO: TagVOData(name: findTag, status: String(), tagId: Int(), type: String(), createdDT: String(), updatedDT: String())), checked: true, forAdding: true, forRemoval: false), at: 0)
             
-            self.tagFindSearchBar.text = ""
+            tagSearchBar.text = ""
             
             filteredTagVO = sortedArray.map({ (item) -> TagVO in
                 return item.tagVO
             })
-            
             self.tagsCollectionView.reloadData()
             self.view.endEditing(true)
         }
     }
     
-    func initTagsState()
-    {
+    func initTagsState() {
         showSpinner(colored: .lightGray)
         viewModel?.getTagsByArchive(archiveId: viewModel?.file.archiveId ?? 0, completion: { result in
             guard let tagsArchive = result else {
                 return
             }
             
-            for (index,_) in tagsArchive.enumerated() {
-                self.sortedArray.append(SortedTagVO(tagVO: tagsArchive[index]))
-                
-            }
+            self.sortedArray = tagsArchive.map( { SortedTagVO(tagVO: $0) } )
             
             if let tags = self.tagVOS {
                 for tagItem in tags {
@@ -233,7 +207,7 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
         
         if  let name = filteredTagVO[indexPath.row].tagVO.name {
             let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
-            let width = attributedName.boundingRect(with: CGSize(width: 300, height: 30), options: [], context: nil).size.width
+            let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
             return CGSize(width: additionalSpace + width , height: 40)
             }
         return CGSize(width: 0, height: 0)
@@ -255,6 +229,6 @@ extension TagDetailsViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        AddTagButtonAction(searchBar)
+        addTagButtonAction(searchBar)
     }
 }

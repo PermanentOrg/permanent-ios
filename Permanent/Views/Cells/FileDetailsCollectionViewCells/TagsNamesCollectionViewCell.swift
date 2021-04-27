@@ -34,7 +34,7 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         cellTitleLabel.textColor = .white
         cellTitleLabel.font = Text.style9.font
         
-        let columnLayout = CustomViewFlowLayout()
+        let columnLayout = TagsCollectionViewLayout()
         columnLayout.cellSpacing = 5
         self.tagsNameCollectionView.collectionViewLayout = columnLayout
     }
@@ -51,10 +51,6 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         self.tagNames = tagNames
         tagsNameCollectionView.reloadData()
     }
-    
-    func setBackgroudColor(color: UIColor = .white) {
-
-    }
 }
 
 extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
@@ -63,14 +59,11 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
-        
         if let tagName = tagNames?[indexPath.row] {
             cell.configure(name: tagName, font: Text.style8.font, fontColor: .white, cornerRadius: 5)
             cell.setBackgroudColor(color: .darkGray)
         }
-        
         return cell
     }
     
@@ -84,9 +77,8 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if  let name = tagNames?[indexPath.row] {
-            
             let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: cellTitleLabel.font as Any])
-            let width = attributedName.boundingRect(with: CGSize(width: 300, height: 30), options: [], context: nil).size.width
+            let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
             return CGSize(width: 15 + width , height: 30)
         }
         return CGSize(width: 0, height: 0)
