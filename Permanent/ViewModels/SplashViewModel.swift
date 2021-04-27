@@ -24,6 +24,7 @@ extension SplashViewModel: SplashViewModelDelegate {
             switch result {
             case .json(let response, _):
                 let status = self.extractAuthStatus(response)
+                
                 handler(status)
 
             case .error:
@@ -44,6 +45,11 @@ extension SplashViewModel: SplashViewModelDelegate {
             let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
             let authResponse = try decoder.decode(AuthResponse.self, from: data)
             let authValue = authResponse.results?.first?.data?.first?.simpleVO?.value ?? false
+            
+            if let csrf = authResponse.csrf {
+                PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+            }
+            
             return authValue ? .loggedIn : .loggedOut
         } catch {
             return .error
