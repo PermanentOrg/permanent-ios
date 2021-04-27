@@ -370,15 +370,22 @@ struct Payloads {
         ]
     }
     
-    static func newDevice(token: String) -> RequestParameters {
+    static func newDevice(params: NewDeviceParams) -> RequestParameters {
         return
             [
-                [
-                    "SimpleVO": [
-                        "key": "deviceToken",
-                        "value": token
+                "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "SimpleVO": [
+                                    "name": "token",
+                                    "value": params.token
+                                ]
+                            ]
+                        ]
                     ]
-                ]
             ]
     }
     
