@@ -21,7 +21,6 @@ struct SortedTagVO {
 class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
-    var tagVOS: [TagVOData]?
 
     weak var delegate: TagDetailsViewControllerDelegate?
     
@@ -147,7 +146,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
             
             self.sortedArray = tagsArchive.map( { SortedTagVO(tagVO: $0) } )
             
-            if let tags = self.tagVOS {
+            if let tags = self.recordVO?.tagVOS {
                 for tagItem in tags {
                     var idx : Int?
                     idx = self.sortedArray.firstIndex(where: { $0.tagVO.tagVO.name == tagItem.name})
@@ -174,8 +173,9 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
         
-        if let tagName = filteredTagVO[indexPath.row].tagVO.name {
-            cell.configure(name: tagName, isVisible: sortedArray[indexPath.row].checked)
+        if let tagName = filteredTagVO[indexPath.row].tagVO.name,
+           let isChecked = sortedArray.first(where: { $0.tagVO.tagVO.name == tagName })?.checked {
+            cell.configure(name: tagName, isChecked: isChecked)
         }
         return cell
     }
@@ -188,10 +188,11 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
                 collectionView.reloadData()
             }
         }
-        
-        sortedArray[indexPath.row].checked = !sortedArray[indexPath.row].checked
-        sortedArray[indexPath.row].forAdding = sortedArray[indexPath.row].checked
-        sortedArray[indexPath.row].forRemoval = !sortedArray[indexPath.row].checked
+        if let cellIndex = sortedArray.firstIndex(where: { $0.tagVO.tagVO.name == filteredTagVO[indexPath.row].tagVO.name}) {
+            sortedArray[cellIndex].checked = !sortedArray[cellIndex].checked
+            sortedArray[cellIndex].forAdding = sortedArray[cellIndex].checked
+            sortedArray[cellIndex].forRemoval = !sortedArray[cellIndex].checked
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -203,13 +204,14 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let additionalSpace: CGFloat = (sortedArray[indexPath.row].checked == true) ? ( 45 ) : ( 35 )
         
-        if  let name = filteredTagVO[indexPath.row].tagVO.name {
+        if  let name = filteredTagVO[indexPath.row].tagVO.name,
+            let isChecked = sortedArray.first(where: { $0.tagVO.tagVO.name == name })?.checked {
+            let additionalSpace: CGFloat = isChecked ? ( 45 ) : ( 35 )
             let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
             let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
             return CGSize(width: additionalSpace + width , height: 40)
-            }
+        }
         return CGSize(width: 0, height: 0)
     }
 }

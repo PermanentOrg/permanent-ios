@@ -266,18 +266,9 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             }
             returnedCell = cell
         case .tags:
-            if stringCellDetails(cellType: currentCellType) == ""
-            {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-                cell.configure(title: title(forCellType: currentCellType), details: "Tap to add tags".localized())
-                returnedCell = cell
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
-                cell.configure(tagNames: stringCellDetails(cellType: currentCellType).components(separatedBy: ","))
-                returnedCell = cell
-            }
-            
-           
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
+            cell.configure(tagNames: stringCellDetails(cellType: currentCellType).components(separatedBy: ","))
+            returnedCell = cell
         case .saveButton:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell
             cell.configure(title: .save)
@@ -322,7 +313,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
                 details = ""
             }
         case .tags:
-            details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? "(none)"
+            details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
         case .size:
             details = ByteCountFormatter.string(fromByteCount: Int64(recordVO?.size ?? 0), countStyle: .file)
         case .fileType:
@@ -429,7 +420,6 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let tagSetVC = UIViewController.create(withIdentifier: .tagDetails, from: .main) as! TagDetailsViewController
             tagSetVC.delegate = self
             tagSetVC.viewModel = viewModel
-            tagSetVC.tagVOS = recordVO?.tagVOS
 
             let navigationVC = NavigationController(rootViewController: tagSetVC)
             navigationVC.modalPresentationStyle = .fullScreen

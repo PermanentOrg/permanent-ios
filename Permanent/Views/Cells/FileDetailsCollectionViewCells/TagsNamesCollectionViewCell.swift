@@ -14,6 +14,7 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var cellTitleLabel: UILabel!
     @IBOutlet weak var tagsNameCollectionView: UICollectionView!
+    @IBOutlet weak var cellNoItemLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -33,6 +34,12 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         cellTitleLabel.text = "Tags".localized()
         cellTitleLabel.textColor = .white
         cellTitleLabel.font = Text.style9.font
+        
+        cellNoItemLabel.text = "Tap to add tags".localized()
+        cellNoItemLabel.textColor = .white
+        cellNoItemLabel.backgroundColor = .clear
+        cellNoItemLabel.font = Text.style8.font
+        cellNoItemLabel.isHidden = true
         
         let columnLayout = TagsCollectionViewLayout()
         columnLayout.cellSpacing = 5
@@ -55,14 +62,22 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
 
 extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tagNames?.count ?? 0
+        if let tagsNumber = tagNames?.count,
+           let lastName = tagNames?[tagsNumber - 1],
+           lastName != "" {
+            collectionView.isHidden = false
+            return tagsNumber
+        }
+        cellNoItemLabel.isHidden = false
+        collectionView.isHidden = true
+        
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
         if let tagName = tagNames?[indexPath.row] {
-            cell.configure(name: tagName, font: Text.style8.font, fontColor: .white, cornerRadius: 5)
-            cell.setBackgroudColor(color: .darkGray)
+            cell.configure(name: tagName, font: Text.style8.font, fontColor: .white, cornerRadius: 5, backgroundColor: .darkGray)
         }
         return cell
     }
