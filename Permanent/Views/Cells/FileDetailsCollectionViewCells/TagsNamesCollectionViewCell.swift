@@ -24,8 +24,8 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         let layout = UICollectionViewFlowLayout()
         tagsNameCollectionView?.collectionViewLayout = layout
         
-        self.tagsNameCollectionView.dataSource = self
-        self.tagsNameCollectionView.delegate = self
+        tagsNameCollectionView.dataSource = self
+        tagsNameCollectionView.delegate = self
         
         tagsNameCollectionView.backgroundColor = .clear
         tagsNameCollectionView.indicatorStyle = .white
