@@ -10,6 +10,6 @@ target 'Permanent' do
   pod 'BSImagePicker', '3.3.1'
   pod 'SDWebImage', '5.10.0'
   pod 'AutoCompletion', :path => 'ios-autocomplete'
-  pod 'Sourcery'
+  pod 'Sourcery', '1.4.1'
   
 end
