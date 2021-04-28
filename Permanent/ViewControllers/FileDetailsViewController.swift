@@ -267,7 +267,8 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             returnedCell = cell
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
-            cell.configure(tagNames: stringCellDetails(cellType: currentCellType).components(separatedBy: ","))
+            let tags = (stringCellDetails(cellType: currentCellType).components(separatedBy: ",").first == "") ? [] : stringCellDetails(cellType: currentCellType).components(separatedBy: ",")
+            cell.configure(tagNames: tags )
             returnedCell = cell
         case .saveButton:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell

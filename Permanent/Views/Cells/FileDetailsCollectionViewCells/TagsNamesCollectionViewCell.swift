@@ -22,7 +22,7 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         tagsNameCollectionView.register(UINib(nibName: TagCollectionViewCell.identifier, bundle: nil), forCellWithReuseIdentifier: TagCollectionViewCell.identifier)
         
         let layout = UICollectionViewFlowLayout()
-        self.tagsNameCollectionView?.collectionViewLayout = layout
+        tagsNameCollectionView?.collectionViewLayout = layout
         
         self.tagsNameCollectionView.dataSource = self
         self.tagsNameCollectionView.delegate = self
@@ -43,7 +43,7 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         
         let columnLayout = TagsCollectionViewLayout()
         columnLayout.cellSpacing = 5
-        self.tagsNameCollectionView.collectionViewLayout = columnLayout
+        tagsNameCollectionView.collectionViewLayout = columnLayout
     }
     
     static func nib() -> UINib {
@@ -56,22 +56,15 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
       
     func configure(tagNames: [String]) {
         self.tagNames = tagNames
+        tagsNameCollectionView.isHidden = (tagNames.count == 0)
+        cellNoItemLabel.isHidden = tagNames.count > 0
         tagsNameCollectionView.reloadData()
     }
 }
 
 extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let tagsNumber = tagNames?.count,
-           let lastName = tagNames?[tagsNumber - 1],
-           lastName != "" {
-            collectionView.isHidden = false
-            return tagsNumber
-        }
-        cellNoItemLabel.isHidden = false
-        collectionView.isHidden = true
-        
-        return 0
+        return tagNames?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
