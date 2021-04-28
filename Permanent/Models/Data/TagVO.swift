@@ -8,7 +8,7 @@
 import Foundation
 
 struct TagVO: Model {
-    let tagVO: TagVOData
+    var tagVO: TagVOData
     
     enum CodingKeys: String, CodingKey {
         case tagVO = "TagVO"
@@ -17,7 +17,7 @@ struct TagVO: Model {
 
 struct TagVOData: Model {
     
-    let name: String?
+    var name: String?
     let status: String?
     let tagId: Int?
     let type: String?
