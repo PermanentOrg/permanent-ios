@@ -46,6 +46,12 @@ class ImagePreviewViewController: UIViewController {
         scrollView.contentSize = imageView.bounds.size
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        resetZoomScale()
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -61,6 +67,25 @@ class ImagePreviewViewController: UIViewController {
             scrollView.zoomScale = minScale
             
             initialZoomScale = minScale
+        }
+    }
+    
+    func resetZoomScale() {
+        // The layout mechanism needs an extra cycle to set the scrollView frames correctly.
+        DispatchQueue.main.async {
+            self.initialZoomScale = nil
+            self.setZoomScale()
+            self.scrollViewDidZoom(self.scrollView)
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate { (ctx) in
+            self.resetZoomScale()
+        } completion: { (ctx) in
         }
     }
 }

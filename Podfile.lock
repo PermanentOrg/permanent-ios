@@ -104,7 +104,7 @@ DEPENDENCIES:
   - Firebase/Messaging
   - ObjectMapper (= 4.2.0)
   - SDWebImage (= 5.10.0)
-  - Sourcery
+  - Sourcery (= 1.4.1)
 
 SPEC REPOS:
   trunk:
@@ -152,6 +152,6 @@ SPEC CHECKSUMS:
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
 
-PODFILE CHECKSUM: f55ed6adf90309510ed0ff96424b2ee784bf7376
+PODFILE CHECKSUM: fc3741536c94d3ae123ded8324554fc4f1a64f96
 
 COCOAPODS: 1.10.1

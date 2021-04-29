@@ -40,8 +40,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        videoPlayer?.player?.pause()
     }
 
     func initUI() {
@@ -52,7 +54,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
         
-        navigationItem.title = file.name
+        title = file.name
     }
     
     override func styleNavBar() {
@@ -71,10 +73,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         view.insertSubview(webView, at: 0)
         
         return webView
-    }
-    
-    func willClose() {
-        removeVideoPlayer()
     }
     
     // MARK: - Load methods
@@ -133,17 +131,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadVideo(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
         let playerItem = AVPlayerItem(asset: asset)
-        playerItem.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
         
         let player = AVPlayer(playerItem: playerItem)
         videoPlayer = AVPlayerViewController()
         videoPlayer!.player = player
-        player.play()
         
         self.playerItem = playerItem
         
         addChild(videoPlayer!)
-        videoPlayer!.view.frame = view.bounds
+        videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
         view.insertSubview(videoPlayer!.view, at: 0)
         videoPlayer!.didMove(toParent: self)
         
@@ -158,7 +154,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func removeVideoPlayer() {
-        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
         videoPlayer?.player?.replaceCurrentItem(with: nil)
         
         videoPlayer?.willMove(toParent: nil)
@@ -167,7 +162,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     // MARK: - Actions
-    @objc private func shareButtonAction(_ sender: Any) {
+    @objc func shareButtonAction(_ sender: Any) {
         if let fileName = self.viewModel?.fileName(),
             let localURL = fileHelper.url(forFileNamed: fileName) {
             share(url: localURL)
@@ -193,7 +188,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    @objc private func infoButtonAction(_ sender: Any) {
+    @objc func infoButtonAction(_ sender: Any) {
         removeVideoPlayer()
         
         let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController

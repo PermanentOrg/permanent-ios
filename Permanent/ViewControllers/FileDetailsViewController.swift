@@ -31,6 +31,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         case originalFileType
     }
     
+    weak var delegate: FilePreviewNavigationControllerDelegate?
+    
     var file: FileViewModel!
     let fileHelper = FileHelper()
     var recordVO: RecordVOData? {
@@ -88,21 +90,24 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     func initUI() {
         view.backgroundColor = .black
         styleNavBar()
+        
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     
         let rightButtonImage = UIBarButtonItem.SystemItem.action
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
-        
-        title = file.name
     }
     
     override func styleNavBar() {
         super.styleNavBar()
         
         navigationController?.navigationBar.barTintColor = .black
-    }
-    
-    func willClose() {
-        
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
@@ -129,6 +134,12 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                     })
                 }
             }
+        }
+    }
+    
+    @objc func closeButtonAction(_ sender: Any) {
+        dismiss(animated: false) {
+            self.delegate?.filePreviewNavigationControllerWillClose(self, hasChanges: (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false)
         }
     }
     
@@ -181,32 +192,43 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
 
-    private func saveButtonPressed(_ cell: SaveButtonCollectionViewCell) {
-        let name = (collectionView.cellForItem(at: [1,0]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
-        let description = (collectionView.cellForItem(at: [1,1]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
-        let date = (collectionView.cellForItem(at: [1,2]) as? FileDetailsDateCollectionViewCell)?.date
-        
-        cell.isSaving = true
-        viewModel?.update(file: file, name: name, description: description, date: date, location: nil, completion: { (success) in
-            cell.isSaving = false
+    private func saveButtonPressedAction() -> ((SaveButtonCollectionViewCell) -> Void) {
+        return { [weak self] cell in
+            guard let strongSelf = self else { return }
             
-            if success {
-                self.title = name
-                self.collectionView.reloadSections([1])
-                (self.navigationController as? FilePreviewNavigationController)?.hasChanges = true
-            }
-            print(success)
-        })
+            let name = (strongSelf.collectionView.cellForItem(at: [1,0]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
+            let description = (strongSelf.collectionView.cellForItem(at: [1,1]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
+            let date = (strongSelf.collectionView.cellForItem(at: [1,2]) as? FileDetailsDateCollectionViewCell)?.date
+            
+            cell.isSaving = true
+            strongSelf.viewModel?.update(file: strongSelf.file, name: name, description: description, date: date, location: nil, completion: { (success) in
+                cell.isSaving = false
+                
+                strongSelf.title = name
+                strongSelf.viewModel?.name = name ?? ""
+                
+                if success {
+                    strongSelf.collectionView.reloadSections([1])
+                    (strongSelf.navigationController as? FilePreviewNavigationController)?.hasChanges = true
+                    strongSelf.delegate?.filePreviewNavigationControllerDidChange(strongSelf, hasChanges: true)
+                }
+                print(success)
+            })
+        }
     }
     
-    private func segmentedControlChanged(_ cell: FileDetailsMenuCollectionViewCell) {
-        if cell.segmentedControl.selectedSegmentIndex == 0 {
-            bottomSectionCells = [.name, .description, .date, .location, .tags, .saveButton]
-        } else {
-            bottomSectionCells = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
+    private func segmentedControlChangedAction() -> ((FileDetailsMenuCollectionViewCell) -> Void) {
+        return { [weak self] cell in
+            guard let strongSelf = self else { return }
+            
+            if cell.segmentedControl.selectedSegmentIndex == 0 {
+                strongSelf.bottomSectionCells = [.name, .description, .date, .location, .tags, .saveButton]
+            } else {
+                strongSelf.bottomSectionCells = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
+            }
+            
+            strongSelf.collectionView.reloadSections([1])
         }
-
-        collectionView.reloadSections([1])
     }
 }
 
@@ -242,7 +264,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .segmentedControl:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMenuCollectionViewCell.identifier, for: indexPath) as! FileDetailsMenuCollectionViewCell
             cell.configure(leftMenuTitle: "Info".localized(), rightMenuTitle: "Details".localized())
-            cell.segmentedControlAction = segmentedControlChanged
+            cell.segmentedControlAction = segmentedControlChangedAction()
             
             returnedCell = cell
         case .name, .description:
@@ -273,7 +295,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         case .saveButton:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell
             cell.configure(title: .save)
-            cell.action = saveButtonPressed
+            cell.action = saveButtonPressedAction()
             returnedCell = cell
         case .size, .fileType, .originalFileName, .originalFileType:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
@@ -399,11 +421,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         let currentCellType = sectionCellTypes[indexPath.item]
         
         if currentCellType == .thumbnail {
-            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-            fileDetailsVC.file = file
-            fileDetailsVC.viewModel = viewModel
-            
-            navigationController?.setViewControllers([fileDetailsVC], animated: false)
+            dismiss(animated: false, completion: nil)
         }
         
         if currentCellType == .location && viewModel?.isEditable ?? false {

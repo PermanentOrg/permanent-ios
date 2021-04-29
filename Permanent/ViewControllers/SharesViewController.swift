@@ -346,12 +346,15 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
                 self.directoryLabel.text = file.name
             })
         } else {
-            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-            filePreviewVC.file = file
+            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+            listPreviewVC.modalPresentationStyle = .fullScreen
+            listPreviewVC.viewModel = viewModel
+            listPreviewVC.currentFile = file
             
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
             fileDetailsNavigationController.filePreviewNavDelegate = self
             fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+            
             present(fileDetailsNavigationController, animated: true)
         }
     }
@@ -378,9 +381,13 @@ extension SharesViewController: SharedFileActionSheetDelegate {
 
 // MARK: - FilePreviewNavigationControllerDelegate
 extension SharesViewController: FilePreviewNavigationControllerDelegate {
-    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: FilePreviewNavigationController, hasChanges: Bool) {
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
         if hasChanges {
             refreshCurrentFolder()
         }
+    }
+    
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        
     }
 }
