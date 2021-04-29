@@ -131,12 +131,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadVideo(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
         let playerItem = AVPlayerItem(asset: asset)
-//        playerItem.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
         
         let player = AVPlayer(playerItem: playerItem)
         videoPlayer = AVPlayerViewController()
         videoPlayer!.player = player
-//        player.play()
         
         self.playerItem = playerItem
         
@@ -156,7 +154,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func removeVideoPlayer() {
-//        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
         videoPlayer?.player?.replaceCurrentItem(with: nil)
         
         videoPlayer?.willMove(toParent: nil)
