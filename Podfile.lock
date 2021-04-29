@@ -94,7 +94,7 @@ PODS:
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
-  - Sourcery (1.3.4)
+  - Sourcery (1.4.1)
 
 DEPENDENCIES:
   - AutoCompletion (from `ios-autocomplete`)
@@ -104,7 +104,7 @@ DEPENDENCIES:
   - Firebase/Messaging
   - ObjectMapper (= 4.2.0)
   - SDWebImage (= 5.10.0)
-  - Sourcery
+  - Sourcery (= 1.4.1)
 
 SPEC REPOS:
   trunk:
@@ -150,8 +150,8 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 0cde852566359049847168e51bd1c690e0f70056
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
-  Sourcery: 1b5b0f816fbed6d0c7c066786fff4074e470e796
+  Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
 
-PODFILE CHECKSUM: f55ed6adf90309510ed0ff96424b2ee784bf7376
+PODFILE CHECKSUM: fc3741536c94d3ae123ded8324554fc4f1a64f96
 
 COCOAPODS: 1.10.1

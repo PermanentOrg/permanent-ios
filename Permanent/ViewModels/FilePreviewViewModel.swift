@@ -11,6 +11,7 @@ import WebKit
 class FilePreviewViewModel: ViewModelInterface {
     let file: FileViewModel
     var csrf: String { file.csrf ?? "" }
+    var name: String
     
     var recordVO: RecordVO?
     var isEditable: Bool {
@@ -25,6 +26,7 @@ class FilePreviewViewModel: ViewModelInterface {
     
     init(file: FileViewModel) {
         self.file = file
+        name = file.name
     }
     
     func getRecord(file: FileViewModel, then handler: @escaping (RecordVO?) -> Void) {

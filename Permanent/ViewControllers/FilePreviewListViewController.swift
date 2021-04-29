@@ -9,8 +9,8 @@ import UIKit
 
 class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     
-    var collectionView: UICollectionView!
-    
+    var pageVC: UIPageViewController!
+
     let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
     
     var filteredFiles: [FileViewModel] {
@@ -21,29 +21,44 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
     var currentFile: FileViewModel!
     
-    var deviceInRotation: Bool = false
+    // Transition Variables
+    var nextFile: FileViewModel? = nil
+    var nextTitle: String? = nil
+    
+    var hasChanges: Bool = false
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = currentFile.name
-        
-        let layout = UICollectionViewFlowLayout()
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        collectionView.isPagingEnabled = true
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        layout.scrollDirection = .horizontal
-        layout.sectionInset = .zero
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        collectionView.collectionViewLayout = layout
-        view.addSubview(collectionView)
 
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: UICollectionViewCell.reuseIdentifier)
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        extendedLayoutIncludesOpaqueBars = true
+        edgesForExtendedLayout = .all
         
+        setupPageVC()
+        setupNavigationBar()
+    }
+    
+    func setupPageVC() {
+        pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+        pageVC.dataSource = self
+        pageVC.delegate = self
+        
+        addChild(pageVC)
+        view.addSubview(pageVC.view)
+        pageVC.view.frame = view.bounds
+        pageVC.didMove(toParent: self)
+        
+        let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+        fileDetailsVC.file = currentFile
+        
+        if let indexOfFileVC = filteredFiles.firstIndex(of: currentFile) {
+            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: Int(indexOfFileVC)))
+        }
+        pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
+    }
+    
+    func setupNavigationBar() {
         let shareButtonImage = UIBarButtonItem.SystemItem.action
         let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
         
@@ -60,129 +75,101 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     }
     
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        let selectedIndex: CGFloat = CGFloat(filteredFiles.firstIndex(of: currentFile) ?? 0)
-
-        collectionView.scrollRectToVisible(CGRect(x: view.bounds.width * selectedIndex, y: 0, width: view.bounds.width, height: view.bounds.height), animated: false)
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        
-        deviceInRotation = true
-        coordinator.animate { (ctx) in
-            
-        } completion: { (ctx) in
-            self.collectionView.reloadData()
-            self.deviceInRotation = false
-        }
-    }
-    
     @objc func closeButtonAction(_ sender: Any) {
-//        filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        (navigationController as! FilePreviewNavigationController).filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
         
         dismiss(animated: true, completion: nil)
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
-        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
-            let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: currentIndex.row)) {
-            fileDetailsNavigationController.shareButtonAction(sender)
-        }
+        (pageVC.viewControllers?.first as! FilePreviewViewController).shareButtonAction(sender)
     }
     
     @objc private func infoButtonAction(_ sender: Any) {
-        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
-            let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: currentIndex.row)) {
-            let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
-            fileDetailsVC.file = fileDetailsNavigationController.file
-            fileDetailsVC.viewModel = fileDetailsNavigationController.viewModel
-            fileDetailsVC.delegate = self
-            
-            let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-            navControl.modalPresentationStyle = .fullScreen
-            present(navControl, animated: false, completion: nil)
-            
-            fileDetailsVC.title = title ?? fileDetailsNavigationController.file.name
-        }
+        let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
+        
+        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+        fileDetailsVC.file = currentFile
+        fileDetailsVC.viewModel = viewModel
+        fileDetailsVC.delegate = self
+        
+        let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+        navControl.modalPresentationStyle = .fullScreen
+        present(navControl, animated: false, completion: nil)
+        
+        fileDetailsVC.title = currentFile.name
     }
 }
 
-extension FilePreviewListViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        filteredFiles.count
+//MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
+extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        let nextVC = pendingViewControllers.first as! FilePreviewViewController
+        nextFile = nextVC.file
+        nextTitle = nextVC.viewModel?.name
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UICollectionViewCell.reuseIdentifier, for: indexPath)
-
-        let file = filteredFiles[indexPath.row]
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        if completed {
+            title = nextTitle
+            currentFile = nextFile
+            
+            navigationController?.setNavigationBarHidden(false, animated: true)
+        }
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        if let indexOfFileVC = filteredFiles.firstIndex(of: (viewController as! FilePreviewViewController).file) {
+            let dequeuedVC = dequeueViewController(atIndex: Int(indexOfFileVC) - 1)
+            
+            return dequeuedVC
+        }
         
-        guard file.fileStatus == .synced else { return cell }
+        return nil
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        if let indexOfFileVC = filteredFiles.firstIndex(of: (viewController as! FilePreviewViewController).file) {
+            let dequeuedVC = dequeueViewController(atIndex: Int(indexOfFileVC) + 1)
+            return dequeuedVC
+        }
         
-        if file.type.isFolder {
-        } else if controllersCache.object(forKey: NSNumber(value: indexPath.row)) == nil {
+        return nil
+    }
+    
+    func dequeueViewController(atIndex index: Int) -> FilePreviewViewController? {
+        if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
+            return fileDetailsVC
+        } else if index >= 0 && index < filteredFiles.count {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
-            fileDetailsVC.file = file
+            fileDetailsVC.file = filteredFiles[index]
             
-            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: indexPath.row))
+            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))
+            
+            return fileDetailsVC
         }
         
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: indexPath.row)) {
-            addChild(fileDetailsNavigationController)
-            cell.contentView.addSubview(fileDetailsNavigationController.view)
-            fileDetailsNavigationController.view.frame = cell.contentView.bounds
-            fileDetailsNavigationController.didMove(toParent: self)
-            fileDetailsNavigationController.willMoveOnScreen()
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let fileDetailsNavigationController = controllersCache.object(forKey: NSNumber(value: indexPath.row)) {
-            fileDetailsNavigationController.willMove(toParent: nil)
-            fileDetailsNavigationController.view.removeFromSuperview()
-            fileDetailsNavigationController.removeFromParent()
-            fileDetailsNavigationController.didMove(toParent: nil)
-            fileDetailsNavigationController.willMoveOffScreen()
-        }
-        
-        if let currentIndex = collectionView.indexPathsForVisibleItems.first,
-           deviceInRotation == false {
-            currentFile = filteredFiles[currentIndex.item]
-            
-            let currentVC = controllersCache.object(forKey: NSNumber(value: currentIndex.item))
-            title = currentVC?.title
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return view.bounds.size
+        return nil
     }
 }
 
 extension FilePreviewListViewController: FilePreviewNavigationControllerDelegate {
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        if hasChanges == true {
+            self.hasChanges = true
+        }
+        
         dismiss(animated: true) {
-            (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+            (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: self.hasChanges)
         }
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        if let currentIndex = collectionView.indexPathsForVisibleItems.first {
-            let currentVC = controllersCache.object(forKey: NSNumber(value: currentIndex.item))
-            currentVC?.title = filePreviewNavigationVC.title
-            title = currentVC?.title
+        let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
+        title = viewModel?.name
+        
+        if hasChanges == true {
+            self.hasChanges = true
         }
     }
 }

@@ -74,15 +74,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -98,6 +89,15 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     func initUI() {
         view.backgroundColor = .black
         styleNavBar()
+        
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
     
         let rightButtonImage = UIBarButtonItem.SystemItem.action
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: rightButtonImage, target: self, action: #selector(shareButtonAction(_:)))
@@ -137,8 +137,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func closeButtonAction(_ sender: Any) {
-//        filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
-        
         dismiss(animated: false) {
             self.delegate?.filePreviewNavigationControllerWillClose(self, hasChanges: (self.navigationController as? FilePreviewNavigationController)?.hasChanges ?? false)
         }
@@ -205,8 +203,10 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             strongSelf.viewModel?.update(file: strongSelf.file, name: name, description: description, date: date, location: nil, completion: { (success) in
                 cell.isSaving = false
                 
+                strongSelf.title = name
+                strongSelf.viewModel?.name = name ?? ""
+                
                 if success {
-                    strongSelf.title = name
                     strongSelf.collectionView.reloadSections([1])
                     (strongSelf.navigationController as? FilePreviewNavigationController)?.hasChanges = true
                     strongSelf.delegate?.filePreviewNavigationControllerDidChange(strongSelf, hasChanges: true)
@@ -478,19 +478,5 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
 extension FileDetailsViewController: LocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
         collectionView.reloadSections([1])
-    }
-}
-
-extension FileDetailsViewController: FilePreviewNavigatable {
-    func willMoveOffScreen() {
-        
-    }
-    
-    func willMoveOnScreen() {
-        
-    }
-    
-    func willClose() {
-        
     }
 }

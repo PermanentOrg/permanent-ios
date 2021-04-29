@@ -39,10 +39,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             loadRecord()
         }
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
 
     func initUI() {
         styleNavBar()
@@ -268,23 +264,5 @@ extension FilePreviewViewController: ImagePreviewViewControllerDelegate {
 extension FilePreviewViewController: UIScrollViewDelegate {
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         navigationController?.setNavigationBarHidden(scale > 1, animated: true)
-    }
-}
-
-extension FilePreviewViewController: FilePreviewNavigatable {
-    func willMoveOffScreen() {
-        videoPlayer?.player?.pause()
-//        playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: &playerItemContext)
-    }
-    
-    func willMoveOnScreen() {
-        if videoPlayer?.player?.rate == 0 {
-//            playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: &playerItemContext)
-//            videoPlayer?.player?.play()
-        }
-    }
-    
-    func willClose() {
-        removeVideoPlayer()
     }
 }
