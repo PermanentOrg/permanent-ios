@@ -39,6 +39,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             loadRecord()
         }
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        videoPlayer?.player?.pause()
+    }
 
     func initUI() {
         styleNavBar()

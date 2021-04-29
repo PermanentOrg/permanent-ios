@@ -126,10 +126,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 }
                 let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
                 completion(locnVO)
-                
             case .error(_, _):
                 completion(nil)
-                
             default:
                 completion(nil)
             }
@@ -144,8 +142,8 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
-    func addTag(tagName: String, completion: @escaping ((TagLinkVOData?) -> Void)) {
-        let params: TagParams = (tagName, recordVO?.recordVO?.recordID ?? 0, csrf)
+    func addTag(tagNames: [String], completion: @escaping ((TagLinkVO?) -> Void)) {
+        let params: TagParams = (tagNames, recordVO?.recordVO?.recordID ?? 0, csrf)
         let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -155,9 +153,10 @@ class FilePreviewViewModel: ViewModelInterface {
                     completion(nil)
                     return
                 }
-                let tagLinkVO: TagLinkVOData? =  model.results.first?.data?.first?.tagLinkVO
-                completion(tagLinkVO)
-                
+                let tagLinkVO: TagLinkVO? =  model.results.first?.data?.first
+                self.getRecord(file: self.file) { (record) in
+                    completion(tagLinkVO)
+                }
             case .error(_, _):
                 completion(nil)
                 
@@ -167,7 +166,7 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    func deleteTag(tagVO: TagVO, completion: @escaping ((String?) -> Void)) {
+    func deleteTag(tagVO: [TagVO], completion: @escaping ((String?) -> Void)) {
         let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0, csrf)
         let apiOperation = APIOperation(TagEndpoint.tagDelete(params: params))
         
@@ -179,8 +178,9 @@ class FilePreviewViewModel: ViewModelInterface {
                     return
                 }
                 let message: String? =  model.results.first?.message.first
-                completion(message)
-                
+                self.getRecord(file: self.file) { (record) in
+                    completion(message)
+                }
             case .error(_, _):
                 completion(nil)
                 
@@ -203,10 +203,8 @@ class FilePreviewViewModel: ViewModelInterface {
                 }
                 let tagVO: [TagVO]? =  model.results.first?.data
                 completion(tagVO)
-                
             case .error(_, _):
                 completion(nil)
-                
             default:
                 completion(nil)
             }

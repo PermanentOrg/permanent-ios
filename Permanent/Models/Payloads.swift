@@ -370,15 +370,22 @@ struct Payloads {
         ]
     }
     
-    static func newDevice(token: String) -> RequestParameters {
+    static func newDevice(params: NewDeviceParams) -> RequestParameters {
         return
             [
-                [
-                    "SimpleVO": [
-                        "key": "deviceToken",
-                        "value": token
+                "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": [
+                            [
+                                "SimpleVO": [
+                                    "name": "token",
+                                    "value": params.token
+                                ]
+                            ]
+                        ]
                     ]
-                ]
             ]
     }
     
@@ -388,40 +395,41 @@ struct Payloads {
             "refTable": "record"
         ]
         
-        return [ "RequestVO":
-                    [
-                        "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
-                        "data": [
-                            [
-                                "TagLinkVO": tagLinkVO,
-                                "TagVO": [
-                                    "name": params.name
-                                ]
-                            ]
-                        ]
-                    ]
-        ]
-    }
-    static func deletePost(params: DeleteTagParams) -> RequestParameters {
-        let tagLinkVO: [String: Any] = [
-            "refId": params.refID,
-            "refTable": "record"
-        ]
-        let tagVO = params.tagVO
-        let tagJson = (try? JSONEncoder().encode(tagVO)) ?? Data()
-        let tagDict = (try? JSONSerialization.jsonObject(with: tagJson, options: [])) as? [String:Any] ?? [String:Any]()
+        let data = params.names.map {[
+            "TagLinkVO": tagLinkVO,
+            "TagVO": [
+                "name": $0
+            ]
+        ]}
         
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
                         "csrf": params.csrf,
-                        "data": [
-                            [
-                                "TagLinkVO": tagLinkVO,
-                                "TagVO": tagDict["TagVO"]
-                            ]
-                        ]
+                        "data": data
+                    ]
+        ]
+    }
+    
+    static func deletePost(params: DeleteTagParams) -> RequestParameters {
+        let tagLinkVO: [String: Any] = [
+            "refId": params.refID,
+            "refTable": "record"
+        ]
+        
+        let data = params.tagVO.map {[
+            "TagLinkVO": tagLinkVO,
+            "TagVO": [
+                "name": ($0.tagVO.name ?? String() ) as String,
+                "tagId": ($0.tagVO.tagId ?? Int() ) as Int
+                ]
+        ]}
+        
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": params.csrf,
+                        "data": data
                     ]
         ]
     }

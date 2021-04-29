@@ -7,15 +7,17 @@
 
 import Foundation
 
+typealias NewDeviceParams = (token: String, csrf: String)
+
 enum DeviceEndpoint {
-    case new(token: String)
+    case new(params: NewDeviceParams)
 }
 
 extension DeviceEndpoint: RequestProtocol {
     var path: String {
         switch self {
         case .new:
-            return "/device/new"
+            return "/device/registerDevice"
         }
     }
     
@@ -51,8 +53,8 @@ extension DeviceEndpoint: RequestProtocol {
     
     var parameters: RequestParameters? {
         switch self {
-        case .new(let token):
-            return Payloads.newDevice(token: token)
+        case .new(let params):
+            return Payloads.newDevice(params: params)
         }
     }
     

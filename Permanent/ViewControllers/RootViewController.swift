@@ -88,9 +88,12 @@ class RootViewController: UIViewController {
     }
     
     private func sendPushNotificationToken() {
-        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey) else { return }
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
+              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        else { return }
         
-        let apiOperation = APIOperation(DeviceEndpoint.new(token: token))
+        let newDeviceParams = NewDeviceParams(token: token, csrf: csrf)
+        let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
 

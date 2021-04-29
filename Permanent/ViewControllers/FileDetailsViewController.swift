@@ -63,6 +63,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         collectionView.register(FileDetailsDateCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsDateCollectionViewCell.identifier)
         collectionView.register(SaveButtonCollectionViewCell.nib(), forCellWithReuseIdentifier: SaveButtonCollectionViewCell.identifier)
         collectionView.register(FileDetailsMapViewCellCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier)
+        collectionView.register(TagsNamesCollectionViewCell.nib(), forCellWithReuseIdentifier: TagsNamesCollectionViewCell.identifier)
         
         if viewModel == nil {
             viewModel = FilePreviewViewModel(file: file)
@@ -287,9 +288,9 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             }
             returnedCell = cell
         case .tags:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
-
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
+            let tags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").filter({ $0 != "" })
+            cell.configure(tagNames: tags )
             returnedCell = cell
         case .saveButton:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell
@@ -335,7 +336,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
                 details = ""
             }
         case .tags:
-            details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ", ") ?? "(none)"
+            details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
         case .size:
             details = ByteCountFormatter.string(fromByteCount: Int64(recordVO?.size ?? 0), countStyle: .file)
         case .fileType:
@@ -435,7 +436,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         }
         
         if currentCellType == .tags && viewModel?.isEditable ?? false {
-//TODO: present tag viewcontroller
+            let tagSetVC = UIViewController.create(withIdentifier: .tagDetails, from: .main) as! TagDetailsViewController
+            tagSetVC.delegate = self
+            tagSetVC.viewModel = viewModel
+
+            let navigationVC = NavigationController(rootViewController: tagSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
         }
     }
     
@@ -456,6 +463,12 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             } else {
                 return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
             }
+        case .tags:
+            let cellHeight: CGFloat = 40
+            let countTags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").count
+            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current file
+            let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 3 ) ? ( (cellHeight * 3) + 13 ) : ( cellHeight * 2 ))
+            return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
         }
@@ -477,6 +490,13 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - LocationSetViewControllerDelegate
 extension FileDetailsViewController: LocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
+        collectionView.reloadSections([1])
+    }
+}
+
+// MARK: - TagDetailsViewControllerDelegate
+extension FileDetailsViewController: TagDetailsViewControllerDelegate {
+    func tagDetailsViewControllerDidUpdate(_ tagVC: TagDetailsViewController) {
         collectionView.reloadSections([1])
     }
 }
