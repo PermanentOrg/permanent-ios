@@ -8,6 +8,8 @@
 import UIKit
 
 class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
+    var viewModel: FilePreviewViewModel?
+    var cellType: FileDetailsViewController.CellType?
 
     static let identifier = "FileDetailsBottomCollectionViewCell"
     
@@ -24,7 +26,7 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         detailsTextField.delegate = self
     }
 
-    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false) {
+    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false, cellType:FileDetailsViewController.CellType, withViewModel vm:FilePreviewViewModel?) {
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
@@ -37,12 +39,28 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         if isDetailsFieldEditable {
             detailsTextField.backgroundColor = .darkGray
         }
+        
+        self.viewModel = vm
+        self.cellType = cellType
     }
 }
 
 extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        switch cellType {
+        case .name:
+            if let file = viewModel?.file,
+               let name = detailsTextField.text {
+                viewModel?.update(file: file, name: name, description: nil, date: nil, location: nil, completion: { (success) in })
+                viewModel?.name = name
+            }
+        case .description:
+            if let file = viewModel?.file {
+                viewModel?.update(file: file, name: nil, description:  detailsTextField.text, date: nil, location: nil, completion: { (success) in })
+            }
+        default: break
+        }
         return true
     }
 }

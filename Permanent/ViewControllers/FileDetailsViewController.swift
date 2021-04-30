@@ -235,7 +235,9 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func onDidUpdateData(_ notification: Notification) {
-        print("data updated.")
+        self.title = viewModel?.name
+        collectionView.reloadSections([1])
+        view.showNotificationBanner(title: "Change was saved.".localized())
     }
 }
 
@@ -276,7 +278,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             returnedCell = cell
         case .name, .description:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
+            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false, cellType: currentCellType, withViewModel: viewModel)
 
             returnedCell = cell
         case .date:
@@ -306,7 +308,7 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             returnedCell = cell
         case .size, .fileType, .originalFileName, .originalFileType:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
+            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), cellType: currentCellType, withViewModel: viewModel)
 
             returnedCell = cell
         case .uploaded, .lastModified, .created, .fileCreated:
