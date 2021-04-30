@@ -75,6 +75,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .fileDetailsDidSavedData, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -82,6 +84,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
         super.viewWillDisappear(animated)
         
         view.endEditing(true)
@@ -229,6 +232,10 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
             
             strongSelf.collectionView.reloadSections([1])
         }
+    }
+    
+    @objc func onDidUpdateData(_ notification: Notification) {
+        print("data updated.")
     }
 }
 
