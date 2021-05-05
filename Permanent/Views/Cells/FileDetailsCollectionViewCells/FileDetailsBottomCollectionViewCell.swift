@@ -7,9 +7,7 @@
 
 import UIKit
 
-class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
-    var viewModel: FilePreviewViewModel?
-    var cellType: FileDetailsViewController.CellType?
+class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
     static let identifier = "FileDetailsBottomCollectionViewCell"
     
@@ -26,41 +24,82 @@ class FileDetailsBottomCollectionViewCell: UICollectionViewCell {
         detailsTextField.delegate = self
     }
 
-    func configure(title: String, details: String, isDetailsFieldEditable: Bool = false, cellType:FileDetailsViewController.CellType, withViewModel vm:FilePreviewViewModel?) {
+    override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
+        super.configure(withViewModel: viewModel, type: type)
+        
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
 
-        detailsTextField.text = details
+        detailsTextField.text = cellDetails()
         detailsTextField.backgroundColor = .clear
         detailsTextField.textColor = .white
         detailsTextField.font = Text.style8.font
-        detailsTextField.isUserInteractionEnabled = isDetailsFieldEditable
-        if isDetailsFieldEditable {
+        
+        detailsTextField.isUserInteractionEnabled = isEditable
+        if isEditable {
             detailsTextField.backgroundColor = .darkGray
         }
+    }
+    
+    func cellDetails() -> String {
+        guard let recordVO = viewModel?.recordVO?.recordVO else { return "" }
         
-        self.viewModel = vm
-        self.cellType = cellType
+        let details: String
+        switch cellType {
+        case .name:
+            details = recordVO.displayName ?? ""
+        case .description:
+            details = recordVO.recordVODescription ?? ""
+        case .tags:
+            details = recordVO.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
+        case .size:
+            details = ByteCountFormatter.string(fromByteCount: Int64(recordVO.size ?? 0), countStyle: .file)
+        case .fileType:
+            details = URL(string: recordVO.type)?.pathExtension ?? ""
+        case .originalFileName:
+            details = URL(string: recordVO.uploadFileName)?.deletingPathExtension().absoluteString ?? ""
+        case .originalFileType:
+            details = URL(string: recordVO.uploadFileName?.uppercased())?.pathExtension ?? ""
+        default:
+            details = "-"
+        }
+        return details
     }
 }
 
 extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
         switch cellType {
         case .name:
-            if let file = viewModel?.file,
+            if (textField.text?.isEmpty ?? false) || textField.text == viewModel?.name {
+                textField.text = viewModel?.name
+                return
+            } else if let file = viewModel?.file,
                let name = detailsTextField.text {
                 viewModel?.update(file: file, name: name, description: nil, date: nil, location: nil, completion: { (success) in })
                 viewModel?.name = name
             }
+            
         case .description:
-            if let file = viewModel?.file {
+            if (textField.text?.isEmpty ?? false) || textField.text == viewModel?.recordVO?.recordVO?.recordVODescription {
+                textField.text = viewModel?.recordVO?.recordVO?.recordVODescription
+                return
+            } else if let file = viewModel?.file {
                 viewModel?.update(file: file, name: nil, description:  detailsTextField.text, date: nil, location: nil, completion: { (success) in })
             }
-        default: break
+            
+        default:
+            break
         }
-        return true
     }
+    
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        textField.resignFirstResponder()
+//
+//
+//
+//        return true
+//    }
 }

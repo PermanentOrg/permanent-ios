@@ -7,10 +7,13 @@
 
 import UIKit
 
-class TagsNamesCollectionViewCell: UICollectionViewCell {
+class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     static let identifier = "TagsNamesCollectionViewCell"
-    var tagNames: [String]?
+    
+    var tagNames: [String] {
+        return viewModel?.recordVO?.recordVO?.tagVOS?.map({ ($0.name ?? "") }) ?? []
+    }
     
     @IBOutlet weak var cellTitleLabel: UILabel!
     @IBOutlet weak var tagsNameCollectionView: UICollectionView!
@@ -54,9 +57,10 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
     }
       
-    func configure(tagNames: [String]) {
-        self.tagNames = tagNames
-        tagsNameCollectionView.isHidden = (tagNames.count == 0)
+    override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
+        super.configure(withViewModel: viewModel, type: type)
+    
+        tagsNameCollectionView.isHidden = tagNames.count == 0
         cellNoItemLabel.isHidden = tagNames.count > 0
         tagsNameCollectionView.reloadData()
     }
@@ -64,14 +68,14 @@ class TagsNamesCollectionViewCell: UICollectionViewCell {
 
 extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tagNames?.count ?? 0
+        return tagNames.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
-        if let tagName = tagNames?[indexPath.row] {
-            cell.configure(name: tagName, font: Text.style8.font, fontColor: .white, cornerRadius: 5, backgroundColor: .darkGray)
-        }
+
+        cell.configure(name: tagNames[indexPath.row], font: Text.style8.font, fontColor: .white, cornerRadius: 5, backgroundColor: .darkGray)
+        
         return cell
     }
     
@@ -84,11 +88,10 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if  let name = tagNames?[indexPath.row] {
-            let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: cellTitleLabel.font as Any])
-            let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
-            return CGSize(width: 15 + width , height: 30)
-        }
-        return CGSize(width: 0, height: 0)
+        let name = tagNames[indexPath.row]
+        let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: cellTitleLabel.font as Any])
+        let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
+        
+        return CGSize(width: 15 + width , height: 30)
     }
 }

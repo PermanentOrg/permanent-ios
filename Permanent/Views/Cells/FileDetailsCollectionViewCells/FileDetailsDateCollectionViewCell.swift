@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FileDetailsDateCollectionViewCell: UICollectionViewCell {
+class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     static let identifier = "FileDetailsDateCollectionViewCell"
     
     @IBOutlet weak var titleLabelField: UILabel!
@@ -29,22 +29,22 @@ class FileDetailsDateCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
     }
 
-    func configure(title: String, date: Date?, isDetailsFieldEditable: Bool = false) {
-        self.date = date
+    override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
+        super.configure(withViewModel: viewModel, type: type)
         
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
         
-        if let date = date {
+        if let date = detailsDate() {
             detailsTextField.text = FileDetailsDateCollectionViewCell.dateFormatter.string(from: date)
         }
         
         detailsTextField.backgroundColor = .clear
         detailsTextField.textColor = .white
         detailsTextField.font = Text.style8.font
-        detailsTextField.isUserInteractionEnabled = isDetailsFieldEditable
-        if isDetailsFieldEditable {
+        detailsTextField.isUserInteractionEnabled = isEditable
+        if isEditable {
             detailsTextField.backgroundColor = .darkGray
         }
         
@@ -75,6 +75,29 @@ class FileDetailsDateCollectionViewCell: UICollectionViewCell {
         stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 40)
         
         detailsTextField.inputView = stackView
+    }
+    
+    func detailsDate() -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        
+        let date: Date?
+        switch cellType {
+        case .uploaded:
+            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.createdDT ?? "")
+        case .lastModified:
+            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.updatedDT ?? "")
+        case .date:
+            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.displayDT ?? "")
+        case .created:
+            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedDT ?? "")
+        case .fileCreated:
+            date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedCreatedDT ?? "")
+        default:
+            date = nil
+        }
+        
+        return date
     }
     
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
