@@ -2,7 +2,6 @@
 //  FileDetailsBaseCollectionViewCell.swift
 //  Permanent
 //
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
