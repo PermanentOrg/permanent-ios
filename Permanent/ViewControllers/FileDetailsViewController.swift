@@ -20,7 +20,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         case date
         case location
         case tags
-        case saveButton
         case uploaded
         case lastModified
         case created
@@ -40,7 +39,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     let topSectionCells: [CellType] = [.thumbnail, .segmentedControl]
-    var bottomSectionCells: [CellType] = [.name, .description, .date, .location, .tags, .saveButton]
+    var bottomSectionCells: [CellType] = [.name, .description, .date, .location, .tags]
     
     let documentInteractionController = UIDocumentInteractionController()
     
@@ -61,7 +60,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         collectionView.register(FileDetailsMenuCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsMenuCollectionViewCell.identifier)
         collectionView.register(FileDetailsBottomCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier)
         collectionView.register(FileDetailsDateCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsDateCollectionViewCell.identifier)
-        collectionView.register(SaveButtonCollectionViewCell.nib(), forCellWithReuseIdentifier: SaveButtonCollectionViewCell.identifier)
         collectionView.register(FileDetailsMapViewCellCollectionViewCell.nib(), forCellWithReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier)
         collectionView.register(TagsNamesCollectionViewCell.nib(), forCellWithReuseIdentifier: TagsNamesCollectionViewCell.identifier)
         
@@ -71,10 +69,16 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 self.title = record?.recordVO?.displayName
                 self.collectionView.reloadData()
             })
+            
+            title = file.name
+        } else {
+            title = viewModel!.recordVO?.recordVO?.displayName
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .fileDetailsDidSavedData, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -82,6 +86,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
         super.viewWillDisappear(animated)
         
         view.endEditing(true)
@@ -191,43 +196,26 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         documentInteractionController.name = url.localizedName ?? url.lastPathComponent
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
-
-    private func saveButtonPressedAction() -> ((SaveButtonCollectionViewCell) -> Void) {
-        return { [weak self] cell in
-            guard let strongSelf = self else { return }
-            
-            let name = (strongSelf.collectionView.cellForItem(at: [1,0]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
-            let description = (strongSelf.collectionView.cellForItem(at: [1,1]) as? FileDetailsBottomCollectionViewCell)?.detailsTextField.text
-            let date = (strongSelf.collectionView.cellForItem(at: [1,2]) as? FileDetailsDateCollectionViewCell)?.date
-            
-            cell.isSaving = true
-            strongSelf.viewModel?.update(file: strongSelf.file, name: name, description: description, date: date, location: nil, completion: { (success) in
-                cell.isSaving = false
-                
-                strongSelf.title = name
-                strongSelf.viewModel?.name = name ?? ""
-                
-                if success {
-                    strongSelf.collectionView.reloadSections([1])
-                    (strongSelf.navigationController as? FilePreviewNavigationController)?.hasChanges = true
-                    strongSelf.delegate?.filePreviewNavigationControllerDidChange(strongSelf, hasChanges: true)
-                }
-                print(success)
-            })
-        }
-    }
     
     private func segmentedControlChangedAction() -> ((FileDetailsMenuCollectionViewCell) -> Void) {
         return { [weak self] cell in
             guard let strongSelf = self else { return }
             
             if cell.segmentedControl.selectedSegmentIndex == 0 {
-                strongSelf.bottomSectionCells = [.name, .description, .date, .location, .tags, .saveButton]
+                strongSelf.bottomSectionCells = [.name, .description, .date, .location, .tags]
             } else {
                 strongSelf.bottomSectionCells = [.uploaded, .lastModified, .created, .fileCreated, .size, .fileType, .originalFileName, .originalFileType]
             }
             
             strongSelf.collectionView.reloadSections([1])
+        }
+    }
+    
+    @objc func onDidUpdateData(_ notification: Notification) {
+        if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
+            self.title = viewModel?.name
+            collectionView.reloadSections([1])
+            view.showNotificationBanner(title: "Change was saved.".localized())
         }
     }
 }
@@ -252,163 +240,42 @@ extension FileDetailsViewController: UICollectionViewDataSource {
         let sectionCellTypes = indexPath.section == 0 ? topSectionCells : bottomSectionCells
         let currentCellType = sectionCellTypes[indexPath.item]
         
-        let returnedCell: UICollectionViewCell
+        let returnedCell: FileDetailsBaseCollectionViewCell
         
         switch currentCellType {
         case .thumbnail:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsTopCollectionViewCell.identifier, for: indexPath) as! FileDetailsTopCollectionViewCell
-
-            cell.configure(with: recordVO?.thumbURL2000 ?? "")
             
             returnedCell = cell
+            
         case .segmentedControl:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMenuCollectionViewCell.identifier, for: indexPath) as! FileDetailsMenuCollectionViewCell
-            cell.configure(leftMenuTitle: "Info".localized(), rightMenuTitle: "Details".localized())
             cell.segmentedControlAction = segmentedControlChangedAction()
             
             returnedCell = cell
-        case .name, .description:
+            
+        case .name, .description, .size, .fileType, .originalFileName, .originalFileType:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
 
             returnedCell = cell
-        case .date:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
-            
-            cell.configure(title: title(forCellType: currentCellType), date: dateCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
-            
-            returnedCell = cell
+
         case .location:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
-            if getLocationDetails() == (0,0) {
-                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isMapHidden: true, isDetailsFieldEditable: viewModel?.isEditable ?? false)
-            } else {
-                cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType), isDetailsFieldEditable: viewModel?.isEditable ?? false)
-                cell.setLocation(getLocationDetails().latitude,getLocationDetails().longitude)
-            }
+            
             returnedCell = cell
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
-            let tags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").filter({ $0 != "" })
-            cell.configure(tagNames: tags )
+            
             returnedCell = cell
-        case .saveButton:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SaveButtonCollectionViewCell.identifier, for: indexPath) as! SaveButtonCollectionViewCell
-            cell.configure(title: .save)
-            cell.action = saveButtonPressedAction()
-            returnedCell = cell
-        case .size, .fileType, .originalFileName, .originalFileType:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsBottomCollectionViewCell.identifier, for: indexPath) as! FileDetailsBottomCollectionViewCell
-            cell.configure(title: title(forCellType: currentCellType), details: stringCellDetails(cellType: currentCellType))
-
-            returnedCell = cell
-        case .uploaded, .lastModified, .created, .fileCreated:
+        case .date, .uploaded, .lastModified, .created, .fileCreated:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
-            cell.configure(title: title(forCellType: currentCellType), date: dateCellDetails(cellType: currentCellType))
-            
             returnedCell = cell
         }
         
+        returnedCell.configure(withViewModel: viewModel!, type: currentCellType)
+        
         return returnedCell
-    }
-    
-    func getLocationDetails() -> (latitude: Double, longitude: Double) {
-        if let latitude = recordVO?.locnVO?.latitude,
-           let longitude = recordVO?.locnVO?.longitude {
-            return (latitude,longitude)
-        } else {
-            return (0,0)
-        }
-    }
-    
-    func stringCellDetails(cellType: CellType) -> String {
-        let details: String
-        switch cellType {
-        case .name:
-            details = recordVO?.displayName ?? ""
-        case .description:
-            details = recordVO?.recordVODescription ?? ""
-        case .location:
-            if let address = viewModel?.getAddressString([recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]) {
-                    details = address
-            } else {
-                details = ""
-            }
-        case .tags:
-            details = recordVO?.tagVOS?.map({ ($0.name ?? "") }).joined(separator: ",") ?? ""
-        case .size:
-            details = ByteCountFormatter.string(fromByteCount: Int64(recordVO?.size ?? 0), countStyle: .file)
-        case .fileType:
-            details = URL(string: recordVO?.type)?.pathExtension ?? ""
-        case .originalFileName:
-            details = URL(string: recordVO?.uploadFileName)?.deletingPathExtension().absoluteString ?? ""
-        case .originalFileType:
-            details = URL(string: recordVO?.uploadFileName?.uppercased())?.pathExtension ?? ""
-        default:
-            details = "-"
-        }
-        return details
-    }
-    
-    func dateCellDetails(cellType: CellType) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        
-        let date: Date?
-        switch cellType {
-        case .uploaded:
-            date = dateFormatter.date(from: recordVO?.createdDT ?? "")
-        case .lastModified:
-            date = dateFormatter.date(from: recordVO?.updatedDT ?? "")
-        case .date:
-            date = dateFormatter.date(from: recordVO?.displayDT ?? "")
-        case .created:
-            date = dateFormatter.date(from: recordVO?.derivedDT ?? "")
-        case .fileCreated:
-            date = dateFormatter.date(from: recordVO?.derivedCreatedDT ?? "")
-        default:
-            date = nil
-        }
-        
-        return date
-    }
-    
-    func title(forCellType cellType: CellType) -> String {
-        switch cellType {
-        case .thumbnail:
-            return ""
-        case .segmentedControl:
-            return ""
-        case .name:
-            return "Name".localized()
-        case .description:
-            return "Description".localized()
-        case .date:
-            return "Date".localized()
-        case .location:
-            return "Location".localized()
-        case .tags:
-            return "Tags".localized()
-        case .saveButton:
-            return ""
-        case .uploaded:
-            return "Uploaded".localized()
-        case .lastModified:
-            return "Last Modified".localized()
-        case .created:
-            return "Created".localized()
-        case .fileCreated:
-            return "File Created".localized()
-        case .size:
-            return "Size".localized()
-        case .fileType:
-            return "File Type".localized()
-        case .originalFileName:
-            return "Original File Name".localized()
-        case .originalFileType:
-            return "Original File Type".localized()
-        }
     }
 }
 
@@ -455,17 +322,16 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
-        case .saveButton:
-            return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .location:
-            if getLocationDetails() == (0,0) {
-                return CGSize(width: UIScreen.main.bounds.width, height: 65)
-            } else {
+            if let _ = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
+               let _ = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
                 return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.65)
+            } else {
+                return CGSize(width: UIScreen.main.bounds.width, height: 65)
             }
         case .tags:
             let cellHeight: CGFloat = 40
-            let countTags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").count
+            let countTags = viewModel?.recordVO?.recordVO?.tagVOS?.count ?? 0
             //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current file
             let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 3 ) ? ( (cellHeight * 3) + 13 ) : ( cellHeight * 2 ))
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)

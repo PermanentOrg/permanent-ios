@@ -8,11 +8,11 @@
 import UIKit
 import MapKit
 
-class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
+class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
-    let regionInMeters: Double = 1500
     
+    let regionInMeters: Double = 1500
  
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsLabelField: UILabel!
@@ -32,23 +32,35 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         locationMapView.removeAnnotations(locationMapView.annotations)
     }
 
-    func configure(title: String, details: String, isMapHidden: Bool = false, isDetailsFieldEditable: Bool = false) {
+    override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
+        super.configure(withViewModel: viewModel, type: type)
+
         titleLabelField.text = title
         titleLabelField.textColor = .white
         titleLabelField.font = Text.style9.font
 
-        detailsLabelField.text = details
+        if let locnVO = viewModel.recordVO?.recordVO?.locnVO {
+            let address = viewModel.getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+            detailsLabelField.text = address
+        } else {
+            detailsLabelField.text = isEditable ? "Tap to set location".localized() : "No Location".localized()
+        }
+        
         detailsLabelField.backgroundColor = .clear
         detailsLabelField.textColor = .white
         detailsLabelField.font = Text.style8.font
         detailsLabelField.layer.cornerRadius = 5
         detailsLabelField.layer.masksToBounds = true
         detailsLabelField.baselineAdjustment = .alignCenters
-        locationMapView.isHidden = isMapHidden
-        if isDetailsFieldEditable {
+        
+        let locationDetails = getLocationDetails()
+        locationMapView.isHidden = locationDetails == (0,0)
+        
+        setLocation(locationDetails.latitude, locationDetails.longitude)
+        
+        if isEditable {
             detailsLabelField.backgroundColor = .darkGray
         }
-
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {
@@ -59,5 +71,14 @@ class FileDetailsMapViewCellCollectionViewCell: UICollectionViewCell {
         locationMapView.setRegion(region, animated: false)
         locationMapView.showsPointsOfInterest = true
         locationMapView.isUserInteractionEnabled = false
+    }
+    
+    func getLocationDetails() -> (latitude: Double, longitude: Double) {
+        if let latitude = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
+           let longitude = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
+            return (latitude,longitude)
+        } else {
+            return (0,0)
+        }
     }
 }

@@ -37,6 +37,8 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         
         setupPageVC()
         setupNavigationBar()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .fileDetailsDidSavedData, object: nil)
     }
     
     func setupPageVC() {
@@ -96,8 +98,16 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
         navControl.modalPresentationStyle = .fullScreen
         present(navControl, animated: false, completion: nil)
+    }
+    
+    @objc func onDidUpdateData(_ notification: Notification) {
+        let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
+        if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
+            title = viewModel?.name
+            view.showNotificationBanner(title: "Change was saved.".localized())
+        }
         
-        fileDetailsVC.title = currentFile.name
+        hasChanges = true
     }
 }
 

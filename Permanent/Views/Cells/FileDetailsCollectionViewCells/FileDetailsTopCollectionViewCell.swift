@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FileDetailsTopCollectionViewCell: UICollectionViewCell {
+class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     @IBOutlet var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -19,11 +19,14 @@ class FileDetailsTopCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-
-    func configure(with urlString: String) {
+    
+    override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
+        super.configure(withViewModel: viewModel, type: type)
+        
         activityIndicator.startAnimating()
         
         imageView.image = nil
+        let urlString = viewModel.recordVO?.recordVO?.thumbURL2000 ?? ""
         imageView.load(urlString: urlString) { _ in
             if let imageLoadedCallback = self.imageLoadedCallback {
                 imageLoadedCallback(self)

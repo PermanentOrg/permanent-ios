@@ -7,12 +7,7 @@
 
 import UIKit
 
-class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-    }
+class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
     @IBOutlet weak var segmentedControl: UISegmentedControl!
         
@@ -20,10 +15,11 @@ class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "FileDetailsMenuCollectionViewCell"
 
-    func configure(leftMenuTitle: String,rightMenuTitle: String) {
-        
-        segmentedControl.setTitle(leftMenuTitle, forSegmentAt: 0)
-        segmentedControl.setTitle(rightMenuTitle, forSegmentAt: 1)
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        segmentedControl.setTitle("Info".localized(), forSegmentAt: 0)
+        segmentedControl.setTitle("Details".localized(), forSegmentAt: 1)
         segmentedControl.backgroundColor = .darkGray
         segmentedControl.tintColor = .clear
         if #available(iOS 13.0, *) {
@@ -33,6 +29,7 @@ class FileDetailsMenuCollectionViewCell: UICollectionViewCell {
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .normal)
     }
+
     @IBAction func segmentedControlAction(_ sender: Any) {
         if let segmentedControlAction = segmentedControlAction {
             segmentedControlAction(self)
