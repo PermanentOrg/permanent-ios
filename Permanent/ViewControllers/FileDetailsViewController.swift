@@ -465,12 +465,17 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             }
         case .tags:
             let cellHeight: CGFloat = 40
-            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current file
-            let countTags = stringCellDetails(cellType: currentCellType).components(separatedBy: ",").count
-            let countTagsLength = Int(Double(stringCellDetails(cellType: currentCellType).components(separatedBy: ",").map({ $0.count + 5 }).reduce(0,+)) * 8.6)
+            let collectionViewWidthConstrains: CGFloat = 45.0
+            let tagAdditionalSpacing: CGFloat = 40.0
+            
+            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current fill
+            let tagsName = stringCellDetails(cellType: currentCellType).components(separatedBy: ",")
+            let tagsWidth = tagsName.map({ NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: Text.style8.font as Any]) }).map({($0.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width) + tagAdditionalSpacing })
+            let tagsWidthSum = tagsWidth.reduce(0, +) + collectionViewWidthConstrains
+      
+            let cellHeightByTagsWidth :CGFloat = CGFloat((view.frame.width - tagsWidthSum < 0) ? ((cellHeight * 3) + cellHeight / 3) : (cellHeight * 2))
 
-            let cellHeightByTagsNumber :CGFloat = CGFloat((((Int(view.frame.width) - countTagsLength) < 0)&&(countTags > 1)) ? ((cellHeight * 3) + 13) : (cellHeight * 2))
-            return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)
+            return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsWidth)
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
         }
