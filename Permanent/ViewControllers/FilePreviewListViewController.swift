@@ -38,7 +38,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         setupPageVC()
         setupNavigationBar()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .fileDetailsDidSavedData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
     }
     
     func setupPageVC() {

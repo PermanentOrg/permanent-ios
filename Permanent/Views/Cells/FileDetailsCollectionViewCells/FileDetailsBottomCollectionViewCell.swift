@@ -78,7 +78,12 @@ extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
                 return
             } else if let file = viewModel?.file,
                let name = detailsTextField.text {
-                viewModel?.update(file: file, name: name, description: nil, date: nil, location: nil, completion: { (success) in })
+                let initialValue = viewModel?.name
+                viewModel?.update(file: file, name: name, description: nil, date: nil, location: nil, completion: { (success) in
+                    if !success {
+                        textField.text = initialValue
+                    }
+                })
                 viewModel?.name = name
             }
             
@@ -87,7 +92,12 @@ extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
                 textField.text = viewModel?.recordVO?.recordVO?.recordVODescription
                 return
             } else if let file = viewModel?.file {
-                viewModel?.update(file: file, name: nil, description:  detailsTextField.text, date: nil, location: nil, completion: { (success) in })
+                let initialValue = viewModel?.recordVO?.recordVO?.recordVODescription
+                viewModel?.update(file: file, name: nil, description:  detailsTextField.text, date: nil, location: nil, completion: { (success) in
+                    if !success {
+                        textField.text = initialValue
+                    }
+                })
             }
             
         default:
@@ -95,11 +105,9 @@ extension FileDetailsBottomCollectionViewCell: UITextFieldDelegate {
         }
     }
     
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//
-//
-//
-//        return true
-//    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+
+        return true
+    }
 }

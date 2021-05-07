@@ -27,6 +27,8 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        detailsTextField.delegate = self
     }
 
     override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
@@ -113,5 +115,29 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
             dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
             detailsTextField.text = dateFormatter.string(from: date)
         }
+    }
+}
+
+extension FileDetailsDateCollectionViewCell: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        let initialDate = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.displayDT ?? "") ?? Date()
+        if date == nil || Calendar.autoupdatingCurrent.isDate(date!, equalTo: initialDate, toGranularity: .minute) {
+            return
+        } else if let file = viewModel?.file {
+            let initialValue = viewModel?.recordVO?.recordVO?.displayDT ?? ""
+            viewModel?.update(file: file, name: nil, description:  nil, date: date, location: nil, completion: { (success) in
+                if !success, let date = dateFormatter.date(from: initialValue) {
+                    textField.text = FileDetailsDateCollectionViewCell.dateFormatter.string(from: date)
+                }
+            })
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+
+        return true
     }
 }
