@@ -330,11 +330,22 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
                 return CGSize(width: UIScreen.main.bounds.width, height: 65)
             }
         case .tags:
-            let cellHeight: CGFloat = 40
-            let countTags = viewModel?.recordVO?.recordVO?.tagVOS?.count ?? 0
-            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current file
-            let cellHeightByTagsNumber :CGFloat = CGFloat(( countTags > 3 ) ? ( (cellHeight * 3) + 13 ) : ( cellHeight * 2 ))
-            return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsNumber)
+            let tagLabelCellHeight: CGFloat = 45
+            let tagCellHeight: CGFloat = 38
+            let collectionViewWidthConstrains: CGFloat = 45.0
+            let tagAdditionalSpacing: CGFloat = 40
+            
+            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current fill
+            let tagsName: [String] = viewModel?.recordVO?.recordVO?.tagVOS?.compactMap({ $0.name}) ?? []
+            
+            let tagsWidth = tagsName.map({ NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: Text.style8.font as Any]) }).map({($0.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width) + tagAdditionalSpacing })
+            let tagsWidthSum = tagsWidth.reduce(0, +) + collectionViewWidthConstrains
+            let dividedTagsWidthBySreenWidth: CGFloat = (tagsWidthSum / view.frame.width).rounded(.up)
+
+            //Set tags cell height in regard with screen width and total tag cells width
+            let cellHeightByTagsWidth :CGFloat = CGFloat((dividedTagsWidthBySreenWidth > 1) ? ((tagLabelCellHeight + (dividedTagsWidthBySreenWidth + 1) * tagCellHeight )) : (tagLabelCellHeight + tagCellHeight ))
+
+            return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsWidth)
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 65)
         }
