@@ -21,6 +21,7 @@ struct SortedTagVO {
 class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     var file: FileViewModel!
+    let maximumNumberOfCharactersForTagName: Int = 24
 
     weak var delegate: TagDetailsViewControllerDelegate?
     
@@ -232,5 +233,9 @@ extension TagDetailsViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         addTagButtonAction(searchBar)
+    }
+    func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if range.location >= maximumNumberOfCharactersForTagName { return false }
+        return true
     }
 }

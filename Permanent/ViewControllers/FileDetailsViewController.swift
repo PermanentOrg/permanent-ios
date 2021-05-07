@@ -333,7 +333,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let tagLabelCellHeight: CGFloat = 45
             let tagCellHeight: CGFloat = 38
             let collectionViewWidthConstrains: CGFloat = 45.0
-            let tagAdditionalSpacing: CGFloat = 40
+            let tagAdditionalSpacing: CGFloat = 37
             
             //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current fill
             let tagsName: [String] = viewModel?.recordVO?.recordVO?.tagVOS?.compactMap({ $0.name}) ?? []
@@ -343,7 +343,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let dividedTagsWidthBySreenWidth: CGFloat = (tagsWidthSum / view.frame.width).rounded(.up)
 
             //Set tags cell height in regard with screen width and total tag cells width
-            let cellHeightByTagsWidth :CGFloat = CGFloat((dividedTagsWidthBySreenWidth > 1) ? ((tagLabelCellHeight + (dividedTagsWidthBySreenWidth + 1) * tagCellHeight )) : (tagLabelCellHeight + tagCellHeight ))
+            let cellHeightByTagsWidth :CGFloat = tagLabelCellHeight + (dividedTagsWidthBySreenWidth + 1) * tagCellHeight
 
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsWidth)
         default:
