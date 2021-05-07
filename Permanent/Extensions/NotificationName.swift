@@ -8,6 +8,6 @@
 import Foundation
 
 extension Notification.Name {
-    static let fileDetailsDidSavedData = Notification.Name("fileDetailsDidSavedData")
-
+    static let filePreviewVMDidSaveData = Notification.Name("filePreviewVMDidSaveData")
+    static let filePreviewVMSaveDataFailed = Notification.Name("filePreviewVMSaveDataFailed")
 }

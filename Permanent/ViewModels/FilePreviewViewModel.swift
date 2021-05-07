@@ -100,14 +100,16 @@ class FilePreviewViewModel: ViewModelInterface {
                 switch result {
                 case .json( _, _):
                     self.getRecord(file: file) { (record) in
-                        NotificationCenter.default.post(name: .fileDetailsDidSavedData, object: self)
+                        NotificationCenter.default.post(name: .filePreviewVMDidSaveData, object: self)
                         completion(true)
                     }
                     
                 case .error(_, _):
+                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)
                     
                 default:
+                    NotificationCenter.default.post(name: .filePreviewVMSaveDataFailed, object: self)
                     completion(false)
                 }
             }

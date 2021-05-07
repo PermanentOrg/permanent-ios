@@ -78,7 +78,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .fileDetailsDidSavedData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDidUpdateData(_:)), name: .filePreviewVMDidSaveData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onFailedUpdateData(_:)), name: .filePreviewVMSaveDataFailed, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -215,7 +216,13 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
             self.title = viewModel?.name
             collectionView.reloadSections([1])
-            view.showNotificationBanner(title: "Change was saved.".localized())
+            view.showNotificationBanner(title: "Change was saved".localized())
+        }
+    }
+    
+    @objc func onFailedUpdateData(_ notification: Notification) {
+        if let notifVM = notification.object as? FilePreviewViewModel, notifVM.file == viewModel?.file {
+            view.showNotificationBanner(title: "Failed to save changes".localized(), backgroundColor: .deepRed)
         }
     }
 }
