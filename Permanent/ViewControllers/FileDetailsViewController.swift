@@ -337,20 +337,44 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
                 return CGSize(width: UIScreen.main.bounds.width, height: 65)
             }
         case .tags:
-            let tagLabelCellHeight: CGFloat = 45
-            let tagCellHeight: CGFloat = 38
+            /*
+             | - ( tag1 ) - (tag 2) - (tag abc) - |
+             | - (aaa) - (bbbv) - (cccc) - |
+             | - (aaa) - (bbbv) - (cccc) - |
+             */
+            
+            // Title label height + bottom spacing
+            let tagLabelCellHeight: CGFloat = 30
+            let tagCellHeight: CGFloat = 35
             let collectionViewWidthConstrains: CGFloat = 45.0
-            let tagAdditionalSpacing: CGFloat = 37
             
-            //Logic for cell height: for being able to show only 2.5 lines when there are more then 3 tags associated to current fill
-            let tagsName: [String] = viewModel?.recordVO?.recordVO?.tagVOS?.compactMap({ $0.name}) ?? []
+            // See TagsNamesCollectionViewCell for more info. 20 extra spacing in chip + 5 interitem spacing.
+            let tagAdditionalSpacing: CGFloat = 20 + 5
             
-            let tagsWidth = tagsName.map({ NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: Text.style8.font as Any]) }).map({($0.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width) + tagAdditionalSpacing })
-            let tagsWidthSum = tagsWidth.reduce(0, +) + collectionViewWidthConstrains
-            let dividedTagsWidthBySreenWidth: CGFloat = (tagsWidthSum / view.frame.width).rounded(.up)
-
+            let tagsName: [String] = viewModel?.recordVO?.recordVO?.tagVOS?.compactMap { $0.name } ?? []
+            
+            let tagsWidth = tagsName.map {
+                NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+            }.map {
+                $0.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width.rounded(.up) + tagAdditionalSpacing
+            }
+            
+            var currentRowWidth: CGFloat = 0
+            var currentRowCount: Int = 0
+            tagsWidth.forEach { (width) in
+                if currentRowWidth + width > (view.frame.width - collectionViewWidthConstrains) {
+                    currentRowWidth = width
+                    currentRowCount += 1
+                } else {
+                    if currentRowCount == 0 {
+                        currentRowCount += 1
+                    }
+                    currentRowWidth += width
+                }
+            }
+           
             //Set tags cell height in regard with screen width and total tag cells width
-            let cellHeightByTagsWidth :CGFloat = tagLabelCellHeight + (dividedTagsWidthBySreenWidth + 1) * tagCellHeight
+            let cellHeightByTagsWidth :CGFloat = tagLabelCellHeight + CGFloat(currentRowCount) * tagCellHeight
 
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeightByTagsWidth)
         default:

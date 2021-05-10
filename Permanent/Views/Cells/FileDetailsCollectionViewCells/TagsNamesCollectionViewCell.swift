@@ -89,9 +89,9 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let name = tagNames[indexPath.row]
-        let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: cellTitleLabel.font as Any])
-        let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
+        let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+        let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width.rounded(.up)
         
-        return CGSize(width: 15 + width , height: 30)
+        return CGSize(width: 20 + width , height: 30)
     }
 }
