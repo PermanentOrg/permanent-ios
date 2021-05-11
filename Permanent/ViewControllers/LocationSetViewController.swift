@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import MapKit
-import AutoCompletion
 import CoreLocation
 import GoogleMaps
 import GooglePlaces
@@ -22,11 +20,8 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
-    var searchedLocations: [String: (CLLocationCoordinate2D, Double)] = ["none": (CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0) ,0.0)]
     
     weak var delegate: LocationSetViewControllerDelegate?
-    
-    let geocoder = CLGeocoder()
     
     @IBOutlet weak var searchBarContainer: UIView!
     var resultsViewController: GMSAutocompleteResultsViewController?
@@ -132,10 +127,6 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
                 self.view.showNotificationBanner(title: "There was a problem saving the location.".localized(), backgroundColor: .deepRed, textColor: .white)
             }
         })
-    }
-    
-    func getLocationString(_ items: [String?]) -> String {
-        return items.compactMap { $0 }.joined(separator: ", ")
     }
 }
 

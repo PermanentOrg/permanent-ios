@@ -6,14 +6,12 @@
 //
 
 import UIKit
-import MapKit
+import CoreLocation
 import GoogleMaps
 
 class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
     static let identifier = "FileDetailsMapViewCellCollectionViewCell"
-    
-    let regionInMeters: Double = 1500
  
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsLabelField: UILabel!
@@ -74,11 +72,8 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     func setLocation(_ latitude: Double, _ longitude: Double) {
         let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
         
-//        mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 9.9))
-        
-        let camera = GMSCameraPosition.camera(withLatitude: coordinate.latitude, longitude: coordinate.longitude, zoom: 9.9)
-        mapView.camera = camera
-        
+        mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 9.9))
+
         if marker == nil {
             marker = GMSMarker()
         }
