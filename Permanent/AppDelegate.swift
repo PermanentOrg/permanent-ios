@@ -8,6 +8,8 @@
 import Firebase
 import FirebaseMessaging
 import UIKit
+import GooglePlaces
+import GoogleMaps
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -49,6 +51,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         firebaseOpts.storageBucket = googleServiceInfo.storageBucket
 
         FirebaseApp.configure(options: firebaseOpts)
+        
+        GMSServices.provideAPIKey(googleServiceInfo.apiKey)
+        GMSPlacesClient.provideAPIKey(googleServiceInfo.apiKey)
     }
     
     fileprivate func initNotifications() {

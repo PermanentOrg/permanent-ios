@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -23,9 +24,10 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PYs-7t-2UV">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rxs-PA-57K">
                         <rect key="frame" x="20" y="26" width="517" height="438"/>
-                    </mapView>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gc8-yp-hqv">
                         <rect key="frame" x="20" y="469" width="517" height="30"/>
                         <constraints>
@@ -48,11 +50,11 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="Gc8-yp-hqv" secondAttribute="bottom" id="0C6-W4-sfh"/>
                 <constraint firstItem="jsF-r3-PIq" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="62Z-qK-gFr"/>
-                <constraint firstItem="PYs-7t-2UV" firstAttribute="top" secondItem="jsF-r3-PIq" secondAttribute="bottom" constant="5" id="DmC-9w-lxt"/>
-                <constraint firstItem="Gc8-yp-hqv" firstAttribute="top" secondItem="PYs-7t-2UV" secondAttribute="bottom" constant="5" id="JYL-qw-0ja"/>
-                <constraint firstAttribute="trailing" secondItem="PYs-7t-2UV" secondAttribute="trailing" constant="20" id="TFl-Tu-FLp"/>
-                <constraint firstItem="PYs-7t-2UV" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="WKM-Jj-NaH"/>
+                <constraint firstItem="Gc8-yp-hqv" firstAttribute="top" secondItem="rxs-PA-57K" secondAttribute="bottom" constant="5" id="R5T-S8-mtR"/>
+                <constraint firstItem="rxs-PA-57K" firstAttribute="top" secondItem="jsF-r3-PIq" secondAttribute="bottom" constant="5" id="TIB-W2-UbZ"/>
+                <constraint firstItem="rxs-PA-57K" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="Tbc-es-bTg"/>
                 <constraint firstAttribute="trailing" secondItem="jsF-r3-PIq" secondAttribute="trailing" constant="20" id="l71-oA-Uxy"/>
+                <constraint firstAttribute="trailing" secondItem="rxs-PA-57K" secondAttribute="trailing" constant="20" id="qSJ-EJ-CVJ"/>
                 <constraint firstAttribute="trailing" secondItem="Gc8-yp-hqv" secondAttribute="trailing" constant="20" id="tBd-iU-B1i"/>
                 <constraint firstItem="jsF-r3-PIq" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="xYf-0g-TsV"/>
                 <constraint firstItem="Gc8-yp-hqv" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="zbW-SS-qFw"/>
@@ -60,10 +62,15 @@
             <size key="customSize" width="557" height="499"/>
             <connections>
                 <outlet property="detailsLabelField" destination="Gc8-yp-hqv" id="VYy-eG-n6r"/>
-                <outlet property="locationMapView" destination="PYs-7t-2UV" id="s6O-UA-D9P"/>
+                <outlet property="mapViewContainer" destination="rxs-PA-57K" id="lUn-J8-EqR"/>
                 <outlet property="titleLabelField" destination="jsF-r3-PIq" id="gtR-lh-aMp"/>
             </connections>
             <point key="canvasLocation" x="-293.47826086956525" y="47.209821428571423"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>

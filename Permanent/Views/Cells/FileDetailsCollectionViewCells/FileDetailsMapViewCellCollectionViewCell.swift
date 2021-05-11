@@ -7,6 +7,7 @@
 
 import UIKit
 import MapKit
+import GoogleMaps
 
 class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCell {
 
@@ -16,7 +17,10 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
  
     @IBOutlet weak var titleLabelField: UILabel!
     @IBOutlet weak var detailsLabelField: UILabel!
-    @IBOutlet weak var locationMapView: MKMapView!
+    @IBOutlet weak var mapViewContainer: UIView!
+    
+    var mapView: GMSMapView!
+    var marker: GMSMarker!
     
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
@@ -24,12 +28,16 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 9.9)
+        mapView = GMSMapView.map(withFrame: mapViewContainer.bounds, camera: camera)
+        mapView.isUserInteractionEnabled = false
+        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mapViewContainer.addSubview(mapView)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        locationMapView.removeAnnotations(locationMapView.annotations)
     }
 
     override func configure(withViewModel viewModel: FilePreviewViewModel, type: FileDetailsViewController.CellType) {
@@ -54,7 +62,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
         detailsLabelField.baselineAdjustment = .alignCenters
         
         let locationDetails = getLocationDetails()
-        locationMapView.isHidden = locationDetails == (0,0)
+        mapViewContainer.isHidden = locationDetails == (0,0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
         
@@ -64,13 +72,18 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {
-        let currentLocation = MKPointAnnotation()
-        currentLocation.coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
-        locationMapView.addAnnotation(currentLocation)
-        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: regionInMeters, longitudinalMeters: regionInMeters)
-        locationMapView.setRegion(region, animated: false)
-        locationMapView.showsPointsOfInterest = true
-        locationMapView.isUserInteractionEnabled = false
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
+        
+//        mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 9.9))
+        
+        let camera = GMSCameraPosition.camera(withLatitude: coordinate.latitude, longitude: coordinate.longitude, zoom: 9.9)
+        mapView.camera = camera
+        
+        if marker == nil {
+            marker = GMSMarker()
+        }
+        marker.position = coordinate
+        marker.map = mapView
     }
     
     func getLocationDetails() -> (latitude: Double, longitude: Double) {
