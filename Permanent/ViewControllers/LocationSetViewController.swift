@@ -6,9 +6,9 @@
 //
 
 import UIKit
-import MapKit
-import AutoCompletion
 import CoreLocation
+import GoogleMaps
+import GooglePlaces
 
 protocol LocationSetViewControllerDelegate: class {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController)
@@ -20,14 +20,18 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }
-    var searchedLocations: [String: (CLLocationCoordinate2D, Double)] = ["none": (CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0) ,0.0)]
     
     weak var delegate: LocationSetViewControllerDelegate?
     
-    let geocoder = CLGeocoder()
-
-    @IBOutlet weak var searchBar: AutoCompletionTextField!
-    @IBOutlet weak var locationSetMapView: MKMapView!
+    @IBOutlet weak var searchBarContainer: UIView!
+    var resultsViewController: GMSAutocompleteResultsViewController?
+    var searchController: UISearchController?
+    
+    @IBOutlet weak var mapContainerView: UIView!
+    var mapView: GMSMapView!
+    var marker: GMSMarker!
+    
+    let placesClient = GMSPlacesClient()
     
     var pickedLocation: LocnVO? = nil
     
@@ -36,16 +40,6 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         
         styleNavBar()
         initUI()
-        
-        locationSetMapView.delegate = self
-        
-        searchBar.suggestionsResultDataSource = self
-        searchBar.suggestionsResultDelegate = self
-        searchBar.delegate = self
-        
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        locationSetMapView.addGestureRecognizer(longPressRecognizer)
-        longPressRecognizer.minimumPressDuration = 0.8
    }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,24 +60,27 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     func initUI() {
         view.backgroundColor = .black
         
-        locationSetMapView.isRotateEnabled = false
+        let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 16.0)
+        mapView = GMSMapView.map(withFrame: mapContainerView.bounds, camera: camera)
+        mapView.delegate = self
+        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mapContainerView.addSubview(mapView)
         
-        searchBar.backgroundColor = .white
-        searchBar.textColor = .black
-        searchBar.font = Text.style29.font
-        searchBar.tableOffset = UIOffset(horizontal: 0, vertical: 0)
+        resultsViewController = GMSAutocompleteResultsViewController()
+        resultsViewController?.delegate = self
         
-        searchBar.tableCornerRadius = 0
-        searchBar.tableHeight = 45
-        searchBar.tableBorderColor = .white
-        searchBar.placeholder = "Search address".localized()
-        searchBar.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 13, height: searchBar.frame.height))
-        searchBar.leftViewMode = .always
+        searchController = UISearchController(searchResultsController: resultsViewController)
+        searchController?.searchResultsUpdater = resultsViewController
+        searchController!.searchBar.backgroundColor = UIColor.clear
+        searchBarContainer.addSubview(searchController!.searchBar)
 
+        // When UISearchController presents the results view, present it in
+        // this view controller, not one further up the chain.
+        definesPresentationContext = true
+        
         if let latitude = recordVO?.locnVO?.latitude,
            let longitude = recordVO?.locnVO?.longitude {
-            setMapRegion(CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
-            setMapAnnotation(CLLocationCoordinate2D(latitude: latitude, longitude: longitude),viewModel?.getAddressString([recordVO?.locnVO?.streetNumber, recordVO?.locnVO?.streetName, recordVO?.locnVO?.locality, recordVO?.locnVO?.country]) ?? "")
+            setLocation(latitude, longitude)
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
@@ -100,110 +97,64 @@ class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
         viewModel?.update(file: file, name: nil, description: nil, date: nil, location: pickedLocation, completion: { (success) in
             self.hideSpinner()
             if success {
-                self.delegate?.locationSetViewControllerDidUpdate(self)
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true, completion: {
+                    self.delegate?.locationSetViewControllerDidUpdate(self)
+                })
             } else {
                 self.showErrorAlert(message: .errorMessage)
             }
         })
     }
     
-    @objc func longPressed(sender: UILongPressGestureRecognizer) {
-        if sender.state == .began  {
-            let touchPoint = sender.location(in: self.locationSetMapView)
-            let touchLocation = locationSetMapView.convert(touchPoint, toCoordinateFrom: locationSetMapView)
-            let coordinates: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: touchLocation.latitude, longitude: touchLocation.longitude)
-            saveLocation(coordinates)
+    func setLocation(_ latitude: Double, _ longitude: Double) {
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
+        
+        mapView.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 6))
+        
+        if marker == nil {
+            marker = GMSMarker()
         }
-    }
-    
-    func setMapRegion(_ coordinates: CLLocationCoordinate2D,_ radiusMeters: Double = 2000) {
-        let currentLocation = MKPointAnnotation()
-        currentLocation.coordinate = coordinates
-        let radius = (radiusMeters < 1000) ? ( 1000 ) : ( radiusMeters )
-        
-        let region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: radius, longitudinalMeters: radius)
-        
-        locationSetMapView.setRegion(region, animated: true)
-        locationSetMapView.isUserInteractionEnabled = true
-    }
-    
-    func setMapAnnotation(_ coordinates: CLLocationCoordinate2D, _ addressText: String) {
-        let currentLocation = MKPointAnnotation()
-        currentLocation.coordinate = coordinates
-        currentLocation.title = addressText
-        locationSetMapView.removeAnnotations(locationSetMapView.annotations)
-        locationSetMapView.addAnnotation(currentLocation)
+        marker.position = coordinate
+        marker.map = mapView
     }
     
     func saveLocation(_ location: CLLocationCoordinate2D) {
         viewModel?.validateLocation(lat: location.latitude, long: location.longitude, completion: { status in
             if let locnVO = status {
-                let streetNumber: String? = locnVO.streetNumber
-                let streetName: String? = locnVO.streetName
-                let locality: String? = locnVO.locality
-                let country: String? = locnVO.country
-                self.setMapAnnotation(location, self.getLocationString([streetNumber,streetName,locality,country]))
+                self.setLocation(location.latitude, location.longitude)
                 self.pickedLocation = locnVO
             } else {
                 self.view.showNotificationBanner(title: "There was a problem saving the location.".localized(), backgroundColor: .deepRed, textColor: .white)
             }
         })
     }
+}
+
+extension LocationSetViewController: GMSMapViewDelegate {
+    func mapView(_ mapView: GMSMapView, didLongPressAt coordinate: CLLocationCoordinate2D) {
+        saveLocation(coordinate)
+    }
+}
+
+extension LocationSetViewController: GMSAutocompleteResultsViewControllerDelegate {
+  func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                         didAutocompleteWith place: GMSPlace) {
+    searchController?.isActive = false
     
-    func getLocationString(_ items: [String?]) -> String {
-        return items.compactMap { $0 }.joined(separator: ", ")
-    }
-}
+    saveLocation(place.coordinate)
+  }
 
-extension LocationSetViewController: MKMapViewDelegate {
-    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-        for item in views {
-            item.isEnabled = false
-        }
-    }
-}
+  func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                         didFailAutocompleteWithError error: Error){
+    print("Error: ", error.localizedDescription)
+  }
 
-extension LocationSetViewController: AutoCompletionTextFieldDataSource {
-    func fetchSuggestions(forIncompleteString incompleteString: String!, withCompletionBlock completion: FetchCompletionBlock!) {
-        if incompleteString.count > 2 {
-            geocoder.geocodeAddressString(incompleteString,
-                                          completionHandler: { (result, error) in
-                                            if let placemarks = result {
-                                                let placemarksDictionary = placemarks.map { placemark -> [String:String] in
-                                                    let addressElements: [String?] = [placemark.thoroughfare, placemark.subThoroughfare, placemark.locality,placemark.administrativeArea, placemark.country]
-                                                    let addressString = self.getLocationString(addressElements)
-                                                    if let coordinate = placemark.location?.coordinate,
-                                                       let radius = placemark.region as? CLCircularRegion {
-                                                        self.searchedLocations[addressString] = (coordinate,radius.radius)
-                                                    }
-                                                    return ["title": addressString]
-                                                }
-                                                completion(placemarksDictionary, "title")
-                                            }
-                                          })
-        }
-    }
-}
+  // Turn the network activity indicator on and off again.
+  func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = true
+  }
 
-extension LocationSetViewController: AutoCompletionTextFieldDelegate {
-    func textField(_ textField: AutoCompletionTextField!, didSelectItem selectedItem: Any!) {
-        if let item = selectedItem as? [String: String] {
-            let itemTitle: String = item["title"] ?? ""
-            searchBar.text = itemTitle
-            if let location: CLLocationCoordinate2D = self.searchedLocations[itemTitle]?.0,
-               let radius: Double = self.searchedLocations[itemTitle]?.1 {
-                setMapRegion(location,radius)
-                saveLocation(location)
-            }
-            self.view.endEditing(true)
-        }
-    }
-}
-
-extension LocationSetViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return true
-    }
+  func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+  }
 }

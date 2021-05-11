@@ -1,5 +1,4 @@
 PODS:
-  - AutoCompletion (1.2.1)
   - BSImagePicker (3.3.1)
   - Firebase/Analytics (6.32.2):
     - Firebase/Core
@@ -64,6 +63,13 @@ PODS:
     - nanopb (~> 1.30906.0)
   - GoogleDataTransport (7.5.1):
     - nanopb (~> 1.30906.0)
+  - GoogleMaps (4.2.0):
+    - GoogleMaps/Maps (= 4.2.0)
+  - GoogleMaps/Base (4.2.0)
+  - GoogleMaps/Maps (4.2.0):
+    - GoogleMaps/Base
+  - GooglePlaces (4.2.0):
+    - GoogleMaps/Base (= 4.2.0)
   - GoogleUtilities/AppDelegateSwizzler (6.7.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -90,18 +96,19 @@ PODS:
   - nanopb/encode (1.30906.0)
   - ObjectMapper (4.2.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.15.8)
+  - Protobuf (3.16.0)
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
   - Sourcery (1.4.1)
 
 DEPENDENCIES:
-  - AutoCompletion (from `ios-autocomplete`)
   - BSImagePicker (= 3.3.1)
   - Firebase/Analytics (= 6.32.2)
   - Firebase/Crashlytics (= 6.32.2)
   - Firebase/Messaging
+  - GoogleMaps (= 4.2.0)
+  - GooglePlaces (= 4.2.0)
   - ObjectMapper (= 4.2.0)
   - SDWebImage (= 5.10.0)
   - Sourcery (= 1.4.1)
@@ -119,6 +126,8 @@ SPEC REPOS:
     - FirebaseMessaging
     - GoogleAppMeasurement
     - GoogleDataTransport
+    - GoogleMaps
+    - GooglePlaces
     - GoogleUtilities
     - nanopb
     - ObjectMapper
@@ -127,12 +136,7 @@ SPEC REPOS:
     - SDWebImage
     - Sourcery
 
-EXTERNAL SOURCES:
-  AutoCompletion:
-    :path: ios-autocomplete
-
 SPEC CHECKSUMS:
-  AutoCompletion: f62fcae28dccd1df0bb3073d2880967c2e6a2cbc
   BSImagePicker: 0fe04b574d4d6b81093785d2af6c26227efc8428
   Firebase: 47176280bfba198e531f909cfb1612dad216cb96
   FirebaseAnalytics: 3c2fee6a922023ccfda7af87e4e641bad1fc11ba
@@ -144,14 +148,16 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 82d75b3770a78bbce470769a6980429608b4c407
   GoogleAppMeasurement: 1a66f478c68ecd6c16ee63ee60c7c3a648e6b337
   GoogleDataTransport: f56af7caa4ed338dc8e138a5d7c5973e66440833
+  GoogleMaps: eb03e327edfd70b06de1e6e321653f73712df7ad
+  GooglePlaces: 196a9dd88580dcb3f3df46f415057703d0d2a310
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
+  Protobuf: 8e78b4aabb47d17f379fb10b0d22ed5439e69b95
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
 
-PODFILE CHECKSUM: fc3741536c94d3ae123ded8324554fc4f1a64f96
+PODFILE CHECKSUM: 650369b2a1700f4c47880a2abbbd1d8602c82f24
 
 COCOAPODS: 1.10.1
