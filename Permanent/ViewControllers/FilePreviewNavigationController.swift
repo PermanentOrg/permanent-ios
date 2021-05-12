@@ -34,6 +34,10 @@ class FilePreviewNavigationController: UINavigationController {
         super.init(coder: aDecoder)
     }
     
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
