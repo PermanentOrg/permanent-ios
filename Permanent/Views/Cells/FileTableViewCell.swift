@@ -75,18 +75,22 @@ class FileTableViewCell: UITableViewCell {
     
     fileprivate func setFileImage(forModel model: FileViewModel) {
         if model.type.isFolder {
+            fileImageView.contentMode = .scaleAspectFit
             fileImageView.image = UIImage.folder.templated
             fileImageView.tintColor = .mainPurple
         } else {
             switch model.fileStatus {
             case .synced:
+                fileImageView.contentMode = .scaleAspectFill
                 let fileURL = URL(string: model.thumbnailURL)
                 fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
                 
             case .downloading:
+                fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .download
                 
             case .uploading, .waiting:
+                fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .cloud // TODO: waiting can be used on download, too.
             }
         }
