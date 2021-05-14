@@ -24,16 +24,15 @@ class NotificationService: UNNotificationServiceExtension {
             }
 
             switch notificationType {
-            case "share-notification":
-                guard let targetArchiveName = userInfo["targetArchiveName"] as? String,
-                      let sourceArchiveName = userInfo["sourceArchiveName"] as? String,
-                      let sharedItemName = userInfo["sharedItemName"] as? String else {
+            case "type.notification.share":
+                guard let sourceArchiveName = userInfo["fromArchiveName"] as? String,
+                      let sharedItemName = userInfo["recordName"] as? String else {
                     contentHandler(bestAttemptContent)
                     return
                 }
                 
                 bestAttemptContent.title = sourceArchiveName
-                bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with \(targetArchiveName)"
+                bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with you."
             
             case "upload-reminder":
                 bestAttemptContent.title = ""

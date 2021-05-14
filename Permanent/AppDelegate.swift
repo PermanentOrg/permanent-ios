@@ -124,12 +124,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         if let notificationType = userInfo["notificationType"] as? String {
             switch notificationType {
-            case "share-notification":
-                guard let name: String = userInfo["sharedItemName"] as? String,
+            case "type.notification.share":
+                guard let name: String = userInfo["recordName"] as? String,
                       let recordId: Int = Int(userInfo["recordId"] as? String ?? ""),
-                      let folderLinkId: Int = Int(userInfo["folder_linkId"] as? String ?? ""),
-                      let archiveNbr: String = userInfo["archiveNbr"] as? String,
-                      let type: String = userInfo["type"] as? String,
+                      let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+                      let archiveNbr: String = userInfo["fromArchiveId"] as? String,
+                      let type: String = "type.record.misc" as? String,
                       let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
                     break
                 }
