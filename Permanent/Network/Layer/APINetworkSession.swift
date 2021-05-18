@@ -125,7 +125,9 @@ extension APINetworkSession: NetworkSessionProtocol {
     func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
         let session = SharedURLSession.shared.session
         let dataTask = session?.dataTask(with: request) { data, response, error in
-            completionHandler(data, response, error)
+            DispatchQueue.main.async {
+                completionHandler(data, response, error)
+            }
         }
 
         return dataTask
