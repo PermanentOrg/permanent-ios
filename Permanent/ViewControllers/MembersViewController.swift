@@ -33,6 +33,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func configureUI() {
+        styleNavBar()
+        
         navigationItem.title = String.member.pluralized()
         view.backgroundColor = .backgroundPrimary
         addMembersButton.configureActionButtonUI(title: String.addMember.pluralized())

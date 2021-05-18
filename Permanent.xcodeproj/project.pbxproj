@@ -296,14 +296,14 @@
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
+		F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
-		F5A2A07D26161AE6003AAF36 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		F5A2A07B26161AE6003AAF36 /* PBXContainerItemProxy */ = {
+		F57E4D3F2653EBC700F0A968 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E2C5D0F24D98EE100E2B95F /* Project object */;
 			proxyType = 1;
@@ -313,13 +313,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		F5A2A07E26161AE6003AAF36 /* Embed App Extensions */ = {
+		F57E4D412653EBC700F0A968 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				F5A2A07D26161AE6003AAF36 /* PushExtension.appex in Embed App Extensions */,
+				F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1561,14 +1561,14 @@
 				5E2C5D1324D98EE100E2B95F /* Sources */,
 				5E2C5D1424D98EE100E2B95F /* Frameworks */,
 				5E2C5D1524D98EE100E2B95F /* Resources */,
-				F5A2A07E26161AE6003AAF36 /* Embed App Extensions */,
 				B0FEDC0FFA313DFFCD51A4EA /* [CP] Embed Pods Frameworks */,
 				1D073FA59F5572A2943FEA28 /* [CP] Copy Pods Resources */,
+				F57E4D412653EBC700F0A968 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F5A2A07C26161AE6003AAF36 /* PBXTargetDependency */,
+				F57E4D402653EBC700F0A968 /* PBXTargetDependency */,
 			);
 			name = Permanent;
 			productName = Permanent;
@@ -2030,10 +2030,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F5A2A07C26161AE6003AAF36 /* PBXTargetDependency */ = {
+		F57E4D402653EBC700F0A968 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F5A2A07526161AE6003AAF36 /* PushExtension */;
-			targetProxy = F5A2A07B26161AE6003AAF36 /* PBXContainerItemProxy */;
+			targetProxy = F57E4D3F2653EBC700F0A968 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2175,7 +2175,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FF948075880F95971F77D902 /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -2184,7 +2183,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2202,7 +2201,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 00A7979E003EFF85A666AA80 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -2211,7 +2209,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2289,7 +2287,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9E92C752205B1A715A4A7D78 /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -2298,7 +2295,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2370,7 +2367,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 90FC29B23EE0D799580DD402 /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -2379,7 +2375,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2401,7 +2397,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2423,7 +2419,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2445,7 +2441,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2467,7 +2463,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

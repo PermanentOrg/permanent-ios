@@ -50,17 +50,30 @@ class RootViewController: UIViewController {
     func setDrawerRoot() {
         sendPushNotificationToken()
         
-        let mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
-        let sideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main)
-        
-        let navController = RootNavigationController(viewController: mainViewController)
-        let drawerController = DrawerViewController(rootViewController: navController,
-                                                    sideMenuController: sideMenuController)
+        let drawerController = drawerControllerForDeepLink()
         
         // Move these 3 lines to a method
         setupChild(drawerController)
         removeChild(current)
         current = drawerController
+    }
+    
+    func drawerControllerForDeepLink() -> DrawerViewController {
+        let mainViewController: UIViewController
+        let sideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main) as! SideMenuViewController
+        
+        if let requestPAAccess: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.requestPAAccess),
+           requestPAAccess == true {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestPAAccess)
+            mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
+            
+            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
+        } else {
+            mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
+        }
+        
+        let navController = RootNavigationController(viewController: mainViewController)
+        return DrawerViewController(rootViewController: navController, sideMenuController: sideMenuController)
     }
     
     func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {
