@@ -22,6 +22,8 @@ class FilePreviewViewModel: ViewModelInterface {
             accessRole.contains("owner")
     }
     
+    weak var delegate: FilePreviewNavigationControllerDelegate?
+    
     var downloader: DownloadManagerGCD? = nil
     
     init(file: FileViewModel) {
