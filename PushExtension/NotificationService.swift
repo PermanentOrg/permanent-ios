@@ -47,6 +47,16 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 bestAttemptContent.title = sourceArchiveName
                 bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with you."
+                
+            case "type.notification.sharelink.request":
+                guard let sourceAccountName = userInfo["fromAccountName"] as? String,
+                      let sharedItemName = userInfo["shareName"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                bestAttemptContent.title = sourceAccountName
+                bestAttemptContent.body = "\(sourceAccountName) has requested access to \(sharedItemName)."
             
             case "upload-reminder":
                 bestAttemptContent.title = ""
