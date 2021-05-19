@@ -24,6 +24,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     let documentInteractionController = UIDocumentInteractionController()
     
+    var pageVC: UIPageViewController!
+    var hasChanges: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -45,7 +48,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         videoPlayer?.player?.pause()
     }
-
+    
     func initUI() {
         styleNavBar()
         let shareButtonImage = UIBarButtonItem.SystemItem.action
@@ -53,8 +56,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         
         title = file.name
+        
+        extendedLayoutIncludesOpaqueBars = true
+        edgesForExtendedLayout = .all
+
     }
     
     override func styleNavBar() {
@@ -82,10 +97,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         else {
             return
         }
+        let fileType = FileType(rawValue: self.viewModel?.recordVO?.recordVO?.type ?? "") ?? .miscellaneous
         
         if let localURL = self.fileHelper.url(forFileNamed: fileName),
            let contentType = fileVO.contentType {
-            switch self.file.type {
+            switch fileType {
             case FileType.image:
                 self.loadImage(withURL: localURL, contentType: contentType)
             case FileType.video:
@@ -96,7 +112,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         } else if let downloadURLString = fileVO.downloadURL,
                   let contentType = fileVO.contentType,
                   let downloadURL = URL(string: downloadURLString) {
-            switch self.file.type {
+            switch fileType {
             case FileType.image:
                 self.loadImage(withURL: downloadURL, contentType: contentType)
             case FileType.video:
@@ -189,19 +205,22 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func infoButtonAction(_ sender: Any) {
+        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+        fileDetailsVC.file = viewModel?.file
+        fileDetailsVC.viewModel = viewModel
+        fileDetailsVC.delegate = self
+        
+        let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
+        navControl.modalPresentationStyle = .fullScreen
+        present(navControl, animated: false, completion: nil)
+    }
+    
+    @objc func closeButtonAction(_ sender: Any) {
+        (navigationController as! FilePreviewNavigationController).filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
+        
         removeVideoPlayer()
         
-        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
-        fileDetailsVC.file = file
-        fileDetailsVC.viewModel = viewModel
-        
-        /*
-         supportedInterfaceOrientations is not queried on setVC or push, because it assumes it will be the same as the previous view controller.
-         However, on pop, it will query it.
-         This is an elegant hack to tie everything together.
-         */
-        navigationController?.setViewControllers([fileDetailsVC, self], animated: false)
-        navigationController?.popViewController(animated: false)
+        dismiss(animated: true, completion: nil)
     }
 
     // MARK: - KVO
@@ -267,5 +286,26 @@ extension FilePreviewViewController: ImagePreviewViewControllerDelegate {
 extension FilePreviewViewController: UIScrollViewDelegate {
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         navigationController?.setNavigationBarHidden(scale > 1, animated: true)
+    }
+}
+
+extension FilePreviewViewController: FilePreviewNavigationControllerDelegate {
+    func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        if hasChanges == true {
+            self.hasChanges = true
+        }
+        
+        dismiss(animated: true) {
+            (self.navigationController as? FilePreviewNavigationController)?.filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: self.hasChanges)
+        }
+    }
+    
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
+        let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
+        title = viewModel?.name
+        
+        if hasChanges == true {
+            self.hasChanges = true
+        }
     }
 }

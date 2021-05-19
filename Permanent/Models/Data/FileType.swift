@@ -14,7 +14,7 @@ enum FileType: String {
     case privateRootFolder = "type.folder.root.private"
     case image = "type.record.image"
     case video = "type.record.video"
-    case miscellaneous
+    case miscellaneous = "type.record.misc"
     
     var isFolder: Bool {
         switch self {
