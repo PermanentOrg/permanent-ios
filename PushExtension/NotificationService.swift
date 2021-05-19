@@ -24,6 +24,20 @@ class NotificationService: UNNotificationServiceExtension {
             }
 
             switch notificationType {
+            case "type.notification.pa_response_non_transfer":
+                guard let accountName = userInfo["fromAccountName"] as? String,
+                      let archiveName = userInfo["fromArchiveName"] as? String,
+                      let accessRole = userInfo["accessRole"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                let accessRoleComps = accessRole.components(separatedBy: ".")
+                let stylizedAccessRole = accessRoleComps.last?.capitalized ?? accessRole
+                
+                bestAttemptContent.title = accountName
+                bestAttemptContent.body = "\(accountName) accepted your invitation to join The \(archiveName) Archive as a \(stylizedAccessRole)"
+                
             case "type.notification.share":
                 guard let sourceArchiveName = userInfo["fromArchiveName"] as? String,
                       let sharedItemName = userInfo["recordName"] as? String else {

@@ -125,42 +125,69 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let notificationType = userInfo["notificationType"] as? String {
             switch notificationType {
             case "type.notification.share":
-                guard let name: String = userInfo["recordName"] as? String,
-                      let recordId: Int = Int(userInfo["recordId"] as? String ?? ""),
-                      let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-                      let archiveNbr: String = userInfo["fromArchiveId"] as? String,
-                      let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
-                    break
-                }
-                DispatchQueue.main.async {
-                    if let drawerVC = self.rootViewController.current as? DrawerViewController {
-                        drawerVC.dismiss(animated: false) {
-                            let rootVC: UIViewController
-                            if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
-                                rootVC = drawerVC.rootViewController.visibleViewController!
-                            } else {
-                                rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-                                self.rootViewController.changeDrawerRoot(viewController: rootVC)
-                            }
-                            
-                            let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, csrf: csrf)
-                            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-                            filePreviewVC.file = fileVM
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
-                                fileDetailsNavigationController.filePreviewNavDelegate = rootVC as? FilePreviewNavigationControllerDelegate
-                                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                                rootVC.present(fileDetailsNavigationController, animated: true)
-                            }
-                        }
-                    } else {
-                        let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
-                        try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
-                    }
-                }
+                openShareNotification(response.notification)
+            case "type.notification.pa_response_non_transfer":
+                openPARequestNotification(response.notification)
             default:
                 break
+            }
+        }
+        
+        completionHandler()
+    }
+    
+    func openShareNotification(_ notification: UNNotification) {
+        let userInfo = notification.request.content.userInfo
+        
+        guard let name: String = userInfo["recordName"] as? String,
+              let recordId: Int = Int(userInfo["recordId"] as? String ?? ""),
+              let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+              let archiveNbr: String = userInfo["fromArchiveId"] as? String,
+              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+            return
+        }
+        DispatchQueue.main.async {
+            if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                drawerVC.dismiss(animated: false) {
+                    let rootVC: UIViewController
+                    if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
+                        rootVC = drawerVC.rootViewController.visibleViewController!
+                    } else {
+                        rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                        self.rootViewController.changeDrawerRoot(viewController: rootVC)
+                    }
+                    
+                    let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, csrf: csrf)
+                    let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+                    filePreviewVC.file = fileVM
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                        fileDetailsNavigationController.filePreviewNavDelegate = rootVC as? FilePreviewNavigationControllerDelegate
+                        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+                        rootVC.present(fileDetailsNavigationController, animated: true)
+                    }
+                }
+            } else {
+                let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
+                try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
+            }
+        }
+    }
+    
+    func openPARequestNotification(_ notification: UNNotification) {
+        DispatchQueue.main.async {
+            if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    let rootVC: UIViewController
+                    
+                    rootVC = UIViewController.create(withIdentifier: .members, from: .members) as! MembersViewController
+                    self.rootViewController.changeDrawerRoot(viewController: rootVC)
+                    
+                    (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
+                }
+            } else {
+                PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.requestPAAccess)
             }
         }
     }
