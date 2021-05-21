@@ -16,6 +16,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var signUpButton: UIButton!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
+    @IBOutlet weak var versionLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +47,10 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
         copyrightLabel.font = Text.style12.font
+        
+        versionLabel.textColor = .white
+        versionLabel.font = Text.style12.font
+        versionLabel.text = "Version \(UIApplication.release) (\(UIApplication.build))"
         
         emailField.delegate = self
         passwordField.delegate = self
