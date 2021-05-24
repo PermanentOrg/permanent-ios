@@ -43,7 +43,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         versionLabel.textColor = .white
         versionLabel.font = Text.style12.font
-        versionLabel.text = "Version".localized() + "\(Bundle.release) (\(Bundle.build))"
+        versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
     }
     
     fileprivate func setupTableView() {
