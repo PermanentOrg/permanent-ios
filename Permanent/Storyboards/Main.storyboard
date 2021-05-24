@@ -139,8 +139,15 @@
                                     <constraint firstAttribute="bottom" secondItem="Dqx-r7-BC8" secondAttribute="bottom" constant="10" id="ysd-qi-B7K"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N3L-D1-bBO" userLabel="Separator">
+                                <rect key="frame" x="20" y="849.5" width="374" height="1"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="k3J-vd-LW8"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="frN-Y0-fth">
-                                <rect key="frame" x="0.0" y="114.5" width="414" height="747.5"/>
+                                <rect key="frame" x="0.0" y="114.5" width="414" height="731"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="9WN-xr-ona" id="pt8-m2-Erl"/>
@@ -148,7 +155,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3HF-FO-9T1">
-                                <rect key="frame" x="186" y="855" width="42" height="21"/>
+                                <rect key="frame" x="186" y="855.5" width="42" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -157,15 +164,18 @@
                         <viewLayoutGuide key="safeArea" id="55x-tS-poO"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="frN-Y0-fth" firstAttribute="trailingMargin" secondItem="N3L-D1-bBO" secondAttribute="trailing" id="Cs5-7C-NID"/>
                             <constraint firstItem="frN-Y0-fth" firstAttribute="leading" secondItem="55x-tS-poO" secondAttribute="leading" id="EV6-18-wZe"/>
                             <constraint firstAttribute="bottom" secondItem="3HF-FO-9T1" secondAttribute="bottom" constant="20" id="ElQ-kB-EQQ"/>
                             <constraint firstItem="42G-RC-aoy" firstAttribute="bottom" secondItem="frN-Y0-fth" secondAttribute="top" id="I2h-8h-deh"/>
                             <constraint firstItem="3HF-FO-9T1" firstAttribute="centerX" secondItem="Rh9-or-m8Q" secondAttribute="centerX" id="JGx-nk-9BB"/>
-                            <constraint firstItem="frN-Y0-fth" firstAttribute="bottom" secondItem="55x-tS-poO" secondAttribute="bottom" id="OKg-Xn-Ohy"/>
+                            <constraint firstItem="frN-Y0-fth" firstAttribute="bottom" secondItem="3HF-FO-9T1" secondAttribute="top" constant="-10" id="OKg-Xn-Ohy"/>
                             <constraint firstItem="55x-tS-poO" firstAttribute="trailing" secondItem="frN-Y0-fth" secondAttribute="trailing" id="PjO-o4-2eT"/>
                             <constraint firstItem="55x-tS-poO" firstAttribute="trailing" secondItem="42G-RC-aoy" secondAttribute="trailing" id="Pr4-qA-3In"/>
                             <constraint firstItem="55x-tS-poO" firstAttribute="top" secondItem="42G-RC-aoy" secondAttribute="top" id="bI1-AX-bvH"/>
                             <constraint firstItem="42G-RC-aoy" firstAttribute="leading" secondItem="55x-tS-poO" secondAttribute="leading" id="o1S-ho-7jq"/>
+                            <constraint firstItem="N3L-D1-bBO" firstAttribute="leading" secondItem="Rh9-or-m8Q" secondAttribute="leadingMargin" id="wKF-R7-y4i"/>
+                            <constraint firstItem="3HF-FO-9T1" firstAttribute="top" secondItem="N3L-D1-bBO" secondAttribute="bottom" constant="5" id="xQh-OA-gQi"/>
                         </constraints>
                     </view>
                     <connections>
