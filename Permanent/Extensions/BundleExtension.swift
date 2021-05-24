@@ -6,7 +6,7 @@
 //
 import UIKit
 
-extension UIApplication {
+extension Bundle {
     static var release: String {
         return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
     }
