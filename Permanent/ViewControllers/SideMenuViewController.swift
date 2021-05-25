@@ -44,6 +44,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         versionLabel.textColor = .white
         versionLabel.font = Text.style12.font
         versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
+        versionLabel.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -56,7 +57,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     func adjustUIForAnimation(isOpening: Bool) {
         shouldDisplayLine = isOpening
         titleLabel.isHidden = !isOpening
-        // self.infoButton.isHidden = !isOpening
+        versionLabel.isHidden = !isOpening
         
         tableView.reloadData()
     }
