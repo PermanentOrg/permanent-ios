@@ -241,6 +241,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self.retryUnfinishedUploadsIfNeeded()
             self.checkForSavedUniversalLink()
             self.checkForSavedShareFile()
+            self.checkForRequestShareAccess()
         })
     }
     
@@ -317,6 +318,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         present(fileDetailsNavigationController, animated: true)
         
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
+    }
+    
+    fileprivate func checkForRequestShareAccess() {
+        guard
+            let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess),
+            let shareVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController,
+            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        else {
+            return
+        }
+        
+        let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, csrf: csrf)
+        shareVC.sharedFile = file
+        shareVC.csrf = csrf
+        
+        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
+        present(shareNavController, animated: true)
+        
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
     }
     
     private func retryUnfinishedUploadsIfNeeded() {
@@ -875,7 +895,9 @@ extension MainViewController: FileActionSheetDelegate {
 
         shareVC.sharedFile = file
         shareVC.csrf = viewModel.csrf
-        navigationController?.display(viewController: shareVC)
+        
+        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
+        present(shareNavController, animated: true)
     }
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {

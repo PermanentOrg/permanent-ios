@@ -13,9 +13,24 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
-}
-
-extension ShareLinkViewModel {
+    var recordVO: RecordVOData?
+    
+    var downloader: DownloadManagerGCD?
+    
+    func getRecord(then handler: @escaping (RecordVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: fileViewModel.type,
+            folderLinkId: fileViewModel.folderLinkId,
+            parentFolderLinkId: fileViewModel.parentFolderLinkId
+        )
+        
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.getRecord(downloadInfo) { (record, error) in
+            self.recordVO = record?.recordVO
+            
+            handler(record)
+        }
+    }
     
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: fileViewModel, and: csrf)

@@ -145,6 +145,7 @@ extension Constants.Keys.StorageKeys {
     static let shareURLToken = "shareURLTokenStorageKey"
     static let sharedFileKey = "sharedFileKey"
     static let requestPAAccess = "requestPAAccess"
+    static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
 }

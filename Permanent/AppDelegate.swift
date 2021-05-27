@@ -128,12 +128,53 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 openShareNotification(response.notification)
             case "type.notification.pa_response_non_transfer":
                 openPARequestNotification(response.notification)
+            case "type.notification.sharelink.request":
+                openShareLinkRequestNotification(response.notification)
             default:
                 break
             }
         }
         
         completionHandler()
+    }
+    
+    func openShareLinkRequestNotification(_ notification: UNNotification) {
+        let userInfo = notification.request.content.userInfo
+        
+        guard let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+              let name = userInfo["shareName"] as? String,
+              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                drawerVC.dismiss(animated: false) {
+                    let rootVC: UIViewController
+                    if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
+                        rootVC = drawerVC.rootViewController.visibleViewController!
+                    } else {
+                        rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                        self.rootViewController.changeDrawerRoot(viewController: rootVC)
+                    }
+                    
+                    let fileVM = FileViewModel(name: name, recordId: 0, folderLinkId: folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, csrf: csrf)
+                    
+                    let shareVC: ShareViewController = UIViewController.create(withIdentifier: .share, from: .share) as! ShareViewController
+                    shareVC.sharedFile = fileVM
+                    shareVC.csrf = csrf
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
+        
+                        rootVC.present(shareNavController, animated: true)
+                    }
+                }
+            } else {
+                let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId)
+                try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
+            }
+        }
     }
     
     func openShareNotification(_ notification: UNNotification) {
