@@ -68,7 +68,8 @@ class RootViewController: UIViewController {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
-        } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
+        } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey),
+                  let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
             let sharesVC: SharesViewController
             
@@ -77,11 +78,18 @@ class RootViewController: UIViewController {
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
             
-            //let shareNavigation = RootNavigationController(viewController: sharesVC)
-            //DrawerViewController(rootViewController: shareNavigation, sideMenuController: sideMenuController)
+            let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, csrf: csrf)
+            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+            filePreviewVC.file = fileVM
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                fileDetailsNavigationController.filePreviewNavDelegate = sharesVC
+                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+                sharesVC.present(fileDetailsNavigationController, animated: true)
+            }
             
             mainViewController = sharesVC
-        
         } else if let sharedFolder: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey),
                   let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)  {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFolderKey)
@@ -97,7 +105,6 @@ class RootViewController: UIViewController {
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
         }
-        
         let navController = RootNavigationController(viewController: mainViewController)
         return DrawerViewController(rootViewController: navController, sideMenuController: sideMenuController)
     }
@@ -135,7 +142,7 @@ class RootViewController: UIViewController {
         let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-
+            
         }
     }
 }
