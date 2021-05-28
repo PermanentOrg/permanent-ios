@@ -75,6 +75,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
+        
+        styleNavBar()
     }
     
     fileprivate func setupTableView() {

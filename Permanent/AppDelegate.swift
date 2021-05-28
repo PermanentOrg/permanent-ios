@@ -140,9 +140,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         
         guard
-              let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-              let archiveNbr: String = userInfo["fromArchiveId"] as? String,
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+            let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+            let archiveNbr: String = userInfo["fromArchiveId"] as? String,
+            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
             return
         }
         
@@ -186,23 +186,23 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         } else if let sharedFolderName: String = userInfo["folderName"] as? String {
             DispatchQueue.main.async {
-                guard let sharesVC = UIViewController.create(
-                    withIdentifier: .shares,
-                    from: .share
-                ) as? SharesViewController else {
-                    return
-                }
-                
-                sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, csrf, sharedFolderName)
-                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                if let drawerVC = self.rootViewController.current as? DrawerViewController {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                        
+                        sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, csrf, sharedFolderName)
+                        sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                        
+                        (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+                        
+                        self.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                    }
+                } else {
+                    let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
+                    try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
                 }
             }
-            
         } else {
-            print("none")
             return
         }
     }

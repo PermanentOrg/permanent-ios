@@ -68,6 +68,32 @@ class RootViewController: UIViewController {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
+        } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
+            let sharesVC: SharesViewController
+            
+            sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+            
+            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+            
+            //let shareNavigation = RootNavigationController(viewController: sharesVC)
+            //DrawerViewController(rootViewController: shareNavigation, sideMenuController: sideMenuController)
+            
+            mainViewController = sharesVC
+        
+        } else if let sharedFolder: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey),
+                  let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)  {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFolderKey)
+            let sharesVC: SharesViewController
+            
+            sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+            sharesVC.initialNavigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, csrf: csrf, folderName: sharedFolder.name)
+            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+            
+            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+            
+            mainViewController = sharesVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
         }
