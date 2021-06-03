@@ -103,7 +103,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         configureTableViewBgView()
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         guard let viewModel = viewModel else { return }
         
         if let currentFolder = viewModel.currentFolder {

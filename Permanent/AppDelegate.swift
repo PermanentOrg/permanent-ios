@@ -149,30 +149,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let name: String = userInfo["recordName"] as? String,
            let recordId: Int = Int(userInfo["recordId"] as? String ?? "") {
             DispatchQueue.main.async {
-                guard let sharesVC = UIViewController.create(
-                    withIdentifier: .shares,
-                    from: .share
-                ) as? SharesViewController else {
-                    return
-                }
-                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
-                
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
                     drawerVC.dismiss(animated: false) {
-                        let rootVC: UIViewController
-                        if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
-                            rootVC = drawerVC.rootViewController.visibleViewController!
-                        } else {
-                            rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-                            self.rootViewController.changeDrawerRoot(viewController: rootVC)
-                        }
-                        
-                        let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, csrf: csrf)
-                        let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-                        filePreviewVC.file = fileVM
-                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            let rootVC: UIViewController
+                            if let sharesVC = drawerVC.rootViewController.visibleViewController as? SharesViewController {
+                                rootVC = sharesVC
+                                sharesVC.refreshCurrentFolder()
+                            } else {
+                                let sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                                rootVC = sharesVC
+                                
+                                (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+                                
+                                self.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                            }
+                            
+                            let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, csrf: csrf)
+                            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+                            filePreviewVC.file = fileVM
+                            
                             let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
                             fileDetailsNavigationController.filePreviewNavDelegate = rootVC as? FilePreviewNavigationControllerDelegate
                             fileDetailsNavigationController.modalPresentationStyle = .fullScreen
@@ -188,14 +185,26 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             DispatchQueue.main.async {
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-                        
-                        sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, csrf, sharedFolderName)
-                        sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-                        
-                        (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
-                        
-                        self.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                        if drawerVC.rootViewController.visibleViewController is SharesViewController == false {
+                            let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                            
+                            sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, csrf, sharedFolderName)
+                            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                            
+                            (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+                            
+                            self.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                        } else {
+                            let sharesVC = drawerVC.rootViewController.visibleViewController as! SharesViewController
+                            sharesVC.segmentedControl.selectedSegmentIndex = 1
+                            sharesVC.segmentedControlValueChanged(sharesVC.segmentedControl)
+                            
+                            let params: NavigateMinParams = (archiveNbr, folderLinkId, csrf, sharedFolderName)
+                            sharesVC.navigateToFolder(withParams: params, backNavigation: false) {
+                                sharesVC.backButton.isHidden = false
+                                sharesVC.directoryLabel.text = params.folderName
+                            }
+                        }
                     }
                 } else {
                     let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
