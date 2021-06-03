@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MobileCoreServices
 
 extension URL {
     var typeIdentifier: String? {
@@ -14,6 +15,17 @@ extension URL {
 
     var localizedName: String? {
         return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
+    }
+    
+    var mimeType: String? {
+        guard
+            let extUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeUnretainedValue(),
+            let mimeUTI = UTTypeCopyPreferredTagWithClass(extUTI, kUTTagClassMIMEType)
+        else {
+            return nil
+        }
+        
+        return mimeUTI.takeUnretainedValue() as String
     }
     
     public init?(string: String?) {

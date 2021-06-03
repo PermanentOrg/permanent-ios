@@ -10,7 +10,6 @@ import Foundation
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String, csrf: String)
 
 enum FilesEndpoint {
-    
     // NAVIGATION
     
     /// Retrieves the “root” of an archive: the parent folder that contains the My Files and Public folders.
@@ -34,7 +33,7 @@ enum FilesEndpoint {
 
     case getPresignedUrl(params: GetPresignedUrlParams)
 
-    case upload(s3Url: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
+    case upload(s3Url: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String = FilesEndpoint.boundary())
 
     case registerRecord(params: RegisterRecordParams)
     // DOWNLOAD
@@ -165,7 +164,7 @@ extension FilesEndpoint: RequestProtocol {
     var bodyData: Data? {
         switch self {
         case .upload(_, let file, _, _, let boundary):
-            return UploadManager.instance.getBodyData(parameters: parameters ?? [:], file: file, boundary: boundary)
+            return getBodyData(parameters: parameters ?? [:], file: file, boundary: boundary)
         case .delete(let parameters):
             if parameters.file.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
@@ -220,5 +219,88 @@ extension FilesEndpoint: RequestProtocol {
         default:
             return nil
         }
+    }
+}
+
+// MARK: - Upload multipart request
+extension FilesEndpoint {
+    private static func boundary() -> String {
+        var uuid = UUID().uuidString
+        uuid = uuid.replacingOccurrences(of: "-", with: "")
+        uuid = uuid.map { $0.lowercased() }.joined()
+
+        let boundary = uuid + "\(Int(Date.timeIntervalSinceReferenceDate))"
+
+        return boundary
+    }
+    
+    private func getBodyData(parameters: RequestParameters, file: FileInfo, boundary: String) -> Data? {
+        var body = self.getHttpBody(forParameters: parameters, withBoundary: boundary)
+        self.add(file: file, toBody: &body, withBoundary: boundary)
+        self.close(body: &body, usingBoundary: boundary)
+        
+        return body
+    }
+    
+    private func getHttpBody(forParameters parameters: RequestParameters, withBoundary boundary: String) -> Data {
+        var body = Data()
+        
+        guard let parameters = parameters as? [String: Any?] else { return body }
+
+        for (key, value) in parameters {
+            guard let value = value else {
+                continue
+            }
+            
+            let values = ["--\(boundary)\r\n",
+                          "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n",
+                          "\(value)\r\n"]
+            
+            _ = body.append(values: values)
+        }
+
+        return body
+    }
+    
+    private func add(file: FileInfo, toBody body: inout Data, withBoundary boundary: String) {
+        var status = true
+        
+        guard
+            let content = file.fileContents,
+            let mimeType = file.mimeType
+        else {
+            return
+        }
+
+        status = false
+        var data = Data()
+
+        let formattedFileInfoPrefix = ["--\(boundary)\r\n",
+                                       "Content-Disposition: form-data; name=\"Content-Type\"\r\n\r\n",
+                                       mimeType,
+                                       "\r\n"]
+
+        let formattedFileInfo = ["--\(boundary)\r\n",
+                                 "Content-Disposition: form-data; name=\"file\"; filename=\"\(file.name)\"\r\n",
+                                 "Content-Type: \(mimeType)\r\n\r\n"]
+
+        if data.append(values: formattedFileInfoPrefix) {
+            if data.append(values: formattedFileInfo) {
+                if data.append(values: [content]) {
+                    if data.append(values: ["\r\n"]) {
+                        status = true
+                    }
+                }
+            }
+        }
+
+        if status {
+            body.append(data)
+        }
+    }
+    
+    private func close(body: inout Data, usingBoundary boundary: String) {
+        _ = body.append(values: ["--\(boundary)--"])
+        print(body)
     }
 }

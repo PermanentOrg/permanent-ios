@@ -8,8 +8,12 @@
 import Foundation
 
 class FileInfo: NSObject, NSCoding {
+    var id: String = NSUUID().uuidString
+    
     var fileContents: Data?
-    var mimeType: String?
+    var mimeType: String? {
+        url.mimeType
+    }
     var name: String
     var url: URL
     var folder: FolderInfo
@@ -28,7 +32,6 @@ class FileInfo: NSObject, NSCoding {
 
         self.name = name
         self.url = url
-        mimeType = UploadManager.instance.getMimeType(forExtension: url.pathExtension)
         self.folder = folder
     }
 
@@ -41,10 +44,11 @@ class FileInfo: NSObject, NSCoding {
     }
 
     func encode(with coder: NSCoder) {
+        coder.encode(id, forKey: "id")
+        
         coder.encode(name, forKey: "name")
         coder.encode(url, forKey: "url")
         coder.encode(folder, forKey: "folder")
-        coder.encode(fileContents, forKey: "fileContents")
     }
     
     required convenience init?(coder: NSCoder) {
@@ -54,6 +58,6 @@ class FileInfo: NSObject, NSCoding {
         
         self.init(withURL: url, named: name, folder: folder)
         
-        fileContents = coder.decodeObject(forKey: "fileContents") as? Data
+        id = coder.decodeObject(forKey: "id") as! String
     }
 }

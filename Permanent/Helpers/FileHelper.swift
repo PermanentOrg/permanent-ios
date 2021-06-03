@@ -9,26 +9,31 @@ import Foundation
 
 class FileHelper {
     var defaultDirectoryURL: URL?
+    var uploadDirectoryURL: URL?
     
     init() {
         do {
-            self.defaultDirectoryURL = try FileManager.default.url(
-                for: .documentDirectory,
-                in: .userDomainMask,
-                appropriateFor: nil,
-                create: true
-            )
+            self.defaultDirectoryURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            
+            let libraryURL = try FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            try FileManager.default.createDirectory(at: libraryURL.appendingPathComponent("uploads"), withIntermediateDirectories: true, attributes: nil)
+            uploadDirectoryURL = libraryURL.appendingPathComponent("uploads")
             
         } catch {
             print("Error. Could not get documents directory URL.", error)
         }
     }
     
-    func saveFile(_ data: Data, named name: String, withExtension extension: String) -> URL? {
+    @discardableResult
+    func saveFile(_ data: Data, named name: String, withExtension extension: String, isDownload: Bool = true) -> URL? {
         do {
-            let fileURL = self.defaultDirectoryURL!
-                .appendingPathComponent(name)
-                .appendingPathExtension(`extension`)
+            var fileURL: URL
+            if isDownload {
+               fileURL = self.defaultDirectoryURL!
+            } else {
+                fileURL = self.uploadDirectoryURL!
+            }
+            fileURL = fileURL.appendingPathComponent(name).appendingPathExtension(`extension`)
             
             try data.write(to: fileURL)
             return fileURL

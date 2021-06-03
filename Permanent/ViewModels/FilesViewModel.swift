@@ -146,6 +146,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     private func saveUploadProgressLocally(files: [FileInfo]) {
+        
+        // Save file contents on disk
         try? PreferencesManager.shared.setCustomObject(files, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
     
@@ -491,8 +493,7 @@ extension FilesViewModel {
 
     // Uploads the file to the server.
     private func uploadFileDataToS3(_ file: FileInfo, params: GetPresignedUrlParams, s3Url: String, destinationUrl: String ,fields: [String:String]?, progressHandler: ProgressHandler?, then handler: @escaping ServerResponse) {
-        let boundary = UploadManager.instance.createBoundary()
-        let apiOperation = APIOperation(FilesEndpoint.upload(s3Url: s3Url, file: file, fields: fields, progressHandler: progressHandler, usingBoundry: boundary))
+        let apiOperation = APIOperation(FilesEndpoint.upload(s3Url: s3Url, file: file, fields: fields, progressHandler: progressHandler))
         apiOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
             switch result {
             case .json:
