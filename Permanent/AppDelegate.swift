@@ -145,7 +145,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func openShareLinkRequestNotification(_ notification: UNNotification) {
         let userInfo = notification.request.content.userInfo
         
-        guard let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+        guard let folderLinkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
               let name = userInfo["shareName"] as? String,
               let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
             return

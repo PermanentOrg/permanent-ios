@@ -41,6 +41,8 @@ enum FilesEndpoint {
     
     case getRecord(itemInfo: GetRecordParams)
     
+    case getFolder(itemInfo: GetRecordParams)
+    
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
 }
 
@@ -67,6 +69,9 @@ extension FilesEndpoint: RequestProtocol {
             }
         case .getRecord:
             return "/record/get"
+            
+        case .getFolder:
+            return "/folder/get"
             
         case .relocate(let parameters):
             if parameters.items.source.type.isFolder {
@@ -181,13 +186,18 @@ extension FilesEndpoint: RequestProtocol {
             }
             
         case .getRecord(let itemInfo):
-            //let recordVO = RecordVOPayload(folderLinkId: itemInfo.file.folderLinkId, parentFolderLinkId: itemInfo.file.parentFolderLinkId)
-            
             let recordVO = RecordVOPayload(folderLinkId: itemInfo.folderLinkId, parentFolderLinkId: itemInfo.parentFolderLinkId)
             
             let requestVO = APIPayload.make(fromData: [recordVO], csrf: itemInfo.csrf)
             
             return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
+            
+        case .getFolder(let itemInfo):
+            let folderVO = FolderVOPayload(folderLinkId: itemInfo.folderLinkId)
+            
+            let requestVO = APIPayload.make(fromData: [folderVO], csrf: itemInfo.csrf)
+            
+            return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
             
         case .relocate(let parameters):
             if parameters.items.source.type.isFolder {

@@ -64,6 +64,16 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 bestAttemptContent.title = sourceAccountName
                 bestAttemptContent.body = "\(sourceAccountName) has requested access to \(sharedItemName)."
+                
+            case "type.notification.share.invitation.acceptance":
+                guard let sourceAccountName = userInfo["invitedArchiveName"] as? String,
+                      let sharedItemName = userInfo["recordName"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                bestAttemptContent.title = sourceAccountName
+                bestAttemptContent.body = "\(sourceAccountName) has joined Permanent to access \(sharedItemName)."
             
             case "upload-reminder":
                 bestAttemptContent.title = ""
