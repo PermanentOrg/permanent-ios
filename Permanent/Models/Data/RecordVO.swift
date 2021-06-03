@@ -45,7 +45,8 @@ struct RecordVOData: Model {
     let locnVO, directiveVOS: LocnVO?
     let timezoneVO: TimezoneVO?
     let fileVOS: [FileVO]?
-    let textDataVOS, archiveVOS: [JSONAny]?
+    let textDataVOS: [JSONAny]?
+    let archiveVOS: [ArchiveVOData]?
     let tagVOS: [TagVOData]?
     let saveAs: JSONAny?
     let attachmentRecordVOS: [AttachmentRecordVO]?

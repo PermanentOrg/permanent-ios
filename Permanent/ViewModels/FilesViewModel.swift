@@ -24,7 +24,6 @@ typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: S
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
-typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
 
 class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""

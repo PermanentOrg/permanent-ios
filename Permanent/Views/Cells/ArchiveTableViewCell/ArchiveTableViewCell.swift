@@ -43,12 +43,12 @@ class ArchiveTableViewCell: UITableViewCell {
         rightButtonTapAction?(self)
     }
     
-    func updateCell(model: MinArchiveVO) {
-        archiveImageView.load(urlString: model.thumbnail)
-        archiveNameLabel.text = String.init(format: .archiveName, model.name)
+    func updateCell(model: ShareVOData) {
+        archiveImageView.load(urlString: model.archiveVO?.thumbURL200 ?? "")
+        archiveNameLabel.text = String.init(format: .archiveName, model.archiveVO?.fullName ?? "")
         relationshipLabel.text = "Friend" // TODO
         
-        bottomButtonsView.isHidden = ShareStatus.status(forValue: model.shareStatus) != .pending
+        bottomButtonsView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
         
     }
     

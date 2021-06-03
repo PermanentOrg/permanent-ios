@@ -44,7 +44,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     fileprivate func configureUI() {
+        styleNavBar()
         navigationItem.title = .share
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(closeButtonPressed(_:)))
         
         createLinkButton.layer.cornerRadius = Constants.Design.actionButtonRadius
         createLinkButton.bgColor = .primary
@@ -85,12 +88,20 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         getShareLink(option: .create)
     }
     
+    @objc func closeButtonPressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     // MARK: - Network Requests
     
     fileprivate func getShareLink(option: ShareLinkOption) {
         showSpinner()
+        
+        let group = DispatchGroup()
+        
+        group.enter()
         viewModel?.getShareLink(option: option, then: { shareVO, error in
-            self.hideSpinner()
+            group.leave()
             
             guard error == nil else {
                 return
@@ -114,6 +125,29 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                     })
             }
         })
+        
+        if sharedFile.type.isFolder {
+            group.enter()
+            viewModel?.getFolder(then: { folderVO in
+                group.leave()
+            })
+        } else {
+            group.enter()
+            viewModel?.getRecord(then: { recordVO in
+                if recordVO == nil {
+                    self.viewModel?.getFolder(then: { folderVO in
+                        group.leave()
+                    })
+                } else {
+                    group.leave()
+                }
+            })
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            self.hideSpinner()
+            self.tableView.reloadData()
+        }
     }
     
     fileprivate func revokeLink() {
@@ -142,19 +176,19 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
 
 extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sharedFile.minArchiveVOS.count
+        return viewModel?.shareVOS?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveTableViewCell.self)) as? ArchiveTableViewCell else {
-            fatalError()
+            return UITableViewCell()
         }
         
-        let model = sharedFile.minArchiveVOS[indexPath.row]
+        guard let model = viewModel?.shareVOS?[indexPath.row] else { return cell }
         cell.updateCell(model: model)
         
         cell.approveAction = {
-            self.viewModel?.approveButtonAction(then: { status in
+            self.viewModel?.approveButtonAction(shareVO: model, then: { status in
                 switch status {
                 case .success:
                     self.view.showNotificationBanner(title: .approveShareRequest)
@@ -167,7 +201,7 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.denyAction = {
-            self.viewModel?.denyButtonAction(then: { status in
+            self.viewModel?.denyButtonAction(shareVO: model, then: { status in
                 switch status {
                 case .success:
                     self.view.showNotificationBanner(title: .denyShareRequest)

@@ -290,6 +290,7 @@
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
 		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
+		F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */; };
 		F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */; };
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
@@ -624,6 +625,7 @@
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
 		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
+		F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLinkAccessNotificationPayload.swift; sourceTree = "<group>"; };
 		F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewNavigationController.swift; sourceTree = "<group>"; };
 		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
@@ -1153,6 +1155,7 @@
 				BCD948D3258BA54600089F86 /* ItemVO.swift */,
 				5EE0ADB225F8216D008ABDC6 /* TagVO.swift */,
 				F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */,
+				F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */,
 				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
 			);
 			path = Data;
@@ -2020,6 +2023,7 @@
 				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,
+				F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

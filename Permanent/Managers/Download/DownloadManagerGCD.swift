@@ -7,6 +7,9 @@
 
 import Foundation
 
+typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
+typealias GetFolderResponse = (_ folder: FolderVO?, _ errorMessage: Error?) -> Void
+
 class DownloadManagerGCD: Downloader {
     fileprivate var csrf: String!
     
@@ -94,6 +97,36 @@ class DownloadManagerGCD: Downloader {
                     let model: APIResults<RecordVO> = JSONHelper.decoding(
                         from: response,
                         with: APIResults<RecordVO>.decoder
+                    ),
+                    model.isSuccessful
+                    
+                else {
+                    handler(nil, APIError.parseError(nil))
+                    return
+                }
+                 
+                handler(model.results.first?.data?.first, nil)
+                    
+            case .error(let error, _):
+                handler(nil, error)
+                    
+            default:
+                break
+            }
+        }
+    }
+    
+    func getFolder(_ file: FileDownloadInfo, then handler: @escaping GetFolderResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
+        self.operation = apiOperation
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<FolderVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<FolderVO>.decoder
                     ),
                     model.isSuccessful
                     

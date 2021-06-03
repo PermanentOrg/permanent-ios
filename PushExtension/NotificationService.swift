@@ -55,6 +55,26 @@ class NotificationService: UNNotificationServiceExtension {
                     return
                 }
                 
+            case "type.notification.sharelink.request":
+                guard let sourceAccountName = userInfo["fromAccountName"] as? String,
+                      let sharedItemName = userInfo["shareName"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                bestAttemptContent.title = sourceAccountName
+                bestAttemptContent.body = "\(sourceAccountName) has requested access to \(sharedItemName)."
+                
+            case "type.notification.share.invitation.acceptance":
+                guard let sourceAccountName = userInfo["invitedArchiveName"] as? String,
+                      let sharedItemName = userInfo["recordName"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                bestAttemptContent.title = sourceAccountName
+                bestAttemptContent.body = "\(sourceAccountName) has joined Permanent to access \(sharedItemName)."
+            
             case "upload-reminder":
                 bestAttemptContent.title = ""
                 bestAttemptContent.body = "Preserve your most important documents with peace of mind. We will never mine your data, claim your copyright or invade your privacy."

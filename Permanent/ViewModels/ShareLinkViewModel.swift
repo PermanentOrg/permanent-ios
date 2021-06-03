@@ -13,9 +13,48 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
-}
-
-extension ShareLinkViewModel {
+    
+    var recordVO: RecordVOData?
+    var folderVO: FolderVOData?
+    var shareVOS: [ShareVOData]? {
+        if let recordVO = recordVO {
+            return recordVO.shareVOS
+        } else {
+            return folderVO?.shareVOS
+        }
+    }
+    
+    var downloader: DownloadManagerGCD?
+    
+    func getRecord(then handler: @escaping (RecordVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: fileViewModel.type,
+            folderLinkId: fileViewModel.folderLinkId,
+            parentFolderLinkId: fileViewModel.parentFolderLinkId
+        )
+        
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.getRecord(downloadInfo) { (record, error) in
+            self.recordVO = record?.recordVO
+            
+            handler(record)
+        }
+    }
+    
+    func getFolder(then handler: @escaping (FolderVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: fileViewModel.type,
+            folderLinkId: fileViewModel.folderLinkId,
+            parentFolderLinkId: fileViewModel.parentFolderLinkId
+        )
+        
+        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader?.getFolder(downloadInfo) { (folder, error) in
+            self.folderVO = folder?.folderVO
+            
+            handler(folder)
+        }
+    }
     
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: fileViewModel, and: csrf)
@@ -113,9 +152,15 @@ extension ShareLinkViewModel {
         }
     }
     
-    func approveButtonAction(then handler: @escaping (RequestStatus) -> Void) {
+    func approveButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
+        guard let folderLinkId = shareVO.folderLinkID,
+              let archiveId = shareVO.archiveID else {
+            handler(RequestStatus.error(message: nil))
+            return
+        }
+        let shareId = shareVO.shareID ?? 0
         
-        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: self.fileViewModel.minArchiveVOS.first!.shareId, folderLinkId: self.fileViewModel.folderLinkId, archiveId: self.fileViewModel.minArchiveVOS.first!.archiveID, csrf: self.csrf))
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: self.csrf))
         
     
         acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
@@ -142,8 +187,15 @@ extension ShareLinkViewModel {
         }
     }
     
-    func denyButtonAction(then handler: @escaping (RequestStatus) -> Void) {
-        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: self.fileViewModel.minArchiveVOS.first!.shareId, folderLinkId: self.fileViewModel.folderLinkId, archiveId: self.fileViewModel.minArchiveVOS.first!.archiveID, csrf: self.csrf))
+    func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
+        guard let folderLinkId = shareVO.folderLinkID,
+              let archiveId = shareVO.archiveID else {
+            handler(RequestStatus.error(message: nil))
+            return
+        }
+        let shareId = shareVO.shareID ?? 0
+        
+        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: self.csrf))
         
     
         denyShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
