@@ -166,7 +166,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         invalidateSearchBarIfNeeded()
-        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
+        let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
             
@@ -187,7 +187,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
             currentFolder.folderLinkId,
-            viewModel.csrf
+            viewModel.csrf,
+            nil
         )
         
         // Back navigation set to `true` so it's not considered a in-depth navigation.
@@ -482,7 +483,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         if file.type.isFolder {
             invalidateSearchBarIfNeeded()
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false
                 self.directoryLabel.text = file.name
