@@ -19,6 +19,7 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var dateStackView: UIStackView!
     @IBOutlet var overlayView: UIView!
     @IBOutlet var sharesImageView: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var rightButtonTapAction: CellButtonTapAction?
     
@@ -28,7 +29,16 @@ class FileTableViewCell: UITableViewCell {
         initUI()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        fileImageView.image = nil
+        activityIndicator.stopAnimating()
+    }
+    
     private func initUI() {
+        activityIndicator.stopAnimating()
+        
         fileNameLabel.font = Text.style11.font
         fileNameLabel.textColor = .textPrimary
         fileDateLabel.font = Text.style12.font
@@ -82,8 +92,11 @@ class FileTableViewCell: UITableViewCell {
             switch model.fileStatus {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
-                let fileURL = URL(string: model.thumbnailURL)
-                fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+                if let fileURL = URL(string: model.thumbnailURL) {
+                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+                } else {
+                    activityIndicator.startAnimating()
+                }
                 
             case .downloading:
                 fileImageView.contentMode = .scaleAspectFit

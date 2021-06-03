@@ -25,6 +25,10 @@
                             <constraint firstAttribute="width" constant="38" id="xQz-gH-UNN"/>
                         </constraints>
                     </imageView>
+                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="yAx-7l-Jye">
+                        <rect key="frame" x="20.5" y="71" width="37" height="37"/>
+                        <color key="color" systemColor="systemOrangeColor"/>
+                    </activityIndicatorView>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
                         <rect key="frame" x="68" y="15" width="304" height="149"/>
                         <subviews>
@@ -100,14 +104,17 @@
                     <constraint firstItem="KNW-4V-gMX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ap0-kV-sir"/>
                     <constraint firstItem="mnZ-AY-U2a" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="gQw-XG-a6N"/>
                     <constraint firstItem="jKZ-My-2Md" firstAttribute="height" secondItem="KNW-4V-gMX" secondAttribute="height" multiplier="0.3" id="hZk-Zc-4Sv"/>
+                    <constraint firstItem="yAx-7l-Jye" firstAttribute="centerY" secondItem="h0w-q0-XkC" secondAttribute="centerY" id="jWh-n7-naD"/>
                     <constraint firstAttribute="trailing" secondItem="KNW-4V-gMX" secondAttribute="trailing" id="l0H-G5-od7"/>
                     <constraint firstItem="jKZ-My-2Md" firstAttribute="centerY" secondItem="KNW-4V-gMX" secondAttribute="centerY" id="qE4-2j-GLj"/>
                     <constraint firstItem="PO6-uJ-qlZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="wTu-bW-Sut"/>
                     <constraint firstItem="mnZ-AY-U2a" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="wu3-KZ-2R1"/>
+                    <constraint firstItem="yAx-7l-Jye" firstAttribute="centerX" secondItem="h0w-q0-XkC" secondAttribute="centerX" id="zdZ-BD-0u2"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="activityIndicator" destination="yAx-7l-Jye" id="tl8-0F-fIk"/>
                 <outlet property="dateStackView" destination="riX-GQ-IFP" id="KZg-XO-4wu"/>
                 <outlet property="fileDateLabel" destination="Tdl-In-Vb7" id="3bN-5t-blR"/>
                 <outlet property="fileImageView" destination="h0w-q0-XkC" id="5LU-1u-YKp"/>
@@ -126,6 +133,9 @@
         <image name="folder" width="21" height="17"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemOrangeColor">
+            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
