@@ -8,9 +8,11 @@
 import Foundation
 
 typealias NewDeviceParams = (token: String, csrf: String)
+typealias DeleteDeviceParams = (token: String, csrf: String)
 
 enum DeviceEndpoint {
     case new(params: NewDeviceParams)
+    case delete(params: DeleteDeviceParams)
 }
 
 extension DeviceEndpoint: RequestProtocol {
@@ -18,19 +20,21 @@ extension DeviceEndpoint: RequestProtocol {
         switch self {
         case .new:
             return "/device/registerDevice"
+        case .delete:
+            return "/device/deleteToken"
         }
     }
     
     var method: RequestMethod {
         switch self {
-        case .new:
+        case .new, .delete:
             return .post
         }
     }
     
     var headers: RequestHeaders? {
         switch self {
-        case .new:
+        case .new, .delete:
             return [
                 "content-type": "application/json"
             ]
@@ -39,14 +43,14 @@ extension DeviceEndpoint: RequestProtocol {
     
     var requestType: RequestType {
         switch self {
-        case .new:
+        case .new, .delete:
             return .data
         }
     }
     
     var responseType: ResponseType {
         switch self {
-        case .new:
+        case .new, .delete:
             return .json
         }
     }
@@ -54,7 +58,9 @@ extension DeviceEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
         case .new(let params):
-            return Payloads.newDevice(params: params)
+            return Payloads.devicePayload(params: params)
+        case .delete(let params):
+            return Payloads.devicePayload(params: params)
         }
     }
     
