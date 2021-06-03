@@ -104,6 +104,10 @@ extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
         print("Saving push token: " + fcmToken)
         PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
+        
+        if rootViewController.isDrawerRootActive {
+            rootViewController.sendPushNotificationToken()
+        }
     }
 }
 
