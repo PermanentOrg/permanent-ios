@@ -11,6 +11,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var infoButton: UIButton!
+    @IBOutlet private var versionLabel: UILabel!
     
     var shouldDisplayLine = false
     var selectedMenuOption: DrawerOption = .files
@@ -39,6 +40,11 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         infoButton.setFont(Text.style16.font)
         infoButton.setTitleColor(.white, for: [])
         infoButton.isHidden = true
+        
+        versionLabel.textColor = .white
+        versionLabel.font = Text.style12.font
+        versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
+        versionLabel.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -51,7 +57,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     func adjustUIForAnimation(isOpening: Bool) {
         shouldDisplayLine = isOpening
         titleLabel.isHidden = !isOpening
-        // self.infoButton.isHidden = !isOpening
+        versionLabel.isHidden = !isOpening
         
         tableView.reloadData()
     }

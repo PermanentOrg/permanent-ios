@@ -22,6 +22,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     var selectedFileId: Int?
     
+    var initialNavigationParams: NavigateMinParams?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -29,8 +31,15 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         configureUI()
         setupTableView()
-     
-        getShares()
+        
+        getShares() { [self] in
+            if let params = initialNavigationParams {
+                navigateToFolder(withParams: params, backNavigation: false) {
+                    self.backButton.isHidden = false
+                    self.directoryLabel.text = params.folderName
+                }
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -66,6 +75,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
+        
+        styleNavBar()
     }
     
     fileprivate func setupTableView() {
@@ -92,11 +103,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         configureTableViewBgView()
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         guard let viewModel = viewModel else { return }
         
         if let currentFolder = viewModel.currentFolder {
-            let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf)
+            let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf, nil)
             
             // Back navigation set to `true` so it's not considered a in-depth navigation.
             navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
@@ -135,7 +146,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         
         if let destinationFolder = viewModel.currentFolder {
-            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf)
+            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
                 self.directoryLabel.text = destinationFolder.name
                 
@@ -275,7 +286,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         downloadingCell.updateProgress(withValue: value)
     }
 
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    public func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         // Clear the data before navigation so we avoid concurrent errors.
@@ -315,8 +326,9 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel = self.viewModel else {
-            fatalError()
+        guard let viewModel = self.viewModel,
+              viewModel.viewModels.count > indexPath.row  else {
+            return UITableViewCell()
         }
         
         let cell = tableView.dequeue(cellClass: SharedFileTableViewCell.self, forIndexPath: indexPath)
@@ -340,7 +352,7 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         guard file.fileStatus == .synced else { return }
         
         if file.type.isFolder {
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf)
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false
                 self.directoryLabel.text = file.name

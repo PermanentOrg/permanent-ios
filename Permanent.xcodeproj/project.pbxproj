@@ -41,6 +41,7 @@
 		5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */; };
 		5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */; };
 		5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */; };
+		5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E980AB62657D3D400ED5764 /* BundleExtension.swift */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
 		5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */; };
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
@@ -365,6 +366,7 @@
 		5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelInterface.swift; sourceTree = "<group>"; };
 		5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelDelegateInterface.swift; sourceTree = "<group>"; };
 		5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
+		5E980AB62657D3D400ED5764 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -755,6 +757,7 @@
 				BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */,
 				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
 				5E647333263C22F900E6566D /* NotificationName.swift */,
+				5E980AB62657D3D400ED5764 /* BundleExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1832,6 +1835,7 @@
 				BC42EDBE25BB11B80031B965 /* InvitesViewController.swift in Sources */,
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
+				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,

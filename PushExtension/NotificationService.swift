@@ -39,14 +39,21 @@ class NotificationService: UNNotificationServiceExtension {
                 bestAttemptContent.body = "\(accountName) accepted your invitation to join The \(archiveName) Archive as a \(stylizedAccessRole)"
                 
             case "type.notification.share":
-                guard let sourceArchiveName = userInfo["fromArchiveName"] as? String,
-                      let sharedItemName = userInfo["recordName"] as? String else {
+                guard let sourceArchiveName = userInfo["fromArchiveName"] as? String else {
                     contentHandler(bestAttemptContent)
                     return
                 }
                 
-                bestAttemptContent.title = sourceArchiveName
-                bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with you."
+                if let sharedItemName = userInfo["recordName"] as? String {
+                    bestAttemptContent.title = sourceArchiveName
+                    bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedItemName) with you."
+                } else if let sharedFolderName = userInfo["folderName"] as? String {
+                    bestAttemptContent.title = sourceArchiveName
+                    bestAttemptContent.body = "\(sourceArchiveName) has shared \(sharedFolderName) folder with you."
+                } else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
                 
             case "type.notification.sharelink.request":
                 guard let sourceAccountName = userInfo["fromAccountName"] as? String,
