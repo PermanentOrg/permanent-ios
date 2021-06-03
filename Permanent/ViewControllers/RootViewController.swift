@@ -100,7 +100,7 @@ class RootViewController: UIViewController {
         viewController.removeFromParent()
     }
     
-    private func sendPushNotificationToken() {
+    func sendPushNotificationToken() {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
               let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
         else { return }
