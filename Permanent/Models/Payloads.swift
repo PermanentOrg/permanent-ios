@@ -370,7 +370,7 @@ struct Payloads {
         ]
     }
     
-    static func newDevice(params: NewDeviceParams) -> RequestParameters {
+    static func devicePayload(params: NewDeviceParams) -> RequestParameters {
         return
             [
                 "RequestVO":

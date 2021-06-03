@@ -74,16 +74,18 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     fileprivate func logOut() {
-        viewModel?.logout(then: { status in
-            switch status {
-            case .success:
-                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
-                
-            case .error(let message):
-                DispatchQueue.main.async {
-                    self.showErrorAlert(message: message)
+        viewModel?.deletePushToken(then: { status in
+            self.viewModel?.logout(then: { status in
+                switch status {
+                case .success:
+                    AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                    
+                case .error(let message):
+                    DispatchQueue.main.async {
+                        self.showErrorAlert(message: message)
+                    }
                 }
-            }
+            })
         })
     }
 }
