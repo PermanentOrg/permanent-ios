@@ -9,16 +9,16 @@ import UIKit
 import SDWebImage
 
 class FileTableViewCell: UITableViewCell {
-    @IBOutlet var fileNameLabel: UILabel!
-    @IBOutlet var fileDateLabel: UILabel!
-    @IBOutlet var moreButton: UIButton!
-    @IBOutlet var rightButtonImageView: UIImageView!
-    @IBOutlet var fileImageView: UIImageView!
-    @IBOutlet var statusLabel: UILabel!
-    @IBOutlet var progressView: UIProgressView!
-    @IBOutlet var dateStackView: UIStackView!
-    @IBOutlet var overlayView: UIView!
-    @IBOutlet var sharesImageView: UIImageView!
+    @IBOutlet weak var fileNameLabel: UILabel!
+    @IBOutlet weak var fileDateLabel: UILabel!
+    @IBOutlet weak var moreButton: UIButton!
+    @IBOutlet weak var rightButtonImageView: UIImageView!
+    @IBOutlet weak var fileImageView: UIImageView!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var dateStackView: UIStackView!
+    @IBOutlet weak var overlayView: UIView!
+    @IBOutlet weak var sharesImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var rightButtonTapAction: CellButtonTapAction?
@@ -66,6 +66,10 @@ class FileTableViewCell: UITableViewCell {
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
         toggleInteraction(forModel: model, action: fileAction)
+        
+        let fileURL = URL(string: model.thumbnailURL)
+        moreButton.isHidden = fileURL == nil
+        rightButtonImageView.isHidden = fileURL == nil
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
@@ -74,7 +78,6 @@ class FileTableViewCell: UITableViewCell {
             self.isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
-            
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
