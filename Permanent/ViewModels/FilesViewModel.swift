@@ -12,7 +12,7 @@ typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
 typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?, csrf: String)
 typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, csrf: String, s3Url: String, destinationUrl: String)
-typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String)
+typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String, folderName: String?)
 typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String, folderLinkId: Int)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
@@ -24,7 +24,6 @@ typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: S
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
-typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Void
 
 class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""

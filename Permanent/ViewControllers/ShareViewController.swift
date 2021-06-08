@@ -126,10 +126,23 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             }
         })
         
-        group.enter()
-        viewModel?.getRecord(then: { recordVO in
-            group.leave()
-        })
+        if sharedFile.type.isFolder {
+            group.enter()
+            viewModel?.getFolder(then: { folderVO in
+                group.leave()
+            })
+        } else {
+            group.enter()
+            viewModel?.getRecord(then: { recordVO in
+                if recordVO == nil {
+                    self.viewModel?.getFolder(then: { folderVO in
+                        group.leave()
+                    })
+                } else {
+                    group.leave()
+                }
+            })
+        }
         
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
@@ -163,7 +176,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
 
 extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.recordVO?.shareVOS?.count ?? 0
+        return viewModel?.shareVOS?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -171,11 +184,11 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        guard let model = viewModel?.recordVO?.shareVOS?[indexPath.row] else { return cell }
+        guard let model = viewModel?.shareVOS?[indexPath.row] else { return cell }
         cell.updateCell(model: model)
         
         cell.approveAction = {
-            self.viewModel?.approveButtonAction(then: { status in
+            self.viewModel?.approveButtonAction(shareVO: model, then: { status in
                 switch status {
                 case .success:
                     self.view.showNotificationBanner(title: .approveShareRequest)
@@ -188,7 +201,7 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.denyAction = {
-            self.viewModel?.denyButtonAction(then: { status in
+            self.viewModel?.denyButtonAction(shareVO: model, then: { status in
                 switch status {
                 case .success:
                     self.view.showNotificationBanner(title: .denyShareRequest)

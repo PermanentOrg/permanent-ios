@@ -66,7 +66,7 @@ class MyFilesViewModel: FilesViewModel {
         }
         
         
-        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf)
+        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
     
