@@ -66,18 +66,37 @@ class FileHelper {
         }
     }
     
-    func hasFile(named name: String) -> Bool {
-        let fileURL = self.defaultDirectoryURL!.appendingPathComponent(name)
+    func hasFile(named name: String, isDownload: Bool = true) -> Bool {
+        var fileURL: URL
+        if isDownload {
+           fileURL = self.defaultDirectoryURL!
+        } else {
+            fileURL = self.uploadDirectoryURL!
+        }
+        fileURL = fileURL.appendingPathComponent(name)
         let filePath = fileURL.path
         
         return FileManager.default.fileExists(atPath: filePath)
     }
     
-    func url(forFileNamed name: String) -> URL? {
-        if hasFile(named: name) {
-            return self.defaultDirectoryURL!.appendingPathComponent(name)
+    func url(forFileNamed name: String, isDownload: Bool = true) -> URL? {
+        if hasFile(named: name, isDownload: isDownload) {
+            var fileURL: URL
+            if isDownload {
+               fileURL = self.defaultDirectoryURL!
+            } else {
+                fileURL = self.uploadDirectoryURL!
+            }
+            fileURL = fileURL.appendingPathComponent(name)
+            return fileURL
         }
         
         return nil
+    }
+    
+    func data(forFileNamed name: String, isDownload: Bool) -> Data? {
+        guard let url = url(forFileNamed: name, isDownload: isDownload) else { return nil }
+        
+        return try? Data(contentsOf: url)
     }
 }

@@ -20,14 +20,25 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet var overlayView: UIView!
     @IBOutlet var sharesImageView: UIImageView!
     
+    var fileInfoId: String?
+    
     var rightButtonTapAction: CellButtonTapAction?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         initUI()
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] notification in
+            guard let userInfo = notification.userInfo,
+                  let fileInfoId = userInfo["fileInfoId"] as? String,
+                  let progress = userInfo["progress"] as? Double,
+                  fileInfoId == self?.fileInfoId else { return }
+            
+            self?.progressView.setProgress(Float(progress), animated: true)
+        }
     }
-    
+
     private func initUI() {
         fileNameLabel.font = Text.style11.font
         fileNameLabel.textColor = .textPrimary
@@ -56,6 +67,8 @@ class FileTableViewCell: UITableViewCell {
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
         toggleInteraction(forModel: model, action: fileAction)
+        
+        fileInfoId = model.fileInfoId
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {

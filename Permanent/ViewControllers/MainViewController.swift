@@ -40,6 +40,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         searchBar.delegate = self
         
         getRootFolder()
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
+            self?.tableView.reloadData()
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -239,7 +247,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
-            self.retryUnfinishedUploadsIfNeeded()
             self.checkForSavedUniversalLink()
             self.checkForSavedShareFile()
             self.checkForRequestShareAccess()
@@ -249,8 +256,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private func navigateToFolder(withParams params: NavigateMinParams,
                                   backNavigation: Bool,
                                   shouldDisplaySpinner: Bool = true,
-                                  then handler: VoidAction? = nil)
-    {
+                                  then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         // Clear the data before navigation so we avoid concurrent errors.
@@ -340,64 +346,53 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
     }
     
-    private func retryUnfinishedUploadsIfNeeded() {
-        guard
-            let uploadQueue: [FileInfo] = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey),
-            !uploadQueue.isEmpty
-        else {
-            return
-        }
+    private func upload(files: [FileInfo]) {
+        viewModel?.uploadFiles(files)
         
-        upload(files: uploadQueue)
-    }
-    
-    private func upload(files: [FileInfo], then handler: VoidAction? = nil) {
-        viewModel?.uploadFiles(
-            files,
-            onUploadStart: {
-                self.screenLockManager.disableIdleTimer(true)
-                DispatchQueue.main.async {
-                    self.refreshTableView()
-                }
-            },
-            onFileUploaded: { uploadedFile, errorMessage in
-                // TODO: what should we do on file upload fail?
-                guard uploadedFile != nil else {
-                    return self.showErrorAlert(message: errorMessage)
-                }
-
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-            },
-            
-            progressHandler: { progress in
-                DispatchQueue.main.async {
-                    self.handleProgress(withValue: progress, listSection: FileListType.uploading)
-                }
-                
-            },
-            
-            then: { status in
-                switch status {
-                case .success:
-                    if self.viewModel?.shouldRefreshList == true {
-                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
-                    }
-                    
-                    self.viewModel?.clearUploadQueue()
-                    self.screenLockManager.disableIdleTimer(false)
-                    handler?()
-                    
-                case .error:
-                    DispatchQueue.main.async {
-                        self.screenLockManager.disableIdleTimer(false)
-                        self.getRootFolder()
-                    }
-                }
-            }
-        )
+//            onUploadStart: {
+//                self.screenLockManager.disableIdleTimer(true)
+//                DispatchQueue.main.async {
+//                    self.refreshTableView()
+//                }
+//            },
+//            onFileUploaded: { uploadedFile, errorMessage in
+//                // TODO: what should we do on file upload fail?
+//                guard uploadedFile != nil else {
+//                    return self.showErrorAlert(message: errorMessage)
+//                }
+//
+//                DispatchQueue.main.async {
+//                    self.tableView.reloadData()
+//                }
+//
+//            },
+//
+//            progressHandler: { progress in
+//                DispatchQueue.main.async {
+//                    self.handleProgress(withValue: progress, listSection: FileListType.uploading)
+//                }
+//
+//            },
+//
+//            then: { status in
+//                switch status {
+//                case .success:
+//                    if self.viewModel?.shouldRefreshList == true {
+//                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
+//                    }
+//
+//                    self.viewModel?.clearUploadQueue()
+//                    self.screenLockManager.disableIdleTimer(false)
+//                    handler?()
+//
+//                case .error:
+//                    DispatchQueue.main.async {
+//                        self.screenLockManager.disableIdleTimer(false)
+//                        self.getRootFolder()
+//                    }
+//                }
+//            }
+//        )
     }
     
     private func createNewFolder(named name: String) {
@@ -831,14 +826,11 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], then handler: VoidAction? = nil) {
-        let folderInfo = FolderInfo(
-            folderId: folder.folderId,
-            folderLinkId: folder.folderLinkId
-        )
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        upload(files: files, then: handler)
+        upload(files: files)
     }
     
     private func newFolderAction() {
@@ -875,9 +867,8 @@ extension MainViewController: MediaRecorderDelegate {
             return showErrorAlert(message: .cameraErrorMessage)
         }
         
-        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
-            self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
-        })
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl])
+        mediaRecorder.clearTemporaryFile(withURL: mediaUrl)
     }
 }
 

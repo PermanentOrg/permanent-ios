@@ -28,8 +28,6 @@ class FileInfo: NSObject, NSCoding {
     }
 
     init(withURL url: URL, named name: String, folder: FolderInfo) {
-        fileContents = try? Data(contentsOf: url)
-
         self.name = name
         self.url = url
         self.folder = folder
