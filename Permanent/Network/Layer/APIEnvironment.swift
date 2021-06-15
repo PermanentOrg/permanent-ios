@@ -33,4 +33,21 @@ enum APIEnvironment: EnvironmentProtocol {
             return "https://www.permanent.org/api"
         }
     }
+    
+    var buyStorageURL: String {
+        switch self {
+        case .staging:
+            return "https://staging.permanent.org/add-storage/"
+        case .development:
+            return "https://dev.permanent.org/add-storage/"
+        case .production:
+            return "https://www.permanent.org/add-storage/"
+        }
+    }
+    
+    #if STAGING_ENVIRONMENT
+    static let defaultEnv: APIEnvironment = .staging
+    #else
+    static let defaultEnv: APIEnvironment = .production
+    #endif
 }
