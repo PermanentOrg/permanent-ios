@@ -132,7 +132,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 openShareNotification(response.notification)
             case "type.notification.pa_response_non_transfer":
                 openPARequestNotification(response.notification)
-            case "type.notification.sharelink.request":
+            case "type.notification.sharelink.request","type.notification.share.invitation.acceptance":
                 openShareLinkRequestNotification(response.notification)
             default:
                 break
@@ -144,10 +144,26 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func openShareLinkRequestNotification(_ notification: UNNotification) {
         let userInfo = notification.request.content.userInfo
+        let name: String
+        let folderLinkId: Int
         
-        guard let folderLinkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
-              let name = userInfo["shareName"] as? String,
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+            return
+        }
+        
+        if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
+           let itemName = userInfo["shareName"] as? String {
+            folderLinkId = linkId
+            name = itemName
+        } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+                  let itemName = userInfo["folderName"] as? String {
+                   folderLinkId = linkId
+                   name = itemName
+        } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
+                  let itemName = userInfo["recordName"] as? String {
+                   folderLinkId = linkId
+                   name = itemName
+        } else {
             return
         }
         
