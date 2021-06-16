@@ -247,7 +247,7 @@ extension FilesViewModel {
     }
     
     func removeFromQueue(_ position: Int) {
-        
+        UploadManager.shared.cancelUpload(fileId: uploadQueue[position].id)
     }
     
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {

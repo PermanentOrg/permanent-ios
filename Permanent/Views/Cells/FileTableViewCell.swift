@@ -68,7 +68,11 @@ class FileTableViewCell: UITableViewCell {
         handleUI(forStatus: model.fileStatus)
         toggleInteraction(forModel: model, action: fileAction)
         
-        fileInfoId = model.fileInfoId
+        if let fileId = model.fileInfoId,
+           let progress = UploadManager.shared.operation(forFileId: fileId)?.progress {
+            fileInfoId = model.fileInfoId
+            updateProgress(withValue: Float(progress))
+        }
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {

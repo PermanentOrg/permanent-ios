@@ -89,3 +89,4 @@ iOSInjectionProject/
 # End of https://www.toptal.com/developers/gitignore/api/swift
 EnvVars.generated.swift
 env-vars-staging.sh
+env-vars.sh

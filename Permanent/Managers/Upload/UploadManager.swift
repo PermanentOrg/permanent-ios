@@ -31,7 +31,7 @@ class UploadManager {
         // Save the file data locally
         let fileHelper = FileHelper()
         fileHelper.saveFile(file.fileContents ?? Data(), named: file.id, withExtension: "upd", isDownload: false)
-        file.fileContents = nil
+//        file.fileContents = nil
         
         // Save file metadata
         let savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
@@ -57,11 +57,11 @@ class UploadManager {
         for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
             let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) ?? ""
             let uploadOperation = UploadOperation(file: file, csrf: csrf) { error in
-                if error == nil {
+//                if error == nil {
                     var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                     savedFiles?.removeAll(where: { $0.id == file.id })
                     try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-                }
+//                }
                 
                 self.refreshQueue()
             }
@@ -70,15 +70,22 @@ class UploadManager {
             uploadQueue.addOperation(uploadOperation)
         }
         
-        NotificationCenter.default.post(name: UploadManager.didRefreshQueueNotification, object: nil, userInfo: nil)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: UploadManager.didRefreshQueueNotification, object: nil, userInfo: nil)
+        }
     }
     
-    func cancelUpload(file: FileInfo) {
+    func cancelUpload(fileId: String) {
         var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-        savedFiles?.removeAll(where: { $0.id == file.id })
+        savedFiles?.removeAll(where: { $0.id == fileId })
         try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
         
-        uploadQueue.operations.first(where: { $0.name == file.id })?.cancel()
+        uploadQueue.operations.first(where: { $0.name == fileId })?.cancel()
+    }
+    
+    func cancelAll() {
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+        uploadQueue.cancelAllOperations()
     }
     
     func inProgressUpload() -> FileInfo? {
@@ -89,5 +96,9 @@ class UploadManager {
     func queuedFiles() -> [FileInfo]? {
         let files = (uploadQueue.operations as! [UploadOperation]).map(\.file)
         return files
+    }
+    
+    func operation(forFileId id: String) -> UploadOperation? {
+        return uploadQueue.operations.filter({ $0.name == id }).first as? UploadOperation
     }
 }
