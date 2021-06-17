@@ -48,7 +48,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
-            let alertVC = UIAlertController(title: "Quota exceeded!", message: "Add more storage to upload this file", preferredStyle: .alert)
+            let alertVC = UIAlertController(title: "Quota Exceeded".localized(), message: "Do you want to add more storage?".localized(), preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
                 guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
