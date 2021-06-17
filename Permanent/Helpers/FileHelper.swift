@@ -9,26 +9,31 @@ import Foundation
 
 class FileHelper {
     var defaultDirectoryURL: URL?
+    var uploadDirectoryURL: URL?
     
     init() {
         do {
-            self.defaultDirectoryURL = try FileManager.default.url(
-                for: .documentDirectory,
-                in: .userDomainMask,
-                appropriateFor: nil,
-                create: true
-            )
+            self.defaultDirectoryURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            
+            let libraryURL = try FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            try FileManager.default.createDirectory(at: libraryURL.appendingPathComponent("uploads"), withIntermediateDirectories: true, attributes: nil)
+            uploadDirectoryURL = libraryURL.appendingPathComponent("uploads")
             
         } catch {
             print("Error. Could not get documents directory URL.", error)
         }
     }
     
-    func saveFile(_ data: Data, named name: String, withExtension extension: String) -> URL? {
+    @discardableResult
+    func saveFile(_ data: Data, named name: String, withExtension extension: String, isDownload: Bool = true) -> URL? {
         do {
-            let fileURL = self.defaultDirectoryURL!
-                .appendingPathComponent(name)
-                .appendingPathExtension(`extension`)
+            var fileURL: URL
+            if isDownload {
+               fileURL = self.defaultDirectoryURL!
+            } else {
+                fileURL = self.uploadDirectoryURL!
+            }
+            fileURL = fileURL.appendingPathComponent(name).appendingPathExtension(`extension`)
             
             try data.write(to: fileURL)
             return fileURL
@@ -36,6 +41,13 @@ class FileHelper {
             print("Error. Could not save file.", error)
             return nil
         }
+    }
+    
+    func copyFile(withURL from: URL) throws -> URL {
+        let to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
+        
+        try FileManager.default.copyItem(at: from, to: to)
+        return to
     }
     
     func saveFile(at url: URL, named name: String? = nil) -> URL? {
@@ -61,18 +73,37 @@ class FileHelper {
         }
     }
     
-    func hasFile(named name: String) -> Bool {
-        let fileURL = self.defaultDirectoryURL!.appendingPathComponent(name)
+    func hasFile(named name: String, isDownload: Bool = true) -> Bool {
+        var fileURL: URL
+        if isDownload {
+           fileURL = self.defaultDirectoryURL!
+        } else {
+            fileURL = self.uploadDirectoryURL!
+        }
+        fileURL = fileURL.appendingPathComponent(name)
         let filePath = fileURL.path
         
         return FileManager.default.fileExists(atPath: filePath)
     }
     
-    func url(forFileNamed name: String) -> URL? {
-        if hasFile(named: name) {
-            return self.defaultDirectoryURL!.appendingPathComponent(name)
+    func url(forFileNamed name: String, isDownload: Bool = true) -> URL? {
+        if hasFile(named: name, isDownload: isDownload) {
+            var fileURL: URL
+            if isDownload {
+               fileURL = self.defaultDirectoryURL!
+            } else {
+                fileURL = self.uploadDirectoryURL!
+            }
+            fileURL = fileURL.appendingPathComponent(name)
+            return fileURL
         }
         
         return nil
+    }
+    
+    func data(forFileNamed name: String, isDownload: Bool) -> Data? {
+        guard let url = url(forFileNamed: name, isDownload: isDownload) else { return nil }
+        
+        return try? Data(contentsOf: url)
     }
 }

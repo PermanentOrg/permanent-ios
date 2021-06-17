@@ -10,39 +10,25 @@ import Foundation
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String, csrf: String)
 
 enum FilesEndpoint {
-    
     // NAVIGATION
-    
     /// Retrieves the “root” of an archive: the parent folder that contains the My Files and Public folders.
     case getRoot
-    
     case navigateMin(params: NavigateMinParams)
-    
     case getLeanItems(params: GetLeanItemsParams)
     
     // FILES MANAGEMENT
-    
     case newFolder(params: NewFolderParams)
-    
     case delete(params: ItemInfoParams)
-
     case relocate(params: RelocateParams)
-    
     case update(params: UpdateRecordParams)
     
     // UPLOAD
-
     case getPresignedUrl(params: GetPresignedUrlParams)
-
-    case upload(s3Url: String?, file: FileInfo, fields: [String:String]?, progressHandler: ProgressHandler?, usingBoundry: String)
-
     case registerRecord(params: RegisterRecordParams)
+    
     // DOWNLOAD
-    
     case getRecord(itemInfo: GetRecordParams)
-    
     case getFolder(itemInfo: GetRecordParams)
-    
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
 }
 
@@ -99,10 +85,6 @@ extension FilesEndpoint: RequestProtocol {
     
     var headers: RequestHeaders? {
         switch self {
-        case .upload(_, _, _, _, let boundary):
-            return [
-                "content-type": "multipart/form-data; boundary=\(boundary)"
-            ]
         default:
             return [
                 "content-type": "application/json"
@@ -116,8 +98,6 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.navigateMinPayload(for: params)
         case .getLeanItems(let params):
             return Payloads.getLeanItemsPayload(for: params)
-        case .upload(_, _, let fields, _, _):
-            return fields
         case .getPresignedUrl(let params):
             return Payloads.getPresignedUrlPayload(for: params)
         case .registerRecord(let params):
@@ -135,9 +115,6 @@ extension FilesEndpoint: RequestProtocol {
     
     var requestType: RequestType {
         switch self {
-        case .upload:
-            return .upload
-            
         case .download:
             return .download
             
@@ -159,7 +136,6 @@ extension FilesEndpoint: RequestProtocol {
     var progressHandler: ProgressHandler? {
         get {
             switch self {
-            case .upload(_, _, _, let handler, _): return handler
             case .download(_, _, let handler): return handler
             default: return nil
             }
@@ -169,8 +145,6 @@ extension FilesEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
-        case .upload(_, let file, _, _, let boundary):
-            return UploadManager.instance.getBodyData(parameters: parameters ?? [:], file: file, boundary: boundary)
         case .delete(let parameters):
             if parameters.file.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
@@ -223,8 +197,6 @@ extension FilesEndpoint: RequestProtocol {
     
     var customURL: String? {
         switch self {
-        case .upload(let destinationUrl, _, _, _, _):
-            return destinationUrl
         case .download(let url, _, _):
             return url.absoluteString
         default:

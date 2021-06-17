@@ -56,6 +56,8 @@ class RootViewController: UIViewController {
         setupChild(drawerController)
         removeChild(current)
         current = drawerController
+        
+        UploadManager.shared.refreshQueue()
     }
     
     func drawerControllerForDeepLink() -> DrawerViewController {

@@ -40,6 +40,30 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         searchBar.delegate = self
         
         getRootFolder()
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
+            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
+                self?.refreshTableView()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
+            let alertVC = UIAlertController(title: "Quota exceeded!", message: "Add more storage to upload this file", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
+                guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
+                UIApplication.shared.open(url)
+            }))
+            
+            self?.present(alertVC, animated: true, completion: nil)
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
+            // if the upload is in this screen's list, refresh the list of models
+            if self?.viewModel?.currentFolder?.folderLinkId == (notif.object as! UploadOperation).file.folder.folderLinkId && (notif.userInfo?["error"] == nil) {
+                self?.refreshCurrentFolder()
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -184,6 +208,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
         
+        viewModel.refreshUploadQueue()
+        
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
             currentFolder.folderLinkId,
@@ -239,7 +265,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
-            self.retryUnfinishedUploadsIfNeeded()
             self.checkForSavedUniversalLink()
             self.checkForSavedShareFile()
             self.checkForRequestShareAccess()
@@ -249,16 +274,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private func navigateToFolder(withParams params: NavigateMinParams,
                                   backNavigation: Bool,
                                   shouldDisplaySpinner: Bool = true,
-                                  then handler: VoidAction? = nil)
-    {
+                                  then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         // Clear the data before navigation so we avoid concurrent errors.
         viewModel?.viewModels.removeAll()
-        
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
@@ -273,10 +293,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         switch status {
         case .success:
-            DispatchQueue.main.async {
-                self.refreshTableView()
-                self.toggleFileAction(self.viewModel?.fileAction)
-            }
+            self.refreshTableView()
+            self.toggleFileAction(self.viewModel?.fileAction)
             
         case .error(let message):
             showErrorAlert(message: message)
@@ -340,64 +358,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
     }
     
-    private func retryUnfinishedUploadsIfNeeded() {
-        guard
-            let uploadQueue: [FileInfo] = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey),
-            !uploadQueue.isEmpty
-        else {
-            return
-        }
-        
-        upload(files: uploadQueue)
-    }
-    
-    private func upload(files: [FileInfo], then handler: VoidAction? = nil) {
-        viewModel?.uploadFiles(
-            files,
-            onUploadStart: {
-                self.screenLockManager.disableIdleTimer(true)
-                DispatchQueue.main.async {
-                    self.refreshTableView()
-                }
-            },
-            onFileUploaded: { uploadedFile, errorMessage in
-                // TODO: what should we do on file upload fail?
-                guard uploadedFile != nil else {
-                    return self.showErrorAlert(message: errorMessage)
-                }
-
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-            },
-            
-            progressHandler: { progress in
-                DispatchQueue.main.async {
-                    self.handleProgress(withValue: progress, listSection: FileListType.uploading)
-                }
-                
-            },
-            
-            then: { status in
-                switch status {
-                case .success:
-                    if self.viewModel?.shouldRefreshList == true {
-                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
-                    }
-                    
-                    self.viewModel?.clearUploadQueue()
-                    self.screenLockManager.disableIdleTimer(false)
-                    handler?()
-                    
-                case .error:
-                    DispatchQueue.main.async {
-                        self.screenLockManager.disableIdleTimer(false)
-                        self.getRootFolder()
-                    }
-                }
-            }
-        )
+    private func upload(files: [FileInfo]) {
+        viewModel?.uploadFiles(files)
     }
     
     private func createNewFolder(named name: String) {
@@ -478,7 +440,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = self.viewModel else {
-            fatalError()
+            return UITableViewCell()
         }
 
         let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
@@ -831,14 +793,11 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], then handler: VoidAction? = nil) {
-        let folderInfo = FolderInfo(
-            folderId: folder.folderId,
-            folderLinkId: folder.folderLinkId
-        )
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+        let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
-        upload(files: files, then: handler)
+        upload(files: files)
     }
     
     private func newFolderAction() {
@@ -875,9 +834,8 @@ extension MainViewController: MediaRecorderDelegate {
             return showErrorAlert(message: .cameraErrorMessage)
         }
         
-        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], then: { [mediaURL = url] in
-            self.mediaRecorder.clearTemporaryFile(withURL: mediaURL)
-        })
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl])
+        mediaRecorder.clearTemporaryFile(withURL: mediaUrl)
     }
 }
 

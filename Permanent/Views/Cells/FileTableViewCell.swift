@@ -21,17 +21,32 @@ class FileTableViewCell: UITableViewCell {
     @IBOutlet weak var sharesImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    var fileInfoId: String?
+    
     var rightButtonTapAction: CellButtonTapAction?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         initUI()
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] notification in
+            guard let userInfo = notification.userInfo,
+                  let fileInfoId = userInfo["fileInfoId"] as? String,
+                  let progress = userInfo["progress"] as? Double,
+                  fileInfoId == self?.fileInfoId else { return }
+            
+            self?.handleUI(forStatus: .uploading)
+            self?.progressView.setProgress(Float(progress), animated: true)
+        }
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        fileInfoId = nil
+        rightButtonTapAction = nil
+
         fileImageView.image = nil
         activityIndicator.stopAnimating()
     }
@@ -67,9 +82,17 @@ class FileTableViewCell: UITableViewCell {
         handleUI(forStatus: model.fileStatus)
         toggleInteraction(forModel: model, action: fileAction)
         
-        let fileURL = URL(string: model.thumbnailURL)
-        moreButton.isHidden = fileURL == nil
-        rightButtonImageView.isHidden = fileURL == nil
+        if let fileId = model.fileInfoId,
+           let progress = UploadManager.shared.operation(forFileId: fileId)?.progress {
+            fileInfoId = model.fileInfoId
+            updateProgress(withValue: Float(progress))
+        }
+        
+        if model.fileStatus == .synced {
+            let fileURL = URL(string: model.thumbnailURL)
+            moreButton.isHidden = fileURL == nil
+            rightButtonImageView.isHidden = fileURL == nil
+        }
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {

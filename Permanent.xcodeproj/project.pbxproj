@@ -162,7 +162,6 @@
 		BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */; };
 		BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
 		BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57F254181BD00E84DA9 /* DataExtension.swift */; };
-		BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D58225418EC400E84DA9 /* UploadManager.swift */; };
 		BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
 		BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358972535D35D00EEC48C /* FileTableViewCell.swift */; };
 		BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC6358982535D35D00EEC48C /* FileTableViewCell.xib */; };
@@ -304,6 +303,10 @@
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
+		F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
+		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
+		F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA412670D16F0027D97A /* BaseOperation.swift */; };
+		F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA432670D1940027D97A /* UploadOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -497,7 +500,6 @@
 		BC600DF725B6E6C200193C96 /* DownloadManagerGCD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManagerGCD.swift; sourceTree = "<group>"; };
 		BC62D57C254180D300E84DA9 /* FileInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfo.swift; sourceTree = "<group>"; };
 		BC62D57F254181BD00E84DA9 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
-		BC62D58225418EC400E84DA9 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		BC6358832535C7D000EEC48C /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		BC6358972535D35D00EEC48C /* FileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTableViewCell.swift; sourceTree = "<group>"; };
 		BC6358982535D35D00EEC48C /* FileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileTableViewCell.xib; sourceTree = "<group>"; };
@@ -642,6 +644,10 @@
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A2A07826161AE6003AAF36 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F5A2A07A26161AE6003AAF36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialInputStream.swift; sourceTree = "<group>"; };
+		F5B3F13226668CAF0040E5C4 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
+		F5E4BA412670D16F0027D97A /* BaseOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOperation.swift; sourceTree = "<group>"; };
+		F5E4BA432670D1940027D97A /* UploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOperation.swift; sourceTree = "<group>"; };
 		FF948075880F95971F77D902 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -793,6 +799,7 @@
 				BC0D99C8256E5B8B00D29041 /* DrawerOption.swift */,
 				BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */,
 				BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */,
+				F5E4BA412670D16F0027D97A /* BaseOperation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1171,7 +1178,6 @@
 			isa = PBXGroup;
 			children = (
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
-				BC62D58225418EC400E84DA9 /* UploadManager.swift */,
 				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
 				BC581A4D255A98DB00171D7A /* MediaRecorder.swift */,
 				BCC5501E255AB31800CA1574 /* FileHelper.swift */,
@@ -1467,6 +1473,7 @@
 		BCE8DA6F25652C1B00842ABD /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				F5B3F12F266689A30040E5C4 /* Upload */,
 				BCEECDAD25B0591B00A4520E /* Download */,
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
@@ -1559,6 +1566,16 @@
 				F5A2A07A26161AE6003AAF36 /* Info.plist */,
 			);
 			path = PushExtension;
+			sourceTree = "<group>";
+		};
+		F5B3F12F266689A30040E5C4 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				F5B3F13226668CAF0040E5C4 /* UploadManager.swift */,
+				F5E4BA432670D1940027D97A /* UploadOperation.swift */,
+				F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */,
+			);
+			path = Upload;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1857,6 +1874,7 @@
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
+				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* TextField.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
@@ -1909,8 +1927,10 @@
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
+				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */,
+				F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */,
 				5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
 				F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */,
@@ -1920,6 +1940,7 @@
 				5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */,
 				5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */,
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
@@ -1932,7 +1953,6 @@
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
-				BC62D58325418EC400E84DA9 /* UploadManager.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				BC59BAB725C2B7D6005A45D3 /* File.swift in Sources */,
