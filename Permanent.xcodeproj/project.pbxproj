@@ -288,6 +288,8 @@
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
+		F540A676267B618A00962B2D /* AccountDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540A675267B618A00962B2D /* AccountDeleteViewController.swift */; };
+		F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540A677267B649800962B2D /* AccountDeleteViewModel.swift */; };
 		F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */; };
 		F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */; };
 		F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */; };
@@ -626,6 +628,8 @@
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
+		F540A675267B618A00962B2D /* AccountDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeleteViewController.swift; sourceTree = "<group>"; };
+		F540A677267B649800962B2D /* AccountDeleteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeleteViewModel.swift; sourceTree = "<group>"; };
 		F540B76025EE8CD9009D331A /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
 		F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLinkAccessNotificationPayload.swift; sourceTree = "<group>"; };
 		F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBaseCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -730,6 +734,7 @@
 				BCF906632587B0C200DF1B64 /* MembersViewController.swift */,
 				5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */,
 				5E46217125C17C5A007642BE /* AccountInfoViewController.swift */,
+				F540A675267B618A00962B2D /* AccountDeleteViewController.swift */,
 				F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */,
 				F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */,
 				5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */,
@@ -817,6 +822,7 @@
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
 				5E46217425C17CE2007642BE /* InfoViewModel.swift */,
 				5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */,
+				F540A677267B649800962B2D /* AccountDeleteViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1892,6 +1898,7 @@
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
+				F540A676267B618A00962B2D /* AccountDeleteViewController.swift in Sources */,
 				BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */,
@@ -1916,6 +1923,7 @@
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
+				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,

@@ -39,6 +39,7 @@ enum ViewControllerId: String {
     case members
     case manageLink
     case accountInfo
+    case accountDelete
     case accountSettings
     case sharePreview
     case invitations
@@ -65,6 +66,8 @@ enum ViewControllerId: String {
             return "ManageLink"
         case .accountInfo:
             return "AccountInfo"
+        case .accountDelete:
+            return "AccountDelete"
         case .accountSettings:
             return "AccountSettings"
         case .sharePreview:

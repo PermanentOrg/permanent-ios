@@ -18,6 +18,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     @IBOutlet var postalCodeView: InputTextWithLabelElementViewViewController!
     @IBOutlet var countryView: InputTextWithLabelElementViewViewController!
     @IBOutlet var contentUpdateButton: RoundedButton!
+    @IBOutlet weak var deleteAccountButton: RoundedButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +39,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.next)
         countryView.configureElementUI(label: .country, returnKey: UIReturnKeyType.done)
         contentUpdateButton.configureActionButtonUI(title: .save)
+        deleteAccountButton.configureActionButtonUI(title: .delete, bgColor: .deepRed)
         
         accountNameView.delegate = self
         primaryEmailView.delegate = self
@@ -53,6 +55,12 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     
     @IBAction func pressedUpdateButton(_ sender: RoundedButton) {
         attemptValuesChange()
+    }
+    
+    @IBAction func deleteButtonPressed(_ sender: Any) {
+        let deleteVC = UIViewController.create(withIdentifier: .accountDelete, from: .settings)
+        let navigationController = NavigationController(rootViewController: deleteVC)
+        present(navigationController, animated: true, completion: nil)
     }
     
     func getUserDetails() {
