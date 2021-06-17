@@ -51,7 +51,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             let alertVC = UIAlertController(title: "Quota exceeded!", message: "Add more storage to upload this file", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
-                guard let url = URL(string: Constants.URL.buyStorageURL) else { return }
+                guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
                 UIApplication.shared.open(url)
             }))
             
@@ -506,7 +506,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.fileStatus == .synced else { return }
+        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         if file.type.isFolder {
             invalidateSearchBarIfNeeded()

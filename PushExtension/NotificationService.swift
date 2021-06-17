@@ -66,8 +66,17 @@ class NotificationService: UNNotificationServiceExtension {
                 bestAttemptContent.body = "\(sourceAccountName) has requested access to \(sharedItemName)."
                 
             case "type.notification.share.invitation.acceptance":
-                guard let sourceAccountName = userInfo["invitedArchiveName"] as? String,
-                      let sharedItemName = userInfo["recordName"] as? String else {
+                let sharedItemName: String
+                guard let sourceAccountName = userInfo["invitedArchiveName"] as? String else {
+                    contentHandler(bestAttemptContent)
+                    return
+                }
+                
+                if let sharedFileName = userInfo["recordName"] as? String {
+                    sharedItemName = sharedFileName
+                }else if let sharedFolderName = userInfo["folderName"] as? String {
+                    sharedItemName = sharedFolderName
+                } else {
                     contentHandler(bestAttemptContent)
                     return
                 }
