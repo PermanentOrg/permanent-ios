@@ -499,7 +499,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.fileStatus == .synced else { return }
+        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         if file.type.isFolder {
             invalidateSearchBarIfNeeded()
