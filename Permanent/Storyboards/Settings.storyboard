@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -143,8 +143,17 @@
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
                                                 <connections>
-                                                    <action selector="pressedUpdateButton:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="Xht-OY-5Ms"/>
-                                                    <action selector="pressedUpdateButton:" destination="U2U-Bo-n5y" eventType="touchUpInside" id="vfm-ZQ-BIP"/>
+                                                    <action selector="pressedUpdateButton:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="0Fw-uo-SU3"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJt-MI-I2f" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="20" y="561" width="374" height="45"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="45" id="Qp1-MT-pHg"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="deleteButtonPressed:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="cN7-5G-AJe"/>
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="top" axis="vertical" distribution="fillEqually" spacing="22" translatesAutoresizingMaskIntoConstraints="NO" id="c4L-J8-oIw">
@@ -218,8 +227,11 @@
                                             <constraint firstItem="c4L-J8-oIw" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" id="2WF-j2-vup"/>
                                             <constraint firstItem="c4L-J8-oIw" firstAttribute="top" secondItem="XnC-Yc-DvG" secondAttribute="topMargin" constant="-13" id="Ben-7u-4TH"/>
                                             <constraint firstAttribute="trailing" secondItem="c4L-J8-oIw" secondAttribute="trailing" constant="20" id="Fhh-Mq-nJu"/>
+                                            <constraint firstItem="xJt-MI-I2f" firstAttribute="top" secondItem="68J-lr-Pzv" secondAttribute="bottom" constant="8" id="Ocw-fp-U0r"/>
                                             <constraint firstItem="68J-lr-Pzv" firstAttribute="top" secondItem="c4L-J8-oIw" secondAttribute="bottom" constant="38" id="awa-UV-FFL"/>
+                                            <constraint firstItem="xJt-MI-I2f" firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" id="ide-eL-8XS"/>
                                             <constraint firstAttribute="trailing" secondItem="68J-lr-Pzv" secondAttribute="trailing" constant="20" id="lj1-DM-mwb"/>
+                                            <constraint firstItem="xJt-MI-I2f" firstAttribute="leading" secondItem="68J-lr-Pzv" secondAttribute="leading" id="m1C-pN-NEc"/>
                                             <constraint firstItem="68J-lr-Pzv" firstAttribute="leading" secondItem="XnC-Yc-DvG" secondAttribute="leading" constant="20" id="w6J-Xe-Zhb"/>
                                         </constraints>
                                     </view>
@@ -252,6 +264,7 @@
                         <outlet property="cityView" destination="o1Z-Ao-tzj" id="bXS-g4-vVc"/>
                         <outlet property="contentUpdateButton" destination="68J-lr-Pzv" id="C8a-vd-tmQ"/>
                         <outlet property="countryView" destination="ZrA-5h-O9O" id="8Du-IW-NbV"/>
+                        <outlet property="deleteAccountButton" destination="xJt-MI-I2f" id="GgI-2I-1bb"/>
                         <outlet property="mobilePhoneView" destination="tvS-OK-oYe" id="Yqa-PI-k9d"/>
                         <outlet property="postalCodeView" destination="eX1-Fa-Ugn" id="r16-pY-MRg"/>
                         <outlet property="primaryEmailView" destination="ogg-ze-DAE" id="xOp-Ux-BIN"/>
@@ -263,13 +276,101 @@
             </objects>
             <point key="canvasLocation" x="128" y="686"/>
         </scene>
+        <!--Account Delete View Controller-->
+        <scene sceneID="gBN-8w-PCE">
+            <objects>
+                <viewController storyboardIdentifier="AccountDelete" id="a7n-sn-Wx3" customClass="AccountDeleteViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="YDp-vo-V9f">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vVo-bt-KqU">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="siZ-Sv-2uj">
+                                        <rect key="frame" x="16" y="16" width="382" height="365.5"/>
+                                        <mutableString key="text">Please note: deleting your account will remove all reference to personally identifiable and contact information as well as payment options you have provided to us in your account settings.
+
+The account deletion action will not delete any archives that you own or personally identifiable information in the records stored in those archives.You must delete archives using the delete archive action in the Profile section of each archive you own.
+
+Any archives you own that are not deleted prior to deleting your account will become orphaned archives.
+
+When you are ready, type ‘DELETE’ in all caps and press confirm below to confirm account deletion.</mutableString>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Type DELETE" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nZr-qP-t6u">
+                                        <rect key="frame" x="16" y="397.5" width="382" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="raD-lF-BHV"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                        <connections>
+                                            <action selector="textFieldValueChanged:" destination="a7n-sn-Wx3" eventType="editingChanged" id="R5m-73-vEh"/>
+                                        </connections>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ICb-Y6-aLK" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="16" y="453.5" width="382" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="KHt-JJ-9or"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <connections>
+                                            <action selector="deleteButtonPressed:" destination="DKX-Ce-nIb" eventType="touchUpInside" id="Med-lJ-m3e"/>
+                                            <action selector="deleteButtonPressed:" destination="a7n-sn-Wx3" eventType="touchUpInside" id="b3R-7Y-wgv"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="ICb-Y6-aLK" firstAttribute="leading" secondItem="nZr-qP-t6u" secondAttribute="leading" id="1JZ-Z2-aKx"/>
+                                    <constraint firstItem="nZr-qP-t6u" firstAttribute="top" secondItem="siZ-Sv-2uj" secondAttribute="bottom" constant="16" id="3Ll-l8-g5s"/>
+                                    <constraint firstItem="ICb-Y6-aLK" firstAttribute="trailing" secondItem="nZr-qP-t6u" secondAttribute="trailing" id="4Kj-8i-FSb"/>
+                                    <constraint firstItem="nZr-qP-t6u" firstAttribute="leading" secondItem="siZ-Sv-2uj" secondAttribute="leading" id="7Cq-YW-xPC"/>
+                                    <constraint firstItem="siZ-Sv-2uj" firstAttribute="top" secondItem="vVo-bt-KqU" secondAttribute="top" constant="16" id="cgM-TW-Pwk"/>
+                                    <constraint firstItem="ICb-Y6-aLK" firstAttribute="top" secondItem="nZr-qP-t6u" secondAttribute="bottom" constant="16" id="k8T-Rc-KOd"/>
+                                    <constraint firstItem="siZ-Sv-2uj" firstAttribute="leading" secondItem="vVo-bt-KqU" secondAttribute="leading" constant="16" id="s9D-jG-Y79"/>
+                                    <constraint firstAttribute="trailing" secondItem="siZ-Sv-2uj" secondAttribute="trailing" constant="16" id="wOo-7X-PZO"/>
+                                    <constraint firstAttribute="bottom" secondItem="siZ-Sv-2uj" secondAttribute="bottom" constant="16" id="whP-yh-h73"/>
+                                    <constraint firstItem="nZr-qP-t6u" firstAttribute="trailing" secondItem="siZ-Sv-2uj" secondAttribute="trailing" id="zld-CZ-uuV"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="oVi-kc-cTF"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="5PC-7Y-cEb"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="NHS-E0-lkg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="NHS-E0-lkg" firstAttribute="bottom" secondItem="vVo-bt-KqU" secondAttribute="bottom" id="3n9-kw-z7e"/>
+                            <constraint firstItem="vVo-bt-KqU" firstAttribute="top" secondItem="NHS-E0-lkg" secondAttribute="top" id="LwP-go-nFD"/>
+                            <constraint firstItem="siZ-Sv-2uj" firstAttribute="width" secondItem="YDp-vo-V9f" secondAttribute="width" constant="-32" id="NzM-Hd-nmD"/>
+                            <constraint firstItem="vVo-bt-KqU" firstAttribute="leading" secondItem="NHS-E0-lkg" secondAttribute="leading" id="anz-QN-18H"/>
+                            <constraint firstItem="NHS-E0-lkg" firstAttribute="trailing" secondItem="vVo-bt-KqU" secondAttribute="trailing" id="yjV-DA-Ppm"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="confirmTextField" destination="nZr-qP-t6u" id="lB0-KF-zBk"/>
+                        <outlet property="deleteButton" destination="ICb-Y6-aLK" id="iP0-uP-AQC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ohr-dw-lRo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="942.02898550724649" y="685.71428571428567"/>
+        </scene>
     </scenes>
     <designables>
         <designable name="68J-lr-Pzv">
             <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
+        <designable name="ICb-Y6-aLK">
+            <size key="intrinsicContentSize" width="70" height="40"/>
+        </designable>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+        <designable name="xJt-MI-I2f">
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>
