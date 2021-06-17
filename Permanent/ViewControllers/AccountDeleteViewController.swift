@@ -34,7 +34,8 @@ class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
             viewModel?.deleteAccount(completion: { [self] success in
                 if success {
                     dismiss(animated: true, completion: nil)
-                    // Clear the UploadManager queue once that branch is merged
+                    UploadManager.shared.cancelAll()
+                    
                     AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
                 }
             })
