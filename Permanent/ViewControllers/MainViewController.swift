@@ -360,51 +360,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     private func upload(files: [FileInfo]) {
         viewModel?.uploadFiles(files)
-        
-//            onUploadStart: {
-//                self.screenLockManager.disableIdleTimer(true)
-//                DispatchQueue.main.async {
-//                    self.refreshTableView()
-//                }
-//            },
-//            onFileUploaded: { uploadedFile, errorMessage in
-//                // TODO: what should we do on file upload fail?
-//                guard uploadedFile != nil else {
-//                    return self.showErrorAlert(message: errorMessage)
-//                }
-//
-//                DispatchQueue.main.async {
-//                    self.tableView.reloadData()
-//                }
-//
-//            },
-//
-//            progressHandler: { progress in
-//                DispatchQueue.main.async {
-//                    self.handleProgress(withValue: progress, listSection: FileListType.uploading)
-//                }
-//
-//            },
-//
-//            then: { status in
-//                switch status {
-//                case .success:
-//                    if self.viewModel?.shouldRefreshList == true {
-//                        self.refreshCurrentFolder(shouldDisplaySpinner: true)
-//                    }
-//
-//                    self.viewModel?.clearUploadQueue()
-//                    self.screenLockManager.disableIdleTimer(false)
-//                    handler?()
-//
-//                case .error:
-//                    DispatchQueue.main.async {
-//                        self.screenLockManager.disableIdleTimer(false)
-//                        self.getRootFolder()
-//                    }
-//                }
-//            }
-//        )
     }
     
     private func createNewFolder(named name: String) {

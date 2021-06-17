@@ -316,15 +316,7 @@ extension FilesViewModel {
     func uploadFiles(_ files: [FileInfo]) {
         UploadManager.shared.upload(files: files)
     }
-    
-//    private func moveToSyncedFilesIfNeeded(_ file: FileInfo) {
-//        if uploadingInCurrentFolder {
-//            var newFile = FileViewModel(model: file)
-//            newFile.fileStatus = .synced
-//            viewModels.prepend(newFile)
-//        }
-//    }
-    
+
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getLeanItems(params: params))
         
