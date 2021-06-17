@@ -20,7 +20,9 @@ class APIOperation: OperationProtocol {
     
     func execute(in requestDispatcher: RequestDispatcherProtocol, completion: @escaping (OperationResult) -> Void) {
         task = requestDispatcher.execute(request: request, completion: { result in
-            completion(result)
+            DispatchQueue.main.async {
+                completion(result)
+            }
         })
     }
     

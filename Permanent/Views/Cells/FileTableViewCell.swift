@@ -9,16 +9,19 @@ import UIKit
 import SDWebImage
 
 class FileTableViewCell: UITableViewCell {
-    @IBOutlet var fileNameLabel: UILabel!
-    @IBOutlet var fileDateLabel: UILabel!
-    @IBOutlet var moreButton: UIButton!
-    @IBOutlet var rightButtonImageView: UIImageView!
-    @IBOutlet var fileImageView: UIImageView!
-    @IBOutlet var statusLabel: UILabel!
-    @IBOutlet var progressView: UIProgressView!
-    @IBOutlet var dateStackView: UIStackView!
-    @IBOutlet var overlayView: UIView!
-    @IBOutlet var sharesImageView: UIImageView!
+    @IBOutlet weak var fileNameLabel: UILabel!
+    @IBOutlet weak var fileDateLabel: UILabel!
+    @IBOutlet weak var moreButton: UIButton!
+    @IBOutlet weak var rightButtonImageView: UIImageView!
+    @IBOutlet weak var fileImageView: UIImageView!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var dateStackView: UIStackView!
+    @IBOutlet weak var overlayView: UIView!
+    @IBOutlet weak var sharesImageView: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    var fileInfoId: String?
     
     var rightButtonTapAction: CellButtonTapAction?
     
@@ -26,9 +29,31 @@ class FileTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
         initUI()
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] notification in
+            guard let userInfo = notification.userInfo,
+                  let fileInfoId = userInfo["fileInfoId"] as? String,
+                  let progress = userInfo["progress"] as? Double,
+                  fileInfoId == self?.fileInfoId else { return }
+            
+            self?.handleUI(forStatus: .uploading)
+            self?.progressView.setProgress(Float(progress), animated: true)
+        }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        fileInfoId = nil
+        rightButtonTapAction = nil
+
+        fileImageView.image = nil
+        activityIndicator.stopAnimating()
     }
     
     private func initUI() {
+        activityIndicator.stopAnimating()
+        
         fileNameLabel.font = Text.style11.font
         fileNameLabel.textColor = .textPrimary
         fileDateLabel.font = Text.style12.font
@@ -56,6 +81,18 @@ class FileTableViewCell: UITableViewCell {
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
         toggleInteraction(forModel: model, action: fileAction)
+        
+        if let fileId = model.fileInfoId,
+           let progress = UploadManager.shared.operation(forFileId: fileId)?.progress {
+            fileInfoId = model.fileInfoId
+            updateProgress(withValue: Float(progress))
+        }
+        
+        if model.fileStatus == .synced {
+            let fileURL = URL(string: model.thumbnailURL)
+            moreButton.isHidden = fileURL == nil
+            rightButtonImageView.isHidden = fileURL == nil
+        }
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
@@ -64,7 +101,6 @@ class FileTableViewCell: UITableViewCell {
             self.isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
-            
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
@@ -82,8 +118,11 @@ class FileTableViewCell: UITableViewCell {
             switch model.fileStatus {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
-                let fileURL = URL(string: model.thumbnailURL)
-                fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+                if let fileURL = URL(string: model.thumbnailURL) {
+                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+                } else {
+                    activityIndicator.startAnimating()
+                }
                 
             case .downloading:
                 fileImageView.contentMode = .scaleAspectFit

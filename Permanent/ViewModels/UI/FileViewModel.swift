@@ -32,6 +32,8 @@ struct FileViewModel: Equatable {
     var fileState: FileState = .enabled
     var minArchiveVOS: [MinArchiveVO] = []
     
+    var fileInfoId: String?
+    
     init(model: FileInfo, archiveThumbnailURL: String? = nil) {
         self.csrf = nil
         
@@ -52,6 +54,7 @@ struct FileViewModel: Equatable {
         self.parentFolderLinkId = -1
         self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
+        self.fileInfoId = model.id
     }
     
     init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, csrf: String) {

@@ -12,6 +12,8 @@ typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
 enum AccountEndpoint {
     /// Creates an new user account.
     case signUp(credentials: SignUpCredentials)
+    /// Deletes user account
+    case delete(accountId: String, csrf: String)
     /// Updates user account.
     case update(accountId: String, updateData: UpdateData, csrf: String)
     /// Sends an SMS with a verification code for verifying the phone number.
@@ -35,6 +37,8 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp:
             return "/account/post"
+        case .delete:
+            return "/account/delete"
         case .update:
             return "/account/update"
         case .sendVerificationCodeSMS:
@@ -58,6 +62,8 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp(let credentials):
             return Payloads.signUpPayload(for: credentials)
+        case .delete(let accountId, let csrf):
+            return Payloads.deleteAccountPayload(accountId: accountId, csrf: csrf)
         case .update(let id, let data, let csrf):
             return Payloads.update(accountId: id, updateData: data, csrf: csrf)
         case .sendVerificationCodeSMS(let id, let email):

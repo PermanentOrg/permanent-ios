@@ -56,16 +56,11 @@ extension MediaRecorder: UIImagePickerControllerDelegate {
         self.pickerController(picker, didSelect: nil)
     }
 
-    public func imagePickerController(_ picker: UIImagePickerController,
-                                      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any])
-    {
-        if let image = info[.originalImage] as? UIImage,
-            let imageData = image.jpegData(compressionQuality: 1.0)
-        {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        if let image = info[.originalImage] as? UIImage, let imageData = image.jpegData(compressionQuality: 1.0) {
             let imageName = "IMG_\(DateUtils.fileTimestamp)"
             let url = self.fileHelper.saveFile(imageData, named: imageName, withExtension: "jpeg")
             return self.pickerController(picker, didSelect: url)
-
         } else {
             let url = info[.mediaURL] as? URL
             self.pickerController(picker, didSelect: url)

@@ -57,6 +57,20 @@ struct Payloads {
         ]
     }
     
+    static func deleteAccountPayload(accountId: String, csrf: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": [
+                        "accountId": accountId
+                    ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": csrf
+            ]
+        ]
+    }
+    
     static func update(accountId: String, updateData: UpdateData, csrf: String) -> RequestParameters {
         return [
             "RequestVO": [
