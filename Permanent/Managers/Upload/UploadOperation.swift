@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct UploadStreams {
-    let input: InputStream
-    let output: OutputStream
+enum UploadError: Error {
+    case presignedURL
+    case s3
+    case registerRecord
 }
 
 class UploadOperation: BaseOperation {
@@ -26,32 +27,13 @@ class UploadOperation: BaseOperation {
     var fields: [String: String]!
     
     var progress: Double = 0
-    
-    var outData: Data = Data()
+    var error: UploadError?
     
     var urlSession: URLSession!
     
     lazy var prefixData: Data = {
         return getHttpBody()
     }()
-    
-    lazy var boundStreams: UploadStreams = {
-        var inputOrNil: InputStream? = nil
-        var outputOrNil: OutputStream? = nil
-        Stream.getBoundStreams(withBufferSize: 16384,
-                               inputStream: &inputOrNil,
-                               outputStream: &outputOrNil)
-        guard let input = inputOrNil, let output = outputOrNil else {
-            fatalError("On return of `getBoundStreams`, both `inputStream` and `outputStream` will contain non-nil streams.")
-        }
-        
-        // configure and open output stream
-        output.delegate = self
-        output.schedule(in: .current, forMode: .default)
-        output.open()
-        return UploadStreams(input: input, output: output)
-    }()
-    var fileInputStream: InputStream!
     
     lazy var boundary: String = {
         var uuid = UUID().uuidString
@@ -78,16 +60,10 @@ class UploadOperation: BaseOperation {
             return
         }
         
-        fileInputStream = InputStream(url: file.url)
-        fileInputStream.open()
-        
         urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
 
-        print("UploadOperation: getting presigned url")
         getPresignedUrl { [self] in
-            print("UploadOperation: starting S3 upload")
             uploadFileDataToS3 { [self] in
-                print("UploadOperation: registering record")
                 registerRecord()
             }
         }
@@ -96,35 +72,39 @@ class UploadOperation: BaseOperation {
     }
     
     override func finish() {
-        print("finishing")
-//        file.fileContents = nil
-        
-        fileInputStream.close()
+        super.finish()
         
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self)
+            let userInfo: [String: Any]?
+            if let error = self.error {
+                userInfo = ["error": error]
+            } else {
+                userInfo = nil
+            }
+            
+            NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
         }
-        
-        super.finish()
     }
     
     private func getPresignedUrl(success: @escaping (() -> Void)) {
         guard let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]),
               let fileSize = resources.fileSize else {
-            handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+            error = UploadError.presignedURL
+            handler(UploadError.presignedURL)
             finish()
             return
         }
-        print("Upload Manager: fileSize: \(fileSize)")
         
-        let params: GetPresignedUrlParams = GetPresignedUrlParams(file.folder.folderId, file.folder.folderLinkId, file.mimeType, file.name, fileSize, nil, csrf)
+        let mimeType = (file.url.mimeType ?? "application/octet-stream")
+        let params: GetPresignedUrlParams = GetPresignedUrlParams(file.folder.folderId, file.folder.folderLinkId, mimeType, file.name, fileSize, nil, csrf)
         
         let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
             switch result {
             case .json(let response, _):
                 guard let model: GetPresignedUrlResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                    error = UploadError.presignedURL
+                    handler(UploadError.presignedURL)
                     finish()
                     return
                 }
@@ -140,11 +120,13 @@ class UploadOperation: BaseOperation {
                     
                     success()
                 } else {
-                    handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                    error = UploadError.presignedURL
+                    handler(UploadError.presignedURL)
                     finish()
                 }
             case .error(let error, _):
-                handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                self.error = UploadError.presignedURL
+                handler(UploadError.presignedURL)
                 finish()
             default:
                 finish()
@@ -154,28 +136,30 @@ class UploadOperation: BaseOperation {
     }
     
     private func uploadFileDataToS3(success: @escaping (() -> Void)) {
-//        var contentLength = prefixData.count
-//        let resources = try! file.url.resourceValues(forKeys:[.fileSizeKey])
-//        let fileSize = resources.fileSize!
-//        contentLength += fileSize
-//        contentLength += "\r\n--\(boundary)--".data(using: .utf8)!.count
+        var contentLength = prefixData.count
+        let resources = try! file.url.resourceValues(forKeys:[.fileSizeKey])
+        let fileSize = resources.fileSize!
+        contentLength += fileSize
+        contentLength += "\r\n--\(boundary)--".data(using: .utf8)!.count
         
         var uploadRequest = URLRequest(url: URL(string: s3Url)!)
-        uploadRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-//        uploadRequest.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
+        uploadRequest.timeoutInterval = 86400
+        uploadRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
+        uploadRequest.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
         
-//        uploadRequest.httpBodyStream = boundStreams.input
-        uploadRequest.httpBody = getBodyData(parameters: fields as RequestParameters, file: file, boundary: boundary)
+        let prefixStream = InputStream(data: prefixData)
+        let fileStream = InputStream(url: file.url)!
+        let postfixStream = InputStream(data: "\r\n--\(boundary)--".data(using: .utf8)!)
+        
+        uploadRequest.httpBodyStream = SerialInputStream(inputStreams: [prefixStream, fileStream, postfixStream])
         uploadRequest.httpMethod = "POST"
-//        urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
-//
-//        }
-//        let uploadTask = urlSession.dataTask(with: uploadRequest) { [self] data, response, error in
+
         let uploadTask = urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
             if let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 {
                 success()
             } else {
-                handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                self.error = UploadError.s3
+                handler(UploadError.s3)
                 finish()
             }
         }
@@ -190,7 +174,8 @@ class UploadOperation: BaseOperation {
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                    self.error = UploadError.registerRecord
+                    handler(UploadError.registerRecord)
                     finish()
                     return
                 }
@@ -199,11 +184,13 @@ class UploadOperation: BaseOperation {
                     handler(nil)
                     finish()
                 } else {
-                    handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                    self.error = UploadError.registerRecord
+                    handler(UploadError.registerRecord)
                     finish()
                 }
             case .error(let error, _):
-                handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
+                self.error = UploadError.registerRecord
+                handler(UploadError.registerRecord)
                 finish()
             default:
                 finish()
@@ -212,75 +199,6 @@ class UploadOperation: BaseOperation {
         }
     }
     
-}
-
-extension UploadOperation: StreamDelegate {
-    func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-        guard aStream == boundStreams.output else {
-            return
-        }
-        
-        if eventCode.contains(.hasSpaceAvailable) {
-            print("has space")
-            if isEOF {
-                print("is eof")
-                boundStreams.output.close()
-            } else if !didAppendPrefix {
-                print("Upload Manager: Adding prefix")
-                let httpBodyData = prefixData
-                httpBodyData.withUnsafeBytes { buffer in
-                    boundStreams.output.write(buffer, maxLength: httpBodyData.count)
-                }
-                outData.append(httpBodyData)
-                
-                didAppendPrefix = true
-            } else {
-                print("Upload Manager: reading file")
-                let bufferSize = 16384
-                let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-                defer {
-                    buffer.deallocate()
-                }
-                if fileInputStream.hasBytesAvailable {
-                    let read = fileInputStream.read(buffer, maxLength: bufferSize)
-                    if read < 0 {
-                        print("stream error")
-                        //Stream error occured
-                        boundStreams.input.close()
-                        boundStreams.output.close()
-                        handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
-                        finish()
-                        
-                        return
-                    } else if read == 0 {
-                        //EOF
-                        print("stream eof")
-                        let data = "\r\n--\(boundary)--".data(using: .utf8)!
-                        data.withUnsafeBytes({ buffer in
-                            boundStreams.output.write(buffer, maxLength: data.count)
-                        })
-                        outData.append(data)
-                        isEOF = true
-                        
-                        return
-                    }
-                    boundStreams.output.write(buffer, maxLength: bufferSize)
-
-                    let b = UnsafeBufferPointer(start: buffer, count: read)
-                    outData.append(b)
-                }
-            }
-        }
-        
-        if eventCode.contains(.errorOccurred) || isCancelled {
-            print("Upload Manager: error in stream")
-            urlSession.invalidateAndCancel()
-            boundStreams.input.close()
-            boundStreams.output.close()
-            handler(NSError(domain: "org.permanent", code: 100, userInfo: nil))
-            finish()
-        }
-    }
 }
 
 // MARK: - Upload request body methods
@@ -294,14 +212,16 @@ extension UploadOperation {
             body.append("\(value)\r\n".data(using: .utf8)!)
         }
         
+        let mimeType = (file.url.mimeType ?? "application/octet-stream")
+        
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"Content-Type\"\r\n\r\n".data(using: .utf8)!)
-        body.append(file.url.mimeType!.data(using: .utf8)!)
+        body.append(mimeType.data(using: .utf8)!)
         body.append("\r\n".data(using: .utf8)!)
 
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(file.name)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: \(file.url.mimeType!)\r\n\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
 
         return body
     }
@@ -315,78 +235,9 @@ extension UploadOperation: URLSessionTaskDelegate {
             let userInfo: [String : Any] = ["fileInfoId": file.id, "progress": progress]
             NotificationCenter.default.post(name: Self.uploadProgressNotification, object: self, userInfo: userInfo)
         }
-        print("post progress")
-    }
-}
-
-// MARK: - Upload multipart request
-extension UploadOperation {
-    private func getBodyData(parameters: RequestParameters, file: FileInfo, boundary: String) -> Data? {
-        var body = self.getHttpBody(forParameters: parameters, withBoundary: boundary)
-        self.add(file: file, toBody: &body, withBoundary: boundary)
-        self.close(body: &body, usingBoundary: boundary)
         
-        return body
-    }
-    
-    private func getHttpBody(forParameters parameters: RequestParameters, withBoundary boundary: String) -> Data {
-        var body = Data()
-        
-        guard let parameters = parameters as? [String: Any?] else { return body }
-
-        for (key, value) in parameters {
-            guard let value = value else {
-                continue
-            }
-            
-            let values = ["--\(boundary)\r\n",
-                          "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n",
-                          "\(value)\r\n"]
-            
-            _ = body.append(values: values)
+        if isCancelled {
+            urlSession.invalidateAndCancel()
         }
-
-        return body
-    }
-    
-    private func add(file: FileInfo, toBody body: inout Data, withBoundary boundary: String) {
-        var status = true
-        
-        guard
-            let mimeType = file.mimeType
-        else {
-            return
-        }
-        let content = try! Data(contentsOf: file.url)
-        status = false
-        var data = Data()
-
-        let formattedFileInfoPrefix = ["--\(boundary)\r\n",
-                                       "Content-Disposition: form-data; name=\"Content-Type\"\r\n\r\n",
-                                       mimeType,
-                                       "\r\n"]
-
-        let formattedFileInfo = ["--\(boundary)\r\n",
-                                 "Content-Disposition: form-data; name=\"file\"; filename=\"\(file.name)\"\r\n",
-                                 "Content-Type: \(mimeType)\r\n\r\n"]
-
-        if data.append(values: formattedFileInfoPrefix) {
-            if data.append(values: formattedFileInfo) {
-                if data.append(values: [content]) {
-                    if data.append(values: ["\r\n"]) {
-                        status = true
-                    }
-                }
-            }
-        }
-
-        if status {
-            body.append(data)
-        }
-    }
-    
-    private func close(body: inout Data, usingBoundary boundary: String) {
-        _ = body.append(values: ["--\(boundary)--"])
-        print(body)
     }
 }

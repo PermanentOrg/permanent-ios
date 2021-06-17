@@ -78,6 +78,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
             self.viewModel?.logout(then: { status in
                 switch status {
                 case .success:
+                    UploadManager.shared.cancelAll()
+                    
                     AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
                     
                 case .error(let message):

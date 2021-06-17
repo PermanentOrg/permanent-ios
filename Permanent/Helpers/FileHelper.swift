@@ -43,6 +43,13 @@ class FileHelper {
         }
     }
     
+    func copyFile(withURL from: URL) throws -> URL {
+        let to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
+        
+        try FileManager.default.copyItem(at: from, to: to)
+        return to
+    }
+    
     func saveFile(at url: URL, named name: String? = nil) -> URL? {
         do {
             let fileURL = self.defaultDirectoryURL!

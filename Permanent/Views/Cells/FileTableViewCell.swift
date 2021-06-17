@@ -35,8 +35,16 @@ class FileTableViewCell: UITableViewCell {
                   let progress = userInfo["progress"] as? Double,
                   fileInfoId == self?.fileInfoId else { return }
             
+            self?.handleUI(forStatus: .uploading)
             self?.progressView.setProgress(Float(progress), animated: true)
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        fileInfoId = nil
+        rightButtonTapAction = nil
     }
 
     private func initUI() {

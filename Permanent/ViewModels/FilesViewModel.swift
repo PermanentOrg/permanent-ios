@@ -29,10 +29,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var csrf: String = ""
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
-    var uploadQueue: [FileInfo] {
-        let savedFiles: [FileInfo]? = UploadManager.shared.queuedFiles()
-        return savedFiles ?? []
-    }
+    var uploadQueue: [FileInfo] = []
+
     var downloadQueue: [FileViewModel] = []
     var activeSortOption: SortOption = .nameAscending
     var uploadInProgress: Bool = false
@@ -139,6 +137,19 @@ class FilesViewModel: NSObject, ViewModelInterface {
         downloadQueue.removeAll()
         
         // delete from prefs
+    }
+    
+    @discardableResult
+    func refreshUploadQueue() -> Bool {
+        let savedFiles: [FileInfo]? = UploadManager.shared.queuedFiles()
+        
+        if savedFiles?.map(\.id) != uploadQueue.map(\.id) {
+            uploadQueue = savedFiles ?? []
+            
+            return true
+        }
+        
+        return false
     }
     
     func removeSyncedFile(_ file: FileViewModel) {

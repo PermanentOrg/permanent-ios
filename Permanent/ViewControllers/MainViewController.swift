@@ -42,11 +42,27 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         getRootFolder()
         
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
-            self?.tableView.reloadData()
+            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
+                self?.refreshTableView()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
+            let alertVC = UIAlertController(title: "Quota exceeded!", message: "Add more storage to upload this file", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
+                guard let url = URL(string: Constants.URL.buyStorageURL) else { return }
+                UIApplication.shared.open(url)
+            }))
+            
+            self?.present(alertVC, animated: true, completion: nil)
         }
         
         NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
-            self?.tableView.reloadData()
+            // if the upload is in this screen's list, refresh the list of models
+            if self?.viewModel?.currentFolder?.folderLinkId == (notif.object as! UploadOperation).file.folder.folderLinkId && (notif.userInfo?["error"] == nil) {
+                self?.refreshCurrentFolder()
+            }
         }
     }
     
@@ -192,6 +208,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
         
+        viewModel.refreshUploadQueue()
+        
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
             currentFolder.folderLinkId,
@@ -262,10 +280,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         // Clear the data before navigation so we avoid concurrent errors.
         viewModel?.viewModels.removeAll()
         
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-        
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
             handler?()
@@ -279,10 +293,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         switch status {
         case .success:
-            DispatchQueue.main.async {
-                self.refreshTableView()
-                self.toggleFileAction(self.viewModel?.fileAction)
-            }
+            self.refreshTableView()
+            self.toggleFileAction(self.viewModel?.fileAction)
             
         case .error(let message):
             showErrorAlert(message: message)
@@ -473,7 +485,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let viewModel = self.viewModel else {
-            fatalError()
+            return UITableViewCell()
         }
 
         let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
