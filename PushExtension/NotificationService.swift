@@ -82,7 +82,7 @@ class NotificationService: UNNotificationServiceExtension {
                 }
                 
                 bestAttemptContent.title = sourceAccountName
-                bestAttemptContent.body = "\(sourceAccountName) has joined permanent to access \(sharedItemName)."
+                bestAttemptContent.body = "\(sourceAccountName) has joined Permanent to access \(sharedItemName)."
             
             case "upload-reminder":
                 bestAttemptContent.title = ""
