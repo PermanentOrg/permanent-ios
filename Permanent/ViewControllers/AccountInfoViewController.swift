@@ -39,7 +39,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.next)
         countryView.configureElementUI(label: .country, returnKey: UIReturnKeyType.done)
         contentUpdateButton.configureActionButtonUI(title: .save)
-        deleteAccountButton.configureActionButtonUI(title: .delete, bgColor: .deepRed)
+        deleteAccountButton.configureActionButtonUI(title: "Delete Account".localized(), bgColor: .deepRed)
         
         accountNameView.delegate = self
         primaryEmailView.delegate = self

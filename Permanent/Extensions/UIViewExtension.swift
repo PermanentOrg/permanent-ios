@@ -69,16 +69,17 @@ extension UIView {
         bannerView.backgroundColor = backgroundColor
         self.addSubview(bannerView)
         
-        let messageLabel = UILabel() // UILabel(frame: CGRect(origin: bannerView.center, size: CGSize(width: self.bounds.width, height: height / 2)))
+        let messageLabel = UILabel()
         messageLabel.text = title
         messageLabel.textColor = textColor
         messageLabel.font = Text.style17.font
+        messageLabel.sizeToFit()
         
         bannerView.addSubview(messageLabel)
         messageLabel.enableAutoLayout()
         NSLayoutConstraint.activate([
             messageLabel.centerXAnchor.constraint(equalTo: bannerView.centerXAnchor),
-            messageLabel.centerYAnchor.constraint(equalTo: bannerView.centerYAnchor)
+            messageLabel.bottomAnchor.constraint(equalTo: bannerView.bottomAnchor, constant: -messageLabel.frame.height / 2)
         ])
         
         UIView.animate(animations: {

@@ -11,17 +11,6 @@ import UIKit.UIAlertController
 typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface {
-    weak var delegate: LoginViewModelDelegate?
-}
-
-protocol LoginViewModelDelegate: ViewModelDelegateInterface {
-    func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void)
-    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void)
-    func signUp(with credentials: SignUpCredentials, then handler: @escaping ServerResponse)
-    func logout(then handler: @escaping ServerResponse)
-}
-
-extension AuthViewModel: LoginViewModelDelegate {
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
               let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
