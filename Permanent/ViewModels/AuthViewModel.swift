@@ -85,7 +85,9 @@ extension AuthViewModel: LoginViewModelDelegate {
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
         let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
 
-        loginOperation.execute(in: APIRequestDispatcher()) { result in
+        let apiDispatch = APIRequestDispatcher()
+        apiDispatch.ignoresMFAWarning = true
+        loginOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
