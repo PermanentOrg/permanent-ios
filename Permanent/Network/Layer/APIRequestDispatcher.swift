@@ -8,6 +8,8 @@
 import Foundation
 
 class APIRequestDispatcher: RequestDispatcherProtocol {
+    var ignoresMFAWarning = false
+    
     /// The environment configuration.
     private var environment: EnvironmentProtocol
 
@@ -96,18 +98,19 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             let parseResult = parse(data: data as? Data)
             switch parseResult {
             case .success(let json):
-                DispatchQueue.main.async {
+                if let mfaError = json as? [String:Any],
+                   let results = mfaError["Results"] as? [[String:Any]],
+                   let message = (results[0]["message"] as? [String])?.first,
+                   message == "warning.auth.mfaToken" && !ignoresMFAWarning {
+                    AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                } else {
                     completion(OperationResult.json(json, urlResponse))
                 }
             case .failure(let error):
-                DispatchQueue.main.async {
                     completion(OperationResult.error(error, urlResponse))
-                }
             }
         case .failure(let error):
-            DispatchQueue.main.async {
                 completion(OperationResult.error(error, urlResponse))
-            }
         }
     }
     
