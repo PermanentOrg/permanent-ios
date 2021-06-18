@@ -288,20 +288,16 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="siZ-Sv-2uj">
-                                        <rect key="frame" x="16" y="16" width="382" height="365.5"/>
+                                        <rect key="frame" x="16" y="16" width="382" height="243.5"/>
                                         <mutableString key="text">Please note: deleting your account will remove all reference to personally identifiable and contact information as well as payment options you have provided to us in your account settings.
 
-The account deletion action will not delete any archives that you own or personally identifiable information in the records stored in those archives.You must delete archives using the delete archive action in the Profile section of each archive you own.
-
-Any archives you own that are not deleted prior to deleting your account will become orphaned archives.
-
-When you are ready, type ‘DELETE’ in all caps and press confirm below to confirm account deletion.</mutableString>
+The account deletion action will not delete any archives that you own or personally identifiable information in the records stored in those archives. Any archives you own that are not deleted prior to deleting your account will become orphaned archives. Archives can only be deleted by logging in to your account on Permanent.org. </mutableString>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Type DELETE" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nZr-qP-t6u">
-                                        <rect key="frame" x="16" y="397.5" width="382" height="40"/>
+                                        <rect key="frame" x="16" y="368.5" width="382" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="raD-lF-BHV"/>
                                         </constraints>
@@ -312,7 +308,7 @@ When you are ready, type ‘DELETE’ in all caps and press confirm below to con
                                         </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ICb-Y6-aLK" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="16" y="453.5" width="382" height="45"/>
+                                        <rect key="frame" x="16" y="424.5" width="382" height="45"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="45" id="KHt-JJ-9or"/>
                                         </constraints>
@@ -322,17 +318,36 @@ When you are ready, type ‘DELETE’ in all caps and press confirm below to con
                                             <action selector="deleteButtonPressed:" destination="a7n-sn-Wx3" eventType="touchUpInside" id="b3R-7Y-wgv"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sY6-Fa-75j">
+                                        <rect key="frame" x="16" y="269.5" width="130" height="33"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <state key="normal" title="Learn more here."/>
+                                        <connections>
+                                            <action selector="learnMoreButtonPressed:" destination="a7n-sn-Wx3" eventType="touchUpInside" id="E02-em-9Gt"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When you are ready, type ‘DELETE’ in all caps and press confirm below to confirm account deletion." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DB0-VF-Tsr">
+                                        <rect key="frame" x="16" y="312.5" width="382" height="41"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="ICb-Y6-aLK" firstAttribute="leading" secondItem="nZr-qP-t6u" secondAttribute="leading" id="1JZ-Z2-aKx"/>
-                                    <constraint firstItem="nZr-qP-t6u" firstAttribute="top" secondItem="siZ-Sv-2uj" secondAttribute="bottom" constant="16" id="3Ll-l8-g5s"/>
                                     <constraint firstItem="ICb-Y6-aLK" firstAttribute="trailing" secondItem="nZr-qP-t6u" secondAttribute="trailing" id="4Kj-8i-FSb"/>
                                     <constraint firstItem="nZr-qP-t6u" firstAttribute="leading" secondItem="siZ-Sv-2uj" secondAttribute="leading" id="7Cq-YW-xPC"/>
+                                    <constraint firstItem="nZr-qP-t6u" firstAttribute="top" secondItem="DB0-VF-Tsr" secondAttribute="bottom" constant="15" id="B4Y-2X-2t1"/>
+                                    <constraint firstItem="sY6-Fa-75j" firstAttribute="leading" secondItem="siZ-Sv-2uj" secondAttribute="leading" id="JIO-0R-x6h"/>
+                                    <constraint firstItem="DB0-VF-Tsr" firstAttribute="leading" secondItem="siZ-Sv-2uj" secondAttribute="leading" id="QoQ-eQ-v8n"/>
+                                    <constraint firstItem="DB0-VF-Tsr" firstAttribute="top" secondItem="sY6-Fa-75j" secondAttribute="bottom" constant="10" id="cDU-L4-R5j"/>
                                     <constraint firstItem="siZ-Sv-2uj" firstAttribute="top" secondItem="vVo-bt-KqU" secondAttribute="top" constant="16" id="cgM-TW-Pwk"/>
+                                    <constraint firstAttribute="bottom" secondItem="ICb-Y6-aLK" secondAttribute="bottom" constant="16" id="ghI-W4-Bid"/>
+                                    <constraint firstItem="DB0-VF-Tsr" firstAttribute="trailing" secondItem="siZ-Sv-2uj" secondAttribute="trailing" id="glr-2D-ZMo"/>
                                     <constraint firstItem="ICb-Y6-aLK" firstAttribute="top" secondItem="nZr-qP-t6u" secondAttribute="bottom" constant="16" id="k8T-Rc-KOd"/>
+                                    <constraint firstItem="sY6-Fa-75j" firstAttribute="top" secondItem="siZ-Sv-2uj" secondAttribute="bottom" constant="10" id="lxK-9b-ady"/>
                                     <constraint firstItem="siZ-Sv-2uj" firstAttribute="leading" secondItem="vVo-bt-KqU" secondAttribute="leading" constant="16" id="s9D-jG-Y79"/>
                                     <constraint firstAttribute="trailing" secondItem="siZ-Sv-2uj" secondAttribute="trailing" constant="16" id="wOo-7X-PZO"/>
-                                    <constraint firstAttribute="bottom" secondItem="siZ-Sv-2uj" secondAttribute="bottom" constant="16" id="whP-yh-h73"/>
                                     <constraint firstItem="nZr-qP-t6u" firstAttribute="trailing" secondItem="siZ-Sv-2uj" secondAttribute="trailing" id="zld-CZ-uuV"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="oVi-kc-cTF"/>
@@ -352,6 +367,8 @@ When you are ready, type ‘DELETE’ in all caps and press confirm below to con
                     <connections>
                         <outlet property="confirmTextField" destination="nZr-qP-t6u" id="lB0-KF-zBk"/>
                         <outlet property="deleteButton" destination="ICb-Y6-aLK" id="iP0-uP-AQC"/>
+                        <outlet property="learnMoreButton" destination="sY6-Fa-75j" id="c0w-r8-Nsh"/>
+                        <outlet property="scrollView" destination="vVo-bt-KqU" id="oed-oT-hlN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ohr-dw-lRo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -367,7 +384,7 @@ When you are ready, type ‘DELETE’ in all caps and press confirm below to con
             <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="xJt-MI-I2f">
             <size key="intrinsicContentSize" width="70" height="40"/>

@@ -9,6 +9,8 @@ import Foundation
 
 class AccountDeleteViewModel: ViewModelInterface {
     
+    static let accountDeleteSuccessNotification = Notification.Name("AccountDeleteViewModel.accountDeleteSuccessNotification")
+    
     func deleteAccount(completion: @escaping ((Bool) -> Void)) {
         guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
               let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
@@ -44,6 +46,40 @@ class AccountDeleteViewModel: ViewModelInterface {
                 
             default:
                 completion(false)
+            }
+        }
+    }
+    
+    func deletePushToken(then handler: @escaping ServerResponse) {
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
+              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        else {
+            handler(.success)
+            return
+        }
+        
+        let deleteTokenParams = (token, csrf)
+        let deleteTokenOperation = APIOperation(DeviceEndpoint.delete(params: deleteTokenParams))
+
+        deleteTokenOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+
+            case .error:
+                handler(.error(message: .errorMessage))
+
+            default:
+                break
             }
         }
     }

@@ -36,10 +36,10 @@ class NotificationService: UNNotificationServiceExtension {
                 let stylizedAccessRole = accessRoleComps.last?.capitalized ?? accessRole
                 
                 bestAttemptContent.title = accountName
-                bestAttemptContent.body = "\(accountName) accepted your invitation to join The \(archiveName) Archive as a \(stylizedAccessRole)"
+                bestAttemptContent.body = "\(accountName) accepted your invitation to join the \(archiveName) as a \(stylizedAccessRole)"
                 
             case "type.notification.share":
-                guard let sourceArchiveName = userInfo["fromArchiveName"] as? String else {
+                guard let sourceArchiveName = userInfo["fromAccountName"] as? String else {
                     contentHandler(bestAttemptContent)
                     return
                 }
@@ -67,7 +67,7 @@ class NotificationService: UNNotificationServiceExtension {
                 
             case "type.notification.share.invitation.acceptance":
                 let sharedItemName: String
-                guard let sourceAccountName = userInfo["invitedArchiveName"] as? String else {
+                guard let sourceAccountName = userInfo["invitedEmail"] as? String else {
                     contentHandler(bestAttemptContent)
                     return
                 }
