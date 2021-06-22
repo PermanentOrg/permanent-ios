@@ -758,27 +758,51 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        let imagePicker = ImagePickerController()
-        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
-        let options = imagePicker.settings.fetch.album.options
-        imagePicker.settings.fetch.album.fetchResults = [
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
-            PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
-        ]
-        presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
-            self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
+        PHPhotoLibrary.requestAuthorization { (auth_status) in
+            switch auth_status {
+            case .authorized,.limited:
+                let imagePicker = ImagePickerController()
+                imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
+                let options = imagePicker.settings.fetch.album.options
+                imagePicker.settings.fetch.album.fetchResults = [
+                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options),
+                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options),
+                    PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
+                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
+                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
+                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+                ]
+                self.presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+                    self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
+                        
+                        guard let currentFolder = self.viewModel?.currentFolder else {
+                            return self.showErrorAlert(message: .cannotUpload)
+                        }
+                        self.processUpload(toFolder: currentFolder, forURLS: urls)
+                    })
+                })
+            case .denied:
+                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
                 
-                guard let currentFolder = self.viewModel?.currentFolder else {
-                    return self.showErrorAlert(message: .cannotUpload)
+                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        return
+                    }
+                    if UIApplication.shared.canOpenURL(settingsUrl) {
+                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+                    }
                 }
+                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
                 
-                self.processUpload(toFolder: currentFolder, forURLS: urls)
-            })
-        })
+                alertController.addAction(cancelAction)
+                alertController.addAction(settingsAction)
+                
+                DispatchQueue.main.async {
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            default: break
+            }
+        }
     }
     
     func openFileBrowser() {
