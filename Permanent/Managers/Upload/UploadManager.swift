@@ -29,6 +29,8 @@ class UploadManager {
         files.forEach { file in
             if let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]) {
                 filesSize += resources.fileSize!
+            } else if let fileContents = file.fileContents {
+                filesSize += fileContents.count
             }
         }
         
@@ -73,10 +75,15 @@ class UploadManager {
     func upload(file: FileInfo, shouldRefreshQueue: Bool = false) {
         // Save the file data locally, otherwise the fileURL will be invalidated next session
         let fileHelper = FileHelper()
-        do {
-            file.url = try fileHelper.copyFile(withURL: file.url)
-        } catch {
-            
+        if let fileContents = file.fileContents {
+            file.url = fileHelper.saveFile(fileContents, named: file.id, withExtension: "jpeg", isDownload: false) ?? URL(fileURLWithPath: "")
+            file.fileContents = nil
+        } else {
+            do {
+                file.url = try fileHelper.copyFile(withURL: file.url)
+            } catch {
+                
+            }
         }
         
         // Save file metadata

@@ -7,8 +7,8 @@
 
 import UIKit
 
-public protocol MediaRecorderDelegate: class {
-    func didSelect(url: URL?)
+public protocol MediaRecorderDelegate: AnyObject {
+    func didSelect(url: URL?, isLocal: Bool)
 }
 
 /// Helper class used to take images and record videos.
@@ -34,10 +34,10 @@ open class MediaRecorder: NSObject {
         self.pickerController.sourceType = .camera
     }
 
-    private func pickerController(_ controller: UIImagePickerController, didSelect url: URL?) {
+    private func pickerController(_ controller: UIImagePickerController, didSelect url: URL?, isLocal: Bool) {
         controller.dismiss(animated: true, completion: nil)
 
-        self.delegate?.didSelect(url: url)
+        self.delegate?.didSelect(url: url, isLocal: isLocal)
     }
 
     func present() {
@@ -53,17 +53,17 @@ open class MediaRecorder: NSObject {
 
 extension MediaRecorder: UIImagePickerControllerDelegate {
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.pickerController(picker, didSelect: nil)
+        self.pickerController(picker, didSelect: nil, isLocal: false)
     }
 
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         if let image = info[.originalImage] as? UIImage, let imageData = image.jpegData(compressionQuality: 1.0) {
             let imageName = "IMG_\(DateUtils.fileTimestamp)"
             let url = self.fileHelper.saveFile(imageData, named: imageName, withExtension: "jpeg")
-            return self.pickerController(picker, didSelect: url)
+            return self.pickerController(picker, didSelect: url, isLocal: true)
         } else {
             let url = info[.mediaURL] as? URL
-            self.pickerController(picker, didSelect: url)
+            self.pickerController(picker, didSelect: url, isLocal: false)
         }
     }
 }

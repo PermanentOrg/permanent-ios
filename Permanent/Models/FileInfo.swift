@@ -27,18 +27,20 @@ class FileInfo: NSObject, NSCoding {
         return name == rhs.name && url == rhs.url && folder.folderId == rhs.folder.folderId
     }
 
-    init(withURL url: URL, named name: String, folder: FolderInfo) {
+    init(withURL url: URL, named name: String, folder: FolderInfo, loadInMemory: Bool = false) {
         self.name = name
         self.url = url
         self.folder = folder
+        
+        if loadInMemory {
+            fileContents = try? Data(contentsOf: url)
+        }
     }
 
-    static func createFiles(from urls: [URL], parentFolder: FolderInfo) -> [FileInfo] {
-        return urls.map {
-            FileInfo(withURL: $0,
-                     named: $0.lastPathComponent,
-                     folder: parentFolder)
-        }
+    static func createFiles(from urls: [URL], parentFolder: FolderInfo, loadInMemory: Bool = false) -> [FileInfo] {
+        let files = urls.map { FileInfo(withURL: $0, named: $0.lastPathComponent, folder: parentFolder, loadInMemory: loadInMemory) }
+        
+        return files
     }
 
     func encode(with coder: NSCoder) {

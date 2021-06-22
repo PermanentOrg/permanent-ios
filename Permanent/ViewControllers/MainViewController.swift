@@ -277,9 +277,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                                   then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
-        // Clear the data before navigation so we avoid concurrent errors.
-        viewModel?.viewModels.removeAll()
-        
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
             handler?()
@@ -793,10 +790,10 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL]) {
+    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], loadInMemory: Bool = false) {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
-        let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo)
+        let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
     }
     
@@ -826,7 +823,7 @@ extension MainViewController: UIDocumentPickerDelegate {
 
 // MARK: - MediaRecorderDelegate
 extension MainViewController: MediaRecorderDelegate {
-    func didSelect(url: URL?) {
+    func didSelect(url: URL?, isLocal: Bool) {
         guard
             let mediaUrl = url,
             let currentFolder = viewModel?.currentFolder
@@ -834,8 +831,11 @@ extension MainViewController: MediaRecorderDelegate {
             return showErrorAlert(message: .cameraErrorMessage)
         }
         
-        processUpload(toFolder: currentFolder, forURLS: [mediaUrl])
-        mediaRecorder.clearTemporaryFile(withURL: mediaUrl)
+        processUpload(toFolder: currentFolder, forURLS: [mediaUrl], loadInMemory: isLocal)
+        
+        if isLocal {
+            mediaRecorder.clearTemporaryFile(withURL: mediaUrl)
+        }
     }
 }
 
