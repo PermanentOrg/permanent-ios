@@ -39,6 +39,15 @@ class CodeVerificationController: BaseViewController<VerificationCodeViewModel> 
         codeField.delegate = self
         codeField.smartInsertDeleteType = .no
         codeField.textContentType = .oneTimeCode
+        
+        let toolBar = UIToolbar()
+        toolBar.sizeToFit()
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(confirmAction(_:)) )
+        toolBar.setItems([flexibleSpace,doneButton], animated: false)
+        
+        codeField.inputAccessoryView = toolBar
     }
     
     // MARK: - Actions
