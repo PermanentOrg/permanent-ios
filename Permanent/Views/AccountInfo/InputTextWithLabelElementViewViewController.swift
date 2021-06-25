@@ -41,17 +41,20 @@ class InputTextWithLabelElementViewViewController: UIView {
         contentView.backgroundColor = .blueGray
     }
     
-    func configureElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default) {
+    func configureElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default, keyboardType: UIKeyboardType = .default) {
         self.contentView.backgroundColor = .white
         self.valueLabel.text = label
         self.valueLabel.font = Text.style8.font
         self.textField.textColor = .middleGray
         self.textField.returnKeyType = returnKey
+        self.textField.autocorrectionType = .no
+        if keyboardType != .default {
+            self.textField.keyboardType = keyboardType
+        }
     }
     
     func setTextFieldValue(text: String)
     {
         self.textField.text = text
     }
-    
 }

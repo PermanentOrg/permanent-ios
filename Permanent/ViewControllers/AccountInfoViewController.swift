@@ -32,7 +32,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         
         accountNameView.configureElementUI(label: .accountName, returnKey: UIReturnKeyType.next)
         primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: UIReturnKeyType.next)
-        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.next)
+        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.next, keyboardType: .numbersAndPunctuation)
         addressView.configureElementUI(label: .address, returnKey: UIReturnKeyType.next)
         cityView.configureElementUI(label: .city, returnKey: UIReturnKeyType.next)
         stateView.configureElementUI(label: .stateOrRegion, returnKey: UIReturnKeyType.next)
