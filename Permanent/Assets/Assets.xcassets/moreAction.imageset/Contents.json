@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "moreAction.pdf",
-      "idiom" : "universal"
+      "filename" : "moreAction.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "moreAction@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "moreAction@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
