@@ -31,8 +31,9 @@
                                             <constraint firstAttribute="width" constant="30" id="36t-Zt-Rt0"/>
                                             <constraint firstAttribute="height" constant="30" id="yzI-H1-5yY"/>
                                         </constraints>
+                                        <color key="tintColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="15" maxY="0.0"/>
-                                        <state key="normal" image="chevron.left" catalog="system">
+                                        <state key="normal" image="chevron.left">
                                             <color key="titleColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
@@ -421,17 +422,17 @@
     </scenes>
     <designables>
         <designable name="Ern-RS-tpK">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
     </designables>
     <resources>
-        <image name="chevron.left" catalog="system" width="96" height="128"/>
+        <image name="chevron.left" width="13" height="21"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
