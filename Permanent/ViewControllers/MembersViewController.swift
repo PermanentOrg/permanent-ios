@@ -50,6 +50,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         tableView.separatorStyle = .none
         tableView.estimatedSectionHeaderHeight = 80
         tableView.sectionFooterHeight = 1
+        tableView.allowsSelection = false
+        tableView.estimatedRowHeight = 40
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
@@ -195,7 +197,6 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard let accessRole = AccessRole(rawValue: indexPath.section) else {
             fatalError()
         }
@@ -203,6 +204,16 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeue(cellClass: MemberTableViewCell.self, forIndexPath: indexPath)
         cell.member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
+        
+        cell.editButtonAction = { [weak self] cell in
+            guard let viewModel = self?.viewModel,
+                let accessRole = AccessRole(rawValue: indexPath.section),
+                let account = viewModel.itemAtRow(indexPath.row, withRole: accessRole) else {
+                return
+            }
+            
+            self?.didTapEdit(forAccount: account)
+        }
         
         return cell
     }
@@ -257,7 +268,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             let viewModel = viewModel,
             let accessRole = AccessRole(rawValue: indexPath.section),
             let account = viewModel.itemAtRow(indexPath.row, withRole: accessRole) else {
-            fatalError()
+            return nil
         }
         
         let deleteAction = UIContextualAction.make(
