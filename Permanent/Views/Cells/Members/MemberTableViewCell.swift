@@ -11,6 +11,7 @@ class MemberTableViewCell: UITableViewCell {
     fileprivate var nameLabel: UILabel!
     fileprivate var statusLabel: UILabel!
     fileprivate var emailLabel: UILabel!
+    fileprivate var editButton: UIButton!
     
     var member: Account? {
         didSet {
@@ -21,6 +22,8 @@ class MemberTableViewCell: UITableViewCell {
             statusLabel.isHidden = member?.status != .pending
         }
     }
+    
+    var editButtonAction: ((MemberTableViewCell) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,7 +36,6 @@ class MemberTableViewCell: UITableViewCell {
     }
     
     fileprivate func configureUI() {
-        
         nameLabel = UILabel()
         nameLabel.textColor = .primary
         nameLabel.font = Text.style11.font
@@ -54,15 +56,31 @@ class MemberTableViewCell: UITableViewCell {
         vStack.spacing = 0
         vStack.alignment = .leading
         
-        self.addSubview(vStack)
+        contentView.addSubview(vStack)
         vStack.enableAutoLayout()
         
+        editButton = UIButton(type: .custom)
+        editButton.setTitle("Edit".localized(), for: .normal)
+        editButton.setTitleColor(.primary, for: .normal)
+        editButton.setFont(Text.style11.font)
+        editButton.enableAutoLayout()
+        contentView.addSubview(editButton)
+        
+        editButton.addTarget(self, action: #selector(editButtonPressed(_:)), for: .touchUpInside)
+        
         NSLayoutConstraint.activate([
-            vStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            vStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            vStack.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            vStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
+            vStack.leadingAnchor.constraint(equalTo:contentView.leadingAnchor, constant: 20),
+            vStack.rightAnchor.constraint(equalTo: editButton.leftAnchor, constant: -10),
+            vStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            vStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            editButton.heightAnchor.constraint(equalToConstant: 30),
+            editButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            editButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
+    }
+    
+    @objc func editButtonPressed(_ sender: Any) {
+        editButtonAction?(self)
     }
 
 }
