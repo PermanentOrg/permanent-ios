@@ -8,14 +8,16 @@
 import UIKit
 
 class ActionDialogView: UIView {
-    @IBOutlet var scrollView: UIScrollView!
-    @IBOutlet var contentView: UIView!
-    @IBOutlet var dialogView: UIView!
-    @IBOutlet var titleLabel: UILabel!
-    @IBOutlet var subtitleLabel: UILabel!
-    @IBOutlet var cancelButton: RoundedButton!
-    @IBOutlet var positiveButton: RoundedButton!
-    @IBOutlet var fieldsStackView: UIStackView!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIView!
+    @IBOutlet weak var dialogView: UIView!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var subtitleLabel: UILabel!
+    @IBOutlet weak var cancelButton: RoundedButton!
+    @IBOutlet weak var positiveButton: RoundedButton!
+    @IBOutlet weak var fieldsStackView: UIStackView!
+    @IBOutlet weak var removeButton: UIButton!
+    @IBOutlet weak var removeButtonContainer: UIView!
     
     private lazy var pickerView = UIPickerView()
     
@@ -26,6 +28,17 @@ class ActionDialogView: UIView {
     private var dialogStyle: ActionDialogStyle = .simple
     
     var positiveAction: ButtonAction?
+    var removeAction: ButtonAction? {
+        didSet {
+            if removeAction != nil {
+                removeButtonContainer.isHidden = false
+                layoutIfNeeded()
+            } else {
+                removeButtonContainer.isHidden = true
+                layoutIfNeeded()
+            }
+        }
+    }
     
     var fieldsInput: [String] {
         var inputArray = [String]()
@@ -43,17 +56,7 @@ class ActionDialogView: UIView {
         return inputArray
     }
     
-    convenience init(
-        frame: CGRect,
-        style: ActionDialogStyle,
-        title: String?,
-        description: String? = nil,
-        positiveButtonTitle: String?,
-        placeholders: [String]? = nil,
-        prefilledValues: [String]? = nil,
-        dropdownValues: [String]? = nil,
-        onDismiss: @escaping ButtonAction
-    ) {
+    convenience init(frame: CGRect, style: ActionDialogStyle, title: String?, description: String? = nil, positiveButtonTitle: String?, placeholders: [String]? = nil, prefilledValues: [String]? = nil, dropdownValues: [String]? = nil, onDismiss: @escaping ButtonAction) {
         self.init(frame: frame)
         
         self.onDismiss = onDismiss
@@ -94,6 +97,11 @@ class ActionDialogView: UIView {
         styleFields()
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
+        
+        removeButton.setTitle("Remove".localized(), for: .normal)
+        removeButton.setFont(Text.style11.font)
+        removeButton.setTitleColor(.primary, for: .normal)
+        removeButtonContainer.isHidden = true
     }
     
     fileprivate func adjustUI(forStyle style: ActionDialogStyle) {
@@ -194,6 +202,10 @@ class ActionDialogView: UIView {
     @objc
     func dismiss() {
         onDismiss()
+    }
+    
+    @IBAction func removeButtonPressed(_ sender: Any) {
+        removeAction?()
     }
 }
 
