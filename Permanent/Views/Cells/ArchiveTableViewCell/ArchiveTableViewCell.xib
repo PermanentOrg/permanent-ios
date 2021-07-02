@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -30,7 +31,7 @@
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="PO6-uJ-qlZ">
                         <rect key="frame" x="64" y="10" width="348" height="218"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU3-4p-PA7" userLabel="Archive Label">
@@ -40,30 +41,42 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tdl-In-Vb7" userLabel="Relationship Label">
-                                <rect key="frame" x="0.0" y="133" width="348" height="40"/>
+                                <rect key="frame" x="0.0" y="128" width="348" height="40"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="6jh-Sm-L0U">
-                                <rect key="frame" x="0.0" y="178" width="348" height="40"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CFp-XX-kbh">
+                                <rect key="frame" x="0.0" y="168" width="348" height="50"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tE3-Dy-rD8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="169" height="40"/>
-                                        <state key="normal" title="Button"/>
-                                        <connections>
-                                            <action selector="denyAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IW4-IM-jr8"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKI-ko-seh" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="179" y="0.0" width="169" height="40"/>
-                                        <state key="normal" title="Button"/>
-                                        <connections>
-                                            <action selector="approveAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="riT-2d-ODf"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="6jh-Sm-L0U">
+                                        <rect key="frame" x="0.0" y="5" width="348" height="40"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tE3-Dy-rD8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="169" height="40"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="denyAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IW4-IM-jr8"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKI-ko-seh" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="179" y="0.0" width="169" height="40"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="approveAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="riT-2d-ODf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
-                            </stackView>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="6jh-Sm-L0U" firstAttribute="top" secondItem="CFp-XX-kbh" secondAttribute="top" constant="5" id="089-u2-RP6"/>
+                                    <constraint firstItem="6jh-Sm-L0U" firstAttribute="leading" secondItem="CFp-XX-kbh" secondAttribute="leading" id="TOh-0K-PfO"/>
+                                    <constraint firstAttribute="trailing" secondItem="6jh-Sm-L0U" secondAttribute="trailing" id="tpI-sz-bcn"/>
+                                    <constraint firstAttribute="bottom" secondItem="6jh-Sm-L0U" secondAttribute="bottom" constant="5" id="zPE-57-3gh"/>
+                                </constraints>
+                            </view>
                         </subviews>
                     </stackView>
                 </subviews>
@@ -82,6 +95,7 @@
                 <outlet property="archiveImageView" destination="h0w-q0-XkC" id="pwW-1g-V06"/>
                 <outlet property="archiveNameLabel" destination="zU3-4p-PA7" id="ddE-zs-gWd"/>
                 <outlet property="bottomButtonsView" destination="6jh-Sm-L0U" id="Lkn-Q3-tUJ"/>
+                <outlet property="bottomView" destination="CFp-XX-kbh" id="qKe-2F-rTr"/>
                 <outlet property="denyButton" destination="tE3-Dy-rD8" id="xav-Wr-lUQ"/>
                 <outlet property="relationshipLabel" destination="Tdl-In-Vb7" id="nW8-tC-ibu"/>
             </connections>
@@ -96,4 +110,9 @@
             <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

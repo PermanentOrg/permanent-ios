@@ -14,6 +14,7 @@ class ArchiveTableViewCell: UITableViewCell {
     @IBOutlet var approveButton: RoundedButton!
     @IBOutlet var denyButton: RoundedButton!
     @IBOutlet var bottomButtonsView: UIStackView!
+    @IBOutlet weak var bottomView: UIView!
     
     var rightButtonTapAction: CellButtonTapAction?
     var approveAction: ButtonAction?
@@ -46,7 +47,8 @@ class ArchiveTableViewCell: UITableViewCell {
         archiveNameLabel.text = String.init(format: .archiveName, model.archiveVO?.fullName ?? "")
         relationshipLabel.text = "Friend" // TODO
         
-        bottomButtonsView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
+        bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
+        
         
     }
     
