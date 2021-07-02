@@ -35,6 +35,8 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         configureUI()
         setupTableView()
         getShareLink(option: .retrieve)
+        
+        tableView.estimatedRowHeight = 40
     }
     
     override func viewDidLayoutSubviews() {

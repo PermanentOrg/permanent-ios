@@ -10,11 +10,11 @@ import UIKit
 class ArchiveTableViewCell: UITableViewCell {
     @IBOutlet var archiveNameLabel: UILabel!
     @IBOutlet var relationshipLabel: UILabel!
-    @IBOutlet var moreButton: UIButton!
     @IBOutlet var archiveImageView: UIImageView!
     @IBOutlet var approveButton: RoundedButton!
     @IBOutlet var denyButton: RoundedButton!
     @IBOutlet var bottomButtonsView: UIStackView!
+    @IBOutlet weak var bottomView: UIView!
     
     var rightButtonTapAction: CellButtonTapAction?
     var approveAction: ButtonAction?
@@ -32,7 +32,6 @@ class ArchiveTableViewCell: UITableViewCell {
         relationshipLabel.font = Text.style12.font
         relationshipLabel.textColor = .textPrimary
         archiveImageView.clipsToBounds = true
-        moreButton.tintColor = .middleGray
         
         approveButton.configureActionButtonUI(title: .approve)
         denyButton.configureActionButtonUI(title: .deny, bgColor: .destructive)
@@ -48,7 +47,8 @@ class ArchiveTableViewCell: UITableViewCell {
         archiveNameLabel.text = String.init(format: .archiveName, model.archiveVO?.fullName ?? "")
         relationshipLabel.text = "Friend" // TODO
         
-        bottomButtonsView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
+        bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
+        
         
     }
     
