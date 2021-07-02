@@ -162,8 +162,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         self.showActionDialog(styled: .simple,
                               withTitle: String.init(format: .removeMember, account.name),
                               positiveButtonTitle: .remove,
-                              positiveAction: {
-                                self.modifyMember(account, withOperation: .remove)
+                              positiveAction: { [weak self] in
+                                self?.modifyMember(account, withOperation: .remove)
                               },
                               overlayView: self.overlayView
         )
@@ -182,6 +182,9 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                               },
                               overlayView: self.overlayView
         )
+        actionDialog?.removeAction = { [weak self] in
+            self?.modifyMember(account, withOperation: .remove)
+        }
     }
 }
 

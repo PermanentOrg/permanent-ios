@@ -20,6 +20,7 @@ class MemberTableViewCell: UITableViewCell {
             
             statusLabel.text = member?.status.value.parenthesized()
             statusLabel.isHidden = member?.status != .pending
+            editButton.isHidden = member?.accessRole == .owner
         }
     }
     
