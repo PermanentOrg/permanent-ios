@@ -51,13 +51,11 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         pageVC.view.frame = view.bounds
         pageVC.didMove(toParent: self)
         
-        let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
-        fileDetailsVC.file = currentFile
-        
         if let indexOfFileVC = filteredFiles.firstIndex(of: currentFile) {
-            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: Int(indexOfFileVC)))
+            let fileDetailsVC = dequeueViewController(atIndex: indexOfFileVC)!
+            
+            pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
         }
-        pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
     }
     
     func setupNavigationBar() {
@@ -147,14 +145,22 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
         return nil
     }
     
+    @discardableResult
     func dequeueViewController(atIndex index: Int) -> FilePreviewViewController? {
         if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
             return fileDetailsVC
         } else if index >= 0 && index < filteredFiles.count {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
             fileDetailsVC.file = filteredFiles[index]
+            fileDetailsVC.loadVM()
             
             controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))
+            
+            // Preload left and right controllers
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+                dequeueViewController(atIndex: index - 1)
+                dequeueViewController(atIndex: index + 1)
+            }
             
             return fileDetailsVC
         }
