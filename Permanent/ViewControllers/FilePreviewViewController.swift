@@ -26,9 +26,17 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     var pageVC: UIPageViewController!
     var hasChanges: Bool = false
-    var recordLoaded: Bool = false
+    var recordLoaded: Bool = false {
+        didSet {
+            if recordLoaded == true {
+                recordLoadedCB?(self)
+            }
+        }
+    }
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    var recordLoadedCB: ((FilePreviewViewController) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
