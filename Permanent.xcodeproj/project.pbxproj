@@ -73,6 +73,7 @@
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
+		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -409,6 +410,7 @@
 		5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
+		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		90FC29B23EE0D799580DD402 /* Pods-Permanent.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-release.xcconfig"; sourceTree = "<group>"; };
 		9E92C752205B1A715A4A7D78 /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
@@ -719,6 +721,7 @@
 				BCB0725A2523497B003E2F66 /* Popups */,
 				BC4526EB251CD61500E24A51 /* Onboarding */,
 				BC6D3B3F251363D600390927 /* Authentication */,
+				5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */,
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
 				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				BC4526EC251CD62C00E24A51 /* MainViewController.swift */,
@@ -1883,6 +1886,7 @@
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
+				5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				BC59BAD425C2B8BD005A45D3 /* NotificationTableViewCell.swift in Sources */,

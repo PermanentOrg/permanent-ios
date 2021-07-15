@@ -12,6 +12,7 @@ enum StoryboardName: String {
     case authentication
     case launch
     case onboarding
+    case welcomePage
     case members
     case share
     case accountInfo
@@ -28,6 +29,7 @@ enum ViewControllerId: String {
     case login
     case signUp
     case onboarding
+    case welcomePage
     case verificationCode
     case termsConditions
     case twoStepVerification
@@ -80,6 +82,8 @@ enum ViewControllerId: String {
             return "LocationSetOnTap"
         case .tagDetails:
             return "TagDetails"
+        case .welcomePage:
+            return "WelcomePage"
         default:
             return self.rawValue.capitalized
         }

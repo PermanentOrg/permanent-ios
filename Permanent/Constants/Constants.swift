@@ -140,6 +140,7 @@ extension Constants.Keys.StorageKeys {
     static let emailStorageKey = "emailStorageKey"
     static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
+    static let viewedWelcomePageStorageKey = "viewedWelcomePage"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let sharedFileKey = "sharedFileKey"
