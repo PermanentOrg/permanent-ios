@@ -26,12 +26,44 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     var pageVC: UIPageViewController!
     var hasChanges: Bool = false
+    var recordLoaded: Bool = false {
+        didSet {
+            if recordLoaded == true {
+                recordLoadedCB?(self)
+            }
+        }
+    }
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    var recordLoadedCB: ((FilePreviewViewController) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
         
-        showSpinner()
+        loadVM()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        videoPlayer?.player?.pause()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        styleNavBar()
+    }
+    
+    func loadVM() {
+        guard recordLoaded == false else { return }
+        
+        if isViewLoaded {
+            activityIndicator.startAnimating()
+        }
+        
         if viewModel == nil {
             viewModel = FilePreviewViewModel(file: file)
             
@@ -41,12 +73,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         } else {
             loadRecord()
         }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        videoPlayer?.player?.pause()
     }
     
     func initUI() {
@@ -123,6 +149,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         } else {
             self.showErrorAlert(message: .errorMessage)
         }
+        
+        recordLoaded = true
     }
     
     func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
@@ -130,6 +158,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         imagePreviewVC.delegate = self
         addChild(imagePreviewVC)
         imagePreviewVC.view.frame = view.bounds
+        imagePreviewVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         // Insert view under the spinner
         view.insertSubview(imagePreviewVC.view, at: 0)
         imagePreviewVC.didMove(toParent: self)
@@ -137,7 +166,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         viewModel?.fileData(withURL: url, onCompletion: { (data, error) in
             if let data = data {
                 imagePreviewVC.image = UIImage(data: data)
-                self.hideSpinner()
+                self.activityIndicator.stopAnimating()
             } else {
                 self.showAlert(title: .error, message: .errorMessage)
             }
@@ -156,10 +185,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         addChild(videoPlayer!)
         videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
+        videoPlayer!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.insertSubview(videoPlayer!.view, at: 0)
         videoPlayer!.didMove(toParent: self)
         
-        hideSpinner()
+        activityIndicator.stopAnimating()
     }
     
     func loadMisc(withURL url: URL) {
@@ -230,7 +260,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             return
         }
         
-        hideSpinner()
+        activityIndicator.stopAnimating()
         
         if keyPath == #keyPath(AVPlayerItem.status) {
             let status: AVPlayerItem.Status
@@ -265,11 +295,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 // MARK: - WKNavigationDelegate
 extension FilePreviewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        hideSpinner()
+        activityIndicator.stopAnimating()
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        hideSpinner()
+        activityIndicator.stopAnimating()
     }
 }
 

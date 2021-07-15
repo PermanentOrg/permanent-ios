@@ -51,13 +51,11 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
         pageVC.view.frame = view.bounds
         pageVC.didMove(toParent: self)
         
-        let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
-        fileDetailsVC.file = currentFile
-        
         if let indexOfFileVC = filteredFiles.firstIndex(of: currentFile) {
-            controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: Int(indexOfFileVC)))
+            let fileDetailsVC = dequeueViewController(atIndex: indexOfFileVC)!
+            
+            pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
         }
-        pageVC.setViewControllers([fileDetailsVC], direction: .forward, animated: false, completion: nil)
     }
     
     func setupNavigationBar() {
@@ -147,12 +145,22 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
         return nil
     }
     
-    func dequeueViewController(atIndex index: Int) -> FilePreviewViewController? {
+    @discardableResult
+    func dequeueViewController(atIndex index: Int, preloadLeftRight: Bool = true) -> FilePreviewViewController? {
         if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
             return fileDetailsVC
         } else if index >= 0 && index < filteredFiles.count {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+            
+            // Preload left and right controllers after the current one is loaded
+            if preloadLeftRight {
+                fileDetailsVC.recordLoadedCB = { [weak self] fileDetailsVC in
+                    self?.dequeueViewController(atIndex: index - 1, preloadLeftRight: false)
+                    self?.dequeueViewController(atIndex: index + 1, preloadLeftRight: false)
+                }
+            }
             fileDetailsVC.file = filteredFiles[index]
+            fileDetailsVC.loadVM()
             
             controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))
             
