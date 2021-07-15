@@ -148,6 +148,14 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
     @discardableResult
     func dequeueViewController(atIndex index: Int, preloadLeftRight: Bool = true) -> FilePreviewViewController? {
         if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
+            // Preload left and right controllers after the current one is loaded
+            if preloadLeftRight {
+                fileDetailsVC.recordLoadedCB = { [weak self] fileDetailsVC in
+                    self?.dequeueViewController(atIndex: index - 1, preloadLeftRight: false)
+                    self?.dequeueViewController(atIndex: index + 1, preloadLeftRight: false)
+                }
+            }
+            
             return fileDetailsVC
         } else if index >= 0 && index < filteredFiles.count {
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
