@@ -25,6 +25,7 @@ class UploadOperation: BaseOperation {
     var s3Url: String!
     var destinationUrl: String!
     var fields: [String: String]!
+    var createdDT: String!
     
     var progress: Double = 0
     var error: UploadError?
@@ -137,10 +138,17 @@ class UploadOperation: BaseOperation {
     
     private func uploadFileDataToS3(success: @escaping (() -> Void)) {
         var contentLength = prefixData.count
-        let resources = try! file.url.resourceValues(forKeys:[.fileSizeKey])
+        let resources = try! file.url.resourceValues(forKeys:[.fileSizeKey, .creationDateKey])
         let fileSize = resources.fileSize!
         contentLength += fileSize
         contentLength += "\r\n--\(boundary)--".data(using: .utf8)!.count
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        let creationDate = resources.creationDate!
+        createdDT = dateFormatter.string(from: creationDate)
         
         var uploadRequest = URLRequest(url: URL(string: s3Url)!)
         uploadRequest.timeoutInterval = 86400
@@ -167,7 +175,7 @@ class UploadOperation: BaseOperation {
     }
     
     private func registerRecord() {
-        let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, nil, self.csrf, s3Url, destinationUrl)
+        let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, createdDT, csrf, s3Url, destinationUrl)
         
         let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
