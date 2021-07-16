@@ -146,13 +146,18 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
     }
     
     @discardableResult
-    func dequeueViewController(atIndex index: Int, preloadLeftRight: Bool = true) -> FilePreviewViewController? {
+    func dequeueViewController(atIndex index: Int, preloadLeftRightLevel: Int = 0) -> FilePreviewViewController? {
         if let fileDetailsVC = controllersCache.object(forKey: NSNumber(value: index)) {
             // Preload left and right controllers after the current one is loaded
-            if preloadLeftRight {
-                fileDetailsVC.recordLoadedCB = { [weak self] fileDetailsVC in
-                    self?.dequeueViewController(atIndex: index - 1, preloadLeftRight: false)
-                    self?.dequeueViewController(atIndex: index + 1, preloadLeftRight: false)
+            if preloadLeftRightLevel <= 2 {
+                if fileDetailsVC.recordLoaded {
+                    dequeueViewController(atIndex: index - 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
+                    dequeueViewController(atIndex: index + 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
+                } else {
+                    fileDetailsVC.recordLoadedCB = { [weak self] fileDetailsVC in
+                        self?.dequeueViewController(atIndex: index - 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
+                        self?.dequeueViewController(atIndex: index + 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
+                    }
                 }
             }
             
@@ -161,10 +166,10 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
             
             // Preload left and right controllers after the current one is loaded
-            if preloadLeftRight {
+            if preloadLeftRightLevel <= 2 {
                 fileDetailsVC.recordLoadedCB = { [weak self] fileDetailsVC in
-                    self?.dequeueViewController(atIndex: index - 1, preloadLeftRight: false)
-                    self?.dequeueViewController(atIndex: index + 1, preloadLeftRight: false)
+                    self?.dequeueViewController(atIndex: index - 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
+                    self?.dequeueViewController(atIndex: index + 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
                 }
             }
             fileDetailsVC.file = filteredFiles[index]
