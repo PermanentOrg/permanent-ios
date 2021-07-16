@@ -150,7 +150,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             self.showErrorAlert(message: .errorMessage)
         }
         
-        recordLoaded = true
+        if recordLoaded != true {
+            recordLoaded = true
+        }
     }
     
     func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
