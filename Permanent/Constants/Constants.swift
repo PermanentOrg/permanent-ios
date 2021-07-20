@@ -70,7 +70,6 @@ struct Constants {
         "Get Started",
     ]
     static let onboardingPageImage = ["1", "2", "3"]
-    static let signUpNameStorageKey = "signUpNameStorageKey"
 }
 
 extension Constants.Design {
@@ -149,4 +148,5 @@ extension Constants.Keys.StorageKeys {
     static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
+    static let signUpNameStorageKey = "signUpNameStorageKey"
 }

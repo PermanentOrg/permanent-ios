@@ -7,7 +7,7 @@
 
 import UIKit
 
-class WelcomePageViewController: BaseViewController<AuthViewModel>  {
+class WelcomePageViewController: UIViewController  {
     
     var archiveName: String?
     
@@ -42,7 +42,7 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
         primaryLabelField.textColor = .white
         primaryLabelField.font = Text.style2.font
         primaryLabelField.numberOfLines = 2
-        primaryLabelField.text = "Welcome to The \(archiveName ?? "name") Archive".localized()
+        primaryLabelField.text = "Welcome to The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName!)
         
         secondaryLabelField.textColor = .white
         secondaryLabelField.font = Text.style2.font
@@ -54,7 +54,7 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
     }
     
     func closePopUp() {
-        UserDefaults.standard.setValue(nil, forKey: Constants.signUpNameStorageKey)
+        UserDefaults.standard.setValue(nil, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
         dismiss(animated: true, completion: nil)
     }
 }
