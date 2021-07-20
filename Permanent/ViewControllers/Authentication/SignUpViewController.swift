@@ -122,6 +122,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     private func handleSignUpStatus(_ status: RequestStatus) {
         switch status {
         case .success:
+            UserDefaults.standard.setValue(nameField.text, forKey: Constants.signUpNameStorageKey)
             performBackgroundLogin()
         case .error(let message):
             hideSpinner()

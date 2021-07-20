@@ -16,6 +16,7 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
     @IBOutlet weak var primaryLabelField: UILabel!
     @IBOutlet weak var secondaryLabelField: UILabel!
     @IBOutlet weak var acceptButton: RoundedButton!
+    @IBOutlet weak var closeButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +25,11 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
     }
     
     @IBAction func acceptButton(_ sender: Any) {
-        PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.viewedWelcomePageStorageKey)
-        dismiss(animated: true, completion: nil)
+        closePopUp()
+    }
+    
+    @IBAction func closeButton(_ sender: Any) {
+        closePopUp()
     }
     
     func initUI() {
@@ -38,7 +42,7 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
         primaryLabelField.textColor = .white
         primaryLabelField.font = Text.style2.font
         primaryLabelField.numberOfLines = 2
-        primaryLabelField.text = "Welcome to The \(archiveName ?? "Lucian Cerbu personal") Archive".localized()
+        primaryLabelField.text = "Welcome to The \(archiveName ?? "name") Archive".localized()
         
         secondaryLabelField.textColor = .white
         secondaryLabelField.font = Text.style2.font
@@ -47,5 +51,10 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
         
         acceptButton.configureActionButtonUI(title: "Start Preserving".localized(), bgColor: .secondary, buttonHeight: 45)
 
+    }
+    
+    func closePopUp() {
+        UserDefaults.standard.setValue(nil, forKey: Constants.signUpNameStorageKey)
+        dismiss(animated: true, completion: nil)
     }
 }

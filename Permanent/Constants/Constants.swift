@@ -70,6 +70,7 @@ struct Constants {
         "Get Started",
     ]
     static let onboardingPageImage = ["1", "2", "3"]
+    static let signUpNameStorageKey = "signUpNameStorageKey"
 }
 
 extension Constants.Design {
@@ -140,7 +141,6 @@ extension Constants.Keys.StorageKeys {
     static let emailStorageKey = "emailStorageKey"
     static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
-    static let viewedWelcomePageStorageKey = "viewedWelcomePage"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let sharedFileKey = "sharedFileKey"

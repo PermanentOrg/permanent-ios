@@ -293,8 +293,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self.refreshTableView()
             self.toggleFileAction(self.viewModel?.fileAction)
             
-            if PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.viewedWelcomePageStorageKey) != true {
-                self.displayWelcomePage()
+            if let userName =  UserDefaults.standard.string(forKey: Constants.signUpNameStorageKey) {
+                self.displayWelcomePage(archiveName: userName)
             }
             
         case .error(let message):
@@ -427,10 +427,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func displayWelcomePage() {
+    func displayWelcomePage(archiveName: String) {
         let vc = UIViewController.create(withIdentifier: .welcomePage, from: .onboarding) as! WelcomePageViewController
-       // vc.archiveName =
-        
+        vc.archiveName = archiveName
         self.present(vc, animated: true, completion: nil)
     }
 }
