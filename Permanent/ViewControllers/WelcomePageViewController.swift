@@ -54,7 +54,7 @@ class WelcomePageViewController: UIViewController  {
     }
     
     func closePopUp() {
-        UserDefaults.standard.setValue(nil, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
+        UserDefaults.standard.removeObject(forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
         dismiss(animated: true, completion: nil)
     }
 }
