@@ -293,7 +293,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self.refreshTableView()
             self.toggleFileAction(self.viewModel?.fileAction)
             
-            if let userName =  UserDefaults.standard.string(forKey: Constants.signUpNameStorageKey) {
+            if let userName = UserDefaults.standard.string(forKey: Constants.signUpNameStorageKey) {
                 self.displayWelcomePage(archiveName: userName)
             }
             

@@ -46,8 +46,8 @@ class WelcomePageViewController: BaseViewController<AuthViewModel>  {
         
         secondaryLabelField.textColor = .white
         secondaryLabelField.font = Text.style2.font
-        secondaryLabelField.numberOfLines = 4
-        secondaryLabelField.text = "This archive represents your personal \n digital legacy. Upload your most \nimportant digital records then share \nthem with total control.".localized()
+        secondaryLabelField.numberOfLines = 0
+        secondaryLabelField.text = "This archive represents your personal digital legacy. Upload your most important digital records then share them with total control.".localized()
         
         acceptButton.configureActionButtonUI(title: "Start Preserving".localized(), bgColor: .secondary, buttonHeight: 45)
 
