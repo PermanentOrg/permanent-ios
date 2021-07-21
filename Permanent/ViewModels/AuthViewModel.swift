@@ -197,7 +197,7 @@ class AuthViewModel: ViewModelInterface {
     }
 }
 
-enum LoginStatus {
+enum LoginStatus: Equatable {
     case success
     case mfaToken
     case error(message: String?)
