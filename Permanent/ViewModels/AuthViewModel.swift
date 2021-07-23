@@ -11,6 +11,9 @@ import UIKit.UIAlertController
 typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface {
+    
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
               let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
@@ -73,8 +76,8 @@ class AuthViewModel: ViewModelInterface {
 
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
         let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
-
-        let apiDispatch = APIRequestDispatcher()
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
         loginOperation.execute(in: apiDispatch) { result in
             switch result {
@@ -194,6 +197,15 @@ class AuthViewModel: ViewModelInterface {
         if let csrf = response.csrf {
             PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
         }
+    }
+    
+    func isEmailOrPasswordEmpty (emailField: String?, passwordField: String?) -> LoginCredentials? {
+        if let email = emailField,
+           let password = passwordField,
+           email.isNotEmpty, password.isNotEmpty {
+            return (email, password)
+        }
+        else { return nil }
     }
 }
 
