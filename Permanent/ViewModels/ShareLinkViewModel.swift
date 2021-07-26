@@ -10,7 +10,6 @@ import Foundation
 typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 
 class ShareLinkViewModel: NSObject, ViewModelInterface {
-    var csrf: String = ""
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
     
@@ -33,7 +32,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { (record, error) in
             self.recordVO = record?.recordVO
             
@@ -48,7 +47,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader = DownloadManagerGCD()
         downloader?.getFolder(downloadInfo) { (folder, error) in
             self.folderVO = folder?.folderVO
             
@@ -57,7 +56,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
     
     func getShareLink(option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
-        let endpoint = option.endpoint(for: fileViewModel, and: csrf)
+        let endpoint = option.endpoint(for: fileViewModel)
         let apiOperation = APIOperation(endpoint)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -92,7 +91,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             return
         }
         
-        let apiOperation = APIOperation(ShareEndpoint.revokeLink(link: shareVO, csrf: csrf))
+        let apiOperation = APIOperation(ShareEndpoint.revokeLink(link: shareVO))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -124,7 +123,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             return
         }
         
-        let apiOperation = APIOperation(ShareEndpoint.updateShareLink(link: sharePayload, csrf: csrf))
+        let apiOperation = APIOperation(ShareEndpoint.updateShareLink(link: sharePayload))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -160,7 +159,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
         let shareId = shareVO.shareID ?? 0
         
-        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: self.csrf))
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
         
     
         acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
@@ -195,7 +194,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
         let shareId = shareVO.shareID ?? 0
         
-        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: self.csrf))
+        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
         
     
         denyShareRequestOperation.execute(in: APIRequestDispatcher()) { result in

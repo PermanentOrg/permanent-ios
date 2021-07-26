@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol DrawerMenuDelegate: class {
+protocol DrawerMenuDelegate: AnyObject {
     func didTapDrawerMenuButton()
 }
 

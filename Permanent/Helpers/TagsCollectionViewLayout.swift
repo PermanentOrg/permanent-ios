@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public protocol CollectionCellAutoLayout: class {
+public protocol CollectionCellAutoLayout: AnyObject {
     var cachedSize: CGSize? { get set }
 }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol LinkOptionsViewDelegate: class {
+protocol LinkOptionsViewDelegate: AnyObject {
     func copyLinkAction()
     func manageLinkAction()
     func revokeLinkAction()

@@ -81,7 +81,7 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
         })
 
         group.notify(queue: DispatchQueue.global()) {
-            self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, csrf: self.viewModel?.actualCsrf ?? "", then: { status in
+            self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, then: { status in
             
                 switch status {
                 case .success(let message):

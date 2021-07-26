@@ -12,12 +12,11 @@ typealias ChangePasswordCredentials = (password: String, passwordVerify: String,
 
 class SecurityViewModel: ViewModelInterface {
     weak var delegate: SecurityViewModelDelegate?
-    var actualCsrf: String?
     weak var viewDelegate: SecurityViewModelDelegate?
 }
 
 protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
-    func changePassword(with accountId: String, data: ChangePasswordCredentials, csrf: String, then handler: @escaping (PasswordChangeStatus) -> Void)
+    func changePassword(with accountId: String, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void)
     func getNewCsrf(then handler: @escaping (Bool) -> Void)
     func getUserBiomericsStatus() -> Bool
     func getAuthToggleStatus() -> Bool
@@ -25,8 +24,8 @@ protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
 }
 
 extension SecurityViewModel: SecurityViewModelDelegate {
-    func changePassword(with accountId: String, data: ChangePasswordCredentials, csrf: String, then handler: @escaping (PasswordChangeStatus) -> Void) {
-        let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data, csrf: csrf))
+    func changePassword(with accountId: String, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void) {
+        let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data))
 
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in
 
@@ -73,10 +72,8 @@ extension SecurityViewModel: SecurityViewModelDelegate {
                     model.isSuccessful
 
                 else {
-                    self.actualCsrf = .errorMessage
                     return
                 }
-                self.actualCsrf = model.csrf
                 handler(true)
                 return
             case .error:

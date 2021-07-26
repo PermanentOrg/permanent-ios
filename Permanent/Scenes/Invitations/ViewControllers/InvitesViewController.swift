@@ -99,8 +99,8 @@ extension InvitesViewController: InviteViewModelViewDelegate {
             viewModel.start()
             view.showNotificationBanner(title: operation.infoText)
         
-        case .error(let message):
-            print(message)
+        case .error(_):
+            break
         }
     }
     
@@ -110,8 +110,8 @@ extension InvitesViewController: InviteViewModelViewDelegate {
             yourInvitationsLabel.isHidden = !viewModel.hasData
             tableView.reloadData()
             
-        case .error(let message):
-            print(message)
+        case .error(_):
+            break
         }
     }
 

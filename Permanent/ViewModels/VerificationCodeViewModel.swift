@@ -60,10 +60,6 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
         if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
         }
-        
-        if let csrf = response.csrf {
-            PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
-        }
     }
 }
 

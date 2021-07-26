@@ -101,9 +101,12 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                 if let mfaError = json as? [String:Any],
                    let results = mfaError["Results"] as? [[String:Any]],
                    let message = (results[0]["message"] as? [String])?.first,
-                   message == "warning.auth.mfaToken" && !ignoresMFAWarning {
+                   (message == "warning.auth.mfaToken" && !ignoresMFAWarning) || message == "error.generic.invalid_csrf" {
                     AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
                 } else {
+                    if let csrf: String = (json as? [String: Any])?["csrf"] as? String {
+                        PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+                    }
                     completion(OperationResult.json(json, urlResponse))
                 }
             case .failure(let error):
@@ -175,7 +178,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     private func verify(data: Any?, urlResponse: HTTPURLResponse, error: Error?) -> Result<Any, Error> {
         switch urlResponse.statusCode {
         case 200...299:
-            return .success(data)
+            return .success(data as Any)
         case 400...499:
             return .failure(APIError.badRequest(error?.localizedDescription))
         case 500...599:

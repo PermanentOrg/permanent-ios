@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol SortActionSheetDelegate: class {
+protocol SortActionSheetDelegate: AnyObject {
     func didSelectOption(_ option: SortOption)
 }
 

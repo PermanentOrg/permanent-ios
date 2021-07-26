@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol TagDetailsViewControllerDelegate: class {
+protocol TagDetailsViewControllerDelegate: AnyObject {
     func tagDetailsViewControllerDidUpdate(_ tagVC: TagDetailsViewController)
 }
 

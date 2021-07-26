@@ -11,12 +11,9 @@ typealias GetRecordResponse = (_ file: RecordVO?, _ errorMessage: Error?) -> Voi
 typealias GetFolderResponse = (_ folder: FolderVO?, _ errorMessage: Error?) -> Void
 
 class DownloadManagerGCD: Downloader {
-    fileprivate var csrf: String!
-    
     fileprivate var operation: APIOperation?
  
-    init(csrf: String) {
-        self.csrf = csrf
+    init() {
     }
     
     func fileVO(forRecordVO recordVO: RecordVO, fileType: FileType) -> FileVO? {
@@ -87,7 +84,7 @@ class DownloadManagerGCD: Downloader {
     }
     
     func getRecord(_ file: FileDownloadInfo, then handler: @escaping GetRecordResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
+        let apiOperation = APIOperation(FilesEndpoint.getRecord(itemInfo: (file.folderLinkId, file.parentFolderLinkId)))
         self.operation = apiOperation
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -117,7 +114,7 @@ class DownloadManagerGCD: Downloader {
     }
     
     func getFolder(_ file: FileDownloadInfo, then handler: @escaping GetFolderResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: (file.folderLinkId, file.parentFolderLinkId, csrf)))
+        let apiOperation = APIOperation(FilesEndpoint.getFolder(itemInfo: (file.folderLinkId, file.parentFolderLinkId)))
         self.operation = apiOperation
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

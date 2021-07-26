@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol ViewModelDelegateInterface: class {
+protocol ViewModelDelegateInterface: AnyObject {
     
 }

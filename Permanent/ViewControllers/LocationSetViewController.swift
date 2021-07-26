@@ -10,7 +10,7 @@ import CoreLocation
 import GoogleMaps
 import GooglePlaces
 
-protocol LocationSetViewControllerDelegate: class {
+protocol LocationSetViewControllerDelegate: AnyObject {
     func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController)
 }
 

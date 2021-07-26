@@ -16,8 +16,6 @@ protocol MembersViewModelDelegate: ViewModelDelegateInterface {
 }
 
 class MembersViewModel: ViewModelInterface {
-    
-    fileprivate var csrf: String = ""
     fileprivate var members: [Account] = []
     fileprivate var memberSections: [AccessRole: [Account]] = [:]
     
@@ -57,7 +55,6 @@ extension MembersViewModel: MembersViewModelDelegate {
                     return handler(.error(message: .errorMessage))
                 }
             
-                self.csrf = model.csrf
                 self.onGetMembersSucess(model.results.first?.data ?? [])
         
                 handler(.success)
@@ -79,7 +76,7 @@ extension MembersViewModel: MembersViewModelDelegate {
             return
         }
         
-        let apiOperation = APIOperation(MembersEndpoint.modifyMember(operation: operation, archiveNbr: archiveNbr, params: params, csrf: csrf))
+        let apiOperation = APIOperation(MembersEndpoint.modifyMember(operation: operation, archiveNbr: archiveNbr, params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
