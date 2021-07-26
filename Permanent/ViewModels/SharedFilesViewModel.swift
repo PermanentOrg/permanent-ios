@@ -37,15 +37,13 @@ class SharedFilesViewModel: FilesViewModel {
                         return handler(.error(message: .errorMessage))
                     }
                     
-                    self.csrf = model.csrf
-                    
                     let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
                     
                     model.results.first?.data?.forEach { archive in
                         let itemVOS = archive.archiveVO?.itemVOS
                         
                         itemVOS?.forEach {
-                            let sharedFileVM = FileViewModel(model: $0, csrf: model.csrf, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
+                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200)
                             
                             if $0.archiveID == currentArchiveId {
                                 self.sharedByMeViewModels.append(sharedFileVM)

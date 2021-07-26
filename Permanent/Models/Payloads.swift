@@ -57,7 +57,7 @@ struct Payloads {
         ]
     }
     
-    static func deleteAccountPayload(accountId: String, csrf: String) -> RequestParameters {
+    static func deleteAccountPayload(accountId: String) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -66,12 +66,12 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
     
-    static func update(accountId: String, updateData: UpdateData, csrf: String) -> RequestParameters {
+    static func update(accountId: String, updateData: UpdateData) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -82,7 +82,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
@@ -128,7 +128,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
@@ -151,7 +151,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
         
@@ -170,7 +170,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
@@ -185,7 +185,7 @@ struct Payloads {
                         "displayName": params.filename,
                         "uploadFileName": params.filename,
                         "size": params.fileSize,
-                        "derivedCreatedDT": params.derivedCreatedDT
+                        "derivedCreatedDT": params.derivedCreatedDT as Any
                     ],
                     "SimpleVO": [
                         "key": "type",
@@ -193,7 +193,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
         return dict
@@ -220,7 +220,7 @@ struct Payloads {
                     ]
                 ],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
 
@@ -238,11 +238,11 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": params.csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
-    static func updatePassword(accountId: String, updateData: ChangePasswordCredentials, csrf: String) -> RequestParameters {
+    static func updatePassword(accountId: String, updateData: ChangePasswordCredentials) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -256,14 +256,14 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
     static func getValidCsrf() -> RequestParameters  {
         return ["data":"none"]
     }
-    static func getUserData(accountId: String,csrf: String) -> RequestParameters {
+    static func getUserData(accountId: String) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -272,11 +272,11 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
-    static func updateUserData(accountId: String, updateUserData: UpdateUserData, csrf: String) -> RequestParameters {
+    static func updateUserData(accountId: String, updateUserData: UpdateUserData) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -293,11 +293,11 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
-    static func acceptShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters {
+    static func acceptShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -311,11 +311,11 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
-    static func denyShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String) -> RequestParameters{
+    static func denyShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters{
         return [
             "RequestVO": [
                 "data": [[
@@ -326,7 +326,7 @@ struct Payloads {
                     ]
                 ]],
                 "apiKey": Constants.API.apiKey,
-                "csrf": csrf
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
     }
@@ -359,7 +359,7 @@ struct Payloads {
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": [
                             [
                                 "RecordVO": recordVO
@@ -378,7 +378,7 @@ struct Payloads {
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": [
                             [
                                 "LocnVO": locnVO
@@ -394,12 +394,12 @@ struct Payloads {
                 "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": [
                             [
                                 "SimpleVO": [
                                     "name": "token",
-                                    "value": params.token
+                                    "value": params
                                 ]
                             ]
                         ]
@@ -423,7 +423,7 @@ struct Payloads {
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": data
                     ]
         ]
@@ -446,7 +446,7 @@ struct Payloads {
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": data
                     ]
         ]
@@ -456,11 +456,11 @@ struct Payloads {
         return [ "RequestVO":
                     [
                         "apiKey": Constants.API.apiKey,
-                        "csrf": params.csrf,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": [
                             [
                                 "ArchiveVO": [
-                                    "archiveId": params.archiveId
+                                    "archiveId": params
                                 ]
                             ]
                         ]

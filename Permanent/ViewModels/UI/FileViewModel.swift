@@ -8,8 +8,6 @@
 import Foundation
 
 struct FileViewModel: Equatable {
-    let csrf: String?
-    
     let thumbnailURL: String?
     let thumbnailURL2000: String?
     let name: String
@@ -35,8 +33,6 @@ struct FileViewModel: Equatable {
     var fileInfoId: String?
     
     init(model: FileInfo, archiveThumbnailURL: String? = nil) {
-        self.csrf = nil
-        
         self.name = model.name
         self.date = DateUtils.currentDate
         self.description = ""
@@ -57,9 +53,7 @@ struct FileViewModel: Equatable {
         self.fileInfoId = model.id
     }
     
-    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, csrf: String) {
-        self.csrf = csrf
-        
+    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String) {
         self.name = name
         self.date = DateUtils.currentDate
         self.description = ""
@@ -78,9 +72,7 @@ struct FileViewModel: Equatable {
         self.folderLinkId = folderLinkId
     }
     
-    init(model: ItemVO, csrf: String?, archiveThumbnailURL: String? = nil) {
-        self.csrf = csrf
-        
+    init(model: ItemVO, archiveThumbnailURL: String? = nil) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -117,9 +109,7 @@ struct FileViewModel: Equatable {
         }
     }
     
-    init(model: MinFolderVO, csrf: String?, archiveThumbnailURL: String? = nil) {
-        self.csrf = csrf
-        
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             

@@ -11,11 +11,11 @@ enum InviteEndpoint {
     
     case getMyInvites
     
-    case sendInvite(name: String, email: String, csrf: String)
+    case sendInvite(name: String, email: String)
     
-    case resendInvite(id: Int, csrf: String)
+    case resendInvite(id: Int)
     
-    case revokeInvite(id: Int, csrf: String)
+    case revokeInvite(id: Int)
 }
 
 extension InviteEndpoint: RequestProtocol {
@@ -54,21 +54,21 @@ extension InviteEndpoint: RequestProtocol {
         case .getMyInvites:
             
             let emptyPayload = NoDataModel()
-            let requestVO = APIPayload.make(fromData: [emptyPayload], csrf: nil)
+            let requestVO = APIPayload.make(fromData: [emptyPayload])
             
             return try? APIPayload<NoDataModel>.encoder.encode(requestVO)
             
-        case .sendInvite(let name, let email, let csrf):
+        case .sendInvite(let name, let email):
             let invitePayload = InviteVOPayload(name: name, email: email)
-            let requestVO = APIPayload.make(fromData: [invitePayload], csrf: csrf)
+            let requestVO = APIPayload.make(fromData: [invitePayload])
             
             return try? APIPayload<InviteVOPayload>.encoder.encode(requestVO)
             
-        case .resendInvite(let id, let csrf),
-             .revokeInvite(let id, let csrf):
+        case .resendInvite(let id),
+             .revokeInvite(let id):
             
-            let invitePayload = InviteVOPayload(id: id, name: nil, email: csrf)
-            let requestVO = APIPayload.make(fromData: [invitePayload], csrf: csrf)
+            let invitePayload = InviteVOPayload(id: id, name: nil, email: nil)
+            let requestVO = APIPayload.make(fromData: [invitePayload])
             
             return try? APIPayload<InviteVOPayload>.encoder.encode(requestVO)
         }

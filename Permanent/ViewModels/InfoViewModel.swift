@@ -13,7 +13,6 @@ typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPho
 class InfoViewModel: ViewModelInterface {
     weak var delegate: InfoViewModelDelegate?
     var userData: UpdateUserData
-    var actualCsrf: String?
     var accountId: String?
     var dataIsNotModified: Bool
     init() {
@@ -24,8 +23,8 @@ class InfoViewModel: ViewModelInterface {
 
 protocol InfoViewModelDelegate: ViewModelDelegateInterface {
     func getNewCsrf(then handler: @escaping (Bool) -> Void)
-    func getUserData(with accountId: String, csrf: String, then handler: @escaping (Bool) -> Void)
-    func updateUserData(with accountId: String, csrf: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void)
+    func getUserData(with accountId: String, then handler: @escaping (Bool) -> Void)
+    func updateUserData(with accountId: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void)
 }
 
 extension InfoViewModel: InfoViewModelDelegate {
@@ -43,10 +42,8 @@ extension InfoViewModel: InfoViewModelDelegate {
                     model.isSuccessful
 
                 else {
-                    self.actualCsrf = .errorMessage
                     return
                 }
-                self.actualCsrf = model.csrf
                 handler(true)
                 return
             case .error:
@@ -58,8 +55,8 @@ extension InfoViewModel: InfoViewModelDelegate {
         }
     }
 
-    func getUserData(with accountId: String, csrf: String, then handler: @escaping (Bool) -> Void) {
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId, csrf: csrf))
+    func getUserData(with accountId: String, then handler: @escaping (Bool) -> Void) {
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
 
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -93,7 +90,7 @@ extension InfoViewModel: InfoViewModelDelegate {
         }
     }
 
-    func updateUserData(with accountId: String, csrf: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void) {
+    func updateUserData(with accountId: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void) {
         guard
             let fullName = userData.fullName,
             fullName.isNotEmpty
@@ -106,7 +103,7 @@ extension InfoViewModel: InfoViewModelDelegate {
             return
         }
 
-        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData, csrf: csrf))
+        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData))
 
         updateUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

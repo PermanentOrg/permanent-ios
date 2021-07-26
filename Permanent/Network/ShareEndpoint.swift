@@ -9,19 +9,19 @@ import Foundation
 
 enum ShareEndpoint {
     
-    case getLink(file: FileViewModel, csrf: String)
+    case getLink(file: FileViewModel)
     
-    case generateShareLink(file: FileViewModel, csrf: String) // TODO: Create typealias
+    case generateShareLink(file: FileViewModel) // TODO: Create typealias
     
-    case revokeLink(link: SharebyURLVOData, csrf: String)
+    case revokeLink(link: SharebyURLVOData)
     
-    case updateShareLink(link: SharebyURLVOData, csrf: String)
+    case updateShareLink(link: SharebyURLVOData)
     
     case getShares
     
     case checkLink(token: String)
     
-    case requestShareAccess(token: String, csrf: String)
+    case requestShareAccess(token: String)
     
 }
 
@@ -57,41 +57,39 @@ extension ShareEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
-        case .getLink(let file, let csrf),
-             .generateShareLink(let file, let csrf):
+        case .getLink(let file),
+             .generateShareLink(let file):
             if file.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: file.folderLinkId)
-                let requestVO = APIPayload.make(fromData: [folderVO], csrf: csrf)
+                let requestVO = APIPayload.make(fromData: [folderVO])
                 
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
                 
             } else {
                 let recordVO = RecordVOPayload(folderLinkId: file.folderLinkId, parentFolderLinkId: file.parentFolderLinkId)
-                let requestVO = APIPayload.make(fromData: [recordVO], csrf: csrf)
+                let requestVO = APIPayload.make(fromData: [recordVO])
                 
                 return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             }
             
-        case .revokeLink(let link, let csrf),
-             .updateShareLink(let link, let csrf):
+        case .revokeLink(let link),
+             .updateShareLink(let link):
 
             let sharebyURLVO = SharebyURLVOPayload(sharebyURLVOData: link)
-            let requestVO = APIPayload.make(fromData: [sharebyURLVO], csrf: csrf)
+            let requestVO = APIPayload.make(fromData: [sharebyURLVO])
             
             return try? APIPayload<SharebyURLVOPayload>.encoder.encode(requestVO)
             
         case .checkLink(let token):
-            
             let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
             
-            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: nil)
+            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO])
             return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
             
-        case .requestShareAccess(let token, let csrf):
-            
+        case .requestShareAccess(let token):
             let sharebyURLTokenVO = SharebyURLVOTokenPayload(token: token)
             
-            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO], csrf: csrf)
+            let requestVO = APIPayload.make(fromData: [sharebyURLTokenVO])
             return try? APIPayload<SharebyURLVOTokenPayload>.encoder.encode(requestVO)
             
         default:

@@ -82,12 +82,11 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
 
         groupAccountInfo.notify(queue: DispatchQueue.global()) {
             guard
-                let accountID: String = self.viewModel?.accountId,
-                let csrf: String = self.viewModel?.actualCsrf
+                let accountID: String = self.viewModel?.accountId
             else {
                 return
             }
-            self.viewModel?.getUserData(with: accountID, csrf: csrf, then: { status in
+            self.viewModel?.getUserData(with: accountID, then: { status in
                 switch status {
                 case true:
                     self.updateUserDetailsFields()
@@ -114,13 +113,12 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
 
         guard
             let accountID: String = viewModel?.accountId,
-            let csrf: String = viewModel?.actualCsrf,
             let userData: UpdateUserData = viewModel?.userData
         else {
             showAlert(title: .error, message: .errorMessage)
             return
         }
-        viewModel?.updateUserData(with: accountID, csrf: csrf, userData: userData, then: { status in
+        viewModel?.updateUserData(with: accountID, userData: userData, then: { status in
             switch status {
             case .success(message: let message):
                 DispatchQueue.main.async {

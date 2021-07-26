@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol FilePreviewNavigationControllerDelegate: class {
+protocol FilePreviewNavigationControllerDelegate: AnyObject {
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
     func filePreviewNavigationControllerWillClose(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool)
 }

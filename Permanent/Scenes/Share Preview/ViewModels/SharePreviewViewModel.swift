@@ -17,8 +17,6 @@ class SharePreviewViewModel {
     
     fileprivate var files: [File] = []
     
-    fileprivate var csrf: String = ""
-    
     var urlToken: String!
 
     var shareDetails: ShareDetails?
@@ -78,7 +76,6 @@ class SharePreviewViewModel {
                     return
                 }
                 
-                self.csrf = model.csrf
                 self.onFetchSharedItemsSuccess(shareByURL)
                 
                
@@ -95,10 +92,9 @@ class SharePreviewViewModel {
     }
     
     func requestShareAccess(urlToken: String) {
-        
         isBusy = true
         
-        let apiOperation = APIOperation(ShareEndpoint.requestShareAccess(token: urlToken, csrf: csrf))
+        let apiOperation = APIOperation(ShareEndpoint.requestShareAccess(token: urlToken))
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             self.isBusy = false
             

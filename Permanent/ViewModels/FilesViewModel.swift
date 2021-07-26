@@ -8,25 +8,24 @@
 import Foundation
 import Photos.PHAsset
 
-typealias NewFolderParams = (filename: String, folderLinkId: Int, csrf: String)
-typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String, csrf: String)
-typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?, csrf: String)
-typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, csrf: String, s3Url: String, destinationUrl: String)
-typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, csrf: String, folderName: String?)
-typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], csrf: String, folderLinkId: Int)
+typealias NewFolderParams = (filename: String, folderLinkId: Int)
+typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String)
+typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?)
+typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, s3Url: String, destinationUrl: String)
+typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, folderName: String?)
+typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], folderLinkId: Int)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
-typealias ItemInfoParams = (file: FileViewModel, csrf: String)
-typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int, csrf: String)
+typealias ItemInfoParams = (FileViewModel)
+typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int)
 
 typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
-typealias RelocateParams = (items: ItemPair, action: FileAction, csrf: String)
+typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
 class FilesViewModel: NSObject, ViewModelInterface {
-    var csrf: String = ""
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
     var uploadQueue: [FileInfo] = []
@@ -171,7 +170,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
 extension FilesViewModel {
     func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
-        let parameters: RelocateParams = ((file, destination), fileAction, csrf)
+        let parameters: RelocateParams = ((file, destination), fileAction)
 
         let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
         
@@ -216,7 +215,7 @@ extension FilesViewModel {
             parentFolderLinkId: file.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader = DownloadManagerGCD()
         downloader?.download(downloadInfo,
                             onDownloadStart: onDownloadStart,
                             onFileDownloaded: onFileDownloaded,
@@ -229,7 +228,7 @@ extension FilesViewModel {
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file, csrf)))
+        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -275,7 +274,7 @@ extension FilesViewModel {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO, csrf: model.csrf)
+                let folder = FileViewModel(model: folderVO)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
 
@@ -377,7 +376,7 @@ extension FilesViewModel {
         viewModels.removeAll()
         
         childItems.forEach {
-            let file = FileViewModel(model: $0, csrf: model.csrf)
+            let file = FileViewModel(model: $0)
             self.viewModels.append(file)
         }
         
@@ -389,8 +388,7 @@ extension FilesViewModel {
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
             let archiveNo = folderVO.archiveNbr,
-            let folderLinkId = folderVO.folderLinkID,
-            let csrf = model.csrf
+            let folderLinkId = folderVO.folderLinkID
         else {
             handler(.error(message: .errorMessage))
             return
@@ -399,11 +397,11 @@ extension FilesViewModel {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
-            let file = FileViewModel(model: folderVO, csrf: csrf)
+            let file = FileViewModel(model: folderVO)
             navigationStack.append(file)
         }
         
-        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, csrf, folderLinkId)
+        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
         getLeanItems(params: params, then: handler)
     }
 }

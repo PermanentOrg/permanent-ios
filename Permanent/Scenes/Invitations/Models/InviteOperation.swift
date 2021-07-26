@@ -15,14 +15,14 @@ enum InviteOperation {
     
     case revoke(id: Int)
     
-    func apiOperation(csrf: String) -> InviteEndpoint {
+    func apiOperation() -> InviteEndpoint {
         switch self {
         case .send(let name, let email):
-            return .sendInvite(name: name, email: email, csrf: csrf)
+            return .sendInvite(name: name, email: email)
         case .resend(let id):
-            return .resendInvite(id: id, csrf: csrf)
+            return .resendInvite(id: id)
         case .revoke(let id):
-            return .revokeInvite(id: id, csrf: csrf)
+            return .revokeInvite(id: id)
         }
     }
     

@@ -70,8 +70,8 @@ extension ActivityFeedViewController: ActivityFeedViewModelViewDelegate {
         case .success:
             tableView.reloadData()
             
-        case .error(let message):
-            print(message)
+        case .error(_):
+            break
         }
     }
     

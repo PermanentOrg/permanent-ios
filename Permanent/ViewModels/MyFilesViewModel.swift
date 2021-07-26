@@ -43,14 +43,11 @@ class MyFilesViewModel: FilesViewModel {
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
             let archiveNo = myFilesFolder.archiveNbr,
-            let folderLinkId = myFilesFolder.folderLinkID,
-            let csrf = model.csrf
+            let folderLinkId = myFilesFolder.folderLinkID
         else {
             handler(.error(message: .errorMessage))
             return
         }
-        
-        self.csrf = csrf
         
         let archiveId = myFilesFolder.archiveID
         PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
@@ -66,7 +63,7 @@ class MyFilesViewModel: FilesViewModel {
         }
         
         
-        let params: NavigateMinParams = (archiveNo, folderLinkId, csrf, nil)
+        let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
     

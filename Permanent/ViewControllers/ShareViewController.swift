@@ -20,14 +20,12 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     private let overlayView = UIView()
     
     var sharedFile: FileViewModel!
-    var csrf: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         viewModel = ShareLinkViewModel()
         viewModel?.fileViewModel = sharedFile
-        viewModel?.csrf = csrf
         
         linkOptionsStackView.isHidden = true
         linkOptionsView.delegate = self

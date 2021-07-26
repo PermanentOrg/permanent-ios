@@ -12,13 +12,12 @@ class AccountDeleteViewModel: ViewModelInterface {
     static let accountDeleteSuccessNotification = Notification.Name("AccountDeleteViewModel.accountDeleteSuccessNotification")
     
     func deleteAccount(completion: @escaping ((Bool) -> Void)) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
             completion(false)
             return
         }
         
-        let deleteOperation = APIOperation(AccountEndpoint.delete(accountId: String(accountId), csrf: csrf))
+        let deleteOperation = APIOperation(AccountEndpoint.delete(accountId: String(accountId)))
 
         deleteOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -51,14 +50,13 @@ class AccountDeleteViewModel: ViewModelInterface {
     }
     
     func deletePushToken(then handler: @escaping ServerResponse) {
-        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {
             handler(.success)
             return
         }
         
-        let deleteTokenParams = (token, csrf)
+        let deleteTokenParams = (token)
         let deleteTokenOperation = APIOperation(DeviceEndpoint.delete(params: deleteTokenParams))
 
         deleteTokenOperation.execute(in: APIRequestDispatcher()) { result in

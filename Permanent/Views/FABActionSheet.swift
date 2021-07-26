@@ -76,7 +76,7 @@ class FABActionSheet: UIViewController {
     }
 }
 
-protocol FABActionSheetDelegate: class {
+protocol FABActionSheetDelegate: AnyObject {
     func didTapUpload()
     func didTapNewFolder()
 }

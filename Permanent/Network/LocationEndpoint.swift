@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias GeomapLatLongParams = (lat: Double, long: Double, csrf: String)
+typealias GeomapLatLongParams = (lat: Double, long: Double)
 
 enum LocationEndpoint {
     case geomapLatLong(params: GeomapLatLongParams)

@@ -61,6 +61,6 @@ class FABView: UIView {
     }
 }
 
-protocol FABViewDelegate: class {
+protocol FABViewDelegate: AnyObject {
     func didTap()
 }
