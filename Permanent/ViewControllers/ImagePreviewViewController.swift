@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol ImagePreviewViewControllerDelegate: class {
+protocol ImagePreviewViewControllerDelegate: AnyObject {
     func imagePreviewViewControllerDidZoom(_ vc: ImagePreviewViewController, scale: CGFloat)
 }
 

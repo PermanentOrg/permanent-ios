@@ -14,13 +14,13 @@ class AccountViewModel: ViewModelInterface {
 }
 
 protocol AccountViewModelDelegate: ViewModelDelegateInterface {
-    func update(for accountId: String, data: UpdateData, csrf: String, then handler: @escaping ServerResponse)
+    func update(for accountId: String, data: UpdateData, then handler: @escaping ServerResponse)
     func sendVerificationCodeSMS(accountId: String, email: String, then handler: @escaping ServerResponse)
 }
 
 extension AccountViewModel: AccountViewModelDelegate {
-    func update(for accountId: String, data: UpdateData, csrf: String, then handler: @escaping ServerResponse) {
-        let updateOperation = APIOperation(AccountEndpoint.update(accountId: accountId, updateData: data, csrf: csrf))
+    func update(for accountId: String, data: UpdateData, then handler: @escaping ServerResponse) {
+        let updateOperation = APIOperation(AccountEndpoint.update(accountId: accountId, updateData: data))
 
         updateOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -64,8 +64,7 @@ extension AccountViewModel: AccountViewModelDelegate {
                     handler(.error(message: .errorMessage))
                 }
 
-            case .error(let error):
-                print("error ", error.0)
+            case .error(_, _):
                 handler(.error(message: .errorMessage))
 
             default:

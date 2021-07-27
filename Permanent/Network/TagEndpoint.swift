@@ -7,9 +7,9 @@
 
 import Foundation
 
-typealias TagParams = (names: [String], refID: Int, csrf: String)
-typealias DeleteTagParams = (tagVO: [TagVO], refID: Int, csrf: String)
-typealias GetTagsByArchiveParams = (archiveId: Int, csrf: String)
+typealias TagParams = (names: [String], refID: Int)
+typealias DeleteTagParams = (tagVO: [TagVO], refID: Int)
+typealias GetTagsByArchiveParams = (Int)
 
 enum TagEndpoint {
     case tagPost(params: TagParams)

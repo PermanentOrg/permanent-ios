@@ -40,7 +40,7 @@ extension NotificationsEndpoint: RequestProtocol {
         switch self {
         case .getMyNotifications:
             let emptyPayload = NoDataModel()
-            let requestVO = APIPayload.make(fromData: [emptyPayload], csrf: nil)
+            let requestVO = APIPayload.make(fromData: [emptyPayload])
             
             return try? APIPayload<NoDataModel>.encoder.encode(requestVO)
         }

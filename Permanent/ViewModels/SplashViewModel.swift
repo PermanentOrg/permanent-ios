@@ -46,10 +46,6 @@ extension SplashViewModel: SplashViewModelDelegate {
             let authResponse = try decoder.decode(AuthResponse.self, from: data)
             let authValue = authResponse.results?.first?.data?.first?.simpleVO?.value ?? false
             
-            if let csrf = authResponse.csrf {
-                PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
-            }
-            
             return authValue ? .loggedIn : .loggedOut
         } catch {
             return .error

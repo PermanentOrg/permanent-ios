@@ -13,23 +13,23 @@ enum AccountEndpoint {
     /// Creates an new user account.
     case signUp(credentials: SignUpCredentials)
     /// Deletes user account
-    case delete(accountId: String, csrf: String)
+    case delete(accountId: String)
     /// Updates user account.
-    case update(accountId: String, updateData: UpdateData, csrf: String)
+    case update(accountId: String, updateData: UpdateData)
     /// Sends an SMS with a verification code for verifying the phone number.
     case sendVerificationCodeSMS(accountId: String, email: String)
     /// Change user password
-    case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials, csrf: String )
+    case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials)
     /// Get valid CSRF parameter
     case getValidCsrf
     /// Get user data
-    case getUserData(accountId: String, csrf: String)
+    case getUserData(accountId: String)
     /// Updates user data
-    case updateUserData(accountId: String, updateData: UpdateUserData, csrf: String)
+    case updateUserData(accountId: String, updateData: UpdateUserData)
     /// Update Share request
-    case updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
+    case updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int)
     /// Revoke Share request
-    case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int,csrf: String)
+    case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -62,24 +62,24 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp(let credentials):
             return Payloads.signUpPayload(for: credentials)
-        case .delete(let accountId, let csrf):
-            return Payloads.deleteAccountPayload(accountId: accountId, csrf: csrf)
-        case .update(let id, let data, let csrf):
-            return Payloads.update(accountId: id, updateData: data, csrf: csrf)
+        case .delete(let accountId):
+            return Payloads.deleteAccountPayload(accountId: accountId)
+        case .update(let id, let data):
+            return Payloads.update(accountId: id, updateData: data)
         case .sendVerificationCodeSMS(let id, let email):
             return Payloads.smsVerificationCodePayload(accountId: id, email: email)
-        case .changePassword(let id, let passData, let csrf):
-            return Payloads.updatePassword(accountId: id,updateData: passData , csrf: csrf)
+        case .changePassword(let id, let passData):
+            return Payloads.updatePassword(accountId: id,updateData: passData)
         case .getValidCsrf:
             return Payloads.getValidCsrf()
-        case .getUserData(let id, let csrf):
-            return Payloads.getUserData(accountId: id,csrf: csrf)
-        case .updateUserData(accountId: let accountId, updateData: let updateData, csrf: let csrf):
-            return Payloads.updateUserData(accountId: accountId,updateUserData: updateData,csrf: csrf)
-        case .updateShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
-            return Payloads.acceptShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
-        case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId, csrf: let csrf):
-            return Payloads.denyShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId, csrf: csrf)
+        case .getUserData(let id):
+            return Payloads.getUserData(accountId: id)
+        case .updateUserData(accountId: let accountId, updateData: let updateData):
+            return Payloads.updateUserData(accountId: accountId,updateUserData: updateData)
+        case .updateShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
+            return Payloads.acceptShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
+        case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
+            return Payloads.denyShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
         }
     }
 

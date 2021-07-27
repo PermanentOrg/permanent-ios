@@ -7,8 +7,8 @@
 
 import Foundation
 
-typealias NewDeviceParams = (token: String, csrf: String)
-typealias DeleteDeviceParams = (token: String, csrf: String)
+typealias NewDeviceParams = (String)
+typealias DeleteDeviceParams = (String)
 
 enum DeviceEndpoint {
     case new(params: NewDeviceParams)

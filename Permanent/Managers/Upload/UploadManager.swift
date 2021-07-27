@@ -35,12 +35,11 @@ class UploadManager {
         }
         
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
             return
         }
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId), csrf: csrf))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -112,8 +111,7 @@ class UploadManager {
             
             let uploadNames = uploadQueue.operations.compactMap(\.name)
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
-                let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) ?? ""
-                let uploadOperation = UploadOperation(file: file, csrf: csrf) { error in
+                let uploadOperation = UploadOperation(file: file) { error in
                     DispatchQueue.main.async {
                         // Clear everything once the upload succeded
                         if error == nil {

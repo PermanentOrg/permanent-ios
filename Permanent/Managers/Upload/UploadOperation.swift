@@ -19,7 +19,6 @@ class UploadOperation: BaseOperation {
     static let uploadFinishedNotification = Notification.Name("UploadOperation.uploadFinishedNotification")
     
     let file: FileInfo
-    let csrf: String
     let handler: ((Error?) -> Void)
     
     var s3Url: String!
@@ -49,9 +48,8 @@ class UploadOperation: BaseOperation {
     var didAppendPrefix = false
     var isEOF = false
     
-    init(file:FileInfo, csrf: String, handler: @escaping ((Error?) -> Void)) {
+    init(file:FileInfo, handler: @escaping ((Error?) -> Void)) {
         self.file = file
-        self.csrf = csrf
         self.handler = handler
     }
     
@@ -97,7 +95,7 @@ class UploadOperation: BaseOperation {
         }
         
         let mimeType = (file.url.mimeType ?? "application/octet-stream")
-        let params: GetPresignedUrlParams = GetPresignedUrlParams(file.folder.folderId, file.folder.folderLinkId, mimeType, file.name, fileSize, nil, csrf)
+        let params: GetPresignedUrlParams = GetPresignedUrlParams(file.folder.folderId, file.folder.folderLinkId, mimeType, file.name, fileSize, nil)
         
         let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
@@ -125,7 +123,7 @@ class UploadOperation: BaseOperation {
                     handler(UploadError.presignedURL)
                     finish()
                 }
-            case .error(let error, _):
+            case .error(_, _):
                 self.error = UploadError.presignedURL
                 handler(UploadError.presignedURL)
                 finish()
@@ -175,7 +173,7 @@ class UploadOperation: BaseOperation {
     }
     
     private func registerRecord() {
-        let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, createdDT, csrf, s3Url, destinationUrl)
+        let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, createdDT, s3Url, destinationUrl)
         
         let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
@@ -196,7 +194,7 @@ class UploadOperation: BaseOperation {
                     handler(UploadError.registerRecord)
                     finish()
                 }
-            case .error(let error, _):
+            case .error(_, _):
                 self.error = UploadError.registerRecord
                 handler(UploadError.registerRecord)
                 finish()

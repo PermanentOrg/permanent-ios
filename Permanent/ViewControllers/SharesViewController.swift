@@ -107,7 +107,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         guard let viewModel = viewModel else { return }
         
         if let currentFolder = viewModel.currentFolder {
-            let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, viewModel.csrf, nil)
+            let params: NavigateMinParams = (currentFolder.archiveNo, currentFolder.folderLinkId, nil)
             
             // Back navigation set to `true` so it's not considered a in-depth navigation.
             navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
@@ -146,7 +146,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         
         if let destinationFolder = viewModel.currentFolder {
-            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, viewModel.csrf, nil)
+            let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
                 self.directoryLabel.text = destinationFolder.name
                 
@@ -352,7 +352,7 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         guard file.fileStatus == .synced else { return }
         
         if file.type.isFolder {
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, viewModel.csrf, nil)
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false
                 self.directoryLabel.text = file.name

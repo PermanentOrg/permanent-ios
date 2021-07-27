@@ -70,8 +70,7 @@ class RootViewController: UIViewController {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
-        } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey),
-                  let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) {
+        } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
             let sharesVC: SharesViewController
             
@@ -80,7 +79,7 @@ class RootViewController: UIViewController {
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
             
-            let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, csrf: csrf)
+            let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type)
             let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
             filePreviewVC.file = fileVM
             
@@ -92,13 +91,12 @@ class RootViewController: UIViewController {
             }
             
             mainViewController = sharesVC
-        } else if let sharedFolder: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey),
-                  let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)  {
+        } else if let sharedFolder: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey) {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFolderKey)
             let sharesVC: SharesViewController
             
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-            sharesVC.initialNavigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, csrf: csrf, folderName: sharedFolder.name)
+            sharesVC.initialNavigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, folderName: sharedFolder.name)
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
             sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
@@ -136,11 +134,10 @@ class RootViewController: UIViewController {
     }
     
     func sendPushNotificationToken() {
-        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else { return }
         
-        let newDeviceParams = NewDeviceParams(token: token, csrf: csrf)
+        let newDeviceParams = NewDeviceParams(token)
         let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

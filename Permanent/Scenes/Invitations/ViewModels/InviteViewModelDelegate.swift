@@ -31,7 +31,7 @@ protocol InviteViewModelDelegate {
     
 }
 
-protocol InviteViewModelViewDelegate: class {
+protocol InviteViewModelViewDelegate: AnyObject {
     
     func refreshList(afterOperation: InviteOperation, status: RequestStatus)
     

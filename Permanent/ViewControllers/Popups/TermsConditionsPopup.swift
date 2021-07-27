@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-protocol TermsConditionsPopupDelegate: class {
+protocol TermsConditionsPopupDelegate: AnyObject {
     func didAccept()
 }
 

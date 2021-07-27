@@ -25,7 +25,7 @@ protocol ActivityFeedViewModelDelegate {
     
 }
 
-protocol ActivityFeedViewModelViewDelegate: class {
+protocol ActivityFeedViewModelViewDelegate: AnyObject {
     
     func updateScreen(status: RequestStatus)
     

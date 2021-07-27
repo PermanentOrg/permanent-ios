@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol SharedFileActionSheetDelegate: class {
+protocol SharedFileActionSheetDelegate: AnyObject {
     func downloadAction(file: FileViewModel)
 }
 

@@ -29,7 +29,7 @@ protocol SharePreviewViewModelDelegate {
     
 }
 
-protocol SharePreviewViewModelViewDelegate: class {
+protocol SharePreviewViewModelViewDelegate: AnyObject {
     
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?)
     

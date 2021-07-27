@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol NavigationBarViewDelegate: class {
+protocol NavigationBarViewDelegate: AnyObject {
     func didTapLeftButton()
 }
 

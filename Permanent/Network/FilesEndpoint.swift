@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String, csrf: String)
+typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
 
 enum FilesEndpoint {
     // NAVIGATION
@@ -48,7 +48,7 @@ extension FilesEndpoint: RequestProtocol {
         case .newFolder:
             return "/folder/post"
         case .delete(let parameters):
-            if parameters.file.type.isFolder {
+            if parameters.type.isFolder {
                 return "/folder/delete"
             } else {
                 return "/record/delete"
@@ -146,15 +146,15 @@ extension FilesEndpoint: RequestProtocol {
     var bodyData: Data? {
         switch self {
         case .delete(let parameters):
-            if parameters.file.type.isFolder {
-                let folderVO = FolderVOPayload(folderLinkId: parameters.file.folderLinkId)
-                let requestVO = APIPayload.make(fromData: [folderVO], csrf: parameters.csrf)
+            if parameters.type.isFolder {
+                let folderVO = FolderVOPayload(folderLinkId: parameters.folderLinkId)
+                let requestVO = APIPayload.make(fromData: [folderVO])
                 
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
                 
             } else {
-                let recordVO = RecordVOPayload(folderLinkId: parameters.file.folderLinkId, parentFolderLinkId: parameters.file.parentFolderLinkId)
-                let requestVO = APIPayload.make(fromData: [recordVO], csrf: parameters.csrf)
+                let recordVO = RecordVOPayload(folderLinkId: parameters.folderLinkId, parentFolderLinkId: parameters.parentFolderLinkId)
+                let requestVO = APIPayload.make(fromData: [recordVO])
                 
                 return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             }
@@ -162,14 +162,14 @@ extension FilesEndpoint: RequestProtocol {
         case .getRecord(let itemInfo):
             let recordVO = RecordVOPayload(folderLinkId: itemInfo.folderLinkId, parentFolderLinkId: itemInfo.parentFolderLinkId)
             
-            let requestVO = APIPayload.make(fromData: [recordVO], csrf: itemInfo.csrf)
+            let requestVO = APIPayload.make(fromData: [recordVO])
             
             return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
             
         case .getFolder(let itemInfo):
             let folderVO = FolderVOPayload(folderLinkId: itemInfo.folderLinkId)
             
-            let requestVO = APIPayload.make(fromData: [folderVO], csrf: itemInfo.csrf)
+            let requestVO = APIPayload.make(fromData: [folderVO])
             
             return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
             
@@ -177,14 +177,14 @@ extension FilesEndpoint: RequestProtocol {
             if parameters.items.source.type.isFolder {
                 let copyVO = RelocateFolderPayload(folderLinkId: parameters.items.source.folderLinkId,
                                                    folderDestLinkId: parameters.items.destination.folderLinkId)
-                let requestVO = APIPayload.make(fromData: [copyVO], csrf: parameters.csrf)
+                let requestVO = APIPayload.make(fromData: [copyVO])
                 
                 return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
             } else {
                 let relocateVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
                                                        folderDestLinkId: parameters.items.destination.folderLinkId,
                                                        parentFolderLinkId: parameters.items.source.parentFolderLinkId)
-                let requestVO = APIPayload.make(fromData: [relocateVO], csrf: parameters.csrf)
+                let requestVO = APIPayload.make(fromData: [relocateVO])
                 
                 return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
             }

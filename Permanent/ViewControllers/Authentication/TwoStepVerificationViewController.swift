@@ -110,14 +110,13 @@ class TwoStepVerificationViewController: BaseViewController<AccountViewModel> {
     func updatePhone() {
         guard
             let email: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey),
-            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey),
-            let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return }
+            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else { return }
         
         let updateData = UpdateData(email, phoneField.text!)
         
         showSpinner(colored: .white)
         
-        viewModel?.update(for: String(accountID), data: updateData, csrf: csrf, then: { status in
+        viewModel?.update(for: String(accountID), data: updateData, then: { status in
             
             switch status {
             case .success:

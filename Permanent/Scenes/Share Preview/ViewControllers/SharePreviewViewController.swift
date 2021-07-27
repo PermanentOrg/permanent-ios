@@ -144,8 +144,8 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
                 collectionView.reloadData()
             }
             
-        case .error(let message):
-            print(message)
+        case .error(_):
+            break
         }
     }
     

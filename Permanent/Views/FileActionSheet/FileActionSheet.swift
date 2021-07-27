@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol FileActionSheetDelegate: class {
+protocol FileActionSheetDelegate: AnyObject {
     func downloadAction(file: FileViewModel)
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath)
     func relocateAction(file: FileViewModel, action: FileAction)

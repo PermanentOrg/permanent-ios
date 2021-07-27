@@ -15,14 +15,13 @@ class AuthViewModel: ViewModelInterface {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     
     func deletePushToken(then handler: @escaping ServerResponse) {
-        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey),
-              let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {
             handler(.success)
             return
         }
         
-        let deleteTokenParams = (token, csrf)
+        let deleteTokenParams = (token)
         let deleteTokenOperation = APIOperation(DeviceEndpoint.delete(params: deleteTokenParams))
 
         deleteTokenOperation.execute(in: APIRequestDispatcher()) { result in
@@ -195,10 +194,6 @@ class AuthViewModel: ViewModelInterface {
 
         if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-        }
-
-        if let csrf = response.csrf {
-            PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
         }
     }
     

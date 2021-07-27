@@ -10,7 +10,6 @@ import WebKit
 
 class FilePreviewViewModel: ViewModelInterface {
     let file: FileViewModel
-    var csrf: String { file.csrf ?? "" }
     var name: String
     
     var recordVO: RecordVO?
@@ -38,7 +37,7 @@ class FilePreviewViewModel: ViewModelInterface {
             parentFolderLinkId: file.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { (record, error) in
             self.recordVO = record
             
@@ -47,7 +46,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func download(_ record: RecordVO, fileType: FileType, onFileDownloaded: @escaping DownloadResponse) {
-        downloader = DownloadManagerGCD(csrf: csrf)
+        downloader = DownloadManagerGCD()
         downloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)
     }
     
@@ -94,7 +93,7 @@ class FilePreviewViewModel: ViewModelInterface {
     } 
     
     func update(file: FileViewModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
-        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo, csrf)
+        let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
         let apiOperation = APIOperation(FilesEndpoint.update(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -119,7 +118,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
-        let params: GeomapLatLongParams = (lat, long, csrf)
+        let params: GeomapLatLongParams = (lat, long)
         let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -148,7 +147,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func addTag(tagNames: [String], completion: @escaping ((TagLinkVO?) -> Void)) {
-        let params: TagParams = (tagNames, recordVO?.recordVO?.recordID ?? 0, csrf)
+        let params: TagParams = (tagNames, recordVO?.recordVO?.recordID ?? 0)
         let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -172,7 +171,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func deleteTag(tagVO: [TagVO], completion: @escaping ((String?) -> Void)) {
-        let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0, csrf)
+        let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0)
         let apiOperation = APIOperation(TagEndpoint.tagDelete(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -196,7 +195,7 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
-        let params: GetTagsByArchiveParams = (archiveId, csrf)
+        let params: GetTagsByArchiveParams = (archiveId)
         let apiOperation = APIOperation(TagEndpoint.getTagsByArchive(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

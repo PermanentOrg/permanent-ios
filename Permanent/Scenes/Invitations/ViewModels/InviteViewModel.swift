@@ -16,8 +16,6 @@ class InviteViewModel {
     
     fileprivate var invites: [Invite] = []
     
-    fileprivate var csrf: String = ""
-    
     var isBusy: Bool = false {
         didSet {
             viewDelegate?.updateSpinner(isLoading: isBusy)
@@ -57,7 +55,6 @@ class InviteViewModel {
                     return
                 }
                 
-                self.csrf = model.csrf
                 self.populateData(inviteVOS)
                 self.viewDelegate?.updateScreen(status: .success)
                 
@@ -73,7 +70,7 @@ class InviteViewModel {
     func handleInvite(operation: InviteOperation) {
         isBusy = true
         
-        let apiOperation = APIOperation(operation.apiOperation(csrf: self.csrf))
+        let apiOperation = APIOperation(operation.apiOperation())
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             self.isBusy = false
             
