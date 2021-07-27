@@ -17,18 +17,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
     
-    fileprivate var areFieldsValid: Bool {
-        guard
-            nameField.text?.isNotEmpty == true,
-            let emailAddress = emailField.text, emailAddress.isNotEmpty, emailAddress.isValidEmail,
-            let password = passwordField.text, password.count >= 8
-        else {
-            return false
-        }
-             
-        return true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .primary
@@ -66,7 +54,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
         guard
-            areFieldsValid,
+            viewModel?.areFieldsValid(nameField: nameField.text, emailField: emailField.text, passwordField: passwordField.text) ?? false,
             let termsConditionsVC = UIViewController.create(
                 withIdentifier: .termsConditions,
                 from: .authentication

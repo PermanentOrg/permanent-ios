@@ -140,8 +140,11 @@ class AuthViewModel: ViewModelInterface {
 
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
 
-        signUpOperation.execute(in: APIRequestDispatcher()) { result in
+        signUpOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
@@ -199,13 +202,12 @@ class AuthViewModel: ViewModelInterface {
         }
     }
     
-    func isEmailOrPasswordEmpty (emailField: String?, passwordField: String?) -> LoginCredentials? {
-        if let email = emailField,
-           let password = passwordField,
-           email.isNotEmpty, password.isNotEmpty {
-            return (email, password)
-        }
-        else { return nil }
+    func areFieldsValid (emailField: String?, passwordField: String?) -> Bool {
+        return (emailField?.isNotEmpty ?? false) && (passwordField?.isNotEmpty ?? false)
+    }
+    
+    func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {
+        return (nameField?.isNotEmpty ?? false)&&(emailField?.isNotEmpty ?? false)&&(emailField?.isValidEmail ?? false)&&(passwordField?.count ?? 0 >= 8)
     }
 }
 
@@ -215,7 +217,7 @@ enum LoginStatus: Equatable {
     case error(message: String?)
 }
 
-enum RequestStatus {
+enum RequestStatus: Equatable {
     case success
     case error(message: String?)
 }

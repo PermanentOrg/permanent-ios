@@ -37,7 +37,6 @@ class LoginTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         try super.tearDownWithError()
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
     func testLoginTestInvalidCredentials() throws {
@@ -76,23 +75,23 @@ class LoginTests: XCTestCase {
         let credentials = LoginCredentials("account@test.com", "simplePassword")
         let email: String? = nil
         let password: String? = credentials.password
-    
-        XCTAssertNil(sut.isEmailOrPasswordEmpty(emailField: email, passwordField: password), "Failed! Checked empty password field.")
+        
+        XCTAssertFalse(sut.areFieldsValid(emailField: email, passwordField: password) , "Failed! Checked empty email field.")
     }
     
     func testEmptyPassField() {
         let credentials = LoginCredentials("account@test.com", "simplePassword")
         let email: String? = credentials.email
         let password: String? = nil
-    
-        XCTAssertNil(sut.isEmailOrPasswordEmpty(emailField: email, passwordField: password), "Failed! Checked empty password field.")
+        
+        XCTAssertFalse(sut.areFieldsValid(emailField: email, passwordField: password), "Failed! Checked empty password field.")
     }
     
     func testValidEmailPassFields() {
         let credentials = LoginCredentials("account@test.com", "simplePassword")
         let email: String? = credentials.email
         let password: String? = credentials.password
-    
-        XCTAssertNotNil(sut.isEmailOrPasswordEmpty(emailField: email, passwordField: password), "Failed! Checked empty password field.")
+        
+        XCTAssertTrue(sut.areFieldsValid(emailField: email, passwordField: password), "Failed! Checked valid email/password fields.")
     }
 }
