@@ -5,6 +5,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:permanent.org</string>
+		<string>applinks:www.permanent.org</string>
 	</array>
 	<key>aps-environment</key>
 	<string>Production</string>
