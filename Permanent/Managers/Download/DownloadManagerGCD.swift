@@ -166,7 +166,7 @@ class DownloadManagerGCD: Downloader {
         let apiOperation = APIOperation(FilesEndpoint.download(url: url, filename: fileName, progressHandler: progressHandler))
         self.operation = apiOperation
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        apiOperation.execute(in: APIRequestDispatcher(networkSession: CDNSession())) { result in
             switch result {
             case .file(let fileURL, _):
                 guard let url = fileURL else {

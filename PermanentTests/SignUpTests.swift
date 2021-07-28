@@ -41,7 +41,7 @@ class SignUpTests: XCTestCase {
     func testSigupTestInvalidCredentials() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedSignUpTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com",password: "simplePass"))
     
@@ -57,7 +57,7 @@ class SignUpTests: XCTestCase {
     func testSigupTestValidCredentials() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulSignUpTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com",password: "simplePass"))
     
