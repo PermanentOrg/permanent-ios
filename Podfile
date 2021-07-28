@@ -1,8 +1,8 @@
 platform :ios, '12.0'
+use_frameworks!
+inhibit_all_warnings!
 
 target 'Permanent' do
-  use_frameworks!
-
   pod 'Firebase/Analytics', '6.32.2'
   pod 'Firebase/Crashlytics', '6.32.2'
   pod 'Firebase/Messaging'
@@ -12,5 +12,9 @@ target 'Permanent' do
   pod 'Sourcery', '1.4.1'
   pod 'GoogleMaps', '4.2.0'
   pod 'GooglePlaces', '4.2.0'
-  
+
+  target 'PermanentTests' do
+        inherit! :search_paths
+        pod 'Firebase'
+    end
 end

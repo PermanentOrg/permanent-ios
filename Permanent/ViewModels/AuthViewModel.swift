@@ -11,6 +11,9 @@ import UIKit.UIAlertController
 typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface {
+    
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {
@@ -72,8 +75,8 @@ class AuthViewModel: ViewModelInterface {
 
     func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
         let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
-
-        let apiDispatch = APIRequestDispatcher()
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
         loginOperation.execute(in: apiDispatch) { result in
             switch result {
@@ -136,8 +139,11 @@ class AuthViewModel: ViewModelInterface {
 
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
 
-        signUpOperation.execute(in: APIRequestDispatcher()) { result in
+        signUpOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
@@ -190,15 +196,23 @@ class AuthViewModel: ViewModelInterface {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
         }
     }
+    
+    func areFieldsValid (emailField: String?, passwordField: String?) -> Bool {
+        return (emailField?.isNotEmpty ?? false) && (passwordField?.isNotEmpty ?? false)
+    }
+    
+    func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {
+        return (nameField?.isNotEmpty ?? false)&&(emailField?.isNotEmpty ?? false)&&(emailField?.isValidEmail ?? false)&&(passwordField?.count ?? 0 >= 8)
+    }
 }
 
-enum LoginStatus {
+enum LoginStatus: Equatable {
     case success
     case mfaToken
     case error(message: String?)
 }
 
-enum RequestStatus {
+enum RequestStatus: Equatable {
     case success
     case error(message: String?)
 }

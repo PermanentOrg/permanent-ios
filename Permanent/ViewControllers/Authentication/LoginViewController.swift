@@ -59,16 +59,14 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     // MARK: - Actions
     
     private func attemptLogin() {
-        guard
-            let email = emailField.text,
-            let password = passwordField.text,
-            email.isNotEmpty, password.isNotEmpty
-        else {
+        
+        guard viewModel?.areFieldsValid(emailField: emailField.text, passwordField: passwordField.text) ?? false else {
             showAlert(title: .error, message: .invalidFields)
             return
         }
         
-        let credentials = LoginCredentials(email, password)
+        let credentials = LoginCredentials(emailField.text!,passwordField.text!)
+        
         
         showSpinner(colored: .white)
         closeKeyboard()

@@ -9,6 +9,8 @@ import Foundation
 
 class VerificationCodeViewModel: ViewModelInterface {
     weak var delegate: VerificationCodeViewModelDelegate?
+    
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
 }
 
 protocol VerificationCodeViewModelDelegate: ViewModelDelegateInterface {
@@ -17,7 +19,8 @@ protocol VerificationCodeViewModelDelegate: ViewModelDelegateInterface {
 
 extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
     func verify(for credentials: VerifyCodeCredentials, then handler: @escaping ServerResponse) {
-        let requestDispatcher = APIRequestDispatcher()
+        
+        let requestDispatcher = APIRequestDispatcher(networkSession: sessionProtocol)
         let verifyOperation = APIOperation(AuthenticationEndpoint.verify(credentials: credentials))
 
         verifyOperation.execute(in: requestDispatcher) { result in
