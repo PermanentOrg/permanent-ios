@@ -32,6 +32,7 @@
 		5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217425C17CE2007642BE /* InfoViewModel.swift */; };
 		5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */; };
 		5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */; };
+		5E5F37CD26B0B3C700031927 /* VerificationCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5F37CC26B0B3C700031927 /* VerificationCodeTests.swift */; };
 		5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E60451C251206F9002E47CB /* OnboardingViewModel.swift */; };
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
@@ -379,6 +380,7 @@
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
 		5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextWithLabelElementViewViewController.swift; sourceTree = "<group>"; };
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
+		5E5F37CC26B0B3C700031927 /* VerificationCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeTests.swift; sourceTree = "<group>"; };
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
@@ -950,6 +952,7 @@
 			children = (
 				5E68F2CE26A74FCD00CC936E /* LoginTests.swift */,
 				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
+				5E5F37CC26B0B3C700031927 /* VerificationCodeTests.swift */,
 				5E68F2D026A74FCD00CC936E /* Info.plist */,
 				5E68F2D826A9A2CD00CC936E /* TestURLs.swift */,
 				5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */,
@@ -2188,6 +2191,7 @@
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5E5F37CD26B0B3C700031927 /* VerificationCodeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
