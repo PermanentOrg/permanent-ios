@@ -288,10 +288,10 @@
 		BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */; };
 		BCFB0C332582B485001D89E1 /* ManageLinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFB0C322582B484001D89E1 /* ManageLinkData.swift */; };
 		BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
-		BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD736A50258B6A030003CE5C /* SharedURLSession.swift */; };
 		BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD95ECC025D53E58009B443F /* ScreenLockManager.swift */; };
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
+		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
@@ -648,10 +648,10 @@
 		BCFB0C2E25822757001D89E1 /* InputSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputSettingsView.swift; sourceTree = "<group>"; };
 		BCFB0C322582B484001D89E1 /* ManageLinkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageLinkData.swift; sourceTree = "<group>"; };
 		BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
-		BD736A50258B6A030003CE5C /* SharedURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedURLSession.swift; sourceTree = "<group>"; };
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -1080,7 +1080,6 @@
 				BC42EDD225C014CC0031B965 /* InviteEndpoint.swift */,
 				BC6AF9AB25933FAB00483BBA /* MembersEndpoint.swift */,
 				BC59BAE525C2B8DD005A45D3 /* NotificationsEndpoint.swift */,
-				BD736A50258B6A030003CE5C /* SharedURLSession.swift */,
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */,
 				5ED73B242613C30E002F9861 /* TagEndpoint.swift */,
@@ -1438,6 +1437,7 @@
 				BC6D3B4A2514E46D00390927 /* APIEnvironment.swift */,
 				BC6D3B4C2514E57500390927 /* NetworkSessionProtocol.swift */,
 				BC6D3B4E2514E60800390927 /* APINetworkSession.swift */,
+				F51E70D226B166FD007304C7 /* CDNSession.swift */,
 				BC6D3B502514EF3300390927 /* OperationProtocol.swift */,
 				BC6D3B522514F0C100390927 /* APIOperation.swift */,
 				BC6D3B542514F26F00390927 /* APIError.swift */,
@@ -2120,7 +2120,6 @@
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
-				BD736A51258B6A030003CE5C /* SharedURLSession.swift in Sources */,
 				BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */,
 				BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
@@ -2159,6 +2158,7 @@
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
+				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,

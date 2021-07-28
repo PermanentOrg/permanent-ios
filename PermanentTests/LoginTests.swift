@@ -42,7 +42,7 @@ class LoginTests: XCTestCase {
     func testLoginTestInvalidCredentials() throws {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedLoginTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let credentialsInvalid = LoginCredentials("account@test.com", "simplePass")
     
@@ -58,7 +58,7 @@ class LoginTests: XCTestCase {
     func testLoginTestValidCredentials() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulLoginTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let credentialsValid = LoginCredentials("account@test.com", "simplePass")
     

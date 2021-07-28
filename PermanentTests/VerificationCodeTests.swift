@@ -40,7 +40,7 @@ class VerificationCodeTests: XCTestCase {
     func testValidMFAVerificationCode() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulVerificationMFACodeTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let verifyCodeCredentials = VerifyCodeCredentials(email: "account@test.com", code: "1234", type: .mfa)
     
@@ -56,7 +56,7 @@ class VerificationCodeTests: XCTestCase {
     func testValidPhoneVerificationCode() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulVerificationMFACodeTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let verifyCodeCredentials = VerifyCodeCredentials(email: "account@test.com", code: "1234", type: .phone)
     
@@ -72,7 +72,7 @@ class VerificationCodeTests: XCTestCase {
     func testInvalidMFAVerificationCode() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedVerificationCodeTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let verifyCodeCredentials = VerifyCodeCredentials(email: "account@test.com", code: "1234", type: .mfa)
     
@@ -88,7 +88,7 @@ class VerificationCodeTests: XCTestCase {
     func testInvalidPhoneVerificationCode() {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedVerificationCodeTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config, delegateQueue: OperationQueue())
+        sut.sessionProtocol = APINetworkSession(configuration: config)
 
         let verifyCodeCredentials = VerifyCodeCredentials(email: "account@test.com", code: "1234", type: .phone)
     
