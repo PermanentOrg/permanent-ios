@@ -142,6 +142,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         showSpinner(colored: .lightGray)
         viewModel?.getTagsByArchive(archiveId: viewModel?.file.archiveId ?? 0, completion: { result in
             guard let tagsArchive = result else {
+                self.hideSpinner()
                 return
             }
             
