@@ -45,6 +45,10 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    var helpURL: String {
+        return "https://desk.zoho.com/portal/permanent/en/home"
+    }
+    
     #if STAGING_ENVIRONMENT
     static let defaultEnv: APIEnvironment = .staging
     #else
