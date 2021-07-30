@@ -148,6 +148,7 @@ extension String {
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
     static var security: String { return "Security".localized() }
+    static var help: String { return "Help".localized() }
     static var accountInfo: String { return "AccountInfo".localized() }
     static var updatePassword: String { return "UpdatePassword".localized()}
     static var currentPassword: String { return "CurrentPassword".localized()}

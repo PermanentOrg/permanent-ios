@@ -22,6 +22,7 @@ struct TableViewData {
             DrawerOption.accountInfo,
             DrawerOption.security,
             DrawerOption.addStorage,
+            DrawerOption.help,
             DrawerOption.logOut
         ]
     ]

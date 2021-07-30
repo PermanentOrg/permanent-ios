@@ -209,6 +209,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             inviteVC.viewModel = InviteViewModel()
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
             
+        case .help:
+            guard let url = URL(string: APIEnvironment.defaultEnv.helpURL) else { return }
+            UIApplication.shared.open(url)
+            
         case .logOut:
             logOut()
         }
