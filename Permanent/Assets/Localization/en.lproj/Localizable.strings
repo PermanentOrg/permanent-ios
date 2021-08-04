@@ -184,6 +184,7 @@
 "Country" = "Country";
 "SaveInfo" = "Save Info";
 "UserDetailsChangedSuccessfully" = "Updates were saved";
+"GetUserDetailsWasSuccessfully" = "User details were received";
 "EmptyNameField" = "Account name can't be empty.";
 "NoDataModification" = "No modifications were done";
 "EmailFieldIsEmpty" = "Email field is invalid";

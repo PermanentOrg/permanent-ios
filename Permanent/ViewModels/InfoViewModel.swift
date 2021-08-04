@@ -19,11 +19,13 @@ class InfoViewModel: ViewModelInterface {
         self.userData = (nil, nil, nil, nil, nil, nil, nil, nil)
         self.dataIsNotModified = false
     }
+    
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
 }
 
 protocol InfoViewModelDelegate: ViewModelDelegateInterface {
     func getNewCsrf(then handler: @escaping (Bool) -> Void)
-    func getUserData(with accountId: String, then handler: @escaping (Bool) -> Void)
+    func getUserData(with accountId: String, then handler: @escaping (GetUserDataStatus) -> Void)
     func updateUserData(with accountId: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void)
 }
 
@@ -55,10 +57,13 @@ extension InfoViewModel: InfoViewModelDelegate {
         }
     }
 
-    func getUserData(with accountId: String, then handler: @escaping (Bool) -> Void) {
+    func getUserData(with accountId: String, then handler: @escaping (GetUserDataStatus) -> Void) {
         let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
 
-        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+        getUserDataOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 guard
@@ -68,6 +73,7 @@ extension InfoViewModel: InfoViewModelDelegate {
                     ),
                     model.isSuccessful
                 else {
+                    handler(.error(message: .errorMessage))
                     return
                 }
 
@@ -79,10 +85,10 @@ extension InfoViewModel: InfoViewModelDelegate {
                 self.userData.zip = model.results.first?.data?.first?.accountVO?.zip
                 self.userData.country = model.results.first?.data?.first?.accountVO?.country
                 self.userData.primaryPhone = model.results.first?.data?.first?.accountVO?.primaryPhone
-                handler(true)
+                handler(.success(message: .getUserDetailsWasSuccessfully))
                 return
             case .error:
-                handler(false)
+                handler(.error(message: .errorMessage))
                 return
             default:
                 break
@@ -91,6 +97,10 @@ extension InfoViewModel: InfoViewModelDelegate {
     }
 
     func updateUserData(with accountId: String, userData: UpdateUserData, then handler: @escaping (UpdateUserDataStatus) -> Void) {
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
+        
         guard
             let fullName = userData.fullName,
             fullName.isNotEmpty
@@ -105,7 +115,7 @@ extension InfoViewModel: InfoViewModelDelegate {
 
         let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData))
 
-        updateUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+        updateUserDataOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 guard
@@ -170,7 +180,12 @@ extension InfoViewModel: InfoViewModelDelegate {
     }
 }
 
-enum UpdateUserDataStatus {
+enum GetUserDataStatus: Equatable {
+    case success(message: String?)
+    case error(message: String?)
+}
+
+enum UpdateUserDataStatus: Equatable {
     case success(message: String?)
     case error(message: String?)
 }

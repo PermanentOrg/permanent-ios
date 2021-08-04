@@ -88,10 +88,10 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
             }
             self.viewModel?.getUserData(with: accountID, then: { status in
                 switch status {
-                case true:
+                case .success(message: _):
                     self.updateUserDetailsFields()
-                case false:
-                    self.showErrorAlert(message: .errorMessage)
+                case .error(message: let message):
+                    self.showErrorAlert(message: message)
                 }
             })
             DispatchQueue.main.async {

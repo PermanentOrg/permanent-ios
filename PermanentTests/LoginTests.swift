@@ -52,7 +52,7 @@ class LoginTests: XCTestCase {
             XCTAssertEqual(status, .error(message: "Incorrect username or password."), "Failed! Checked incorrect username/password.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testLoginTestValidCredentials() {
@@ -68,7 +68,7 @@ class LoginTests: XCTestCase {
             XCTAssertEqual(status, .mfaToken, "Failed! Checked valid username/password.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testEmptyEmailField() {
