@@ -51,7 +51,7 @@ class SignUpTests: XCTestCase {
             XCTAssertEqual(status, .error(message: "This email is already in use."), "Failed! Checked with duplicate email.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testSigupTestValidCredentials() {
@@ -67,7 +67,7 @@ class SignUpTests: XCTestCase {
             XCTAssertEqual(status, .success, "Failed! Checked with valid username/email/password.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testEmptyEmailField() {

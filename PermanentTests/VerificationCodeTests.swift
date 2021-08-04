@@ -50,7 +50,7 @@ class VerificationCodeTests: XCTestCase {
             XCTAssertEqual(status, .success, "Failed! Checked valid MFA verification code.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testValidPhoneVerificationCode() {
@@ -66,7 +66,7 @@ class VerificationCodeTests: XCTestCase {
             XCTAssertEqual(status, .success, "Failed! Checked valid phone verification code.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testInvalidMFAVerificationCode() {
@@ -82,7 +82,7 @@ class VerificationCodeTests: XCTestCase {
             XCTAssertEqual(status, .error(message: "The code is incorrect."), "Failed! Checked invalid MFA verification code.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
     
     func testInvalidPhoneVerificationCode() {
@@ -98,6 +98,6 @@ class VerificationCodeTests: XCTestCase {
             XCTAssertEqual(status, .error(message: "The code is incorrect."), "Failed! Checked invalid phone verification code.")
             promise.fulfill()
         })
-        wait(for: [promise], timeout: 2)
+        wait(for: [promise], timeout: 6)
     }
 }

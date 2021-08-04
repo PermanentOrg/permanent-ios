@@ -50,6 +50,7 @@ extension String {
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
     static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
     static var userDetailsChangedSuccessfully: String{ return "UserDetailsChangedSuccessfully".localized()}
+    static var getUserDetailsWasSuccessfully: String{ return "GetUserDetailsWasSuccessfully".localized()}
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
