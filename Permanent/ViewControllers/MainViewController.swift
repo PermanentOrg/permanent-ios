@@ -257,6 +257,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         showSortActionSheetDialog()
     }
     
+    @objc
+    private func cancelAllUploadsAction(_ sender: UIButton) {
+        viewModel?.cancelUploadsInFolder()
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -511,6 +516,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             sectionTitleButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
             sectionTitleButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
         ])
+        
+        if viewModel?.hasCancelButton(forSection: section) == true {
+            let cancelButton = UIButton()
+            cancelButton.setTitle("Cancel All".localized(), for: [])
+            cancelButton.setFont(Text.style11.font)
+            cancelButton.setTitleColor(.darkBlue, for: [])
+            cancelButton.addTarget(self, action: #selector(cancelAllUploadsAction(_:)), for: .touchUpInside)
+            
+            headerView.addSubview(cancelButton)
+            cancelButton.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                cancelButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+                cancelButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -10)
+            ])
+        }
+        
         return headerView
     }
     

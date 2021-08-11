@@ -56,15 +56,15 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func shouldPerformAction(forSection section: Int) -> Bool {
-        guard uploadOrDownloadInProgress else { return true }
-        
         // Perform action only for synced items
         return section == FileListType.synced.rawValue
     }
     
+    func hasCancelButton(forSection section: Int) -> Bool {
+        return FileListType.uploading.rawValue == section
+    }
+    
     func title(forSection section: Int) -> String {
-        guard uploadOrDownloadInProgress else { return activeSortOption.title }
-        
         switch section {
         case FileListType.downloading.rawValue: return .downloads
         case FileListType.uploading.rawValue: return .uploads
@@ -72,19 +72,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
         default: return "" // We cannot have more than 3 sections.
         }
     }
-
-    var uploadOrDownloadInProgress: Bool {
-        return
-            queueItemsForCurrentFolder.count > 0 || // UPLOAD
-            downloadInProgress // DOWNLOAD
-    }
     
     var shouldDisplayBackgroundView: Bool {
         syncedViewModels.isEmpty && uploadQueue.isEmpty
     }
     
     var numberOfSections: Int {
-        uploadOrDownloadInProgress ? 3 : 1
+        3
     }
     
     var queueItemsForCurrentFolder: [FileInfo] {
@@ -96,9 +90,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
-        // If the upload or download is not in progress, we have only one section.
-        guard uploadOrDownloadInProgress else { return syncedViewModels.count }
-
         switch section {
         case FileListType.downloading.rawValue: return downloadQueue.count
         case FileListType.uploading.rawValue: return queueItemsForCurrentFolder.count
@@ -108,8 +99,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
-        guard uploadOrDownloadInProgress else { return syncedViewModels[indexPath.row] }
-
         switch indexPath.section {
         case FileListType.downloading.rawValue:
             return downloadQueue[indexPath.row]
@@ -314,6 +303,13 @@ extension FilesViewModel {
     // sets up a queue and calls uploadFileMeta and uploadFileData
     func uploadFiles(_ files: [FileInfo]) {
         UploadManager.shared.upload(files: files)
+    }
+    
+    func cancelUploadsInFolder() {
+        let uploadIds = uploadQueue.map({ $0.id })
+        uploadIds.forEach { id in
+            UploadManager.shared.cancelUpload(fileId: id)
+        }
     }
 
     func getLeanItems(params: GetLeanItemsParams, then handler: @escaping ServerResponse) {
