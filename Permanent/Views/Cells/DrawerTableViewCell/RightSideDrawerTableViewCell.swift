@@ -16,15 +16,12 @@ class RightSideDrawerTableViewCell: UITableViewCell {
         
         selectionStyle = .none
     
-        menuItemTitleLabel.textColor = .black
-        menuItemTitleLabel.font = Text.style9.font
+        menuItemTitleLabel.textColor = .darkBlue
+        menuItemTitleLabel.font = Text.style10.font
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-        contentView.backgroundColor = selected ? .mainPurple : .primary
+        contentView.backgroundColor = .white
     }
     
     func updateCell(with data: DrawerOption) {
