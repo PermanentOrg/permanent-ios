@@ -100,12 +100,12 @@ class FileTableViewCell: UITableViewCell {
             overlayView.isHidden = true
             self.isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = action == .none ? .iconTintPrimary : UIColor.iconTintPrimary.withAlphaComponent(0.5)
+            rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
             moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = .iconTintPrimary
+            rightButtonImageView.tintColor = .primary
         }
     }
     
