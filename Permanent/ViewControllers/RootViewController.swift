@@ -62,14 +62,15 @@ class RootViewController: UIViewController {
     
     func drawerControllerForDeepLink() -> DrawerViewController {
         let mainViewController: UIViewController
-        let sideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main) as! SideMenuViewController
+        let leftSideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main) as! SideMenuViewController
+        let rightSideMenuController = UIViewController.create(withIdentifier: .rightSideMenu, from: .main) as! RightSideMenuViewController
         
         if let requestPAAccess: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.requestPAAccess),
            requestPAAccess == true {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestPAAccess)
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
             
-            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftOthers]![0]  //screen members
         } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
             let sharesVC: SharesViewController
@@ -77,7 +78,7 @@ class RootViewController: UIViewController {
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
-            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftFiles]![1]  //screen shares
             
             let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type)
             let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
@@ -99,14 +100,14 @@ class RootViewController: UIViewController {
             sharesVC.initialNavigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, folderName: sharedFolder.name)
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
-            sideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftFiles]![1] //screen shares
             
             mainViewController = sharesVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
         }
         let navController = RootNavigationController(viewController: mainViewController)
-        return DrawerViewController(rootViewController: navController, sideMenuController: sideMenuController)
+        return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, rightSideMenuController: rightSideMenuController)
     }
     
     func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {

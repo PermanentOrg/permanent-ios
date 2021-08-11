@@ -151,4 +151,13 @@ extension UIView {
     func hideKeyboard() {
         self.endEditing(true)
     }
+    
+    func shadowToBorder(showShadow: Bool = true) {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = showShadow ? 1 : 0
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 10
+        layer.shouldRasterize = true
+        layer.rasterizationScale = UIScreen.main.scale
+    }
 }

@@ -1,22 +1,24 @@
 //
-//  SideMenuViewController.swift
+//  RightSideMenuViewController.swift
 //  Permanent
 //
-//  Created by Adrian Creteanu on 23.11.2020.
+//  Created by Lucian Cerbu on 06.08.2021.
 //
-
 import UIKit
 
-class SideMenuViewController: BaseViewController<AuthViewModel> {
-    @IBOutlet private var tableView: UITableView!
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var infoButton: UIButton!
-    @IBOutlet private var versionLabel: UILabel!
+class RightSideMenuViewController: BaseViewController<AuthViewModel> {
+    
+    @IBOutlet weak var loggedInLabel: UILabel!
+    @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var storageProgressBar: UIProgressView!
+    @IBOutlet weak var storageUsedLabel: UILabel!
+    @IBOutlet weak var separatorBar: UIView!
+    @IBOutlet weak var tableView: UITableView!
     
     var shouldDisplayLine = false
     var selectedMenuOption: DrawerOption = .files
     
-    private let tableViewData: [DrawerSection: [DrawerOption]] = [
+    static private let tableViewData: [DrawerSection: [DrawerOption]] = [
         DrawerSection.leftFiles: [
             DrawerOption.files,
             DrawerOption.shares
@@ -24,12 +26,22 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         DrawerSection.leftOthers: [
             DrawerOption.members
+        ],
+        
+        DrawerSection.rightSideMenu: [
+            DrawerOption.activityFeed,
+            DrawerOption.invitations,
+            DrawerOption.accountInfo,
+            DrawerOption.security,
+            DrawerOption.addStorage,
+            DrawerOption.help,
+            DrawerOption.logOut
         ]
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         initUI()
         
         setupTableView()
@@ -37,38 +49,21 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         viewModel = AuthViewModel()
     }
     
-    fileprivate func initUI() {
-        view.backgroundColor = .primary
-        tableView.backgroundColor = .primary
-        
-        view.shadowToBorder()
-        
-        titleLabel.font = Text.style8.font
-        titleLabel.textColor = .white
-        titleLabel.isHidden = true
-        
-        infoButton.setTitle(.manageArchives, for: [])
-        infoButton.setFont(Text.style16.font)
-        infoButton.setTitleColor(.white, for: [])
-        infoButton.isHidden = true
-        
-        versionLabel.textColor = .white
-        versionLabel.font = Text.style12.font
-        versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
-        versionLabel.isHidden = true
+    func initUI() {
+        storageProgressBar.isHidden = true
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: DrawerTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: DrawerTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: RightSideDrawerTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: RightSideDrawerTableViewCell.self))
         
-        tableView.tableFooterView = UIView()
+    tableView.tableFooterView = UIView()
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
+        view.shadowToBorder(showShadow: isOpening)
         shouldDisplayLine = isOpening
-        titleLabel.isHidden = !isOpening
-        versionLabel.isHidden = !isOpening
+        storageProgressBar.isHidden = !isOpening
         
         tableView.reloadData()
     }
@@ -103,38 +98,29 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
 }
 
-extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return tableViewData.count
-    }
+extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let drawerSection = DrawerSection(rawValue: section),
-              let numberOfItems = tableViewData[drawerSection]?.count else {
-            return 0
-        }
-        return numberOfItems
+  //      guard let drawerSection = DrawerSection(rawValue: section) else { return 0 }
+        return RightSideMenuViewController.tableViewData[DrawerSection.rightSideMenu]?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell,
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
-            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RightSideDrawerTableViewCell.self)) as? RightSideDrawerTableViewCell,
+            let menuOption = RightSideMenuViewController.tableViewData[DrawerSection.rightSideMenu]?[indexPath.row]
         else {
-            fatalError()
+            return UITableViewCell()
         }
-        
         cell.updateCell(with: menuOption)
         return cell
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
-            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+            let menuOption = RightSideMenuViewController.tableViewData[DrawerSection.rightSideMenu]?[indexPath.row]
         else {
-            fatalError()
+            return
         }
         
         if menuOption == selectedMenuOption {
@@ -144,42 +130,14 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
-            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+            let menuOption = RightSideMenuViewController.tableViewData[DrawerSection.rightSideMenu]?[indexPath.row]
         else {
-            fatalError()
+            return
         }
         
         selectedMenuOption = menuOption
         handleMenuOptionTap(forOption: menuOption)
     }
-    
-//    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//        guard section == DrawerSection.leftSideMenu.rawValue, shouldDisplayLine else { return nil }
-//        
-//        let headerView = UIView()
-//        
-//        let lineView = UIView()
-//        lineView.backgroundColor = .backgroundPrimary
-//        headerView.addSubview(lineView)
-//        
-//        lineView.enableAutoLayout()
-//        
-//        NSLayoutConstraint.activate([
-//            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-//            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 10),
-//            lineView.heightAnchor.constraint(equalToConstant: 1),
-//            lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
-//        ])
-//        
-//        return headerView
-//    }
-//    
-//    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-//        guard section == DrawerSection.leftSideMenu.rawValue, shouldDisplayLine else { return 0 }
-//        
-//        return 21
-//    }
     
     fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
         switch option {

@@ -29,6 +29,8 @@ class RootNavigationController: UINavigationController {
     func configureNavigationItems() {
         topViewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.hamburger.templated, style: .plain, target: self, action: #selector(didTapDrawerMenuButton))
         topViewController?.navigationItem.leftBarButtonItem?.tintColor = .white
+        
+        topViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.templated, style: .plain, target: self, action: #selector(didTapRightSideMenuButton))
     }
     
     func changeRootController(viewController: UIViewController) {
@@ -42,5 +44,9 @@ extension RootNavigationController: DrawerMenuDelegate {
     @objc
     func didTapDrawerMenuButton() {
         drawerDelegate?.didTapDrawerMenuButton()
+    }
+    @objc
+    func didTapRightSideMenuButton() {
+        drawerDelegate?.didTapRightSideMenuButton()
     }
 }

@@ -10,13 +10,16 @@ import UIKit.UIColor
 struct TableViewData {
 
     static let drawerData: [DrawerSection: [DrawerOption]] = [
-        DrawerSection.files: [
+        DrawerSection.leftFiles: [
             DrawerOption.files,
             DrawerOption.shares
         ],
         
-        DrawerSection.others: [
-            DrawerOption.members,
+        DrawerSection.leftOthers: [
+            DrawerOption.members
+        ],
+        
+        DrawerSection.rightSideMenu: [
             DrawerOption.activityFeed,
             DrawerOption.invitations,
             DrawerOption.accountInfo,
@@ -49,10 +52,8 @@ struct StaticData {
         .map { $0.groupName }
 }
 
-
-struct SharedFileData {
-    let fileName: String
-    let date: String
-    let thumbnailURL: String
-    let archiveThumbnailURL: String
+enum DrawerSection: Int {
+    case leftFiles
+    case leftOthers
+    case rightSideMenu
 }
