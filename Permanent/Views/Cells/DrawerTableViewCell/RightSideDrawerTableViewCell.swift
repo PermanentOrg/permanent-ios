@@ -21,8 +21,15 @@ class RightSideDrawerTableViewCell: UITableViewCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = selected ? .mainPurple : .white
+        menuItemTitleLabel.textColor = selected ? .white : .darkBlue
     }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        contentView.backgroundColor = highlighted ? .mainPurple : .white
+        menuItemTitleLabel.textColor = highlighted ? .white : .darkBlue
+    }
+
     
     func updateCell(with data: DrawerOption) {
         menuItemTitleLabel.text = data.title

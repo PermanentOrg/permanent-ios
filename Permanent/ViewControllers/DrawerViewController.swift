@@ -14,8 +14,8 @@ protocol DrawerMenuDelegate: AnyObject {
 
 class DrawerViewController: UIViewController {
     var rootViewController: RootNavigationController
-    var leftSideMenuController: UIViewController
-    var rightSideMenuController: UIViewController
+    var leftSideMenuController: SideMenuViewController
+    var rightSideMenuController: RightSideMenuViewController
     var isLeftMenuExpanded: Bool = false
     var isRightMenuExpanded: Bool = false
     let backgroundView = UIView()
@@ -25,7 +25,7 @@ class DrawerViewController: UIViewController {
     fileprivate var leftSideMenuHeight: CGFloat { view.bounds.height - leftSideMenuOrigin.y }
     fileprivate var rightSideMenuHeight: CGFloat { view.bounds.height - rightSideMenuOrigin.y }
     
-    init(rootViewController: RootNavigationController, leftSideMenuController: UIViewController, rightSideMenuController: UIViewController) {
+    init(rootViewController: RootNavigationController, leftSideMenuController: SideMenuViewController, rightSideMenuController: RightSideMenuViewController) {
         self.rootViewController = rootViewController
         self.leftSideMenuController = leftSideMenuController
         self.rightSideMenuController = rightSideMenuController
@@ -45,94 +45,99 @@ class DrawerViewController: UIViewController {
         view.addSubview(rootViewController.view)
         rootViewController.didMove(toParent: self)
         
-        backgroundView.backgroundColor = .clear
+        backgroundView.backgroundColor = .darkGray
         backgroundView.alpha = 0
-        view.addSubview(backgroundView)
-                
-        leftSideMenuController.view.frame = CGRect(
-            origin: self.leftSideMenuOrigin,
-            size: CGSize(width: 0, height: leftSideMenuHeight)
-        )
-        
-        rightSideMenuController.view.frame = CGRect(
-            origin: self.rightSideMenuOrigin,
-            size: CGSize(width: 0, height: rightSideMenuHeight)
-        )
-
-        addChild(leftSideMenuController)
-        addChild(rightSideMenuController)
-        view.addSubview(leftSideMenuController.view)
-        view.addSubview(rightSideMenuController.view)
-        leftSideMenuController.didMove(toParent: self)
-        rightSideMenuController.didMove(toParent: self)
-        
-        //configureGestures()
+    
+        configureGestures()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        //backgroundView.frame = view.bounds
-        backgroundView.frame = leftSideMenuController.view.bounds
-        backgroundView.frame.origin.y = CGFloat(view.bounds.height - backgroundView.frame.height)
-        
-        let leftWidth: CGFloat = isLeftMenuExpanded ? (view.bounds.width * 2 / 3) : 0
-        let rightWidth: CGFloat = isRightMenuExpanded ? (view.bounds.width * 2 / 3) : 0
-            
-        leftSideMenuController.view.frame = CGRect(
-            origin: self.leftSideMenuOrigin,
-            size: CGSize(width: leftWidth, height: leftSideMenuHeight)
-        )
-        
-        rightSideMenuController.view.frame = CGRect(
-            origin: self.rightSideMenuOrigin,
-            size: CGSize(width: rightWidth, height: rightSideMenuHeight)
-        )
     }
     
-    func toggleMenu() {
+    func toggleMenu(animateBg: Bool = true) {
         isLeftMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
         
-        let width: CGFloat = isLeftMenuExpanded ? (view.bounds.width * 2 / 3) : 0
+        if leftSideMenuController.parent == nil {
+            let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight)
+            backgroundView.frame = CGRect(origin: bgViewOrigin, size: CGSize(width: view.bounds.width, height: view.bounds.height - bgViewOrigin.y))
+            view.addSubview(backgroundView)
+            
+            addChild(leftSideMenuController)
+            view.addSubview(leftSideMenuController.view)
+            leftSideMenuController.didMove(toParent: self)
+        }
         
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-            self.leftSideMenuController.view.frame = CGRect(
-                origin: self.leftSideMenuOrigin,
-                size: CGSize(width: width, height: self.leftSideMenuHeight)
+        leftSideMenuController.view.frame = CGRect(
+            origin: CGPoint(x: isLeftMenuExpanded ? -(view.bounds.width * 2 / 3) : 0, y: leftSideMenuOrigin.y),
+            size: CGSize(width: view.bounds.width * 2 / 3, height: leftSideMenuHeight)
+        )
+        leftSideMenuController.adjustUIForAnimation(isOpening: isLeftMenuExpanded)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: { [self] in
+            leftSideMenuController.view.frame = CGRect(
+                origin: CGPoint(x: isLeftMenuExpanded ? 0 : -(view.bounds.width * 2 / 3), y: leftSideMenuOrigin.y),
+                size: CGSize(width: view.bounds.width * 2 / 3, height: leftSideMenuHeight)
             )
             
-            self.leftSideMenuController.view.layoutIfNeeded()
-            self.backgroundView.alpha = (self.isLeftMenuExpanded) ? 0.5 : 0.0
-            
-            (self.leftSideMenuController as? SideMenuViewController)?.adjustUIForAnimation(isOpening: self.isLeftMenuExpanded)
-            
-        }, completion: nil)
+            if animateBg {
+                backgroundView.alpha = (isLeftMenuExpanded) ? 0.5 : 0.0
+            }
+        }, completion: { [self] finished in
+            if isLeftMenuExpanded == false {
+                leftSideMenuController.removeFromParent()
+                leftSideMenuController.view.removeFromSuperview()
+                
+                if animateBg {
+                    backgroundView.removeFromSuperview()
+                }
+            }
+        })
     }
     
-    func toggleRightSideMenu() {
+    func toggleRightSideMenu(animateBg: Bool = true) {
         isRightMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
         
+        if rightSideMenuController.parent == nil {
+            let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight)
+            backgroundView.frame = CGRect(origin: bgViewOrigin, size: CGSize(width: view.bounds.width, height: view.bounds.height - bgViewOrigin.y))
+            view.addSubview(backgroundView)
+            
+            addChild(rightSideMenuController)
+            view.addSubview(rightSideMenuController.view)
+            rightSideMenuController.didMove(toParent: self)
+        }
+        
         let width: CGFloat = view.bounds.width * 2 / 3
         
-        self.rightSideMenuController.view.frame = CGRect(
-            origin: isRightMenuExpanded ? CGPoint(x: view.bounds.width, y: self.rightSideMenuOrigin.y) : self.rightSideMenuOrigin,
-            size: CGSize(width: width, height: self.rightSideMenuHeight)
+        rightSideMenuController.view.frame = CGRect(
+            origin: isRightMenuExpanded ? CGPoint(x: view.bounds.width, y: rightSideMenuOrigin.y) : rightSideMenuOrigin,
+            size: CGSize(width: width, height: rightSideMenuHeight)
             )
-        self.rightSideMenuController.view.layoutIfNeeded()
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-            self.rightSideMenuController.view.frame = CGRect(
-                origin: self.isRightMenuExpanded ? self.rightSideMenuOrigin : CGPoint(x: self.view.bounds.width, y: self.rightSideMenuOrigin.y),
-                size: CGSize(width: width, height: self.rightSideMenuHeight)
+        
+        rightSideMenuController.adjustUIForAnimation(isOpening: isRightMenuExpanded)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: { [self] in
+            rightSideMenuController.view.frame = CGRect(
+                origin: isRightMenuExpanded ? rightSideMenuOrigin : CGPoint(x: view.bounds.width, y: rightSideMenuOrigin.y),
+                size: CGSize(width: width, height: rightSideMenuHeight)
             )
             
-            self.rightSideMenuController.view.layoutIfNeeded()
-            self.backgroundView.alpha = (self.isRightMenuExpanded) ? 0.5 : 0.0
-            
-            (self.rightSideMenuController as? RightSideMenuViewController)?.adjustUIForAnimation(isOpening: self.isRightMenuExpanded)
-            
-        }, completion: nil)
+            if animateBg {
+                backgroundView.alpha = (isRightMenuExpanded) ? 0.5 : 0.0
+            }
+        }, completion: { [self] finished in
+            if isRightMenuExpanded == false {
+                rightSideMenuController.removeFromParent()
+                rightSideMenuController.view.removeFromSuperview()
+                
+                if animateBg {
+                    backgroundView.removeFromSuperview()
+                }
+            }
+        })
     }
 
     func navigateTo(viewController: UIViewController) {
@@ -141,6 +146,51 @@ class DrawerViewController: UIViewController {
     
     func changeRoot(viewController: UIViewController) {
         rootViewController.changeRootController(viewController: viewController)
+        
+        switch viewController {
+        case _ where viewController is AccountInfoViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .accountInfo
+            break
+            
+        case _ where viewController is ActivityFeedViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .activityFeed
+            break
+            
+        case _ where viewController is InvitesViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .invitations
+            break
+            
+        case _ where viewController is AccountSettingsViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .security
+            break
+            
+        case _ where viewController is AccountSettingsViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .security
+            break
+            
+        case _ where viewController is MainViewController:
+            leftSideMenuController.selectedMenuOption = .files
+            rightSideMenuController.selectedMenuOption = .none
+            break
+            
+        case _ where viewController is SharesViewController:
+            leftSideMenuController.selectedMenuOption = .shares
+            rightSideMenuController.selectedMenuOption = .none
+            break
+            
+        case _ where viewController is MembersViewController:
+            leftSideMenuController.selectedMenuOption = .members
+            rightSideMenuController.selectedMenuOption = .none
+            break
+            
+        default:
+            break
+        }
         
         if isLeftMenuExpanded {
             toggleMenu()
@@ -152,36 +202,62 @@ class DrawerViewController: UIViewController {
     }
     
     fileprivate func configureGestures() {
-      let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeLeft))
-      swipeLeftGesture.direction = .left
-      backgroundView.addGestureRecognizer(swipeLeftGesture)
-
-      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapOutside))
-      backgroundView.addGestureRecognizer(tapGesture)
+        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeLeft))
+        swipeLeftGesture.direction = .left
+        backgroundView.addGestureRecognizer(swipeLeftGesture)
+        
+        let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeRight))
+        swipeRightGesture.direction = .right
+        backgroundView.addGestureRecognizer(swipeRightGesture)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapOutside))
+        backgroundView.addGestureRecognizer(tapGesture)
     }
-
+    
     @objc
     fileprivate func didSwipeLeft() {
-      toggleMenu()
+        if isLeftMenuExpanded {
+            toggleMenu()
+        }
     }
-
+    
+    @objc
+    fileprivate func didSwipeRight() {
+        if isRightMenuExpanded {
+            toggleRightSideMenu()
+        }
+    }
+    
     @objc
     fileprivate func didTapOutside() {
-        toggleMenu()
+        if isLeftMenuExpanded {
+            toggleMenu()
+        }
+        
+        if isRightMenuExpanded {
+            toggleRightSideMenu()
+        }
     }
 }
 
 extension DrawerViewController: DrawerMenuDelegate {
     func didTapDrawerMenuButton() {
+        var animateBG = true
+        
         if isRightMenuExpanded {
-            toggleRightSideMenu()
+            animateBG = false
+            toggleRightSideMenu(animateBg: animateBG)
         }
-        toggleMenu()
+        toggleMenu(animateBg: animateBG)
     }
+    
     func didTapRightSideMenuButton() {
+        var animateBG = true
+        
         if isLeftMenuExpanded {
-            toggleMenu()
+            animateBG = false
+            toggleMenu(animateBg: animateBG)
         }
-        toggleRightSideMenu()
+        toggleRightSideMenu(animateBg: animateBG)
     }
 }

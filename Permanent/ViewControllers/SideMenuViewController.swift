@@ -13,7 +13,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var infoButton: UIButton!
     @IBOutlet private var versionLabel: UILabel!
     
-    var shouldDisplayLine = false
     var selectedMenuOption: DrawerOption = .files
     
     private let tableViewData: [LeftDrawerSection: [DrawerOption]] = [
@@ -45,7 +44,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         titleLabel.font = Text.style8.font
         titleLabel.textColor = .white
-        titleLabel.isHidden = true
         
         infoButton.setTitle(.manageArchives, for: [])
         infoButton.setFont(Text.style16.font)
@@ -55,7 +53,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         versionLabel.textColor = .white
         versionLabel.font = Text.style12.font
         versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
-        versionLabel.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -66,20 +63,13 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
-        view.shadowToBorder(showShadow: isOpening)
-        
-        shouldDisplayLine = isOpening
-        titleLabel.isHidden = !isOpening
-        versionLabel.isHidden = !isOpening
-        
         tableView.reloadData()
         
         if (tableView.contentSize.height < tableView.frame.size.height) {
             tableView.isScrollEnabled = false
-         }
-        else {
+        } else {
             tableView.isScrollEnabled = true
-         }
+        }
     }
 }
 
@@ -135,8 +125,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard section == LeftDrawerSection.leftFiles.rawValue,
-              shouldDisplayLine else {
+        guard section == LeftDrawerSection.leftFiles.rawValue else {
             return nil
         }
         
@@ -159,7 +148,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard section == LeftDrawerSection.leftFiles.rawValue, shouldDisplayLine else { return 0 }
+        guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
         
         return 21
     }
@@ -177,38 +166,8 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         case .members:
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .accountInfo:
-            let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .security:
-            let newRootVC = UIViewController.create(withIdentifier: .accountSettings, from: .settings)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .addStorage:
-            guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
-            UIApplication.shared.open(url)
-            
-        case .activityFeed:
-            let newRootVC = ActivityFeedViewController()
-            newRootVC.viewModel = ActivityFeedViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .invitations:
-            guard
-                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitesViewController
-            else {
-                return
-            }
-            
-            inviteVC.viewModel = InviteViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
-            
-        case .help:
-            guard let url = URL(string: APIEnvironment.defaultEnv.helpURL) else { return }
-            UIApplication.shared.open(url)
-        case .logOut:
+
+        default:
             return
         }
     }

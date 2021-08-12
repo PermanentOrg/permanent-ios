@@ -15,7 +15,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var separatorBar: UIView!
     @IBOutlet weak var tableView: UITableView!
     
-    var shouldDisplayLine = false
+    var selectedMenuOption: DrawerOption = .none
     
     private let tableViewData: [RightDrawerSection: [DrawerOption]] = [
         RightDrawerSection.rightSideMenu: [
@@ -48,19 +48,15 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         
         tableView.separatorColor = .clear
         
-        storageProgressBar.isHidden = true
         storageProgressBar.tintColor = .mainPurple
-        storageProgressBar.progress = Float(0.12)
         
         loggedInLabel.text = "Logged in as".localized()+":"
         loggedInLabel.font = Text.style8.font
         loggedInLabel.textColor = .middleGray
         
-        emailLabel.text = "account@server.com"
         emailLabel.font = Text.style11.font
         emailLabel.textColor = .middleGray
         
-        storageUsedLabel.text = "44.3 MB " + "used".localized()
         storageUsedLabel.font = Text.style11.font
         storageUsedLabel.textColor = .middleGray
     }
@@ -73,17 +69,29 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
-        view.shadowToBorder(showShadow: isOpening)
-        shouldDisplayLine = isOpening
-        storageProgressBar.isHidden = !isOpening
-        
         tableView.reloadData()
         
         if (tableView.contentSize.height < tableView.frame.size.height) {
             tableView.isScrollEnabled = false
-         } else {
+        } else {
             tableView.isScrollEnabled = true
-         }
+        }
+        
+        if isOpening {
+            viewModel?.getAccountInfo { [self] accountData, error in
+                guard let accountData = accountData else { return }
+                
+                let spaceTotal = (accountData.spaceTotal ?? 0)
+                let spaceLeft = (accountData.spaceLeft ?? 0)
+                let spaceUsed = spaceTotal - spaceLeft
+                let storageLabelString = "<STORAGE_USED> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: ByteCountFormatter.string(fromByteCount: Int64(spaceUsed), countStyle: .file))
+                storageUsedLabel.text = storageLabelString
+                
+                storageProgressBar.setProgress(Float(spaceUsed) / Float(spaceTotal), animated: true)
+                
+                emailLabel.text = accountData.primaryEmail
+            }
+        }
     }
     
     fileprivate func logOut() {
@@ -133,10 +141,6 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard
             let drawerSection = RightDrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
@@ -144,12 +148,35 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             return
         }
         
+        if menuOption == selectedMenuOption {
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard
+            let drawerSection = RightDrawerSection(rawValue: indexPath.section),
+            let sectionData = tableViewData[drawerSection]
+        else {
+            return
+        }
+        let menuOption = sectionData[indexPath.row]
+        
+        let previousMenuOption = selectedMenuOption
+        if menuOption != .addStorage && menuOption != .help {
+            selectedMenuOption = menuOption
+        } else {
+            tableView.deselectRow(at: indexPath, animated: true)
+            
+            let previousIndexPath: IndexPath = [0, sectionData.firstIndex(of: previousMenuOption)!]
+            tableView.selectRow(at: previousIndexPath, animated: true, scrollPosition: .none)
+        }
+        
         handleMenuOptionTap(forOption: menuOption)
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard section == RightDrawerSection.rightOthers.rawValue,
-              shouldDisplayLine else {
+        guard section == RightDrawerSection.rightOthers.rawValue else {
             return nil
         }
         
@@ -172,25 +199,13 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard section == RightDrawerSection.rightOthers.rawValue, shouldDisplayLine else { return 0 }
+        guard section == RightDrawerSection.rightOthers.rawValue else { return 0 }
         
         return 21
     }
     
     fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
         switch option {
-        case .files:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .shares:
-            let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .members:
-            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
         case .accountInfo:
             let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
@@ -224,6 +239,9 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             
         case .logOut:
             logOut()
+            
+        default:
+            break
         }
     }
     
