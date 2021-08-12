@@ -24,8 +24,8 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.activityFeed,
             DrawerOption.invitations,
             DrawerOption.security,
-            DrawerOption.logOut,
-            DrawerOption.help
+            DrawerOption.help,
+            DrawerOption.logOut
         ],
         
         RightDrawerSection.rightOthers: [

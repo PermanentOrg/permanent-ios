@@ -70,7 +70,7 @@ class RootViewController: UIViewController {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestPAAccess)
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
             
-            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftOthers]![0]  //screen members
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![1]
         } else if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
             let sharesVC: SharesViewController
@@ -78,7 +78,7 @@ class RootViewController: UIViewController {
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
-            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftFiles]![1]  //screen shares
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
             
             let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type)
             let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
@@ -100,7 +100,7 @@ class RootViewController: UIViewController {
             sharesVC.initialNavigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, folderName: sharedFolder.name)
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
-            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.leftFiles]![1] //screen shares
+            leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
             
             mainViewController = sharesVC
         } else {

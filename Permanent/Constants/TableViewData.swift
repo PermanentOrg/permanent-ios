@@ -10,23 +10,9 @@ import UIKit.UIColor
 struct TableViewData {
 
     static let drawerData: [DrawerSection: [DrawerOption]] = [
-        DrawerSection.leftFiles: [
-            DrawerOption.files,
-            DrawerOption.shares
-        ],
-        
-        DrawerSection.leftOthers: [
+        DrawerSection.navigationScreens: [
+            DrawerOption.shares,
             DrawerOption.members
-        ],
-        
-        DrawerSection.rightSideMenu: [
-            DrawerOption.activityFeed,
-            DrawerOption.invitations,
-            DrawerOption.accountInfo,
-            DrawerOption.security,
-            DrawerOption.addStorage,
-            DrawerOption.help,
-            DrawerOption.logOut
         ]
     ]
 }
@@ -53,7 +39,5 @@ struct StaticData {
 }
 
 enum DrawerSection: Int {
-    case leftFiles
-    case leftOthers
-    case rightSideMenu
+    case navigationScreens
 }
