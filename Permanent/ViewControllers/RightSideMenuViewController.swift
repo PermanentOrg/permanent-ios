@@ -168,8 +168,10 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
             
-            let previousIndexPath: IndexPath = [0, sectionData.firstIndex(of: previousMenuOption)!]
-            tableView.selectRow(at: previousIndexPath, animated: true, scrollPosition: .none)
+            if previousMenuOption != .none {
+                let previousIndexPath: IndexPath = [0, sectionData.firstIndex(of: previousMenuOption)!]
+                tableView.selectRow(at: previousIndexPath, animated: true, scrollPosition: .none)
+            }
         }
         
         handleMenuOptionTap(forOption: menuOption)
