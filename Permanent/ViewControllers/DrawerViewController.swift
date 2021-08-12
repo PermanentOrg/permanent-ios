@@ -47,7 +47,7 @@ class DrawerViewController: UIViewController {
         
         backgroundView.backgroundColor = .clear
         backgroundView.alpha = 0
-        //view.addSubview(backgroundView)
+        view.addSubview(backgroundView)
                 
         leftSideMenuController.view.frame = CGRect(
             origin: self.leftSideMenuOrigin,
@@ -72,7 +72,9 @@ class DrawerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        backgroundView.frame = view.bounds
+        //backgroundView.frame = view.bounds
+        backgroundView.frame = leftSideMenuController.view.bounds
+        backgroundView.frame.origin.y = CGFloat(view.bounds.height - backgroundView.frame.height)
         
         let leftWidth: CGFloat = isLeftMenuExpanded ? (view.bounds.width * 2 / 3) : 0
         let rightWidth: CGFloat = isRightMenuExpanded ? (view.bounds.width * 2 / 3) : 0
@@ -109,7 +111,6 @@ class DrawerViewController: UIViewController {
     }
     
     func toggleRightSideMenu() {
-        
         isRightMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
         
@@ -132,7 +133,6 @@ class DrawerViewController: UIViewController {
             (self.rightSideMenuController as? RightSideMenuViewController)?.adjustUIForAnimation(isOpening: self.isRightMenuExpanded)
             
         }, completion: nil)
-        
     }
 
     func navigateTo(viewController: UIViewController) {
@@ -146,26 +146,29 @@ class DrawerViewController: UIViewController {
             toggleMenu()
         }
         
+        if isRightMenuExpanded {
+            toggleRightSideMenu()
+        }
     }
     
-//    fileprivate func configureGestures() {
-//      let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeLeft))
-//      swipeLeftGesture.direction = .left
-//      backgroundView.addGestureRecognizer(swipeLeftGesture)
-//
-//      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapOutside))
-//      //backgroundView.addGestureRecognizer(tapGesture)
-//    }
-//
-//    @objc
-//    fileprivate func didSwipeLeft() {
-//    //  toggleMenu()
-//    }
-//
-//    @objc
-//    fileprivate func didTapOutside() {
-//     // toggleMenu()
-//    }
+    fileprivate func configureGestures() {
+      let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeLeft))
+      swipeLeftGesture.direction = .left
+      backgroundView.addGestureRecognizer(swipeLeftGesture)
+
+      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapOutside))
+      backgroundView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc
+    fileprivate func didSwipeLeft() {
+      toggleMenu()
+    }
+
+    @objc
+    fileprivate func didTapOutside() {
+        toggleMenu()
+    }
 }
 
 extension DrawerViewController: DrawerMenuDelegate {
