@@ -36,6 +36,7 @@ enum ViewControllerId: String {
     case biometrics
     case fabActionSheet
     case sideMenu
+    case rightSideMenu
     case share
     case shares
     case members
@@ -64,6 +65,8 @@ enum ViewControllerId: String {
             return "FABActionSheet"
         case .sideMenu:
             return "SideMenu"
+        case .rightSideMenu:
+            return "RightSideMenu"
         case .manageLink:
             return "ManageLink"
         case .accountInfo:

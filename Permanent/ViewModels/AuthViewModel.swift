@@ -14,6 +14,38 @@ class AuthViewModel: ViewModelInterface {
     
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     
+    func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void) ) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            completionBlock(nil, APIError.unknown)
+            return
+        }
+        
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
+        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil, APIError.invalidResponse)
+                    return
+                }
+                
+                let accountData = model.results[0].data?[0].accountVO
+                completionBlock(accountData, nil)
+               
+                return
+            case .error:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {

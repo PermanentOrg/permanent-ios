@@ -13,10 +13,18 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var infoButton: UIButton!
     @IBOutlet private var versionLabel: UILabel!
     
-    var shouldDisplayLine = false
     var selectedMenuOption: DrawerOption = .files
     
-    private let tableViewData = TableViewData.drawerData
+    private let tableViewData: [LeftDrawerSection: [DrawerOption]] = [
+        LeftDrawerSection.leftFiles: [
+            DrawerOption.files,
+            DrawerOption.shares
+        ],
+        
+        LeftDrawerSection.leftOthers: [
+            DrawerOption.members
+        ]
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,9 +40,10 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         view.backgroundColor = .primary
         tableView.backgroundColor = .primary
         
+        tableView.separatorColor = .clear
+        
         titleLabel.font = Text.style8.font
         titleLabel.textColor = .white
-        titleLabel.isHidden = true
         
         infoButton.setTitle(.manageArchives, for: [])
         infoButton.setFont(Text.style16.font)
@@ -44,7 +53,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         versionLabel.textColor = .white
         versionLabel.font = Text.style12.font
         versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
-        versionLabel.isHidden = true
     }
     
     fileprivate func setupTableView() {
@@ -55,40 +63,13 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
-        shouldDisplayLine = isOpening
-        titleLabel.isHidden = !isOpening
-        versionLabel.isHidden = !isOpening
-        
         tableView.reloadData()
-    }
-    
-    fileprivate func showLogOutDialog() {
-        showActionDialog(
-            styled: .simple,
-            withTitle: "Are you sure you want to log out?",
-            positiveButtonTitle: .logOut,
-            positiveAction: {
-                self.logOut()
-            },
-            overlayView: nil)
-    }
-    
-    fileprivate func logOut() {
-        viewModel?.deletePushToken(then: { status in
-            self.viewModel?.logout(then: { status in
-                switch status {
-                case .success:
-                    UploadManager.shared.cancelAll()
-                    
-                    AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(message: message)
-                    }
-                }
-            })
-        })
+        
+        if (tableView.contentSize.height < tableView.frame.size.height) {
+            tableView.isScrollEnabled = false
+        } else {
+            tableView.isScrollEnabled = true
+        }
     }
 }
 
@@ -98,18 +79,20 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let drawerSection = DrawerSection(rawValue: section) else { return 0 }
-        
-        return tableViewData[drawerSection]?.count ?? 0
+        guard let drawerSection = LeftDrawerSection(rawValue: section),
+              let numberOfItems = tableViewData[drawerSection]?.count else {
+            return 0
+        }
+        return numberOfItems
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell,
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let drawerSection = LeftDrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
         else {
-            fatalError()
+            return UITableViewCell()
         }
         
         cell.updateCell(with: menuOption)
@@ -118,10 +101,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let drawerSection = LeftDrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
         else {
-            fatalError()
+            return
         }
         
         if menuOption == selectedMenuOption {
@@ -131,10 +114,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard
-            let drawerSection = DrawerSection(rawValue: indexPath.section),
+            let drawerSection = LeftDrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
         else {
-            fatalError()
+            return
         }
         
         selectedMenuOption = menuOption
@@ -142,7 +125,9 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return nil }
+        guard section == LeftDrawerSection.leftFiles.rawValue else {
+            return nil
+        }
         
         let headerView = UIView()
         
@@ -163,7 +148,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard section == DrawerSection.files.rawValue, shouldDisplayLine else { return 0 }
+        guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
         
         return 21
     }
@@ -181,40 +166,9 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         case .members:
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .accountInfo:
-            let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .security:
-            let newRootVC = UIViewController.create(withIdentifier: .accountSettings, from: .settings)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .addStorage:
-            guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
-            UIApplication.shared.open(url)
-            
-        case .activityFeed:
-            let newRootVC = ActivityFeedViewController()
-            newRootVC.viewModel = ActivityFeedViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .invitations:
-            guard
-                let inviteVC = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitesViewController
-            else {
-                return
-            }
-            
-            inviteVC.viewModel = InviteViewModel()
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
-            
-        case .help:
-            guard let url = URL(string: APIEnvironment.defaultEnv.helpURL) else { return }
-            UIApplication.shared.open(url)
-            
-        case .logOut:
-            logOut()
+
+        default:
+            return
         }
     }
     
@@ -224,7 +178,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-enum DrawerSection: Int {
-    case files
-    case others
+enum LeftDrawerSection: Int {
+    case leftFiles
+    case leftOthers
 }

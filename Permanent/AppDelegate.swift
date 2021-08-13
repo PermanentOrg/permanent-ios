@@ -216,7 +216,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
                                 rootVC = sharesVC
                                 
-                                (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+                                drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
                                 
                                 self.rootViewController.changeDrawerRoot(viewController: sharesVC)
                             }
@@ -246,7 +246,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                             sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, sharedFolderName)
                             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
                             
-                            (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.files]![1]
+                            drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
                             
                             self.rootViewController.changeDrawerRoot(viewController: sharesVC)
                         } else {
@@ -280,7 +280,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     rootVC = UIViewController.create(withIdentifier: .members, from: .members) as! MembersViewController
                     self.rootViewController.changeDrawerRoot(viewController: rootVC)
                     
-                    (drawerVC.sideMenuController as! SideMenuViewController).selectedMenuOption = TableViewData.drawerData[DrawerSection.others]![0]
+                    drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![1]
                 }
             } else {
                 PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.requestPAAccess)

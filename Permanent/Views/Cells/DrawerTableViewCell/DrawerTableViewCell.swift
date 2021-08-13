@@ -23,10 +23,13 @@ class DrawerTableViewCell: UITableViewCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
         contentView.backgroundColor = selected ? .mainPurple : .primary
+    }
+    
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        // Configure the view for the selected state
+        contentView.backgroundColor = highlighted ? .mainPurple : .primary
     }
     
     func updateCell(with data: DrawerOption) {

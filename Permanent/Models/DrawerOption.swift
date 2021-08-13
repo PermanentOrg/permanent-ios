@@ -18,6 +18,7 @@ enum DrawerOption {
     case invitations
     case help
     case logOut
+    case none
     
     var icon: UIImage? {
         switch self {
@@ -31,6 +32,7 @@ enum DrawerOption {
         case .activityFeed: return .alert
         case .help: return .help
         case .logOut: return UIImage.logOut.templated
+        case .none: return nil
         }
     }
     
@@ -46,6 +48,7 @@ enum DrawerOption {
         case .security: return String.security
         case .help: return String.help
         case .logOut: return .logOut
+        case .none: return ""
         }
     }
     
