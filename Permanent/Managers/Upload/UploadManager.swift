@@ -151,8 +151,6 @@ class UploadManager {
         if let fileURL = fileURL {
             FileHelper().deleteFile(at: fileURL)
         }
-        
-        refreshQueue()
     }
     
     func cancelAll() {

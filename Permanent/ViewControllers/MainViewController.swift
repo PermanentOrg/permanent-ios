@@ -248,8 +248,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @objc
     private func removeFromQueue(atPosition position: Int) {
         viewModel?.removeFromQueue(position)
-        
-        refreshTableView()
     }
     
     @objc

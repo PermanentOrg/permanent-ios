@@ -246,7 +246,7 @@ extension FilesViewModel {
     }
     
     func removeFromQueue(_ position: Int) {
-        UploadManager.shared.cancelUpload(fileId: uploadQueue[position].id)
+        UploadManager.shared.cancelUpload(fileId: queueItemsForCurrentFolder[position].id)
     }
     
     func createNewFolder(params: NewFolderParams, then handler: @escaping ServerResponse) {
@@ -306,7 +306,7 @@ extension FilesViewModel {
     }
     
     func cancelUploadsInFolder() {
-        let uploadIds = uploadQueue.map({ $0.id })
+        let uploadIds = queueItemsForCurrentFolder.map({ $0.id })
         uploadIds.forEach { id in
             UploadManager.shared.cancelUpload(fileId: id)
         }

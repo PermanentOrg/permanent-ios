@@ -31,6 +31,10 @@ class UploadOperation: BaseOperation {
     
     var urlSession: URLSession!
     
+    var uploadTask: URLSessionUploadTask?
+    
+    var didSentFinishNotification: Bool = false
+    
     lazy var prefixData: Data = {
         return getHttpBody()
     }()
@@ -60,7 +64,7 @@ class UploadOperation: BaseOperation {
         }
         
         urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-
+        
         getPresignedUrl { [self] in
             uploadFileDataToS3 { [self] in
                 registerRecord()
@@ -73,22 +77,7 @@ class UploadOperation: BaseOperation {
     override func finish() {
         super.finish()
         
-        DispatchQueue.main.async {
-            let userInfo: [String: Any]?
-            if let error = self.error {
-                userInfo = ["error": error]
-            } else {
-                userInfo = nil
-            }
-            
-            NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
-        }
-    }
-    
-    override func cancel() {
-        super.cancel()
-        
-        if !isExecuting {
+        if !didSentFinishNotification {
             DispatchQueue.main.async {
                 let userInfo: [String: Any]?
                 if let error = self.error {
@@ -100,6 +89,23 @@ class UploadOperation: BaseOperation {
                 NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
             }
         }
+    }
+    
+    override func cancel() {
+        super.cancel()
+        
+        DispatchQueue.main.async {
+            let userInfo: [String: Any]?
+            if let error = self.error {
+                userInfo = ["error": error]
+            } else {
+                userInfo = nil
+            }
+            
+            NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
+        }
+        
+        didSentFinishNotification = true
     }
     
     private func getPresignedUrl(success: @escaping (() -> Void)) {
@@ -177,7 +183,7 @@ class UploadOperation: BaseOperation {
         uploadRequest.httpBodyStream = SerialInputStream(inputStreams: [prefixStream, fileStream, postfixStream])
         uploadRequest.httpMethod = "POST"
 
-        let uploadTask = urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
+        uploadTask = urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
             if let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 {
                 success()
             } else {
@@ -186,7 +192,7 @@ class UploadOperation: BaseOperation {
                 finish()
             }
         }
-        uploadTask.resume()
+        uploadTask?.resume()
     }
     
     private func registerRecord() {

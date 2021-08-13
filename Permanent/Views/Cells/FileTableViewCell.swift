@@ -74,6 +74,8 @@ class FileTableViewCell: UITableViewCell {
     }
     
     func updateCell(model: FileViewModel, fileAction: FileAction) {
+        rightButtonImageView.isHidden = false
+        
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         sharesImageView.isHidden = model.minArchiveVOS.isEmpty
