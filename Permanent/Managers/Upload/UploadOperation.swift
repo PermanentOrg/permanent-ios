@@ -85,6 +85,23 @@ class UploadOperation: BaseOperation {
         }
     }
     
+    override func cancel() {
+        super.cancel()
+        
+        if !isExecuting {
+            DispatchQueue.main.async {
+                let userInfo: [String: Any]?
+                if let error = self.error {
+                    userInfo = ["error": error]
+                } else {
+                    userInfo = nil
+                }
+                
+                NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
+            }
+        }
+    }
+    
     private func getPresignedUrl(success: @escaping (() -> Void)) {
         guard let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]),
               let fileSize = resources.fileSize else {

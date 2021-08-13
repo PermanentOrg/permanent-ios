@@ -173,7 +173,7 @@ class UploadManager {
     
     func queuedFiles() -> [FileInfo]? {
         let files = (uploadQueue.operations as! [UploadOperation]).map(\.file)
-        return files
+        return try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
     }
     
     func operation(forFileId id: String) -> UploadOperation? {

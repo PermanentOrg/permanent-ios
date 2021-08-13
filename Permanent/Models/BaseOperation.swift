@@ -39,6 +39,9 @@ class BaseOperation: Operation {
     
     override func cancel() {
         super.cancel()
-        finish()
+        
+        if isExecuting {
+            finish()
+        }
     }
 }
