@@ -56,7 +56,7 @@ class ActionDialogView: UIView {
         return inputArray
     }
     
-    convenience init(frame: CGRect, style: ActionDialogStyle, title: String?, description: String? = nil, positiveButtonTitle: String?, placeholders: [String]? = nil, prefilledValues: [String]? = nil, dropdownValues: [String]? = nil, onDismiss: @escaping ButtonAction) {
+    convenience init(frame: CGRect, style: ActionDialogStyle, title: String?, description: String? = nil, positiveButtonTitle: String?, cancelButtonTitle:String? ,positiveButtonColor: UIColor?, cancelButtonColor: UIColor?, placeholders: [String]? = nil, prefilledValues: [String]? = nil, dropdownValues: [String]? = nil, onDismiss: @escaping ButtonAction) {
         self.init(frame: frame)
         
         self.onDismiss = onDismiss
@@ -70,6 +70,10 @@ class ActionDialogView: UIView {
         titleLabel.text = title
         subtitleLabel.text = description
         positiveButton.setTitle(positiveButtonTitle, for: [])
+        cancelButton.setTitle(cancelButtonTitle, for: [])
+        
+        styleActionButton(cancelButton, color: cancelButtonColor!)
+        styleActionButton(positiveButton, color: positiveButtonColor!)
     }
     
     func commonInit() {
@@ -88,11 +92,6 @@ class ActionDialogView: UIView {
         
         subtitleLabel.font = Text.style8.font
         subtitleLabel.textColor = .textPrimary
-        
-        cancelButton.setTitle(.cancel, for: [])
-        
-        styleActionButton(cancelButton, color: .brightRed)
-        styleActionButton(positiveButton, color: .primary)
         
         styleFields()
         
@@ -123,13 +122,12 @@ class ActionDialogView: UIView {
             initDropdown()
             
         case .multipleFields:
-            
             subtitleLabel.isHidden = true
             let textField = TextField()
             fieldsStackView.addArrangedSubview(textField)
-            
-        default:
-            break
+
+        case .simpleWithDescription:
+            fieldsStackView.isHidden = true
         }
     }
     

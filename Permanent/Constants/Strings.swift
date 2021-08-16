@@ -24,6 +24,7 @@ extension String {
     static var ok: String { return "Ok".localized() }
     static var accept: String { return "Accept".localized() }
     static var decline: String { return "Decline".localized() }
+    static var cancelAll: String { return "Cancel all"}
     static var termsConditions: String { return "TermsConditions".localized() }
     static var success: String { return "Success".localized() }
     static var emailSent: String { return "EmailSent".localized() }

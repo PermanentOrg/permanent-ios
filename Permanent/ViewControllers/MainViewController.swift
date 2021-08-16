@@ -257,7 +257,23 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func cancelAllUploadsAction(_ sender: UIButton) {
-        viewModel?.cancelUploadsInFolder()
+        let title = "Confirmation".localized()
+        let description = "Are you sure you want to cancel all uploads?".localized()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.showActionDialog(styled: .simpleWithDescription,
+                                  withTitle: title,
+                                  description: description,
+                                  positiveButtonTitle: .cancelAll,
+                                  positiveAction: {
+                                    self.actionDialog?.dismiss()
+                                    self.viewModel?.cancelUploadsInFolder()
+                                  },
+                                  cancelButtonTitle: "No".localized(),
+                                  positiveButtonColor: .brightRed,
+                                  cancelButtonColor: .primary,
+                                  overlayView: self.overlayView)
+        }
     }
     
     // MARK: - Network Related
