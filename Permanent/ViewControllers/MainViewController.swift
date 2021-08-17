@@ -257,7 +257,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Confirmation".localized()
+        let title = "Cancel all uploads".localized()
         let description = "Are you sure you want to cancel all uploads?".localized()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
