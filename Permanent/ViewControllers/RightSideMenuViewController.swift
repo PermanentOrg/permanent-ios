@@ -84,7 +84,10 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
                 let spaceTotal = (accountData.spaceTotal ?? 0)
                 let spaceLeft = (accountData.spaceLeft ?? 0)
                 let spaceUsed = spaceTotal - spaceLeft
-                let storageLabelString = "<STORAGE_USED> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: ByteCountFormatter.string(fromByteCount: Int64(spaceUsed), countStyle: .file))
+                
+                let spaceTotalHumanReadableContent = ByteCountFormatter.string(fromByteCount: Int64(spaceTotal), countStyle: .file)
+                
+                let storageLabelString = "<STORAGE_USED> of <STORAGE_TOTAL> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: ByteCountFormatter.string(fromByteCount: Int64(spaceUsed), countStyle: .file)).replacingOccurrences(of: "<STORAGE_TOTAL>", with: spaceTotalHumanReadableContent)
                 storageUsedLabel.text = storageLabelString
                 
                 storageProgressBar.setProgress(Float(spaceUsed) / Float(spaceTotal), animated: true)

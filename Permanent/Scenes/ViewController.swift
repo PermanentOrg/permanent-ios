@@ -39,6 +39,9 @@ class ViewController: UIViewController {
         prefilledValues: [String]? = nil,
         dropdownValues: [String]? = nil,
         positiveButtonTitle: String,
+        cancelButtonTitle: String = .cancel,
+        positiveButtonColor: UIColor = .primary,
+        cancelButtonColor: UIColor = .brightRed,
         positiveAction: @escaping ButtonAction
     ) {
         
@@ -50,6 +53,9 @@ class ViewController: UIViewController {
             title: title,
             description: description,
             positiveButtonTitle: positiveButtonTitle,
+            cancelButtonTitle: cancelButtonTitle,
+            positiveButtonColor: positiveButtonColor,
+            cancelButtonColor: cancelButtonColor,
             placeholders: placeholders,
             prefilledValues: prefilledValues,
             dropdownValues: dropdownValues,

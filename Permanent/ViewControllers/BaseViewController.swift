@@ -63,6 +63,9 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         dropdownValues: [String]? = nil,
         positiveButtonTitle: String,
         positiveAction: @escaping ButtonAction,
+        cancelButtonTitle: String = .cancel,
+        positiveButtonColor: UIColor = .primary,
+        cancelButtonColor: UIColor = .brightRed,
         overlayView: UIView?
     ) {
         
@@ -74,6 +77,9 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             title: title,
             description: description,
             positiveButtonTitle: positiveButtonTitle,
+            cancelButtonTitle: cancelButtonTitle,
+            positiveButtonColor: positiveButtonColor,
+            cancelButtonColor: cancelButtonColor,
             placeholders: placeholders,
             prefilledValues: prefilledValues,
             dropdownValues: dropdownValues,
@@ -89,6 +95,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         )
         
         actionDialog?.positiveAction = positiveAction
+        actionDialog?.titleLabel.textAlignment = .center
+        actionDialog?.subtitleLabel.textAlignment = .center
         view.addSubview(actionDialog!)
         self.view.presentPopup(actionDialog, overlayView: overlayView)
     } 
