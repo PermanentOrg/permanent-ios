@@ -85,12 +85,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
                 let spaceLeft = (accountData.spaceLeft ?? 0)
                 let spaceUsed = spaceTotal - spaceLeft
                 
-                var spaceTotalHumanReadableContent = ByteCountFormatter.string(fromByteCount: Int64(spaceTotal), countStyle: .file)
-                
-                if let firstReplacePosition = spaceTotalHumanReadableContent.firstIndex(of: "."),
-                   let lastReplacePosition = spaceTotalHumanReadableContent.firstIndex(of: " ") {
-                    spaceTotalHumanReadableContent.replaceSubrange(firstReplacePosition...lastReplacePosition, with: " ")
-                }
+                let spaceTotalHumanReadableContent = ByteCountFormatter.string(fromByteCount: Int64(spaceTotal), countStyle: .file)
                 
                 let storageLabelString = "<STORAGE_USED> of <STORAGE_TOTAL> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: ByteCountFormatter.string(fromByteCount: Int64(spaceUsed), countStyle: .file)).replacingOccurrences(of: "<STORAGE_TOTAL>", with: spaceTotalHumanReadableContent)
                 storageUsedLabel.text = storageLabelString
