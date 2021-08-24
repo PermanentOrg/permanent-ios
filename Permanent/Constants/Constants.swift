@@ -149,4 +149,8 @@ extension Constants.Keys.StorageKeys {
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let signUpNameStorageKey = "signUpNameStorageKey"
+    static let archiveId = "archiveId"
+    static let archiveName = "archiveName"
+    static let archiveNbr = "archiveNbr"
+    static let archiveThumbUrl = "archiveThumbUrl"
 }

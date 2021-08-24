@@ -227,6 +227,16 @@ class AuthViewModel: ViewModelInterface {
         if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
         }
+        
+        if let archiveId = response.results?.first?.data?.first?.archiveVO?.archiveID,
+           let archiveName = response.results?.first?.data?.first?.archiveVO?.fullName,
+           let archiveNbr = response.results?.first?.data?.first?.archiveVO?.archiveNbr,
+           let archiveThumbUrl = response.results?.first?.data?.first?.archiveVO?.thumbURL500 {
+            PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveId)
+            PreferencesManager.shared.set(archiveName, forKey: Constants.Keys.StorageKeys.archiveName)
+            PreferencesManager.shared.set(archiveNbr, forKey: Constants.Keys.StorageKeys.archiveNbr)
+            PreferencesManager.shared.set(archiveThumbUrl, forKey: Constants.Keys.StorageKeys.archiveThumbUrl)
+        }
     }
     
     func areFieldsValid (emailField: String?, passwordField: String?) -> Bool {

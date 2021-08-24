@@ -45,6 +45,8 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0.0
+        
+        updateCurrentArchive()
     }
     
     @IBAction func CreateNewArchiveAction(_ sender: Any) {
@@ -57,5 +59,15 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
             positiveAction: {
                 
             }, overlayView: self.overlayView)
+    }
+    
+    func updateCurrentArchive() {
+        if let archiveName: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveName),
+           let archiveThumbURL: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveThumbUrl) {
+            currentArhiveImage.image = nil
+            currentArhiveImage.load(urlString: archiveThumbURL)
+            
+            currentArhiveNameLabel.text = "<ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        }
     }
 }

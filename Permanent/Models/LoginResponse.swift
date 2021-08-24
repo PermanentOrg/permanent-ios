@@ -37,7 +37,7 @@ struct LoginResult: Codable {
 
 struct LoginData: Codable {
     let accountVO: AccountVOData?
-    let archiveVO: ArchiveVO?
+    let archiveVO: ArchiveVOData?
 
     enum CodingKeys: String, CodingKey {
         case accountVO = "AccountVO"

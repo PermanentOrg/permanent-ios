@@ -93,11 +93,13 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         if menuOption == .archives {
-            
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
-                tableViewCell.updateCell(with: UIImage(named: "cloud")!, archiveName: "My name")
+                
+                if let archiveName: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveName),
+                   let archiveThumbURL: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveThumbUrl) {
+                    tableViewCell.updateCell(with: archiveThumbURL, archiveName: archiveName)
+                }
                 cell = tableViewCell
-
             }
         } else {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {

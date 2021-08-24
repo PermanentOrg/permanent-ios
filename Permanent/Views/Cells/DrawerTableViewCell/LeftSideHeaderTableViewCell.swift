@@ -34,8 +34,10 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         contentView.backgroundColor = highlighted ? .mainPurple : .primary
     }
     
-    func updateCell(with thumbnail: UIImage, archiveName: String) {
-        archiveImage.image = thumbnail
+    func updateCell(with thumbnailURL: String, archiveName: String) {
+        archiveImage.image = nil
+        archiveImage.load(urlString: thumbnailURL)
+        
         archiveNameLabel.text = "<ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
     }
 }
