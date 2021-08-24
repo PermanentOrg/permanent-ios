@@ -8,6 +8,7 @@
 import UIKit
 
 enum DrawerOption {
+    case archives
     case files
     case shares
     case members
@@ -31,6 +32,7 @@ enum DrawerOption {
         case .invitations: return .mail
         case .activityFeed: return .alert
         case .help: return .help
+        case .archives: return nil
         case .logOut: return UIImage.logOut.templated
         case .none: return nil
         }
@@ -48,6 +50,7 @@ enum DrawerOption {
         case .security: return String.security
         case .help: return String.help
         case .logOut: return .logOut
+        case .archives: return ""
         case .none: return ""
         }
     }

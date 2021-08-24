@@ -18,6 +18,7 @@ enum StoryboardName: String {
     case accountInfo
     case invitations
     case settings
+    case archives
     
     var name: String {
         return self.rawValue.capitalized
@@ -50,6 +51,7 @@ enum ViewControllerId: String {
     case fileDetailsOnTap
     case locationSetOnTap
     case tagDetails
+    case archives
 
     var value: String {
         switch self {

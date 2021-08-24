@@ -9,13 +9,15 @@ import UIKit
 
 class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var infoButton: UIButton!
     @IBOutlet private var versionLabel: UILabel!
     
     var selectedMenuOption: DrawerOption = .files
     
     private let tableViewData: [LeftDrawerSection: [DrawerOption]] = [
+        LeftDrawerSection.header: [
+            DrawerOption.archives
+        ],
+        
         LeftDrawerSection.leftFiles: [
             DrawerOption.files,
             DrawerOption.shares
@@ -29,11 +31,11 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        viewModel = AuthViewModel()
+        
         initUI()
         
         setupTableView()
-        
-        viewModel = AuthViewModel()
     }
     
     fileprivate func initUI() {
@@ -41,14 +43,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.backgroundColor = .primary
         
         tableView.separatorColor = .clear
-        
-        titleLabel.font = Text.style8.font
-        titleLabel.textColor = .white
-        
-        infoButton.setTitle(.manageArchives, for: [])
-        infoButton.setFont(Text.style16.font)
-        infoButton.setTitleColor(.white, for: [])
-        infoButton.isHidden = true
         
         versionLabel.textColor = .white
         versionLabel.font = Text.style12.font
@@ -58,6 +52,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     fileprivate func setupTableView() {
         tableView.register(UINib(nibName: String(describing: DrawerTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: DrawerTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
     }
@@ -87,15 +83,29 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = UITableViewCell()
+        
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell,
             let drawerSection = LeftDrawerSection(rawValue: indexPath.section),
             let menuOption = tableViewData[drawerSection]?[indexPath.row]
         else {
             return UITableViewCell()
         }
         
-        cell.updateCell(with: menuOption)
+        if menuOption == .archives {
+            
+            if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
+                tableViewCell.updateCell(with: UIImage(named: "cloud")!, archiveName: "My name")
+                cell = tableViewCell
+
+            }
+        } else {
+            if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
+            tableViewCell.updateCell(with: menuOption)
+            cell = tableViewCell
+            }
+        }
+    
         return cell
     }
     
@@ -147,7 +157,36 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         return headerView
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section == LeftDrawerSection.leftFiles.rawValue else {
+            return nil
+        }
+        
+        let headerView = UIView()
+        
+        let lineView = UIView()
+        lineView.backgroundColor = .backgroundPrimary
+        headerView.addSubview(lineView)
+        
+        lineView.enableAutoLayout()
+        
+        NSLayoutConstraint.activate([
+            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
+            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 10),
+            lineView.heightAnchor.constraint(equalToConstant: 1),
+            lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+        ])
+        
+        return headerView
+    }
+    
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
+        
+        return 21
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
         
         return 21
@@ -167,6 +206,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
 
+        case .archives:
+            let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         default:
             return
         }
@@ -179,6 +222,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 enum LeftDrawerSection: Int {
+    case header
     case leftFiles
     case leftOthers
 }

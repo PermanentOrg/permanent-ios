@@ -188,6 +188,11 @@ class DrawerViewController: UIViewController {
             rightSideMenuController.selectedMenuOption = .none
             break
             
+        case _ where viewController is ArchivesViewController:
+            leftSideMenuController.selectedMenuOption = .none
+            rightSideMenuController.selectedMenuOption = .none
+            break
+            
         default:
             break
         }
