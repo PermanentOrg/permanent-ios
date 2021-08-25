@@ -18,10 +18,10 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         
         selectionStyle = .none
         
-        archiveNameLabel.font = Text.style8.font
+        archiveNameLabel.font = Text.style7.font
         archiveNameLabel.textColor = .white
         
-        actionDescriptionLabel.font = Text.style11.font
+        actionDescriptionLabel.font = Text.style16.font
         actionDescriptionLabel.textColor = .white
         actionDescriptionLabel.text = "Tap to manage archives".localized()
     }
@@ -38,6 +38,6 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         archiveImage.image = nil
         archiveImage.load(urlString: thumbnailURL)
         
-        archiveNameLabel.text = "<ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
     }
 }

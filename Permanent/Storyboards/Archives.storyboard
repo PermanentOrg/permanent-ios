@@ -48,17 +48,17 @@
                                             <constraint firstAttribute="width" constant="1" id="KIN-Kf-WB6"/>
                                         </constraints>
                                     </view>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="TfW-Cl-Ioc">
-                                        <rect key="frame" x="81" y="14.5" width="272" height="51"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="TfW-Cl-Ioc">
+                                        <rect key="frame" x="76" y="19.5" width="277" height="41"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tpa-Dw-3Ha">
-                                                <rect key="frame" x="0.0" y="0.0" width="272" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="277" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jxK-VT-fQQ">
-                                                <rect key="frame" x="0.0" y="30.5" width="272" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="20.5" width="277" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -66,10 +66,10 @@
                                         </subviews>
                                     </stackView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="f17-Ki-h3h">
-                                        <rect key="frame" x="11" y="10" width="60" height="60"/>
+                                        <rect key="frame" x="16" y="15" width="50" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="60" id="4ZB-vn-D2Y"/>
-                                            <constraint firstAttribute="width" constant="60" id="vbe-Mn-tzv"/>
+                                            <constraint firstAttribute="height" constant="50" id="4ZB-vn-D2Y"/>
+                                            <constraint firstAttribute="width" constant="50" id="vbe-Mn-tzv"/>
                                         </constraints>
                                     </imageView>
                                 </subviews>
@@ -84,7 +84,7 @@
                                     <constraint firstAttribute="trailing" secondItem="zzm-Za-hlg" secondAttribute="trailing" id="G0n-oS-87O"/>
                                     <constraint firstItem="TfW-Cl-Ioc" firstAttribute="leading" secondItem="f17-Ki-h3h" secondAttribute="trailing" constant="10" id="Pw6-NA-8Ro"/>
                                     <constraint firstAttribute="trailing" secondItem="8tm-pO-FC4" secondAttribute="trailing" id="RDf-6I-NjM"/>
-                                    <constraint firstItem="f17-Ki-h3h" firstAttribute="leading" secondItem="W45-bM-dWt" secondAttribute="trailing" constant="10" id="UgJ-at-bFB"/>
+                                    <constraint firstItem="f17-Ki-h3h" firstAttribute="leading" secondItem="W45-bM-dWt" secondAttribute="trailing" constant="15" id="UgJ-at-bFB"/>
                                     <constraint firstItem="f17-Ki-h3h" firstAttribute="centerY" secondItem="LiA-iD-9rz" secondAttribute="centerY" id="Zem-c9-DIL"/>
                                     <constraint firstItem="TfW-Cl-Ioc" firstAttribute="centerY" secondItem="LiA-iD-9rz" secondAttribute="centerY" id="aq3-pF-EGB"/>
                                     <constraint firstAttribute="bottom" secondItem="8tm-pO-FC4" secondAttribute="bottom" id="dEE-U4-QG8"/>
@@ -102,11 +102,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1XR-vW-kpT">
-                                <rect key="frame" x="20" y="254.5" width="374" height="537.5"/>
+                                <rect key="frame" x="20" y="254.5" width="374" height="527.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ke2-ZL-CVN" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="20" y="812" width="374" height="30"/>
+                                <rect key="frame" x="20" y="802" width="374" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="df1-KH-h32"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="CreateNewArchiveAction:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="rW1-nH-JXW"/>
@@ -144,6 +147,11 @@
             <point key="canvasLocation" x="131.8840579710145" y="73.660714285714278"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="Ke2-ZL-CVN">
+            <size key="intrinsicContentSize" width="46" height="30"/>
+        </designable>
+    </designables>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

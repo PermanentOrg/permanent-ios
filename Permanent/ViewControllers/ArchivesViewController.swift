@@ -30,10 +30,10 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
     
     private func initUI() {
         currentArchiveLabel.text = "Current Archive".localized()
-        currentArchiveLabel.font = Text.style8.font
+        currentArchiveLabel.font = Text.style7.font
         currentArchiveLabel.textColor = .darkBlue
         
-        currentArhiveNameLabel.font = Text.style16.font
+        currentArhiveNameLabel.font = Text.style17.font
         currentArhiveNameLabel.textColor = .darkBlue
         
         chooseArchiveName.text = "Choose Archive:".localized()
@@ -67,7 +67,7 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
             currentArhiveImage.image = nil
             currentArhiveImage.load(urlString: archiveThumbURL)
             
-            currentArhiveNameLabel.text = "<ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+            currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
     }
 }
