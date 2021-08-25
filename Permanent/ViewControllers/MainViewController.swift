@@ -5,7 +5,6 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
-import BSImagePicker
 import MobileCoreServices
 import Photos
 import UIKit
