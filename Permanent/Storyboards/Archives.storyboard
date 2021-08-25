@@ -104,6 +104,10 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1XR-vW-kpT">
                                 <rect key="frame" x="20" y="254.5" width="374" height="527.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Y6W-OH-hqX" id="lHD-SP-Fca"/>
+                                    <outlet property="delegate" destination="Y6W-OH-hqX" id="KiO-zg-UMd"/>
+                                </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ke2-ZL-CVN" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                 <rect key="frame" x="20" y="802" width="374" height="40"/>
@@ -140,6 +144,7 @@
                         <outlet property="currentArchiveLabel" destination="tpa-Dw-3Ha" id="cMx-rr-140"/>
                         <outlet property="currentArhiveImage" destination="f17-Ki-h3h" id="S6l-js-VZ1"/>
                         <outlet property="currentArhiveNameLabel" destination="jxK-VT-fQQ" id="t0C-SH-qG5"/>
+                        <outlet property="tableView" destination="1XR-vW-kpT" id="8AT-Ub-nLJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

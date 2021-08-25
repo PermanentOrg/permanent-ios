@@ -13,17 +13,24 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var currentArhiveNameLabel: UILabel!
     @IBOutlet weak var chooseArchiveName: UILabel!
     @IBOutlet weak var createNewArchiveButton: RoundedButton!
+    @IBOutlet weak var tableView: UITableView!
     
     private let overlayView = UIView()
+    
+    var tableViewData: [ArchiveVOData]? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableViewData = []
+        
         viewModel = AuthViewModel()
+        
+        getAccountArchives()
         
         initUI()
         
-        getAccountArchives()
+        setupTableView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -53,6 +60,13 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
         updateCurrentArchive()
     }
     
+    fileprivate func setupTableView() {
+        tableView.separatorColor = .clear
+        
+        tableView.register(UINib(nibName: String(describing: ArchiveScreenDetailsTableViewCell.self), bundle: nil),
+                           forCellReuseIdentifier: String(describing: ArchiveScreenDetailsTableViewCell.self))
+    }
+    
     @IBAction func CreateNewArchiveAction(_ sender: Any) {
         self.showActionDialog(
             styled: .inputWithDropdown,
@@ -76,8 +90,36 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
     }
     
     func getAccountArchives() {
-        viewModel?.getAccountArchives { [self] accountArchives, error in
-            
+        viewModel?.getAccountArchives { accountArchives, error in
+            accountArchives?.forEach{ archive in
+                if let archiveVOData = archive.archiveVO {
+                    self.tableViewData?.append(archiveVOData)
+                }
+            }
+            self.tableView.reloadData()
         }
+    }
+}
+
+extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+        return tableViewData?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = ArchiveScreenDetailsTableViewCell()
+        if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenDetailsTableViewCell.self)) as? ArchiveScreenDetailsTableViewCell,
+           let archiveThumbString = tableViewData?[indexPath.row].thumbURL500,
+           let archiveNameString = tableViewData?[indexPath.row].fullName,
+           let archiveAccessString = tableViewData?[indexPath.row].accessRole {
+            cell = tableViewCell
+            cell.updateCell(with: archiveThumbString, archiveName: archiveNameString, accessLevel: AccessRole.roleForValue(archiveAccessString).groupName)
+        }
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
     }
 }
