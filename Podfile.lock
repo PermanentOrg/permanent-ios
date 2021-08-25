@@ -1,5 +1,4 @@
 PODS:
-  - BSImagePicker (3.3.1)
   - Firebase (6.32.2):
     - Firebase/Core (= 6.32.2)
   - Firebase/Analytics (6.32.2):
@@ -105,7 +104,6 @@ PODS:
   - Sourcery (1.4.1)
 
 DEPENDENCIES:
-  - BSImagePicker (= 3.3.1)
   - Firebase
   - Firebase/Analytics (= 6.32.2)
   - Firebase/Crashlytics (= 6.32.2)
@@ -118,7 +116,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - BSImagePicker
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -140,7 +137,6 @@ SPEC REPOS:
     - Sourcery
 
 SPEC CHECKSUMS:
-  BSImagePicker: 0fe04b574d4d6b81093785d2af6c26227efc8428
   Firebase: 47176280bfba198e531f909cfb1612dad216cb96
   FirebaseAnalytics: 3c2fee6a922023ccfda7af87e4e641bad1fc11ba
   FirebaseCore: 1d697bb944bf2af5fc248f1a66e165c9dd88bf97
@@ -161,6 +157,6 @@ SPEC CHECKSUMS:
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
 
-PODFILE CHECKSUM: 20f00817ed9153cff60bd245956dc91c27e6a0c6
+PODFILE CHECKSUM: 05843ff26ff99292f134e2fd9a7ddcd1d3ccf4de
 
 COCOAPODS: 1.10.1

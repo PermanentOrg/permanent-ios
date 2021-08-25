@@ -5,7 +5,6 @@
 //  Created by Adrian Creteanu on 24/09/2020.
 //
 
-import BSImagePicker
 import MobileCoreServices
 import Photos
 import UIKit
@@ -801,26 +800,13 @@ extension MainViewController: FABActionSheetDelegate {
         PHPhotoLibrary.requestAuthorization { (auth_status) in
             switch auth_status {
             case .authorized,.limited:
-                let imagePicker = ImagePickerController()
-                imagePicker.settings.fetch.assets.supportedMediaTypes = [.image, .video]
-                let options = imagePicker.settings.fetch.album.options
-                imagePicker.settings.fetch.album.fetchResults = [
-                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options),
-                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options),
-                    PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options),
-                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options),
-                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options),
-                    PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
-                ]
-                self.presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
-                    self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { urls in
-                        
-                        guard let currentFolder = self.viewModel?.currentFolder else {
-                            return self.showErrorAlert(message: .cannotUpload)
-                        }
-                        self.processUpload(toFolder: currentFolder, forURLS: urls)
-                    })
-                })
+                DispatchQueue.main.async {
+                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
+                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
+                    imagePicker.pickerDelegate = self
+                    
+                    self.present(imagePicker, animated: true, completion: nil)
+                }
             case .denied:
                 let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
                 
@@ -955,6 +941,19 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
         
+    }
+}
+
+// MARK: - PhotoPickerViewControllerDelegate
+extension MainViewController: PhotoPickerViewControllerDelegate {
+    func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
+        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
+            guard let currentFolder = viewModel?.currentFolder else {
+                return showErrorAlert(message: .cannotUpload)
+            }
+            
+            processUpload(toFolder: currentFolder, forURLS: urls)
+        })
     }
 }
 

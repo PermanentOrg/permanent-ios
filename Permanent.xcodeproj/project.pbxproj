@@ -301,6 +301,12 @@
 		BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD95ECC025D53E58009B443F /* ScreenLockManager.swift */; };
 		BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */; };
 		BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */; };
+		F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48326D6132F00657D37 /* AssetGridViewController.swift */; };
+		F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48426D6132F00657D37 /* AlbumCollectionViewCell.swift */; };
+		F502C48A26D6132F00657D37 /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48526D6132F00657D37 /* GridViewCell.swift */; };
+		F502C48B26D6132F00657D37 /* PhotoPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F502C48626D6132F00657D37 /* PhotoPicker.storyboard */; };
+		F502C48C26D6132F00657D37 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48726D6132F00657D37 /* AlbumsViewController.swift */; };
+		F502C48E26D6220300657D37 /* PhotoTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48D26D6220300657D37 /* PhotoTabBarViewController.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
@@ -671,6 +677,12 @@
 		BD95ECC025D53E58009B443F /* ScreenLockManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockManager.swift; sourceTree = "<group>"; };
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
+		F502C48326D6132F00657D37 /* AssetGridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetGridViewController.swift; sourceTree = "<group>"; };
+		F502C48426D6132F00657D37 /* AlbumCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumCollectionViewCell.swift; sourceTree = "<group>"; };
+		F502C48526D6132F00657D37 /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
+		F502C48626D6132F00657D37 /* PhotoPicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PhotoPicker.storyboard; sourceTree = "<group>"; };
+		F502C48726D6132F00657D37 /* AlbumsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
+		F502C48D26D6220300657D37 /* PhotoTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTabBarViewController.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1583,6 +1595,7 @@
 		BCEECD5725ADA5F800A4520E /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				F502C48226D612A500657D37 /* PhotoPicker */,
 				BC59BABF25C2B8BD005A45D3 /* Activity Feed */,
 				BC59BAA425C2B7D6005A45D3 /* Share Preview */,
 				BC42EDB825BB11860031B965 /* Invitations */,
@@ -1643,6 +1656,19 @@
 				48468D1010A4DFA1FEBE1BAA /* Pods-PermanentTests.dev-release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		F502C48226D612A500657D37 /* PhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				F502C48D26D6220300657D37 /* PhotoTabBarViewController.swift */,
+				F502C48726D6132F00657D37 /* AlbumsViewController.swift */,
+				F502C48326D6132F00657D37 /* AssetGridViewController.swift */,
+				F502C48526D6132F00657D37 /* GridViewCell.swift */,
+				F502C48426D6132F00657D37 /* AlbumCollectionViewCell.swift */,
+				F502C48626D6132F00657D37 /* PhotoPicker.storyboard */,
+			);
+			path = PhotoPicker;
 			sourceTree = "<group>";
 		};
 		F5A2A07726161AE6003AAF36 /* PushExtension */ = {
@@ -1796,6 +1822,7 @@
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
+				F502C48B26D6132F00657D37 /* PhotoPicker.storyboard in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
 				BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */,
@@ -2066,6 +2093,7 @@
 				BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */,
+				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
 				BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				5E647334263C22F900E6566D /* NotificationName.swift in Sources */,
@@ -2117,6 +2145,7 @@
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */,
+				F502C48A26D6132F00657D37 /* GridViewCell.swift in Sources */,
 				BC2D95A525382215005FE8EF /* FileType.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
@@ -2202,11 +2231,13 @@
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
+				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
 				F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
+				F502C48C26D6132F00657D37 /* AlbumsViewController.swift in Sources */,
 				BC59BACD25C2B8BD005A45D3 /* ActivityFeedViewModel.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
@@ -2219,6 +2250,7 @@
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,
 				F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */,
+				F502C48E26D6220300657D37 /* PhotoTabBarViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
