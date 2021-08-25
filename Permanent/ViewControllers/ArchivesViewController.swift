@@ -19,7 +19,11 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewModel = AuthViewModel()
+        
         initUI()
+        
+        getAccountArchives()
     }
     
     override func viewDidLayoutSubviews() {
@@ -68,6 +72,12 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
             currentArhiveImage.load(urlString: archiveThumbURL)
             
             currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        }
+    }
+    
+    func getAccountArchives() {
+        viewModel?.getAccountArchives { [self] accountArchives, error in
+            
         }
     }
 }

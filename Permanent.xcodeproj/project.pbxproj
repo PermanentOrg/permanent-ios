@@ -62,6 +62,7 @@
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
+		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */; };
 		5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */; };
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
@@ -420,6 +421,7 @@
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
+		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		5ED0855D24E3E5C300CDB4D3 /* OpenSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -1109,6 +1111,7 @@
 				BCD414D9257F80500019548F /* ShareEndpoint.swift */,
 				F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */,
 				5ED73B242613C30E002F9861 /* TagEndpoint.swift */,
+				5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -2127,6 +2130,7 @@
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
+				5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */,
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */,

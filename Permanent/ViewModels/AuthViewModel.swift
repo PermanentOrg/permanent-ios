@@ -246,6 +246,38 @@ class AuthViewModel: ViewModelInterface {
     func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {
         return (nameField?.isNotEmpty ?? false)&&(emailField?.isNotEmpty ?? false)&&(emailField?.isValidEmail ?? false)&&(passwordField?.count ?? 0 >= 8)
     }
+    
+    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            completionBlock(nil, APIError.unknown)
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil, APIError.invalidResponse)
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                completionBlock(accountArchives, nil)
+               
+                return
+            case .error:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            }
+        }
+    }
 }
 
 enum LoginStatus: Equatable {

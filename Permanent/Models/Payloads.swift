@@ -467,4 +467,20 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func getArchivesByAccountId(accountId: GetArchivesByAccountId) -> RequestParameters {
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                        "data": [
+                            [
+                                "AccountVO": [
+                                    "accountId": accountId
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }
