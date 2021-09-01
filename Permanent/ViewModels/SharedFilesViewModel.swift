@@ -37,7 +37,9 @@ class SharedFilesViewModel: FilesViewModel {
                         return handler(.error(message: .errorMessage))
                     }
                     
-                    let currentArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
+                    
+                    let currentArchive: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+                    let currentArchiveId: Int? = currentArchive?.archiveID
                     
                     model.results.first?.data?.forEach { archive in
                         let itemVOS = archive.archiveVO?.itemVOS

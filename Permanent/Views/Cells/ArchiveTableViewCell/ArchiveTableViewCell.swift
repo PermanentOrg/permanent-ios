@@ -48,8 +48,6 @@ class ArchiveTableViewCell: UITableViewCell {
         relationshipLabel.text = "Friend" // TODO
         
         bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
-        
-        
     }
     
     func hideBottomButtons(status: Bool ) {

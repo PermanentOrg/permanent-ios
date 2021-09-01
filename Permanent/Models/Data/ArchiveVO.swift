@@ -16,6 +16,19 @@ struct ArchiveVO: Model {
 }
 
 struct ArchiveVOData: Model {
+    
+    enum Status: String, Codable {
+        case ok = "status.generic.ok"
+        case pending = "status.generic.pending"
+        case orphaned = "status.generic.orphaned"
+        
+        case unknown = "N/A"
+        
+        public init(from decoder: Decoder) throws {
+            self = try Status(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+        }
+    }
+    
     let childFolderVOS, folderSizeVOS, recordVOS: [JSONAny]?
     let accessRole, fullName: String?
     let spaceTotal, spaceLeft, fileTotal, fileLeft: JSONAny?
@@ -33,7 +46,8 @@ struct ArchiveVOData: Model {
     let thumbURL500: String?
     let thumbURL1000: String?
     let thumbURL2000: String?
-    let thumbDT, status, createdDT, updatedDT: String?
+    let thumbDT, createdDT, updatedDT: String?
+    let status: Status?
 
     enum CodingKeys: String, CodingKey {
         case childFolderVOS = "ChildFolderVOs"

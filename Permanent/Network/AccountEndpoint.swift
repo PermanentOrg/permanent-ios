@@ -15,7 +15,9 @@ enum AccountEndpoint {
     /// Deletes user account
     case delete(accountId: String)
     /// Updates user account.
-    case update(accountId: String, updateData: UpdateData)
+    case updateEmailAndPhone(accountId: String, data: UpdateData)
+    /// Updates user account.
+    case update(accountVO: AccountVOData)
     /// Sends an SMS with a verification code for verifying the phone number.
     case sendVerificationCodeSMS(accountId: String, email: String)
     /// Change user password
@@ -39,7 +41,7 @@ extension AccountEndpoint: RequestProtocol {
             return "/account/post"
         case .delete:
             return "/account/delete"
-        case .update:
+        case .update, .updateEmailAndPhone:
             return "/account/update"
         case .sendVerificationCodeSMS:
             return "/auth/resendTextCreatedAccount"
@@ -64,8 +66,10 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.signUpPayload(for: credentials)
         case .delete(let accountId):
             return Payloads.deleteAccountPayload(accountId: accountId)
-        case .update(let id, let data):
-            return Payloads.update(accountId: id, updateData: data)
+        case .updateEmailAndPhone(let accountId, let data):
+            return Payloads.updateEmailAndPhone(accountId: accountId, updateData: data)
+        case .update(let accountVO):
+            return Payloads.update(accountVO: accountVO)
         case .sendVerificationCodeSMS(let id, let email):
             return Payloads.smsVerificationCodePayload(accountId: id, email: email)
         case .changePassword(let id, let passData):

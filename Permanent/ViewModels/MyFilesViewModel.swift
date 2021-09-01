@@ -49,20 +49,6 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
-        let archiveId = myFilesFolder.archiveID
-        PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveIdStorageKey)
-        
-        // Workaround until we implement multiple archives
-        // Modify `archiveNbr` received from server and add '0000'
-        
-        if let rootArchiveNbr = myFilesFolder.archiveNbr {
-            let archiveNbrPrefix = String(rootArchiveNbr.prefix(5))
-            let archiveNbr = archiveNbrPrefix + "0000"
-            
-            PreferencesManager.shared.set(archiveNbr, forKey: Constants.Keys.StorageKeys.archiveNbrStorageKey)
-        }
-        
-        
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }

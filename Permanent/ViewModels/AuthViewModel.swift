@@ -46,6 +46,38 @@ class AuthViewModel: ViewModelInterface {
         }
     }
     
+    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            completionBlock(nil, APIError.unknown)
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil, APIError.invalidResponse)
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                
+                completionBlock(accountArchives, nil)
+                return
+            case .error:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {
@@ -131,6 +163,7 @@ class AuthViewModel: ViewModelInterface {
                     }
 
                     if loginError == .mfaToken {
+                        self.saveStorageData(model)
                         handler(.mfaToken)
                     } else {
                         handler(.error(message: loginError.description))
@@ -226,6 +259,34 @@ class AuthViewModel: ViewModelInterface {
 
         if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        }
+        
+        if let archiveVO = response.results?.first?.data?.first?.archiveVO {
+            setCurrentArchive(archiveVO)
+        } else {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
+        }
+    }
+    
+    func setCurrentArchive(_ archive: ArchiveVOData) {
+        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+    }
+    
+    func getCurrentArchive() -> ArchiveVOData? {
+        let archiveVO: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        
+        return archiveVO
+    }
+    
+    func refreshCurrentArchive(_ updateHandler: @escaping ((ArchiveVOData?) -> Void)) {
+        getAccountArchives { [self] archives, error in
+            if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
+                setCurrentArchive(defaultArchive)
+                
+                updateHandler(defaultArchive)
+            } else {
+                updateHandler(nil)
+            }
         }
     }
     

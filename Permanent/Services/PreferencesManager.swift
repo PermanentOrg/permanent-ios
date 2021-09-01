@@ -20,6 +20,11 @@ class PreferencesManager {
         guard let data = userDefaults.value(forKey: key) as? Data else { return nil }
         return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? T
     }
+    
+    func getCodableObject<T: Codable>(forKey key: String) throws -> T? {
+        guard let data = userDefaults.value(forKey: key) as? Data else { return nil }
+        return try JSONDecoder().decode(T.self, from: data)
+    }
 
     func set<T>(_ value: T, forKey key: String) {
         userDefaults.set(value, forKey: key)
@@ -27,6 +32,11 @@ class PreferencesManager {
     
     func setNonPlistObject<T: NSCoding>(_ value: T, forKey key: String) throws {
         let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
+        userDefaults.setValue(data, forKey: key)
+    }
+    
+    func setCodableObject<T: Codable>(_ value: T, forKey key: String) throws {
+        let data = try JSONEncoder().encode(value)
         userDefaults.setValue(data, forKey: key)
     }
     

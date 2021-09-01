@@ -135,8 +135,6 @@ extension Constants.API.NotificationType {
 extension Constants.Keys.StorageKeys {
     static let nameStorageKey = "nameStorageKey"
     static let accountIdStorageKey = "accountIdStorageKey"
-    static let archiveIdStorageKey = "archiveIdStorageKey"
-    static let archiveNbrStorageKey = "archiveNbrStorageKey"
     static let emailStorageKey = "emailStorageKey"
     static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
@@ -149,4 +147,6 @@ extension Constants.Keys.StorageKeys {
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let signUpNameStorageKey = "signUpNameStorageKey"
+    static let archive = "archive"
+    static let defaultArchiveId = "defaultArchiveId"
 }
