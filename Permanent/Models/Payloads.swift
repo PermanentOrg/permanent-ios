@@ -71,7 +71,7 @@ struct Payloads {
         ]
     }
     
-    static func update(accountId: String, updateData: UpdateData) -> RequestParameters {
+    static func updateEmailAndPhone(accountId: String, updateData: UpdateData) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -80,6 +80,25 @@ struct Payloads {
                         "primaryPhone": updateData.phone,
                         "primaryEmail": updateData.email
                     ]
+                ]],
+                "apiKey": Constants.API.apiKey,
+                "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
+            ]
+        ]
+    }
+    
+    static func update(accountVO: AccountVOData) -> RequestParameters {
+        let accountDict: Any?
+        if let accountJson = try? JSONEncoder().encode(accountVO) {
+            accountDict = try? JSONSerialization.jsonObject(with: accountJson, options: [])
+        } else {
+            accountDict = nil
+        }
+        
+        return [
+            "RequestVO": [
+                "data": [[
+                    "AccountVO": accountDict
                 ]],
                 "apiKey": Constants.API.apiKey,
                 "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
@@ -481,6 +500,43 @@ struct Payloads {
                             ]
                         ]
                     ]
+        ]
+    }
+    
+    static func changeArchivePayload(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "apiKey": Constants.API.apiKey,
+                    "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func createArchivePayload(name: String, type: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "apiKey": Constants.API.apiKey,
+                    "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "fullName": name,
+                                "type": type,
+                                "relationType": NSNull()
+                            ]
+                        ]
+                    ]
+                ]
         ]
     }
 }

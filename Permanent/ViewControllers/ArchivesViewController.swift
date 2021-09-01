@@ -7,29 +7,26 @@
 
 import UIKit
 
-class ArchivesViewController: BaseViewController<AuthViewModel> {
+class ArchivesViewController: BaseViewController<ArchivesViewModel> {
+    
+    @IBOutlet weak var currentArchiveContainer: UIView!
     @IBOutlet weak var currentArhiveImage: UIImageView!
     @IBOutlet weak var currentArchiveLabel: UILabel!
     @IBOutlet weak var currentArhiveNameLabel: UILabel!
     @IBOutlet weak var chooseArchiveName: UILabel!
     @IBOutlet weak var createNewArchiveButton: RoundedButton!
+    @IBOutlet weak var currentArchiveRightButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
     private let overlayView = UIView()
     
-    var tableViewData: [ArchiveVOData]? = nil
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableViewData = []
+        viewModel = ArchivesViewModel()
         
-        viewModel = AuthViewModel()
-        
-        getAccountArchives()
-        
+        updateArchivesList()
         initUI()
-        
         setupTableView()
     }
     
@@ -40,6 +37,9 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
     }
     
     private func initUI() {
+        currentArchiveContainer.layer.borderWidth = 1
+        currentArchiveContainer.layer.borderColor = UIColor.gray.cgColor
+        
         currentArchiveLabel.text = "Current Archive".localized()
         currentArchiveLabel.font = Text.style7.font
         currentArchiveLabel.textColor = .darkBlue
@@ -56,8 +56,6 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0.0
-        
-        updateCurrentArchive()
     }
     
     fileprivate func setupTableView() {
@@ -67,7 +65,7 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
                            forCellReuseIdentifier: String(describing: ArchiveScreenDetailsTableViewCell.self))
     }
     
-    @IBAction func CreateNewArchiveAction(_ sender: Any) {
+    @IBAction func createNewArchiveAction(_ sender: Any) {
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: "Create new archive".localized(),
@@ -75,51 +73,138 @@ class ArchivesViewController: BaseViewController<AuthViewModel> {
             dropdownValues: StaticData.archiveTypes,
             positiveButtonTitle: .create,
             positiveAction: {
-                
-            }, overlayView: self.overlayView)
+                if let fieldsInput = self.actionDialog?.fieldsInput,
+                    let name = fieldsInput.first,
+                    let typeValue = fieldsInput.last,
+                    let type = ArchiveType.create(localizedValue: typeValue) {
+                    self.viewModel?.createArchive(name: name, type: type.rawValue, { success, error in
+                        if success {
+                            self.updateArchivesList()
+                        }
+                        
+                        self.actionDialog?.dismiss()
+                    })
+                }
+            },
+            overlayView: self.overlayView
+        )
+    }
+    
+    @IBAction func currentArchiveRightButtonPressed(_ sender: Any) {
+        let actionSheet = PRMNTActionSheetViewController(actions: [
+            PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { [self] action in
+                guard let archiveId = viewModel?.currentArchive()?.archiveID else { return }
+                showSpinner()
+                viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
+                    hideSpinner()
+                    updateCurrentArchive()
+                    tableView.reloadData()
+                })
+            })
+        ])
+        present(actionSheet, animated: true)
     }
     
     func updateCurrentArchive() {
-        if let archiveName: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveName),
-           let archiveThumbURL: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveThumbUrl) {
+        if let archive = viewModel?.currentArchive(),
+           let archiveName: String = archive.fullName,
+           let archiveThumbURL: String = archive.thumbURL500 {
             currentArhiveImage.image = nil
             currentArhiveImage.load(urlString: archiveThumbURL)
             
             currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+            
+            if archive.archiveID == viewModel?.defaultArchiveId {
+                if #available(iOS 13.0, *) {
+                    currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                } else {
+                    currentArchiveRightButton.setImage(UIImage(named: "star.fill"), for: .normal)
+                }
+                currentArchiveRightButton.isEnabled = false
+            } else {
+                currentArchiveRightButton.setImage(UIImage(named: "more"), for: .normal)
+                currentArchiveRightButton.isEnabled = true
+            }
         }
     }
     
-    func getAccountArchives() {
-        viewModel?.getAccountArchives { accountArchives, error in
-            accountArchives?.forEach{ archive in
-                if let archiveVOData = archive.archiveVO {
-                    self.tableViewData?.append(archiveVOData)
-                }
+    func updateArchivesList() {
+        showSpinner()
+        
+        viewModel?.getAccountInfo({ [self] account, error in
+            viewModel?.getAccountArchives { [self] accountArchives, error in
+                tableView.reloadData()
+                updateCurrentArchive()
+                hideSpinner()
             }
-            self.tableView.reloadData()
-        }
+        })
+    }
+    
+    func switchToArchive(_ archive: ArchiveVOData) {
+        viewModel?.changeArchive(archive, { [self] success, error in
+            if success {
+                updateCurrentArchive()
+                tableView.reloadData()
+            }
+        })
     }
 }
 
 extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-        return tableViewData?.count ?? 0
+        return viewModel?.availableArchives.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = ArchiveScreenDetailsTableViewCell()
+        var cell = UITableViewCell()
         if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenDetailsTableViewCell.self)) as? ArchiveScreenDetailsTableViewCell,
-           let archiveThumbString = tableViewData?[indexPath.row].thumbURL500,
-           let archiveNameString = tableViewData?[indexPath.row].fullName,
-           let archiveAccessString = tableViewData?[indexPath.row].accessRole {
+           let tableViewData = viewModel?.availableArchives {
+            let archiveVO = tableViewData[indexPath.row]
+            tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId)
+            tableViewCell.rightButtonAction = { [weak self] cell in
+                let actionSheet = PRMNTActionSheetViewController(actions: [
+                    PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { action in
+                        print("delete")
+                    }),
+                    PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
+                        guard let archiveId = self?.viewModel?.currentArchive()?.archiveID else { return }
+                        self?.showSpinner()
+                        self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
+                            self?.hideSpinner()
+                            self?.updateCurrentArchive()
+                            tableView.reloadData()
+                        })
+                    })
+                ])
+                self?.present(actionSheet, animated: true)
+            }
+            
             cell = tableViewCell
-            cell.updateCell(with: archiveThumbString, archiveName: archiveNameString, accessLevel: AccessRole.roleForValue(archiveAccessString).groupName)
         }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        let tableViewData = viewModel?.availableArchives
+        if let archive = tableViewData?[indexPath.row],
+           let archiveName = archive.fullName {
+            let title = "Switch Archive".localized()
+            let description = "Switch to The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+            
+            self.showActionDialog(styled: .simpleWithDescription,
+                                  withTitle: title,
+                                  description: description,
+                                  positiveButtonTitle: "Switch".localized(),
+                                  positiveAction: {
+                                    self.actionDialog?.dismiss()
+                                    self.switchToArchive(archive)
+                                  },
+                                  cancelButtonTitle: "Cancel".localized(),
+                                  positiveButtonColor: .primary,
+                                  cancelButtonColor: .primary,
+                                  overlayView: self.overlayView)
+            
+            self.tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 }

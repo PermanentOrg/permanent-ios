@@ -33,10 +33,8 @@ class MembersViewModel: ViewModelInterface {
 extension MembersViewModel: MembersViewModelDelegate {
     
     func getMembers(then handler: @escaping ServerResponse) {
-        
-        guard let archiveNbr: String = PreferencesManager.shared.getValue(
-            forKey: Constants.Keys.StorageKeys.archiveNbrStorageKey
-        ) else {
+        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+            let archiveNbr: String = currentArchive.archiveNbr else {
             return
         }
         
@@ -70,9 +68,8 @@ extension MembersViewModel: MembersViewModelDelegate {
     
     func modifyMember(_ operation: MemberOperation, params: AddMemberParams, then handler: @escaping ServerResponse) {
         
-        guard let archiveNbr: String = PreferencesManager.shared.getValue(
-            forKey: Constants.Keys.StorageKeys.archiveNbrStorageKey
-        ) else {
+        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+            let archiveNbr: String = currentArchive.archiveNbr else {
             return
         }
         

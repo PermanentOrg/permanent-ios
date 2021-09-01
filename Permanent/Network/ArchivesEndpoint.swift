@@ -11,6 +11,8 @@ typealias GetArchivesByAccountId = (Int)
 
 enum ArchivesEndpoint {
     case getArchivesByAccountId(accountId: GetArchivesByAccountId)
+    case change(archiveId: Int, archiveNbr: String)
+    case create(name: String, type: String)
 }
 
 extension ArchivesEndpoint: RequestProtocol {
@@ -18,43 +20,43 @@ extension ArchivesEndpoint: RequestProtocol {
         switch self {
         case .getArchivesByAccountId:
             return "/archive/getAllArchives"
+            
+        case .change:
+            return "/archive/change"
+            
+        case .create:
+            return "/archive/post"
         }
     }
     
     var method: RequestMethod {
-        switch self {
-        case .getArchivesByAccountId:
-            return .post
-        }
+        return .post
     }
     
     var headers: RequestHeaders? {
-        switch self {
-        case .getArchivesByAccountId:
-            return [
-                "content-type": "application/json"
-            ]
-        }
+        return [
+            "content-type": "application/json"
+        ]
     }
     
     var requestType: RequestType {
-        switch self {
-        case .getArchivesByAccountId:
-            return .data
-        }
+        return .data
     }
     
     var responseType: ResponseType {
-        switch self {
-        case .getArchivesByAccountId:
-            return .json
-        }
+        return .json
     }
     
     var parameters: RequestParameters? {
         switch self {
         case .getArchivesByAccountId(let accountId):
             return Payloads.getArchivesByAccountId(accountId: accountId)
+            
+        case .change(let archiveId, let archiveNbr):
+            return Payloads.changeArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
+            
+        case .create(let name, let type):
+            return Payloads.createArchivePayload(name: name, type: type)
         }
     }
     

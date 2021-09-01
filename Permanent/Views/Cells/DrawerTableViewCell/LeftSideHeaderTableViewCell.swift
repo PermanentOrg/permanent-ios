@@ -13,6 +13,8 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var actionDescriptionLabel: UILabel!
     
+    var isEnabled = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         

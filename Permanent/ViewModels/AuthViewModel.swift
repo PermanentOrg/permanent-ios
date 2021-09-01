@@ -46,6 +46,44 @@ class AuthViewModel: ViewModelInterface {
         }
     }
     
+    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            completionBlock(nil, APIError.unknown)
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil, APIError.invalidResponse)
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                
+//                accountArchives?.forEach{ archive in
+//                    if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
+//                        self.allArchives.append(archiveVOData)
+//                    }
+//                }
+                
+                completionBlock(accountArchives, nil)
+                return
+            case .error:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(nil, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
     func deletePushToken(then handler: @escaping ServerResponse) {
         guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         else {
@@ -131,6 +169,7 @@ class AuthViewModel: ViewModelInterface {
                     }
 
                     if loginError == .mfaToken {
+                        self.saveStorageData(model)
                         handler(.mfaToken)
                     } else {
                         handler(.error(message: loginError.description))
@@ -228,14 +267,32 @@ class AuthViewModel: ViewModelInterface {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
         }
         
-        if let archiveId = response.results?.first?.data?.first?.archiveVO?.archiveID,
-           let archiveName = response.results?.first?.data?.first?.archiveVO?.fullName,
-           let archiveNbr = response.results?.first?.data?.first?.archiveVO?.archiveNbr,
-           let archiveThumbUrl = response.results?.first?.data?.first?.archiveVO?.thumbURL500 {
-            PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.archiveId)
-            PreferencesManager.shared.set(archiveName, forKey: Constants.Keys.StorageKeys.archiveName)
-            PreferencesManager.shared.set(archiveNbr, forKey: Constants.Keys.StorageKeys.archiveNbr)
-            PreferencesManager.shared.set(archiveThumbUrl, forKey: Constants.Keys.StorageKeys.archiveThumbUrl)
+        if let archiveVO = response.results?.first?.data?.first?.archiveVO {
+            setCurrentArchive(archiveVO)
+        } else {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
+        }
+    }
+    
+    func setCurrentArchive(_ archive: ArchiveVOData) {
+        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+    }
+    
+    func getCurrentArchive() -> ArchiveVOData? {
+        let archiveVO: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        
+        return archiveVO
+    }
+    
+    func refreshCurrentArchive(_ updateHandler: @escaping ((ArchiveVOData?) -> Void)) {
+        getAccountArchives { [self] archives, error in
+            if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
+                setCurrentArchive(defaultArchive)
+                
+                updateHandler(defaultArchive)
+            } else {
+                updateHandler(nil)
+            }
         }
     }
     
@@ -245,38 +302,6 @@ class AuthViewModel: ViewModelInterface {
     
     func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {
         return (nameField?.isNotEmpty ?? false)&&(emailField?.isNotEmpty ?? false)&&(emailField?.isValidEmail ?? false)&&(passwordField?.count ?? 0 >= 8)
-    }
-    
-    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
-            completionBlock(nil, APIError.unknown)
-            return
-        }
-        
-        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
-        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(nil, APIError.invalidResponse)
-                    return
-                }
-                
-                let accountArchives = model.results.first?.data
-                completionBlock(accountArchives, nil)
-               
-                return
-            case .error:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            default:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            }
-        }
     }
 }
 

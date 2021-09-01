@@ -63,6 +63,10 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
         if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
             PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
         }
+        
+        if let archiveId = response.results?.first?.data?.first?.accountVO?.defaultArchiveID {
+            PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+        }
     }
 }
 

@@ -20,7 +20,7 @@ protocol AccountViewModelDelegate: ViewModelDelegateInterface {
 
 extension AccountViewModel: AccountViewModelDelegate {
     func update(for accountId: String, data: UpdateData, then handler: @escaping ServerResponse) {
-        let updateOperation = APIOperation(AccountEndpoint.update(accountId: accountId, updateData: data))
+        let updateOperation = APIOperation(AccountEndpoint.updateEmailAndPhone(accountId: accountId, data: data))
 
         updateOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

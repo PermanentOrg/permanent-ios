@@ -21,7 +21,7 @@ struct AccountVOData: Model {
     let address, address2, country, city: String?
     let state, zip: String?
     let primaryPhone: String?
-    let defaultArchiveID: Int?
+    var defaultArchiveID: Int?
     let level, apiToken: JSONAny?
     let betaParticipant: Int?
     let facebookAccountID, googleAccountID: JSONAny?

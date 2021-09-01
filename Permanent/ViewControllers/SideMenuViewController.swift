@@ -34,8 +34,13 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         viewModel = AuthViewModel()
         
         initUI()
-        
         setupTableView()
+        
+        if viewModel?.getCurrentArchive() == nil {
+            viewModel?.refreshCurrentArchive({ [self] archive in
+                tableView.reloadRows(at: [[0,0]], with: .none)
+            })
+        }
     }
     
     fileprivate func initUI() {
@@ -95,10 +100,15 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         if menuOption == .archives {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
                 
-                if let archiveName: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveName),
-                   let archiveThumbURL: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveThumbUrl) {
+                if let archive = viewModel?.getCurrentArchive(),
+                   let archiveName: String = archive.fullName {
+                    let archiveThumbURL: String = archive.thumbURL500 ?? ""
                     tableViewCell.updateCell(with: archiveThumbURL, archiveName: archiveName)
+                    tableViewCell.isEnabled = true
+                } else {
+                    tableViewCell.isEnabled = false
                 }
+                
                 cell = tableViewCell
             }
         } else {
@@ -121,6 +131,22 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         
         if menuOption == selectedMenuOption {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        guard
+            let drawerSection = LeftDrawerSection(rawValue: indexPath.section),
+            let menuOption = tableViewData[drawerSection]?[indexPath.row]
+        else {
+            return true
+        }
+        
+        if menuOption == .archives {
+            let cell = tableView.cellForRow(at: indexPath) as? LeftSideHeaderTableViewCell
+            return cell?.isEnabled ?? true
+        } else {
+            return true
         }
     }
     
