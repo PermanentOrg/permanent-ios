@@ -66,12 +66,6 @@ class AuthViewModel: ViewModelInterface {
                 
                 let accountArchives = model.results.first?.data
                 
-//                accountArchives?.forEach{ archive in
-//                    if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
-//                        self.allArchives.append(archiveVOData)
-//                    }
-//                }
-                
                 completionBlock(accountArchives, nil)
                 return
             case .error:
