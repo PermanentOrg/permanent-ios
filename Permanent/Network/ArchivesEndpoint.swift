@@ -13,6 +13,7 @@ enum ArchivesEndpoint {
     case getArchivesByAccountId(accountId: GetArchivesByAccountId)
     case change(archiveId: Int, archiveNbr: String)
     case create(name: String, type: String)
+    case delete(archiveId: Int, archiveNbr: String)
 }
 
 extension ArchivesEndpoint: RequestProtocol {
@@ -26,6 +27,9 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .create:
             return "/archive/post"
+            
+        case .delete:
+            return "/archive/delete"
         }
     }
     
@@ -57,6 +61,9 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .create(let name, let type):
             return Payloads.createArchivePayload(name: name, type: type)
+            
+        case .delete(let archiveId, let archiveNbr):
+            return Payloads.deleteArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
         }
     }
     

@@ -539,4 +539,22 @@ struct Payloads {
                 ]
         ]
     }
+    
+    static func deleteArchivePayload(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "apiKey": Constants.API.apiKey,
+                    "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
 }

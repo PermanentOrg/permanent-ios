@@ -80,6 +80,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                     self.viewModel?.createArchive(name: name, type: type.rawValue, { success, error in
                         if success {
                             self.updateArchivesList()
+                        } else {
+                            self.showAlert(title: .error, message: .errorMessage)
                         }
                         
                         self.actionDialog?.dismiss()
@@ -97,8 +99,12 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 showSpinner()
                 viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
                     hideSpinner()
-                    updateCurrentArchive()
-                    tableView.reloadData()
+                    if error == nil {
+                        updateCurrentArchive()
+                        tableView.reloadData()
+                    } else {
+                        showAlert(title: .error, message: .errorMessage)
+                    }
                 })
             })
         ])
@@ -132,10 +138,19 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         showSpinner()
         
         viewModel?.getAccountInfo({ [self] account, error in
-            viewModel?.getAccountArchives { [self] accountArchives, error in
-                tableView.reloadData()
-                updateCurrentArchive()
-                hideSpinner()
+            if error == nil {
+                viewModel?.getAccountArchives { [self] accountArchives, error in
+                    hideSpinner()
+                    
+                    if error == nil {
+                        tableView.reloadData()
+                        updateCurrentArchive()
+                    } else {
+                        showAlert(title: .error, message: .errorMessage)
+                    }
+                }
+            } else {
+                showAlert(title: .error, message: .errorMessage)
             }
         })
     }
@@ -145,6 +160,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             if success {
                 updateCurrentArchive()
                 tableView.reloadData()
+            } else {
+                showAlert(title: .error, message: .errorMessage)
             }
         })
     }
@@ -164,15 +181,28 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
             tableViewCell.rightButtonAction = { [weak self] cell in
                 let actionSheet = PRMNTActionSheetViewController(actions: [
                     PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { action in
-                        print("delete")
+                        self?.showSpinner()
+                        self?.viewModel?.deleteArchive(archiveId: archiveVO.archiveID, archiveNbr: archiveVO.archiveNbr, { success, error in
+                            self?.hideSpinner()
+                            if success {
+                                self?.updateCurrentArchive()
+                                self?.updateArchivesList()
+                            } else {
+                                self?.showAlert(title: .error, message: .errorMessage)
+                            }
+                        })
                     }),
                     PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
-                        guard let archiveId = self?.viewModel?.currentArchive()?.archiveID else { return }
+                        guard let archiveId = archiveVO.archiveID else { return }
                         self?.showSpinner()
                         self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
                             self?.hideSpinner()
-                            self?.updateCurrentArchive()
-                            tableView.reloadData()
+                            if error == nil {
+                                self?.updateCurrentArchive()
+                                tableView.reloadData()
+                            } else {
+                                self?.showAlert(title: .error, message: .errorMessage)
+                            }
                         })
                     })
                 ])

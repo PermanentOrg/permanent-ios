@@ -188,4 +188,34 @@ class ArchivesViewModel: ViewModelInterface {
         }
     }
     
+    func deleteArchive(archiveId: Int?, archiveNbr: String?, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        guard let archiveId = archiveId, let archiveNbr = archiveNbr else {
+            completionBlock(false, APIError.unknown)
+            return
+        }
+        
+        let deleteArchiveOperation = APIOperation(ArchivesEndpoint.delete(archiveId: archiveId, archiveNbr: archiveNbr))
+        deleteArchiveOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(false, APIError.invalidResponse)
+                    return
+                }
+                
+                completionBlock(true, nil)
+                return
+            case .error:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
 }
