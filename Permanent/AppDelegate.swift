@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        clearShareDeepLinks()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()
         window?.makeKeyAndVisible()
@@ -27,10 +29,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        clearShareDeepLinks()
         
         guard
             userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-            let url = userActivity.webpageURL else {
+            let url = userActivity.webpageURL,
+            url.pathComponents.count > 0,
+            url.pathComponents[1] == "share"  else {
             return false
         }
         
@@ -123,6 +128,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
     // Called after the user interacts with the notification
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        clearShareDeepLinks()
+        
         guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
         
         let userInfo = response.notification.request.content.userInfo
@@ -286,5 +293,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.requestPAAccess)
             }
         }
+    }
+    
+    func clearShareDeepLinks() {
+        PreferencesManager.shared.removeValues(forKeys: [Constants.API.NotificationType.NOTIFICATION_TYPE_PA_SHARE,Constants.API.NotificationType.NOTIFICATION_TYPE_ACCOUNT,Constants.API.NotificationType.NOTIFICATION_TYPE_RELATIONSHIP,Constants.Keys.StorageKeys.shareURLToken])
     }
 }
