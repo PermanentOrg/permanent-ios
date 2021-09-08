@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard
             userActivity.activityType == NSUserActivityTypeBrowsingWeb,
             let url = userActivity.webpageURL,
-            url.pathComponents.count > 0,
+            url.pathComponents.count > 1,
             url.pathComponents[1] == "share"  else {
             return false
         }
