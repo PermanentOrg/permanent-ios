@@ -121,8 +121,6 @@
 		BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */; };
 		BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */; };
 		BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3DF867252DE642003D3829 /* BiometryUtils.swift */; };
-		BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC4278C1255D528A00270B34 /* FileActionSheet.xib */; };
-		BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C4255D535E00270B34 /* FileActionSheet.swift */; };
 		BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4278C7255D70DF00270B34 /* LocnVO.swift */; };
 		BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */; };
 		BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC42EDB525BB116A0031B965 /* Invitations.storyboard */; };
@@ -500,8 +498,6 @@
 		BC3DF861252DB8BA003D3829 /* LocalAuthErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthErrors.swift; sourceTree = "<group>"; };
 		BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsViewController.swift; sourceTree = "<group>"; };
 		BC3DF867252DE642003D3829 /* BiometryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryUtils.swift; sourceTree = "<group>"; };
-		BC4278C1255D528A00270B34 /* FileActionSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionSheet.xib; sourceTree = "<group>"; };
-		BC4278C4255D535E00270B34 /* FileActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionSheet.swift; sourceTree = "<group>"; };
 		BC4278C7255D70DF00270B34 /* LocnVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocnVO.swift; sourceTree = "<group>"; };
 		BC42ED8725B6EB630031B965 /* FileDownloadInfoVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadInfoVM.swift; sourceTree = "<group>"; };
 		BC42EDB525BB116A0031B965 /* Invitations.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Invitations.storyboard; sourceTree = "<group>"; };
@@ -769,7 +765,6 @@
 				BCEAB2812581125800567E8C /* Share Link */,
 				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
 				BC7A793F255ED1F000DDFD4D /* SortActionSheet */,
-				BC4278C0255D526400270B34 /* FileActionSheet */,
 				BC0D35AE2553FC0A00786E8C /* ActionDialogView */,
 				BC6358962535D27300EEC48C /* Cells */,
 				BC1BDF1A2513567B00F2D239 /* XIBs */,
@@ -1164,15 +1159,6 @@
 				BC752BC8253EBBD100EF7941 /* UploadFilesView.xib */,
 			);
 			path = XIBs;
-			sourceTree = "<group>";
-		};
-		BC4278C0255D526400270B34 /* FileActionSheet */ = {
-			isa = PBXGroup;
-			children = (
-				BC4278C1255D528A00270B34 /* FileActionSheet.xib */,
-				BC4278C4255D535E00270B34 /* FileActionSheet.swift */,
-			);
-			path = FileActionSheet;
 			sourceTree = "<group>";
 		};
 		BC42EDB825BB11860031B965 /* Invitations */ = {
@@ -1844,7 +1830,6 @@
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
 				5ED581C125EF802000A5A79E /* FileDetailsTopCollectionViewCell.xib in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
-				BC4278C2255D528A00270B34 /* FileActionSheet.xib in Resources */,
 				5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
@@ -2182,7 +2167,6 @@
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
-				BC4278C5255D535E00270B34 /* FileActionSheet.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,

@@ -23,7 +23,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let screenLockManager = ScreenLockManager()
 
     private var sortActionSheet: SortActionSheet?
-    private var fileActionSheet: FileActionSheet?
     private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
@@ -782,7 +781,7 @@ extension MainViewController: FABActionSheetDelegate {
             }))
         }
         
-        let actionSheet = PRMNTActionSheetViewController(actions: actions)
+        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
         present(actionSheet, animated: true, completion: nil)
     }
     
@@ -896,7 +895,7 @@ extension MainViewController: MediaRecorderDelegate {
 }
 
 // MARK: - FileActionSheetDelegate
-extension MainViewController: FileActionSheetDelegate {
+extension MainViewController {
     func share(file: FileViewModel) {
         guard
             let shareVC = UIViewController.create(
@@ -918,7 +917,6 @@ extension MainViewController: FileActionSheetDelegate {
     }
     
     func downloadAction(file: FileViewModel) {
-        fileActionSheet?.dismiss()
         download(file)
     }
     

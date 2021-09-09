@@ -27,14 +27,17 @@ class PRMNTActionSheetViewController: UIViewController {
     let overlayView = UIView(frame: .zero)
     
     let contentView = UIView(frame: .zero)
+    var titleLabel: UILabel?
     var buttons: [UIButton] = []
     
     var contentViewBottomConstraint: NSLayoutConstraint!
 
-    init(actions: [PRMNTAction]) {
+    init(title: String? = nil, actions: [PRMNTAction]) {
         self.actions = actions
         
         super.init(nibName: nil, bundle: nil)
+        
+        self.title = title
         
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -93,7 +96,24 @@ class PRMNTActionSheetViewController: UIViewController {
         }
         
         if let lastButton = buttons.last {
-            lastButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+            if (title?.count ?? 0) > 0 {
+                titleLabel = UILabel(frame: .zero)
+                titleLabel!.translatesAutoresizingMaskIntoConstraints = false
+                titleLabel!.text = title
+                titleLabel!.font = Text.style11.font
+                titleLabel!.textColor = .textPrimary
+                contentView.addSubview(titleLabel!)
+                
+                NSLayoutConstraint.activate([
+                    titleLabel!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+                    titleLabel!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+                    titleLabel!.bottomAnchor.constraint(equalTo: lastButton.topAnchor, constant: -8),
+                    titleLabel!.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+                    titleLabel!.heightAnchor.constraint(equalToConstant: 20)
+                ])
+            } else {
+                lastButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+            }
         } else {
             contentView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         }
