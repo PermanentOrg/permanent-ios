@@ -44,6 +44,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         currentArchiveLabel.font = Text.style7.font
         currentArchiveLabel.textColor = .darkBlue
         
+        currentArhiveNameLabel.text = nil
         currentArhiveNameLabel.font = Text.style17.font
         currentArhiveNameLabel.textColor = .darkBlue
         
@@ -156,7 +157,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     func switchToArchive(_ archive: ArchiveVOData) {
+        showSpinner()
+        
         viewModel?.changeArchive(archive, { [self] success, error in
+            hideSpinner()
+            
             if success {
                 updateCurrentArchive()
                 tableView.reloadData()
@@ -216,25 +221,10 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tableViewData = viewModel?.availableArchives
-        if let archive = tableViewData?[indexPath.row],
-           let archiveName = archive.fullName {
-            let title = "Switch Archive".localized()
-            let description = "Switch to The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        if let archive = tableViewData?[indexPath.row] {
+            switchToArchive(archive)
             
-            self.showActionDialog(styled: .simpleWithDescription,
-                                  withTitle: title,
-                                  description: description,
-                                  positiveButtonTitle: "Switch".localized(),
-                                  positiveAction: {
-                                    self.actionDialog?.dismiss()
-                                    self.switchToArchive(archive)
-                                  },
-                                  cancelButtonTitle: "Cancel".localized(),
-                                  positiveButtonColor: .primary,
-                                  cancelButtonColor: .primary,
-                                  overlayView: self.overlayView)
-            
-            self.tableView.deselectRow(at: indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
 }
