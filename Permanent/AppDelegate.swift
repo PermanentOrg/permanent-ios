@@ -181,7 +181,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         self.rootViewController.changeDrawerRoot(viewController: rootVC)
                     }
                     
-                    let fileVM = FileViewModel(name: name, recordId: 0, folderLinkId: folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue)
+                    let fileVM = FileViewModel(name: name, recordId: 0, folderLinkId: folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: [.read])
                     
                     let shareVC: ShareViewController = UIViewController.create(withIdentifier: .share, from: .share) as! ShareViewController
                     shareVC.sharedFile = fileVM
@@ -228,7 +228,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 self.rootViewController.changeDrawerRoot(viewController: sharesVC)
                             }
                             
-                            let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
+                            let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, permissions: [.read])
                             let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
                             filePreviewVC.file = fileVM
                             

@@ -32,7 +32,9 @@ struct FileViewModel: Equatable {
     
     var fileInfoId: String?
     
-    init(model: FileInfo, archiveThumbnailURL: String? = nil) {
+    var permissions: [Permission]
+    
+    init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
         self.name = model.name
         self.date = DateUtils.currentDate
         self.description = ""
@@ -51,9 +53,11 @@ struct FileViewModel: Equatable {
         self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
         self.fileInfoId = model.id
+        
+        self.permissions = permissions
     }
     
-    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String) {
+    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, permissions: [Permission]) {
         self.name = name
         self.date = DateUtils.currentDate
         self.description = ""
@@ -70,9 +74,11 @@ struct FileViewModel: Equatable {
         self.parentFolderId = -1
         self.parentFolderLinkId = -1
         self.folderLinkId = folderLinkId
+        
+        self.permissions = permissions
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -95,6 +101,8 @@ struct FileViewModel: Equatable {
         self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
         
+        self.permissions = permissions
+        
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
                let thumbnailURL = $0.archiveVO?.thumbURL200,
@@ -109,7 +117,7 @@ struct FileViewModel: Equatable {
         }
     }
     
-    init(model: MinFolderVO, archiveThumbnailURL: String? = nil) {
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -130,6 +138,8 @@ struct FileViewModel: Equatable {
         self.parentFolderId = model.parentFolderID ?? -1
         self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
+        
+        self.permissions = permissions
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,

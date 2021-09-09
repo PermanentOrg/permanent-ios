@@ -30,11 +30,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewModel = MyFilesViewModel()
+        
         initUI()
         setupTableView()
         setupBottomActionSheet()
         
-        viewModel = MyFilesViewModel()
         fabView.delegate = self
         searchBar.delegate = self
         
@@ -96,6 +97,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
+        
+        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false
     }
     
     fileprivate func setupTableView() {
@@ -343,7 +346,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
         
-        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type)
+        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: viewModel!.archivePermissions)
         sharePreviewVC.file = fileVM
         
         let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: sharePreviewVC)
@@ -362,7 +365,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
         
-        let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue)
+        let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
         shareVC.sharedFile = file
         
         let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
@@ -593,16 +596,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none) // test
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
-            
             viewModel?.cancelDownload()
             
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            self.tableView.reloadData()
             
         case .uploading, .waiting:
             cellRightButtonAction(atPosition: indexPath.row)
@@ -752,32 +751,39 @@ extension MainViewController: FABActionSheetDelegate {
     }
 
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        // Safety measure, in case the user taps to show sheet, but the previously shown one
-        // has not finished dimissing and being deallocated.
-        guard fileActionSheet == nil else { return }
+        var actions: [PRMNTAction] = []
+        if file.permissions.contains(.share) {
+            actions.append(PRMNTAction(title: "Share".localized(), color: .primary, handler: { [self] action in
+                share(file: file)
+            }))
+        }
         
-        fileActionSheet = FileActionSheet(
-            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-            title: file.name,
-            file: file,
-            indexPath: indexPath,
-            hasDownloadButton: viewModel?.downloadInProgress == false,
-            onDismiss: {
-                self.tableView.deselectRow(at: indexPath, animated: true)
-                self.view.dismissPopup(
-                    self.fileActionSheet,
-                    overlayView: self.overlayView,
-                    completion: { _ in
-                        self.fileActionSheet?.removeFromSuperview()
-                        self.fileActionSheet = nil
-                    }
-                )
-            }
-        )
+        if file.permissions.contains(.delete) {
+            actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
-        fileActionSheet?.delegate = self
-        view.addSubview(fileActionSheet!)
-        view.presentPopup(fileActionSheet, overlayView: overlayView)
+        if file.permissions.contains(.move) {
+            actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
+                relocateAction(file: file, action: .move)
+            }))
+        }
+        
+        if file.permissions.contains(.create) {
+            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
+                relocateAction(file: file, action: .copy)
+            }))
+        }
+        
+        if file.permissions.contains(.read) && file.type.isFolder == false {
+            actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
+                downloadAction(file: file)
+            }))
+        }
+        
+        let actionSheet = PRMNTActionSheetViewController(actions: actions)
+        present(actionSheet, animated: true, completion: nil)
     }
     
     func showActionSheet() {

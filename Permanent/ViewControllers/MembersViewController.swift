@@ -39,6 +39,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         view.backgroundColor = .backgroundPrimary
         addMembersButton.configureActionButtonUI(title: String.addMember.pluralized())
         
+        addMembersButton.isHidden = viewModel!.archivePermissions.contains(.archiveShare) == false
+        
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0.0
@@ -88,7 +90,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func getMembers() {
-    
         showSpinner()
         viewModel?.getMembers(then: { status in
             self.hideSpinner()
@@ -107,7 +108,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func modifyMember(_ member: Account? = nil, withOperation operation: MemberOperation) {
-        
         guard let parameters = getModifyMemberParams(member: member, operation: operation) else { return }
         
         actionDialog?.dismiss()
@@ -128,7 +128,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func getModifyMemberParams(member: Account?, operation: MemberOperation) -> AddMemberParams? {
-        
         switch operation {
         case .add:
             guard
@@ -204,9 +203,13 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
     
-        
         let cell = tableView.dequeue(cellClass: MemberTableViewCell.self, forIndexPath: indexPath)
-        cell.member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
+        
+        let member = viewModel?.itemAtRow(indexPath.row, withRole: accessRole)
+        cell.member = member
+        
+        let hasEditPermission = viewModel?.archivePermissions.contains(.archiveShare) ?? false
+        cell.editButton.isHidden = !(hasEditPermission && member?.accessRole != .owner)
         
         cell.editButtonAction = { [weak self] cell in
             guard let viewModel = self?.viewModel,
