@@ -49,11 +49,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
     var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
     var archivePermissions: [Permission] {
-        guard let accessRaw = currentArchive?.accessRole else {
-            return [.read]
-        }
-        
-        return permissions(forAccessRole: accessRaw)
+        return currentArchive?.permissions() ?? [.read]
     }
     
     // MARK: - Table View Logic
@@ -408,24 +404,5 @@ extension FilesViewModel {
         
         let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
         getLeanItems(params: params, then: handler)
-    }
-    
-    func permissions(forAccessRole accessRoleRaw: String) -> [Permission] {
-        let accessRole = AccessRole.roleForValue(accessRoleRaw)
-        
-        switch accessRole {
-        case .owner:
-            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership]
-        case .manager:
-            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]
-        case .curator:
-            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share]
-        case .editor:
-            return [.read, .create, .upload, .edit]
-        case .contributor:
-            return [.read, .create, .upload]
-        case .viewer:
-            return [.read]
-        }
     }
 }

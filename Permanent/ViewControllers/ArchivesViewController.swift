@@ -170,6 +170,19 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             }
         })
     }
+    
+    func deleteArchive(_ archiveVO: ArchiveVOData) {
+        showSpinner()
+        viewModel?.deleteArchive(archiveId: archiveVO.archiveID, archiveNbr: archiveVO.archiveNbr, { [self] success, error in
+            hideSpinner()
+            if success {
+                updateCurrentArchive()
+                updateArchivesList()
+            } else {
+                showAlert(title: .error, message: .errorMessage)
+            }
+        })
+    }
 }
 
 extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
@@ -184,19 +197,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
             let archiveVO = tableViewData[indexPath.row]
             tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId)
             tableViewCell.rightButtonAction = { [weak self] cell in
-                let actionSheet = PRMNTActionSheetViewController(actions: [
-                    PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { action in
-                        self?.showSpinner()
-                        self?.viewModel?.deleteArchive(archiveId: archiveVO.archiveID, archiveNbr: archiveVO.archiveNbr, { success, error in
-                            self?.hideSpinner()
-                            if success {
-                                self?.updateCurrentArchive()
-                                self?.updateArchivesList()
-                            } else {
-                                self?.showAlert(title: .error, message: .errorMessage)
-                            }
-                        })
-                    }),
+                var actions = [
                     PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
                         guard let archiveId = archiveVO.archiveID else { return }
                         self?.showSpinner()
@@ -210,7 +211,29 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                             }
                         })
                     })
-                ])
+                ]
+                
+                if archiveVO.accessRole == "access.role.owner" {
+                    actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
+                        let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
+                        
+                        self?.showActionDialog(styled: .simpleWithDescription,
+                                              withTitle: description,
+                                              description: "",
+                                              positiveButtonTitle: "Delete".localized(),
+                                              positiveAction: {
+                                                self?.actionDialog?.dismiss()
+                                                self?.deleteArchive(archiveVO)
+                                              },
+                                              cancelButtonTitle: "Cancel".localized(),
+                                              positiveButtonColor: .brightRed,
+                                              cancelButtonColor: .primary,
+                                              overlayView: self?.overlayView)
+
+                    }), at: 0)
+                }
+                
+                let actionSheet = PRMNTActionSheetViewController(actions: actions)
                 self?.present(actionSheet, animated: true)
             }
             
