@@ -89,26 +89,36 @@ class FileTableViewCell: UITableViewCell {
             fileInfoId = model.fileInfoId
             updateProgress(withValue: Float(progress))
         }
-        
-        if model.fileStatus == .synced {
-            let fileURL = URL(string: model.thumbnailURL)
-            moreButton.isHidden = fileURL == nil
-            rightButtonImageView.isHidden = fileURL == nil
-        }
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
+        var hasRightButton = true
+        if model.fileStatus == .synced {
+            let fileURL = URL(string: model.thumbnailURL)
+            hasRightButton = hasRightButton && fileURL != nil
+        }
+        
         if model.type.isFolder {
             overlayView.isHidden = true
             self.isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
+            
+            let hasRightButtonPermission = model.permissions.contains(.create) ||
+                model.permissions.contains(.delete) ||
+                model.permissions.contains(.move) ||
+                model.permissions.contains(.publish) ||
+                model.permissions.contains(.share)
+            hasRightButton = hasRightButton && hasRightButtonPermission
         } else {
             overlayView.isHidden = action == .none
             self.isUserInteractionEnabled = action == .none
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = .primary
         }
+        
+        moreButton.isHidden = !hasRightButton
+        rightButtonImageView.isHidden = !hasRightButton
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {

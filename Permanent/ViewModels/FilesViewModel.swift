@@ -46,6 +46,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     private var downloader: Downloader?
     
     var isSearchActive: Bool = false
+
+    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    var archivePermissions: [Permission] {
+        return currentArchive?.permissions() ?? [.read]
+    }
     
     // MARK: - Table View Logic
     
@@ -105,7 +110,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
 
         case FileListType.uploading.rawValue:
             let fileInfo = queueItemsForCurrentFolder[indexPath.row]
-            var fileViewModel = FileViewModel(model: fileInfo)
+            var fileViewModel = FileViewModel(model: fileInfo, permissions: archivePermissions)
             
             // If the first item in queue, set the `uploading` status.
             let currentFileUpload = UploadManager.shared.inProgressUpload()
@@ -263,7 +268,7 @@ extension FilesViewModel {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO)
+                let folder = FileViewModel(model: folderVO, permissions: self.archivePermissions)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
 
@@ -372,7 +377,7 @@ extension FilesViewModel {
         viewModels.removeAll()
         
         childItems.forEach {
-            let file = FileViewModel(model: $0)
+            let file = FileViewModel(model: $0, permissions: self.archivePermissions)
             self.viewModels.append(file)
         }
         
@@ -393,7 +398,7 @@ extension FilesViewModel {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
-            let file = FileViewModel(model: folderVO)
+            let file = FileViewModel(model: folderVO, permissions: archivePermissions)
             navigationStack.append(file)
         }
         

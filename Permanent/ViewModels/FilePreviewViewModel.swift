@@ -14,11 +14,7 @@ class FilePreviewViewModel: ViewModelInterface {
     
     var recordVO: RecordVO?
     var isEditable: Bool {
-        let accessRole = recordVO?.recordVO?.accessRole?.lowercased() ?? ""
-        return accessRole.contains("editor") ||
-            accessRole.contains("curator") ||
-            accessRole.contains("manager") ||
-            accessRole.contains("owner")
+        return file.permissions.contains(.edit)
     }
     
     weak var delegate: FilePreviewNavigationControllerDelegate?

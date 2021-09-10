@@ -62,6 +62,7 @@ class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
         tagsNameCollectionView.isHidden = tagNames.count == 0
         cellNoItemLabel.isHidden = tagNames.count > 0
+        cellNoItemLabel.text = viewModel.isEditable ? "Tap to add tags".localized() : "None".localized()
         tagsNameCollectionView.reloadData()
     }
 }

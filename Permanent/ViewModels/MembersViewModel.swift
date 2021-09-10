@@ -9,17 +9,18 @@ import Foundation
 
 typealias AddMemberParams = (accountId: Int?, email: String, role: String)
 
-protocol MembersViewModelDelegate: ViewModelDelegateInterface {
-    
-    func getMembers(then handler: @escaping ServerResponse)
-    
-}
-
 class MembersViewModel: ViewModelInterface {
     fileprivate var members: [Account] = []
     fileprivate var memberSections: [AccessRole: [Account]] = [:]
     
-    weak var delegate: MembersViewModelDelegate?
+    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    var archivePermissions: [Permission] {
+        guard let accessRaw = currentArchive?.accessRole else {
+            return [.read]
+        }
+        
+        return permissions(forAccessRole: accessRaw)
+    }
     
     func numberOfItemsForRole(_ role: AccessRole) -> Int {
         return memberSections[role]?.count ?? 0
@@ -28,9 +29,6 @@ class MembersViewModel: ViewModelInterface {
     func itemAtRow(_ row: Int, withRole role: AccessRole) -> Account? {
         return memberSections[role]?[row]
     }
-}
-
-extension MembersViewModel: MembersViewModelDelegate {
     
     func getMembers(then handler: @escaping ServerResponse) {
         guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
@@ -100,6 +98,25 @@ extension MembersViewModel: MembersViewModelDelegate {
     fileprivate func onGetMembersSucess(_ accounts: [AccountVO]) {
         self.members = accounts.map { AccountVM(accountVO: $0) }
         self.memberSections = Dictionary(grouping: self.members, by: { $0.accessRole })
+    }
+    
+    func permissions(forAccessRole accessRoleRaw: String) -> [Permission] {
+        let accessRole = AccessRole.roleForValue(accessRoleRaw)
+        
+        switch accessRole {
+        case .owner:
+            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership]
+        case .manager:
+            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]
+        case .curator:
+            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share]
+        case .editor:
+            return [.read, .create, .upload, .edit]
+        case .contributor:
+            return [.read, .create, .upload]
+        case .viewer:
+            return [.read]
+        }
     }
     
 }

@@ -11,7 +11,7 @@ class MemberTableViewCell: UITableViewCell {
     fileprivate var nameLabel: UILabel!
     fileprivate var statusLabel: UILabel!
     fileprivate var emailLabel: UILabel!
-    fileprivate var editButton: UIButton!
+    var editButton: UIButton!
     
     var member: Account? {
         didSet {
