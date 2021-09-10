@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Vlad Alexandru Rusu on 30.08.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import Foundation
