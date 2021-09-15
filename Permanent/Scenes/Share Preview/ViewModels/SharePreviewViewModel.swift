@@ -26,6 +26,8 @@ class SharePreviewViewModel {
             viewDelegate?.updateSpinner(isLoading: isBusy)
         }
     }
+    
+    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
 
     // MARK: - Events
     
@@ -52,7 +54,6 @@ class SharePreviewViewModel {
     // MARK: - Network
     
     func fetchSharedItems(urlToken: String) {
-        
         isBusy = true
         
         let apiOperation = APIOperation(ShareEndpoint.checkLink(token: urlToken))
@@ -138,7 +139,6 @@ class SharePreviewViewModel {
     
     
     fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVOData) {
-        
         if let folderData = model.folderData {
             if let files = extractSharedFiles(from: folderData) {
                 self.files = files
