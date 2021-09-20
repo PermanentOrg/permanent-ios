@@ -61,10 +61,12 @@
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
+		5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */; };
+		5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
-		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.swift */; };
-		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.xib */; };
+		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
+		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
 		5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */; };
 		5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */; };
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
@@ -87,6 +89,8 @@
 		5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */; };
 		5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */; };
 		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
+		5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */; };
+		5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */; };
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
@@ -429,10 +433,12 @@
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
+		5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenSectionTitleTableViewCell.swift; sourceTree = "<group>"; };
+		5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenSectionTitleTableViewCell.xib; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
-		5EC8C4B926D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenDetailsTableViewCell.swift; sourceTree = "<group>"; };
-		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
+		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		5ED0855D24E3E5C300CDB4D3 /* OpenSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -461,6 +467,8 @@
 		5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageOne.swift; sourceTree = "<group>"; };
 		5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageTwo.swift; sourceTree = "<group>"; };
 		5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageThree.swift; sourceTree = "<group>"; };
+		5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenPendingArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
+		5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenPendingArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
@@ -1518,8 +1526,12 @@
 			children = (
 				BC8E794B257A8526008ED0F5 /* ArchiveTableViewCell.xib */,
 				BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */,
-				5EC8C4BA26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.xib */,
-				5EC8C4B926D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.swift */,
+				5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */,
+				5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */,
+				5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */,
+				5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */,
+				5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */,
+				5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */,
 			);
 			path = ArchiveTableViewCell;
 			sourceTree = "<group>";
@@ -1806,12 +1818,14 @@
 				BCC1CCF425792E950069E337 /* LinkOptionsView.xib in Resources */,
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
+				5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */,
 				BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */,
 				5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
 				5E2E3D1926D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib in Resources */,
@@ -1841,7 +1855,7 @@
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
 				5E2E3D0F26D058940090EF02 /* Archives.storyboard in Resources */,
 				F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */,
-				5EC8C4BC26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.xib in Resources */,
+				5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
@@ -2007,6 +2021,7 @@
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
+				5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
@@ -2020,7 +2035,7 @@
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
-				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenDetailsTableViewCell.swift in Sources */,
+				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
 				5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */,
@@ -2050,6 +2065,7 @@
 				BC6358B52536FD9200EEC48C /* FolderVO.swift in Sources */,
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
 				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
+				5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,

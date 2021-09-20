@@ -16,6 +16,12 @@ class ArchivesViewModel: ViewModelInterface {
     var availableArchives: [ArchiveVOData] {
         return allArchives.filter({ $0.archiveNbr != currentArchive()?.archiveNbr })
     }
+    var pendingArchives: [ArchiveVOData] {
+        return allArchives.filter({ $0.status == ArchiveVOData.Status.pending })
+    }
+    var selectableArchives: [ArchiveVOData] {
+        return availableArchives.filter({ $0.status == ArchiveVOData.Status.ok })
+    }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
         guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {

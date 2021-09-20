@@ -7,14 +7,14 @@
 
 import UIKit
 
-class ArchiveScreenDetailsTableViewCell: UITableViewCell {
+class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
 
     @IBOutlet weak var archiveThumbnailImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archiveAccessLabel: UILabel!
     @IBOutlet weak var rightButton: UIButton!
     
-    var rightButtonAction: ((ArchiveScreenDetailsTableViewCell) -> Void)?
+    var rightButtonAction: ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
