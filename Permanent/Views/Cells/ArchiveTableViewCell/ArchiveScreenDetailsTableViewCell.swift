@@ -36,7 +36,7 @@ class ArchiveScreenDetailsTableViewCell: UITableViewCell {
         contentView.backgroundColor = highlighted ? .barneyPurple : .white
     }
     
-    func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool) {
+    func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool, isManaging: Bool) {
         guard let thumbURL = archiveVO.thumbURL500,
               let archiveName = archiveVO.fullName,
               let accessLevel = archiveVO.accessRole else { return }
@@ -46,6 +46,7 @@ class ArchiveScreenDetailsTableViewCell: UITableViewCell {
         archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         archiveAccessLabel.text = "Access: <ACCESS_LEVEL>".localized().replacingOccurrences(of: "<ACCESS_LEVEL>", with: AccessRole.roleForValue(accessLevel).groupName)
         
+        rightButton.isHidden = false
         if isDefault {
             if #available(iOS 13.0, *) {
                 rightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
@@ -54,9 +55,11 @@ class ArchiveScreenDetailsTableViewCell: UITableViewCell {
             }
             
             rightButton.isEnabled = false
-        } else {
+        } else if isManaging {
             rightButton.setImage(UIImage(named: "more"), for: .normal)
             rightButton.isEnabled = true
+        } else {
+            rightButton.isHidden = true
         }
     }
     

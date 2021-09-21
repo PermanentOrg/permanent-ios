@@ -18,6 +18,13 @@ class SharePreviewViewController: UIViewController {
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var actionButton: RoundedButton!
     
+    @IBOutlet weak var currentArchiveContainer: UIView!
+    @IBOutlet weak var currentArchiveImageView: UIImageView!
+    @IBOutlet weak var currentArchiveName: UILabel!
+    @IBOutlet weak var currentArchiveDefaultButton: UIButton!
+    @IBOutlet weak var selectArchiveLabel: UILabel!
+    
+    
     var viewModel: SharePreviewViewModelDelegate! {
         didSet {
             viewModel.viewDelegate = self
@@ -38,6 +45,7 @@ class SharePreviewViewController: UIViewController {
         navigationItem.title = .sharePreview
         view.backgroundColor = .galleryGray
      
+        // MARK: Shared by view setup
         headerView.backgroundColor = .backgroundPrimary
         collectionView.backgroundColor = .backgroundPrimary
         
@@ -56,6 +64,34 @@ class SharePreviewViewController: UIViewController {
         
         archiveImage.isHidden = true
         actionButton.isHidden = true
+        
+        // MARK: Current Archive view setup
+        currentArchiveContainer.layer.borderWidth = 1
+        currentArchiveContainer.layer.borderColor = UIColor.darkBlue.cgColor
+        currentArchiveContainer.layer.cornerRadius = Constants.Design.actionButtonRadius
+        currentArchiveContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeArchiveButtonPressed(_:))))
+        
+        currentArchiveName.text = nil
+        currentArchiveName.font = Text.style17.font
+        currentArchiveName.textColor = .darkBlue
+        
+        selectArchiveLabel.text = "Tap to change archive".localized()
+        selectArchiveLabel.font = Text.style7.font
+        selectArchiveLabel.textColor = .darkBlue
+        
+        updateCurrentArchiveView()
+    }
+    
+    func updateCurrentArchiveView() {
+        if let archiveThumbURL = viewModel.currentArchive?.thumbURL500,
+           let archiveName = viewModel.currentArchive?.fullName {
+            currentArchiveImageView.image = nil
+            currentArchiveImageView.load(urlString: archiveThumbURL)
+            
+            currentArchiveDefaultButton.isHidden = viewModel.currentArchive?.archiveID != PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+            
+            currentArchiveName.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        }
     }
     
     fileprivate func setupCollectionView() {
@@ -88,6 +124,15 @@ class SharePreviewViewController: UIViewController {
     
     @IBAction func previewAction(_ sender: UIButton) {
         viewModel.performAction()
+    }
+    
+    @IBAction func changeArchiveButtonPressed(_ sender: Any) {
+        let archivesVC = UIViewController.create(withIdentifier: .archives, from: .archives) as! ArchivesViewController
+        archivesVC.delegate = self
+        archivesVC.isManaging = false
+        
+        let navController = NavigationController(rootViewController: archivesVC)
+        present(navController, animated: true, completion: nil)
     }
     
     @objc
@@ -191,5 +236,12 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
         sharesVC.selectedFileId = viewModel.shareDetails?.folderLinkId
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
+    }
+}
+
+extension SharePreviewViewController: ArchivesViewControllerDelegate {
+    func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController) {
+        updateCurrentArchiveView()
+        viewModel.start()
     }
 }
