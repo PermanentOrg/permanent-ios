@@ -223,4 +223,35 @@ class ArchivesViewModel: ViewModelInterface {
         }
     }
     
+    func pendingArchiveOperation(archive: ArchiveVOData, accept: Bool, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        let createArchiveOperation: APIOperation
+        if accept {
+            createArchiveOperation = APIOperation(ArchivesEndpoint.accept(archiveVO: archive))
+        } else {
+            createArchiveOperation = APIOperation(ArchivesEndpoint.decline(archiveVO: archive))
+        }
+        
+        createArchiveOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(false, APIError.invalidResponse)
+                    return
+                }
+                
+                completionBlock(true, nil)
+                return
+            case .error:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
 }

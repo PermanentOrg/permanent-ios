@@ -253,7 +253,30 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self)) as? ArchiveScreenPendingArchiveDetailsTableViewCell,
                let tableViewData = viewModel?.pendingArchives {
                 let archiveVO = tableViewData[indexPath.row]
-                tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId)
+                tableViewCell.updateCell(withArchiveVO: archiveVO)
+                tableViewCell.acceptButtonAction = { [weak self] cell in
+                    self?.showSpinner()
+                    self?.viewModel?.pendingArchiveOperation(archive: archiveVO, accept: true, { success, error in
+                        self?.hideSpinner()
+                        if error == nil {
+                            self?.updateArchivesList()
+                        } else {
+                            self?.showAlert(title: .error, message: .errorMessage)
+                        }
+                    })
+                }
+                
+                tableViewCell.declineButtonAction = { [weak self] cell in
+                    self?.showSpinner()
+                    self?.viewModel?.pendingArchiveOperation(archive: archiveVO, accept: false, { success, error in
+                        self?.hideSpinner()
+                        if error == nil {
+                            self?.updateArchivesList()
+                        } else {
+                            self?.showAlert(title: .error, message: .errorMessage)
+                        }
+                    })
+                }
                 
                 cell = tableViewCell
             }

@@ -21,7 +21,7 @@ class ArchiveScreenSectionTitleTableViewCell: UITableViewCell {
     }
     
     func configureUI() {
-        backgroundColor = .white
+        topSectionTitleLabel.backgroundColor = .white
         topSectionTitleLabel.font = Text.style3.font
         topSectionTitleLabel.textColor = .darkBlue
     }
@@ -31,7 +31,7 @@ class ArchiveScreenSectionTitleTableViewCell: UITableViewCell {
         case .pending:
             topSectionTitleLabel.text = "Pending Archives:".localized()
         case .ok:
-            topSectionTitleLabel.text = "Choose Archives:".localized()
+            topSectionTitleLabel.text = "Choose Archive:".localized()
         default:
             topSectionTitleLabel.text = ""
         }

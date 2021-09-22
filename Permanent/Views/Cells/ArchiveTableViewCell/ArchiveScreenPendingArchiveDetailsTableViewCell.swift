@@ -16,8 +16,10 @@ class ArchiveScreenPendingArchiveDetailsTableViewCell: UITableViewCell {
     @IBOutlet var approveButton: RoundedButton!
     @IBOutlet var denyButton: RoundedButton!
     
-    var approveAction: ButtonAction?
-    var denyAction: ButtonAction?
+    var acceptButtonAction: ((ArchiveScreenPendingArchiveDetailsTableViewCell) -> Void)?
+    var declineButtonAction: ((ArchiveScreenPendingArchiveDetailsTableViewCell) -> Void)?
+    
+    var archiveData: ArchiveVOData?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,7 +37,7 @@ class ArchiveScreenPendingArchiveDetailsTableViewCell: UITableViewCell {
         contentView.backgroundColor = .white
     }
     
-    func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool) {
+    func updateCell(withArchiveVO archiveVO: ArchiveVOData) {
         guard let thumbURL = archiveVO.thumbURL500,
               let archiveName = archiveVO.fullName,
               let accessLevel = archiveVO.accessRole else { return }
@@ -47,14 +49,16 @@ class ArchiveScreenPendingArchiveDetailsTableViewCell: UITableViewCell {
         
         approveButton.configureActionButtonUI(title: .accept, bgColor: .darkBlue)
         denyButton.configureActionButtonUI(title: .decline, bgColor: .brightRed)
+        
+        archiveData = archiveVO
     }
     
-    @IBAction func approveAction(_ sender: UIButton) {
-        approveAction?()
+    @IBAction func acceptAction(_ sender: UIButton) {
+        acceptButtonAction?(self)
     }
     
-    @IBAction func denyAction(_ sender: UIButton) {
-        denyAction?()
+    @IBAction func declineAction(_ sender: UIButton) {
+        declineButtonAction?(self)
     }
     
 }
