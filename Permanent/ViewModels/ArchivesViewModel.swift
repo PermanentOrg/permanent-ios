@@ -75,6 +75,8 @@ class ArchivesViewModel: ViewModelInterface {
                     return
                 }
                 
+                PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+                
                 self.account = model.results[0].data?[0].accountVO
                 completionBlock(self.account, nil)
                

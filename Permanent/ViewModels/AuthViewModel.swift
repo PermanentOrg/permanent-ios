@@ -266,6 +266,10 @@ class AuthViewModel: ViewModelInterface {
         } else {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
         }
+        
+        if let archiveId = response.results?.first?.data?.first?.accountVO?.defaultArchiveID {
+            PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+        }
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {

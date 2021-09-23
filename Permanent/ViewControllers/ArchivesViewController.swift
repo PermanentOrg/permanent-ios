@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ArchivesViewControllerDelegate: AnyObject {
+    func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController)
+}
+
 class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     @IBOutlet weak var currentArchiveContainer: UIView!
@@ -16,6 +20,9 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     @IBOutlet weak var createNewArchiveButton: RoundedButton!
     @IBOutlet weak var currentArchiveRightButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    
+    weak var delegate: ArchivesViewControllerDelegate?
+    var isManaging = true
     
     private let overlayView = UIView()
     private var tableViewSections: [ArchiveVOData.Status] = []
@@ -28,12 +35,25 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         updateArchivesList()
         initUI()
         setupTableView()
+        styleNavBar()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         overlayView.frame = view.bounds
+    }
+    
+    override func styleNavBar() {
+        super.styleNavBar()
+        
+        if isManaging {
+            title = "Manage Archives".localized()
+        } else {
+            title = "Change Archive".localized()
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonPressed(_:)))
+        }
     }
     
     private func initUI() {
@@ -49,6 +69,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         currentArhiveNameLabel.textColor = .darkBlue
         
         createNewArchiveButton.configureActionButtonUI(title: String("Create new archive".localized()))
+        createNewArchiveButton.isHidden = !isManaging
         
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
@@ -66,6 +87,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                            forCellReuseIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self))
     }
     
+    // MARK: - Actions
     @IBAction func createNewArchiveAction(_ sender: Any) {
         self.showActionDialog(
             styled: .inputWithDropdown,
@@ -112,6 +134,41 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         present(actionSheet, animated: true)
     }
     
+    @objc func doneButtonPressed(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func switchToArchive(_ archive: ArchiveVOData) {
+        showSpinner()
+        
+        viewModel?.changeArchive(archive, { [self] success, error in
+            hideSpinner()
+            
+            if success {
+                updateCurrentArchive()
+                tableView.reloadData()
+                
+                delegate?.archivesViewControllerDidChangeArchive(self)
+            } else {
+                showAlert(title: .error, message: .errorMessage)
+            }
+        })
+    }
+    
+    func deleteArchive(_ archiveVO: ArchiveVOData) {
+        showSpinner()
+        viewModel?.deleteArchive(archiveId: archiveVO.archiveID, archiveNbr: archiveVO.archiveNbr, { [self] success, error in
+            hideSpinner()
+            if success {
+                updateCurrentArchive()
+                updateArchivesList()
+            } else {
+                showAlert(title: .error, message: .errorMessage)
+            }
+        })
+    }
+    
+    // MARK: - UI
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
            let archiveName: String = archive.fullName,
@@ -121,6 +178,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             
             currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
             
+            currentArchiveRightButton.isHidden = false
             if archive.archiveID == viewModel?.defaultArchiveId {
                 if #available(iOS 13.0, *) {
                     currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
@@ -128,9 +186,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                     currentArchiveRightButton.setImage(UIImage(named: "star.fill"), for: .normal)
                 }
                 currentArchiveRightButton.isEnabled = false
-            } else {
+            } else if isManaging {
                 currentArchiveRightButton.setImage(UIImage(named: "more"), for: .normal)
                 currentArchiveRightButton.isEnabled = true
+            } else {
+                currentArchiveRightButton.isHidden = true
             }
         }
     }
@@ -150,34 +210,6 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                         showAlert(title: .error, message: .errorMessage)
                     }
                 }
-            } else {
-                showAlert(title: .error, message: .errorMessage)
-            }
-        })
-    }
-    
-    func switchToArchive(_ archive: ArchiveVOData) {
-        showSpinner()
-        
-        viewModel?.changeArchive(archive, { [self] success, error in
-            hideSpinner()
-            
-            if success {
-                updateCurrentArchive()
-                tableView.reloadData()
-            } else {
-                showAlert(title: .error, message: .errorMessage)
-            }
-        })
-    }
-    
-    func deleteArchive(_ archiveVO: ArchiveVOData) {
-        showSpinner()
-        viewModel?.deleteArchive(archiveId: archiveVO.archiveID, archiveNbr: archiveVO.archiveNbr, { [self] success, error in
-            hideSpinner()
-            if success {
-                updateCurrentArchive()
-                updateArchivesList()
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }
@@ -205,7 +237,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self)) as? ArchiveScreenChooseArchiveDetailsTableViewCell,
                let tableViewData = viewModel?.selectableArchives {
                 let archiveVO = tableViewData[indexPath.row]
-                tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId)
+                tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
                 tableViewCell.rightButtonAction = { [weak self] cell in
                     var actions = [
                         PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
@@ -249,6 +281,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 
                 cell = tableViewCell
             }
+            
         } else if tableViewSections[indexPath.section] == .pending {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self)) as? ArchiveScreenPendingArchiveDetailsTableViewCell,
                let tableViewData = viewModel?.pendingArchives {
@@ -298,7 +331,8 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         tableViewSections = []
         if let pendingArchives = viewModel?.pendingArchives,
-           pendingArchives.count > 0{
+           pendingArchives.count > 0,
+           isManaging {
             tableViewSections.append(ArchiveVOData.Status.pending)
         }
         if let selectableArchives = viewModel?.selectableArchives,
