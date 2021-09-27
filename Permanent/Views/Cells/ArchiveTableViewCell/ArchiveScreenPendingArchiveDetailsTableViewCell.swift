@@ -32,10 +32,6 @@ class ArchiveScreenPendingArchiveDetailsTableViewCell: UITableViewCell {
         archiveAccessLabel.font = Text.style8.font
         archiveAccessLabel.textColor = .darkBlue
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        contentView.backgroundColor = .white
-    }
     
     func updateCell(withArchiveVO archiveVO: ArchiveVOData) {
         guard let thumbURL = archiveVO.thumbURL500,

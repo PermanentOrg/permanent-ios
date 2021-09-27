@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArchiveScreenSectionTitleTableViewCell: UITableViewCell {
+class ArchiveScreenSectionTitleTableViewCell: UITableViewHeaderFooterView {
 
     @IBOutlet weak var topSectionTitleLabel: UILabel!
     
@@ -15,12 +15,9 @@ class ArchiveScreenSectionTitleTableViewCell: UITableViewCell {
         super.awakeFromNib()
         configureUI()
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
     
     func configureUI() {
+        contentView.isUserInteractionEnabled = false
         topSectionTitleLabel.backgroundColor = .white
         topSectionTitleLabel.font = Text.style3.font
         topSectionTitleLabel.textColor = .darkBlue

@@ -83,8 +83,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                            forCellReuseIdentifier: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self))
         tableView.register(UINib(nibName: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self), bundle: nil),
                            forCellReuseIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: ArchiveScreenSectionTitleTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ArchiveScreenSectionTitleTableViewCell.self), bundle: nil), forHeaderFooterViewReuseIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self))
     }
     
     // MARK: - Actions
@@ -215,6 +214,80 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             }
         })
     }
+    
+    private func rightButtonAction() -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
+        return { [weak self] cell in
+            guard let archiveVO = cell.archiveData else { return }
+            var actions = [
+                PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
+                    guard let archiveId = archiveVO.archiveID else { return }
+                    self?.showSpinner()
+                    self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
+                        self?.hideSpinner()
+                        if error == nil {
+                            self?.updateCurrentArchive()
+                            self?.tableView.reloadData()
+                        } else {
+                            self?.showAlert(title: .error, message: .errorMessage)
+                        }
+                    })
+                })
+            ]
+            
+            if archiveVO.accessRole == "access.role.owner" {
+                actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
+                    let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
+                    
+                    self?.showActionDialog(styled: .simpleWithDescription,
+                                           withTitle: description,
+                                           description: "",
+                                           positiveButtonTitle: "Delete".localized(),
+                                           positiveAction: {
+                                            self?.actionDialog?.dismiss()
+                                            self?.deleteArchive(archiveVO)
+                                           },
+                                           cancelButtonTitle: "Cancel".localized(),
+                                           positiveButtonColor: .brightRed,
+                                           cancelButtonColor: .primary,
+                                           overlayView: self?.overlayView)
+                    
+                }), at: 0)
+            }
+            
+            let actionSheet = PRMNTActionSheetViewController(actions: actions)
+            self?.present(actionSheet, animated: true)
+        }
+    }
+    
+    private func acceptButtonAction() -> ((ArchiveScreenPendingArchiveDetailsTableViewCell) -> Void) {
+        return { [weak self] cell in
+            self?.showSpinner()
+            guard let archiveData = cell.archiveData else { return }
+            self?.viewModel?.pendingArchiveOperation(archive: archiveData, accept: true, { success, error in
+                self?.hideSpinner()
+                if error == nil {
+                    self?.updateArchivesList()
+                } else {
+                    self?.showAlert(title: .error, message: .errorMessage)
+                }
+            })
+        }
+    }
+        
+    private func declineButtonAction() -> ((ArchiveScreenPendingArchiveDetailsTableViewCell) -> Void) {
+        return { [weak self] cell in
+            self?.showSpinner()
+            guard let archiveData = cell.archiveData else { return }
+            self?.viewModel?.pendingArchiveOperation(archive: archiveData, accept: false, { success, error in
+                self?.hideSpinner()
+                if error == nil {
+                    self?.updateArchivesList()
+                } else {
+                    self?.showAlert(title: .error, message: .errorMessage)
+                }
+            })
+        }
+    }
 }
 
 extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
@@ -238,46 +311,8 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                let tableViewData = viewModel?.selectableArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
-                tableViewCell.rightButtonAction = { [weak self] cell in
-                    var actions = [
-                        PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
-                            guard let archiveId = archiveVO.archiveID else { return }
-                            self?.showSpinner()
-                            self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
-                                self?.hideSpinner()
-                                if error == nil {
-                                    self?.updateCurrentArchive()
-                                    tableView.reloadData()
-                                } else {
-                                    self?.showAlert(title: .error, message: .errorMessage)
-                                }
-                            })
-                        })
-                    ]
-                    
-                    if archiveVO.accessRole == "access.role.owner" {
-                        actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
-                            let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
-                            
-                            self?.showActionDialog(styled: .simpleWithDescription,
-                                                   withTitle: description,
-                                                   description: "",
-                                                   positiveButtonTitle: "Delete".localized(),
-                                                   positiveAction: {
-                                                    self?.actionDialog?.dismiss()
-                                                    self?.deleteArchive(archiveVO)
-                                                   },
-                                                   cancelButtonTitle: "Cancel".localized(),
-                                                   positiveButtonColor: .brightRed,
-                                                   cancelButtonColor: .primary,
-                                                   overlayView: self?.overlayView)
-                            
-                        }), at: 0)
-                    }
-                    
-                    let actionSheet = PRMNTActionSheetViewController(actions: actions)
-                    self?.present(actionSheet, animated: true)
-                }
+                
+                tableViewCell.rightButtonAction = rightButtonAction()
                 
                 cell = tableViewCell
             }
@@ -287,29 +322,10 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                let tableViewData = viewModel?.pendingArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO)
-                tableViewCell.acceptButtonAction = { [weak self] cell in
-                    self?.showSpinner()
-                    self?.viewModel?.pendingArchiveOperation(archive: archiveVO, accept: true, { success, error in
-                        self?.hideSpinner()
-                        if error == nil {
-                            self?.updateArchivesList()
-                        } else {
-                            self?.showAlert(title: .error, message: .errorMessage)
-                        }
-                    })
-                }
                 
-                tableViewCell.declineButtonAction = { [weak self] cell in
-                    self?.showSpinner()
-                    self?.viewModel?.pendingArchiveOperation(archive: archiveVO, accept: false, { success, error in
-                        self?.hideSpinner()
-                        if error == nil {
-                            self?.updateArchivesList()
-                        } else {
-                            self?.showAlert(title: .error, message: .errorMessage)
-                        }
-                    })
-                }
+                tableViewCell.acceptButtonAction = acceptButtonAction()
+                
+                tableViewCell.declineButtonAction = declineButtonAction()
                 
                 cell = tableViewCell
             }
@@ -343,13 +359,19 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
         let headerView = UIView()
-        if let headerCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self)) as? ArchiveScreenSectionTitleTableViewCell {
+        if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self)) as? ArchiveScreenSectionTitleTableViewCell {
             headerCell.updateCell(with: tableViewSections[section])
             headerView.addSubview(headerCell)
         }
 
         return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        if tableViewSections[indexPath.section] == .pending {
+            return false
+        }
+        return true
     }
 }

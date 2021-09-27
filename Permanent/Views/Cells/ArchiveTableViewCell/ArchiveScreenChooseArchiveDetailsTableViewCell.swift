@@ -16,6 +16,8 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
     
     var rightButtonAction: ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void)?
     
+    var archiveData: ArchiveVOData?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -61,6 +63,8 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
         } else {
             rightButton.isHidden = true
         }
+        
+        archiveData = archiveVO
     }
     
     @IBAction func rightButtonPressed(_ sender: Any) {
