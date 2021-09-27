@@ -7,22 +7,21 @@
 
 import Foundation
 
-class ShareNotificationPayload: NSObject, NSCoding {
-    
+class ShareNotificationPayload: BaseNotificationPayload {
     let name: String
     let recordId: Int
     let folderLinkId: Int
     let archiveNbr: String
     let type: String
     
-    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String) {
+    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, toArchiveId: Int, toArchiveNbr: String, toArchiveName: String) {
         self.name = name
         self.recordId = recordId
         self.folderLinkId = folderLinkId
         self.archiveNbr = archiveNbr
         self.type = type
         
-        super.init()
+        super.init(toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
     }
     
     required init?(coder: NSCoder) {
@@ -32,15 +31,17 @@ class ShareNotificationPayload: NSObject, NSCoding {
         archiveNbr = coder.decodeObject(forKey: "archiveNbr") as? String ?? ""
         type = coder.decodeObject(forKey: "type") as? String ?? ""
         
-        super.init()
+        super.init(coder: coder)
     }
     
-    func encode(with coder: NSCoder) {
+    override func encode(with coder: NSCoder) {
         coder.encode(name, forKey: "name")
         coder.encode(recordId, forKey: "recordId")
         coder.encode(folderLinkId, forKey: "folderLinkId")
         coder.encode(archiveNbr, forKey: "archiveNbr")
         coder.encode(type, forKey: "type")
+        
+        super.encode(with: coder)
     }
     
 }

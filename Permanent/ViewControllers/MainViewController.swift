@@ -283,7 +283,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.getRoot(then: { status in
             self.onFilesFetchCompletion(status)
             self.checkForSavedUniversalLink()
-            self.checkForSavedShareFile()
             self.checkForRequestShareAccess()
         })
     }
@@ -337,40 +336,49 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationController?.display(viewController: sharePreviewVC)
     }
     
-    fileprivate func checkForSavedShareFile() {
-        guard
-            let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey),
-            let sharePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as? FilePreviewViewController
-        else {
-            return
-        }
-        
-        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: viewModel!.archivePermissions)
-        sharePreviewVC.file = fileVM
-        
-        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: sharePreviewVC)
-        fileDetailsNavigationController.filePreviewNavDelegate = self
-        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-        present(fileDetailsNavigationController, animated: true)
-        
-        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
-    }
-    
-    fileprivate func checkForRequestShareAccess() {
+    func checkForRequestShareAccess() {
         guard
             let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess),
             let shareVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
         else {
             return
         }
-        
-        let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
-        
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
+        
+        func _presentShare() {
+            let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
+            shareVC.sharedFile = file
+            
+            let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
+            present(shareNavController, animated: true)
+        }
+        
+        let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+        if currentArchive?.archiveNbr != sharedFilePayload.toArchiveNbr {
+            let action = { [weak self] in
+                self?.actionDialog?.dismiss()
+                
+                self?.viewModel?.changeArchive(withArchiveId: sharedFilePayload.toArchiveId, archiveNbr: sharedFilePayload.toArchiveNbr, completion: { success in
+                    self?.getRootFolder()
+                    _presentShare()
+                })
+                
+                self?.actionDialog = nil
+            }
+            
+            let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFilePayload.toArchiveName)
+            let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFilePayload.toArchiveName)
+            showActionDialog(styled: .simpleWithDescription,
+                             withTitle: title,
+                             description: description,
+                             positiveButtonTitle: "Switch".localized(),
+                             positiveAction: action,
+                             cancelButtonTitle: "Cancel".localized(),
+                             overlayView: overlayView)
+        } else {
+            _presentShare()
+        }
+        
     }
     
     private func upload(files: [FileInfo]) {

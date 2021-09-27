@@ -22,23 +22,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     var selectedFileId: Int?
     
-    var initialNavigationParams: NavigateMinParams?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         viewModel = SharedFilesViewModel()
         
+        let hasSavedFile = checkSavedFile()
+        let hasSavedFolder = checkSavedFolder()
+        
         configureUI()
         setupTableView()
         
-        getShares() { [self] in
-            if let params = initialNavigationParams {
-                navigateToFolder(withParams: params, backNavigation: false) {
-                    self.backButton.isHidden = false
-                    self.directoryLabel.text = params.folderName
-                }
-            }
+        if !hasSavedFolder && !hasSavedFile {
+            getShares()
         }
     }
     
@@ -101,6 +97,111 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     fileprivate func refreshTableView(_ completion: (() -> ())? = nil) {
         tableView.reloadData(completion)
         configureTableViewBgView()
+    }
+    
+    func checkSavedFile() -> Bool {
+        var hasSavedFile = false
+        if let sharedFile: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
+            hasSavedFile = true
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
+            
+            selectedIndex = ShareListType.sharedWithMe.rawValue
+            
+            func _presentFileDetails() {
+                let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+                let permissions = currentArchive?.permissions() ?? [.read]
+                let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions)
+                let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+                filePreviewVC.file = fileVM
+                
+                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+                fileDetailsNavigationController.filePreviewNavDelegate = self
+                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+                present(fileDetailsNavigationController, animated: true)
+            }
+            
+            let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+            if currentArchive?.archiveNbr != sharedFile.toArchiveNbr {
+                let action = { [weak self] in
+                    self?.actionDialog?.dismiss()
+                    
+                    self?.viewModel?.changeArchive(withArchiveId: sharedFile.toArchiveId, archiveNbr: sharedFile.toArchiveNbr, completion: { success in
+                        if success {
+                            self?.getShares() {
+                                _presentFileDetails()
+                            }
+                        }
+                    })
+                }
+                
+                let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFile.toArchiveName)
+                let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFile.toArchiveName)
+                showActionDialog(styled: .simpleWithDescription,
+                                 withTitle: title,
+                                 description: description,
+                                 positiveButtonTitle: "Switch".localized(),
+                                 positiveAction: action,
+                                 cancelButtonTitle: "Cancel".localized(),
+                                 overlayView: overlayView)
+            } else {
+                getShares() {
+                    _presentFileDetails()
+                }
+            }
+        }
+        
+        return hasSavedFile
+    }
+    
+    func checkSavedFolder() -> Bool {
+        var hasSavedFolder = false
+        if let sharedFolder: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey) {
+            hasSavedFolder = true
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFolderKey)
+            
+            selectedIndex = ShareListType.sharedWithMe.rawValue
+            
+            let navigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, folderName: sharedFolder.name)
+            
+            let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+            if currentArchive?.archiveNbr != sharedFolder.toArchiveNbr {
+                let action = { [weak self] in
+                    self?.actionDialog?.dismiss()
+                    
+                    self?.viewModel?.changeArchive(withArchiveId: sharedFolder.toArchiveId, archiveNbr: sharedFolder.toArchiveNbr, completion: { success in
+                        if success {
+                            self?.getShares() {
+                                self?.navigateToFolder(withParams: navigationParams, backNavigation: false) {
+                                    self?.backButton.isHidden = false
+                                    self?.directoryLabel.text = navigationParams.folderName
+                                }
+                            }
+                        }
+                    })
+                    
+                    self?.actionDialog = nil
+                }
+                
+                let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFolder.toArchiveName)
+                let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFolder.toArchiveName)
+                showActionDialog(styled: .simpleWithDescription,
+                                 withTitle: title,
+                                 description: description,
+                                 positiveButtonTitle: "Switch".localized(),
+                                 positiveAction: action,
+                                 cancelButtonTitle: "Cancel".localized(),
+                                 overlayView: overlayView)
+            } else {
+                getShares() { [self] in
+                    navigateToFolder(withParams: navigationParams, backNavigation: false) {
+                        backButton.isHidden = false
+                        directoryLabel.text = navigationParams.folderName
+                    }
+                }
+            }
+        }
+        
+        return hasSavedFolder
     }
     
     func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {

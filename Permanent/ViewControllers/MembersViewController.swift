@@ -23,7 +23,9 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         configureUI()
         setupTableView()
         
-        getMembers()
+        if checkSavedNotification() == false {
+            getMembers()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -54,6 +56,42 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         tableView.sectionFooterHeight = 1
         tableView.allowsSelection = false
         tableView.estimatedRowHeight = 40
+    }
+    
+    func checkSavedNotification() -> Bool {
+        var hasSavedNotification = false
+        
+        if let requestPAAccess: PARequestNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestPAAccess) {
+            hasSavedNotification = true
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestPAAccess)
+            
+            let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+            if currentArchive?.archiveNbr != requestPAAccess.toArchiveNbr {
+                let action = { [weak self] in
+                    self?.actionDialog?.dismiss()
+                    
+                    self?.viewModel?.changeArchive(withArchiveId: requestPAAccess.toArchiveId, archiveNbr: requestPAAccess.toArchiveNbr, completion: { success in
+                        self?.getMembers()
+                    })
+                    
+                    self?.actionDialog = nil
+                }
+                
+                let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: requestPAAccess.toArchiveName)
+                let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: requestPAAccess.toArchiveName)
+                showActionDialog(styled: .simpleWithDescription,
+                                 withTitle: title,
+                                 description: description,
+                                 positiveButtonTitle: "Switch".localized(),
+                                 positiveAction: action,
+                                 cancelButtonTitle: "Cancel".localized(),
+                                 overlayView: overlayView)
+            } else {
+                getMembers()
+            }
+        }
+        
+        return hasSavedNotification
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {

@@ -170,33 +170,26 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             return
         }
         
+        guard
+            let toArchiveNbr: String = userInfo["toArchiveNumber"] as? String,
+            let toArchiveName: String = userInfo["toArchiveName"] as? String,
+            let toArchiveId: Int = Int(userInfo["toArchiveId"] as? String ?? "") else {
+            return
+        }
+        
         DispatchQueue.main.async {
+            let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+            try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
+            
             if let drawerVC = self.rootViewController.current as? DrawerViewController {
                 drawerVC.dismiss(animated: false) {
-                    let rootVC: UIViewController
-                    if drawerVC.rootViewController.visibleViewController is FilePreviewNavigationControllerDelegate {
-                        rootVC = drawerVC.rootViewController.visibleViewController!
+                    if let mainVC = drawerVC.rootViewController.visibleViewController as? MainViewController {
+                        mainVC.checkForRequestShareAccess()
                     } else {
-                        rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                        let rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
                         self.rootViewController.changeDrawerRoot(viewController: rootVC)
                     }
-                    
-                    let currentArchive: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
-                    let permissions = currentArchive?.permissions() ?? [.read]
-                    let fileVM = FileViewModel(name: name, recordId: 0, folderLinkId: folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: permissions)
-                    
-                    let shareVC: ShareViewController = UIViewController.create(withIdentifier: .share, from: .share) as! ShareViewController
-                    shareVC.sharedFile = fileVM
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        
-                        rootVC.present(shareNavController, animated: true)
-                    }
                 }
-            } else {
-                let requestAccessNotifPayload = RequestLinkAccessNotificationPayload(name: name, folderLinkId: folderLinkId)
-                try? PreferencesManager.shared.setNonPlistObject(requestAccessNotifPayload, forKey: Constants.Keys.StorageKeys.requestLinkAccess)
             }
         }
     }
@@ -206,56 +199,48 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         guard
             let folderLinkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-            let archiveNbr: String = userInfo["fromArchiveId"] as? String else {
+            let archiveNbr: String = userInfo["fromArchiveId"] as? String,
+            let toArchiveNbr: String = userInfo["toArchiveNumber"] as? String,
+            let toArchiveName: String = userInfo["toArchiveName"] as? String,
+            let toArchiveId: Int = Int(userInfo["toArchiveId"] as? String ?? "") else {
             return
         }
         
         if let name: String = userInfo["recordName"] as? String,
            let recordId: Int = Int(userInfo["recordId"] as? String ?? "") {
             DispatchQueue.main.async {
+                let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+                try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
+                
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
                     drawerVC.dismiss(animated: false) {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            let rootVC: UIViewController
                             if let sharesVC = drawerVC.rootViewController.visibleViewController as? SharesViewController {
-                                rootVC = sharesVC
-                                sharesVC.refreshCurrentFolder()
+                                sharesVC.segmentedControl.selectedSegmentIndex = 1
+                                sharesVC.segmentedControlValueChanged(sharesVC.segmentedControl)
+                                
+                                _ = sharesVC.checkSavedFile()
                             } else {
                                 let sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
                                 sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-                                rootVC = sharesVC
                                 
                                 drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
                                 
                                 self.rootViewController.changeDrawerRoot(viewController: sharesVC)
                             }
-                            
-                            let currentArchive: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
-                            let permissions = currentArchive?.permissions() ?? [.read]
-                            let fileVM = FileViewModel(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, permissions: permissions)
-                            let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-                            filePreviewVC.file = fileVM
-                            
-                            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
-                            fileDetailsNavigationController.filePreviewNavDelegate = rootVC as? FilePreviewNavigationControllerDelegate
-                            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                            rootVC.present(fileDetailsNavigationController, animated: true)
                         }
                     }
-                } else {
-                    let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
-                    try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
                 }
             }
         } else if let sharedFolderName: String = userInfo["folderName"] as? String {
             DispatchQueue.main.async {
+                let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+                try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
+                
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         if drawerVC.rootViewController.visibleViewController is SharesViewController == false {
                             let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-                            
-                            sharesVC.initialNavigationParams = (archiveNbr, folderLinkId, sharedFolderName)
-                            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
                             
                             drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
                             
@@ -265,16 +250,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                             sharesVC.segmentedControl.selectedSegmentIndex = 1
                             sharesVC.segmentedControlValueChanged(sharesVC.segmentedControl)
                             
-                            let params: NavigateMinParams = (archiveNbr, folderLinkId, sharedFolderName)
-                            sharesVC.navigateToFolder(withParams: params, backNavigation: false) {
-                                sharesVC.backButton.isHidden = false
-                                sharesVC.directoryLabel.text = params.folderName
-                            }
+                            _ = sharesVC.checkSavedFolder()
                         }
                     }
-                } else {
-                    let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue)
-                    try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
                 }
             }
         } else {
@@ -283,7 +261,19 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func openPARequestNotification(_ notification: UNNotification) {
+        let userInfo = notification.request.content.userInfo
+        
+        guard
+            let toArchiveNbr: String = userInfo["toArchiveNumber"] as? String,
+            let toArchiveName: String = userInfo["toArchiveName"] as? String,
+            let toArchiveId: Int = Int(userInfo["toArchiveId"] as? String ?? "") else {
+            return
+        }
+        
         DispatchQueue.main.async {
+            let notifPayload = PARequestNotificationPayload(toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+            try? PreferencesManager.shared.setNonPlistObject(notifPayload, forKey: Constants.Keys.StorageKeys.requestPAAccess)
+            
             if let drawerVC = self.rootViewController.current as? DrawerViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     let rootVC: UIViewController
@@ -293,13 +283,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     
                     drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![1]
                 }
-            } else {
-                PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.requestPAAccess)
             }
         }
     }
     
     func clearShareDeepLinks() {
-        PreferencesManager.shared.removeValues(forKeys: [Constants.API.NotificationType.NOTIFICATION_TYPE_PA_SHARE,Constants.API.NotificationType.NOTIFICATION_TYPE_ACCOUNT,Constants.API.NotificationType.NOTIFICATION_TYPE_RELATIONSHIP,Constants.Keys.StorageKeys.shareURLToken])
+        PreferencesManager.shared.removeValues(forKeys: [
+            Constants.Keys.StorageKeys.requestPAAccess,
+            Constants.Keys.StorageKeys.sharedFolderKey,
+            Constants.Keys.StorageKeys.sharedFileKey,
+            Constants.Keys.StorageKeys.requestLinkAccess,
+            Constants.Keys.StorageKeys.shareURLToken])
     }
 }
