@@ -7,14 +7,16 @@
 
 import UIKit
 
-class ArchiveScreenDetailsTableViewCell: UITableViewCell {
+class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
 
     @IBOutlet weak var archiveThumbnailImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archiveAccessLabel: UILabel!
     @IBOutlet weak var rightButton: UIButton!
     
-    var rightButtonAction: ((ArchiveScreenDetailsTableViewCell) -> Void)?
+    var rightButtonAction: ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void)?
+    
+    var archiveData: ArchiveVOData?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -61,6 +63,8 @@ class ArchiveScreenDetailsTableViewCell: UITableViewCell {
         } else {
             rightButton.isHidden = true
         }
+        
+        archiveData = archiveVO
     }
     
     @IBAction func rightButtonPressed(_ sender: Any) {

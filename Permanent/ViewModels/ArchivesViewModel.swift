@@ -16,6 +16,12 @@ class ArchivesViewModel: ViewModelInterface {
     var availableArchives: [ArchiveVOData] {
         return allArchives.filter({ $0.archiveNbr != currentArchive()?.archiveNbr })
     }
+    var pendingArchives: [ArchiveVOData] {
+        return allArchives.filter({ $0.status == ArchiveVOData.Status.pending })
+    }
+    var selectableArchives: [ArchiveVOData] {
+        return availableArchives.filter({ $0.status == ArchiveVOData.Status.ok })
+    }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
         guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
@@ -197,6 +203,37 @@ class ArchivesViewModel: ViewModelInterface {
         
         let deleteArchiveOperation = APIOperation(ArchivesEndpoint.delete(archiveId: archiveId, archiveNbr: archiveNbr))
         deleteArchiveOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(false, APIError.invalidResponse)
+                    return
+                }
+                
+                completionBlock(true, nil)
+                return
+            case .error:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            default:
+                completionBlock(false, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
+    func pendingArchiveOperation(archive: ArchiveVOData, accept: Bool, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        let createArchiveOperation: APIOperation
+        if accept {
+            createArchiveOperation = APIOperation(ArchivesEndpoint.accept(archiveVO: archive))
+        } else {
+            createArchiveOperation = APIOperation(ArchivesEndpoint.decline(archiveVO: archive))
+        }
+        
+        createArchiveOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard

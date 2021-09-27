@@ -14,6 +14,8 @@ enum ArchivesEndpoint {
     case change(archiveId: Int, archiveNbr: String)
     case create(name: String, type: String)
     case delete(archiveId: Int, archiveNbr: String)
+    case accept(archiveVO: ArchiveVOData)
+    case decline(archiveVO: ArchiveVOData)
 }
 
 extension ArchivesEndpoint: RequestProtocol {
@@ -30,6 +32,12 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .delete:
             return "/archive/delete"
+            
+        case .accept:
+            return "/archive/accept"
+            
+        case .decline:
+            return "/archive/decline"
         }
     }
     
@@ -64,6 +72,12 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .delete(let archiveId, let archiveNbr):
             return Payloads.deleteArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
+            
+        case .accept(archiveVO: let archiveVO):
+            return Payloads.acceptArchivePayload(archiveVO: archiveVO)
+            
+        case .decline(archiveVO: let archiveVO):
+            return Payloads.declineArchivePayload(archiveVO: archiveVO)
         }
     }
     

@@ -557,4 +557,44 @@ struct Payloads {
                 ]
         ]
     }
+    
+    static func acceptArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
+        var modifiedArchive: Any = []
+        let archive = archiveVO
+        if let archiveJson = try? JSONEncoder().encode(archive),
+           let archiveDict = try? JSONSerialization.jsonObject(with: archiveJson, options: []) {
+            modifiedArchive = archiveDict
+        }
+        return [
+            "RequestVO":
+                [
+                    "csrf": UserDefaults.standard.value(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                    "data": [
+                        [
+                            "ArchiveVO": modifiedArchive
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func declineArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
+        var modifiedArchive: Any = []
+        let archive = archiveVO
+        if let archiveJson = try? JSONEncoder().encode(archive),
+           let archiveDict = try? JSONSerialization.jsonObject(with: archiveJson, options: []) {
+            modifiedArchive = archiveDict
+        }
+        return [
+            "RequestVO":
+                [
+                    "csrf": UserDefaults.standard.value(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                    "data": [
+                        [
+                            "ArchiveVO": modifiedArchive
+                        ]
+                    ]
+                ]
+        ]
+    }
 }
