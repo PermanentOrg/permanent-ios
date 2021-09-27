@@ -332,6 +332,8 @@
 		F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853D1F26E9FA5A0050E377 /* Permission.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
+		F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */; };
+		F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
 		F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
 		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
@@ -714,6 +716,8 @@
 		F5853D1F26E9FA5A0050E377 /* Permission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
+		F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PARequestNotificationPayload.swift; sourceTree = "<group>"; };
+		F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNotificationPayload.swift; sourceTree = "<group>"; };
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A2A07826161AE6003AAF36 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F5A2A07A26161AE6003AAF36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1264,7 +1268,9 @@
 				BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */,
 				BCD948D3258BA54600089F86 /* ItemVO.swift */,
 				5EE0ADB225F8216D008ABDC6 /* TagVO.swift */,
+				F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */,
 				F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */,
+				F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */,
 				F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */,
 				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
 			);
@@ -2177,6 +2183,7 @@
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
+				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
 				5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */,
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
@@ -2248,6 +2255,7 @@
 				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
+				F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,

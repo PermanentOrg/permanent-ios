@@ -119,4 +119,32 @@ class MembersViewModel: ViewModelInterface {
         }
     }
     
+    func changeArchive(withArchiveId toArchiveId: Int, archiveNbr: String, completion: @escaping ((Bool) -> Void)) {
+        let changeArchiveOperation = APIOperation(ArchivesEndpoint.change(archiveId: toArchiveId, archiveNbr: archiveNbr))
+        changeArchiveOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<ArchiveVO>.decoder),
+                    model.isSuccessful
+                else {
+                    completion(false)
+                    return
+                }
+                
+                let archive = model.results[0].data?[0].archiveVO
+                try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+                
+                completion(true)
+                return
+            case .error:
+                completion(false)
+                return
+            default:
+                completion(false)
+                return
+            }
+        }
+    }
+    
 }
