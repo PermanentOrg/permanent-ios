@@ -40,6 +40,7 @@ extension String {
     static var emptyNameField: String { return "EmptyNameField".localized() }
     static var noDataModification: String { return "NoDataModification".localized() }
     static var emailFieldIsEmpty: String { return "EmailFieldIsEmpty".localized() }
+    static var emailIsNotValid: String { return "Please enter a valid email address.".localized() }
     static var MFARequired: String { return "MFARequired".localized() }
     static var incorrectCredentials: String { return "IncorrectCredentials".localized() }
     static var tokenExpired: String { return "TokenExpired".localized() }
