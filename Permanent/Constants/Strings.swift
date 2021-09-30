@@ -29,6 +29,7 @@ extension String {
     static var success: String { return "Success".localized() }
     static var emailSent: String { return "EmailSent".localized() }
     static var cancel: String { return "Cancel".localized() }
+    static var retry: String { return "Retry".localized() }
     static var resetPassword: String { return "ResetPassword".localized() }
     static var twoStepTitle: String { return "TwoStepTitle".localized() }
     static var twoStepSubtitle: String { return "TwoStepSubtitle".localized() }
