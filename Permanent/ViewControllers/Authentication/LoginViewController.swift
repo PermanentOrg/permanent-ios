@@ -107,18 +107,14 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             showAlert(title: .success,
                       message: String(format: .emailSent, email!))
         case .error(let message):
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
-                
-                alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
-                alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
-                    self.dismiss(animated: true, completion: {
-                        self.forgotPasswordAction(self.forgotPasswordButton)
-                    })
-                }))
-                
-                self.present(alert, animated: true)
-            }
+            let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
+                self.forgotPasswordAction(self.forgotPasswordButton)
+            }))
+            
+            self.present(alert, animated: true)
         }
     }
     
