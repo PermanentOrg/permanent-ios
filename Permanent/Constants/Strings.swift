@@ -29,6 +29,7 @@ extension String {
     static var success: String { return "Success".localized() }
     static var emailSent: String { return "EmailSent".localized() }
     static var cancel: String { return "Cancel".localized() }
+    static var retry: String { return "Retry".localized() }
     static var resetPassword: String { return "ResetPassword".localized() }
     static var twoStepTitle: String { return "TwoStepTitle".localized() }
     static var twoStepSubtitle: String { return "TwoStepSubtitle".localized() }
@@ -40,6 +41,7 @@ extension String {
     static var emptyNameField: String { return "EmptyNameField".localized() }
     static var noDataModification: String { return "NoDataModification".localized() }
     static var emailFieldIsEmpty: String { return "EmailFieldIsEmpty".localized() }
+    static var emailIsNotValid: String { return "Please enter a valid email address.".localized() }
     static var MFARequired: String { return "MFARequired".localized() }
     static var incorrectCredentials: String { return "IncorrectCredentials".localized() }
     static var tokenExpired: String { return "TokenExpired".localized() }

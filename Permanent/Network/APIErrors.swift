@@ -51,6 +51,7 @@ enum AccountUpdateError: String {
     case nameFieldIsEmpty = "error.empty.name"
     case dataIsNotModified = "warning.same.data"
     case emailIsEmpty = "warning.validation.empty"
+    case emailIsNotValid = "error.invalid.email"
 
     var description: String {
         switch self {
@@ -62,6 +63,8 @@ enum AccountUpdateError: String {
             return .noDataModification
         case .emailIsEmpty:
             return .emailFieldIsEmpty
+        case .emailIsNotValid:
+            return .emailIsNotValid
         }
     }
 }

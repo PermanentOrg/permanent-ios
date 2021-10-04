@@ -107,7 +107,14 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             showAlert(title: .success,
                       message: String(format: .emailSent, email!))
         case .error(let message):
-            showAlert(title: .error, message: message)
+            let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
+                self.forgotPasswordAction(self.forgotPasswordButton)
+            }))
+            
+            self.present(alert, animated: true)
         }
     }
     
