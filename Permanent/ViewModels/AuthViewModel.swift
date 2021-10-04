@@ -253,6 +253,8 @@ class AuthViewModel: ViewModelInterface {
     }
 
     fileprivate func saveStorageData(_ response: LoginResponse) {
+        PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
+        
         if let email = response.results?.first?.data?.first?.accountVO?.primaryEmail {
             PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
         }

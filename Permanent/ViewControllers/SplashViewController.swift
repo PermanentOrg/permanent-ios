@@ -38,6 +38,11 @@ class SplashViewController: BaseViewController<SplashViewModel> {
     }
 
     fileprivate func handleAuthState(_ status: AuthStatus) {
+        guard PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.modelVersion) ?? 0 >= 1 else {
+            handleLoggedOutState()
+            return
+        }
+        
         switch status {
         case .loggedIn:
             let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
