@@ -28,6 +28,8 @@ class SharePreviewViewModel {
     }
     
     var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    
+    var accountArchives: [ArchiveVOData]? = []
 
     // MARK: - Events
     
@@ -49,7 +51,6 @@ class SharePreviewViewModel {
         }
         
     }
-    
     
     // MARK: - Network
     
@@ -163,6 +164,46 @@ class SharePreviewViewModel {
     
     fileprivate func extractSharedFile(from record: RecordVOData) -> File? {
         return FileVM(record: record)
+    }
+    
+    func updateAccountArchives(completion: @escaping () -> ()) {
+        isBusy = true
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            self.isBusy = false
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            self.isBusy = false
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                
+                self.accountArchives?.removeAll()
+                
+                accountArchives?.forEach { archive in
+                    if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
+                        self.accountArchives?.append(archiveVOData)
+                    }
+                }
+                completion()
+                return
+                
+            case .error:
+                return
+                
+            default:
+                return
+            }
+        }
     }
     
 }
