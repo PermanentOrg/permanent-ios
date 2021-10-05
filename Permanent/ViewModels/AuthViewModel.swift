@@ -246,13 +246,19 @@ class AuthViewModel: ViewModelInterface {
         alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
             guard let email: String = alert.textFields?.first?.text else { return }
+            
+            if !email.isValidEmail {
+                handler(nil, .error(message: .emailIsNotValid))
+                return
+            }
             self.forgotPassword(email: email, then: handler)
         }))
-
         return alert
     }
 
     fileprivate func saveStorageData(_ response: LoginResponse) {
+        PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
+        
         if let email = response.results?.first?.data?.first?.accountVO?.primaryEmail {
             PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
         }
@@ -295,7 +301,7 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func areFieldsValid (emailField: String?, passwordField: String?) -> Bool {
-        return (emailField?.isNotEmpty ?? false) && (passwordField?.isNotEmpty ?? false)
+        return (emailField?.isValidEmail ?? false) && (passwordField?.isNotEmpty ?? false)
     }
     
     func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {

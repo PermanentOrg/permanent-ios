@@ -108,6 +108,15 @@ extension InfoViewModel: InfoViewModelDelegate {
             handler(.error(message: AccountUpdateError.nameFieldIsEmpty.description))
             return
         }
+        
+        guard
+            let primaryEmail = userData.primaryEmail,
+            primaryEmail.isValidEmail
+        else {
+            handler(.error(message: AccountUpdateError.emailIsNotValid.description))
+            return
+        }
+        
         guard dataIsNotModified == false else {
             handler(.error(message: AccountUpdateError.dataIsNotModified.description))
             return

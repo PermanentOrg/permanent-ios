@@ -149,4 +149,5 @@ extension Constants.Keys.StorageKeys {
     static let signUpNameStorageKey = "signUpNameStorageKey"
     static let archive = "archive"
     static let defaultArchiveId = "defaultArchiveId"
+    static let modelVersion = "modelVersion"
 }
