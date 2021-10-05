@@ -17,13 +17,17 @@ protocol SharePreviewViewModelDelegate {
     
     var numberOfItems: Int { get }
     
-    func itemFor(row: Int) -> File 
+    func itemFor(row: Int) -> File
+    
+    var accountArchives: [ArchiveVOData]? { get }
     
     // Events
     
     func start()
     
     func performAction()
+    
+    func updateAccountArchives(completion: @escaping () -> ())
     
     var isBusy: Bool { get }
         
