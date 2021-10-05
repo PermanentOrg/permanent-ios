@@ -625,7 +625,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                   positiveAction: {
                                       self.actionDialog?.dismiss()
                                       self.deleteFile(file, atIndexPath: indexPath)
-                                  }, overlayView: self.overlayView)
+                                  }, positiveButtonColor: .brightRed,
+                                  cancelButtonColor: .primary,
+                                  overlayView: self.overlayView)
         }
     }
     
