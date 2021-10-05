@@ -24,6 +24,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     weak var delegate: ArchivesViewControllerDelegate?
     var isManaging = true
     
+    var accountArchives : [ArchiveVOData]?
+    
     private let overlayView = UIView()
     private var tableViewSections: [ArchiveVOData.Status] = []
     
@@ -199,14 +201,23 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         
         viewModel?.getAccountInfo({ [self] account, error in
             if error == nil {
-                viewModel?.getAccountArchives { [self] accountArchives, error in
+                if let currentArchives = self.accountArchives {
                     hideSpinner()
                     
-                    if error == nil {
-                        tableView.reloadData()
-                        updateCurrentArchive()
-                    } else {
-                        showAlert(title: .error, message: .errorMessage)
+                    viewModel?.allArchives = currentArchives
+                    self.accountArchives = nil
+                    tableView.reloadData()
+                    updateCurrentArchive()
+                } else {
+                    viewModel?.getAccountArchives { [self] accountArchives, error in
+                        hideSpinner()
+                        
+                        if error == nil {
+                            tableView.reloadData()
+                            updateCurrentArchive()
+                        } else {
+                            showAlert(title: .error, message: .errorMessage)
+                        }
                     }
                 }
             } else {
