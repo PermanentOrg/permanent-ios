@@ -35,7 +35,7 @@ class SharePreviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         configureUI()
         setupCollectionView()
         viewModel.start()
@@ -92,6 +92,13 @@ class SharePreviewViewController: UIViewController {
             
             currentArchiveName.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
+        
+        viewModel.updateAccountArchives { [self] in
+            if let accountArchives = viewModel.accountArchives,
+               accountArchives.count == 1 {
+                currentArchiveContainer.isHidden = true
+            }
+        }
     }
     
     fileprivate func setupCollectionView() {
@@ -130,6 +137,7 @@ class SharePreviewViewController: UIViewController {
         let archivesVC = UIViewController.create(withIdentifier: .archives, from: .archives) as! ArchivesViewController
         archivesVC.delegate = self
         archivesVC.isManaging = false
+        archivesVC.accountArchives = self.viewModel.accountArchives
         
         let navController = NavigationController(rootViewController: archivesVC)
         present(navController, animated: true, completion: nil)

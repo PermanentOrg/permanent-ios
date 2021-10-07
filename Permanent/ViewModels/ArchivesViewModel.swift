@@ -112,7 +112,7 @@ class ArchivesViewModel: ViewModelInterface {
                 let accountArchives = model.results.first?.data
                 
                 self.allArchives.removeAll()
-                accountArchives?.forEach{ archive in
+                accountArchives?.forEach { archive in
                     if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
                         self.allArchives.append(archiveVOData)
                     }
