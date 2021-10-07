@@ -13,10 +13,14 @@ import WebKit
 class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!
+//    @IBOutlet var tableView: UITableView!
     @IBOutlet var fabView: FABView!
     @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
+    @IBOutlet weak var switchViewButton: UIButton!
+    
+    private var isGridView = false
     
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
@@ -101,10 +105,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupTableView() {
-        tableView.registerNib(cellClass: FileTableViewCell.self)
-        tableView.tableFooterView = UIView()
-        tableView.refreshControl = refreshControl
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        collectionView.refreshControl = refreshControl
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.minimumInteritemSpacing = 6
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.estimatedItemSize = .zero
+        collectionView.collectionViewLayout = flowLayout
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
@@ -112,17 +119,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func refreshTableView() {
         handleTableBackgroundView()
-        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
-            tableView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
+            collectionView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
                                                        image: .emptyFolder)
             return
         }
 
-        tableView.backgroundView = nil
+        collectionView.backgroundView = nil
     }
     
     func invalidateSearchBarIfNeeded() {
@@ -237,13 +244,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private func handleProgress(withValue value: Float, listSection section: FileListType) {
         let indexPath = IndexPath(row: 0, section: section.rawValue)
         
-        guard
-            let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
-        else {
-            return
-        }
-        
-        uploadingCell.updateProgress(withValue: value)
+//        guard
+//            let uploadingCell = tableView.cellForRow(at: indexPath) as? FileTableViewCell
+//        else {
+//            return
+//        }
+//
+//        uploadingCell.updateProgress(withValue: value)
     }
     
     @objc
@@ -273,6 +280,26 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                               positiveButtonColor: .brightRed,
                               cancelButtonColor: .primary,
                               overlayView: self.overlayView)
+    }
+    
+    @IBAction func switchViewButtonPressed(_ sender: Any) {
+        isGridView.toggle()
+        
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        
+        if #available(iOS 13.0, *) {
+            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        collectionView.reloadData()
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.minimumInteritemSpacing = 6
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.estimatedItemSize = .zero
+        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout.invalidateLayout()
     }
     
     // MARK: - Network Related
@@ -417,7 +444,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             case .success:
                 DispatchQueue.main.async {
                     self.viewModel?.removeSyncedFile(file)
-                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
+//                    self.collectionView.deleteRows(at: [indexPath], with: .automatic)
                     self.refreshTableView()
                 }
                 
@@ -454,6 +481,112 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         vc.archiveName = archiveName
         self.present(vc, animated: true, completion: nil)
     }
+}
+
+extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return viewModel?.numberOfSections ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel?.numberOfRowsInSection(section) ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let viewModel = self.viewModel else {
+            return UICollectionViewCell()
+        }
+        
+        let reuseIdentifier: String
+        if indexPath.section == FileListType.synced.rawValue {
+            reuseIdentifier = isGridView ? "FileGridCell" : "FileCell"
+        } else {
+            reuseIdentifier = "FileCell"
+        }
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView)
+        
+        cell.rightButtonTapAction = { _ in
+            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 70)
+        // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
+        // Vertical size: 30 is the height of the title label
+        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
+        
+        if indexPath.section == FileListType.synced.rawValue {
+            return isGridView ? gridItemSize : listItemSize
+        } else {
+            return listItemSize
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let viewModel = viewModel else { return }
+
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        
+        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
+        
+        if file.type.isFolder {
+            invalidateSearchBarIfNeeded()
+            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                self.backButton.isHidden = false
+                self.directoryLabel.text = file.name
+            })
+        } else {
+            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+            listPreviewVC.modalPresentationStyle = .fullScreen
+            listPreviewVC.viewModel = viewModel
+            listPreviewVC.currentFile = file
+            
+            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
+            fileDetailsNavigationController.filePreviewNavDelegate = self
+            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+            
+            present(fileDetailsNavigationController, animated: true)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            let section = indexPath.section
+            
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            headerView.leftButtonTitle = viewModel?.title(forSection: section)
+            if viewModel?.shouldPerformAction(forSection: section) == true {
+                headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
+            } else {
+                headerView.leftButtonAction = nil
+            }
+            
+            if viewModel?.hasCancelButton(forSection: section) == true {
+                headerView.rightButtonTitle = "Cancel All".localized()
+                headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
+            } else {
+                headerView.rightButtonTitle = nil
+                headerView.rightButtonAction = nil
+            }
+            
+            return headerView
+        }
+        
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
+        return CGSize(width: UIScreen.main.bounds.width, height: height)
+    }
+    
 }
 
 // MARK: - Table View Delegates
@@ -608,7 +741,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         case .downloading:
             viewModel?.cancelDownload()
             
-            self.tableView.reloadData()
+            self.collectionView.reloadData()
             
         case .uploading, .waiting:
             cellRightButtonAction(atPosition: indexPath.row)
