@@ -491,6 +491,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
 extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel?.numberOfSections ?? 0
@@ -599,113 +600,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
 // MARK: - Table View Delegates
 
-extension MainViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel?.numberOfSections ?? 0
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.numberOfRowsInSection(section) ?? 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel = self.viewModel else {
-            return UITableViewCell()
-        }
-
-        let cell = tableView.dequeue(cellClass: FileTableViewCell.self, forIndexPath: indexPath)
-        let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction)
-        
-        cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
-        }
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        guard let viewModel = viewModel else { return }
-
-        let file = viewModel.fileForRowAt(indexPath: indexPath)
-        
-        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
-        
-        if file.type.isFolder {
-            invalidateSearchBarIfNeeded()
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                self.backButton.isHidden = false
-                self.directoryLabel.text = file.name
-            })
-        } else {
-            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-            listPreviewVC.modalPresentationStyle = .fullScreen
-            listPreviewVC.viewModel = viewModel
-            listPreviewVC.currentFile = file
-            
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-            fileDetailsNavigationController.filePreviewNavDelegate = self
-            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-            
-            present(fileDetailsNavigationController, animated: true)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard viewModel?.numberOfRowsInSection(section) != 0 else {
-            return nil
-        }
-        
-        let headerView = UIView()
-        headerView.backgroundColor = .backgroundPrimary
-        
-        let sectionTitleButton = UIButton()
-        sectionTitleButton.setTitle(viewModel?.title(forSection: section), for: [])
-        sectionTitleButton.setFont(Text.style11.font)
-        sectionTitleButton.setTitleColor(.middleGray, for: [])
-        
-        if viewModel?.shouldPerformAction(forSection: section) == true {
-            sectionTitleButton.addTarget(self, action: #selector(headerButtonAction(_:)), for: .touchUpInside)
-        }
-        
-        headerView.addSubview(sectionTitleButton)
-        sectionTitleButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            sectionTitleButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-            sectionTitleButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20)
-        ])
-        
-        if viewModel?.hasCancelButton(forSection: section) == true {
-            let cancelButton = UIButton()
-            cancelButton.setTitle("Cancel All".localized(), for: [])
-            cancelButton.setFont(Text.style11.font)
-            cancelButton.setTitleColor(.darkBlue, for: [])
-            cancelButton.addTarget(self, action: #selector(cancelAllUploadsAction(_:)), for: .touchUpInside)
-            
-            headerView.addSubview(cancelButton)
-            cancelButton.translatesAutoresizingMaskIntoConstraints = false
-            
-            NSLayoutConstraint.activate([
-                cancelButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-                cancelButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -10)
-            ])
-        }
-        
-        return headerView
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard viewModel?.numberOfRowsInSection(section) != 0 else {
-            return 0
-        }
-
-        return 40
-    }
-    
+extension MainViewController {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let viewModel = viewModel else {
             fatalError()
