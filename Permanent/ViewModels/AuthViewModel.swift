@@ -279,7 +279,11 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+        do {
+            try PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+        } catch {
+            print(error)
+        }
     }
     
     func getCurrentArchive() -> ArchiveVOData? {
