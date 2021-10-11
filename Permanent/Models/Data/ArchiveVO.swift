@@ -37,7 +37,8 @@ struct ArchiveVOData: Model {
     let birthDay, company, archiveVODescription: JSONAny?
     let archiveID: Int?
     let publicDT, archiveNbr: String?
-    let archiveVOPublic, view, viewProperty: JSONAny?
+    let view, viewProperty: JSONAny?
+    let archiveVOPublic: Int?
     let vaultKey: String?
     let thumbArchiveNbr: JSONAny?
     let type, thumbStatus: String?
