@@ -101,7 +101,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override func styleNavBar() {
         super.styleNavBar()
         
-        navigationController?.navigationBar.barTintColor = .black
+        if #available(iOS 13.0, *) {
+            navigationController?.navigationBar.standardAppearance.backgroundColor = .black
+            navigationController?.navigationBar.scrollEdgeAppearance?.backgroundColor = .black
+        } else {
+            navigationController?.navigationBar.barTintColor = .black
+        }
     }
     
     func setupWebView() -> WKWebView {
