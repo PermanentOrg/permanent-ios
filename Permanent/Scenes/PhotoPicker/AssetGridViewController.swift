@@ -140,13 +140,27 @@ class AssetGridViewController: UICollectionViewController {
     }
     
     func styleNavBar() {
-        navigationController?.navigationBar.barTintColor = .darkBlue
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            .font: Text.style14.font
-        ]
         navigationController?.navigationBar.tintColor = .white
+        
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .darkBlue
+            appearance.titleTextAttributes = [
+                .foregroundColor: UIColor.white,
+                .font: Text.style14.font
+            ]
+            
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        } else {
+            navigationController?.navigationBar.barTintColor = .darkBlue
+            navigationController?.navigationBar.isTranslucent = false
+            navigationController?.navigationBar.titleTextAttributes = [
+                .foregroundColor: UIColor.white,
+                .font: Text.style14.font
+            ]
+        }
     }
     
     @IBAction func dismissButtonPressed(_ sender: Any) {
