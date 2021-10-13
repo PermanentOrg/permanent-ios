@@ -15,12 +15,14 @@ enum MemberOperation {
     
     case remove
     
+    case transferOwnership
+    
     var endpoint: String {
         switch self {
         case .add: return "/archive/share"
         case .edit: return "/archive/updateShare"
         case .remove: return "/archive/unshare"
+        case .transferOwnership: return "/archive/transferOwnership"
         }
     }
-    
 }

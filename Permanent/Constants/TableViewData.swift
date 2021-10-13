@@ -33,6 +33,9 @@ struct StaticData {
         .viewer: .viewerTooltipText
     ]
     
+    static let allAccessRoles = AccessRole.allCases
+        .map { $0.groupName }
+    
     static let accessRoles = AccessRole.allCases
         .filter { $0 != .owner }
         .map { $0.groupName }

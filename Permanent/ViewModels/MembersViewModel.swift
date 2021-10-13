@@ -11,6 +11,7 @@ typealias AddMemberParams = (accountId: Int?, email: String, role: String)
 
 class MembersViewModel: ViewModelInterface {
     fileprivate var members: [Account] = []
+    fileprivate var sortedMembers: [Account] = []
     fileprivate var memberSections: [AccessRole: [Account]] = [:]
     
     var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
@@ -96,7 +97,7 @@ class MembersViewModel: ViewModelInterface {
     }
     
     fileprivate func onGetMembersSucess(_ accounts: [AccountVO]) {
-        self.members = accounts.map { AccountVM(accountVO: $0) }
+        self.members = accounts.map { AccountVM(accountVO: $0) }.sorted(by: { $0.status.value < $1.status.value })
         self.memberSections = Dictionary(grouping: self.members, by: { $0.accessRole })
     }
     
@@ -147,4 +148,32 @@ class MembersViewModel: ViewModelInterface {
         }
     }
     
+    func transferOwnership(email: String, then handler: @escaping ServerResponse) {
+        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+            let archiveNbr: String = currentArchive.archiveNbr else {
+            return
+        }
+        
+        let apiOperation = APIOperation(ArchivesEndpoint.transferOwnership(archiveNbr: archiveNbr, primaryEmail: email))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<AccountVO>.decoder
+                    ), model.isSuccessful else {
+                    
+                    return handler(.error(message: .errorMessage))
+                }
+                handler(.success)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
 }
