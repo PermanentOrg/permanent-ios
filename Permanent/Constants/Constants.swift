@@ -81,6 +81,8 @@ extension Constants.Design {
     static let pickerHeight: CGFloat = 200
     static let numberOfGridItemsPerRow = 2
     static let avatarRadius: CGFloat = 17.0
+    static let shortNotificationBarAnimationDuration: CGFloat = 0.8
+    static let longNotificationBarAnimationDuration: CGFloat = 2.2
 }
 
 extension Constants.API {

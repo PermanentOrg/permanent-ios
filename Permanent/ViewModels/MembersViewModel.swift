@@ -161,10 +161,14 @@ class MembersViewModel: ViewModelInterface {
                 guard
                     let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<AccountVO>.decoder
-                    ), model.isSuccessful else {
-                    
-                    return handler(.error(message: .errorMessage))
+                        with: APIResults<AccountVO>.decoder) else { return handler(.error(message: .errorMessage)) }
+                guard
+                    model.isSuccessful
+                else {
+                    let message = model.results.first?.message.first
+                    let memberOperationFailedMessage = MembersOperationsError(rawValue: message ?? .errorUnknown)
+                    handler(.error(message: memberOperationFailedMessage?.description))
+                    return
                 }
                 handler(.success)
                 

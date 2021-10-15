@@ -85,3 +85,19 @@ enum PasswordChangeError: String {
         }
     }
 }
+
+enum MembersOperationsError: String {
+    case ownerAccountPending = "error.pr.pending_owner"
+    case emailNotValid = "warning.archive.no_email_found"
+    
+    var description: String {
+        switch self {
+        case .ownerAccountPending:
+            return "There is already a pending owner for this Permanent Archive".localized()
+        case .emailNotValid:
+            return .emailIsNotValid
+        default:
+            return .errorMessage
+        }
+    }
+}

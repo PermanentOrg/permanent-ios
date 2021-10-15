@@ -97,7 +97,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: .addMember,
@@ -105,11 +104,13 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             dropdownValues: StaticData.allAccessRoles,
             positiveButtonTitle: .save,
             positiveAction: {
-                if let currentRole = self.actionDialog?.fieldsInput.last,
-                   currentRole == .owner {
-                    self.transferOwnership(withOperation: .transferOwnership)
-                } else {
-                    self.modifyMember(withOperation: .add)
+                if let currentEmail = self.actionDialog?.fieldsInput.first {
+                    if currentEmail.isValidEmail {
+                        if let currentRole = self.actionDialog?.fieldsInput.last {
+                            if currentRole == .owner { self.transferOwnership(withOperation: .transferOwnership) }
+                            else if currentRole == .accessLevel { self.showEmailWarning("Please choose an access level from the list".localized()) }
+                        } else { self.modifyMember(withOperation: .add) }
+                    } else { self.showEmailWarning(.emailIsNotValid) }
                 }
             },
             overlayView: self.overlayView)
@@ -166,7 +167,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
-                    self.showErrorAlert(message: message)
+                    self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white)
                 }
             }
         })
@@ -234,11 +235,16 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                             dropdownValues: StaticData.allAccessRoles,
                             positiveButtonTitle: .save,
                             positiveAction: {
-                                if let currentRole = self.actionDialog?.fieldsInput.last,
-                                   currentRole == .owner {
+                                if let newMemberRole = self.actionDialog?.fieldsInput.last,
+                                   newMemberRole == .owner {
                                         self.transferOwnership(account, withOperation: .transferOwnership)
                                     } else {
-                                        self.modifyMember(withOperation: .edit)
+                                        if account.accessRole != .owner {
+                                            self.modifyMember(account, withOperation: .edit)
+                                        } else {
+                                            self.actionDialog?.dismiss()
+                                            self.view.showNotificationBanner(height: 60, title: "You cannot change the access level of the Permanent Archive owner".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                                        }
                                     }
                             },
                             overlayView: self.overlayView
@@ -254,7 +260,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         } else { return }
         
         actionDialog?.dismiss()
-    
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.showActionDialog(styled: .simpleWithDescription,
                                   withTitle: .transferOwnership,
@@ -271,15 +277,25 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                                         case .success:
                                             self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Ownership transfer request sent".localized())
                                             self.getMembers()
-                                        case .error:
-                                            DispatchQueue.main.async {
-                                                view.showNotificationBanner(title: "Failed to send request.".localized(), backgroundColor: .deepRed, textColor: .white)
-                                            }
+                                        case .error(message: let message):
+                                            self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
                                         }
                                     })
                                   },
                                   overlayView: self.overlayView
             )}
+    }
+    
+    func showEmailWarning(_ message: String) {
+        let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: {_ in
+            self.actionDialog?.dismiss()
+        }))
+        alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
+        }))
+        
+        self.present(alert, animated: true)
     }
 }
 
