@@ -107,10 +107,17 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                 if let currentEmail = self.actionDialog?.fieldsInput.first {
                     if currentEmail.isValidEmail {
                         if let currentRole = self.actionDialog?.fieldsInput.last {
-                            if currentRole == .owner { self.transferOwnership(withOperation: .transferOwnership) }
-                            else if currentRole == .accessLevel { self.showEmailWarning("Please choose an access level from the list".localized()) }
-                        } else { self.modifyMember(withOperation: .add) }
-                    } else { self.showEmailWarning(.emailIsNotValid) }
+                            if currentRole == .owner {
+                                self.transferOwnership(withOperation: .transferOwnership)
+                            } else if currentRole == .accessLevel {
+                                self.showEmailWarning("Please choose an access level from the list".localized())
+                            } else {
+                                self.modifyMember(withOperation: .add)
+                            }
+                        }
+                    } else {
+                        self.showEmailWarning(.emailIsNotValid)
+                    }
                 }
             },
             overlayView: self.overlayView)
@@ -269,6 +276,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                                   positiveButtonTitle: String.transferButtonText,
                                   positiveAction: { [self] in
                                     actionDialog?.dismiss()
+                                    actionDialog = nil
                                     showSpinner()
                 
                                     viewModel?.transferOwnership(email: self.parametersActionDialog.email , then: { status in
