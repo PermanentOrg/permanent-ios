@@ -199,6 +199,9 @@ extension String {
     static var linkNotAvailable: String { return "LinkNotAvailable".localized()}
     static var approveShareRequest: String { return "ApproveShareRequest".localized()}
     static var denyShareRequest: String { return "DenyShareRequest".localized()}
+    static var transferButtonText: String { return "Transfer".localized() }
+    static var transferOwnership: String { return "Transfer Ownership".localized() }
+    static var transferOwnershipInfo: String { return "Permanent Archives can only have one owner at a time. Once this is complete, your role will be changed to Curator".localized() }
     
     /// Errors
     static var errorCancelled: String { return "ErrorCancelled".localized() }

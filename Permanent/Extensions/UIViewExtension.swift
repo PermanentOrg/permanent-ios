@@ -61,7 +61,7 @@ extension UIView {
         }, completion: completion)
     }
     
-    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String, backgroundColor: UIColor = .paleGreen, textColor: UIColor = .bilbaoGreen) {
+    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String, backgroundColor: UIColor = .paleGreen, textColor: UIColor = .bilbaoGreen, animationDelayInSeconds: CGFloat = Constants.Design.shortNotificationBarAnimationDuration) {
         let initialBannerOrigin = CGPoint(x: 0, y: -height)
         let bannerView = UIView(frame: CGRect(origin: initialBannerOrigin,
                                               size: CGSize(width: self.bounds.width, height: height)))
@@ -74,19 +74,22 @@ extension UIView {
         messageLabel.textColor = textColor
         messageLabel.font = Text.style17.font
         messageLabel.sizeToFit()
+        messageLabel.numberOfLines = 2
+        messageLabel.textAlignment = .center
         
         bannerView.addSubview(messageLabel)
         messageLabel.enableAutoLayout()
         NSLayoutConstraint.activate([
-            messageLabel.centerXAnchor.constraint(equalTo: bannerView.centerXAnchor),
-            messageLabel.bottomAnchor.constraint(equalTo: bannerView.bottomAnchor, constant: -messageLabel.frame.height / 2)
+            messageLabel.leadingAnchor.constraint(equalTo: bannerView.leadingAnchor),
+            messageLabel.trailingAnchor.constraint(equalTo: bannerView.trailingAnchor),
+            messageLabel.centerYAnchor.constraint(equalTo: bannerView.centerYAnchor)
         ])
         
         UIView.animate(animations: {
             bannerView.frame.origin = CGPoint(x: 0, y: 0)
         }, completion: { _ in
         
-            UIView.animate(delay: 0.8,
+            UIView.animate(delay: animationDelayInSeconds,
                            animations: {
                                bannerView.frame.origin = initialBannerOrigin
                            }, completion: { _ in

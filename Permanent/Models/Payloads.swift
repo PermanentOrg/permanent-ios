@@ -597,4 +597,24 @@ struct Payloads {
                 ]
         ]
     }
+    
+    static func transferOwnership(archiveNbr: String, primaryEmail: String) -> RequestParameters {
+        return [ "RequestVO":
+                    [
+                        "apiKey": Constants.API.apiKey,
+                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                        "data": [
+                            [
+                                "ArchiveVO": [
+                                    "archiveNbr": archiveNbr
+                                ],
+                                "AccountVO": [
+                                    "primaryEmail": primaryEmail,
+                                    "accessRole": AccessRole.apiRoleForValue(.owner)
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }

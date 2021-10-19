@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="8us-Dr-8hZ">
-                                <rect key="frame" x="0.0" y="57" width="414" height="685"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="708"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="GSS-UI-zUH" id="ATW-Gm-bfv"/>
@@ -26,7 +26,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gmW-ZF-fWK" userLabel="Add Members Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="20" y="762" width="374" height="40"/>
+                                <rect key="frame" x="20" y="772" width="374" height="30"/>
                                 <connections>
                                     <action selector="addMembersAction:" destination="GSS-UI-zUH" eventType="touchUpInside" id="O1f-Vl-I7I"/>
                                 </connections>
@@ -38,12 +38,13 @@
                             <constraint firstItem="q02-99-HRE" firstAttribute="bottom" secondItem="gmW-ZF-fWK" secondAttribute="bottom" constant="60" id="2Ag-DP-uWn"/>
                             <constraint firstItem="gmW-ZF-fWK" firstAttribute="leading" secondItem="q02-99-HRE" secondAttribute="leading" constant="20" id="99t-B9-T0k"/>
                             <constraint firstItem="8us-Dr-8hZ" firstAttribute="leading" secondItem="q02-99-HRE" secondAttribute="leading" id="Rny-g0-mCh"/>
-                            <constraint firstItem="8us-Dr-8hZ" firstAttribute="top" secondItem="q02-99-HRE" secondAttribute="top" constant="13" id="aM5-YE-XtD"/>
+                            <constraint firstItem="8us-Dr-8hZ" firstAttribute="top" secondItem="q02-99-HRE" secondAttribute="top" id="aM5-YE-XtD"/>
                             <constraint firstItem="gmW-ZF-fWK" firstAttribute="top" secondItem="8us-Dr-8hZ" secondAttribute="bottom" constant="20" id="fqm-ZY-LNz"/>
                             <constraint firstItem="q02-99-HRE" firstAttribute="trailing" secondItem="gmW-ZF-fWK" secondAttribute="trailing" constant="20" id="y7E-sU-8J8"/>
                             <constraint firstItem="q02-99-HRE" firstAttribute="trailing" secondItem="8us-Dr-8hZ" secondAttribute="trailing" id="yrW-4E-Nmx"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="addMembersButton" destination="gmW-ZF-fWK" id="KnW-De-I6Q"/>
                         <outlet property="tableView" destination="8us-Dr-8hZ" id="FUe-Gs-M9g"/>
@@ -56,7 +57,7 @@
     </scenes>
     <designables>
         <designable name="gmW-ZF-fWK">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
     </designables>
     <resources>

@@ -38,9 +38,12 @@ class MemberRoleHeader: UIView {
         roleLabel.textColor = .primary
         
         infoButton = UIButton()
-        infoButton.setImage(UIImage.info.original, for: [])
+        infoButton.frame.size = .init(width: 24, height: 24)
+        infoButton.setImage(UIImage.info.withRenderingMode(UIImage.RenderingMode.alwaysTemplate), for: .normal)
         infoButton.imageView?.contentMode = .scaleAspectFit
         infoButton.addTarget(self, action: #selector(showInfoAction(_:)), for: .touchUpInside)
+        infoButton.imageView?.tintColor = .lightGray
+
         
         let hStack = UIStackView(arrangedSubviews: [
             roleLabel,

@@ -16,6 +16,7 @@ enum ArchivesEndpoint {
     case delete(archiveId: Int, archiveNbr: String)
     case accept(archiveVO: ArchiveVOData)
     case decline(archiveVO: ArchiveVOData)
+    case transferOwnership(archiveNbr: String, primaryEmail: String)
 }
 
 extension ArchivesEndpoint: RequestProtocol {
@@ -38,6 +39,8 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .decline:
             return "/archive/decline"
+        case .transferOwnership:
+            return "/archive/transferOwnership"
         }
     }
     
@@ -78,6 +81,9 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .decline(archiveVO: let archiveVO):
             return Payloads.declineArchivePayload(archiveVO: archiveVO)
+            
+        case .transferOwnership(archiveNbr: let archiveNbr, primaryEmail: let primaryEmail):
+            return Payloads.transferOwnership(archiveNbr:archiveNbr, primaryEmail:primaryEmail)
         }
     }
     

@@ -15,6 +15,8 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
+    var parametersActionDialog: AddMemberParams = (nil,"","")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -95,15 +97,28 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     @IBAction func addMembersAction(_ sender: UIButton) {
-        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: .addMember,
             placeholders: [.memberEmail, .accessLevel],
-            dropdownValues: StaticData.accessRoles,
+            dropdownValues: StaticData.allAccessRoles,
             positiveButtonTitle: .save,
             positiveAction: {
-                self.modifyMember(withOperation: .add)
+                if let currentEmail = self.actionDialog?.fieldsInput.first {
+                    if currentEmail.isValidEmail {
+                        if let currentRole = self.actionDialog?.fieldsInput.last {
+                            if currentRole == .owner {
+                                self.transferOwnership(withOperation: .transferOwnership)
+                            } else if currentRole == .accessLevel {
+                                self.showEmailWarning("Please choose an access level from the list".localized())
+                            } else {
+                                self.modifyMember(withOperation: .add)
+                            }
+                        }
+                    } else {
+                        self.showEmailWarning(.emailIsNotValid)
+                    }
+                }
             },
             overlayView: self.overlayView)
     }
@@ -159,7 +174,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
-                    self.showErrorAlert(message: message)
+                    self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white)
                 }
             }
         })
@@ -191,7 +206,19 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                 let apiRole = AccessRole.apiRoleForValue(account.accessRole.groupName) else { return nil }
             
             return (nil, account.email, apiRole)
-        
+            
+        case .transferOwnership:
+            var email: String = ""
+            
+            if let account = member {
+                email = account.email
+            } else {
+                guard
+                    let fieldsInput = actionDialog?.fieldsInput.first else { return nil }
+                email = fieldsInput
+            }
+            
+            return (nil, email, "")
         }
     }
     
@@ -208,20 +235,75 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     fileprivate func didTapEdit(forAccount account: Account) {
         self.showActionDialog(styled: .dropdownWithDescription,
-                              withTitle: account.name,
-                              description: account.email,
-                              placeholders: [.accessLevel],
-                              prefilledValues: [account.accessRole.groupName],
-                              dropdownValues: StaticData.accessRoles,
-                              positiveButtonTitle: .save,
-                              positiveAction: {
-                                self.modifyMember(account, withOperation: .edit)
-                              },
-                              overlayView: self.overlayView
+                            withTitle: account.name,
+                            description: account.email,
+                            placeholders: [.accessLevel],
+                            prefilledValues: [account.accessRole.groupName],
+                            dropdownValues: StaticData.allAccessRoles,
+                            positiveButtonTitle: .save,
+                            positiveAction: {
+                                if let newMemberRole = self.actionDialog?.fieldsInput.last,
+                                   newMemberRole == .owner {
+                                        self.transferOwnership(account, withOperation: .transferOwnership)
+                                    } else {
+                                        if account.accessRole != .owner {
+                                            self.modifyMember(account, withOperation: .edit)
+                                        } else {
+                                            self.actionDialog?.dismiss()
+                                            self.view.showNotificationBanner(height: 60, title: "You cannot change the access level of the Permanent Archive owner".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                                        }
+                                    }
+                            },
+                            overlayView: self.overlayView
         )
         actionDialog?.removeAction = { [weak self] in
             self?.modifyMember(account, withOperation: .remove)
         }
+    }
+    
+    fileprivate func transferOwnership(_ member: Account? = nil, withOperation operation: MemberOperation) {
+        if let parameters = getModifyMemberParams(member: member, operation: operation) {
+            parametersActionDialog = parameters
+        } else { return }
+        
+        actionDialog?.dismiss()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.showActionDialog(styled: .simpleWithDescription,
+                                  withTitle: .transferOwnership,
+                                  description: String.transferOwnershipInfo,
+                                  placeholders: [.accessLevel],
+                                  positiveButtonTitle: String.transferButtonText,
+                                  positiveAction: { [self] in
+                                    actionDialog?.dismiss()
+                                    actionDialog = nil
+                                    showSpinner()
+                
+                                    viewModel?.transferOwnership(email: self.parametersActionDialog.email , then: { status in
+                                        hideSpinner()
+                                        switch status {
+                                        case .success:
+                                            self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Ownership transfer request sent".localized())
+                                            self.getMembers()
+                                        case .error(message: let message):
+                                            self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                                        }
+                                    })
+                                  },
+                                  overlayView: self.overlayView
+            )}
+    }
+    
+    func showEmailWarning(_ message: String) {
+        let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: {_ in
+            self.actionDialog?.dismiss()
+        }))
+        alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
+        }))
+        
+        self.present(alert, animated: true)
     }
 }
 
@@ -247,7 +329,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         cell.member = member
         
         let hasEditPermission = viewModel?.archivePermissions.contains(.archiveShare) ?? false
-        cell.editButton.isHidden = !(hasEditPermission && member?.accessRole != .owner)
+        cell.editButton.isHidden = !((hasEditPermission && member?.accessRole != .owner)||(member?.accessRole == .owner && member?.status == .pending))
         
         cell.editButtonAction = { [weak self] cell in
             guard let viewModel = self?.viewModel,
