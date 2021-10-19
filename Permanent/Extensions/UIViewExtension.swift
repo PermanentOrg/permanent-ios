@@ -82,7 +82,6 @@ extension UIView {
         NSLayoutConstraint.activate([
             messageLabel.leadingAnchor.constraint(equalTo: bannerView.leadingAnchor),
             messageLabel.trailingAnchor.constraint(equalTo: bannerView.trailingAnchor),
-         //   messageLabel.bottomAnchor.constraint(equalTo: bannerView.bottomAnchor, constant: -10 ) //-messageLabel.frame.height / 2)
             messageLabel.centerYAnchor.constraint(equalTo: bannerView.centerYAnchor)
         ])
         
