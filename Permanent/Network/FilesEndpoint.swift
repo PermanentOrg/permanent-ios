@@ -30,6 +30,10 @@ enum FilesEndpoint {
     case getRecord(itemInfo: GetRecordParams)
     case getFolder(itemInfo: GetRecordParams)
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
+    
+    //RENAME
+    
+    case renameFolder(params: UpdateRecordParams)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -68,6 +72,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .update:
             return "/record/update"
+            
+        case .renameFolder:
+            return "/folder/update"
 
         default:
             return ""
@@ -108,6 +115,8 @@ extension FilesEndpoint: RequestProtocol {
             return ["filename": filename]
         case .update(let params):
             return Payloads.updateRecordRequest(params: params)
+        case .renameFolder(let params):
+            return Payloads.renameFolderRequest(params: params)
         default:
             return nil
         }

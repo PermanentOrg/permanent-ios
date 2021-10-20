@@ -109,6 +109,7 @@
                             <constraint firstItem="vKa-Za-ffa" firstAttribute="leading" secondItem="ctr-sN-CNk" secondAttribute="leading" id="oey-Rr-Hbc"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="contentUpdateButton" destination="S4H-vw-aNZ" id="Enh-oR-t7F"/>
                         <outlet property="currentPasswordView" destination="ZaR-Lf-U3y" id="AfV-0Q-Qcr"/>
@@ -379,16 +380,16 @@ The account deletion action will not delete any archives that you own or persona
     </scenes>
     <designables>
         <designable name="68J-lr-Pzv">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="ICb-Y6-aLK">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="30" height="40"/>
+            <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="xJt-MI-I2f">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
     </designables>
     <resources>

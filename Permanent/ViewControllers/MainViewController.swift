@@ -428,6 +428,44 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
+    func renameFile(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.renameFile(file: file, name: name, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.pullToRefreshAction()
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "File rename was successfully".localized())
+                }
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+            
+        })
+    }
+    
+    func renameFolder(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.renameFolder(file: file, name: name, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.pullToRefreshAction()
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Folder rename was successfully".localized())
+                }
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+            
+        })
+    }
+    
     func relocate(file: FileViewModel, to destination: FileViewModel) {
         showSpinner()
         viewModel?.relocate(file: file, to: destination, then: { status in
@@ -767,6 +805,12 @@ extension MainViewController: FABActionSheetDelegate {
             }))
         }
         
+        if file.permissions.contains(.edit) {
+            actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
+                renameAction(file: file, atIndexPath: indexPath)
+            }))
+        }
+        
         if file.permissions.contains(.delete) {
             actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
                 deleteAction(file: file, atIndexPath: indexPath)
@@ -920,6 +964,32 @@ extension MainViewController {
         
         let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
         present(shareNavController, animated: true)
+    }
+    
+    func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        let title = String(format: "\(String.rename) \"%@\"", file.name)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.showActionDialog(styled: .singleField,
+                                  withTitle: title,
+                                  prefilledValues: ["Name".localized()],
+                                  positiveButtonTitle: .rename,
+                                  positiveAction: {
+                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
+                if inputName.isEmpty {
+                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                } else {
+                    self.actionDialog?.dismiss()
+                    if file.type.isFolder {
+                        self.renameFolder(file, inputName, atIndexPath: indexPath)
+                    } else {
+                        self.renameFile(file, inputName, atIndexPath: indexPath)
+                    }
+                }
+            }, positiveButtonColor: .primary,
+                                  cancelButtonColor: .brightRed,
+                                  overlayView: self.overlayView)
+        }
     }
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
