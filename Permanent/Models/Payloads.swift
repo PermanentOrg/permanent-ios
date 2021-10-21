@@ -624,15 +624,15 @@ struct Payloads {
             "archiveNbr": params.archiveNbr,
             "folder_linkId": params.folderLinkId
         ]
-        
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+
         if let name = params.name {
             folderVO["displayName"] = name
         }
         
         return [ "RequestVO":
                     [
-                        "apiKey": Constants.API.apiKey,
-                        "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
+                        "csrf": csrf,
                         "data": [
                             [
                                 "FolderVO": folderVO

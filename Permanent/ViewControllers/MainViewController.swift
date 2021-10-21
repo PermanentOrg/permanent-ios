@@ -428,39 +428,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func renameFile(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
+    func rename(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
         showSpinner()
-        viewModel?.renameFile(file: file, name: name, then: { status in
+        viewModel?.rename(file: file, name: name, then: { status in
             self.hideSpinner()
             
             switch status {
             case .success:
-                DispatchQueue.main.async {
                     self.pullToRefreshAction()
+                if file.type.isFolder {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Folder rename was successfully".localized())
+                } else {
                     self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "File rename was successfully".localized())
                 }
                 
-            case .error(let message):
-                self.showErrorAlert(message: message)
-            }
-            
-        })
-    }
-    
-    func renameFolder(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
-        showSpinner()
-        viewModel?.renameFolder(file: file, name: name, then: { status in
-            self.hideSpinner()
-            
-            switch status {
-            case .success:
-                DispatchQueue.main.async {
-                    self.pullToRefreshAction()
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Folder rename was successfully".localized())
-                }
-                
-            case .error(let message):
-                self.showErrorAlert(message: message)
+            case .error( _):
+                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
             
         })
@@ -980,11 +963,8 @@ extension MainViewController {
                     self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
                 } else {
                     self.actionDialog?.dismiss()
-                    if file.type.isFolder {
-                        self.renameFolder(file, inputName, atIndexPath: indexPath)
-                    } else {
-                        self.renameFile(file, inputName, atIndexPath: indexPath)
-                    }
+                    self.actionDialog = nil
+                    self.rename(file, inputName, atIndexPath: indexPath)
                 }
             }, positiveButtonColor: .primary,
                                   cancelButtonColor: .brightRed,
