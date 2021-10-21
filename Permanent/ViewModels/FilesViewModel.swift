@@ -435,12 +435,15 @@ extension FilesViewModel {
     }
     
     func rename(file: FileViewModel, name: String?, then handler: @escaping ServerResponse) {
-        var params: UpdateRecordParams = (name, nil, nil, nil, file.recordId, file.folderLinkId, file.archiveNo)
-        var apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        var params: UpdateRecordParams
+        var apiOperation: APIOperation
         
         if file.type.isFolder {
             params = (name, nil, nil, nil, file.folderId, file.folderLinkId, file.archiveNo)
             apiOperation = APIOperation(FilesEndpoint.renameFolder(params: params))
+        } else {
+            params = (name, nil, nil, nil, file.recordId, file.folderLinkId, file.archiveNo)
+            apiOperation = APIOperation(FilesEndpoint.update(params: params))
         }
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

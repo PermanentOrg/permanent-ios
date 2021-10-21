@@ -952,24 +952,22 @@ extension MainViewController {
     func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.rename) \"%@\"", file.name)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.showActionDialog(styled: .singleField,
-                                  withTitle: title,
-                                  prefilledValues: ["Name".localized()],
-                                  positiveButtonTitle: .rename,
-                                  positiveAction: {
-                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
-                if inputName.isEmpty {
-                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-                } else {
-                    self.actionDialog?.dismiss()
-                    self.actionDialog = nil
-                    self.rename(file, inputName, atIndexPath: indexPath)
-                }
-            }, positiveButtonColor: .primary,
-                                  cancelButtonColor: .brightRed,
-                                  overlayView: self.overlayView)
-        }
+        self.showActionDialog(styled: .singleField,
+                              withTitle: title,
+                              prefilledValues: ["Name".localized()],
+                              positiveButtonTitle: .rename,
+                              positiveAction: {
+            guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
+            if inputName.isEmpty {
+                self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+            } else {
+                self.actionDialog?.dismiss()
+                self.actionDialog = nil
+                self.rename(file, inputName, atIndexPath: indexPath)
+            }
+        }, positiveButtonColor: .primary,
+                              cancelButtonColor: .brightRed,
+                              overlayView: self.overlayView)
     }
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
