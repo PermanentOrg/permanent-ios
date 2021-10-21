@@ -964,6 +964,7 @@ extension MainViewController {
                 self.actionDialog?.dismiss()
                 self.actionDialog = nil
                 self.rename(file, inputName, atIndexPath: indexPath)
+                self.view.endEditing(true)
             }
         }, positiveButtonColor: .primary,
                               cancelButtonColor: .brightRed,
