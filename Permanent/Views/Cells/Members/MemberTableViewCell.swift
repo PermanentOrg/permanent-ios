@@ -11,7 +11,7 @@ class MemberTableViewCell: UITableViewCell {
     fileprivate var nameLabel: UILabel!
     fileprivate var statusLabel: UILabel!
     fileprivate var emailLabel: UILabel!
-    var editButton: UIButton!
+    var editButton: BigAreaButton!
     
     var member: Account? {
         didSet {
@@ -60,9 +60,9 @@ class MemberTableViewCell: UITableViewCell {
         contentView.addSubview(vStack)
         vStack.enableAutoLayout()
         
-        editButton = UIButton(type: .custom)
-        editButton.setTitle("Edit".localized(), for: .normal)
-        editButton.setTitleColor(.primary, for: .normal)
+        editButton = BigAreaButton(type: .custom)
+        editButton.setImage(UIImage(named: "more"), for: .normal)
+        editButton.tintColor = .lightGray
         editButton.setFont(Text.style11.font)
         editButton.enableAutoLayout()
         contentView.addSubview(editButton)
@@ -75,7 +75,7 @@ class MemberTableViewCell: UITableViewCell {
             vStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             vStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             editButton.heightAnchor.constraint(equalToConstant: 30),
-            editButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            editButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -28),
             editButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }

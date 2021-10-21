@@ -256,9 +256,6 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                             },
                             overlayView: self.overlayView
         )
-        actionDialog?.removeAction = { [weak self] in
-            self?.modifyMember(account, withOperation: .remove)
-        }
     }
     
     fileprivate func transferOwnership(_ member: Account? = nil, withOperation operation: MemberOperation) {
@@ -305,6 +302,21 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         
         self.present(alert, animated: true)
     }
+    
+    func showFileActionSheet(forAccount account: Account, atIndexPath indexPath: IndexPath) {
+        var actions: [PRMNTAction] = []
+        
+        actions.append(PRMNTAction(title: "Remove".localized(), color: .brightRed, handler: { [self] action in
+            modifyMember(account, withOperation: .remove)
+        }))
+        
+        actions.append(PRMNTAction(title: "Edit".localized(), color: .primary, handler: { [self] action in
+            didTapEdit(forAccount: account)
+        }))
+    
+        let actionSheet = PRMNTActionSheetViewController(title: account.email, actions: actions)
+        present(actionSheet, animated: true, completion: nil)
+    }
 }
 
 extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
@@ -338,7 +350,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
                 return
             }
             
-            self?.didTapEdit(forAccount: account)
+            self?.showFileActionSheet(forAccount:account, atIndexPath: indexPath)
         }
         
         return cell
