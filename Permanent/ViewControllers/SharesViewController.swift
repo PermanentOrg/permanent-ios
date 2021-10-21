@@ -11,7 +11,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
     @IBOutlet var backButton: UIButton!
     @IBOutlet var segmentedControl: UISegmentedControl!
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var switchViewButton: UIButton!
     private let refreshControl = UIRefreshControl()
     
     private var fileActionSheet: SharedFileActionSheet?
@@ -22,6 +23,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     var selectedFileId: Int?
     
+    private var isGridView = false
+    private var sortActionSheet: SortActionSheet?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,7 +35,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let hasSavedFolder = checkSavedFolder()
         
         configureUI()
-        setupTableView()
+        setupCollectionView()
         
         if !hasSavedFolder && !hasSavedFile {
             getShares()
@@ -75,28 +79,38 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         styleNavBar()
     }
     
-    fileprivate func setupTableView() {
-        tableView.registerNib(cellClass: SharedFileTableViewCell.self)
-        tableView.tableFooterView = UIView()
-        tableView.separatorInset = .zero
+    fileprivate func setupCollectionView() {
+        isGridView = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isGridView) ?? false
+        if #available(iOS 13.0, *) {
+            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
         
-        tableView.refreshControl = refreshControl
+        collectionView.refreshControl = refreshControl
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.minimumInteritemSpacing = 6
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.estimatedItemSize = .zero
+        collectionView.collectionViewLayout = flowLayout
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
     }
     
-    fileprivate func configureTableViewBgView() {
+    fileprivate func configureCollectionViewBgView() {
         if let items = viewModel?.viewModels, items.isEmpty {
-            tableView.backgroundView = EmptyFolderView(title: .shareActionMessage, image: .shares)
+            collectionView.backgroundView = EmptyFolderView(title: .shareActionMessage, image: .shares)
         } else {
-            tableView.backgroundView = nil
+            collectionView.backgroundView = nil
         }
     }
     
-    fileprivate func refreshTableView(_ completion: (() -> ())? = nil) {
-        tableView.reloadData(completion)
-        configureTableViewBgView()
+    fileprivate func refreshCollectionView(_ completion: (() -> ())? = nil) {
+        collectionView.reloadData()
+        configureCollectionViewBgView()
+        completion?()
     }
     
     func checkSavedFile() -> Bool {
@@ -231,11 +245,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             return
         }
         
-        self.directoryLabel.text = listType == .sharedByMe ? .sharedByMe : .sharedWithMe
+        self.directoryLabel.text = "Shares".localized()
         self.backButton.isHidden = true
         
         viewModel?.shareListType = listType
-        refreshTableView()
+        refreshCollectionView()
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
@@ -261,6 +275,56 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
+    @IBAction func switchViewButtonPressed(_ sender: Any) {
+        isGridView.toggle()
+        PreferencesManager.shared.set(isGridView, forKey: Constants.Keys.StorageKeys.isGridView)
+        
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        
+        if #available(iOS 13.0, *) {
+            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        collectionView.reloadData()
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.minimumInteritemSpacing = 6
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.estimatedItemSize = .zero
+        collectionView.collectionViewLayout = flowLayout
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    @objc private func headerButtonAction(_ sender: UIButton) {
+        showSortActionSheetDialog()
+    }
+    
+    func showSortActionSheetDialog() {
+        guard
+            sortActionSheet == nil,
+            let viewModel = viewModel else { return }
+        
+        sortActionSheet = SortActionSheet(
+            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
+            selectedOption: viewModel.activeSortOption,
+            onDismiss: {
+                self.view.dismissPopup(
+                    self.sortActionSheet,
+                    overlayView: self.overlayView,
+                    completion: { _ in
+                        self.sortActionSheet?.removeFromSuperview()
+                        self.sortActionSheet = nil
+                    }
+                )
+            }
+        )
+        
+        sortActionSheet?.delegate = self
+        view.addSubview(sortActionSheet!)
+        view.presentPopup(sortActionSheet, overlayView: overlayView)
+    }
+    
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         // Safety measure, in case the user taps to show sheet, but the previously shown one
         // has not finished dimissing and being deallocated.
@@ -273,7 +337,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             indexPath: indexPath,
             hasDownloadButton: viewModel?.downloadInProgress == false,
             onDismiss: {
-                self.tableView.deselectRow(at: indexPath, animated: true)
+                self.collectionView.deselectItem(at: indexPath, animated: true)
                 self.view.dismissPopup(
                     self.fileActionSheet,
                     overlayView: self.overlayView,
@@ -299,10 +363,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
-                self.refreshTableView {
+                self.refreshCollectionView {
                     self.scrollToFileIfNeeded()
                     
-                    self.directoryLabel.text = self.viewModel?.shareListType == .sharedByMe ? .sharedByMe : .sharedWithMe
+                    self.directoryLabel.text = "Shares".localized()
                     self.backButton.isHidden = true
                 }
             case .error(let message):
@@ -318,18 +382,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private func download(_ file: FileViewModel) {
         viewModel?.download(file, onDownloadStart: {
             DispatchQueue.main.async {
-                if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
-                    self.viewModel?.viewModels[index].fileStatus = .downloading
-                }
-                
-                self.refreshTableView()
+                self.refreshCollectionView()
             }
         }, onFileDownloaded: { url, error in
             DispatchQueue.main.async {
-                if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
-                    self.viewModel?.viewModels[index].fileStatus = .synced
-                }
-                
                 self.onFileDownloaded(url: url, error: error)
             }
         }, progressHandler: { progress in
@@ -340,7 +396,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
-        self.refreshTableView()
+        self.refreshCollectionView()
         
         guard let _ = url else {
             let apiError = (error as? APIError) ?? .unknown
@@ -358,19 +414,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
             showFileActionSheet(file: file, atIndexPath: indexPath)
             
         case .downloading:
             viewModel?.cancelDownload()
             
-            if let index = self.viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
-                self.viewModel?.viewModels[index].fileStatus = .synced
+            if let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }) {
+                viewModel?.viewModels[index].fileStatus = .synced
             }
             
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+            collectionView.reloadData()
             
         case .uploading, .waiting:
             break
@@ -379,7 +433,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     private func handleProgress(forFile file: FileViewModel, withValue value: Float) {
         guard let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }),
-              let downloadingCell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? SharedFileTableViewCell
+              let downloadingCell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? FileCollectionViewCell
         else {
             return
         }
@@ -393,9 +447,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         // Clear the data before navigation so we avoid concurrent errors.
         viewModel?.viewModels.removeAll()
         
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
+        self.collectionView.reloadData()
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
@@ -411,7 +463,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         switch status {
         case .success:
             DispatchQueue.main.async {
-                self.refreshTableView()
+                self.refreshCollectionView()
             }
             
         case .error(let message):
@@ -420,50 +472,58 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
+// MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
+extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel?.numberOfSections ?? 0
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel?.numberOfRowsInSection(section) ?? 0
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel = self.viewModel,
-              viewModel.viewModels.count > indexPath.row  else {
-            return UITableViewCell()
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let viewModel = self.viewModel else {
+            return UICollectionViewCell()
         }
         
-        let cell = tableView.dequeue(cellClass: SharedFileTableViewCell.self, forIndexPath: indexPath)
-        let item = viewModel.viewModels[indexPath.row]
-        cell.updateCell(model: item)
+        let reuseIdentifier: String
+        if indexPath.section == FileListType.synced.rawValue {
+            reuseIdentifier = isGridView ? "FileGridCell" : "FileCell"
+        } else {
+            reuseIdentifier = "FileCell"
+        }
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
+        let file = viewModel.fileForRowAt(indexPath: indexPath)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView)
         
         cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: item, atIndexPath: indexPath)
+            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
         
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 70)
+        // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
+        // Vertical size: 30 is the height of the title label
+        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
         
-        guard let viewModel = self.viewModel else { return }
-        
+        if indexPath.section == FileListType.synced.rawValue {
+            return isGridView ? gridItemSize : listItemSize
+        } else {
+            return listItemSize
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let viewModel = viewModel else { return }
+
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.fileStatus == .synced else { return }
+        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         if file.type.isFolder {
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
@@ -485,6 +545,37 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let section = indexPath.section
+        let title = viewModel?.title(forSection: section) ?? ""
+        
+        if kind == UICollectionView.elementKindSectionHeader && title.count > 0 {
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            headerView.leftButtonTitle = title
+            if viewModel?.shouldPerformAction(forSection: section) == true {
+                headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
+            } else {
+                headerView.leftButtonAction = nil
+            }
+            
+            headerView.rightButtonTitle = nil
+            headerView.rightButtonAction = nil
+            
+            return headerView
+        }
+        
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 && (viewModel?.title(forSection: section) ?? "").count > 0 ? 40 : 0
+        return CGSize(width: UIScreen.main.bounds.width, height: height)
+    }
+    
+}
+
+// MARK: - CollectionView Related
+extension SharesViewController {
     func scrollToFileIfNeeded() {
         guard
             let folderLinkId = selectedFileId,
@@ -494,7 +585,7 @@ extension SharesViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let indexPath = IndexPath(row: index, section: 0)
-        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
     }
 }
 
@@ -515,5 +606,13 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
         
+    }
+}
+
+// MARK: - SortActionSheetDelegate
+extension SharesViewController: SortActionSheetDelegate {
+    func didSelectOption(_ option: SortOption) {
+        viewModel?.activeSortOption = option
+        refreshCurrentFolder()
     }
 }

@@ -21,6 +21,19 @@ class SharedFilesViewModel: FilesViewModel {
     var sharedByMeViewModels: [FileViewModel] = []
     var sharedWithMeViewModels: [FileViewModel] = []
     
+    override func shouldPerformAction(forSection section: Int) -> Bool {
+        return section == FileListType.synced.rawValue && !currentFolderIsRoot
+    }
+    
+    override func title(forSection section: Int) -> String {
+        switch section {
+        case FileListType.downloading.rawValue: return .downloads
+        case FileListType.uploading.rawValue: return .uploads
+        case FileListType.synced.rawValue: return currentFolderIsRoot ? "" : activeSortOption.title
+        default: return "" // We cannot have more than 3 sections.
+        }
+    }
+    
     func getShares(then handler: @escaping ServerResponse) {
         viewModels.removeAll()
         sharedByMeViewModels.removeAll()
