@@ -433,4 +433,42 @@ extension FilesViewModel {
             }
         }
     }
+    
+    func rename(file: FileViewModel, name: String?, then handler: @escaping ServerResponse) {
+        var params: UpdateRecordParams
+        var apiOperation: APIOperation
+        
+        if file.type.isFolder {
+            params = (name, nil, nil, nil, file.folderId, file.folderLinkId, file.archiveNo)
+            apiOperation = APIOperation(FilesEndpoint.renameFolder(params: params))
+        } else {
+            params = (name, nil, nil, nil, file.recordId, file.folderLinkId, file.archiveNo)
+            apiOperation = APIOperation(FilesEndpoint.update(params: params))
+        }
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
+        }
+    }
 }

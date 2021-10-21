@@ -617,4 +617,28 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func renameFolderRequest(params: UpdateRecordParams) -> RequestParameters {
+        var folderVO: [String: Any] = [
+            "folderId": params.recordId,
+            "archiveNbr": params.archiveNbr,
+            "folder_linkId": params.folderLinkId
+        ]
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+
+        if let name = params.name {
+            folderVO["displayName"] = name
+        }
+        
+        return [ "RequestVO":
+                    [
+                        "csrf": csrf,
+                        "data": [
+                            [
+                                "FolderVO": folderVO
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }
