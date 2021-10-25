@@ -327,14 +327,12 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KKf-kI-Qug">
                                                     <rect key="frame" x="14" y="10" width="46" height="30"/>
-                                                    <state key="normal" title="Button"/>
                                                     <connections>
                                                         <action selector="leftButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="yg5-Cm-w4a"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eY7-Sa-TzA">
                                                     <rect key="frame" x="356" y="10" width="46" height="30"/>
-                                                    <state key="normal" title="Button"/>
                                                     <connections>
                                                         <action selector="rightButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="jmU-OI-67Y"/>
                                                     </connections>
@@ -824,7 +822,7 @@
     <resources>
         <image name="chevron.left" width="13" height="21"/>
         <image name="folder" width="21" height="17"/>
-        <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
+        <image name="square.grid.2x2.fill" catalog="system" width="128" height="115"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
