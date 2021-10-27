@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -24,7 +24,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S4H-vw-aNZ" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="20" y="336" width="374" height="45"/>
+                                                <rect key="frame" x="20" y="20" width="374" height="45"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="45" id="LjR-hm-rqC"/>
                                                 </constraints>
@@ -32,38 +32,15 @@
                                                     <action selector="pressedUpdateButton:" destination="U2U-Bo-n5y" eventType="touchUpInside" id="KKW-AO-fsX"/>
                                                 </connections>
                                             </button>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="MOe-py-7bl">
-                                                <rect key="frame" x="0.0" y="23" width="414" height="278"/>
-                                                <subviews>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZaR-Lf-U3y" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="82.5"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <userDefinedRuntimeAttributes>
-                                                            <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
-                                                        </userDefinedRuntimeAttributes>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ubi-Qk-1kO" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="97.5" width="414" height="83"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-aT-FoJ" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="195.5" width="414" height="82.5"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                    </view>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="278" id="koC-Iz-gT9"/>
-                                                </constraints>
-                                            </stackView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fWz-P8-1yb">
-                                                <rect key="frame" x="0.0" y="415.5" width="414" height="1"/>
+                                                <rect key="frame" x="0.0" y="85" width="414" height="1"/>
                                                 <color key="backgroundColor" systemColor="systemPinkColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="uAV-W7-bVH"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2o9-qH-Dds" customClass="SwitchSettingsView" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="20" y="426.5" width="374" height="45"/>
+                                                <rect key="frame" x="20" y="96" width="374" height="45"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="45" id="iPK-eL-8aR"/>
@@ -72,17 +49,14 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="MOe-py-7bl" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" id="1KY-5b-vZT"/>
+                                            <constraint firstItem="S4H-vw-aNZ" firstAttribute="top" secondItem="d32-Lh-2lY" secondAttribute="top" constant="20" id="1Um-kH-dRF"/>
                                             <constraint firstAttribute="trailing" secondItem="fWz-P8-1yb" secondAttribute="trailing" id="1xU-OM-EPT"/>
                                             <constraint firstItem="fWz-P8-1yb" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" id="NZf-zF-MSU"/>
                                             <constraint firstAttribute="trailing" secondItem="2o9-qH-Dds" secondAttribute="trailing" constant="20" id="OmF-48-xE6"/>
-                                            <constraint firstItem="S4H-vw-aNZ" firstAttribute="top" secondItem="MOe-py-7bl" secondAttribute="bottom" constant="35" id="R0W-18-2JJ"/>
                                             <constraint firstItem="2o9-qH-Dds" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" constant="20" id="R6n-dB-Vvj"/>
                                             <constraint firstItem="2o9-qH-Dds" firstAttribute="top" secondItem="fWz-P8-1yb" secondAttribute="bottom" constant="10" id="RRA-54-dwg"/>
                                             <constraint firstItem="S4H-vw-aNZ" firstAttribute="leading" secondItem="d32-Lh-2lY" secondAttribute="leading" constant="20" id="RXK-6L-uCG"/>
-                                            <constraint firstItem="MOe-py-7bl" firstAttribute="top" secondItem="d32-Lh-2lY" secondAttribute="topMargin" constant="15" id="W8U-Hv-89X"/>
-                                            <constraint firstAttribute="trailing" secondItem="MOe-py-7bl" secondAttribute="trailing" id="dxD-Wv-EpM"/>
-                                            <constraint firstItem="fWz-P8-1yb" firstAttribute="top" secondItem="S4H-vw-aNZ" secondAttribute="bottom" constant="34.5" id="qwC-hd-ibt"/>
+                                            <constraint firstItem="fWz-P8-1yb" firstAttribute="top" secondItem="S4H-vw-aNZ" secondAttribute="bottom" constant="20" id="qwC-hd-ibt"/>
                                             <constraint firstAttribute="trailing" secondItem="S4H-vw-aNZ" secondAttribute="trailing" constant="20" id="sB9-pw-eSS"/>
                                         </constraints>
                                     </view>
@@ -112,16 +86,119 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="contentUpdateButton" destination="S4H-vw-aNZ" id="Enh-oR-t7F"/>
-                        <outlet property="currentPasswordView" destination="ZaR-Lf-U3y" id="AfV-0Q-Qcr"/>
                         <outlet property="firstLineView" destination="fWz-P8-1yb" id="XeM-Vj-w6f"/>
                         <outlet property="logWithBiometricsView" destination="2o9-qH-Dds" id="r3S-5X-7A5"/>
-                        <outlet property="newPasswordView" destination="Ubi-Qk-1kO" id="U0I-NW-CNv"/>
-                        <outlet property="reTypePasswordView" destination="AuZ-aT-FoJ" id="Ujz-lj-zmY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tl6-bN-9mW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="128" y="-21"/>
+            <point key="canvasLocation" x="127.53623188405798" y="-21.428571428571427"/>
+        </scene>
+        <!--Password Update View Controller-->
+        <scene sceneID="7ku-Ll-0cN">
+            <objects>
+                <viewController storyboardIdentifier="PasswordUpdate" id="4og-wY-huY" customClass="PasswordUpdateViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ILA-Sg-Ffj">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="bcb-TD-ljy">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DZw-tH-luB">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fUa-8S-g3h" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="20" y="336" width="374" height="45"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="45" id="esg-dz-KgW"/>
+                                                </constraints>
+                                                <connections>
+                                                    <action selector="pressedUpdateButton:" destination="U2U-Bo-n5y" eventType="touchUpInside" id="DGR-Ym-f8J"/>
+                                                    <action selector="pressedUpdateButton:" destination="4og-wY-huY" eventType="touchUpInside" id="fhA-Gc-aCp"/>
+                                                </connections>
+                                            </button>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="g3y-8y-ptq">
+                                                <rect key="frame" x="0.0" y="23" width="414" height="278"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o0U-C1-Zmy" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="82.5"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rbh-pn-bOe" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="97.5" width="414" height="83"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8lZ-yM-AxE" customClass="PasswordElementView" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="195.5" width="414" height="82.5"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="278" id="BmB-uq-l4p"/>
+                                                </constraints>
+                                            </stackView>
+                                            <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0qB-WJ-y9d">
+                                                <rect key="frame" x="20" y="85" width="1" height="3"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="1"/>
+                                                <textInputTraits key="textInputTraits" textContentType="username"/>
+                                            </textField>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="g3y-8y-ptq" secondAttribute="trailing" id="0P7-q8-XmK"/>
+                                            <constraint firstItem="g3y-8y-ptq" firstAttribute="top" secondItem="DZw-tH-luB" secondAttribute="topMargin" constant="15" id="Jaj-cX-2A4"/>
+                                            <constraint firstItem="0qB-WJ-y9d" firstAttribute="leading" secondItem="DZw-tH-luB" secondAttribute="leading" constant="20" id="ffa-i3-lau"/>
+                                            <constraint firstItem="fUa-8S-g3h" firstAttribute="top" secondItem="g3y-8y-ptq" secondAttribute="bottom" constant="35" id="sFQ-14-Jcg"/>
+                                            <constraint firstItem="fUa-8S-g3h" firstAttribute="leading" secondItem="DZw-tH-luB" secondAttribute="leading" constant="20" id="sob-yn-8SU"/>
+                                            <constraint firstItem="0qB-WJ-y9d" firstAttribute="top" secondItem="DZw-tH-luB" secondAttribute="top" constant="85" id="tgX-Oc-uTO"/>
+                                            <constraint firstItem="g3y-8y-ptq" firstAttribute="leading" secondItem="DZw-tH-luB" secondAttribute="leading" id="tvf-Vq-x9X"/>
+                                            <constraint firstAttribute="trailing" secondItem="fUa-8S-g3h" secondAttribute="trailing" constant="20" id="yIu-37-V2R"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="QZZ-Uv-NWz" secondAttribute="bottom" id="0ZM-P7-Ix2"/>
+                                    <constraint firstItem="gl1-05-qY1" firstAttribute="bottom" secondItem="DZw-tH-luB" secondAttribute="bottom" id="1XL-N4-eDr"/>
+                                    <constraint firstItem="DZw-tH-luB" firstAttribute="trailing" secondItem="bcb-TD-ljy" secondAttribute="trailing" id="6c6-TS-UQi"/>
+                                    <constraint firstItem="DZw-tH-luB" firstAttribute="leading" secondItem="bcb-TD-ljy" secondAttribute="leading" id="Eyj-um-7dZ"/>
+                                    <constraint firstItem="DZw-tH-luB" firstAttribute="top" secondItem="gl1-05-qY1" secondAttribute="top" id="Lbc-bR-Qb5"/>
+                                    <constraint firstItem="DZw-tH-luB" firstAttribute="top" secondItem="bcb-TD-ljy" secondAttribute="top" id="cQ5-Fs-VbK"/>
+                                    <constraint firstItem="QZZ-Uv-NWz" firstAttribute="top" secondItem="bcb-TD-ljy" secondAttribute="top" id="dZ7-3L-h1q"/>
+                                    <constraint firstAttribute="trailing" secondItem="DZw-tH-luB" secondAttribute="trailing" id="fMI-jc-yPf"/>
+                                    <constraint firstItem="DZw-tH-luB" firstAttribute="leading" secondItem="bcb-TD-ljy" secondAttribute="leading" id="mLM-6u-whw"/>
+                                    <constraint firstAttribute="bottom" secondItem="DZw-tH-luB" secondAttribute="bottom" id="rjT-yC-9pG"/>
+                                    <constraint firstAttribute="width" secondItem="DZw-tH-luB" secondAttribute="width" id="t6o-Su-g00"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="QZZ-Uv-NWz"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="gl1-05-qY1"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="DkC-8x-EZM"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="DkC-8x-EZM" firstAttribute="bottom" secondItem="bcb-TD-ljy" secondAttribute="bottom" id="Jdb-Zt-2qM"/>
+                            <constraint firstItem="bcb-TD-ljy" firstAttribute="leading" secondItem="DkC-8x-EZM" secondAttribute="leading" id="SO8-nn-rxz"/>
+                            <constraint firstItem="bcb-TD-ljy" firstAttribute="top" secondItem="DkC-8x-EZM" secondAttribute="top" id="Yxi-NH-pSx"/>
+                            <constraint firstItem="bcb-TD-ljy" firstAttribute="trailing" secondItem="DkC-8x-EZM" secondAttribute="trailing" id="eHh-Qp-byf"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <connections>
+                        <outlet property="confirmPasswordTextField" destination="8lZ-yM-AxE" id="SRO-du-hOr"/>
+                        <outlet property="contentUpdateButton" destination="fUa-8S-g3h" id="Awj-7K-EAv"/>
+                        <outlet property="newPasswordTextField" destination="rbh-pn-bOe" id="Dnv-Pi-5Ng"/>
+                        <outlet property="passwordTextField" destination="o0U-C1-Zmy" id="hWB-29-jnX"/>
+                        <outlet property="userTextField" destination="0qB-WJ-y9d" id="XBe-QT-363"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5wi-dF-eIw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="929" y="-21"/>
         </scene>
         <!--Account Info View Controller-->
         <scene sceneID="7ff-zy-13g">
@@ -386,6 +463,9 @@ The account deletion action will not delete any archives that you own or persona
             <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="S4H-vw-aNZ">
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+        <designable name="fUa-8S-g3h">
             <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
         <designable name="xJt-MI-I2f">
