@@ -17,7 +17,6 @@ class SecurityViewModel: ViewModelInterface {
 
 protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
     func changePassword(with accountId: String, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void)
-    func getNewCsrf(then handler: @escaping (Bool) -> Void)
     func getUserBiomericsStatus() -> Bool
     func getAuthToggleStatus() -> Bool
     func getAuthTypeText() -> String
@@ -59,32 +58,6 @@ extension SecurityViewModel: SecurityViewModelDelegate {
                 handler(.error(message: .errorMessage))
                 self.viewDelegate?.passwordUpdated(success: false)
 
-            default:
-                break
-            }
-        }
-    }
-
-    func getNewCsrf(then handler: @escaping (Bool) -> Void) {
-        let getNewCsrfOperation = APIOperation(AccountEndpoint.getValidCsrf)
-
-        getNewCsrfOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<NoDataModel>.decoder
-                    ),
-                    model.isSuccessful
-
-                else {
-                    return
-                }
-                handler(true)
-                return
-            case .error:
-                handler(false)
             default:
                 break
             }
