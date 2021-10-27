@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
     @IBOutlet var contentUpdateButton: RoundedButton!

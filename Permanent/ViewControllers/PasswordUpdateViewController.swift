@@ -64,8 +64,6 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
     }
     
     private func attemptPasswordChange() {
-        let group = DispatchGroup()
-        
         guard
             let currentPass = passwordTextField.passwordTextField.text,
             let retypePass = confirmPasswordTextField.passwordTextField.text,
@@ -87,30 +85,21 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
         showSpinner(colored: .white)
         closeKeyboard()
         
-        group.enter()
-        viewModel?.getNewCsrf(then: { _ in
-            DispatchQueue.main.async {
-                group.leave()
+        self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, then: { status in
+            switch status {
+            case .success(let message):
+                DispatchQueue.main.async {
+                    self.hideSpinner()
+                    self.dismiss(animated: true, completion: nil)
+                }
+                
+            case .error(let message):
+                DispatchQueue.main.async {
+                    self.hideSpinner()
+                    self.showAlert(title: .error, message: message)
+                }
             }
         })
-        
-        group.notify(queue: DispatchQueue.global()) {
-            self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, then: { status in
-                switch status {
-                case .success(let message):
-                    DispatchQueue.main.async {
-                        self.hideSpinner()
-                        self.dismiss(animated: true, completion: nil)
-                    }
-                    
-                case .error(let message):
-                    DispatchQueue.main.async {
-                        self.hideSpinner()
-                        self.showAlert(title: .error, message: message)
-                    }
-                }
-            })
-        }
     }
 }
 
