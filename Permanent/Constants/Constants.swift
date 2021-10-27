@@ -152,4 +152,5 @@ extension Constants.Keys.StorageKeys {
     static let archive = "archive"
     static let defaultArchiveId = "defaultArchiveId"
     static let modelVersion = "modelVersion"
+    static let isGridView = "isGridView"
 }
