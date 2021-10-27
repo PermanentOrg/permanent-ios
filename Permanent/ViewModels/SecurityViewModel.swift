@@ -12,7 +12,7 @@ typealias ChangePasswordCredentials = (password: String, passwordVerify: String,
 
 class SecurityViewModel: ViewModelInterface {
     weak var delegate: SecurityViewModelDelegate?
-    weak var viewDelegate: SecurityViewModelDelegate?
+    weak var viewDelegate: SecurityViewModelViewDelegate?
 }
 
 protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
@@ -21,6 +21,10 @@ protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
     func getUserBiomericsStatus() -> Bool
     func getAuthToggleStatus() -> Bool
     func getAuthTypeText() -> String
+}
+
+protocol SecurityViewModelViewDelegate: ViewModelDelegateInterface {
+    func passwordUpdated(success: Bool)
 }
 
 extension SecurityViewModel: SecurityViewModelDelegate {
@@ -38,6 +42,7 @@ extension SecurityViewModel: SecurityViewModelDelegate {
                     )
                 else {
                     handler(.error(message: .errorMessage))
+                    self.viewDelegate?.passwordUpdated(success: false)
                     return
                 }
                 guard
@@ -49,8 +54,10 @@ extension SecurityViewModel: SecurityViewModelDelegate {
                     return
                 }
                 handler(.success(message: .passwordChangedSuccessfully))
+                self.viewDelegate?.passwordUpdated(success: true)
             case .error:
                 handler(.error(message: .errorMessage))
+                self.viewDelegate?.passwordUpdated(success: false)
 
             default:
                 break

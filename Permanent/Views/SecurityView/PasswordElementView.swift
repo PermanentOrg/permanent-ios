@@ -41,12 +41,14 @@ class PasswordElementView: UIView {
         contentView.backgroundColor = .blueGray
         
     }
-    func configurePasswordElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default) {
+    func configurePasswordElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default, passFieldContentType: UITextContentType = .password) {
         self.contentView.backgroundColor = .white
         self.valueLabel.text = label
         self.valueLabel.font = Text.style3.font
         self.passwordTextField.textColor = .middleGray
         self.passwordTextField.returnKeyType = returnKey
+        self.passwordTextField.textContentType = passFieldContentType
+        self.passwordTextField.isSecureTextEntry = true
     }
     func clearPasswordField() {
         self.passwordTextField.text = ""
