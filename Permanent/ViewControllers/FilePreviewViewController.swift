@@ -14,6 +14,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all]
     }
     
+    @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var retryButton: UIButton!
+    
     let fileHelper = FileHelper()
     
     var file: FileViewModel!
@@ -41,8 +44,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        
-        loadVM()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -60,15 +61,20 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadVM() {
         guard recordLoaded == false else { return }
         
-        if isViewLoaded {
-            activityIndicator.startAnimating()
-        }
+        activityIndicator.startAnimating()
         
-        if viewModel == nil {
+        if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
             
             viewModel?.getRecord(file: file, then: { record in
-                self.loadRecord()
+                if record != nil {
+                    self.loadRecord()
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    
+                    self.errorLabel.isHidden = false
+                    self.retryButton.isHidden = false
+                }
             })
         } else {
             loadRecord()
@@ -77,6 +83,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     func initUI() {
         styleNavBar()
+        
+        errorLabel.font = Text.style17.font
+        errorLabel.textColor = .white
+        errorLabel.isHidden = true
+        retryButton.setFont(Text.style10.font)
+        retryButton.setTitleColor(.white, for: .normal)
+        retryButton.isHidden = true
+        
         let shareButtonImage = UIBarButtonItem.SystemItem.action
         let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
         
@@ -152,7 +166,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 self.loadMisc(withURL: downloadURL)
             }
         } else {
-            self.showErrorAlert(message: .errorMessage)
+            self.errorLabel.isHidden = false
+            self.retryButton.isHidden = false
         }
         
         if recordLoaded != true {
@@ -171,11 +186,17 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         imagePreviewVC.didMove(toParent: self)
         
         viewModel?.fileData(withURL: url, onCompletion: { (data, error) in
+            self.activityIndicator.stopAnimating()
+            
             if let data = data {
                 imagePreviewVC.image = UIImage(data: data)
-                self.activityIndicator.stopAnimating()
             } else {
-                self.showAlert(title: .error, message: .errorMessage)
+                self.errorLabel.isHidden = false
+                self.retryButton.isHidden = false
+                
+                imagePreviewVC.view.removeFromSuperview()
+                imagePreviewVC.removeFromParent()
+                imagePreviewVC.didMove(toParent: nil)
             }
         })
     }
@@ -260,6 +281,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         dismiss(animated: true, completion: nil)
     }
 
+    @IBAction func retryButtonPressed(_ sender: Any) {
+        errorLabel.isHidden = true
+        retryButton.isHidden = true
+        
+        loadVM()
+    }
+    
     // MARK: - KVO
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &playerItemContext else {
@@ -278,7 +306,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
             
             if status == .failed {
-                showAlert(title: .error, message: "Sorry, can't play this video format.".localized())
+                self.errorLabel.isHidden = false
+                self.retryButton.isHidden = false
+                
+                removeVideoPlayer()
             }
         }
     }
@@ -307,6 +338,11 @@ extension FilePreviewViewController: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         activityIndicator.stopAnimating()
+        
+        self.errorLabel.isHidden = false
+        self.retryButton.isHidden = false
+        
+        webView.removeFromSuperview()
     }
 }
 

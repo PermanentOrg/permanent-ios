@@ -173,6 +173,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
                 }
             }
             fileDetailsVC.file = filteredFiles[index]
+            fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
             
             controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))

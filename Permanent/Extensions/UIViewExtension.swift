@@ -61,7 +61,7 @@ extension UIView {
         }, completion: completion)
     }
     
-    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String, backgroundColor: UIColor = .paleGreen, textColor: UIColor = .bilbaoGreen, animationDelayInSeconds: CGFloat = Constants.Design.shortNotificationBarAnimationDuration) {
+    func showNotificationBanner(height: CGFloat = Constants.Design.bannerHeight, title: String, backgroundColor: UIColor = .paleGreen, textColor: UIColor = .bilbaoGreen, animationDelayInSeconds: Double = Constants.Design.shortNotificationBarAnimationDuration) {
         let initialBannerOrigin = CGPoint(x: 0, y: -height)
         let bannerView = UIView(frame: CGRect(origin: initialBannerOrigin,
                                               size: CGSize(width: self.bounds.width, height: height)))
