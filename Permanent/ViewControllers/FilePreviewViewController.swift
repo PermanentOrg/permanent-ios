@@ -15,7 +15,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @IBOutlet weak var errorLabel: UILabel!
-    @IBOutlet weak var retryButton: UIButton!
+    @IBOutlet weak var retryButton: RoundedButton!
     
     let fileHelper = FileHelper()
     
@@ -87,6 +87,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         errorLabel.font = Text.style17.font
         errorLabel.textColor = .white
         errorLabel.isHidden = true
+        retryButton.configureActionButtonUI(title: "Retry".localized(), bgColor: .tangerine, buttonHeight: 30)
         retryButton.setFont(Text.style10.font)
         retryButton.setTitleColor(.white, for: .normal)
         retryButton.isHidden = true
