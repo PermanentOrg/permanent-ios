@@ -52,6 +52,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return currentArchive?.permissions() ?? [.read]
     }
     
+    var shareDownloader: DownloadManagerGCD? = nil
+    
     // MARK: - Table View Logic
     
     var currentFolderIsRoot: Bool { true }
@@ -219,6 +221,24 @@ extension FilesViewModel {
                                 self.downloadQueue.safeRemoveFirst()
                             })
 
+    }
+    
+    func getRecord(file: FileViewModel, then handler: @escaping (RecordVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: file.type,
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
+        )
+        
+        shareDownloader = DownloadManagerGCD()
+        shareDownloader?.getRecord(downloadInfo) { (record, error) in
+            handler(record)
+        }
+    }
+    
+    func download(_ record: RecordVO, fileType: FileType, onFileDownloaded: @escaping DownloadResponse) {
+        shareDownloader = DownloadManagerGCD()
+        shareDownloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {

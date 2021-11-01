@@ -59,8 +59,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
     
     func setupNavigationBar() {
-        let shareButtonImage = UIBarButtonItem.SystemItem.action
-        let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
+        let shareButton = UIBarButtonItem(image: .more, style: .plain, target: self, action: #selector(shareButtonAction(_:)))
         
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
@@ -82,7 +81,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
     
     @objc private func shareButtonAction(_ sender: Any) {
-        (pageVC.viewControllers?.first as! FilePreviewViewController).shareButtonAction(sender)
+        (pageVC.viewControllers?.first as! FilePreviewViewController).showShareMenu(sender)
     }
     
     @objc private func infoButtonAction(_ sender: Any) {
