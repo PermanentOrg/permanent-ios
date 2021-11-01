@@ -101,6 +101,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                     let name = fieldsInput.first,
                     let typeValue = fieldsInput.last,
                     let type = ArchiveType.create(localizedValue: typeValue) {
+                    self.actionDialog?.positiveButton.isEnabled = false
+                    self.actionDialog?.cancelButton.isEnabled = false
                     self.viewModel?.createArchive(name: name, type: type.rawValue, { success, error in
                         if success {
                             self.updateArchivesList()
@@ -109,6 +111,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                         }
                         
                         self.actionDialog?.dismiss()
+                        self.actionDialog = nil
                     })
                 }
             },
