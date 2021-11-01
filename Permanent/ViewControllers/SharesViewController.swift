@@ -132,6 +132,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 fileDetailsNavigationController.filePreviewNavDelegate = self
                 fileDetailsNavigationController.modalPresentationStyle = .fullScreen
                 present(fileDetailsNavigationController, animated: true)
+                
+                // This has to be done after presentation, filePreviewVC has to have it's view loaded
+                filePreviewVC.loadVM()
             }
             
             let currentArchive: ArchiveVOData? = viewModel?.currentArchive

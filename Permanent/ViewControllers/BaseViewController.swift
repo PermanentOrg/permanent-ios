@@ -35,9 +35,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
     }
     
     func showErrorAlert(message: String?) {
-        DispatchQueue.main.async {
-            self.showAlert(title: .error, message: message)
-        }
+        self.showAlert(title: .error, message: message)
     }
     
     func styleNavBar() {

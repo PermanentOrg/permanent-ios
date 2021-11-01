@@ -326,13 +326,13 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KKf-kI-Qug">
-                                                    <rect key="frame" x="14" y="10" width="46" height="30"/>
+                                                    <rect key="frame" x="14" y="10" width="30" height="30"/>
                                                     <connections>
                                                         <action selector="leftButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="yg5-Cm-w4a"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eY7-Sa-TzA">
-                                                    <rect key="frame" x="356" y="10" width="46" height="30"/>
+                                                    <rect key="frame" x="372" y="10" width="30" height="30"/>
                                                     <connections>
                                                         <action selector="rightButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="jmU-OI-67Y"/>
                                                     </connections>
@@ -575,17 +575,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
+                                <rect key="frame" x="0.0" y="720" width="414" height="142"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
+                                        <rect key="frame" x="20" y="26" width="374" height="90"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="50" width="374" height="40"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -630,16 +630,39 @@
                                 <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
                                 <color key="color" systemColor="systemGray5Color"/>
                             </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Something went wrong. Please try again." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7sT-rm-bn7">
+                                <rect key="frame" x="33.5" y="443" width="347" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NyA-JK-Omz" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="188.5" y="471.5" width="37" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="r1k-AS-275"/>
+                                </constraints>
+                                <state key="normal" title="Retry"/>
+                                <connections>
+                                    <action selector="retryButtonPressed:" destination="KoP-X5-M3H" eventType="touchUpInside" id="KNo-NZ-Bev"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Td9-LP-dcb"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="7sT-rm-bn7" firstAttribute="centerY" secondItem="Td9-LP-dcb" secondAttribute="centerY" id="BNz-iF-5Ow"/>
+                            <constraint firstItem="7sT-rm-bn7" firstAttribute="leading" secondItem="Td9-LP-dcb" secondAttribute="leading" constant="33.5" id="TL7-TX-MhX"/>
+                            <constraint firstItem="Td9-LP-dcb" firstAttribute="trailing" secondItem="7sT-rm-bn7" secondAttribute="trailing" constant="33.5" id="cLr-e0-x27"/>
+                            <constraint firstItem="NyA-JK-Omz" firstAttribute="top" secondItem="7sT-rm-bn7" secondAttribute="bottom" constant="20" id="dWc-YX-P0s"/>
                             <constraint firstItem="3UD-hv-DwU" firstAttribute="centerY" secondItem="Td9-LP-dcb" secondAttribute="centerY" id="lbI-Ky-yi0"/>
+                            <constraint firstItem="NyA-JK-Omz" firstAttribute="centerX" secondItem="Td9-LP-dcb" secondAttribute="centerX" id="nef-WY-kJY"/>
                             <constraint firstItem="3UD-hv-DwU" firstAttribute="centerX" secondItem="Td9-LP-dcb" secondAttribute="centerX" id="yrn-It-SK6"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="3UD-hv-DwU" id="QCB-j7-b8b"/>
+                        <outlet property="errorLabel" destination="7sT-rm-bn7" id="jVB-rE-SXo"/>
+                        <outlet property="retryButton" destination="NyA-JK-Omz" id="TDe-VE-mAG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="A9w-Uu-zo2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -811,13 +834,13 @@
     </scenes>
     <designables>
         <designable name="Ern-RS-tpK">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>
