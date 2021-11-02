@@ -960,7 +960,7 @@ extension MainViewController {
     }
     
     func shareWithOtherApps(file: FileViewModel) {
-        if let localURL = fileHelper.url(forFileNamed: file.name) {
+        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)

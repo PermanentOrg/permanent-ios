@@ -43,7 +43,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var currentFolder: FileViewModel? { navigationStack.last }
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
-    private var downloader: Downloader?
+    private var downloader: DownloadManagerGCD?
     
     var isSearchActive: Bool = false
 
@@ -52,7 +52,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return currentArchive?.permissions() ?? [.read]
     }
     
-    var shareDownloader: DownloadManagerGCD? = nil
+    var recordVO: RecordVO?
     
     // MARK: - Table View Logic
     
@@ -230,15 +230,46 @@ extension FilesViewModel {
             parentFolderLinkId: file.parentFolderLinkId
         )
         
-        shareDownloader = DownloadManagerGCD()
-        shareDownloader?.getRecord(downloadInfo) { (record, error) in
+        downloader = DownloadManagerGCD()
+        downloader?.getRecord(downloadInfo) { (record, error) in
+            self.recordVO = record
+            
             handler(record)
         }
     }
     
     func download(_ record: RecordVO, fileType: FileType, onFileDownloaded: @escaping DownloadResponse) {
-        shareDownloader = DownloadManagerGCD()
-        shareDownloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)
+        downloader = DownloadManagerGCD()
+        
+        downloader?.downloadFileData(record: record, fileType: fileType, progressHandler: nil, then: onFileDownloaded)
+    }
+    
+    func fileVO() -> FileVO? {
+        if self.selectedFile?.type == .video,
+           let fileVO = recordVO?.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
+            return fileVO
+        } else {
+            return recordVO?.recordVO?.fileVOS?.first
+        }
+    }
+    
+    func fileName() -> String? {
+        guard let fileVO = self.fileVO(),
+              let uploadFileName = self.recordVO?.recordVO?.uploadFileName,
+              let displayName = self.recordVO?.recordVO?.displayName
+        else {
+            return ""
+        }
+        
+        // If the file was converted, then it most certainly is an mp4
+        // Otherwise, the file was not converted, we use the original filename + extension
+        let fileName: String
+        if self.selectedFile?.type == .video && fileVO.contentType == "video/mp4" {
+            fileName = displayName + ".mp4"
+        } else {
+            fileName = uploadFileName
+        }
+        return fileName
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
