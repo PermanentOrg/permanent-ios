@@ -81,6 +81,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     func detailsDate() -> Date? {
         let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         let date: Date?
@@ -94,6 +95,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         case .created:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedDT ?? "")
         case .fileCreated:
+            dateFormatter.timeZone = nil
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedCreatedDT ?? "")
         default:
             date = nil
