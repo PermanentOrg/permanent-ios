@@ -95,7 +95,6 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         case .created:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedDT ?? "")
         case .fileCreated:
-            dateFormatter.timeZone = nil
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedCreatedDT ?? "")
         default:
             date = nil
