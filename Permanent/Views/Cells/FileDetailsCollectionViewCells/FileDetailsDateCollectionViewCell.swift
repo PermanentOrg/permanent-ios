@@ -16,7 +16,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     var date: Date?
     static let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
+        dateFormatter.dateFormat = "yyyy-MM-dd h:mm a zzz"
         
         return dateFormatter
     }()
