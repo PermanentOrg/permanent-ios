@@ -29,6 +29,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
+    let fileHelper = FileHelper()
+    let documentInteractionController = UIDocumentInteractionController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -784,8 +787,14 @@ extension MainViewController: FABActionSheetDelegate {
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         if file.permissions.contains(.share) {
-            actions.append(PRMNTAction(title: "Share".localized(), color: .primary, handler: { [self] action in
-                share(file: file)
+            if file.type.isFolder == false {
+                actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+                    shareWithOtherApps(file: file)
+                }))
+            }
+            
+            actions.append(PRMNTAction(title: "Share in Permanent".localized(), color: .primary, handler: { [self] action in
+                shareInApp(file: file)
             }))
         }
         
@@ -934,7 +943,7 @@ extension MainViewController: MediaRecorderDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension MainViewController {
-    func share(file: FileViewModel) {
+    func shareInApp(file: FileViewModel) {
         guard
             let shareVC = UIViewController.create(
                 withIdentifier: .share,
@@ -948,6 +957,39 @@ extension MainViewController {
         
         let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
         present(shareNavController, animated: true)
+    }
+    
+    func shareWithOtherApps(file: FileViewModel) {
+        if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
+            share(url: localURL)
+        } else {
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                self.viewModel?.cancelDownload()
+            }))
+            
+            present(preparingAlert, animated: true) {
+                self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                    if let url = url {
+                        self.dismiss(animated: true) {
+                            self.share(url: url)
+                        }
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                })
+            }
+        }
+    }
+    
+    private func share(url: URL) {
+        // For now, dismiss the menu in case another one opens so we avoid crash.
+        documentInteractionController.dismissMenu(animated: true)
+        
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
     
     func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
