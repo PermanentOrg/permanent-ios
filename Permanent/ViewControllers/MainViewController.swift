@@ -969,18 +969,13 @@ extension MainViewController {
             }))
             
             present(preparingAlert, animated: true) {
-                self.viewModel?.getRecord(file: file, then: { record in
-                    
-                    if let record = record {
-                        self.viewModel?.download(record, fileType: file.type, onFileDownloaded: { url, _ in
-                            if let url = url {
-                                self.dismiss(animated: true) {
-                                    self.share(url: url)
-                                }
-                            } else {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
+                self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
+                    if let url = url {
+                        self.dismiss(animated: true) {
+                            self.share(url: url)
+                        }
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
                     }
                 })
             }
