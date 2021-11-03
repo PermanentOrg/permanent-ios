@@ -641,4 +641,23 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func searchFolderAndRecord(text: String) -> RequestParameters {
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+        
+        return [ "RequestVO":
+                    [
+                        "csrf": csrf,
+                        "data": [
+                            [
+                                "SearchVO": [
+                                    "query": text,
+                                    "numberOfResults": 10,
+                                    "TagVOs": []
+                                ]
+                            ]
+                        ]
+                    ]
+        ]
+    }
 }

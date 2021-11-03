@@ -708,6 +708,7 @@ extension MainViewController {
     }
 }
 
+// MARK: - UISearchBarDelegate
 extension MainViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         view.endEditing(true)
@@ -716,12 +717,13 @@ extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
             viewModel?.isSearchActive = false
+            refreshCollectionView()
         } else {
             viewModel?.isSearchActive = true
-            viewModel?.searchFiles(byQuery: searchText)
+            viewModel?.searchFiles(byQuery: searchText, handler: { status in
+                self.refreshCollectionView()
+            })
         }
-        
-        refreshCollectionView()
     }
 }
 

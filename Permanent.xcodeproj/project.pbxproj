@@ -339,6 +339,8 @@
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
 		F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
 		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
+		F5C8D247273204CA00707301 /* SearchVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D246273204CA00707301 /* SearchVO.swift */; };
+		F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D248273205B000707301 /* SearchEndpoint.swift */; };
 		F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA412670D16F0027D97A /* BaseOperation.swift */; };
 		F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA432670D1940027D97A /* UploadOperation.swift */; };
 		F5EC701E270F21BE0052E53D /* FileCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC701D270F21BE0052E53D /* FileCollectionViewHeader.swift */; };
@@ -728,6 +730,8 @@
 		F5A2A07A26161AE6003AAF36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialInputStream.swift; sourceTree = "<group>"; };
 		F5B3F13226668CAF0040E5C4 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
+		F5C8D246273204CA00707301 /* SearchVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVO.swift; sourceTree = "<group>"; };
+		F5C8D248273205B000707301 /* SearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEndpoint.swift; sourceTree = "<group>"; };
 		F5E4BA412670D16F0027D97A /* BaseOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOperation.swift; sourceTree = "<group>"; };
 		F5E4BA432670D1940027D97A /* UploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOperation.swift; sourceTree = "<group>"; };
 		F5EC701D270F21BE0052E53D /* FileCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -1150,6 +1154,7 @@
 				F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */,
 				5ED73B242613C30E002F9861 /* TagEndpoint.swift */,
 				5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */,
+				F5C8D248273205B000707301 /* SearchEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -1280,6 +1285,7 @@
 				F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */,
 				F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */,
 				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
+				F5C8D246273204CA00707301 /* SearchVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -2106,6 +2112,7 @@
 				BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
+				F5C8D247273204CA00707301 /* SearchVO.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
 				5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
@@ -2114,6 +2121,7 @@
 				5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */,
 				BC11C808255953B2008BDEFA /* APIPayload.swift in Sources */,
 				BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */,
+				F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
 				F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */,

@@ -153,12 +153,36 @@ class FilesViewModel: NSObject, ViewModelInterface {
         viewModels.remove(at: index)
     }
     
-    func searchFiles(byQuery query: String) {
-        let searchedItems = viewModels.filter {
-            $0.name.lowercased().contains(query.lowercased())
+    func searchFiles(byQuery query: String, handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(SearchEndpoint.folderAndRecord(text: query))
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<SearchVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<SearchVO>.decoder
+                    ),
+                    model.isSuccessful
+
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                self.searchViewModels.removeAll()
+                let searchedItems = model.results[0].data?[0].searchVO.childItemVOs ?? []
+                let searchedFileVMs = searchedItems.map({ FileViewModel(model: $0, permissions: self.archivePermissions) })
+                self.searchViewModels.append(contentsOf: searchedFileVMs)
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
         }
-        searchViewModels.removeAll()
-        searchViewModels.append(contentsOf: searchedItems)
     }
 }
 
