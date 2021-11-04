@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -97,6 +97,7 @@
                             <constraint firstItem="bEG-4x-ta0" firstAttribute="top" secondItem="U3K-nQ-DBc" secondAttribute="top" constant="30" id="vRR-og-AKP"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="createLinkButton" destination="eyh-Xi-naH" id="zFd-ng-l8G"/>
                         <outlet property="descriptionLabel" destination="PoA-Pj-khG" id="XAc-Ae-CIT"/>
@@ -201,6 +202,7 @@
                             <constraint firstItem="DVS-Ag-zFY" firstAttribute="top" secondItem="mIi-D7-d70" secondAttribute="bottom" constant="10" id="xgM-NC-PmI"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="autoApproveSwitchView" destination="8xd-fw-Fc4" id="lcf-BI-SWc"/>
                         <outlet property="autoApproveTooltipLabel" destination="pjZ-WT-n5G" id="P4w-rG-5si"/>
@@ -583,6 +585,7 @@
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="height" secondItem="eVQ-eX-BfZ" secondAttribute="height" id="uwu-z4-csq"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="backButton" destination="1dv-wK-LXr" id="0v8-JD-0Yp"/>
                         <outlet property="collectionView" destination="JPq-vy-INN" id="fkm-hs-ZhW"/>
@@ -748,6 +751,7 @@
                             <constraint firstItem="vp2-F5-rLO" firstAttribute="trailing" secondItem="IIX-dP-AYX" secondAttribute="trailing" id="y7O-S1-GKD"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="actionButton" destination="Qpj-CF-mcr" id="jST-cg-oUj"/>
                         <outlet property="archiveImage" destination="MQa-ME-Dth" id="q1u-PS-S23"/>

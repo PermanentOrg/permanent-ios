@@ -29,7 +29,7 @@ enum AccountEndpoint {
     /// Updates user data
     case updateUserData(accountId: String, updateData: UpdateUserData)
     /// Update Share request
-    case updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int)
+    case updateShareRequest(shareVO: ShareVOData)
     /// Revoke Share request
     case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int)
 }
@@ -80,10 +80,10 @@ extension AccountEndpoint: RequestProtocol {
             return Payloads.getUserData(accountId: id)
         case .updateUserData(accountId: let accountId, updateData: let updateData):
             return Payloads.updateUserData(accountId: accountId,updateUserData: updateData)
-        case .updateShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
-            return Payloads.acceptShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
+        case .updateShareRequest(let shareVO):
+            return Payloads.updateShareRequest(shareVO: shareVO)
         case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
-            return Payloads.denyShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
+            return Payloads.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
         }
     }
 
