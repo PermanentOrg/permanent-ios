@@ -159,9 +159,8 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
         let shareId = shareVO.shareID ?? 0
         
-        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId,accessRole: AccessRole.viewer))
         
-    
         acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):

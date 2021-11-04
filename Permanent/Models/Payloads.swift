@@ -316,7 +316,7 @@ struct Payloads {
             ]
         ]
     }
-    static func acceptShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters {
+    static func updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int, accessRole: AccessRole) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [[
@@ -324,7 +324,7 @@ struct Payloads {
                         "shareId": shareId,
                         "folder_linkId": folderLinkId,
                         "archiveId": archiveId,
-                        "accessRole": "access.role.viewer",
+                        "accessRole": accessRole,
                         "type": "type.share.record",
                         "status": "status.generic.ok"
                     ]
@@ -334,7 +334,7 @@ struct Payloads {
             ]
         ]
     }
-    static func denyShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters{
+    static func deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters{
         return [
             "RequestVO": [
                 "data": [[
