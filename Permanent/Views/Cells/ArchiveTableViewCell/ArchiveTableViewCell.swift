@@ -15,6 +15,7 @@ class ArchiveTableViewCell: UITableViewCell {
     @IBOutlet var denyButton: RoundedButton!
     @IBOutlet var bottomButtonsView: UIStackView!
     @IBOutlet weak var bottomView: UIView!
+    @IBOutlet weak var moreButton: UIButton!
     
     var rightButtonTapAction: CellButtonTapAction?
     var approveAction: ButtonAction?
@@ -48,6 +49,7 @@ class ArchiveTableViewCell: UITableViewCell {
         relationshipLabel.text = "Friend" // TODO
         
         bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
+        moreButton.isHidden = ShareStatus.status(forValue: model.status ?? "") == .pending
     }
     
     func hideBottomButtons(status: Bool ) {
