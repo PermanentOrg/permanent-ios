@@ -101,3 +101,17 @@ enum MembersOperationsError: String {
         }
     }
 }
+
+enum ShareOperationsError: String {
+    case noShareSelf = "warning.share.no_share_self"
+    
+    var description: String {
+        switch self {
+
+        case .noShareSelf:
+            return "You cannot share an item with yourself".localized()
+        default:
+            return .errorMessage
+        }
+    }
+}

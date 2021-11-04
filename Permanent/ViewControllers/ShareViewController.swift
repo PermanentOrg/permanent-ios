@@ -103,11 +103,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                         self?.hideSpinner()
                         
                         if status == .success {
-                            
+                            self?.view.showNotificationBanner(title: "Access role was successfully changed".localized())
                         } else {
-                            
+                            self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
                         }
-                        
                         self?.getShareLink(option: .retrieve)
                     })
                 }
@@ -271,11 +270,10 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                                         self?.viewModel?.denyButtonAction(shareVO: model, then: { status in
                                             self?.hideSpinner()
                                             if status == .success {
-                                                
+                                                self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
                                             } else {
-                                                
+                                                self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
                                             }
-                                            
                                             self?.getShareLink(option: .retrieve)
                                         })
                                        },
