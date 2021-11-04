@@ -83,6 +83,41 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             $0.textColor = .primary
         }
     }
+    
+    func editArchive(shareVO: ShareVOData) {
+        guard let archiveVO = shareVO.archiveVO else { return }
+        
+        self.showActionDialog(
+            styled: .dropdownWithDescription,
+            withTitle: "The \(archiveVO.fullName ?? "") Archive",
+            placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
+            dropdownValues: StaticData.accessRoles,
+            positiveButtonTitle: "Update".localized(),
+            positiveAction: { [weak self] in
+                if let fieldsInput = self?.actionDialog?.fieldsInput,
+                   let roleValue = fieldsInput.first {
+                    self?.showSpinner()
+                    
+                    let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
+                    self?.viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
+                        self?.hideSpinner()
+                        
+                        if status == .success {
+                            
+                        } else {
+                            
+                        }
+                        
+                        self?.getShareLink(option: .retrieve)
+                    })
+                }
+                
+                self?.actionDialog?.dismiss()
+                self?.actionDialog = nil
+            },
+            overlayView: self.overlayView
+        )
+    }
 
     @IBAction func createLinkAction(_ sender: UIButton) {
         getShareLink(option: .create)
@@ -187,31 +222,74 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         guard let model = viewModel?.shareVOS?[indexPath.row] else { return cell }
         cell.updateCell(model: model)
         
-        cell.approveAction = {
-            self.viewModel?.approveButtonAction(shareVO: model, then: { status in
+        cell.approveAction = { [weak self] in
+            self?.viewModel?.approveButtonAction(shareVO: model, then: { status in
                 switch status {
                 case .success:
-                    self.view.showNotificationBanner(title: .approveShareRequest)
+                    self?.view.showNotificationBanner(title: .approveShareRequest)
                     cell.hideBottomButtons(status: true)
                     
                 case .error(message: let message):
-                    self.showErrorAlert(message: message)
+                    self?.showErrorAlert(message: message)
+                }
+            })
+        }
+         
+        cell.denyAction = { [weak self] in
+            self?.viewModel?.denyButtonAction(shareVO: model, then: { status in
+                switch status {
+                case .success:
+                    self?.view.showNotificationBanner(title: .denyShareRequest)
+                    cell.hideBottomButtons(status: true)
+                    
+                case .error(message: let message):
+                    self?.showErrorAlert(message: message)
                 }
             })
         }
         
-        cell.denyAction = {
-            self.viewModel?.denyButtonAction(shareVO: model, then: { status in
-                switch status {
-                case .success:
-                    self.view.showNotificationBanner(title: .denyShareRequest)
-                    cell.hideBottomButtons(status: true)
-                    
-                case .error(message: let message):
-                    self.showErrorAlert(message: message)
-                }
-            })
+        cell.rightButtonTapAction = { [weak self] cell in
+            var actions = [
+                PRMNTAction(title: "Edit".localized(), color: .primary, handler: { action in
+                    self?.editArchive(shareVO: model)
+                })
+            ]
+            
+            actions.insert(PRMNTAction(title: "Remove".localized(), color: .destructive, handler: { [weak self] action in
+                print("remove")
+                let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: model.archiveVO?.fullName ?? "")
+                
+                self?.showActionDialog(styled: .simpleWithDescription,
+                                       withTitle: description,
+                                       description: "",
+                                       positiveButtonTitle: "Remove".localized(),
+                                       positiveAction: { [weak self] in
+                                        self?.actionDialog?.dismiss()
+                                        self?.actionDialog = nil
+                                        
+                                        self?.showSpinner()
+                                        self?.viewModel?.denyButtonAction(shareVO: model, then: { status in
+                                            self?.hideSpinner()
+                                            if status == .success {
+                                                
+                                            } else {
+                                                
+                                            }
+                                            
+                                            self?.getShareLink(option: .retrieve)
+                                        })
+                                       },
+                                       cancelButtonTitle: "Cancel".localized(),
+                                       positiveButtonColor: .brightRed,
+                                       cancelButtonColor: .primary,
+                                       overlayView: self?.overlayView)
+                
+            }), at: 0)
+            
+            let actionSheet = PRMNTActionSheetViewController(actions: actions)
+            self?.present(actionSheet, animated: true)
         }
+        
         return cell
     }
     

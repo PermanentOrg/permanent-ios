@@ -151,15 +151,10 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    func approveButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
-        guard let folderLinkId = shareVO.folderLinkID,
-              let archiveId = shareVO.archiveID else {
-            handler(RequestStatus.error(message: nil))
-            return
-        }
-        let shareId = shareVO.shareID ?? 0
-        
-        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId,accessRole: AccessRole.viewer))
+    func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
+        var newShareVO = shareVO
+        newShareVO.accessRole = AccessRole.apiRoleForValue(accessRole.groupName)
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareVO: newShareVO))
         
         acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -195,7 +190,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         
         let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
         
-    
         denyShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):

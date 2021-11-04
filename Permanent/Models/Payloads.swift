@@ -316,23 +316,22 @@ struct Payloads {
             ]
         ]
     }
-    static func updateShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int, accessRole: AccessRole) -> RequestParameters {
-        return [
+    static func updateShareRequest(shareVO: ShareVOData) -> RequestParameters {
+        guard let shareVOJson = try? JSONEncoder().encode(shareVO),
+           let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
+            return []
+        }
+        
+        let updateDict = [
             "RequestVO": [
                 "data": [[
-                    "ShareVO": [
-                        "shareId": shareId,
-                        "folder_linkId": folderLinkId,
-                        "archiveId": archiveId,
-                        "accessRole": accessRole,
-                        "type": "type.share.record",
-                        "status": "status.generic.ok"
-                    ]
+                    "ShareVO": shareVODict
                 ]],
                 "apiKey": Constants.API.apiKey,
                 "csrf": PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
             ]
         ]
+        return updateDict
     }
     static func deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int) -> RequestParameters{
         return [

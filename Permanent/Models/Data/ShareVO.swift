@@ -17,7 +17,8 @@ struct ShareVO: Model {
 
 struct ShareVOData: Model {
     let shareID, folderLinkID, archiveID: Int?
-    let accessRole, type, status, requestToken: String?
+    var accessRole: String?
+    let type, status, requestToken: String?
     let previewToggle: JSONAny?
     let folderVO: FolderVOData?
     let recordVO: RecordVOData?
