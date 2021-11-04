@@ -91,7 +91,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var syncedViewModels: [FileViewModel] {
-        isSearchActive ? searchViewModels : viewModels
+        if currentFolderIsRoot && isSearchActive {
+            return searchViewModels
+        } else {
+            return viewModels
+        }
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
@@ -170,6 +174,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     return
                 }
                 
+                self.navigationStack.removeSubrange(1..<self.navigationStack.count)
                 self.searchViewModels.removeAll()
                 let searchedItems = model.results[0].data?[0].searchVO.childItemVOs ?? []
                 let searchedFileVMs = searchedItems.map({ FileViewModel(model: $0, permissions: self.archivePermissions) })

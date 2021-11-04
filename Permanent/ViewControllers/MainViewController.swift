@@ -26,7 +26,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let screenLockManager = ScreenLockManager()
 
     private var sortActionSheet: SortActionSheet?
-    private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
     let fileHelper = FileHelper()
@@ -141,17 +140,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.backgroundView = nil
     }
     
-    func invalidateSearchBarIfNeeded() {
-        guard viewModel?.isSearchActive == true else {
-            return
-        }
-        
-        searchBar.text = ""
-        viewModel?.isSearchActive = false
-        viewModel?.searchViewModels.removeAll()
-        view.endEditing(true)
-    }
-    
     fileprivate func setupBottomActionSheet() {
         fileActionBottomView.closeAction = {
             self.setupUIForAction(.none)
@@ -206,7 +194,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
         
-        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
@@ -565,7 +552,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         if file.type.isFolder {
-            invalidateSearchBarIfNeeded()
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false
@@ -723,6 +709,10 @@ extension MainViewController: UISearchBarDelegate {
             refreshCollectionView()
         } else {
             viewModel?.isSearchActive = true
+            let folder = viewModel?.navigationStack.first
+            self.directoryLabel.text = folder?.name
+            self.backButton.isHidden = true
+            
             viewModel?.searchFiles(byQuery: searchText, handler: { status in
                 self.refreshCollectionView()
             })
