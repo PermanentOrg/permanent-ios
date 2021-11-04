@@ -91,10 +91,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         retryButton.setFont(Text.style10.font)
         retryButton.setTitleColor(.white, for: .normal)
         retryButton.isHidden = true
-        
-        let shareButtonImage = UIBarButtonItem.SystemItem.action
-        let shareButton = UIBarButtonItem(barButtonSystemItem: shareButtonImage, target: self, action: #selector(shareButtonAction(_:)))
-        
+
+        let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
+
         let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
         navigationItem.rightBarButtonItems = [shareButton, infoButton]
         let leftButtonImage: UIImage!
@@ -237,30 +236,22 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     // MARK: - Actions
-    @objc func shareButtonAction(_ sender: Any) {
-        if let fileName = self.viewModel?.fileName(),
-            let localURL = fileHelper.url(forFileNamed: fileName) {
-            share(url: localURL)
-        } else {
-            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
-            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
-                self.viewModel?.cancelDownload()
-            }))
-            
-            present(preparingAlert, animated: true) {
-                if let record = self.viewModel?.recordVO {
-                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, _ in
-                        if let url = url {
-                            self.dismiss(animated: true) {
-                                self.share(url: url)
-                            }
-                        } else {
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                    })
-                }
+
+    @objc func showShareMenu(_ sender: Any) {
+        var actions: [PRMNTAction] = []
+        
+        actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+            shareWithOtherApps()
+        }))
+        
+        actions.append(PRMNTAction(title: "Share in Permanent".localized(), color: .primary, handler: { [self] action in
+            if let file = self.viewModel?.file {
+                shareInApp(file: file)
             }
-        }
+        }))
+    
+        let actionSheet = PRMNTActionSheetViewController(title: "", actions: actions)
+        present(actionSheet, animated: true, completion: nil)
     }
     
     @objc func infoButtonAction(_ sender: Any) {
@@ -328,6 +319,48 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     private func htmlBody(withContent content: String) -> String {
         return "<html><body style=\"width:\(UIScreen.main.scale * view.frame.width);height:\(UIScreen.main.scale * view.frame.height);background-color:#000000;margin:0;padding:0;\">\(content)</body></html>"
+    }
+    
+    func shareWithOtherApps() {
+        if let fileName = self.viewModel?.fileName(),
+            let localURL = fileHelper.url(forFileNamed: fileName) {
+            share(url: localURL)
+        } else {
+            let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
+            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                self.viewModel?.cancelDownload()
+            }))
+
+            present(preparingAlert, animated: true) {
+                if let record = self.viewModel?.recordVO {
+                    self.viewModel?.download(record, fileType: self.file.type, onFileDownloaded: { url, _ in
+                        if let url = url {
+                            self.dismiss(animated: true) {
+                                self.share(url: url)
+                            }
+                        } else {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    })
+                }
+            }
+        }
+    }
+    
+    func shareInApp(file: FileViewModel) {
+        guard
+            let shareVC = UIViewController.create(
+                withIdentifier: .share,
+                from: .share
+            ) as? ShareViewController
+        else {
+            return
+        }
+
+        shareVC.sharedFile = file
+        
+        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
+        present(shareNavController, animated: true)
     }
 }
 

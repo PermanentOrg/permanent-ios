@@ -16,7 +16,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     var date: Date?
     static let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
+        dateFormatter.dateFormat = "yyyy-MM-dd h:mm a zzz"
         
         return dateFormatter
     }()
@@ -81,6 +81,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     func detailsDate() -> Date? {
         let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         let date: Date?

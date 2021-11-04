@@ -43,7 +43,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var currentFolder: FileViewModel? { navigationStack.last }
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
-    private var downloader: Downloader?
+    private var downloader: DownloadManagerGCD?
     
     var isSearchActive: Bool = false
 
@@ -243,6 +243,25 @@ extension FilesViewModel {
                                 self.downloadQueue.safeRemoveFirst()
                             })
 
+    }
+
+    func download(file: FileViewModel,onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
+        
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: file.type,
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
+        )
+        
+        downloader = DownloadManagerGCD()
+        downloader?.download(downloadInfo,
+                             onDownloadStart: onDownloadStart,
+                             onFileDownloaded: onFileDownloaded,
+                             progressHandler: nil,
+                             completion: {
+                                self.downloader = nil
+                                self.downloadQueue.safeRemoveFirst()
+                            })
     }
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
