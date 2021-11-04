@@ -241,6 +241,8 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.view.showNotificationBanner(title: .denyShareRequest)
                     cell.hideBottomButtons(status: true)
                     
+                    self?.getShareLink(option: .retrieve)
+                    
                 case .error(message: let message):
                     self?.showErrorAlert(message: message)
                 }
