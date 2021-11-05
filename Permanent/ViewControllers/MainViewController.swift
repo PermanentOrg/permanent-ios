@@ -792,10 +792,11 @@ extension MainViewController: FABActionSheetDelegate {
                     shareWithOtherApps(file: file)
                 }))
             }
-            
-            actions.append(PRMNTAction(title: "Share in Permanent".localized(), color: .primary, handler: { [self] action in
-                shareInApp(file: file)
-            }))
+            if file.permissions.contains(.ownership) {
+                actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
+                    shareInApp(file: file)
+                }))
+            }
         }
         
         if file.permissions.contains(.edit) {
