@@ -87,11 +87,15 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     func editArchive(shareVO: ShareVOData) {
         guard let archiveVO = shareVO.archiveVO else { return }
         
+        let accessRoles = AccessRole.allCases
+            .filter { $0 != .owner && $0 != .manager }
+            .map { $0.groupName }
+        
         self.showActionDialog(
             styled: .dropdownWithDescription,
             withTitle: "The \(archiveVO.fullName ?? "") Archive",
             placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
-            dropdownValues: StaticData.accessRoles,
+            dropdownValues: accessRoles,
             positiveButtonTitle: "Update".localized(),
             positiveAction: { [weak self] in
                 if let fieldsInput = self?.actionDialog?.fieldsInput,
