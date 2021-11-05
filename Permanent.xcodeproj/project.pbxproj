@@ -2473,7 +2473,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2499,7 +2499,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2677,7 +2677,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2758,7 +2758,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Assets/Info.plist";
@@ -2783,7 +2783,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -2807,7 +2807,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -2831,7 +2831,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -2855,7 +2855,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				INFOPLIST_FILE = PushExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
