@@ -244,7 +244,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             shareWithOtherApps()
         }))
         
-        actions.append(PRMNTAction(title: "Share in Permanent".localized(), color: .primary, handler: { [self] action in
+        actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
             if let file = self.viewModel?.file {
                 shareInApp(file: file)
             }
