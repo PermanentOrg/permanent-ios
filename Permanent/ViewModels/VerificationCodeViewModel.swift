@@ -18,8 +18,8 @@ protocol VerificationCodeViewModelDelegate: ViewModelDelegateInterface {
 }
 
 extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
+    
     func verify(for credentials: VerifyCodeCredentials, then handler: @escaping ServerResponse) {
-        
         let requestDispatcher = APIRequestDispatcher(networkSession: sessionProtocol)
         let verifyOperation = APIOperation(AuthenticationEndpoint.verify(credentials: credentials))
 
@@ -33,7 +33,8 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
                 
                 if model.isSuccessful == true {
                     self.saveStorageData(model)
-                    handler(.success)
+                    
+                    self.getAccountArchives(then: handler)
                 } else {
                     guard
                         let message = model.results?.first?.message?.first,
@@ -55,6 +56,41 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
         }
     }
     
+    func getAccountArchives(then handler: @escaping ServerResponse) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                if let defaultArchive = accountArchives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
+                    self.setCurrentArchive(defaultArchive)
+                }
+                
+                handler(.success)
+                return
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+            default:
+                handler(.error(message: .errorMessage))
+                return
+            }
+        }
+    }
+    
     fileprivate func saveStorageData(_ response: VerifyResponse) {
         if let email = response.results?.first?.data?.first?.accountVO?.primaryEmail {
             PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
@@ -68,6 +104,15 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
             PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
         }
     }
+    
+    func setCurrentArchive(_ archive: ArchiveVOData) {
+        do {
+            try PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+        } catch {
+            print(error)
+        }
+    }
+    
 }
 
 enum CodeVerificationType {
