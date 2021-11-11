@@ -15,7 +15,6 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
     @IBOutlet weak var changeProfileBannerButton: UIButton!
     @IBOutlet weak var profilePhotoImageView: UIImageView!
     @IBOutlet weak var changeProfilePhotoButton: UIButton!
-    @IBOutlet weak var profileNameLabel: UILabel!
     @IBOutlet weak var changeProfileBannerPhotoButtonView: UIView!
     @IBOutlet weak var changeProfilePhotoButtonView: UIView!
     @IBOutlet weak var profilePhotoBorderView: UIView!
@@ -23,13 +22,11 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        profileNameLabel.textColor = .primary
-        profileNameLabel.font = Text.style9.font
-        
         profileBannerImageView.backgroundColor = .lightGray
         profilePhotoImageView.backgroundColor = .darkGray
         
         changeProfileBannerButton.setImage(UIImage(named: "cameraIcon")!, for: .normal)
+        changeProfileBannerButton.tintColor = .primary
 
         changeProfileBannerPhotoButtonView.backgroundColor = .galleryGray
         changeProfileBannerPhotoButtonView.clipsToBounds = true
@@ -38,6 +35,7 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
         changeProfileBannerPhotoButtonView.layer.borderWidth = 1
         
         changeProfilePhotoButton.setImage(UIImage(named: "cameraIcon")!, for: .normal)
+        changeProfilePhotoButton.tintColor = .primary
         
         changeProfilePhotoButtonView.backgroundColor = .galleryGray
         changeProfilePhotoButtonView.clipsToBounds = true
@@ -49,8 +47,7 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
         profilePhotoImageView.layer.cornerRadius = 2
     }
     
-    func configure(archiveName: String, profileBannerImage: UIImage?, profilePhotoImage: UIImage?) {
-        profileNameLabel.text = archiveName
+    func configure(profileBannerImage: UIImage?, profilePhotoImage: UIImage?) {
         if let bannerPhoto = profileBannerImage {
             profileBannerImageView.image = bannerPhoto
         }

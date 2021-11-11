@@ -85,7 +85,6 @@ extension ProfilePageViewController: UICollectionViewDataSource {
             
         case .thumbnails:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageTopCollectionViewCell.identifier, for: indexPath) as! ProfilePageTopCollectionViewCell
-            cell.configure(archiveName: self.archiveName, profileBannerImage: UIImage(named: "1"), profilePhotoImage: .accountInfo)
             returnedCell = cell
         case .segmentedControl:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMenuCollectionViewCell.identifier, for: indexPath) as! ProfilePageMenuCollectionViewCell
