@@ -17,6 +17,7 @@ enum DrawerOption {
     case security
     case activityFeed
     case invitations
+    case profilePage
     case help
     case logOut
     case none
@@ -31,6 +32,7 @@ enum DrawerOption {
         case .accountInfo: return .accountInfo
         case .invitations: return .mail
         case .activityFeed: return .alert
+        case .profilePage: return .cloud
         case .help: return .help
         case .archives: return nil
         case .logOut: return UIImage.logOut.templated
@@ -51,6 +53,7 @@ enum DrawerOption {
         case .help: return String.help
         case .logOut: return .logOut
         case .archives: return ""
+        case .profilePage: return "View Profile"
         case .none: return ""
         }
     }
