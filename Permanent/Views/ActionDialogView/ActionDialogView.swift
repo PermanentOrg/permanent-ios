@@ -142,10 +142,17 @@ class ActionDialogView: UIView {
         )
         
         let dropdownView = DropdownView()
-        dropdownView.dropdownAction = {
+        dropdownView.dropdownAction = { [weak self] in
+            guard let self = self else { return }
+            
             self.endEditing(true)
             self.addSubview(self.pickerView)
             self.scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+            
+            let dropdownView = self.fieldsStackView.arrangedSubviews.last as? DropdownView
+            if self.dropdownValues?.contains(dropdownView?.value ?? "") == false {
+                dropdownView?.value = self.dropdownValues?[0]
+            }
         }
         
         fieldsStackView.addArrangedSubview(dropdownView)
@@ -223,7 +230,6 @@ extension ActionDialogView: UITextFieldDelegate {
 }
 
 extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
-    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -233,7 +239,6 @@ extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        
         guard let values = dropdownValues else {
             return nil
         }
@@ -242,13 +247,8 @@ extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
         let dropdownView = fieldsStackView.arrangedSubviews.last as? DropdownView
         dropdownView?.value = dropdownValues?[row]
-        dropdownView?.rotateImage(upwards: false)
-        
-        scrollView.setContentOffset(.zero, animated: true)
-        pickerView.removeFromSuperview()
     }
     
 }
