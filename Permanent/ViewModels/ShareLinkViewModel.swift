@@ -173,7 +173,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                     handler(.success)
                 } else {
                     if model.results[0].message[0] == "warning.share.no_share_self" {
-                        handler(.error(message: "You cannot share an item with yourself"))
+                        handler(.error(message: "You cannot share an item with yourself".localized()))
                     } else {
                         handler(.error(message: .errorMessage))
                     }
