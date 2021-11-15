@@ -47,13 +47,13 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
         profilePhotoImageView.layer.cornerRadius = 2
     }
     
-    func configure(profileBannerImage: UIImage?, profilePhotoImage: UIImage?) {
-        if let bannerPhoto = profileBannerImage {
-            profileBannerImageView.image = bannerPhoto
+    func configure(profileBannerImageUrl: String?, profilePhotoImageUrl: String?) {
+        if let bannerPhotoUrl = profileBannerImageUrl {
+            profileBannerImageView.load(urlString: bannerPhotoUrl)
         }
         
-        if let profilePhoto = profilePhotoImage {
-            profilePhotoImageView.image = profilePhoto
+        if let profilePhotoUrl = profilePhotoImageUrl {
+            profilePhotoImageView.load(urlString: profilePhotoUrl)
         }
     }
 

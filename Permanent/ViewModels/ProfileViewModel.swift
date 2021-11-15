@@ -8,5 +8,12 @@
 import UIKit
 
 class ProfilePageViewModel: ViewModelInterface {
+    var archiveData: ArchiveVOData?
+    var archiveTitle: String?
     
+    init(authData: AuthViewModel) {
+        guard let archiveData = authData.getCurrentArchive() else { return }
+        self.archiveData = archiveData
+        self.archiveTitle = archiveData.fullName
+    }
 }

@@ -9,7 +9,7 @@ import UIKit
 
 class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
     
-    let archiveName = "Current Profile Archive"
+    var authData: AuthViewModel!
     
     enum CellType {
         case thumbnails
@@ -24,7 +24,7 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel = ProfilePageViewModel()
+        viewModel = ProfilePageViewModel(authData: authData)
         
         initUI()
         
@@ -32,7 +32,9 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
     }
     
     func initUI() {
-        title = archiveName
+        if let archiveName = viewModel?.archiveData?.fullName {
+            title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        }
         view.backgroundColor = .white
         
     }
@@ -85,6 +87,7 @@ extension ProfilePageViewController: UICollectionViewDataSource {
             
         case .thumbnails:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageTopCollectionViewCell.identifier, for: indexPath) as! ProfilePageTopCollectionViewCell
+            cell.configure(profileBannerImageUrl: nil, profilePhotoImageUrl: self.viewModel?.archiveData?.thumbURL1000)
             returnedCell = cell
         case .segmentedControl:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMenuCollectionViewCell.identifier, for: indexPath) as! ProfilePageMenuCollectionViewCell
