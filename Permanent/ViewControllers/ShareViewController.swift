@@ -106,11 +106,13 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                     self?.viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
                         self?.hideSpinner()
                         
-                        if status == .success {
+                        switch status {
+                        case .success:
                             self?.view.showNotificationBanner(title: "Access role was successfully changed".localized())
-                        } else {
-                            self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                        case .error(let errorMessage):
+                            self?.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
                         }
+                        
                         self?.getShareLink(option: .retrieve)
                     })
                 }
