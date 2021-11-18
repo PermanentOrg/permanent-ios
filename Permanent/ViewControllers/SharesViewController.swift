@@ -499,7 +499,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)

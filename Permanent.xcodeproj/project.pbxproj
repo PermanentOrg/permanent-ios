@@ -313,6 +313,8 @@
 		F502C48C26D6132F00657D37 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48726D6132F00657D37 /* AlbumsViewController.swift */; };
 		F502C48E26D6220300657D37 /* PhotoTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C48D26D6220300657D37 /* PhotoTabBarViewController.swift */; };
 		F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
+		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
+		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
@@ -703,6 +705,8 @@
 		F502C48726D6132F00657D37 /* AlbumsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		F502C48D26D6220300657D37 /* PhotoTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTabBarViewController.swift; sourceTree = "<group>"; };
 		F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesViewModel.swift; sourceTree = "<group>"; };
+		F509D6FB2742E265007E4594 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -841,6 +845,7 @@
 				5E611E32261C681700B17491 /* TagDetailsViewController.swift */,
 				5E2E3D1026D0F6840090EF02 /* ArchivesViewController.swift */,
 				F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */,
+				F509D6FB2742E265007E4594 /* SearchViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -916,6 +921,7 @@
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
 				F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */,
 				F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */,
+				F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 				BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */,
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
@@ -2139,6 +2145,7 @@
 				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
 				BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
+				F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */,
 				5E647334263C22F900E6566D /* NotificationName.swift in Sources */,
 				BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
@@ -2286,6 +2293,7 @@
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
 				BC6D3B4B2514E46E00390927 /* APIEnvironment.swift in Sources */,
 				F502C48C26D6132F00657D37 /* AlbumsViewController.swift in Sources */,
+				F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */,
 				BC59BACD25C2B8BD005A45D3 /* ActivityFeedViewModel.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,

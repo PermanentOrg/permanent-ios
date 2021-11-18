@@ -7,6 +7,7 @@
 
 import Foundation
 import Photos.PHAsset
+import CoreImage
 
 typealias NewFolderParams = (filename: String, folderLinkId: Int)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String)
@@ -44,8 +45,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
-    
-    var isSearchActive: Bool = false
 
     var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
     var archivePermissions: [Permission] {
@@ -91,11 +90,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var syncedViewModels: [FileViewModel] {
-        if currentFolderIsRoot && isSearchActive {
-            return searchViewModels
-        } else {
-            return viewModels
-        }
+        return viewModels
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
@@ -155,39 +150,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.remove(at: index)
-    }
-    
-    func searchFiles(byQuery query: String, handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(SearchEndpoint.folderAndRecord(text: query))
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<SearchVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<SearchVO>.decoder
-                    ),
-                    model.isSuccessful
-
-                else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                self.navigationStack.removeSubrange(1..<self.navigationStack.count)
-                self.searchViewModels.removeAll()
-                let searchedItems = model.results[0].data?[0].searchVO.childItemVOs ?? []
-                let searchedFileVMs = searchedItems.map({ FileViewModel(model: $0, permissions: self.archivePermissions) })
-                self.searchViewModels.append(contentsOf: searchedFileVMs)
-                handler(.success)
-
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
-            }
-        }
     }
 }
 

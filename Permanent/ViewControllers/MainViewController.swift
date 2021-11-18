@@ -16,6 +16,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet var fabView: FABView!
     @IBOutlet var searchBar: UISearchBar!
+    @IBOutlet weak var searchBarContainer: UIView!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
     
@@ -41,7 +42,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         setupBottomActionSheet()
         
         fabView.delegate = self
-        searchBar.delegate = self
         
         getRootFolder()
         
@@ -68,6 +68,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.refreshCurrentFolder()
             }
         }
+        
+        let searchTapGesture = UITapGestureRecognizer(target: self, action: #selector(searchBarTapped(_:)))
+        searchBarContainer.addGestureRecognizer(searchTapGesture)
     }
     
     override func viewDidLayoutSubviews() {
@@ -297,6 +300,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
+    @objc func searchBarTapped(_ sender: Any) {
+        guard let searchVC = UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController else {
+            return
+        }
+        
+        let navController = NavigationController(rootViewController: searchVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: false)
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -522,7 +535,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -693,29 +706,6 @@ extension MainViewController {
             }
 
             return
-        }
-    }
-}
-
-// MARK: - UISearchBarDelegate
-extension MainViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        view.endEditing(true)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            viewModel?.isSearchActive = false
-            refreshCollectionView()
-        } else {
-            viewModel?.isSearchActive = true
-            let folder = viewModel?.navigationStack.first
-            self.directoryLabel.text = folder?.name
-            self.backButton.isHidden = true
-            
-            viewModel?.searchFiles(byQuery: searchText, handler: { status in
-                self.refreshCollectionView()
-            })
         }
     }
 }

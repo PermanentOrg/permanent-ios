@@ -53,6 +53,7 @@ enum ViewControllerId: String {
     case tagDetails
     case archives
     case passwordUpdate
+    case search
 
     var value: String {
         switch self {
@@ -92,6 +93,8 @@ enum ViewControllerId: String {
             return "WelcomePage"
         case .passwordUpdate:
             return "PasswordUpdate"
+        case .search:
+            return "Search"
         default:
             return self.rawValue.capitalized
         }
