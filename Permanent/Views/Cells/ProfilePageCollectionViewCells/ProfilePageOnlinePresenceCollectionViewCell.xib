@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ProfilePageOnlinePresenceCollectionViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="434" height="259"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="434" height="259"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Online Presence" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vLO-S8-0Tr">
+                        <rect key="frame" x="20" y="5" width="124" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p5h-z0-z62">
+                        <rect key="frame" x="365" y="5" width="49" height="31"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V41-bD-Qr7">
+                        <rect key="frame" x="20" y="36" width="394" height="21"/>
+                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l45-nh-Kf6">
+                        <rect key="frame" x="20" y="62" width="394" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UBZ-Tb-UEe">
+                        <rect key="frame" x="20" y="88" width="394" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lvI-pF-JdG">
+                        <rect key="frame" x="20" y="119" width="53" height="22"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Button">
+                            <directionalEdgeInsets key="contentInsets" top="5" leading="0.0" bottom="0.0" trailing="10"/>
+                        </buttonConfiguration>
+                    </button>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="lvI-pF-JdG" firstAttribute="top" secondItem="UBZ-Tb-UEe" secondAttribute="bottom" constant="10" id="1Gg-w3-AbU"/>
+                <constraint firstItem="V41-bD-Qr7" firstAttribute="top" secondItem="vLO-S8-0Tr" secondAttribute="bottom" constant="10" id="3QG-v0-L0k"/>
+                <constraint firstItem="l45-nh-Kf6" firstAttribute="top" secondItem="V41-bD-Qr7" secondAttribute="bottom" constant="5" id="3yA-sT-4QP"/>
+                <constraint firstItem="l45-nh-Kf6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="6X8-2C-qdC"/>
+                <constraint firstAttribute="trailing" secondItem="V41-bD-Qr7" secondAttribute="trailing" constant="20" id="AF0-NH-r6M"/>
+                <constraint firstItem="UBZ-Tb-UEe" firstAttribute="top" secondItem="l45-nh-Kf6" secondAttribute="bottom" constant="5" id="BZw-65-Xoq"/>
+                <constraint firstItem="lvI-pF-JdG" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="GTd-yx-zt5"/>
+                <constraint firstAttribute="trailing" secondItem="p5h-z0-z62" secondAttribute="trailing" constant="20" id="SRG-gy-xa3"/>
+                <constraint firstItem="vLO-S8-0Tr" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="ZcD-Pf-QUC"/>
+                <constraint firstItem="vLO-S8-0Tr" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="bYN-Kt-Z9j"/>
+                <constraint firstItem="V41-bD-Qr7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="eaL-AF-hmr"/>
+                <constraint firstItem="p5h-z0-z62" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="lAp-VY-NIB"/>
+                <constraint firstAttribute="trailing" secondItem="UBZ-Tb-UEe" secondAttribute="trailing" constant="20" id="tc5-YC-XOz"/>
+                <constraint firstAttribute="trailing" secondItem="l45-nh-Kf6" secondAttribute="trailing" constant="20" id="yco-mI-kNl"/>
+                <constraint firstItem="UBZ-Tb-UEe" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="zQx-4E-OXw"/>
+            </constraints>
+            <size key="customSize" width="434" height="259"/>
+            <connections>
+                <outlet property="editButton" destination="p5h-z0-z62" id="R9O-uq-fgx"/>
+                <outlet property="linkOneLabel" destination="V41-bD-Qr7" id="dem-Lu-MPr"/>
+                <outlet property="linkThreeLabel" destination="UBZ-Tb-UEe" id="LoN-mL-fud"/>
+                <outlet property="linkTwoLabel" destination="l45-nh-Kf6" id="CBo-U6-e0d"/>
+                <outlet property="readMoreButton" destination="lvI-pF-JdG" id="BCs-Gg-Kvn"/>
+                <outlet property="titleLabel" destination="vLO-S8-0Tr" id="OYX-4K-bQD"/>
+            </connections>
+            <point key="canvasLocation" x="113" y="87"/>
+        </collectionViewCell>
+    </objects>
+</document>

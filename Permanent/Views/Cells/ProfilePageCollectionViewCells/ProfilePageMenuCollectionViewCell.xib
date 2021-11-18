@@ -23,6 +23,9 @@
                             <segment title="First"/>
                             <segment title="Second"/>
                         </segments>
+                        <connections>
+                            <action selector="segmentedControlAction:" destination="gTV-IL-0wX" eventType="valueChanged" id="alc-Dt-1Ap"/>
+                        </connections>
                     </segmentedControl>
                 </subviews>
             </view>

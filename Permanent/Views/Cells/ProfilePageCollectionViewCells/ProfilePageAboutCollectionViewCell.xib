@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ProfilePageAboutCollectionViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="383" height="84"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="383" height="84"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="About" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ycC-Fo-PM6">
+                        <rect key="frame" x="20" y="10" width="46" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VR6-VI-Fs1">
+                        <rect key="frame" x="333" y="10" width="30" height="22"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Edit">
+                            <directionalEdgeInsets key="contentInsets" top="0.0" leading="5" bottom="5" trailing="0.0"/>
+                        </buttonConfiguration>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fyF-1j-G4y">
+                        <rect key="frame" x="20" y="36" width="343" height="20.5"/>
+                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="csP-ka-Lj3">
+                        <rect key="frame" x="20" y="61.5" width="48" height="22.5"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Button">
+                            <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="5"/>
+                        </buttonConfiguration>
+                    </button>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="fyF-1j-G4y" firstAttribute="top" secondItem="ycC-Fo-PM6" secondAttribute="bottom" constant="5" id="6a8-oI-3ru"/>
+                <constraint firstAttribute="trailing" secondItem="fyF-1j-G4y" secondAttribute="trailing" constant="20" id="7LW-BF-4pB"/>
+                <constraint firstItem="ycC-Fo-PM6" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="Bdi-Sx-n26"/>
+                <constraint firstItem="csP-ka-Lj3" firstAttribute="top" secondItem="fyF-1j-G4y" secondAttribute="bottom" constant="5" id="QQ3-w9-f86"/>
+                <constraint firstAttribute="bottom" secondItem="csP-ka-Lj3" secondAttribute="bottom" id="SYP-9V-c2x"/>
+                <constraint firstItem="csP-ka-Lj3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="jkn-w0-kcH"/>
+                <constraint firstItem="ycC-Fo-PM6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="qcl-91-BwQ"/>
+                <constraint firstItem="VR6-VI-Fs1" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="tUO-bF-m1d"/>
+                <constraint firstItem="fyF-1j-G4y" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="vNa-ks-Veo"/>
+                <constraint firstAttribute="trailing" secondItem="VR6-VI-Fs1" secondAttribute="trailing" constant="20" id="vQG-Hr-6m8"/>
+            </constraints>
+            <size key="customSize" width="383" height="84"/>
+            <connections>
+                <outlet property="contentLabel" destination="fyF-1j-G4y" id="jlO-DG-Jjd"/>
+                <outlet property="editButton" destination="VR6-VI-Fs1" id="e2H-w9-nAd"/>
+                <outlet property="readMoreButton" destination="csP-ka-Lj3" id="tpF-rb-aoO"/>
+                <outlet property="titleLabel" destination="ycC-Fo-PM6" id="iJk-Mi-Vye"/>
+            </connections>
+            <point key="canvasLocation" x="-73.188405797101453" y="48.883928571428569"/>
+        </collectionViewCell>
+    </objects>
+</document>

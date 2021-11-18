@@ -11,6 +11,8 @@ class ProfilePageMenuCollectionViewCell: ProfilePageBaseCollectionViewCell {
    
     static let identifier = "ProfilePageMenuCollectionViewCell"
     
+    var segmentedControlAction: ((ProfilePageMenuCollectionViewCell) -> Void)?
+    
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     override func awakeFromNib() {
@@ -26,6 +28,12 @@ class ProfilePageMenuCollectionViewCell: ProfilePageBaseCollectionViewCell {
         
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style8.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.primary, .font: Text.style8.font], for: .normal)
+    }
+    
+    @IBAction func segmentedControlAction(_ sender: Any) {
+        if let segmentedControlAction = segmentedControlAction {
+            segmentedControlAction(self)
+        }
     }
     
     static func nib() -> UINib {
