@@ -24,9 +24,11 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p5h-z0-z62">
-                        <rect key="frame" x="365" y="5" width="49" height="31"/>
+                        <rect key="frame" x="384" y="5" width="30" height="22"/>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                        <buttonConfiguration key="configuration" style="plain" title="Edit">
+                            <directionalEdgeInsets key="contentInsets" top="0.0" leading="5" bottom="5" trailing="0.0"/>
+                        </buttonConfiguration>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V41-bD-Qr7">
                         <rect key="frame" x="20" y="36" width="394" height="21"/>

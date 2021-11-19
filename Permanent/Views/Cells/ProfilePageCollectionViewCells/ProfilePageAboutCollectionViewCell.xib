@@ -37,7 +37,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="csP-ka-Lj3">
-                        <rect key="frame" x="20" y="61.5" width="48" height="22.5"/>
+                        <rect key="frame" x="20" y="56.5" width="48" height="27.5"/>
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" title="Button">
                             <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="5"/>
@@ -50,7 +50,7 @@
                 <constraint firstItem="fyF-1j-G4y" firstAttribute="top" secondItem="ycC-Fo-PM6" secondAttribute="bottom" constant="5" id="6a8-oI-3ru"/>
                 <constraint firstAttribute="trailing" secondItem="fyF-1j-G4y" secondAttribute="trailing" constant="20" id="7LW-BF-4pB"/>
                 <constraint firstItem="ycC-Fo-PM6" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="Bdi-Sx-n26"/>
-                <constraint firstItem="csP-ka-Lj3" firstAttribute="top" secondItem="fyF-1j-G4y" secondAttribute="bottom" constant="5" id="QQ3-w9-f86"/>
+                <constraint firstItem="csP-ka-Lj3" firstAttribute="top" secondItem="fyF-1j-G4y" secondAttribute="bottom" id="QQ3-w9-f86"/>
                 <constraint firstAttribute="bottom" secondItem="csP-ka-Lj3" secondAttribute="bottom" id="SYP-9V-c2x"/>
                 <constraint firstItem="csP-ka-Lj3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="jkn-w0-kcH"/>
                 <constraint firstItem="ycC-Fo-PM6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="qcl-91-BwQ"/>

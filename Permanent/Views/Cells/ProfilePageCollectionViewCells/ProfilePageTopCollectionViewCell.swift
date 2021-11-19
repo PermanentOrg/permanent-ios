@@ -49,11 +49,11 @@ class ProfilePageTopCollectionViewCell: ProfilePageBaseCollectionViewCell {
     
     func configure(profileBannerImageUrl: String?, profilePhotoImageUrl: String?) {
         if let bannerPhotoUrl = profileBannerImageUrl {
-            profileBannerImageView.load(urlString: bannerPhotoUrl)
+            profilePhotoImageView.sd_setImage(with: URL(string: bannerPhotoUrl))
         }
         
         if let profilePhotoUrl = profilePhotoImageUrl {
-            profilePhotoImageView.load(urlString: profilePhotoUrl)
+            profilePhotoImageView.sd_setImage(with: URL(string: profilePhotoUrl))
         }
     }
 

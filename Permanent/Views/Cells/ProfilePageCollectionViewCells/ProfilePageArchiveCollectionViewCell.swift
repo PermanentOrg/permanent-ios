@@ -21,12 +21,8 @@ class ProfilePageArchiveCollectionViewCell: ProfilePageBaseCollectionViewCell {
         archiveTitleLabel.textColor = .primary
         archiveTitleLabel.font = Text.style9.font
 
-        
-        shareButton.setTitle("Share".localized(), for: .normal)
-        shareButton.setFont(Text.style12.font)
-        shareButton.setTitleColor(.darkGray, for: .normal)
-        shareButton.setTitleColor(.lightGray, for: .highlighted)
-        
+        shareButton.setAttributedTitle(NSAttributedString(string: "Share".localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.darkGray]), for: .normal)
+        shareButton.setAttributedTitle(NSAttributedString(string: "Share".localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
     }
 
     static func nib() -> UINib {

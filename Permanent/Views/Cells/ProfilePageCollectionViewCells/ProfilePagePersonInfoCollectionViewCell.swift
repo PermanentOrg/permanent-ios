@@ -60,8 +60,8 @@ class ProfilePagePersonInfoCollectionViewCell: ProfilePageBaseCollectionViewCell
     }
     
     func temporarySample() {
-        fullNameLabel.text = ""
-        birthDateLabel.text = ""
-        birthLocationLabel.text = ""
+        fullNameLabel.text = "User Name"
+        birthDateLabel.text = "Jan 01, 2000"
+        birthLocationLabel.text = "1401 South Grand Avenue, Los Angeles, California, United States"
     }
 }

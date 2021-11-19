@@ -219,7 +219,7 @@ extension ProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .about:
-            return CGSize(width: UIScreen.main.bounds.width, height: 170)
+            return CGSize(width: UIScreen.main.bounds.width, height: 150)
         case .personalInformation:
             return CGSize(width: UIScreen.main.bounds.width, height: 200)
         case .onlinePresence:
