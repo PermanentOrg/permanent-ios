@@ -17,44 +17,38 @@
                 <rect key="frame" x="0.0" y="0.0" width="352" height="205"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="254" text="Personal Information" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ghA-jF-FRW">
-                        <rect key="frame" x="20" y="10" width="157" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="Full Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8f-t2-0h4">
-                        <rect key="frame" x="20" y="41" width="76" height="21"/>
+                        <rect key="frame" x="20" y="10" width="76" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jVE-4N-mPN">
-                        <rect key="frame" x="20" y="64" width="232" height="21"/>
+                        <rect key="frame" x="20" y="33" width="232" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Birth Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8rZ-du-GNb">
-                        <rect key="frame" x="20" y="95" width="77" height="21"/>
+                        <rect key="frame" x="20" y="64" width="77" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nuQ-2p-zPW">
-                        <rect key="frame" x="20" y="118" width="232" height="21"/>
+                        <rect key="frame" x="20" y="87" width="232" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="253" text="Birth Location" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sBm-bm-dQP">
-                        <rect key="frame" x="20" y="149" width="106" height="20.5"/>
+                        <rect key="frame" x="20" y="118" width="106" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aHz-xJ-upz" userLabel="Birth Location Label">
-                        <rect key="frame" x="20" y="171.5" width="232" height="28.5"/>
+                        <rect key="frame" x="20" y="140.5" width="232" height="59.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -76,11 +70,9 @@
                 <constraint firstAttribute="trailing" secondItem="jVE-4N-mPN" secondAttribute="trailing" constant="100" id="QuZ-hs-7MP"/>
                 <constraint firstItem="nuQ-2p-zPW" firstAttribute="top" secondItem="8rZ-du-GNb" secondAttribute="bottom" constant="2" id="TI5-FB-2ev"/>
                 <constraint firstAttribute="bottom" secondItem="aHz-xJ-upz" secondAttribute="bottom" constant="5" id="VxP-DA-stw"/>
-                <constraint firstItem="e8f-t2-0h4" firstAttribute="top" secondItem="ghA-jF-FRW" secondAttribute="bottom" constant="10" id="YzK-7N-3QQ"/>
-                <constraint firstItem="ghA-jF-FRW" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="iAK-eh-s5v"/>
                 <constraint firstAttribute="trailing" secondItem="aHz-xJ-upz" secondAttribute="trailing" constant="100" id="iaU-bK-tkI"/>
-                <constraint firstItem="ghA-jF-FRW" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="kGP-zz-jfY"/>
                 <constraint firstItem="jVE-4N-mPN" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="kRD-t1-Sad"/>
+                <constraint firstItem="e8f-t2-0h4" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="wuv-dN-c3U"/>
             </constraints>
             <size key="customSize" width="352" height="205"/>
             <connections>
@@ -90,7 +82,6 @@
                 <outlet property="birthLocationTitleLabel" destination="sBm-bm-dQP" id="AeY-Hs-X3H"/>
                 <outlet property="fullNameLabel" destination="jVE-4N-mPN" id="ljD-qf-uAn"/>
                 <outlet property="fullNameTitleLabel" destination="e8f-t2-0h4" id="9O6-jM-8As"/>
-                <outlet property="personalInformationLabel" destination="ghA-jF-FRW" id="wvg-3y-3g1"/>
             </connections>
             <point key="canvasLocation" x="349.27536231884062" y="158.37053571428569"/>
         </collectionViewCell>

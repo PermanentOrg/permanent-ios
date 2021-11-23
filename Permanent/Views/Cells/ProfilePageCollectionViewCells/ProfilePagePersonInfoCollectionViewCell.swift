@@ -9,7 +9,6 @@ import UIKit
 
 class ProfilePagePersonInfoCollectionViewCell: ProfilePageBaseCollectionViewCell {
     
-    @IBOutlet weak var personalInformationLabel: UILabel!
     @IBOutlet weak var fullNameTitleLabel: UILabel!
     @IBOutlet weak var fullNameLabel: UILabel!
     @IBOutlet weak var birthDateTitleLabel: UILabel!
@@ -22,12 +21,7 @@ class ProfilePagePersonInfoCollectionViewCell: ProfilePageBaseCollectionViewCell
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        personalInformationLabel.text = "Personal Information".localized()
-        personalInformationLabel.textColor = .primary
-        personalInformationLabel.font = Text.style9.font
-
-        
+    
         fullNameTitleLabel.text = "Full Name".localized()
         fullNameTitleLabel.textColor = .darkGray
         fullNameTitleLabel.font = Text.style12.font
@@ -52,16 +46,18 @@ class ProfilePagePersonInfoCollectionViewCell: ProfilePageBaseCollectionViewCell
         birthLocationLabel.textColor = .primary
         birthLocationLabel.font = Text.style13.font
         
-        temporarySample()
+        fullNameLabel.text = "User Name"
+        birthDateLabel.text = "Jan 01, 2000"
+        birthLocationLabel.text = "1401 South Grand Avenue, Los Angeles, California, United States"
+    }
+    
+    func configure(fullName: String = "", birthDate: String = "", birthLocation: String = "") {
+        fullNameLabel.text = fullName.localized()
+        birthDateLabel.text = birthDate
+        birthLocationLabel.text = birthLocation
     }
 
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
-    }
-    
-    func temporarySample() {
-        fullNameLabel.text = "User Name"
-        birthDateLabel.text = "Jan 01, 2000"
-        birthLocationLabel.text = "1401 South Grand Avenue, Los Angeles, California, United States"
     }
 }

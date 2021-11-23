@@ -17,39 +17,26 @@
                 <rect key="frame" x="0.0" y="0.0" width="498" height="273"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Milestones" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E8O-pY-9Jz">
-                        <rect key="frame" x="20" y="5" width="83" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k20-Pb-80P">
-                        <rect key="frame" x="448" y="5" width="30" height="22"/>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" title="Edit">
-                            <directionalEdgeInsets key="contentInsets" top="0.0" leading="5" bottom="5" trailing="0.0"/>
-                        </buttonConfiguration>
-                    </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zqb-cX-iSJ">
-                        <rect key="frame" x="20" y="36" width="42" height="21"/>
+                        <rect key="frame" x="20" y="10" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XWa-nl-726">
-                        <rect key="frame" x="20" y="57" width="42" height="21"/>
+                        <rect key="frame" x="20" y="31" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tp5-HJ-g3W">
-                        <rect key="frame" x="20" y="78" width="42" height="21"/>
+                        <rect key="frame" x="20" y="52" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BAn-NI-0dU">
-                        <rect key="frame" x="20" y="109" width="458" height="20.5"/>
+                        <rect key="frame" x="20" y="83" width="458" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -58,28 +45,22 @@
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="k20-Pb-80P" secondAttribute="trailing" constant="20" id="5Mb-bS-Duz"/>
-                <constraint firstItem="k20-Pb-80P" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="5vi-BY-Hcy"/>
+                <constraint firstItem="Zqb-cX-iSJ" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="0fW-3M-D1G"/>
                 <constraint firstItem="BAn-NI-0dU" firstAttribute="top" secondItem="Tp5-HJ-g3W" secondAttribute="bottom" constant="10" id="E0B-lG-FeE"/>
                 <constraint firstAttribute="trailing" secondItem="BAn-NI-0dU" secondAttribute="trailing" constant="20" id="FwZ-c1-iZ6"/>
                 <constraint firstItem="Tp5-HJ-g3W" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="KEB-1g-fIU"/>
-                <constraint firstItem="E8O-pY-9Jz" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="Nym-Hr-yAS"/>
                 <constraint firstItem="XWa-nl-726" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="Ti3-Bj-pt5"/>
                 <constraint firstItem="BAn-NI-0dU" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="W5E-Zs-9k6"/>
                 <constraint firstItem="XWa-nl-726" firstAttribute="top" secondItem="Zqb-cX-iSJ" secondAttribute="bottom" id="cPs-Hp-3A3"/>
                 <constraint firstItem="Zqb-cX-iSJ" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="p04-34-dMc"/>
-                <constraint firstItem="E8O-pY-9Jz" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="tnB-7P-4fc"/>
                 <constraint firstItem="Tp5-HJ-g3W" firstAttribute="top" secondItem="XWa-nl-726" secondAttribute="bottom" id="uIY-Dh-8oJ"/>
-                <constraint firstItem="Zqb-cX-iSJ" firstAttribute="top" secondItem="E8O-pY-9Jz" secondAttribute="bottom" constant="10" id="uXk-BL-pc3"/>
             </constraints>
             <size key="customSize" width="498" height="273"/>
             <connections>
-                <outlet property="editButton" destination="k20-Pb-80P" id="X1m-xc-e1n"/>
                 <outlet property="milestoneDateLabel" destination="Tp5-HJ-g3W" id="AWC-m1-Ypx"/>
                 <outlet property="milestoneLocationLabel" destination="XWa-nl-726" id="MfJ-oG-CCq"/>
                 <outlet property="milestoneTextLabel" destination="BAn-NI-0dU" id="lRP-W0-FTv"/>
                 <outlet property="milestoneTitleLabel" destination="Zqb-cX-iSJ" id="Gfr-fg-XfE"/>
-                <outlet property="titleLabel" destination="E8O-pY-9Jz" id="lTW-Jj-Kyq"/>
             </connections>
             <point key="canvasLocation" x="265" y="102"/>
         </collectionViewCell>

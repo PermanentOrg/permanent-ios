@@ -64,8 +64,6 @@
 		5E68F2CF26A74FCD00CC936E /* LoginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2CE26A74FCD00CC936E /* LoginTests.swift */; };
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
-		5E77E75227465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E77E75027465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.swift */; };
-		5E77E75327465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E77E75127465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.xib */; };
 		5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */; };
 		5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */; };
 		5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */; };
@@ -465,8 +463,6 @@
 		5E68F2D026A74FCD00CC936E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E68F2D826A9A2CD00CC936E /* TestURLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestURLs.swift; sourceTree = "<group>"; };
 		5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseURLProtocol.swift; sourceTree = "<group>"; };
-		5E77E75027465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageEmptyCollectionReusableView.swift; sourceTree = "<group>"; };
-		5E77E75127465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageEmptyCollectionReusableView.xib; sourceTree = "<group>"; };
 		5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordUpdateViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
@@ -1100,8 +1096,6 @@
 				5E5DFA6B27463602000D9924 /* ProfilePageHeaderCollectionViewCell.xib */,
 				5E5DFA6E2746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift */,
 				5E5DFA6F2746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib */,
-				5E77E75027465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.swift */,
-				5E77E75127465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.xib */,
 				5EAAB298273C046D009D41E6 /* ProfilePageBaseCollectionViewCell.swift */,
 			);
 			path = ProfilePageCollectionViewCells;
@@ -1942,7 +1936,6 @@
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
-				5E77E75327465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.xib in Resources */,
 				F502C48B26D6132F00657D37 /* PhotoPicker.storyboard in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
 				BCF906602587965A00DF1B64 /* SharedFileTableViewCell.xib in Resources */,
@@ -2147,7 +2140,6 @@
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
 				F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
-				5E77E75227465F8D00F29230 /* ProfilePageEmptyCollectionReusableView.swift in Sources */,
 				BC6358992535D35D00EEC48C /* FileTableViewCell.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,

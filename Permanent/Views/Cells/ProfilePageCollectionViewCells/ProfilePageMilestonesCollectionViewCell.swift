@@ -11,8 +11,6 @@ class ProfilePageMilestonesCollectionViewCell: ProfilePageBaseCollectionViewCell
     
     static let identifier = "ProfilePageMilestonesCollectionViewCell"
     
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!
@@ -21,13 +19,6 @@ class ProfilePageMilestonesCollectionViewCell: ProfilePageBaseCollectionViewCell
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        titleLabel.text = "Milestones".localized()
-        titleLabel.textColor = .primary
-        titleLabel.font = Text.style9.font
-        
-        editButton.setAttributedTitle(NSAttributedString(string: "Edit".localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.darkGray]), for: .normal)
-        editButton.setAttributedTitle(NSAttributedString(string: "Edit".localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
         
         milestoneTitleLabel.text = "Lizard Creek Hill"
         milestoneTitleLabel.textColor = .primary

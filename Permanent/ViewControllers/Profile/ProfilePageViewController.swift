@@ -23,6 +23,8 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
     
     let topSectionCells: [CellType] = [.thumbnails, .segmentedControl]
     var bottomSectionCells: [CellType] = [.archiveGallery]
+    var numberOfBottomSections: Int = 1
+    var currentSegmentValue: Int = 0
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -60,11 +62,8 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
         collectionView.register(ProfilePageOnlinePresenceCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageOnlinePresenceCollectionViewCell.identifier)
         collectionView.register(ProfilePageMilestonesCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier)
         
-        
         collectionView.register(ProfilePageHeaderCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier)
         collectionView.register(ProfilePageFooterCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ProfilePageFooterCollectionViewCell.identifier)
-        collectionView.register(ProfilePageEmptyCollectionReusableView.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier)
-        collectionView.register(ProfilePageEmptyCollectionReusableView.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,12 +81,33 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
             guard let strongSelf = self else { return }
             
             if cell.segmentedControl.selectedSegmentIndex == 0 {
+                self?.currentSegmentValue = 0
+                
                 strongSelf.bottomSectionCells = [.archiveGallery]
+                self?.numberOfBottomSections = 1
+                
+                let deleteIndexSet = IndexSet(integersIn: 2...4)
+                
+                self?.collectionView.performBatchUpdates {
+                    self?.collectionView.deleteSections(deleteIndexSet)
+                    self?.collectionView.reloadSections([1])
+                }
+                
             } else {
+                self?.currentSegmentValue = 1
+                
+                self?.numberOfBottomSections = 4
                 strongSelf.bottomSectionCells = [.about, .personalInformation, .onlinePresence, .milestones]
+                
+                let addedIndexSet = IndexSet(integersIn: 2...4)
+                self?.collectionView.insertSections(addedIndexSet)
+                
+                let reloadIndexSet = IndexSet(integersIn: 1...4)
+                
+                self?.collectionView.performBatchUpdates {
+                    self?.collectionView.reloadSections(reloadIndexSet)
+                }
             }
-            
-            strongSelf.collectionView.reloadSections([1])
         }
     }
 }
@@ -97,21 +117,25 @@ extension ProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
             return topSectionCells.count
-        } else if section == 1 {
-            return bottomSectionCells.count
         }
         
-        return 0
+        return 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return numberOfBottomSections + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let sectionCellTypes = indexPath.section == 0 ? topSectionCells : bottomSectionCells
-        let currentCellType = sectionCellTypes[indexPath.item]
+        var sectionCellType: [ProfilePageViewController.CellType] = []
         
+        if indexPath.section == 0 {
+            sectionCellType = topSectionCells
+        } else {
+            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
+        }
+        
+        let currentCellType = sectionCellType[indexPath.item]
         let returnedCell: ProfilePageBaseCollectionViewCell
         
         switch currentCellType {
@@ -130,7 +154,6 @@ extension ProfilePageViewController: UICollectionViewDataSource {
             
         case .archiveGallery:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier, for: indexPath) as! ProfilePageArchiveCollectionViewCell
-            
             returnedCell = cell
             
         case .about:
@@ -153,56 +176,62 @@ extension ProfilePageViewController: UICollectionViewDataSource {
             
             returnedCell = cell
         }
+        
         return returnedCell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var sectionCellType: [ProfilePageViewController.CellType] = []
         
-        let sectionCellTypes = indexPath.section == 0 ? topSectionCells : bottomSectionCells
-        let currentCellType = sectionCellTypes[indexPath.item]
+        if indexPath.section == 0 {
+            sectionCellType = topSectionCells
+        } else {
+            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
+        }
         
-        switch currentCellType {
+        let currentCellType = sectionCellType[indexPath.item]
+        let returnedCell: ProfilePageBaseCollectionViewCell
+        
+        switch kind {
             
-        case .thumbnails:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
-        case .segmentedControl:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
-        case .archiveGallery:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
-        case .about:
-            switch kind {
-                
-            case UICollectionView.elementKindSectionHeader:
-                let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier, for: indexPath)
-                return headerCell
-                
-            case UICollectionView.elementKindSectionFooter:
-                let footerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageFooterCollectionViewCell.identifier, for: indexPath)
-                return footerCell
-                
+        case UICollectionView.elementKindSectionHeader:
+            let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier, for: indexPath) as! ProfilePageHeaderCollectionViewCell
+            switch currentCellType {
+            case .archiveGallery:
+                headerCell.configure(titleLabel: "Archive", buttonText: "Share")
+            case .about:
+                headerCell.configure(titleLabel: "About", buttonText: "Edit")
+            case .personalInformation:
+                headerCell.configure(titleLabel: "Personal Information", buttonText: "", buttonIsHidden: true)
+            case .onlinePresence:
+                headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit")
+            case .milestones:
+                headerCell.configure(titleLabel: "Milestones", buttonText: "Edit")
             default:
-                let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-            
-                return emptyCell
+                break
             }
-        case .personalInformation:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
-        case .onlinePresence:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
-        case .milestones:
-            let emptyCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageEmptyCollectionReusableView.identifier, for: indexPath)
-        
-            return emptyCell
+            return headerCell
+            
+        case UICollectionView.elementKindSectionFooter:
+            let footerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageFooterCollectionViewCell.identifier, for: indexPath) as! ProfilePageFooterCollectionViewCell
+            switch currentCellType {
+            case .archiveGallery:
+                footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: true)
+            case .personalInformation:
+                footerCell.configure(isReadMoreButtonHidden: true)
+            case .milestones:
+                footerCell.configure(isReadMoreButtonHidden: true)
+            case .about:
+                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
+            case .onlinePresence:
+                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
+            default:
+                break
+            }
+            return footerCell
+            
+        default:
+            return UICollectionReusableView()
         }
     }
 }
@@ -210,8 +239,15 @@ extension ProfilePageViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 extension ProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let sectionCellTypes = indexPath.section == 0 ? topSectionCells : bottomSectionCells
-        let currentCellType = sectionCellTypes[indexPath.item]
+        var sectionCellType: [ProfilePageViewController.CellType] = []
+        
+        if indexPath.section == 0 {
+            sectionCellType = topSectionCells
+        } else {
+            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
+        }
+        
+        let currentCellType = sectionCellType[indexPath.item]
         
         switch currentCellType {
         case .thumbnails:
@@ -219,13 +255,13 @@ extension ProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .about:
-            return CGSize(width: UIScreen.main.bounds.width, height: 150)
+            return CGSize(width: UIScreen.main.bounds.width, height: 110)
         case .personalInformation:
-            return CGSize(width: UIScreen.main.bounds.width, height: 200)
+            return CGSize(width: UIScreen.main.bounds.width, height: 170)
         case .onlinePresence:
-            return CGSize(width: UIScreen.main.bounds.width, height: 150)
+            return CGSize(width: UIScreen.main.bounds.width, height: 100)
         case .milestones:
-            return CGSize(width: UIScreen.main.bounds.width, height: 200)
+            return CGSize(width: UIScreen.main.bounds.width, height: 130)
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 120)
         }
@@ -244,11 +280,22 @@ extension ProfilePageViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        var height: CGFloat = 40
         
-        return CGSize(width: collectionView.frame.width, height: 0)
+        if section == 0 {
+            height = 0
+        }
+        
+        return CGSize(width: collectionView.frame.width, height: height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 0)
+        var height: CGFloat = 40
+        
+        if section == 0 {
+            height = 0
+        }
+        
+        return CGSize(width: collectionView.frame.width, height: height)
     }
 }
