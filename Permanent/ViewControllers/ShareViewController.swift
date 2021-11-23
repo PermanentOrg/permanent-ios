@@ -87,11 +87,15 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     func editArchive(shareVO: ShareVOData) {
         guard let archiveVO = shareVO.archiveVO else { return }
         
+        let accessRoles = AccessRole.allCases
+            .filter { $0 != .owner && $0 != .manager }
+            .map { $0.groupName }
+        
         self.showActionDialog(
             styled: .dropdownWithDescription,
             withTitle: "The \(archiveVO.fullName ?? "") Archive",
             placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
-            dropdownValues: StaticData.accessRoles,
+            dropdownValues: accessRoles,
             positiveButtonTitle: "Update".localized(),
             positiveAction: { [weak self] in
                 if let fieldsInput = self?.actionDialog?.fieldsInput,
@@ -102,11 +106,13 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                     self?.viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
                         self?.hideSpinner()
                         
-                        if status == .success {
+                        switch status {
+                        case .success:
                             self?.view.showNotificationBanner(title: "Access role was successfully changed".localized())
-                        } else {
-                            self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                        case .error(let errorMessage):
+                            self?.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
                         }
+                        
                         self?.getShareLink(option: .retrieve)
                     })
                 }

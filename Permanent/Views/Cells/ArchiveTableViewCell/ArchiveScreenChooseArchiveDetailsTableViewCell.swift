@@ -39,11 +39,11 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
     }
     
     func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool, isManaging: Bool) {
-        guard let thumbURL = archiveVO.thumbURL500,
+        guard let thumbURL = URL(string: archiveVO.thumbURL500),
               let archiveName = archiveVO.fullName,
               let accessLevel = archiveVO.accessRole else { return }
         archiveThumbnailImage.image = nil
-        archiveThumbnailImage.load(urlString: thumbURL)
+        archiveThumbnailImage.sd_setImage(with: thumbURL)
         
         archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         archiveAccessLabel.text = "Access: <ACCESS_LEVEL>".localized().replacingOccurrences(of: "<ACCESS_LEVEL>", with: AccessRole.roleForValue(accessLevel).groupName)

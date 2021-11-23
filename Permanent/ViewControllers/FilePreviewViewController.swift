@@ -159,7 +159,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                   let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                self.loadImage(withURL: downloadURL, contentType: contentType)
+                self.loadImage(withURL: URL(string: file.thumbnailURL2000 ?? "")!, contentType: contentType)
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
             default:
@@ -243,12 +243,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
             shareWithOtherApps()
         }))
-        
-        actions.append(PRMNTAction(title: "Share in Permanent".localized(), color: .primary, handler: { [self] action in
-            if let file = self.viewModel?.file {
-                shareInApp(file: file)
-            }
-        }))
+        if self.file.permissions.contains(.ownership) {
+            actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
+                if let file = self.viewModel?.file {
+                    shareInApp(file: file)
+                }
+            }))
+        }
     
         let actionSheet = PRMNTActionSheetViewController(title: "", actions: actions)
         present(actionSheet, animated: true, completion: nil)

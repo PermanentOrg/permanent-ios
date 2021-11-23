@@ -163,13 +163,22 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                     let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
                         with: APIResults<NoDataModel>.decoder
-                    ),
-                    model.isSuccessful
+                    )
                 else {
                     handler(.error(message: .errorMessage))
                     return
                 }
-                handler(.success)
+                
+                if model.isSuccessful {
+                    handler(.success)
+                } else {
+                    if model.results[0].message[0] == "warning.share.no_share_self" {
+                        handler(.error(message: "You cannot share an item with yourself".localized()))
+                    } else {
+                        handler(.error(message: .errorMessage))
+                    }
+                }
+                
                 return
             case .error:
                 handler(.error(message: .errorMessage))
