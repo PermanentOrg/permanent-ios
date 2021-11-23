@@ -7,13 +7,11 @@
 
 import UIKit
 
-class ProfilePageOnlinePresenceCollectionViewCell: ProfilePageBaseCollectionViewCell {
+class ProfilePageOnlinePresenceCollectionViewCell: UICollectionViewCell {
   
     static let identifier = "ProfilePageOnlinePresenceCollectionViewCell"
     
-    @IBOutlet weak var linkOneLabel: UILabel!
-    @IBOutlet weak var linkTwoLabel: UILabel!
-    @IBOutlet weak var linkThreeLabel: UILabel!
+    @IBOutlet weak var linkLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,13 +21,9 @@ class ProfilePageOnlinePresenceCollectionViewCell: ProfilePageBaseCollectionView
         attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.primary, range: NSRange.init(location: 0, length: attributedString.length))
         attributedString.addAttribute(NSAttributedString.Key.font, value: Text.style5.font, range: NSRange.init(location: 0, length: attributedString.length))
         
-        linkOneLabel.attributedText = attributedString
-        linkTwoLabel.attributedText = attributedString
-        linkThreeLabel.attributedText = attributedString
+        linkLabel.attributedText = attributedString
 
-        linkOneLabel.text = "https://twitter.com/"
-        linkTwoLabel.text = "https://www.linkedin.com/"
-        linkThreeLabel.text = "https://www.instagram.com/"
+        linkLabel.text = "https://twitter.com/"
     }
 
     static func nib() -> UINib {

@@ -23,37 +23,17 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l45-nh-Kf6">
-                        <rect key="frame" x="20" y="36" width="394" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UBZ-Tb-UEe">
-                        <rect key="frame" x="20" y="62" width="394" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="V41-bD-Qr7" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="0fl-8o-h8c"/>
-                <constraint firstItem="l45-nh-Kf6" firstAttribute="top" secondItem="V41-bD-Qr7" secondAttribute="bottom" constant="5" id="3yA-sT-4QP"/>
-                <constraint firstItem="l45-nh-Kf6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="6X8-2C-qdC"/>
                 <constraint firstAttribute="trailing" secondItem="V41-bD-Qr7" secondAttribute="trailing" constant="20" id="AF0-NH-r6M"/>
-                <constraint firstItem="UBZ-Tb-UEe" firstAttribute="top" secondItem="l45-nh-Kf6" secondAttribute="bottom" constant="5" id="BZw-65-Xoq"/>
                 <constraint firstItem="V41-bD-Qr7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="eaL-AF-hmr"/>
-                <constraint firstAttribute="trailing" secondItem="UBZ-Tb-UEe" secondAttribute="trailing" constant="20" id="tc5-YC-XOz"/>
-                <constraint firstAttribute="trailing" secondItem="l45-nh-Kf6" secondAttribute="trailing" constant="20" id="yco-mI-kNl"/>
-                <constraint firstItem="UBZ-Tb-UEe" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="zQx-4E-OXw"/>
             </constraints>
             <size key="customSize" width="434" height="259"/>
             <connections>
-                <outlet property="linkOneLabel" destination="V41-bD-Qr7" id="dem-Lu-MPr"/>
-                <outlet property="linkThreeLabel" destination="UBZ-Tb-UEe" id="LoN-mL-fud"/>
-                <outlet property="linkTwoLabel" destination="l45-nh-Kf6" id="CBo-U6-e0d"/>
+                <outlet property="linkLabel" destination="V41-bD-Qr7" id="dem-Lu-MPr"/>
             </connections>
             <point key="canvasLocation" x="113" y="87"/>
         </collectionViewCell>

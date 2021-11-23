@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfilePageMenuCollectionViewCell: ProfilePageBaseCollectionViewCell {
+class ProfilePageMenuCollectionViewCell: UICollectionViewCell {
    
     static let identifier = "ProfilePageMenuCollectionViewCell"
     

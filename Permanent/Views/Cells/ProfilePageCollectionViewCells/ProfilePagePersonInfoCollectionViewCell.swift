@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfilePagePersonInfoCollectionViewCell: ProfilePageBaseCollectionViewCell {
+class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var fullNameTitleLabel: UILabel!
     @IBOutlet weak var fullNameLabel: UILabel!

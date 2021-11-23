@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfilePageMilestonesCollectionViewCell: ProfilePageBaseCollectionViewCell {
+class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "ProfilePageMilestonesCollectionViewCell"
     

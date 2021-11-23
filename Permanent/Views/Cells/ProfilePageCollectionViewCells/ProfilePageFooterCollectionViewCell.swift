@@ -18,8 +18,7 @@ class ProfilePageFooterCollectionViewCell: UICollectionReusableView {
         super.awakeFromNib()
         
         lineView.backgroundColor = .galleryGray
-        
-        readMoreButton.setTitle("Read More".localized(), for: .normal)
+
         readMoreButton.setAttributedTitle(NSAttributedString(string: "Read More".localized(), attributes: [.font: Text.style18.font, .foregroundColor: UIColor.darkGray]), for: .normal)
         readMoreButton.setAttributedTitle(NSAttributedString(string: "Read More".localized(), attributes: [.font: Text.style18.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
     }

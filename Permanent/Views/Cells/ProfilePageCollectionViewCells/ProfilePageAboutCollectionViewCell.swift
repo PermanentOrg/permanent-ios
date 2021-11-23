@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfilePageAboutCollectionViewCell: ProfilePageBaseCollectionViewCell {
+class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "ProfilePageAboutCollectionViewCell"
     

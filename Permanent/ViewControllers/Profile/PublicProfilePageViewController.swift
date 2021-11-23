@@ -7,9 +7,9 @@
 
 import UIKit
 
-class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
+class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     
-    var authData: AuthViewModel!
+    var archiveData: ArchiveVOData!
     
     enum CellType {
         case thumbnails
@@ -31,7 +31,7 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel = ProfilePageViewModel(authData: authData)
+        viewModel = PublicProfilePageViewModel(archiveData: archiveData)
         
         initUI()
         
@@ -113,7 +113,7 @@ class ProfilePageViewController: BaseViewController<ProfilePageViewModel> {
 }
 
 // MARK: - UICollectionViewDataSource
-extension ProfilePageViewController: UICollectionViewDataSource {
+extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
             return topSectionCells.count
@@ -127,7 +127,7 @@ extension ProfilePageViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var sectionCellType: [ProfilePageViewController.CellType] = []
+        var sectionCellType: [PublicProfilePageViewController.CellType] = []
         
         if indexPath.section == 0 {
             sectionCellType = topSectionCells
@@ -136,7 +136,7 @@ extension ProfilePageViewController: UICollectionViewDataSource {
         }
         
         let currentCellType = sectionCellType[indexPath.item]
-        let returnedCell: ProfilePageBaseCollectionViewCell
+        let returnedCell: UICollectionViewCell
         
         switch currentCellType {
             
@@ -181,7 +181,7 @@ extension ProfilePageViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        var sectionCellType: [ProfilePageViewController.CellType] = []
+        var sectionCellType: [PublicProfilePageViewController.CellType] = []
         
         if indexPath.section == 0 {
             sectionCellType = topSectionCells
@@ -190,7 +190,6 @@ extension ProfilePageViewController: UICollectionViewDataSource {
         }
         
         let currentCellType = sectionCellType[indexPath.item]
-        let returnedCell: ProfilePageBaseCollectionViewCell
         
         switch kind {
             
@@ -237,9 +236,9 @@ extension ProfilePageViewController: UICollectionViewDataSource {
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension ProfilePageViewController: UICollectionViewDelegateFlowLayout {
+extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var sectionCellType: [ProfilePageViewController.CellType] = []
+        var sectionCellType: [PublicProfilePageViewController.CellType] = []
         
         if indexPath.section == 0 {
             sectionCellType = topSectionCells

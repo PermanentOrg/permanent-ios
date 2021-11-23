@@ -240,10 +240,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .profilePage:
-            guard let authViewModel = viewModel else { return }
-            let newRootVS = UIViewController.create(withIdentifier: .profilePage, from: .profile) as! ProfilePageViewController
-            newRootVS.authData = authViewModel
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVS)
+            guard let archive = viewModel?.getCurrentArchive() else { return }
+            let newRootVC = UIViewController.create(withIdentifier: .profilePage, from: .profile) as! PublicProfilePageViewController
+            newRootVC.archiveData = archive
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
         default:
             return
         }
