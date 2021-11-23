@@ -24,7 +24,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         ],
         
         LeftDrawerSection.leftOthers: [
-            DrawerOption.members
+            DrawerOption.members,
+            DrawerOption.profilePage
         ]
     ]
     
@@ -238,6 +239,11 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .profilePage:
+            guard let archive = viewModel?.getCurrentArchive() else { return }
+            let newRootVC = UIViewController.create(withIdentifier: .profilePage, from: .profile) as! PublicProfilePageViewController
+            newRootVC.archiveData = archive
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
         default:
             return
         }

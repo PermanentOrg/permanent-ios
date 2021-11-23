@@ -19,6 +19,7 @@ enum StoryboardName: String {
     case invitations
     case settings
     case archives
+    case profile
     
     var name: String {
         return self.rawValue.capitalized
@@ -53,6 +54,7 @@ enum ViewControllerId: String {
     case tagDetails
     case archives
     case passwordUpdate
+    case profilePage
 
     var value: String {
         switch self {
@@ -92,6 +94,8 @@ enum ViewControllerId: String {
             return "WelcomePage"
         case .passwordUpdate:
             return "PasswordUpdate"
+        case .profilePage:
+            return "ProfilePage"
         default:
             return self.rawValue.capitalized
         }
