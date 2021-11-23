@@ -641,8 +641,14 @@ struct Payloads {
         ]
     }
     
-    static func searchFolderAndRecord(text: String) -> RequestParameters {
+    static func searchFolderAndRecord(text: String, tags: [TagVOData]) -> RequestParameters {
         guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+        
+        var tagVOs: Any = []
+        if let json = try? JSONEncoder().encode(tags),
+           let jsonDict = try? JSONSerialization.jsonObject(with: json, options: []) {
+            tagVOs = jsonDict
+        }
         
         return [ "RequestVO":
                     [
@@ -652,7 +658,7 @@ struct Payloads {
                                 "SearchVO": [
                                     "query": text,
                                     "numberOfResults": 10,
-                                    "TagVOs": []
+                                    "TagVOs": tagVOs
                                 ]
                             ]
                         ]

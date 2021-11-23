@@ -15,8 +15,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet var fabView: FABView!
-    @IBOutlet var searchBar: UISearchBar!
-    @IBOutlet weak var searchBarContainer: UIView!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
     
@@ -68,9 +66,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.refreshCurrentFolder()
             }
         }
-        
-        let searchTapGesture = UITapGestureRecognizer(target: self, action: #selector(searchBarTapped(_:)))
-        searchBarContainer.addGestureRecognizer(searchTapGesture)
     }
     
     override func viewDidLayoutSubviews() {
@@ -89,6 +84,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.title = .myFiles
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = .white
+
+        if let rightBarItem = navigationItem.rightBarButtonItem {
+            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
+            navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
+        }
         
         styleNavBar()
         
@@ -96,8 +96,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
-        
-        searchBar.setDefaultStyle(placeholder: .searchFiles)
         
         fileActionBottomView.isHidden = true
         
@@ -300,7 +298,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
-    @objc func searchBarTapped(_ sender: Any) {
+    @objc func searchButtonPressed(_ sender: Any) {
         guard let searchVC = UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController else {
             return
         }

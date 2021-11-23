@@ -8,7 +8,7 @@
 import Foundation
 
 enum SearchEndpoint {
-    case folderAndRecord(text: String)
+    case folderAndRecord(text: String, tagVOs: [TagVOData])
 }
 
 extension SearchEndpoint: RequestProtocol {
@@ -39,8 +39,8 @@ extension SearchEndpoint: RequestProtocol {
     
     var parameters: RequestParameters? {
         switch self {
-        case .folderAndRecord(let text):
-            return Payloads.searchFolderAndRecord(text: text)
+        case .folderAndRecord(let text, let tags):
+            return Payloads.searchFolderAndRecord(text: text, tags: tags)
         }
     }
     

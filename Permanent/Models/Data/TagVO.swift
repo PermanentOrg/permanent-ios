@@ -16,7 +16,6 @@ struct TagVO: Model {
 }
 
 struct TagVOData: Model {
-    
     var name: String?
     let status: String?
     let tagId: Int?

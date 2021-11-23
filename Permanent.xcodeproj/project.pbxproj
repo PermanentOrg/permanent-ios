@@ -343,6 +343,7 @@
 		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
 		F5C8D247273204CA00707301 /* SearchVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D246273204CA00707301 /* SearchVO.swift */; };
 		F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D248273205B000707301 /* SearchEndpoint.swift */; };
+		F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */; };
 		F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA412670D16F0027D97A /* BaseOperation.swift */; };
 		F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA432670D1940027D97A /* UploadOperation.swift */; };
 		F5EC701E270F21BE0052E53D /* FileCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC701D270F21BE0052E53D /* FileCollectionViewHeader.swift */; };
@@ -736,6 +737,7 @@
 		F5B3F13226668CAF0040E5C4 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		F5C8D246273204CA00707301 /* SearchVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVO.swift; sourceTree = "<group>"; };
 		F5C8D248273205B000707301 /* SearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEndpoint.swift; sourceTree = "<group>"; };
+		F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSearchTagsCollectionViewCell.swift; sourceTree = "<group>"; };
 		F5E4BA412670D16F0027D97A /* BaseOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOperation.swift; sourceTree = "<group>"; };
 		F5E4BA432670D1940027D97A /* UploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOperation.swift; sourceTree = "<group>"; };
 		F5EC701D270F21BE0052E53D /* FileCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -1455,6 +1457,7 @@
 				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
 				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
 				F5616188270E49250038D29E /* FileCollectionViewCell.swift */,
+				F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */,
 				F5EC701D270F21BE0052E53D /* FileCollectionViewHeader.swift */,
 			);
 			path = Cells;
@@ -2098,6 +2101,7 @@
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
+				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,

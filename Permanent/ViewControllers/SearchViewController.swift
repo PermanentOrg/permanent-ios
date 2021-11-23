@@ -8,12 +8,13 @@
 import UIKit
 
 class SearchViewController: BaseViewController<SearchFilesViewModel> {
-    @IBOutlet var directoryLabel: UILabel!
-    @IBOutlet var backButton: UIButton!
+    @IBOutlet weak var directoryLabel: UILabel!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var folderNavigationStackView: UIStackView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet var searchBar: UISearchBar!
-    @IBOutlet var fileActionBottomView: BottomActionSheet!
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var switchViewButton: UIButton!
+    @IBOutlet weak var collectionViewTopConstraint: NSLayoutConstraint!
     
     private var isGridView = false
     
@@ -32,6 +33,11 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         setupCollectionView()
         
         searchBar.delegate = self
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("SearchFilesViewModel.didSearch"), object: viewModel, queue: nil) { notification in
+            self.searchBar.text = ""
+            self.refreshCollectionView()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -65,9 +71,11 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         backButton.tintColor = .primary
         backButton.isHidden = true
         
-        searchBar.setDefaultStyle(placeholder: .searchFiles)
+        switchViewButton.isHidden = true
+        folderNavigationStackView.isHidden = true
+        collectionViewTopConstraint.constant = 0
         
-        fileActionBottomView.isHidden = true
+        searchBar.setDefaultStyle(placeholder: .searchFiles)
         
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
@@ -101,6 +109,8 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         
         refreshControl.tintColor = .primary
         refreshControl.addTarget(self, action: #selector(pullToRefreshAction), for: .valueChanged)
+        
+        handleTableBackgroundView()
     }
     
     func refreshCollectionView() {
@@ -110,8 +120,9 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
-            collectionView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
-                                                       image: .emptyFolder)
+            let backgroundView = EmptyFolderView(title: "Enter search terms to match tags and titles.\nSearch results will appear here.", image: .emptySearch)
+            backgroundView.frame = collectionView.bounds
+            collectionView.backgroundView = backgroundView
             return
         }
 
@@ -170,42 +181,8 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         )
     }
     
-    private func handleProgress(withValue value: Float, listSection section: FileListType) {
-        let indexPath = IndexPath(row: 0, section: section.rawValue)
-        
-        guard let uploadingCell = collectionView.cellForItem(at: indexPath) as? FileCollectionViewCell else {
-            return
-        }
-
-        uploadingCell.updateProgress(withValue: value)
-    }
-    
-    @objc
-    private func removeFromQueue(atPosition position: Int) {
-        viewModel?.removeFromQueue(position)
-    }
-    
     @objc
     private func headerButtonAction(_ sender: UIButton) {
-    }
-    
-    @objc
-    private func cancelAllUploadsAction(_ sender: UIButton) {
-        let title = "Cancel all uploads".localized()
-        let description = "Are you sure you want to cancel all uploads?".localized()
-        
-        self.showActionDialog(styled: .simpleWithDescription,
-                              withTitle: title,
-                              description: description,
-                              positiveButtonTitle: .cancelAll,
-                              positiveAction: {
-                                self.actionDialog?.dismiss()
-                                self.viewModel?.cancelUploadsInFolder()
-                              },
-                              cancelButtonTitle: "No".localized(),
-                              positiveButtonColor: .brightRed,
-                              cancelButtonColor: .primary,
-                              overlayView: self.overlayView)
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
@@ -274,19 +251,29 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
             return UICollectionViewCell()
         }
         
-        let reuseIdentifier: String
-        if indexPath.section == FileListType.synced.rawValue {
-            reuseIdentifier = isGridView ? "FileGridCell" : "FileCell"
-        } else {
-            reuseIdentifier = "FileCell"
-        }
-
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
-        let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: true)
+        let cell: UICollectionViewCell
         
-        cell.rightButtonTapAction = { _ in
-            self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+        let reuseIdentifier: String
+        if indexPath.section == 1 {
+            reuseIdentifier = isGridView ? "FileGridCell" : "FileCell"
+            
+            let newCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
+            let file = viewModel.fileForRowAt(indexPath: indexPath)
+            newCell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: true)
+            
+            newCell.rightButtonTapAction = { _ in
+                self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
+            }
+            
+            cell = newCell
+        } else {
+            reuseIdentifier = "SearchTagsCell"
+            
+            let newCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileSearchTagsCollectionViewCell
+            
+            newCell.configure(withViewModel: viewModel)
+            
+            cell = newCell
         }
         
         return cell
@@ -345,8 +332,6 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
             }
             
             if viewModel?.hasCancelButton(forSection: section) == true {
-                headerView.rightButtonTitle = "Cancel All".localized()
-                headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
                 headerView.rightButtonTitle = nil
                 headerView.rightButtonAction = nil
@@ -359,7 +344,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
+        let height: CGFloat = viewModel?.heightForSection(section) ?? 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
     }
     

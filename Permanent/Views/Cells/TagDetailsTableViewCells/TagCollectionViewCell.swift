@@ -29,7 +29,7 @@ class TagCollectionViewCell: UICollectionViewCell {
       
     func configure(name: String, isChecked: Bool = false, font: UIFont = Text.style2.font, fontColor: UIColor = .black, cornerRadius: CGFloat = 10.0, backgroundColor: UIColor = .white) {
         checkMarkImage.isHidden = !isChecked
-        checkMarkImage.tintColor = .black
+        checkMarkImage.tintColor = fontColor
         
         tagBackgroundView.backgroundColor = backgroundColor
         tagBackgroundView.tintColor = .white
