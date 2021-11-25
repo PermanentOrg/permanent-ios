@@ -36,6 +36,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initUI()
         
         initCollectionView()
+        
+        getAllByArchiveNbr(archiveData)
     }
     
     func initUI() {
@@ -109,6 +111,24 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                 }
             }
         }
+    }
+    
+    func getAllByArchiveNbr(_ archive: ArchiveVOData) {
+        showSpinner()
+        
+        viewModel?.getAllByArchiveNbr(archive, { [self] profileItemVO, error in
+            hideSpinner()
+            
+            if let profileItemVOs = profileItemVO {
+                
+                collectionView.performBatchUpdates {
+                    collectionView.reloadSections([1])
+                }
+                
+            } else {
+                showAlert(title: .error, message: .errorMessage)
+            }
+        })
     }
 }
 

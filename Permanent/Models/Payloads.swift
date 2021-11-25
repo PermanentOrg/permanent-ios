@@ -640,4 +640,39 @@ struct Payloads {
                     ]
         ]
     }
+    
+    static func getAllByArchiveNbr(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+        
+        return [
+            "RequestVO":
+                [
+                    "csrf": csrf,
+                    "data": [
+                        [
+                            "Profile_itemVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func safeAddUpdate(profileItemVO: ProfileItemVOData) -> RequestParameters {
+        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+        
+        return [
+            "RequestVO":
+                [
+                    "csrf": csrf,
+                    "data": [
+                        [
+                            "Profile_itemVO": profileItemVO
+                        ]
+                    ]
+                ]
+        ]
+    }
 }
