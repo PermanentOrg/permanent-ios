@@ -23,7 +23,7 @@
 "Email" = "Email";
 "EmailAlreadyUsed" = "This email is already in use.";
 "EmailSent" = "An email with instructions to change your password has been sent at %@.";
-"EnterCode" = "Enter the 4-digit code";
+"EnterCode" = "Enter the verification code";
 "EnterEmail" = "Enter your email here";
 "EnterVerificationCode" = "Enter verification code";
 "Error" = "Error";

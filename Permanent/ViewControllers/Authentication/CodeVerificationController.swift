@@ -92,13 +92,6 @@ extension CodeVerificationController: UITextFieldDelegate {
         (textField as? TextField)?.toggleBorder(active: false)
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard let text = textField.text else { return true }
-        let newLength = text.count + string.count - range.length
-        
-        return newLength <= 4 // TODO: Make a property in TextField for this value
-    }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         scrollView.setContentOffset(.zero, animated: true)
