@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -13,11 +15,11 @@
             <objects>
                 <viewController storyboardIdentifier="ProfilePage" id="Y6W-OH-hqX" customClass="PublicProfilePageViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="dhj-rr-UZE">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ccU-Qj-THn">
                                     <size key="itemSize" width="128" height="128"/>
@@ -36,11 +38,11 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="ChJ-0h-h3m">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </collectionReusableView>
                                 <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="xpn-Qu-HPx">
-                                    <rect key="frame" x="0.0" y="178" width="600" height="50"/>
+                                    <rect key="frame" x="0.0" y="178" width="414" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </collectionReusableView>
                                 <connections>
@@ -58,6 +60,7 @@
                             <constraint firstItem="dhj-rr-UZE" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="SnJ-nJ-5tl"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="collectionView" destination="dhj-rr-UZE" id="srt-7f-zv5"/>
                     </connections>
@@ -66,8 +69,81 @@
             </objects>
             <point key="canvasLocation" x="-419" y="110"/>
         </scene>
+        <!--Public Profile About Page View Controller-->
+        <scene sceneID="5PD-M4-56f">
+            <objects>
+                <viewController storyboardIdentifier="AboutPage" id="7MW-Tg-dqg" customClass="PublicProfileAboutPageViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="jFm-40-tXz">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g8Q-1C-w6c">
+                                <rect key="frame" x="20" y="64" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dGk-LD-ovb">
+                                <rect key="frame" x="20" y="95" width="374" height="40"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="ZCq-ep-VXl"/>
+                                </constraints>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lum-ya-iBb">
+                                <rect key="frame" x="20" y="155" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="l6p-f4-q2c">
+                                <rect key="frame" x="20" y="196" width="374" height="250"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="250" id="U90-sd-Tro"/>
+                                </constraints>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="if5-IC-3YF"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="g8Q-1C-w6c" firstAttribute="top" secondItem="if5-IC-3YF" secondAttribute="top" constant="20" id="C4c-zZ-Mrb"/>
+                            <constraint firstItem="l6p-f4-q2c" firstAttribute="top" secondItem="lum-ya-iBb" secondAttribute="bottom" constant="20" id="CAj-DJ-6Gu"/>
+                            <constraint firstItem="lum-ya-iBb" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="LCo-fV-MM5"/>
+                            <constraint firstItem="dGk-LD-ovb" firstAttribute="top" secondItem="g8Q-1C-w6c" secondAttribute="bottom" constant="10" id="OPP-B9-4Hu"/>
+                            <constraint firstItem="dGk-LD-ovb" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="bWM-FO-hh2"/>
+                            <constraint firstItem="g8Q-1C-w6c" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="cWv-g0-B3I"/>
+                            <constraint firstItem="lum-ya-iBb" firstAttribute="top" secondItem="dGk-LD-ovb" secondAttribute="bottom" constant="20" id="gM5-v3-lRV"/>
+                            <constraint firstItem="l6p-f4-q2c" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="i5s-q3-Rlu"/>
+                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="dGk-LD-ovb" secondAttribute="trailing" constant="20" id="jeV-bu-Rka"/>
+                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="l6p-f4-q2c" secondAttribute="trailing" constant="20" id="uKB-pa-KVu"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <connections>
+                        <outlet property="longAboutDescriptionTextView" destination="l6p-f4-q2c" id="i60-zi-J5t"/>
+                        <outlet property="longAboutDescriptionTitleLabel" destination="lum-ya-iBb" id="exA-rH-1Ns"/>
+                        <outlet property="shortAboutDescriptionTextView" destination="dGk-LD-ovb" id="NIL-IJ-sjD"/>
+                        <outlet property="shortAboutDescriptionTitleLabel" destination="g8Q-1C-w6c" id="FcV-Cb-6f5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KjP-St-fmo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="664" y="110"/>
+        </scene>
     </scenes>
     <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

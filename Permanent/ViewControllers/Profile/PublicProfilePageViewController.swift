@@ -10,6 +10,11 @@ import UIKit
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     
     var archiveData: ArchiveVOData!
+    var profileData: [ProfileItemVO] = []
+    var archiveType: ArchiveType?
+    
+    var longDescription: String?
+    var shortDescription: String?
     
     enum CellType {
         case thumbnails
@@ -25,6 +30,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     var bottomSectionCells: [CellType] = [.archiveGallery]
     var numberOfBottomSections: Int = 1
     var currentSegmentValue: Int = 0
+    var editAction: ButtonAction?
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -33,11 +39,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
 
         viewModel = PublicProfilePageViewModel(archiveData: archiveData)
         
+        getAllByArchiveNbr(archiveData)
+        
         initUI()
         
         initCollectionView()
-        
-        getAllByArchiveNbr(archiveData)
     }
     
     func initUI() {
@@ -121,12 +127,17 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             
             if let profileItemVOs = profileItemVO {
                 
+                self.profileData = profileItemVOs
+                
                 collectionView.performBatchUpdates {
                     collectionView.reloadSections([1])
                 }
                 
             } else {
                 showAlert(title: .error, message: .errorMessage)
+            }
+            if let archiveType = self.archiveData.type {
+                self.archiveType = ArchiveType(rawValue: archiveType)
             }
         })
     }
@@ -178,7 +189,15 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             
         case .about:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            
+            for profile in profileData {
+                if profile.profileItemVO?.fieldNameUI == "profile.blurb" {
+                    shortDescription = profile.profileItemVO?.string1
+                }else if profile.profileItemVO?.fieldNameUI == "profile.description" {
+                    longDescription = profile.profileItemVO?.textData1
+                }
+            }
+            cell.configure(shortDescription, longDescription)
+        
             returnedCell = cell
             
         case .personalInformation:
@@ -220,6 +239,20 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
             case .about:
                 headerCell.configure(titleLabel: "About", buttonText: "Edit")
+                
+                headerCell.buttonAction = { [weak self] in
+                    
+                    let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
+                    
+                    profileAboutVC.archiveType = self?.archiveType
+                    profileAboutVC.shortDescription = self?.shortDescription
+                    profileAboutVC.longDescription = self?.longDescription
+                    
+                    let navigationVC = NavigationController(rootViewController: profileAboutVC)
+                    navigationVC.modalPresentationStyle = .fullScreen
+                    self?.present(navigationVC, animated: true)
+                }
+                
             case .personalInformation:
                 headerCell.configure(titleLabel: "Personal Information", buttonText: "", buttonIsHidden: true)
             case .onlinePresence:
