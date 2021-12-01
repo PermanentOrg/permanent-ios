@@ -13,6 +13,7 @@ extension UIColor {
     static var lightBlue = UIColor(red: 29/255, green: 75/255, blue: 178/255, alpha: 1)
     static var blueGray = UIColor(red: 70/255, green: 80/255, blue: 132/255, alpha: 1)
     static var barneyPurple = UIColor(red: 128/255, green: 0/255, blue: 128/255, alpha: 1)
+    static var lightPurple = UIColor(red: 231/255, green: 212/255, blue: 231/255, alpha: 1)
     static var deepRed = UIColor(red: 161/255, green: 0/255, blue: 0/255, alpha: 1)
     static var tangerine = UIColor(red: 255/255, green: 153/255, blue: 51/255, alpha: 1)
     static var dotGreen = UIColor(red: 27/255, green: 201/255, blue: 23/255, alpha: 1)

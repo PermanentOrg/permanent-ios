@@ -15,7 +15,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var backButton: UIButton!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet var fabView: FABView!
-    @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
     
@@ -26,7 +25,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private let screenLockManager = ScreenLockManager()
 
     private var sortActionSheet: SortActionSheet?
-    private var isSearchActive: Bool = false
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
     let fileHelper = FileHelper()
@@ -42,7 +40,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         setupBottomActionSheet()
         
         fabView.delegate = self
-        searchBar.delegate = self
         
         getRootFolder()
         
@@ -87,6 +84,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.title = .myFiles
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = .white
+
+        if let rightBarItem = navigationItem.rightBarButtonItem {
+            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
+            navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
+        }
         
         styleNavBar()
         
@@ -94,8 +96,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true
-        
-        searchBar.setDefaultStyle(placeholder: .searchFiles)
         
         fileActionBottomView.isHidden = true
         
@@ -139,17 +139,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         collectionView.backgroundView = nil
-    }
-    
-    func invalidateSearchBarIfNeeded() {
-        guard viewModel?.isSearchActive == true else {
-            return
-        }
-        
-        searchBar.text = ""
-        viewModel?.isSearchActive = false
-        viewModel?.searchViewModels.removeAll()
-        view.endEditing(true)
     }
     
     fileprivate func setupBottomActionSheet() {
@@ -206,7 +195,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             return
         }
         
-        invalidateSearchBarIfNeeded()
         let navigateParams: NavigateMinParams = (destinationFolder.archiveNo, destinationFolder.folderLinkId, nil)
         navigateToFolder(withParams: navigateParams, backNavigation: true, then: {
             self.directoryLabel.text = destinationFolder.name
@@ -308,6 +296,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         flowLayout.estimatedItemSize = .zero
         collectionView.collectionViewLayout = flowLayout
         collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    @objc func searchButtonPressed(_ sender: Any) {
+        guard let searchVC = UIViewController.create(withIdentifier: .search, from: .main) as? SearchViewController else {
+            return
+        }
+        
+        let navController = NavigationController(rootViewController: searchVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: false)
     }
     
     // MARK: - Network Related
@@ -535,7 +533,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -565,7 +563,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         if file.type.isFolder {
-            invalidateSearchBarIfNeeded()
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
             navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                 self.backButton.isHidden = false
@@ -708,23 +705,6 @@ extension MainViewController {
 
             return
         }
-    }
-}
-
-extension MainViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        view.endEditing(true)
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            viewModel?.isSearchActive = false
-        } else {
-            viewModel?.isSearchActive = true
-            viewModel?.searchFiles(byQuery: searchText)
-        }
-        
-        refreshCollectionView()
     }
 }
 
