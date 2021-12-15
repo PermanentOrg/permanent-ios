@@ -17,8 +17,8 @@ enum FieldNameUI: String, CaseIterable {
     
     var fieldToInsertString: String {
         switch self {
-        case .archiveName, .shortDescription, .longDescription, .emailAddress, .profileGender: return "string1"
-
+        case .archiveName, .shortDescription, .emailAddress, .profileGender: return "string1"
+        case .longDescription: return "textData1"
         }
     }
 
