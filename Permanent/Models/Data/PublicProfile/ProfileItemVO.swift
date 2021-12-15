@@ -92,10 +92,13 @@ struct ProfileItemVOData: Model {
         guard let fieldName = fieldNameUI else { return nil }
 
         switch fieldName {
-        case FieldNameUI.shortDescription.rawValue, FieldNameUI.longDescription.rawValue:
+        case FieldNameUI.shortDescription.rawValue :
             guard let string = string1 else { return nil }
             returnedValue = string
-            
+        
+        case FieldNameUI.longDescription.rawValue :
+            guard let string = textData1 else { return nil }
+            returnedValue = string
         default:
             returnedValue = nil
         }
