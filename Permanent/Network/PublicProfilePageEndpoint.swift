@@ -9,7 +9,9 @@ import Foundation
 
 enum PublicProfileEndpoint {
     case getAllByArchiveNbr(archiveId: Int, archiveNbr: String)
-    case safeAddUpdate(profileItemVO: ProfileItemVOData)
+    case safeAddUpdate(profileItemVOData: ProfileItemVOData)
+    case deleteProfileItem(profileItemVOData: ProfileItemVOData)
+    
 }
 
 extension PublicProfileEndpoint: RequestProtocol {
@@ -20,6 +22,9 @@ extension PublicProfileEndpoint: RequestProtocol {
             
         case .safeAddUpdate:
             return "/profile_item/safeAddUpdate"
+            
+        case .deleteProfileItem:
+            return "/profile_item/delete"
         }
     }
     
@@ -46,8 +51,11 @@ extension PublicProfileEndpoint: RequestProtocol {
         case .getAllByArchiveNbr(let archiveId,let archiveNbr):
             return Payloads.getAllByArchiveNbr(archiveId: archiveId, archiveNbr: archiveNbr)
             
-        case .safeAddUpdate(let profileItemVO):
-            return Payloads.safeAddUpdate(profileItemVO: profileItemVO)
+        case .safeAddUpdate(let profileItemVOData):
+            return Payloads.safeAddUpdate(profileItemVOData: profileItemVOData)
+            
+        case .deleteProfileItem(let profileItemVOData):
+            return Payloads.safeAddUpdate(profileItemVOData: profileItemVOData)
         }
     }
     

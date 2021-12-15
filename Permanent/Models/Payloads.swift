@@ -660,7 +660,16 @@ struct Payloads {
         ]
     }
     
-    static func safeAddUpdate(profileItemVO: ProfileItemVOData) -> RequestParameters {
+    static func safeAddUpdate(profileItemVOData: ProfileItemVOData) -> RequestParameters {
+        
+        let profileDict: Any?
+        if let profileJson = try? JSONEncoder().encode(profileItemVOData) {
+            profileDict = try? JSONSerialization.jsonObject(with: profileJson, options: [])
+        } else {
+            profileDict = nil
+        }
+        
+        
         guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
         
         return [
@@ -669,7 +678,7 @@ struct Payloads {
                     "csrf": csrf,
                     "data": [
                         [
-                            "Profile_itemVO": profileItemVO
+                            "Profile_itemVO": profileDict
                         ]
                     ]
                 ]

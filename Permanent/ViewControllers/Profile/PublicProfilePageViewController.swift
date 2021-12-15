@@ -26,11 +26,15 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         case milestones
     }
     
+    var readMoreIsEnabled: [CellType : Bool] = [:]
+    
     let topSectionCells: [CellType] = [.thumbnails, .segmentedControl]
     var bottomSectionCells: [CellType] = [.archiveGallery]
     var numberOfBottomSections: Int = 1
     var currentSegmentValue: Int = 0
+    
     var editAction: ButtonAction?
+    var readMoreAction: ButtonAction?
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -43,7 +47,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         
         initUI()
         
+        initButtonStates()
+        
         initCollectionView()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onDataIsUpdated(_:)), name: .publicProfilePageAboutUpdate, object: nil)
     }
     
     func initUI() {
@@ -56,6 +64,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     func initCollectionView() {
         let layout = UICollectionViewFlowLayout()
+        layout.estimatedItemSize = .zero
         layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
 
         collectionView.collectionViewLayout = layout
@@ -82,6 +91,18 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         super.viewWillDisappear(animated)
         
         view.endEditing(true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        initButtonStates()
+        
+        super.viewDidAppear(true)
+        
+        collectionView.reloadSections([1])
+    }
+    
+    func initButtonStates() {
+        readMoreIsEnabled[.about] = false
     }
     
     private func segmentedControlChangedAction() -> ((ProfilePageMenuCollectionViewCell) -> Void) {
@@ -141,6 +162,21 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             }
         })
     }
+    
+    @objc func onDataIsUpdated(_ notification: Notification) {
+        getAllByArchiveNbr(archiveData)
+    }
+    
+    func heightForCell(text:String, font:UIFont, width:CGFloat) -> CGFloat {
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
+         label.numberOfLines = 0
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
+         label.font = font
+         label.text = text
+         label.sizeToFit()
+
+         return label.frame.height
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -189,14 +225,43 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             
         case .about:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            for profile in profileData {
-                if profile.profileItemVO?.fieldNameUI == "profile.blurb" {
-                    shortDescription = profile.profileItemVO?.string1
-                }else if profile.profileItemVO?.fieldNameUI == "profile.description" {
-                    longDescription = profile.profileItemVO?.textData1
-                }
+            
+            var shortDescriptionValue = "", longDescriptionValue = ""
+            
+            if let shortDescriptionText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
+            }).first?.profileItemVO?.toBackendString() {
+                shortDescriptionValue = shortDescriptionText
+                shortDescription = shortDescriptionText
+            } else {
+                shortDescriptionValue = "Add a short description about the purpose of this Archive".localized()
+                shortDescription = nil
             }
-            cell.configure(shortDescription, longDescription)
+            
+            var longArchiveEmptyDescription = ""
+            
+            switch archiveType {
+            case .person:
+                longArchiveEmptyDescription = "Tell the story of the Person this Archive is for".localized()
+            case .family:
+                longArchiveEmptyDescription = "Tell the story of the Family this Archive is for".localized()
+            case .organization:
+                longArchiveEmptyDescription = "Tell the story of the Organization this Archive is for".localized()
+            default:
+                longArchiveEmptyDescription = ""
+            }
+            
+            if let longDescriptionText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
+            }).first?.profileItemVO?.toBackendString() {
+                longDescriptionValue = longDescriptionText
+                longDescription = longDescriptionText
+            } else {
+                longDescriptionValue = longArchiveEmptyDescription
+                longDescription = nil
+            }
+            
+            cell.configure(shortDescriptionValue, longDescriptionValue)
         
             returnedCell = cell
             
@@ -244,9 +309,20 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                     
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
                     
+                    let shortAboutProfileData: Int? = self?.profileData.filter { element in
+                        element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
+                    }.first?.profileItemVO?.profileItemId
+                    
+                    let longAboutProfileData: Int? = self?.profileData.filter { element in
+                        element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
+                    }.first?.profileItemVO?.profileItemId
+                    
                     profileAboutVC.archiveType = self?.archiveType
                     profileAboutVC.shortDescription = self?.shortDescription
                     profileAboutVC.longDescription = self?.longDescription
+                    profileAboutVC.viewModel = self?.viewModel
+                    profileAboutVC.shortAboutProfileItemId = shortAboutProfileData
+                    profileAboutVC.longAboutProfileItemId = longAboutProfileData
                     
                     let navigationVC = NavigationController(rootViewController: profileAboutVC)
                     navigationVC.modalPresentationStyle = .fullScreen
@@ -274,7 +350,15 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             case .milestones:
                 footerCell.configure(isReadMoreButtonHidden: true)
             case .about:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
+                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: self.readMoreIsEnabled[.about] ?? false)
+                
+                footerCell.readMoreButtonAction = { [weak self] in
+                    if let readMoreForAbout = self?.readMoreIsEnabled[.about] {
+                        self?.readMoreIsEnabled[.about] = !readMoreForAbout
+                        footerCell.readMoreIsEnabled = !readMoreForAbout
+                        collectionView.reloadSections([1])
+                    }
+                }
             case .onlinePresence:
                 footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
             default:
@@ -307,7 +391,21 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .about:
-            return CGSize(width: UIScreen.main.bounds.width, height: 110)
+            let shortDescription = profileData.filter { element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
+            }.first?.profileItemVO?.toBackendString() ?? "Add a short description about the purpose of this Archive".localized()
+            
+            let longDescription = profileData.filter { element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
+            }.first?.profileItemVO?.toBackendString() ?? "Tell the story of the Person this Archive is for".localized()
+            
+            var descriptionText = shortDescription
+            
+            if readMoreIsEnabled[.about] ?? false {
+                descriptionText.append(contentsOf: "\n\n\(longDescription)")
+            }
+            let cellHeight = heightForCell(text: descriptionText, font: Text.style8.font, width: view.frame.width - 40) + 20
+            return CGSize(width: UIScreen.main.bounds.width, height: cellHeight)
         case .personalInformation:
             return CGSize(width: UIScreen.main.bounds.width, height: 170)
         case .onlinePresence:

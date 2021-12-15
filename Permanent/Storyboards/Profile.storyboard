@@ -83,56 +83,73 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dGk-LD-ovb">
-                                <rect key="frame" x="20" y="95" width="374" height="40"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="ZCq-ep-VXl"/>
-                                </constraints>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="g94-ye-7Z9">
+                                <rect key="frame" x="20" y="95" width="374" height="34"/>
+                                <nil key="textColor"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lum-ya-iBb">
-                                <rect key="frame" x="20" y="155" width="42" height="21"/>
+                                <rect key="frame" x="20" y="149" width="42" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="l6p-f4-q2c">
-                                <rect key="frame" x="20" y="196" width="374" height="250"/>
+                                <rect key="frame" x="20" y="180" width="374" height="250"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="250" id="U90-sd-Tro"/>
                                 </constraints>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8dv-Ut-6xC">
+                                <rect key="frame" x="24" y="95" width="368" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PII-UI-CPm">
+                                <rect key="frame" x="24" y="180" width="368" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="vYz-KZ-18l"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="if5-IC-3YF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="8dv-Ut-6xC" secondAttribute="trailing" constant="22" id="7bc-np-TBm"/>
+                            <constraint firstItem="g94-ye-7Z9" firstAttribute="top" secondItem="g8Q-1C-w6c" secondAttribute="bottom" constant="10" id="Bec-1I-0qI"/>
                             <constraint firstItem="g8Q-1C-w6c" firstAttribute="top" secondItem="if5-IC-3YF" secondAttribute="top" constant="20" id="C4c-zZ-Mrb"/>
-                            <constraint firstItem="l6p-f4-q2c" firstAttribute="top" secondItem="lum-ya-iBb" secondAttribute="bottom" constant="20" id="CAj-DJ-6Gu"/>
+                            <constraint firstItem="l6p-f4-q2c" firstAttribute="top" secondItem="lum-ya-iBb" secondAttribute="bottom" constant="10" id="CAj-DJ-6Gu"/>
                             <constraint firstItem="lum-ya-iBb" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="LCo-fV-MM5"/>
-                            <constraint firstItem="dGk-LD-ovb" firstAttribute="top" secondItem="g8Q-1C-w6c" secondAttribute="bottom" constant="10" id="OPP-B9-4Hu"/>
-                            <constraint firstItem="dGk-LD-ovb" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="bWM-FO-hh2"/>
+                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="g94-ye-7Z9" secondAttribute="trailing" constant="20" id="Lu0-Hh-Gfi"/>
+                            <constraint firstItem="lum-ya-iBb" firstAttribute="top" secondItem="g94-ye-7Z9" secondAttribute="bottom" constant="20" id="QNm-cM-3l5"/>
+                            <constraint firstItem="PII-UI-CPm" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="24" id="Y7D-50-R38"/>
                             <constraint firstItem="g8Q-1C-w6c" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="cWv-g0-B3I"/>
-                            <constraint firstItem="lum-ya-iBb" firstAttribute="top" secondItem="dGk-LD-ovb" secondAttribute="bottom" constant="20" id="gM5-v3-lRV"/>
+                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="PII-UI-CPm" secondAttribute="trailing" constant="22" id="glM-V7-SSH"/>
                             <constraint firstItem="l6p-f4-q2c" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="i5s-q3-Rlu"/>
-                            <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="dGk-LD-ovb" secondAttribute="trailing" constant="20" id="jeV-bu-Rka"/>
+                            <constraint firstItem="PII-UI-CPm" firstAttribute="top" secondItem="l6p-f4-q2c" secondAttribute="top" id="o24-i9-1q8"/>
                             <constraint firstItem="if5-IC-3YF" firstAttribute="trailing" secondItem="l6p-f4-q2c" secondAttribute="trailing" constant="20" id="uKB-pa-KVu"/>
+                            <constraint firstItem="g94-ye-7Z9" firstAttribute="bottom" secondItem="8dv-Ut-6xC" secondAttribute="bottom" id="uup-4o-gwv"/>
+                            <constraint firstItem="g94-ye-7Z9" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="20" id="wlQ-xh-rK2"/>
+                            <constraint firstItem="8dv-Ut-6xC" firstAttribute="top" secondItem="g94-ye-7Z9" secondAttribute="top" id="z4n-2B-B9x"/>
+                            <constraint firstItem="8dv-Ut-6xC" firstAttribute="leading" secondItem="if5-IC-3YF" secondAttribute="leading" constant="24" id="zBg-xa-nIM"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="longAboutDescriptionTextView" destination="l6p-f4-q2c" id="i60-zi-J5t"/>
                         <outlet property="longAboutDescriptionTitleLabel" destination="lum-ya-iBb" id="exA-rH-1Ns"/>
-                        <outlet property="shortAboutDescriptionTextView" destination="dGk-LD-ovb" id="NIL-IJ-sjD"/>
+                        <outlet property="longDescriptionEmptyLabel" destination="PII-UI-CPm" id="Pur-6a-6eZ"/>
+                        <outlet property="shortAboutDescriptionTextField" destination="g94-ye-7Z9" id="EOC-jd-AU5"/>
                         <outlet property="shortAboutDescriptionTitleLabel" destination="g8Q-1C-w6c" id="FcV-Cb-6f5"/>
+                        <outlet property="shortDescriptionEmptyLabel" destination="8dv-Ut-6xC" id="f1k-qv-st2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KjP-St-fmo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

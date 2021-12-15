@@ -39,6 +39,7 @@ struct ProfileItemVOData: Model {
     let recordArchiveNbr: Int?
     let folderArchiveNbr: Int?
     let isVisible: Bool?
+    let isPendingAction: Bool?
     let publicDT: String?
     let status: String?
     let type: String?
@@ -74,6 +75,7 @@ struct ProfileItemVOData: Model {
         case recordArchiveNbr
         case folderArchiveNbr
         case isVisible
+        case isPendingAction
         case publicDT
         case status
         case type
@@ -82,5 +84,21 @@ struct ProfileItemVOData: Model {
         case textData2
         case archiveNbr
         case createdDT, updatedDT
+    }
+    
+    func toBackendString() -> String? {
+        var returnedValue: String?
+        
+        guard let fieldName = fieldNameUI else { return nil }
+
+        switch fieldName {
+        case FieldNameUI.shortDescription.rawValue, FieldNameUI.longDescription.rawValue:
+            guard let string = string1 else { return nil }
+            returnedValue = string
+            
+        default:
+            returnedValue = nil
+        }
+        return returnedValue
     }
 }

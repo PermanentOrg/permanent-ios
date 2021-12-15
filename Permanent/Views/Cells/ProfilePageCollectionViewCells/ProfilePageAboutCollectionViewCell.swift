@@ -11,16 +11,14 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "ProfilePageAboutCollectionViewCell"
     
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var contentLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         contentLabel.text = ""
-        contentLabel.textColor = .darkGray
-        contentLabel.font = Text.style12.font
+        contentLabel.textColor = .middleGray
+        contentLabel.font = Text.style8.font
     }
     
     func configure(_ shortDescription: String?, _ longDescription: String?) {
@@ -34,6 +32,10 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
         }
         
         contentLabel.text = contentText
+    }
+    
+    func getHeight() -> CGFloat {
+        return frame.height
     }
 
     static func nib() -> UINib {
