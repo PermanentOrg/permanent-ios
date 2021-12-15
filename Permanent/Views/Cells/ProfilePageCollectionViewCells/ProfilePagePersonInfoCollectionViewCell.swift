@@ -45,10 +45,6 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
         birthLocationLabel.text = ""
         birthLocationLabel.textColor = .primary
         birthLocationLabel.font = Text.style13.font
-        
-        fullNameLabel.text = "User Name"
-        birthDateLabel.text = "Jan 01, 2000"
-        birthLocationLabel.text = "1401 South Grand Avenue, Los Angeles, California, United States"
     }
     
     func configure(fullName: String = "", birthDate: String = "", birthLocation: String = "") {

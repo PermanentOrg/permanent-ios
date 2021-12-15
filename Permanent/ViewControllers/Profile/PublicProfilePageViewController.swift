@@ -330,7 +330,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                 
             case .personalInformation:
-                headerCell.configure(titleLabel: "Personal Information", buttonText: "", buttonIsHidden: true)
+                headerCell.configure(titleLabel: "Personal Information", buttonText: "Edit")
             case .onlinePresence:
                 headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit")
             case .milestones:
