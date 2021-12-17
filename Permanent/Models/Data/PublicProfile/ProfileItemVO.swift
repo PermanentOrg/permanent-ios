@@ -86,75 +86,85 @@ struct ProfileItemVOData: Model {
         case createdDT, updatedDT
     }
     
-    func toBackendString() -> String? {
+    func toBackendString(fieldType: ProfileItemType) -> String? {
         var returnedValue: String?
         
         guard let fieldName = fieldNameUI else { return nil }
 
         switch fieldName {
-            
-        case "profile.basic":
-            switch fieldName {
-            case FieldNameUI.archiveName.rawValue:
+        case FieldNameUI.basic.rawValue:
+            switch fieldType.itemTypeToString {
+                
+            case  ProfileItemType.shortDescription.itemTypeToString:
                 guard let string = string1 else { return nil }
                 returnedValue = string
-            case FieldNameUI.fullName.rawValue:
+                
+            case ProfileItemType.fullName.itemTypeToString:
                 guard let string = string2 else { return nil }
                 returnedValue = string
-            case FieldNameUI.nickname.rawValue:
+                
+            case ProfileItemType.nickname.itemTypeToString:
                 guard let string = string3 else { return nil }
                 returnedValue = string
+                
             default:
                 return nil
         }
-        case "profile.blurb":
-            switch fieldName {
-            case FieldNameUI.shortDescription.rawValue:
+            
+        case FieldNameUI.blurb.rawValue:
+            switch fieldType.itemTypeToString {
+            case ProfileItemType.shortDescription.itemTypeToString:
                 guard let string = string1 else { return nil }
                 returnedValue = string
             default:
                 return nil
             }
-        case "profile.description":
-            switch fieldName {
-                case FieldNameUI.longDescription.rawValue:
+            
+        case FieldNameUI.description.rawValue:
+            switch fieldType.itemTypeToString {
+                case ProfileItemType.longDescription.itemTypeToString:
                     guard let string = textData1 else { return nil }
                     returnedValue = string
             default:
                 return nil
             }
-        case "profile.email":
-            switch fieldName {
-            case FieldNameUI.emailAddress.rawValue:
+            
+        case FieldNameUI.email.rawValue:
+            switch fieldType.itemTypeToString {
+            case ProfileItemType.emailAddress.itemTypeToString:
                 guard let string = string1 else { return nil }
                 returnedValue = string
             default:
                 return nil
             }
-        case "profile.gender":
-            switch fieldName {
-            case FieldNameUI.profileGender.rawValue:
+            
+        case FieldNameUI.profileGender.rawValue:
+            switch fieldType.itemTypeToString {
+            case ProfileItemType.profileGender.itemTypeToString:
                 guard let string = string1 else { return nil }
                 returnedValue = string
             default:
                 return nil
             }
-        case "profile.birth_info":
-            switch fieldName {
-            case FieldNameUI.birthDate.rawValue:
+            
+        case FieldNameUI.birthInfo.rawValue:
+            switch fieldType.itemTypeToString {
+                
+            case ProfileItemType.birthDate.itemTypeToString:
                 guard let string = day1 else { return nil }
                 returnedValue = string
                 
-            case FieldNameUI.birthLocation.rawValue:
-                
+            case ProfileItemType.birthLocation.itemTypeToString:
                 guard let locnVO = LocnVOs?.first else { return nil }
-                
+        
                 let address = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
 
                 returnedValue = address
+                
             default:
                 return nil
             }
+            
         default:
             return nil
         }

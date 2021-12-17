@@ -229,8 +229,8 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             var shortDescriptionValue = "", longDescriptionValue = ""
             
             if let shortDescriptionText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
-            }).first?.profileItemVO?.toBackendString() {
+                element.profileItemVO?.fieldNameUI == FieldNameUI.blurb.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .shortDescription) {
                 shortDescriptionValue = shortDescriptionText
                 shortDescription = shortDescriptionText
             } else {
@@ -252,8 +252,8 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             }
             
             if let longDescriptionText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
-            }).first?.profileItemVO?.toBackendString() {
+                element.profileItemVO?.fieldNameUI == FieldNameUI.description.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .longDescription) {
                 longDescriptionValue = longDescriptionText
                 longDescription = longDescriptionText
             } else {
@@ -270,26 +270,26 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
             
             let nicknameText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.nickname.rawValue
-            }).first?.profileItemVO?.toBackendString()
-            
+                element.profileItemVO?.fieldNameUI == FieldNameUI.basic.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .nickname)
+
             let fullNameText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.fullName.rawValue
-            }).first?.profileItemVO?.toBackendString()
-            
+                element.profileItemVO?.fieldNameUI == FieldNameUI.basic.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .fullName)
+
             let profileGenderText = profileData.filter({ element in
                 element.profileItemVO?.fieldNameUI == FieldNameUI.profileGender.rawValue
-            }).first?.profileItemVO?.toBackendString()
-            
+            }).first?.profileItemVO?.toBackendString(fieldType: .profileGender)
+
             let birthDateText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.birthDate.rawValue
-            }).first?.profileItemVO?.toBackendString()
-            
+                element.profileItemVO?.fieldNameUI == FieldNameUI.birthInfo.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .birthDate)
+
             let birthLocationText = profileData.filter({ element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.birthLocation.rawValue
-            }).first?.profileItemVO?.toBackendString()
+                element.profileItemVO?.fieldNameUI == FieldNameUI.birthInfo.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .birthLocation)
             
-           cell.configure(fullName: "Lucian Cerbu", nickname: nicknameText, gender: profileGenderText, birthDate: "1987-04-09", birthLocation: birthLocationText)
+           cell.configure(fullName: fullNameText, nickname: nicknameText, gender: profileGenderText, birthDate: birthDateText, birthLocation: birthLocationText)
             
             returnedCell = cell
             
@@ -332,13 +332,13 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                     
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
                     
-                    let shortAboutProfileData: Int? = self?.profileData.filter { element in
-                        element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
-                    }.first?.profileItemVO?.profileItemId
-                    
-                    let longAboutProfileData: Int? = self?.profileData.filter { element in
-                        element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
-                    }.first?.profileItemVO?.profileItemId
+                    let shortAboutProfileData: Int? = self?.profileData.filter({ element in
+                        element.profileItemVO?.fieldNameUI == FieldNameUI.blurb.rawValue
+                    }).first?.profileItemVO?.profileItemId
+
+                    let longAboutProfileData: Int? = self?.profileData.filter({ element in
+                        element.profileItemVO?.fieldNameUI == FieldNameUI.description.rawValue
+                    }).first?.profileItemVO?.profileItemId
                     
                     profileAboutVC.archiveType = self?.archiveType
                     profileAboutVC.shortDescription = self?.shortDescription
@@ -424,16 +424,16 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
         case .about:
-            let shortDescription = profileData.filter { element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.shortDescription.rawValue
-            }.first?.profileItemVO?.toBackendString() ?? "Add a short description about the purpose of this Archive".localized()
-            
-            let longDescription = profileData.filter { element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.longDescription.rawValue
-            }.first?.profileItemVO?.toBackendString() ?? "Tell the story of the Person this Archive is for".localized()
-            
+            let shortDescription = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.blurb.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .shortDescription) ?? "Add a short description about the purpose of this Archive".localized()
+
+            let longDescription = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.description.rawValue
+            }).first?.profileItemVO?.toBackendString(fieldType: .longDescription) ?? "Tell the story of the Person this Archive is for".localized()
+
             var descriptionText = shortDescription
-            
+
             if readMoreIsEnabled[.about] ?? false {
                 descriptionText.append(contentsOf: "\n\n\(longDescription)")
             }

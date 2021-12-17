@@ -122,6 +122,7 @@
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
+		5EFFCE86276D3BE800EB9D7D /* ProfileItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFFCE85276D3BE800EB9D7D /* ProfileItemType.swift */; };
 		71B9D69F99F7766FC6E3CA7A /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09AB8F4D7E7FDEF41B5E3C60 /* Pods_PermanentTests.framework */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
@@ -531,6 +532,7 @@
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
 		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
+		5EFFCE85276D3BE800EB9D7D /* ProfileItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileItemType.swift; sourceTree = "<group>"; };
 		6B6D56DDE327615466BB09CE /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6C8F6527F0E6C1B47A069802 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		90FC29B23EE0D799580DD402 /* Pods-Permanent.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-release.xcconfig"; sourceTree = "<group>"; };
@@ -1689,6 +1691,7 @@
 				BCC4067025A86E9C00E29CC4 /* AccountStatus.swift */,
 				5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */,
 				5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */,
+				5EFFCE85276D3BE800EB9D7D /* ProfileItemType.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -2390,6 +2393,7 @@
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
+				5EFFCE86276D3BE800EB9D7D /* ProfileItemType.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
