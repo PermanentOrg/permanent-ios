@@ -107,6 +107,11 @@ class PublicProfilePageViewModel: ViewModelInterface {
             let profileItemVOData = ProfileItemVOData(profileItemId: profileItemId, archiveId: archiveId, fieldNameUI: fieldname.rawValue, string1: nil, string2: nil, string3: nil, int1: nil, int2: nil, int3: nil, datetime1: nil, datetime2: nil, day1: nil, day2: nil, locnId1: nil, locnId2: nil, text_dataId1: nil, text_dataId2: nil, otherId1: nil, otherId2: nil, archiveArchiveNbr: nil, recordArchiveNbr: nil, folderArchiveNbr: nil, isVisible: nil, isPendingAction: true, publicDT: publicDT, status: nil, type: "type.widget.string", LocnVOs: nil, timezoneVO: nil, textData1: itemValue, textData2: nil, archiveNbr: nil, createdDT: nil, updatedDT: nil)
             
             return profileItemVOData
+            
+        default:
+            let profileItemVOData = ProfileItemVOData(profileItemId: profileItemId, archiveId: archiveId, fieldNameUI: fieldname.rawValue, string1: itemValue, string2: nil, string3: nil, int1: nil, int2: nil, int3: nil, datetime1: nil, datetime2: nil, day1: nil, day2: nil, locnId1: nil, locnId2: nil, text_dataId1: nil, text_dataId2: nil, otherId1: nil, otherId2: nil, archiveArchiveNbr: nil, recordArchiveNbr: nil, folderArchiveNbr: nil, isVisible: nil, isPendingAction: true, publicDT: publicDT, status: nil, type: "type.widget.string", LocnVOs: nil, timezoneVO: nil, textData1: nil, textData2: nil, archiveNbr: nil, createdDT: nil, updatedDT: nil)
+            
+            return profileItemVOData
         }
     }
 }

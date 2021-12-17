@@ -266,7 +266,30 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             returnedCell = cell
             
         case .personalInformation:
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
+            
+            let nicknameText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.nickname.rawValue
+            }).first?.profileItemVO?.toBackendString()
+            
+            let fullNameText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.fullName.rawValue
+            }).first?.profileItemVO?.toBackendString()
+            
+            let profileGenderText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.profileGender.rawValue
+            }).first?.profileItemVO?.toBackendString()
+            
+            let birthDateText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.birthDate.rawValue
+            }).first?.profileItemVO?.toBackendString()
+            
+            let birthLocationText = profileData.filter({ element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.birthLocation.rawValue
+            }).first?.profileItemVO?.toBackendString()
+            
+           cell.configure(fullName: "Lucian Cerbu", nickname: nicknameText, gender: profileGenderText, birthDate: "1987-04-09", birthLocation: birthLocationText)
             
             returnedCell = cell
             
@@ -331,10 +354,20 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
             case .personalInformation:
                 headerCell.configure(titleLabel: "Personal Information", buttonText: "Edit")
+                
+                headerCell.buttonAction = { [weak self] in
+                    
+                    let profilePernalInformationVC = UIViewController.create(withIdentifier: .profilePersonalInfoPage, from: .profile) as! PublicProfilePersonalInfoViewController
+                    
+                    let navigationVC = NavigationController(rootViewController: profilePernalInformationVC)
+                    navigationVC.modalPresentationStyle = .fullScreen
+                    self?.present(navigationVC, animated: true)
+                }
+                    
             case .onlinePresence:
-                headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit")
+                headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit", buttonIsHidden: true)
             case .milestones:
-                headerCell.configure(titleLabel: "Milestones", buttonText: "Edit")
+                headerCell.configure(titleLabel: "Milestones", buttonText: "Edit", buttonIsHidden: true)
             default:
                 break
             }
@@ -407,7 +440,7 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             let cellHeight = heightForCell(text: descriptionText, font: Text.style8.font, width: view.frame.width - 40) + 20
             return CGSize(width: UIScreen.main.bounds.width, height: cellHeight)
         case .personalInformation:
-            return CGSize(width: UIScreen.main.bounds.width, height: 170)
+            return CGSize(width: UIScreen.main.bounds.width, height: 260)
         case .onlinePresence:
             return CGSize(width: UIScreen.main.bounds.width, height: 100)
         case .milestones:

@@ -43,7 +43,7 @@ struct ProfileItemVOData: Model {
     let publicDT: String?
     let status: String?
     let type: String?
-    let LocnVOs: String?
+    let LocnVOs: [LocnVO]?
     let timezoneVO: TimezoneVO?
     let textData1: String?
     let textData2: String?
@@ -92,16 +92,80 @@ struct ProfileItemVOData: Model {
         guard let fieldName = fieldNameUI else { return nil }
 
         switch fieldName {
-        case FieldNameUI.shortDescription.rawValue :
-            guard let string = string1 else { return nil }
-            returnedValue = string
-        
-        case FieldNameUI.longDescription.rawValue :
-            guard let string = textData1 else { return nil }
-            returnedValue = string
+            
+        case "profile.basic":
+            switch fieldName {
+            case FieldNameUI.archiveName.rawValue:
+                guard let string = string1 else { return nil }
+                returnedValue = string
+            case FieldNameUI.fullName.rawValue:
+                guard let string = string2 else { return nil }
+                returnedValue = string
+            case FieldNameUI.nickname.rawValue:
+                guard let string = string3 else { return nil }
+                returnedValue = string
+            default:
+                return nil
+        }
+        case "profile.blurb":
+            switch fieldName {
+            case FieldNameUI.shortDescription.rawValue:
+                guard let string = string1 else { return nil }
+                returnedValue = string
+            default:
+                return nil
+            }
+        case "profile.description":
+            switch fieldName {
+                case FieldNameUI.longDescription.rawValue:
+                    guard let string = textData1 else { return nil }
+                    returnedValue = string
+            default:
+                return nil
+            }
+        case "profile.email":
+            switch fieldName {
+            case FieldNameUI.emailAddress.rawValue:
+                guard let string = string1 else { return nil }
+                returnedValue = string
+            default:
+                return nil
+            }
+        case "profile.gender":
+            switch fieldName {
+            case FieldNameUI.profileGender.rawValue:
+                guard let string = string1 else { return nil }
+                returnedValue = string
+            default:
+                return nil
+            }
+        case "profile.birth_info":
+            switch fieldName {
+            case FieldNameUI.birthDate.rawValue:
+                guard let string = day1 else { return nil }
+                returnedValue = string
+                
+            case FieldNameUI.birthLocation.rawValue:
+                
+                guard let locnVO = LocnVOs?.first else { return nil }
+                
+                let address = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+
+                returnedValue = address
+            default:
+                return nil
+            }
         default:
-            returnedValue = nil
+            return nil
         }
         return returnedValue
+    }
+    
+    func getAddressString(_ items: [String?], _ inMetadataScreen: Bool = true) -> String {
+        var address = items.compactMap { $0 }.joined(separator: ", ")
+        if inMetadataScreen  {
+            address == "" ? (address = "Choose a location".localized()) : ()
+        }
+        return address
     }
 }

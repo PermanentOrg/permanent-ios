@@ -43,6 +43,7 @@
 		5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217425C17CE2007642BE /* InfoViewModel.swift */; };
 		5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */; };
 		5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */; };
+		5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */; };
 		5E56FDBF2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */; };
 		5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */; };
 		5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */; };
@@ -444,6 +445,7 @@
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
 		5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextWithLabelElementViewViewController.swift; sourceTree = "<group>"; };
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
+		5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePersonalInfoViewController.swift; sourceTree = "<group>"; };
 		5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageArchiveCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageArchiveCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageAboutCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1056,6 +1058,7 @@
 			children = (
 				5E5EF855273B23C3004F7EBC /* PublicProfilePageViewController.swift */,
 				5E2CFA26275116480055941C /* PublicProfileAboutPageViewController.swift */,
+				5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -2321,6 +2324,7 @@
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
 				BC8945112524B24000FA8D7A /* SignUpResponse.swift in Sources */,
 				5ED581C025EF802000A5A79E /* FileDetailsTopCollectionViewCell.swift in Sources */,
+				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,

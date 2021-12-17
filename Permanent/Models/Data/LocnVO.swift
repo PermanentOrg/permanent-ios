@@ -19,8 +19,8 @@ struct LocnVO: Model {
     let locnID: Int?
     let displayName: String?
     let geoCodeLookup: String?
-    let streetName, streetNumber, locality: String?
-    let postalCode, adminOneName, adminOneCode: JSONAny? // TODO
+    let streetName, streetNumber, locality, adminOneName: String?
+    let postalCode, adminOneCode: JSONAny? // TODO
     let adminTwoName, adminTwoCode: JSONAny? // TODO
     let country, countryCode, geometryType: String?
     let anyLatitude, anyLongitude: JSONAny?
