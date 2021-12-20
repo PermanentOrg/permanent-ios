@@ -43,6 +43,12 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         
         initUI()
         
+        fullNameTextField.delegate = self
+        nicknameTextField.delegate = self
+        genderTextField.delegate = self
+        birthDateTextField.delegate = self
+        locationTextField.delegate = self
+        
         self.dismissKeyboard()
     }
     
@@ -143,12 +149,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         genderHintLabel.text = "Gender".localized()
         birthDateHintLabel.text = "YYYY-MM-DD"
         birthLocationHintLabel.text = "Choose a location".localized()
-        
-        fullNameTextField.text = " "
-        nicknameTextField.text = " "
-        genderTextField.text = " "
-        birthDateTextField.text = " "
-        locationTextField.text = " "
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -157,5 +157,53 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     
     @objc func doneButtonAction(_ sender: Any) {
         dismiss(animated: true)
+    }
+}
+
+extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        switch textField {
+        case fullNameTextField:
+            fullNameHintLabel.isHidden = true
+        case nicknameTextField:
+            nicknameHintLabel.isHidden = true
+        case genderTextField:
+            genderHintLabel.isHidden = true
+        case birthDateTextField:
+            birthDateHintLabel.isHidden = true
+        case locationTextField:
+            birthLocationHintLabel.isHidden = true
+        default:
+            return
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let textFieldText = textField.text else { return }
+        
+        switch textField {
+        case fullNameTextField:
+            if textFieldText.isEmpty {
+                fullNameHintLabel.isHidden = false
+            }
+        case nicknameTextField:
+            if textFieldText.isEmpty {
+                nicknameHintLabel.isHidden = false
+            }
+        case genderTextField:
+            if textFieldText.isEmpty {
+                genderHintLabel.isHidden = false
+            }
+        case birthDateTextField:
+            if textFieldText.isEmpty {
+                birthDateHintLabel.isHidden = false
+            }
+        case locationTextField:
+            if textFieldText.isEmpty {
+                birthLocationHintLabel.isHidden = false
+            }
+        default:
+            return
+        }
     }
 }
