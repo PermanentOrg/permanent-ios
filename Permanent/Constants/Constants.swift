@@ -89,8 +89,6 @@ extension Constants.Design {
 }
 
 extension Constants.API {
-    static let apiKey = "5aef7dd1f32e0d9ca57290e3c82b59db"
-
     static let TYPE_AUTH_CREATED_ACCOUNT_EMAIL = "type.auth.created_account_email"
     static let TYPE_AUTH_CREATED_ACCOUNT_TEXT = "type.auth.created_account_text"
     static let TYPE_AUTH_EMAIL = "type.auth.email"

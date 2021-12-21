@@ -33,10 +33,6 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
         
         contentLabel.text = contentText
     }
-    
-    func getHeight() -> CGFloat {
-        return frame.height
-    }
 
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)

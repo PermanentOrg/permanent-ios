@@ -49,7 +49,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         birthDateTextField.delegate = self
         locationTextField.delegate = self
         
-        self.dismissKeyboard()
+        addDismissKeyboardGesture()
     }
     
     override func viewWillAppear(_ animated: Bool) {

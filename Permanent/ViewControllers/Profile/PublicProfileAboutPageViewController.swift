@@ -41,7 +41,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         shortAboutDescriptionTextField.delegate = self
         longAboutDescriptionTextView.delegate = self
         
-        self.dismissKeyboard()
+        addDismissKeyboardGesture()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,8 +49,9 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
         super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
         
         view.endEditing(true)
     }

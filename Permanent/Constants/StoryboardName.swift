@@ -57,7 +57,7 @@ enum ViewControllerId: String {
     case profilePage
     case profileAboutPage
     case profilePersonalInfoPage
-
+    case search
     var value: String {
         switch self {
         case .signUp:
@@ -102,6 +102,8 @@ enum ViewControllerId: String {
             return "AboutPage"
         case .profilePersonalInfoPage:
             return "PersonalInformationPage"
+        case .search:
+            return "Search"
         default:
             return self.rawValue.capitalized
         }
