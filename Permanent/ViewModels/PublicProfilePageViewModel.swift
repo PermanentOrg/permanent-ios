@@ -25,7 +25,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful
                 else {
                     completionBlock(nil, APIError.invalidResponse)
@@ -63,7 +63,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful,
                     let newProfileItemId = model.results.first
                 else {
