@@ -59,7 +59,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
         view.backgroundColor = .white
-        
     }
     
     func initCollectionView() {
@@ -94,10 +93,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        initButtonStates()
-        
         super.viewDidAppear(true)
-        
+    
         collectionView.reloadSections([1])
     }
     
@@ -165,17 +162,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     @objc func onDataIsUpdated(_ notification: Notification) {
         getAllByArchiveNbr(archiveData)
-    }
-    
-    func heightForCell(text:String, font:UIFont, width:CGFloat) -> CGFloat {
-        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
-         label.numberOfLines = 0
-         label.lineBreakMode = NSLineBreakMode.byWordWrapping
-         label.font = font
-         label.text = text
-         label.sizeToFit()
-
-         return label.frame.height
     }
 }
 
@@ -404,8 +390,12 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             if readMoreIsEnabled[.about] ?? false {
                 descriptionText.append(contentsOf: "\n\n\(longDescription)")
             }
-            let cellHeight = heightForCell(text: descriptionText, font: Text.style8.font, width: view.frame.width - 40) + 20
-            return CGSize(width: UIScreen.main.bounds.width, height: cellHeight)
+            
+            let currentText: NSAttributedString = NSAttributedString(string: descriptionText, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+            
+            let textHeight = currentText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
+ 
+            return CGSize(width: UIScreen.main.bounds.width, height: textHeight + 20)
         case .personalInformation:
             return CGSize(width: UIScreen.main.bounds.width, height: 170)
         case .onlinePresence:

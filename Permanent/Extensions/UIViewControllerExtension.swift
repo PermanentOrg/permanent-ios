@@ -50,9 +50,8 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    
-    func dismissKeyboard() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer( target:     self, action:    #selector(UIViewController.dismissKeyboardTouchOutside))
+    func addDismissKeyboardGesture() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboardTouchOutside))
                tap.cancelsTouchesInView = false
                view.addGestureRecognizer(tap)
             }
@@ -61,4 +60,3 @@ extension UIViewController {
         view.endEditing(true)
     }
 }
-
