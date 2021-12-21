@@ -48,3 +48,15 @@ extension UIViewController {
         return storyboard.instantiateViewController(withIdentifier: id.value)
     }
 }
+
+extension UIViewController {
+    func addDismissKeyboardGesture() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboardTouchOutside))
+               tap.cancelsTouchesInView = false
+               view.addGestureRecognizer(tap)
+            }
+            
+    @objc private func dismissKeyboardTouchOutside() {
+        view.endEditing(true)
+    }
+}

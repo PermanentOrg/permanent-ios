@@ -10,4 +10,5 @@ import Foundation
 extension Notification.Name {
     static let filePreviewVMDidSaveData = Notification.Name("filePreviewVMDidSaveData")
     static let filePreviewVMSaveDataFailed = Notification.Name("filePreviewVMSaveDataFailed")
+    static let publicProfilePageAboutUpdate = Notification.Name("publicProfilePageAboutUpdate")
 }

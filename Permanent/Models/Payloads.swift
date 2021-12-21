@@ -600,7 +600,6 @@ struct Payloads {
             "archiveNbr": params.archiveNbr,
             "folder_linkId": params.folderLinkId
         ]
-        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
 
         if let name = params.name {
             folderVO["displayName"] = name
@@ -608,7 +607,7 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": csrf,
+                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "FolderVO": folderVO
@@ -618,9 +617,46 @@ struct Payloads {
         ]
     }
     
-    static func searchFolderAndRecord(text: String, tags: [TagVOData]) -> RequestParameters {
-        guard let csrf: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) else { return [] }
+    static func getAllByArchiveNbr(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "Profile_itemVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func safeAddUpdate(profileItemVOData: ProfileItemVOData) -> RequestParameters {
+        let profileDict: Any?
+        if let profileJson = try? JSONEncoder().encode(profileItemVOData) {
+            profileDict = try? JSONSerialization.jsonObject(with: profileJson, options: [])
+        } else {
+            profileDict = nil
+        }
         
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "Profile_itemVO": profileDict
+                        ]
+                    ]
+                ]
+        ]
+        
+    }
+        
+    static func searchFolderAndRecord(text: String, tags: [TagVOData]) -> RequestParameters {
         var tagVOs: Any = []
         if let json = try? JSONEncoder().encode(tags),
            let jsonDict = try? JSONSerialization.jsonObject(with: json, options: []) {
@@ -629,7 +665,7 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": csrf,
+                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "SearchVO": [

@@ -15,6 +15,8 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var buttonImage: UIImageView!
     
+    var buttonAction: ButtonAction?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     
@@ -36,5 +38,7 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }
-
+    @IBAction func buttonAction(_ sender: Any) {
+        buttonAction?()
+    }
 }
