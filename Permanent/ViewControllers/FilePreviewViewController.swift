@@ -44,6 +44,13 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Setting category to AVAudioSessionCategoryPlayback failed.")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -202,7 +209,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadVideo(withURL url: URL, contentType: String) {
-        let asset = AVURLAsset(url: url, options: ["AVURLAssetOutOfBandMIMETypeKey": contentType])
+        let asset = AVURLAsset(url: url)
         let playerItem = AVPlayerItem(asset: asset)
         
         let player = AVPlayer(playerItem: playerItem)

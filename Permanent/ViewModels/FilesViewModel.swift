@@ -7,6 +7,7 @@
 
 import Foundation
 import Photos.PHAsset
+import CoreImage
 
 typealias NewFolderParams = (filename: String, folderLinkId: Int)
 typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String)
@@ -44,8 +45,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
-    
-    var isSearchActive: Bool = false
 
     var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
     var archivePermissions: [Permission] {
@@ -91,7 +90,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     }
     
     var syncedViewModels: [FileViewModel] {
-        isSearchActive ? searchViewModels : viewModels
+        return viewModels
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
@@ -151,14 +150,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.remove(at: index)
-    }
-    
-    func searchFiles(byQuery query: String) {
-        let searchedItems = viewModels.filter {
-            $0.name.lowercased().contains(query.lowercased())
-        }
-        searchViewModels.removeAll()
-        searchViewModels.append(contentsOf: searchedItems)
     }
 }
 

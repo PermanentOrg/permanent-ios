@@ -21,6 +21,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var isGridCell: Bool = false
+    var isSearchCell:Bool = false
     
     var fileInfoId: String?
     
@@ -74,8 +75,9 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool) {
         self.isGridCell = isGridCell
+        self.isSearchCell = isSearchCell
         
         rightButtonImageView.isHidden = false
         
@@ -98,12 +100,12 @@ class FileCollectionViewCell: UICollectionViewCell {
         var hasRightButton = true
         if model.fileStatus == .synced {
             let fileURL = URL(string: model.thumbnailURL)
-            hasRightButton = hasRightButton && fileURL != nil
+            hasRightButton = hasRightButton && fileURL != nil && !isSearchCell
         }
         
         if model.type.isFolder {
             overlayView.isHidden = true
-            self.isUserInteractionEnabled = true
+            isUserInteractionEnabled = true
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
             
@@ -115,7 +117,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             hasRightButton = hasRightButton && hasRightButtonPermission
         } else {
             overlayView.isHidden = action == .none
-            self.isUserInteractionEnabled = action == .none
+            isUserInteractionEnabled = action == .none
             moreButton.isEnabled = action == .none
             rightButtonImageView.tintColor = .primary
         }

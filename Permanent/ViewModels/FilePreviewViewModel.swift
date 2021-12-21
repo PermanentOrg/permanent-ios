@@ -7,6 +7,7 @@
 
 import UIKit
 import WebKit
+import AVKit
 
 class FilePreviewViewModel: ViewModelInterface {
     let file: FileViewModel
@@ -61,13 +62,20 @@ class FilePreviewViewModel: ViewModelInterface {
     }
     
     func fileVO() -> FileVO? {
-        if file.type == .video,
-           let fileVO = recordVO?.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
-            return fileVO
-        } else {
-            return recordVO?.recordVO?.fileVOS?.first
+        var fileVO: FileVO? = recordVO?.recordVO?.fileVOS?.first
+
+        if file.type == .video {
+            if let uwFileVO = recordVO?.recordVO?.fileVOS?.first,
+               let url = URL(string: uwFileVO.downloadURL),
+               AVAsset(url: url).isPlayable {
+                fileVO = uwFileVO
+            } else if let uwFileVO = recordVO?.recordVO?.fileVOS?.first(where: {$0.format == "file.format.converted"}) {
+                fileVO = uwFileVO
+            }
         }
-    }
+        
+        return fileVO
+}
     
     func fileName() -> String? {
         guard let fileVO = self.fileVO(),
