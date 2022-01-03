@@ -10,6 +10,7 @@ import UIKit
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     
     var archiveData: ArchiveVOData!
+    weak var delegate: PublicArchiveChildDelegate?
     
     enum CellType {
         case thumbnails
@@ -21,9 +22,9 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         case milestones
     }
     
-    let topSectionCells: [CellType] = [.thumbnails, .segmentedControl]
-    var bottomSectionCells: [CellType] = [.archiveGallery]
-    var numberOfBottomSections: Int = 1
+    let topSectionCells: [CellType] = []
+    var bottomSectionCells: [CellType] = [.about, .personalInformation, .onlinePresence, .milestones]
+    var numberOfBottomSections: Int = 4
     var currentSegmentValue: Int = 0
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -296,5 +297,11 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         }
         
         return CGSize(width: collectionView.frame.width, height: height)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
+            scrollView.contentOffset = .zero
+        }
     }
 }
