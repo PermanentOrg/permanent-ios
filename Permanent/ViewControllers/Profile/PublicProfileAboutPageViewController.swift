@@ -92,8 +92,8 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longAboutDescriptionTitleLabel.textColor = .middleGray
         longAboutDescriptionTitleLabel.font = Text.style12.font
         
-        shortAboutDescriptionTitleLabel.text = "What is this Archive for? (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(shortDescription?.count ?? 0)")
-        shortDescriptionEmptyLabel.text = "Add a short description about the purpose of this Archive".localized()
+        shortAboutDescriptionTitleLabel.text = "\(archiveType.shortDescriptionTitle) (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(shortDescription?.count ?? 0)")
+        shortDescriptionEmptyLabel.text = archiveType.shortDescriptionHint
         
         if let shortDescription = shortDescription {
             shortAboutDescriptionTextField.text = shortDescription
@@ -109,20 +109,8 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
             longDescriptionEmptyLabel.isHidden = false
         }
         
-        switch archiveType {
-        case .person:
-            longAboutDescriptionTitleLabel.text = "Tell us about this Person".localized()
-            longDescriptionEmptyLabel.text = "Tell the story of the Person this Archive is for".localized()
-        case .family:
-            
-            longAboutDescriptionTitleLabel.text = "Tell us about this Family".localized()
-            longDescriptionEmptyLabel.text = "Tell the story of the Family this Archive is for".localized()
-        case .organization:
-            
-            longAboutDescriptionTitleLabel.text = "Tell us about this Organization".localized()
-            longDescriptionEmptyLabel.text = "Tell the story of the Organization this Archive is for".localized()
-        case .none: break
-        }
+        longAboutDescriptionTitleLabel.text = archiveType.longDescriptionTitle
+        longDescriptionEmptyLabel.text = archiveType.longDescriptionHint
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -237,7 +225,7 @@ extension PublicProfileAboutPageViewController: UITextFieldDelegate {
         
         let textCount = textFieldText.count + string.count - range.length
         
-        shortAboutDescriptionTitleLabel.text = "What is this Archive for? (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+        shortAboutDescriptionTitleLabel.text = "\(archiveType.shortDescriptionTitle) (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
         
         if textCount < 280 {
             return true

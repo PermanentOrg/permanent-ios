@@ -76,6 +76,7 @@
 		5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */; };
 		5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */; };
 		5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E980AB62657D3D400ED5764 /* BundleExtension.swift */; };
+		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
 		5EAAB292273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */; };
 		5EAAB293273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */; };
@@ -86,6 +87,11 @@
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
 		5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */; };
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
+		5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */; };
+		5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */; };
+		5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620242784871B001B9AFD /* EmailProfileItem.swift */; };
+		5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620262784B01D001B9AFD /* GenderProfileItem.swift */; };
+		5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */; };
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
 		5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */; };
@@ -485,6 +491,7 @@
 		5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelDelegateInterface.swift; sourceTree = "<group>"; };
 		5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
 		5E980AB62657D3D400ED5764 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
 		5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageTopCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageTopCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -495,6 +502,11 @@
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagsNamesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
+		5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurbProfileItem.swift; sourceTree = "<group>"; };
+		5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionProfileItem.swift; sourceTree = "<group>"; };
+		5EB620242784871B001B9AFD /* EmailProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProfileItem.swift; sourceTree = "<group>"; };
+		5EB620262784B01D001B9AFD /* GenderProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderProfileItem.swift; sourceTree = "<group>"; };
+		5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthInfoProfileItem.swift; sourceTree = "<group>"; };
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenSectionTitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -1054,6 +1066,12 @@
 			isa = PBXGroup;
 			children = (
 				5E2CFA24274EEB570055941C /* ProfileItemVO.swift */,
+				5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */,
+				5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */,
+				5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */,
+				5EB620242784871B001B9AFD /* EmailProfileItem.swift */,
+				5EB620262784B01D001B9AFD /* GenderProfileItem.swift */,
+				5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */,
 			);
 			path = PublicProfile;
 			sourceTree = "<group>";
@@ -2153,6 +2171,7 @@
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */,
+				5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
@@ -2174,6 +2193,7 @@
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
 				BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */,
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
+				5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
@@ -2353,6 +2373,7 @@
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
+				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */,
@@ -2364,6 +2385,7 @@
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
+				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				5EAAB296273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.swift in Sources */,
 				F5616189270E49250038D29E /* FileCollectionViewCell.swift in Sources */,
@@ -2406,6 +2428,7 @@
 				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
+				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
@@ -2419,6 +2442,7 @@
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */,
+				5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
