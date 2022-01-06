@@ -1840,7 +1840,8 @@
 			buildConfigurationList = 5E2C5D2B24D98EE300E2B95F /* Build configuration list for PBXNativeTarget "Permanent" */;
 			buildPhases = (
 				63F695EE229B9F7560DC32ED /* [CP] Check Pods Manifest.lock */,
-				F5551D86261C54D500A7C540 /* ShellScript */,
+				F5551D86261C54D500A7C540 /* Sourcery */,
+				F5A784992785D84A00738389 /* Swiftlint */,
 				5E2C5D1324D98EE100E2B95F /* Sources */,
 				5E2C5D1424D98EE100E2B95F /* Frameworks */,
 				5E2C5D1524D98EE100E2B95F /* Resources */,
@@ -2113,7 +2114,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F5551D86261C54D500A7C540 /* ShellScript */ = {
+		F5551D86261C54D500A7C540 /* Sourcery */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2122,6 +2123,7 @@
 			);
 			inputPaths = (
 			);
+			name = Sourcery;
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -2129,6 +2131,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID\n\n";
+		};
+		F5A784992785D84A00738389 /* Swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Swiftlint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"error: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  exit 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

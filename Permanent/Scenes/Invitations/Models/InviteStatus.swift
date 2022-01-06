@@ -26,10 +26,10 @@ enum InviteStatus: String {
     
     static func status(forValue value: String?) -> InviteStatus {
         switch value {
-        case Constants.API.InviteStatus.STATUS_INVITE_ACCEPTED: return .accepted
-        case Constants.API.InviteStatus.STATUS_INVITE_REVOKED: return .revoked
-        case Constants.API.InviteStatus.STATUS_INVITE_PENDING: return .pending
-        case Constants.API.InviteStatus.STATUS_INVITE_REJECTED: return .rejected
+        case Constants.API.InviteStatus.accepted: return .accepted
+        case Constants.API.InviteStatus.revoked: return .revoked
+        case Constants.API.InviteStatus.pending: return .pending
+        case Constants.API.InviteStatus.rejected: return .rejected
         default: return .unknown
         }
     }

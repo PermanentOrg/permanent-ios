@@ -8,29 +8,28 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-
+    
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-
+        
         if let bestAttemptContent = bestAttemptContent {
             let userInfo = bestAttemptContent.userInfo
             guard let notificationType = userInfo["notificationType"] as? String else {
                 contentHandler(bestAttemptContent)
                 return
             }
-
+            
             switch notificationType {
             case "type.notification.pa_response_non_transfer":
                 guard let accountName = userInfo["fromAccountName"] as? String,
                       let archiveName = userInfo["fromArchiveName"] as? String,
                       let accessRole = userInfo["accessRole"] as? String else {
-                    contentHandler(bestAttemptContent)
-                    return
-                }
+                          contentHandler(bestAttemptContent)
+                          return
+                      }
                 
                 let accessRoleComps = accessRole.components(separatedBy: ".")
                 let stylizedAccessRole = accessRoleComps.last?.capitalized ?? accessRole
@@ -58,9 +57,9 @@ class NotificationService: UNNotificationServiceExtension {
             case "type.notification.sharelink.request":
                 guard let sourceAccountName = userInfo["fromAccountName"] as? String,
                       let sharedItemName = userInfo["shareName"] as? String else {
-                    contentHandler(bestAttemptContent)
-                    return
-                }
+                          contentHandler(bestAttemptContent)
+                          return
+                      }
                 
                 bestAttemptContent.title = sourceAccountName
                 bestAttemptContent.body = "\(sourceAccountName) has requested access to \(sharedItemName)."
@@ -74,7 +73,7 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 if let sharedFileName = userInfo["recordName"] as? String {
                     sharedItemName = sharedFileName
-                }else if let sharedFolderName = userInfo["folderName"] as? String {
+                } else if let sharedFolderName = userInfo["folderName"] as? String {
                     sharedItemName = sharedFolderName
                 } else {
                     contentHandler(bestAttemptContent)
@@ -83,7 +82,7 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 bestAttemptContent.title = sourceAccountName
                 bestAttemptContent.body = "\(sourceAccountName) has joined Permanent to access \(sharedItemName)."
-            
+                
             case "upload-reminder":
                 bestAttemptContent.title = ""
                 bestAttemptContent.body = "Preserve your most important documents with peace of mind. We will never mine your data, claim your copyright or invade your privacy."
@@ -98,9 +97,8 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
     }
-
 }

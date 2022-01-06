@@ -20,8 +20,8 @@ enum ShareStatus {
     
     static func status(forValue value: String?) -> ShareStatus {
         switch value {
-        case Constants.API.AccountStatus.STATUS_GENERIC_OK: return .accepted
-        case Constants.API.AccountStatus.STATUS_GENERIC_PENDING: return .pending
+        case Constants.API.AccountStatus.ok: return .accepted
+        case Constants.API.AccountStatus.pending: return .pending
         default: return .needsApproval
         }
     }

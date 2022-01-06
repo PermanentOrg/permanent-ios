@@ -24,7 +24,6 @@ class MyFilesViewModel: FilesViewModel {
                 
                 if model.isSuccessful == true {
                     self.onGetRootSuccess(model, handler)
-                    
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -41,7 +40,7 @@ class MyFilesViewModel: FilesViewModel {
     private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
-            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.MY_FILES_FOLDER }),
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder }),
             let archiveNo = myFilesFolder.archiveNbr,
             let folderLinkId = myFilesFolder.folderLinkID
         else {
@@ -52,5 +51,4 @@ class MyFilesViewModel: FilesViewModel {
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
-    
 }

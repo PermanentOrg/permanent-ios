@@ -8,7 +8,6 @@
 import Foundation
 
 enum FileStatus {
-    
     /// File is synced on the device. It must be displayed on the `FileListType.synced` list.
     case synced
     
@@ -20,7 +19,4 @@ enum FileStatus {
     
     /// File is currently downloading . It must be displayed on the `FileListType.downloading` list.
     case downloading
-    
 }
-
-

@@ -21,13 +21,7 @@ class FileActionManager: ContextAction {
         self.action = action
     }
     
-    func copy() {
-        // TODO
-    }
+    func copy() { }
     
-    func move() {
-        // TODO
-    }
+    func move() { }
 }
-
-
