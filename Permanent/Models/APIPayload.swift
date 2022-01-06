@@ -8,7 +8,7 @@
 import Foundation
 
 struct APIPayload<T: Model>: Model {
-    let RequestVO: RequestVOData<T>
+    let requestVO: RequestVOData<T>
     
     // TODO: Make csrf global
     static func make(fromData data: [T]) -> APIPayload<T> {
@@ -16,7 +16,7 @@ struct APIPayload<T: Model>: Model {
             data: data,
             csrf: PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
         )
-        return APIPayload(RequestVO: voData)
+        return APIPayload(requestVO: voData)
     }
 }
 

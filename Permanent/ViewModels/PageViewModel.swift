@@ -7,14 +7,14 @@
 
 import Foundation
 
-class PageViewModel : PageViewModelInterface{
+class PageViewModel: PageViewModelInterface {
     weak var delegate: PageViewModelDelegate?
     var currentPage = 0 {
         didSet {
             onCurrentPageChange?(currentPage,delegate?.numberOfViewControllers() ?? 0)
         }
     }
-    var onCurrentPageChange: ((Int, Int)->Void)?
+    var onCurrentPageChange: ((Int, Int) -> Void)?
     
     func viewDidLoad() {
         delegate?.createViewControllers()
@@ -22,7 +22,7 @@ class PageViewModel : PageViewModelInterface{
     }
     
     func moveToNextPage () -> Bool {
-        if currentPage < (delegate?.numberOfViewControllers() ?? 0) - 1  {
+        if currentPage < (delegate?.numberOfViewControllers() ?? 0) - 1 {
             currentPage += 1
             delegate?.setViewController(of: currentPage)
             return true
@@ -31,7 +31,7 @@ class PageViewModel : PageViewModelInterface{
         }
     }
     
-    func nextPageIndex(after index: Int) -> Int?{
+    func nextPageIndex(after index: Int) -> Int? {
         if index < (delegate?.numberOfViewControllers() ?? 0) - 1 {
             return index + 1
         } else {
@@ -39,7 +39,7 @@ class PageViewModel : PageViewModelInterface{
         }
     }
     
-    func beforePageIndex(before index:Int) -> Int?{
+    func beforePageIndex(before index: Int) -> Int? {
         if index > 0 {
             return index - 1
         } else {
@@ -48,7 +48,4 @@ class PageViewModel : PageViewModelInterface{
     }
 }
 
-protocol PageViewModelDelegate: PageViewModelDelegateInterface {
-    
-    
-}
+protocol PageViewModelDelegate: PageViewModelDelegateInterface { }

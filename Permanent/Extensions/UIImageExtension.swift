@@ -17,7 +17,6 @@ extension UIImage {
     }
 }
 
-
 extension UIImage {
     static let `public` = UIImage(named: "public")!
     

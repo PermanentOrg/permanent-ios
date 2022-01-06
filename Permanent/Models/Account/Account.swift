@@ -8,7 +8,6 @@
 import Foundation
 
 protocol Account {
-    
     var accountId: Int { get }
     
     var name: String { get }
@@ -18,7 +17,4 @@ protocol Account {
     var accessRole: AccessRole { get }
     
     var status: AccountStatus { get }
-    
 }
-
-

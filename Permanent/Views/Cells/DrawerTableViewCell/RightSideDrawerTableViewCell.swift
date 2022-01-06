@@ -8,7 +8,6 @@
 import UIKit
 
 class RightSideDrawerTableViewCell: UITableViewCell {
-
     @IBOutlet weak var menuItemTitleLabel: UILabel!
     
     override func awakeFromNib() {
@@ -30,7 +29,6 @@ class RightSideDrawerTableViewCell: UITableViewCell {
         menuItemTitleLabel.textColor = highlighted ? .white : .darkBlue
     }
 
-    
     func updateCell(with data: DrawerOption) {
         menuItemTitleLabel.text = data.title
     }

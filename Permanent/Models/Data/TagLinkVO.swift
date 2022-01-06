@@ -16,12 +16,22 @@ struct TagLinkVO: Model {
 }
 
 struct TagLinkVOData: Model {
-    
     let createdDT, updatedDT: String?
     let refId: Int?
     let refTable: String?
     let status: String?
     let tagId: Int?
-    let tag_linkId: Int?
+    let tagLinkId: Int?
     let type: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case createdDT
+        case updatedDT
+        case refId
+        case refTable
+        case status
+        case tagId
+        case tagLinkId = "tag_linkId"
+        case type
+    }
 }

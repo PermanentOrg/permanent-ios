@@ -28,9 +28,9 @@ enum NotificationType: String {
     
     static func type(forValue value: String?) -> NotificationType {
         switch value {
-        case Constants.API.NotificationType.NOTIFICATION_TYPE_PA_SHARE: return .share
-        case Constants.API.NotificationType.NOTIFICATION_TYPE_RELATIONSHIP: return .relationship
-        case Constants.API.NotificationType.NOTIFICATION_TYPE_ACCOUNT: return .account
+        case Constants.API.NotificationType.paShare: return .share
+        case Constants.API.NotificationType.relationship: return .relationship
+        case Constants.API.NotificationType.account: return .account
         default: return .unknown
         }
     }

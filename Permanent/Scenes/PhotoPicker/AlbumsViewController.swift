@@ -4,7 +4,6 @@
 //
 //
 
-
 import UIKit
 import Photos
 
@@ -100,7 +99,6 @@ class AlbumsViewController: UICollectionViewController, UICollectionViewDelegate
         // #warning Incomplete implementation, return the number of sections
         return Section.count
     }
-
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch Section(rawValue: section)! {

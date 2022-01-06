@@ -7,7 +7,6 @@
 import UIKit
 
 class GridViewCell: UICollectionViewCell {
-    
     @IBOutlet var imageView: UIImageView!
     
     var representedAssetIdentifier: String!
@@ -32,6 +31,4 @@ class GridViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
     }
-    
-    
 }

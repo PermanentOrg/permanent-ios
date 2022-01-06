@@ -850,9 +850,9 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openPhotoLibrary() {
-        PHPhotoLibrary.requestAuthorization { (auth_status) in
-            switch auth_status {
-            case .authorized,.limited:
+        PHPhotoLibrary.requestAuthorization { (authStatus) in
+            switch authStatus {
+            case .authorized, .limited:
                 DispatchQueue.main.async {
                     let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
                     let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
@@ -860,6 +860,7 @@ extension MainViewController: FABActionSheetDelegate {
                     
                     self.present(imagePicker, animated: true, completion: nil)
                 }
+                
             case .denied:
                 let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
                 
@@ -879,15 +880,15 @@ extension MainViewController: FABActionSheetDelegate {
                 DispatchQueue.main.async {
                     self.present(alertController, animated: true, completion: nil)
                 }
+                
             default: break
             }
         }
     }
     
     func openFileBrowser() {
-        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String,
-                                                                       kUTTypeContent as String],
-                                                       in: .import)
+        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
+        
         docPicker.delegate = self
         docPicker.allowsMultipleSelection = true
         present(docPicker, animated: true, completion: nil)

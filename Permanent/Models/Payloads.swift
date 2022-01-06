@@ -240,7 +240,6 @@ struct Payloads {
         return dict
     }
 
-    
     static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
         return [
             "RequestVO": [

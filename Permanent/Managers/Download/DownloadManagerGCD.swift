@@ -71,8 +71,6 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
-    
-    
     func downloadFile(_ file: FileDownloadInfo, progressHandler: ProgressHandler?, then handler: @escaping DownloadResponse) {
         getRecord(file) { [weak self] record, errorMessage in
             guard let record = record else {
