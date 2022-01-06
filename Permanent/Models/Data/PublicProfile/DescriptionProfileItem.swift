@@ -16,5 +16,14 @@ class DescriptionProfileItem: ProfileItemModel {
             textData1 = newValue
         }
     }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.description.rawValue)
+        self.type = "type.widget.string"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
 }
 

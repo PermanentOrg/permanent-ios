@@ -14,13 +14,3 @@ enum FieldNameUI: String, CaseIterable {
     case profileGender = "profile.gender"
     case birthInfo = "profile.birth_info"
 }
-
-struct FieldType {
-    var shortDescription: String
-    var longDescription: String
-    var fullName: String
-    var nickname: String
-    var gender: String
-    var birthDate: String
-    var birthLocation: String
-}

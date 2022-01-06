@@ -16,4 +16,13 @@ class BlurbProfileItem: ProfileItemModel {
             string1 = newValue
         }
     }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.blurb.rawValue)
+        self.type = "type.widget.string"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
 }

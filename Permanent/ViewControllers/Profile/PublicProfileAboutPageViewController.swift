@@ -65,7 +65,6 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     }
     
     func initUI() {
-        
         shortAboutDescriptionTextField.layer.borderColor = UIColor.lightGray.cgColor
         shortAboutDescriptionTextField.layer.borderWidth = 0.5
         shortAboutDescriptionTextField.layer.cornerRadius = 3
@@ -130,20 +129,22 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                 if shortTextField.isEmpty {
                     if let shortProfileItemId = shortAboutProfileItemId {
                         group.enter()
-                        viewModel?.modifyPublicProfileItem(.shortDescription, "", .delete, shortProfileItemId, { result, error, itemId in
+                        
+                        viewModel?.modifyBlurbProfileItem(profileItemId: shortProfileItemId, newValue: "", operationType: .delete, { result, error, itemId in
                             if result {
                                 self.shortAboutProfileItemId = nil
                             } else {
                                 self.showErrorAlert(message: .errorMessage)
                                 publicProfileUpdateIsSuccessfully.0 = false
                             }
-                        group.leave()
+                            group.leave()
                         })
                     }
-            
+                    
                 } else {
                     group.enter()
-                    viewModel?.modifyPublicProfileItem(.shortDescription, shortTextField, .update, shortAboutProfileItemId, { result, error, itemId  in
+                    
+                    viewModel?.modifyBlurbProfileItem(profileItemId: shortAboutProfileItemId, newValue: shortTextField, operationType: .update, { result, error, itemId  in
                         if result {
                             self.shortAboutProfileItemId = itemId
                         } else {
@@ -162,7 +163,8 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                 if longTextView.isEmpty {
                     if let longProfileItemId = longAboutProfileItemId {
                         group.enter()
-                        viewModel?.modifyPublicProfileItem(.longDescription, "", .delete, longProfileItemId, { result, error, itemId in
+                        
+                        viewModel?.modifyDescriptionProfileItem(profileItemId: longProfileItemId, newValue: "", operationType: .delete, { result, error, itemId in
                             if result {
                                 self.longAboutProfileItemId = nil
                             } else {
@@ -172,9 +174,11 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                             group.leave()
                         })
                     }
+                    
                 } else {
                     group.enter()
-                    viewModel?.modifyPublicProfileItem(.longDescription, longTextView, .update, longAboutProfileItemId, { result, error, itemId  in
+                    
+                    viewModel?.modifyDescriptionProfileItem(profileItemId: longAboutProfileItemId, newValue: longTextView, operationType: .update, { result, error, itemId  in
                         if result {
                             self.longAboutProfileItemId = itemId
                         } else {
@@ -198,7 +202,6 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
 
 extension PublicProfileAboutPageViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-
             longDescriptionEmptyLabel.isHidden = true
     }
 
@@ -215,12 +218,10 @@ extension PublicProfileAboutPageViewController: UITextViewDelegate {
 
 extension PublicProfileAboutPageViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
         shortDescriptionEmptyLabel.isHidden = true
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
         guard let textFieldText = textField.text else { return false }
         
         let textCount = textFieldText.count + string.count - range.length
