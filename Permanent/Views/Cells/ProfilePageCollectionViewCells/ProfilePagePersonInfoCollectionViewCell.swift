@@ -16,7 +16,6 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var birthLocationTitleLabel: UILabel!
     @IBOutlet weak var birthLocationLabel: UILabel!
     
-    
     static let identifier = "ProfilePagePersonInfoCollectionViewCell"
     
     override func awakeFromNib() {

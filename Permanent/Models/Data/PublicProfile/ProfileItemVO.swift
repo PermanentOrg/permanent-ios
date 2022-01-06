@@ -31,8 +31,8 @@ struct ProfileItemVOData: Model {
     let day2: String?
     let locnId1: Int?
     let locnId2: Int?
-    let text_dataId1: Int?
-    let text_dataId2: Int?
+    let textDataId1: Int?
+    let textDataId2: Int?
     let otherId1: Int?
     let otherId2: Int?
     let archiveArchiveNbr: Int?
@@ -43,7 +43,7 @@ struct ProfileItemVOData: Model {
     let publicDT: String?
     let status: String?
     let type: String?
-    let LocnVOs: String?
+    let locnVOs: String?
     let timezoneVO: TimezoneVO?
     let textData1: String?
     let textData2: String?
@@ -67,8 +67,8 @@ struct ProfileItemVOData: Model {
         case day2
         case locnId1
         case locnId2
-        case text_dataId1
-        case text_dataId2
+        case textDataId1 = "text_dataId1"
+        case textDataId2 = "text_dataId2"
         case otherId1
         case otherId2
         case archiveArchiveNbr
@@ -79,7 +79,7 @@ struct ProfileItemVOData: Model {
         case publicDT
         case status
         case type
-        case LocnVOs
+        case locnVOs = "LocnVOs"
         case textData1
         case textData2
         case archiveNbr
