@@ -44,7 +44,6 @@ class MemberRoleHeader: UIView {
         infoButton.addTarget(self, action: #selector(showInfoAction(_:)), for: .touchUpInside)
         infoButton.imageView?.tintColor = .lightGray
 
-        
         let hStack = UIStackView(arrangedSubviews: [
             roleLabel,
             infoButton
@@ -78,15 +77,13 @@ class MemberRoleHeader: UIView {
     
     @objc
     func showInfoAction(_ sender: UIButton) {
-
         // This view is used as a UITableViewHeader, so its parent is a UITableView.
         // In order to access the parent UIViewController, we access the superview's superview.
         
         let originX = sender.frame.origin.x + sender.frame.width + 20 + 3 // leadingMargin + offset
         let originY = sender.frame.origin.y + 10 // topMargin
         
-        let absPos = self.convert(CGPoint(x: originX, y: originY),
-                                  to: self.superview?.superview)
+        let absPos = self.convert(CGPoint(x: originX, y: originY), to: self.superview?.superview)
         
         infoAction?(absPos, tooltipText)
     }

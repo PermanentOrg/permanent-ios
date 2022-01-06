@@ -11,9 +11,7 @@ typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
 typealias CellButtonTapAction = (UITableViewCell) -> Void
 
-struct Font {
-    
-}
+struct Font { }
 
 struct Text {
     static var style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
@@ -60,17 +58,17 @@ struct Constants {
     static let onboardingTextBold = [
         "Share your most cherished \nmemories with total control.",
         "Preserve your most important \ndocuments with peace of mind.",
-        "We will never mine your data, \nclaim your copyright or invade \nyour privacy.",
+        "We will never mine your data, \nclaim your copyright or invade \nyour privacy."
     ]
     static let onboardingTextNormal = [
         "Easily create links to privately shared \ncontent that limit how many people can \naccess the content or for how long.",
         "We are the most comprehensive consumer \ndigital preservation platform available today.",
-        "We are backed by mission-driven \ncultural heritage nonprofit dedicated to \nthe public good.",
+        "We are backed by mission-driven \ncultural heritage nonprofit dedicated to \nthe public good."
     ]
     static let onboardingBottomButtonText = [
         "Next",
         "Next",
-        "Get Started",
+        "Get Started"
     ]
     static let onboardingPageImage = ["1", "2", "3"]
 }
@@ -89,28 +87,28 @@ extension Constants.Design {
 }
 
 extension Constants.API {
-    static let TYPE_AUTH_CREATED_ACCOUNT_EMAIL = "type.auth.created_account_email"
-    static let TYPE_AUTH_CREATED_ACCOUNT_TEXT = "type.auth.created_account_text"
-    static let TYPE_AUTH_EMAIL = "type.auth.email"
-    static let TYPE_AUTH_KEEP_LOGGED_IN = "type.auth.keep_logged_in"
-    static let TYPE_AUTH_PASSWORD = "type.auth.password"
-    static let TYPE_AUTH_PERM_SESSION = "type.auth.perm_session"
-    static let TYPE_AUTH_PHONE = "type.auth.phone"
-    static let TYPE_AUTH_REMEMBER_ME = "type.auth.remember_me"
-    static let TYPE_AUTH_SESSION = "type.auth.session"
-    static let TYPE_AUTH_SIGNUP = "type.auth.signup"
-    static let TYPE_AUTH_VAULT = "type.auth.vault"
-    static let TYPE_AUTH_MFA = "type.auth.mfa"
-    static let TYPE_AUTH_MFAVALIDATION = "type.auth.mfaValidation"
+    static let typeAuthCreatedAccountEmail = "type.auth.created_account_email"
+    static let typeAuthCreatedAccountText = "type.auth.created_account_text"
+    static let typeAuthEmail = "type.auth.email"
+    static let typeAuthKeepLoggedIn = "type.auth.keep_logged_in"
+    static let typeAuthPassword = "type.auth.password"
+    static let typeAuthPermSession = "type.auth.perm_session"
+    static let typeAuthPhone = "type.auth.phone"
+    static let typeAuthRememberMe = "type.auth.remember_me"
+    static let typeAuthSession = "type.auth.session"
+    static let typeAuthSignup = "type.auth.signup"
+    static let typeAuthVault = "type.auth.vault"
+    static let typeAuthMFA = "type.auth.mfa"
+    static let typeAuthMFAValidation = "type.auth.mfaValidation"
 }
 
 extension Constants.API.FileType {
-    static let MY_FILES_FOLDER = "My Files"
+    static let myFilesFolder = "My Files"
 
-    static let TYPE_FOLDER_ROOT_PRIVATE = "type.folder.root.private"
-    static let TYPE_FOLDER_ROOT_PUBLIC = "type.folder.root.public"
-    static let TYPE_FOLDER_PRIVATE = "type.folder.private"
-    static let TYPE_RECORD_IMAGE = "type.record.image"
+    static let typeFolderRootPrivate = "type.folder.root.private"
+    static let typeFolderRootPublic = "type.folder.root.public"
+    static let typeFolderPrivate = "type.folder.private"
+    static let typeRecordImage = "type.record.image"
 }
 
 extension Constants.URL {
@@ -118,21 +116,21 @@ extension Constants.URL {
 }
 
 extension Constants.API.AccountStatus {
-    static let STATUS_GENERIC_PENDING = "status.generic.pending"
-    static let STATUS_GENERIC_OK = "status.generic.ok"
+    static let pending = "status.generic.pending"
+    static let ok = "status.generic.ok"
 }
 
 extension Constants.API.InviteStatus {
-    static let STATUS_INVITE_ACCEPTED = "status.invite.accepted"
-    static let STATUS_INVITE_REVOKED = "status.invite.revoked"
-    static let STATUS_INVITE_PENDING = "status.invite.pending"
-    static let STATUS_INVITE_REJECTED = "status.invite.rejected"
+    static let accepted = "status.invite.accepted"
+    static let revoked = "status.invite.revoked"
+    static let pending = "status.invite.pending"
+    static let rejected = "status.invite.rejected"
 }
 
 extension Constants.API.NotificationType {
-    static let NOTIFICATION_TYPE_PA_SHARE = "type.notification.pa_share"
-    static let NOTIFICATION_TYPE_RELATIONSHIP = "type.notification.relationship"
-    static let NOTIFICATION_TYPE_ACCOUNT = "type.notification.cleanup_bad_upload"
+    static let paShare = "type.notification.pa_share"
+    static let relationship = "type.notification.relationship"
+    static let account = "type.notification.cleanup_bad_upload"
 }
 
 extension Constants.Keys.StorageKeys {

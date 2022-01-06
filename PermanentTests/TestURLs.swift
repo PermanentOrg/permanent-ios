@@ -8,11 +8,9 @@
 import Foundation
 
 class TestURLs {
-  var urls: [URL?: Data] {
-    get {
-      [:]
+    var urls: [URL?: Data] {
+        [:]
     }
-  }
-  required init() {
-  }
+    required init() {
+    }
 }

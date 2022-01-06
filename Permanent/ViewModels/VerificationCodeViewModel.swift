@@ -7,18 +7,32 @@
 
 import Foundation
 
-class VerificationCodeViewModel: ViewModelInterface {
-    weak var delegate: VerificationCodeViewModelDelegate?
+enum CodeVerificationType {
+    case phone
+    case mfa
     
-    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    var value: String {
+        switch self {
+        case .mfa:
+            return Constants.API.typeAuthMFAValidation
+            
+        case .phone:
+            return Constants.API.typeAuthPhone
+        }
+    }
 }
 
 protocol VerificationCodeViewModelDelegate: ViewModelDelegateInterface {
     func verify(for credentials: VerifyCodeCredentials, then handler: @escaping ServerResponse)
 }
 
-extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
+class VerificationCodeViewModel: ViewModelInterface {
+    weak var delegate: VerificationCodeViewModelDelegate?
     
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+}
+
+extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
     func verify(for credentials: VerifyCodeCredentials, then handler: @escaping ServerResponse) {
         let requestDispatcher = APIRequestDispatcher(networkSession: sessionProtocol)
         let verifyOperation = APIOperation(AuthenticationEndpoint.verify(credentials: credentials))
@@ -110,21 +124,6 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
             try PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
         } catch {
             print(error)
-        }
-    }
-    
-}
-
-enum CodeVerificationType {
-    case phone
-    case mfa
-    
-    var value: String {
-        switch self {
-        case .mfa:
-            return Constants.API.TYPE_AUTH_MFAVALIDATION
-        case .phone:
-            return Constants.API.TYPE_AUTH_PHONE
         }
     }
 }

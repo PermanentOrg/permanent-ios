@@ -27,8 +27,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
-    
-    
     var screenTitle: String = "Personal Information".localized()
     
     override func viewDidLoad() {

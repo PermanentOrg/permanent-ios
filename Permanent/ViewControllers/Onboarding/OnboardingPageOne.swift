@@ -8,7 +8,6 @@
 import UIKit
 
 class OnboardingPageOne: UIViewController {
-    
     @IBOutlet weak var labelOne: UILabel!
     @IBOutlet weak var labelTwo: UILabel!
     override func viewDidLoad() {
@@ -21,13 +20,10 @@ class OnboardingPageOne: UIViewController {
         labelOne.numberOfLines = 3
         labelOne.textColor = .white
         
-        
         labelTwo.attributedText = Text.style2.setTextWithLineSpacing(text: Constants.onboardingTextNormal[0])
         labelTwo.font = Text.style2.font
         labelTwo.textAlignment = Text.style2.alignment
         labelTwo.numberOfLines = 3
         labelTwo.textColor = .white
-        
     }
-    
 }

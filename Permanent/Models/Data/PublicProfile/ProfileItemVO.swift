@@ -64,8 +64,8 @@ class ProfileItemModel: Model {
     var day2: String? = nil
     var locnId1: Int? = nil
     var locnId2: Int? = nil
-    var text_dataId1: Int? = nil
-    var text_dataId2: Int? = nil
+    var textDataId1: Int? = nil
+    var textDataId2: Int? = nil
     var otherId1: Int? = nil
     var otherId2: Int? = nil
     var archiveArchiveNbr: Int? = nil
@@ -102,8 +102,8 @@ class ProfileItemModel: Model {
         case day2
         case locnId1
         case locnId2
-        case text_dataId1
-        case text_dataId2
+        case textDataId1 = "text_dataId1"
+        case textDataId2 = "text_dataId2"
         case otherId1
         case otherId2
         case archiveArchiveNbr

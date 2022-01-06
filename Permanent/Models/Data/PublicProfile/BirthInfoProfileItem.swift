@@ -36,7 +36,6 @@ class BirthInfoProfileItem: ProfileItemModel {
         set { }
     }
     
-    
     func getAddressString(_ items: [String?]) -> String {
         var address = items.compactMap { $0 }.joined(separator: ", ")
         address == "" ? (address = "Choose a location".localized()) : ()

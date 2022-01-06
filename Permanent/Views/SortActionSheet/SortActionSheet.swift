@@ -20,7 +20,6 @@ class SortActionSheet: UIView {
     
     weak var delegate: SortActionSheetDelegate?
 
-
     convenience init(
         frame: CGRect,
         selectedOption: SortOption = .nameAscending,
@@ -37,7 +36,6 @@ class SortActionSheet: UIView {
     }
 
     fileprivate func initUI() {
-        
         sheetView = UIView()
         sheetView.layer.cornerRadius = 4
         sheetView.backgroundColor = .backgroundPrimary
@@ -49,7 +47,7 @@ class SortActionSheet: UIView {
         NSLayoutConstraint.activate([
             sheetView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.trailingAnchor.constraint(equalTo: sheetView.trailingAnchor),
-            sheetView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            sheetView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
         
         // Stack view
@@ -66,7 +64,6 @@ class SortActionSheet: UIView {
             sheetView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: 20),
             sheetView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 26)
         ])
-        
         
         for option in SortOption.allCases where option != self.selectedOption {
             let button = RoundedButton()

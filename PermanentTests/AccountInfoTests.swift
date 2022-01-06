@@ -11,24 +11,20 @@ import XCTest
 
 class SuccessfulAccountInfoTestURLs: TestURLs {
     override var urls: [URL? : Data] {
-        get {
-            return [
-                URL(string:"https://www.permanent.org/api/auth/loggedIn"):"{\"Results\":[{\"data\":[{\"SimpleVO\":{\"key\":\"bool\",\"value\":true,\"createdDT\":null,\"updatedDT\":null}}],\"message\":[\"Status retrieved\"],\"status\":true,\"resultDT\":\"2021-08-03T17:59:25\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
-                URL(string:"https://www.permanent.org/api/account/get"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":4642,\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":null,\"address2\":null,\"country\":null,\"city\":null,\"state\":null,\"zip\":null,\"primaryPhone\":null,\"defaultArchiveId\":6053,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":\"type.account.standard\",\"emailStatus\":\"status.auth.verified\",\"phoneStatus\":\"status.auth.none\",\"notificationPreferences\":\"{\\\"textPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"emailPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"inAppPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}}\",\"agreed\":null,\"optIn\":null,\"emailArray\":null,\"inviteCode\":null,\"rememberMe\":null,\"keepLoggedIn\":null,\"accessRole\":null,\"spaceTotal\":2147483648,\"spaceLeft\":1948732003,\"fileTotal\":null,\"fileLeft\":199969,\"changePrimaryEmail\":null,\"changePrimaryPhone\":null,\"createdDT\":\"2021-03-18T08:28:15\",\"updatedDT\":\"2021-07-27T23:15:14\"}}],\"message\":[\"Account has been retrieved.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:01:55\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
-                URL(string:"https://www.permanent.org/api/account/update"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":\"4642\",\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
-            ]
-        }
+        return [
+            URL(string: "https://www.permanent.org/api/auth/loggedIn"): "{\"Results\":[{\"data\":[{\"SimpleVO\":{\"key\":\"bool\",\"value\":true,\"createdDT\":null,\"updatedDT\":null}}],\"message\":[\"Status retrieved\"],\"status\":true,\"resultDT\":\"2021-08-03T17:59:25\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
+            URL(string: "https://www.permanent.org/api/account/get"): "{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":4642,\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":null,\"address2\":null,\"country\":null,\"city\":null,\"state\":null,\"zip\":null,\"primaryPhone\":null,\"defaultArchiveId\":6053,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":\"type.account.standard\",\"emailStatus\":\"status.auth.verified\",\"phoneStatus\":\"status.auth.none\",\"notificationPreferences\":\"{\\\"textPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"emailPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"inAppPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}}\",\"agreed\":null,\"optIn\":null,\"emailArray\":null,\"inviteCode\":null,\"rememberMe\":null,\"keepLoggedIn\":null,\"accessRole\":null,\"spaceTotal\":2147483648,\"spaceLeft\":1948732003,\"fileTotal\":null,\"fileLeft\":199969,\"changePrimaryEmail\":null,\"changePrimaryPhone\":null,\"createdDT\":\"2021-03-18T08:28:15\",\"updatedDT\":\"2021-07-27T23:15:14\"}}],\"message\":[\"Account has been retrieved.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:01:55\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
+            URL(string: "https://www.permanent.org/api/account/update"): "{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":\"4642\",\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
+        ]
     }
 }
 
 class FailedAccountInfoTestURLs: TestURLs {
     override var urls: [URL? : Data] {
-        get {
-            return [
-                URL(string:"https://www.permanent.org/api/account/get"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":4642,\"primaryEmail\":\"luciancerbu87@gmail.com\",\"fullName\":\"Lucian Cerbu\",\"address\":null,\"address2\":null,\"country\":null,\"city\":null,\"state\":null,\"zip\":null,\"primaryPhone\":null,\"defaultArchiveId\":6053,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":\"type.account.standard\",\"emailStatus\":\"status.auth.verified\",\"phoneStatus\":\"status.auth.none\",\"notificationPreferences\":\"{\\\"textPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"emailPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"inAppPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}}\",\"agreed\":null,\"optIn\":null,\"emailArray\":null,\"inviteCode\":null,\"rememberMe\":null,\"keepLoggedIn\":null,\"accessRole\":null,\"spaceTotal\":2147483648,\"spaceLeft\":1948732003,\"fileTotal\":null,\"fileLeft\":199969,\"changePrimaryEmail\":null,\"changePrimaryPhone\":null,\"createdDT\":\"2021-03-18T08:28:15\",\"updatedDT\":\"2021-07-27T23:15:14\"}}],\"message\":[\"Account has been retrieved.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:01:55\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
-                URL(string:"https://www.permanent.org/api/account/update"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":\"4642\",\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
-            ]
-        }
+        return [
+            URL(string: "https://www.permanent.org/api/account/get"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":4642,\"primaryEmail\":\"luciancerbu87@gmail.com\",\"fullName\":\"Lucian Cerbu\",\"address\":null,\"address2\":null,\"country\":null,\"city\":null,\"state\":null,\"zip\":null,\"primaryPhone\":null,\"defaultArchiveId\":6053,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":\"type.account.standard\",\"emailStatus\":\"status.auth.verified\",\"phoneStatus\":\"status.auth.none\",\"notificationPreferences\":\"{\\\"textPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"emailPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"inAppPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}}\",\"agreed\":null,\"optIn\":null,\"emailArray\":null,\"inviteCode\":null,\"rememberMe\":null,\"keepLoggedIn\":null,\"accessRole\":null,\"spaceTotal\":2147483648,\"spaceLeft\":1948732003,\"fileTotal\":null,\"fileLeft\":199969,\"changePrimaryEmail\":null,\"changePrimaryPhone\":null,\"createdDT\":\"2021-03-18T08:28:15\",\"updatedDT\":\"2021-07-27T23:15:14\"}}],\"message\":[\"Account has been retrieved.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:01:55\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
+            URL(string: "https://www.permanent.org/api/account/update"):"{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":\"4642\",\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"690064441af5103e8dec08b59331fa7c\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
+        ]
     }
 }
 
@@ -80,25 +76,25 @@ class AccountInfoTests: XCTestCase {
         let dataWasNotModified = expectation(description: "Test update data was not modified.")
         
         sut.updateUserData(with: accountId, userData: userData, then: { status in
-            XCTAssertEqual(status, .success(message: "Updates were saved") ,"Failed!User data Not received.")
+            XCTAssertEqual(status, .success(message: "Updates were saved"), "Failed!User data Not received.")
             validTestResult.fulfill()
         })
         
         userData.fullName = nil
         sut.dataIsNotModified = false
         sut.updateUserData(with: accountId, userData: userData, then: { status in
-            XCTAssertEqual(status, .error(message: "Account name can\'t be empty.") ,"Failed!Tested invalid user name.")
+            XCTAssertEqual(status, .error(message: "Account name can\'t be empty."), "Failed!Tested invalid user name.")
             invalidUserNameResult.fulfill()
         })
         
         userData.fullName = "testAccount"
         sut.dataIsNotModified = true
         sut.updateUserData(with: accountId, userData: userData, then: { status in
-            XCTAssertEqual(status, .error(message: "No modifications were done") ,"Failed!Tested data was not modified.")
+            XCTAssertEqual(status, .error(message: "No modifications were done"), "Failed!Tested data was not modified.")
             dataWasNotModified.fulfill()
         })
         
-        wait(for: [validTestResult,invalidUserNameResult,dataWasNotModified], timeout: 6)
+        wait(for: [validTestResult, invalidUserNameResult, dataWasNotModified], timeout: 6)
     }
     
     func testGetUserInvalidData() throws {
@@ -126,27 +122,26 @@ class AccountInfoTests: XCTestCase {
         let invalidTestResult = expectation(description: "Test invalid api response.")
         
         sut.updateUserData(with: accountId, userData: userData, then: { status in
-            XCTAssertEqual(status, .error(message: nil) ,"Failed!User data Not received.")
+            XCTAssertEqual(status, .error(message: nil), "Failed!User data Not received.")
             invalidTestResult.fulfill()
         })
         wait(for: [invalidTestResult], timeout: 6)
     }
     
     func testPhoneNumberFormat() throws {
-
         let formatString = "+ZZZZZZZZZZZ"
-        let phoneNumbers = ["1234567890000":"+12345678900",
-                            "aassnnc221123331":"+221123331",
-                            "+2223311234441231":"+22233112344"
+        let phoneNumbers = [
+            "1234567890000": "+12345678900",
+            "aassnnc221123331": "+221123331",
+            "+2223311234441231": "+22233112344"
         ]
         
         for (inputPhoneNumber, outputPhoneNumber) in phoneNumbers {
-            XCTAssertEqual(sut.format(with: formatString, phone: inputPhoneNumber),outputPhoneNumber,"Test scenario.")
+            XCTAssertEqual(sut.format(with: formatString, phone: inputPhoneNumber), outputPhoneNumber, "Test scenario.")
         }
     }
     
     func testValuesFromTestField() throws {
-
         let userData = UpdateUserData(fullName: "testAccount", primaryEmail: "testaccount+prmnttst0001@server.com", primaryPhone: "+123456", address: "Test location", city: "Test city", state: "N/A", zip: nil, country: "RO")
         sut.userData = userData
         
@@ -154,7 +149,6 @@ class AccountInfoTests: XCTestCase {
         sut.dataIsNotModified = true
         
         sut.getValuesFromTextFieldValue(receivedData: userData)
-        XCTAssertFalse(sut.dataIsNotModified,"")
+        XCTAssertFalse(sut.dataIsNotModified, "")
     }
 }
-

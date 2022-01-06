@@ -74,5 +74,3 @@ extension PublicProfileEndpoint: RequestProtocol {
         nil
     }
 }
-
-

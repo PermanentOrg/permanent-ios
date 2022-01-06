@@ -67,7 +67,6 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         let credentials = LoginCredentials(emailField.text!,passwordField.text!)
         
-        
         showSpinner(colored: .white)
         closeKeyboard()
         

@@ -8,7 +8,6 @@
 import Foundation
 
 enum AccountStatus: String {
-    
     // Account has been approved.
     case ok
     
@@ -20,8 +19,8 @@ enum AccountStatus: String {
     
     static func status(forValue value: String?) -> AccountStatus {
         switch value {
-        case Constants.API.AccountStatus.STATUS_GENERIC_OK: return .ok
-        case Constants.API.AccountStatus.STATUS_GENERIC_PENDING: return .pending
+        case Constants.API.AccountStatus.ok: return .ok
+        case Constants.API.AccountStatus.pending: return .pending
         default: return .unknown
         }
     }
@@ -32,5 +31,4 @@ enum AccountStatus: String {
         default: return ""
         }
     }
-    
 }
