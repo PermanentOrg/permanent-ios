@@ -9,8 +9,8 @@ import Foundation
 
 enum PublicProfileEndpoint {
     case getAllByArchiveNbr(archiveId: Int, archiveNbr: String)
-    case safeAddUpdate(profileItemVOData: ProfileItemVOData)
-    case deleteProfileItem(profileItemVOData: ProfileItemVOData)
+    case safeAddUpdate(profileItemVOData: ProfileItemModel)
+    case deleteProfileItem(profileItemVOData: ProfileItemModel)
     
 }
 

@@ -9,9 +9,21 @@ import UIKit
 
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
+    var archiveType: ArchiveType!
     
-    init(archiveData: ArchiveVOData) {
+    var profileItems = [ProfileItemModel]()
+    
+    var blurbProfileItem: BlurbProfileItem? {
+        return profileItems.first(where: {$0 is BlurbProfileItem}) as? BlurbProfileItem
+    }
+    var descriptionProfileItem: DescriptionProfileItem? {
+        return profileItems.first(where: {$0 is DescriptionProfileItem}) as? DescriptionProfileItem
+    }
+    
+    init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
+        guard let archiveType = archiveData.type else { return }
+        self.archiveType = ArchiveType(rawValue: archiveType)
     }
     
     func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping (([ProfileItemVO]?, Error?) -> Void)) {
@@ -25,18 +37,20 @@ class PublicProfilePageViewModel: ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful
                 else {
                     completionBlock(nil, APIError.invalidResponse)
                     return
                 }
-                
+                self.profileItems = model.results.first?.data?.compactMap({ $0.profileItemVO }) ?? []
                 completionBlock(model.results.first?.data, nil)
                 return
+            
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -44,26 +58,40 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     
-    func modifyPublicProfileItem(_ fieldType: FieldNameUI,_ newValue: String,_ operationType: ProfileItemOperation,_ profileItemId: Int? = nil, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+    func modifyBlurbProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newBlurbItem = BlurbProfileItem()
+        newBlurbItem.shortDescription = newValue
+        newBlurbItem.archiveId = archiveData.archiveID
+        newBlurbItem.profileItemId = profileItemId
         
-        guard let profileItemData = createProfileItem(fieldname: fieldType, itemValue: newValue, archiveId: archiveData.archiveID, profileItemId: profileItemId) else {
-            completionBlock(false, APIError.parseError(.errorMessage), nil)
-            return
-        }
-        var updatePublicProfile = APIOperation(PublicProfileEndpoint.safeAddUpdate(profileItemVOData: profileItemData))
+        modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
+    }
+    
+    func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newDescriptionItem = DescriptionProfileItem()
+        newDescriptionItem.longDescription = newValue
+        newDescriptionItem.archiveId = archiveData.archiveID
+        newDescriptionItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+    }
+    
+    func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let apiOperation: APIOperation
         
         switch operationType {
         case .update, .create:
-             updatePublicProfile = APIOperation(PublicProfileEndpoint.safeAddUpdate(profileItemVOData: profileItemData))
+            apiOperation = APIOperation(PublicProfileEndpoint.safeAddUpdate(profileItemVOData: profileItemModel))
+            
         case .delete:
-             updatePublicProfile = APIOperation(PublicProfileEndpoint.deleteProfileItem(profileItemVOData: profileItemData))
+            apiOperation = APIOperation(PublicProfileEndpoint.deleteProfileItem(profileItemVOData: profileItemModel))
         }
         
-        updatePublicProfile.execute(in: APIRequestDispatcher()) { result in
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful,
                     let newProfileItemId = model.results.first
                 else {
@@ -77,42 +105,15 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 }
                 completionBlock(true, nil, newProfileItemId.data?.first?.profileItemVO?.profileItemId)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
             }
         }
     }
-    
-    func createProfileItem(fieldname: FieldNameUI, itemValue: String, archiveId: Int?, profileItemId: Int?) -> ProfileItemVOData? {
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        
-        let publicDT = dateFormatter.string(from: Date())
-        
-        switch fieldname {
-        
-        case .shortDescription, .archiveName, .emailAddress, .profileGender:
-            let profileItemVOData = ProfileItemVOData(profileItemId: profileItemId, archiveId: archiveId, fieldNameUI: fieldname.rawValue, string1: itemValue, string2: nil, string3: nil, int1: nil, int2: nil, int3: nil, datetime1: nil, datetime2: nil, day1: nil, day2: nil, locnId1: nil, locnId2: nil, textDataId1: nil, textDataId2: nil, otherId1: nil, otherId2: nil, archiveArchiveNbr: nil, recordArchiveNbr: nil, folderArchiveNbr: nil, isVisible: nil, isPendingAction: true, publicDT: publicDT, status: nil, type: "type.widget.string", locnVOs: nil, timezoneVO: nil, textData1: nil, textData2: nil, archiveNbr: nil, createdDT: nil, updatedDT: nil)
-            
-            return profileItemVOData
-            
-        case .longDescription:
-            let profileItemVOData = ProfileItemVOData(profileItemId: profileItemId, archiveId: archiveId, fieldNameUI: fieldname.rawValue, string1: nil, string2: nil, string3: nil, int1: nil, int2: nil, int3: nil, datetime1: nil, datetime2: nil, day1: nil, day2: nil, locnId1: nil, locnId2: nil, textDataId1: nil, textDataId2: nil, otherId1: nil, otherId2: nil, archiveArchiveNbr: nil, recordArchiveNbr: nil, folderArchiveNbr: nil, isVisible: nil, isPendingAction: true, publicDT: publicDT, status: nil, type: "type.widget.string", locnVOs: nil, timezoneVO: nil, textData1: itemValue, textData2: nil, archiveNbr: nil, createdDT: nil, updatedDT: nil)
-            
-            return profileItemVOData
-        }
-    }
-}
-
-enum ProfileItemOperation {
-    case update
-    case create
-    case delete
 }

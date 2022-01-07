@@ -244,6 +244,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .profilePage, from: .profile) as! PublicProfilePageViewController
             newRootVC.archiveData = archive
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         default:
             return
         }

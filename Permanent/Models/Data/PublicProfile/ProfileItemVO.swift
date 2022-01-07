@@ -8,47 +8,82 @@
 import Foundation
 
 struct ProfileItemVO: Model {
-    let profileItemVO: ProfileItemVOData?
+    let profileItemVO: ProfileItemModel?
     
     enum CodingKeys: String, CodingKey {
         case profileItemVO = "Profile_itemVO"
     }
+    
+    enum ItemCodingKeys: String, CodingKey {
+        case fieldNameUI
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Self.CodingKeys)
+        let profileItemContainer = try container.nestedContainer(keyedBy: Self.ItemCodingKeys, forKey: .profileItemVO)
+        let fieldNameUI = try profileItemContainer.decode(String?.self, forKey: .fieldNameUI)
+        
+        switch fieldNameUI {
+        case FieldNameUI.blurb.rawValue:
+            profileItemVO = try container.decode(BlurbProfileItem?.self, forKey: .profileItemVO)
+            
+        case FieldNameUI.basic.rawValue:
+            profileItemVO = try container.decode(BasicProfileItem?.self, forKey: .profileItemVO)
+            
+        case FieldNameUI.description.rawValue:
+            profileItemVO = try container.decode(DescriptionProfileItem?.self, forKey: .profileItemVO)
+            
+        case FieldNameUI.email.rawValue:
+            profileItemVO = try container.decode(EmailProfileItem?.self, forKey: .profileItemVO)
+            
+        case FieldNameUI.profileGender.rawValue:
+            profileItemVO = try container.decode(GenderProfileItem?.self, forKey: .profileItemVO)
+            
+        case FieldNameUI.birthInfo.rawValue:
+            profileItemVO = try container.decode(BirthInfoProfileItem?.self, forKey: .profileItemVO)
+            
+        default:
+            profileItemVO = nil
+        }
+    }
 }
 
-struct ProfileItemVOData: Model {
-    let profileItemId: Int?
-    let archiveId: Int?
-    let fieldNameUI: String?
-    let string1: String?
-    let string2: String?
-    let string3: String?
-    let int1: Int?
-    let int2: Int?
-    let int3: Int?
-    let datetime1: String?
-    let datetime2: String?
-    let day1: String?
-    let day2: String?
-    let locnId1: Int?
-    let locnId2: Int?
-    let textDataId1: Int?
-    let textDataId2: Int?
-    let otherId1: Int?
-    let otherId2: Int?
-    let archiveArchiveNbr: Int?
-    let recordArchiveNbr: Int?
-    let folderArchiveNbr: Int?
-    let isVisible: Bool?
-    let isPendingAction: Bool?
-    let publicDT: String?
-    let status: String?
-    let type: String?
-    let locnVOs: String?
-    let timezoneVO: TimezoneVO?
-    let textData1: String?
-    let textData2: String?
-    let archiveNbr: String?
-    let createdDT, updatedDT: String?
+class ProfileItemModel: Model {
+    var profileItemId: Int?
+    var archiveId: Int?
+    var fieldNameUI: String?
+    var string1: String?
+    var string2: String?
+    var string3: String?
+    var int1: Int?
+    var int2: Int?
+    var int3: Int?
+    var datetime1: String?
+    var datetime2: String?
+    var day1: String?
+    var day2: String?
+    var locnId1: Int?
+    var locnId2: Int?
+    var textDataId1: Int?
+    var textDataId2: Int?
+    var otherId1: Int?
+    var otherId2: Int?
+    var archiveArchiveNbr: Int?
+    var recordArchiveNbr: Int?
+    var folderArchiveNbr: Int?
+    var isVisible: Bool?
+    var isPendingAction: Bool?
+    var publicDT: String?
+    var status: String?
+    var type: String?
+    var locnVOs: [LocnVO]?
+    var timezoneVO: TimezoneVO?
+    var textData1: String?
+    var textData2: String?
+    var archiveNbr: String?
+    var createdDT: String?
+    var updatedDT: String?
+    var locationValue: LocnVO?
 
     enum CodingKeys: String, CodingKey {
         case profileItemId = "profile_itemId"
@@ -86,22 +121,7 @@ struct ProfileItemVOData: Model {
         case createdDT, updatedDT
     }
     
-    func toBackendString() -> String? {
-        var returnedValue: String?
-        
-        guard let fieldName = fieldNameUI else { return nil }
-
-        switch fieldName {
-        case FieldNameUI.shortDescription.rawValue :
-            guard let string = string1 else { return nil }
-            returnedValue = string
-        
-        case FieldNameUI.longDescription.rawValue :
-            guard let string = textData1 else { return nil }
-            returnedValue = string
-        default:
-            returnedValue = nil
-        }
-        return returnedValue
+    init(fieldNameUI: String) {
+        self.fieldNameUI = fieldNameUI
     }
 }

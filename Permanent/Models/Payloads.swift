@@ -633,7 +633,7 @@ struct Payloads {
         ]
     }
     
-    static func safeAddUpdate(profileItemVOData: ProfileItemVOData) -> RequestParameters {
+    static func safeAddUpdate(profileItemVOData: ProfileItemModel) -> RequestParameters {
         let profileDict: Any?
         if let profileJson = try? JSONEncoder().encode(profileItemVOData) {
             profileDict = try? JSONSerialization.jsonObject(with: profileJson, options: [])

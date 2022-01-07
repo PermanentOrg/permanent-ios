@@ -67,7 +67,6 @@ struct ArchiveVOData: Model {
 
 // MARK: - Permissions
 extension ArchiveVOData {
-    
     func permissions() -> [Permission] {
         guard let rawAccessRole = accessRole else { return [.read] }
         
@@ -80,17 +79,21 @@ extension ArchiveVOData {
         switch accessRole {
         case .owner:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership]
+            
         case .manager:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]
+            
         case .curator:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share]
+            
         case .editor:
             return [.read, .create, .upload, .edit]
+            
         case .contributor:
             return [.read, .create, .upload]
+            
         case .viewer:
             return [.read]
         }
     }
-    
 }
