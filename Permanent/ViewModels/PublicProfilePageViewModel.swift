@@ -9,9 +9,21 @@ import UIKit
 
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
+    var archiveType: ArchiveType!
     
-    init(archiveData: ArchiveVOData) {
+    var profileItems = [ProfileItemModel]()
+    
+    var blurbProfileItem: BlurbProfileItem? {
+        return profileItems.first(where: {$0 is BlurbProfileItem}) as? BlurbProfileItem
+    }
+    var descriptionProfileItem: DescriptionProfileItem? {
+        return profileItems.first(where: {$0 is DescriptionProfileItem}) as? DescriptionProfileItem
+    }
+    
+    init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
+        guard let archiveType = archiveData.type else { return }
+        self.archiveType = ArchiveType(rawValue: archiveType)
     }
     
     func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping (([ProfileItemVO]?, Error?) -> Void)) {
@@ -31,12 +43,14 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(nil, APIError.invalidResponse)
                     return
                 }
-                
+                self.profileItems = model.results.first?.data?.compactMap({ $0.profileItemVO }) ?? []
                 completionBlock(model.results.first?.data, nil)
                 return
+            
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -62,13 +76,13 @@ class PublicProfilePageViewModel: ViewModelInterface {
         modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
     }
     
-    func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel,_ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        
+    func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let apiOperation: APIOperation
         
         switch operationType {
         case .update, .create:
             apiOperation = APIOperation(PublicProfileEndpoint.safeAddUpdate(profileItemVOData: profileItemModel))
+            
         case .delete:
             apiOperation = APIOperation(PublicProfileEndpoint.deleteProfileItem(profileItemVOData: profileItemModel))
         }
@@ -91,9 +105,11 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 }
                 completionBlock(true, nil, newProfileItemId.data?.first?.profileItemVO?.profileItemId)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return

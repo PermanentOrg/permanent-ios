@@ -9,15 +9,6 @@ import UIKit
 import AVFoundation
 
 class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePageViewModel> {
-    
-    var shortDescription: String?
-    var longDescription: String?
-    var shortAboutProfileItemId: Int?
-    var longAboutProfileItemId: Int?
-    
-    var screenTitle: String = "About This Archive".localized()
-    var archiveType: ArchiveType!
-    
     @IBOutlet weak var shortAboutDescriptionTitleLabel: UILabel!
     @IBOutlet weak var shortAboutDescriptionTextField: UITextField!
     @IBOutlet weak var longAboutDescriptionTextView: UITextView!
@@ -29,13 +20,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = screenTitle.localized()
-        
-        extendedLayoutIncludesOpaqueBars = true
-        edgesForExtendedLayout = .all
-        
         setupNavigationBar()
-        
         initUI()
         
         shortAboutDescriptionTextField.delegate = self
@@ -51,9 +36,11 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
-        
         view.endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setupNavigationBar() {
@@ -65,6 +52,11 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     }
     
     func initUI() {
+        title = "About This Archive".localized()
+        
+        extendedLayoutIncludesOpaqueBars = true
+        edgesForExtendedLayout = .all
+        
         shortAboutDescriptionTextField.layer.borderColor = UIColor.lightGray.cgColor
         shortAboutDescriptionTextField.layer.borderWidth = 0.5
         shortAboutDescriptionTextField.layer.cornerRadius = 3
@@ -91,48 +83,46 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longAboutDescriptionTitleLabel.textColor = .middleGray
         longAboutDescriptionTitleLabel.font = Text.style12.font
         
-        shortAboutDescriptionTitleLabel.text = "\(archiveType.shortDescriptionTitle) (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(shortDescription?.count ?? 0)")
-        shortDescriptionEmptyLabel.text = archiveType.shortDescriptionHint
+        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
+        shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint
         
-        if let shortDescription = shortDescription {
+        if let shortDescription = viewModel?.blurbProfileItem?.shortDescription {
             shortAboutDescriptionTextField.text = shortDescription
             shortDescriptionEmptyLabel.isHidden = true
         } else {
             shortDescriptionEmptyLabel.isHidden = false
         }
         
-        if let longDescription = longDescription {
+        if let longDescription = viewModel?.descriptionProfileItem?.longDescription {
             longAboutDescriptionTextView.text = longDescription
             longDescriptionEmptyLabel.isHidden = true
         } else {
             longDescriptionEmptyLabel.isHidden = false
         }
         
-        longAboutDescriptionTitleLabel.text = archiveType.longDescriptionTitle
-        longDescriptionEmptyLabel.text = archiveType.longDescriptionHint
+        longAboutDescriptionTitleLabel.text = viewModel?.archiveType.longDescriptionTitle
+        longDescriptionEmptyLabel.text = viewModel?.archiveType.longDescriptionHint
     }
     
     @objc func closeButtonAction(_ sender: Any) {
         dismiss(animated: true)
     }
-    
     @objc func doneButtonAction(_ sender: Any) {
-        var publicProfileUpdateIsSuccessfully: (Bool,Bool) = (true,true)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (true, true)
         
         let group = DispatchGroup()
         
         showSpinner()
              
         if let shortTextField = shortAboutDescriptionTextField.text {
-            if shortTextField != shortDescription {
-                
+            if shortTextField != viewModel?.blurbProfileItem?.shortDescription {
                 if shortTextField.isEmpty {
-                    if let shortProfileItemId = shortAboutProfileItemId {
+                    if let shortProfileItemId = viewModel?.blurbProfileItem?.profileItemId {
                         group.enter()
                         
                         viewModel?.modifyBlurbProfileItem(profileItemId: shortProfileItemId, newValue: "", operationType: .delete, { result, error, itemId in
                             if result {
-                                self.shortAboutProfileItemId = nil
+                                self.viewModel?.blurbProfileItem?.profileItemId = nil
                             } else {
                                 self.showErrorAlert(message: .errorMessage)
                                 publicProfileUpdateIsSuccessfully.0 = false
@@ -140,13 +130,12 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                             group.leave()
                         })
                     }
-                    
                 } else {
                     group.enter()
                     
-                    viewModel?.modifyBlurbProfileItem(profileItemId: shortAboutProfileItemId, newValue: shortTextField, operationType: .update, { result, error, itemId  in
+                    viewModel?.modifyBlurbProfileItem(profileItemId: viewModel?.blurbProfileItem?.profileItemId, newValue: shortTextField, operationType: .update, { result, error, itemId  in
                         if result {
-                            self.shortAboutProfileItemId = itemId
+                            self.viewModel?.blurbProfileItem?.profileItemId = itemId
                         } else {
                             self.showAlert(title: .error, message: .errorMessage)
                             publicProfileUpdateIsSuccessfully.0 = false
@@ -158,15 +147,14 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         }
         
         if let longTextView = longAboutDescriptionTextView.text {
-            if longTextView != longDescription {
-                
+            if longTextView != viewModel?.descriptionProfileItem?.longDescription {
                 if longTextView.isEmpty {
-                    if let longProfileItemId = longAboutProfileItemId {
+                    if let longProfileItemId = viewModel?.descriptionProfileItem?.profileItemId {
                         group.enter()
                         
                         viewModel?.modifyDescriptionProfileItem(profileItemId: longProfileItemId, newValue: "", operationType: .delete, { result, error, itemId in
                             if result {
-                                self.longAboutProfileItemId = nil
+                                self.viewModel?.descriptionProfileItem?.profileItemId = nil
                             } else {
                                 self.showErrorAlert(message: .errorMessage)
                                 publicProfileUpdateIsSuccessfully.1 = false
@@ -174,13 +162,12 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                             group.leave()
                         })
                     }
-                    
                 } else {
                     group.enter()
                     
-                    viewModel?.modifyDescriptionProfileItem(profileItemId: longAboutProfileItemId, newValue: longTextView, operationType: .update, { result, error, itemId  in
+                    viewModel?.modifyDescriptionProfileItem(profileItemId: viewModel?.descriptionProfileItem?.profileItemId, newValue: longTextView, operationType: .update, { result, error, itemId  in
                         if result {
-                            self.longAboutProfileItemId = itemId
+                            self.viewModel?.descriptionProfileItem?.profileItemId = itemId
                         } else {
                             self.showAlert(title: .error, message: .errorMessage)
                             publicProfileUpdateIsSuccessfully.1 = false
@@ -202,11 +189,11 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
 
 extension PublicProfileAboutPageViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-            longDescriptionEmptyLabel.isHidden = true
+        longDescriptionEmptyLabel.isHidden = true
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-            return true
+        return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -226,7 +213,7 @@ extension PublicProfileAboutPageViewController: UITextFieldDelegate {
         
         let textCount = textFieldText.count + string.count - range.length
         
-        shortAboutDescriptionTitleLabel.text = "\(archiveType.shortDescriptionTitle) (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
         
         if textCount < 280 {
             return true

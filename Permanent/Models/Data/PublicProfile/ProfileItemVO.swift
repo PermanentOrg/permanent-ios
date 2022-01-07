@@ -49,41 +49,41 @@ struct ProfileItemVO: Model {
 }
 
 class ProfileItemModel: Model {
-    var profileItemId: Int? = nil
-    var archiveId: Int? = nil
-    var fieldNameUI: String? = nil
-    var string1: String? = nil
-    var string2: String? = nil
-    var string3: String? = nil
-    var int1: Int? = nil
-    var int2: Int? = nil
-    var int3: Int? = nil
-    var datetime1: String? = nil
-    var datetime2: String? = nil
-    var day1: String? = nil
-    var day2: String? = nil
-    var locnId1: Int? = nil
-    var locnId2: Int? = nil
-    var textDataId1: Int? = nil
-    var textDataId2: Int? = nil
-    var otherId1: Int? = nil
-    var otherId2: Int? = nil
-    var archiveArchiveNbr: Int? = nil
-    var recordArchiveNbr: Int? = nil
-    var folderArchiveNbr: Int? = nil
-    var isVisible: Bool? = nil
-    var isPendingAction: Bool? = nil
-    var publicDT: String? = nil
-    var status: String? = nil
-    var type: String? = nil
-    var locnVOs: [LocnVO]? = nil
-    var timezoneVO: TimezoneVO? = nil
-    var textData1: String? = nil
-    var textData2: String? = nil
-    var archiveNbr: String? = nil
-    var createdDT: String? = nil
-    var updatedDT: String? = nil
-    var locationValue: LocnVO? = nil
+    var profileItemId: Int?
+    var archiveId: Int?
+    var fieldNameUI: String?
+    var string1: String?
+    var string2: String?
+    var string3: String?
+    var int1: Int?
+    var int2: Int?
+    var int3: Int?
+    var datetime1: String?
+    var datetime2: String?
+    var day1: String?
+    var day2: String?
+    var locnId1: Int?
+    var locnId2: Int?
+    var textDataId1: Int?
+    var textDataId2: Int?
+    var otherId1: Int?
+    var otherId2: Int?
+    var archiveArchiveNbr: Int?
+    var recordArchiveNbr: Int?
+    var folderArchiveNbr: Int?
+    var isVisible: Bool?
+    var isPendingAction: Bool?
+    var publicDT: String?
+    var status: String?
+    var type: String?
+    var locnVOs: [LocnVO]?
+    var timezoneVO: TimezoneVO?
+    var textData1: String?
+    var textData2: String?
+    var archiveNbr: String?
+    var createdDT: String?
+    var updatedDT: String?
+    var locationValue: LocnVO?
 
     enum CodingKeys: String, CodingKey {
         case profileItemId = "profile_itemId"

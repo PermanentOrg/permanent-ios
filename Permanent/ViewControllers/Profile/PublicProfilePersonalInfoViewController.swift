@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 17.12.2021.
-//  Copyright © 2021 Victory Square Partners. All rights reserved.
 //
 
 import UIKit
@@ -163,19 +162,23 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
         switch textField {
         case fullNameTextField:
             fullNameHintLabel.isHidden = true
+            
         case nicknameTextField:
             nicknameHintLabel.isHidden = true
+            
         case genderTextField:
             genderHintLabel.isHidden = true
+            
         case birthDateTextField:
             birthDateHintLabel.isHidden = true
+            
         case locationTextField:
             birthLocationHintLabel.isHidden = true
+            
         default:
             return
         }
     }
-    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let textFieldText = textField.text else { return }
         
@@ -184,22 +187,27 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             if textFieldText.isEmpty {
                 fullNameHintLabel.isHidden = false
             }
+            
         case nicknameTextField:
             if textFieldText.isEmpty {
                 nicknameHintLabel.isHidden = false
             }
+            
         case genderTextField:
             if textFieldText.isEmpty {
                 genderHintLabel.isHidden = false
             }
+            
         case birthDateTextField:
             if textFieldText.isEmpty {
                 birthDateHintLabel.isHidden = false
             }
+            
         case locationTextField:
             if textFieldText.isEmpty {
                 birthLocationHintLabel.isHidden = false
             }
+            
         default:
             return
         }

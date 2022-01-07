@@ -33,14 +33,15 @@ class BirthInfoProfileItem: ProfileItemModel {
             
             return locationString
         }
-        set { }
+        set {
+            self.birthLocationFormated = newValue
+        }
     }
     
     func getAddressString(_ items: [String?]) -> String {
         var address = items.compactMap { $0 }.joined(separator: ", ")
-        address == "" ? (address = "Choose a location".localized()) : ()
+        address.isEmpty ? (address = "Choose a location".localized()) : ()
 
         return address
     }
 }
-

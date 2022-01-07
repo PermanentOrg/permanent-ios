@@ -26,4 +26,3 @@ class DescriptionProfileItem: ProfileItemModel {
         try super.init(from: decoder)
     }
 }
-
