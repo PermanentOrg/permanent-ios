@@ -2,6 +2,7 @@
 //  GridViewCell.swift
 //  Permanent
 //
+//  Created by Vlad Alexandru Rusu on 25.08.2021.
 //
 
 import UIKit

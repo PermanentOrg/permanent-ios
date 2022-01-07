@@ -1,6 +1,6 @@
 //
 //  NotificationService.swift
-//  PushExtension
+//  PermanentPushExtension
 //
 //  Created by Vlad Alexandru Rusu on 01.04.2021.
 //

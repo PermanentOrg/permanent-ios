@@ -2,6 +2,7 @@
 //  FileDetailsBaseCollectionViewCell.swift
 //  Permanent
 //
+//  Created by Vlad Rusu on 05.05.2021.
 //
 
 import UIKit

@@ -4,7 +4,8 @@ excluded:
   - Pods
   - Cartography
   - build
-  - EnvVars.stencil
+  - Permanent/EnvVars.stencil
+  - Permanent/EnvVars.generated.swift
 
 disabled_rules:
   - duplicate_enum_cases
@@ -58,6 +59,7 @@ opt_in_rules:
   - vertical_whitespace_closing_braces
   - vertical_whitespace_opening_braces
   - yoda_condition
+  - file_header
   
 identifier_name:
   min_length:
@@ -76,3 +78,12 @@ vertical_whitespace_opening_braces:
 closure_body_length:
   warning: 80
   error: 120
+file_header:
+  severity: error
+  required_pattern: |
+                    \/\/( *?)
+                    \/\/.*?\.swift
+                    \/\/( *?)(Permanent.*?)
+                    \/\/( *?)
+                    \/\/( *?)Created by .*? on .*?
+                    \/\/( *?)
