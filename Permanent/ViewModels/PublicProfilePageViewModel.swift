@@ -19,6 +19,18 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var descriptionProfileItem: DescriptionProfileItem? {
         return profileItems.first(where: {$0 is DescriptionProfileItem}) as? DescriptionProfileItem
     }
+    var basicProfileItem: BasicProfileItem? {
+        return profileItems.first(where: {$0 is BasicProfileItem}) as? BasicProfileItem
+    }
+    var emailProfileItem: EmailProfileItem? {
+        return profileItems.first(where: {$0 is EmailProfileItem}) as? EmailProfileItem
+    }
+    var profileGenderProfileItem: GenderProfileItem? {
+        return profileItems.first(where: {$0 is GenderProfileItem}) as? GenderProfileItem
+    }
+    var birthInfoProfileItem: BirthInfoProfileItem? {
+        return profileItems.first(where: {$0 is BirthInfoProfileItem}) as? BirthInfoProfileItem
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
@@ -26,9 +38,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
         self.archiveType = ArchiveType(rawValue: archiveType)
     }
     
-    func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping (([ProfileItemVO]?, Error?) -> Void)) {
+    func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Error?) -> Void)) {
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
-            completionBlock(nil, APIError.unknown)
+            completionBlock(APIError.unknown)
             return
         }
         
@@ -40,19 +52,19 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful
                 else {
-                    completionBlock(nil, APIError.invalidResponse)
+                    completionBlock(APIError.invalidResponse)
                     return
                 }
                 self.profileItems = model.results.first?.data?.compactMap({ $0.profileItemVO }) ?? []
-                completionBlock(model.results.first?.data, nil)
+                completionBlock(nil)
                 return
             
             case .error:
-                completionBlock(nil, APIError.invalidResponse)
+                completionBlock(APIError.invalidResponse)
                 return
                 
             default:
-                completionBlock(nil, APIError.invalidResponse)
+                completionBlock(APIError.invalidResponse)
                 return
             }
         }

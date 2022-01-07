@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     @IBOutlet weak var fullNameTitleLabel: UILabel!
     @IBOutlet weak var fullNameTextField: UITextField!
     @IBOutlet weak var nicknameTitleLabel: UILabel!
@@ -26,18 +25,10 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
-    var screenTitle: String = "Personal Information".localized()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = screenTitle.localized()
-        
-        extendedLayoutIncludesOpaqueBars = true
-        edgesForExtendedLayout = .all
-        
         setupNavigationBar()
-        
         initUI()
         
         fullNameTextField.delegate = self
@@ -45,6 +36,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         genderTextField.delegate = self
         birthDateTextField.delegate = self
         locationTextField.delegate = self
+        
+        setFieldValues()
         
         addDismissKeyboardGesture()
     }
@@ -55,8 +48,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        //      NotificationCenter.default.removeObserver(self)
+    
         view.endEditing(true)
     }
     
@@ -64,11 +56,14 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         styleNavBar()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(closeButtonAction(_:)))
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction(_:)))
     }
     
     func initUI() {
+        title = viewModel?.archiveType.personalInformationPublicPageTitle
+        
+        extendedLayoutIncludesOpaqueBars = true
+        edgesForExtendedLayout = .all
         
         fullNameTitleLabel.textColor = .middleGray
         fullNameTitleLabel.font = Text.style12.font
@@ -155,6 +150,23 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @objc func doneButtonAction(_ sender: Any) {
         dismiss(animated: true)
     }
+    
+    func setFieldValues() {
+        setInitialLabelValueForTextField(fullNameTextField, value: viewModel?.basicProfileItem?.fullName, associatedLabel: fullNameHintLabel)
+        setInitialLabelValueForTextField(nicknameTextField, value: viewModel?.basicProfileItem?.nickname, associatedLabel: nicknameHintLabel)
+        setInitialLabelValueForTextField(genderTextField, value: viewModel?.profileGenderProfileItem?.personGender, associatedLabel: genderHintLabel)
+        setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
+        setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+    }
+    
+    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
+        if let savedValue = value {
+            textField.text = savedValue
+            associatedLabel.isHidden = true
+        } else {
+            associatedLabel.isHidden = false
+        }
+    }
 }
 
 extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
@@ -179,6 +191,7 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             return
         }
     }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let textFieldText = textField.text else { return }
         

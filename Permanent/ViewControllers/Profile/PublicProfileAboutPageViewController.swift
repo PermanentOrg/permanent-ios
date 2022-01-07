@@ -52,7 +52,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     }
     
     func initUI() {
-        title = "About This Archive".localized()
+        title = viewModel?.archiveType.aboutPublicPageTitle
         
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all

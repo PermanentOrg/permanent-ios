@@ -9,7 +9,6 @@ import UIKit
 
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     var archiveData: ArchiveVOData!
-    var profileData: [ProfileItemVO] = []
     
     enum CellType {
         case thumbnails
@@ -130,12 +129,10 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     func getAllByArchiveNbr(_ archive: ArchiveVOData) {
         showSpinner()
         
-        viewModel?.getAllByArchiveNbr(archive, { [self] profileItemVO, error in
+        viewModel?.getAllByArchiveNbr(archive, { [self] error in
             hideSpinner()
             
-            if let profileItemVOs = profileItemVO {
-                self.profileData = profileItemVOs
-                
+            if error == nil {
                 collectionView.performBatchUpdates {
                     collectionView.reloadSections([1])
                 }
@@ -206,19 +203,11 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
             
-            let basicProfileItem = profileData.first(where: { element in
-                element.profileItemVO?.fieldNameUI == FieldNameUI.basic.rawValue
-            })?.profileItemVO as? BasicProfileItem
-            let nicknameText = basicProfileItem?.nickname
-            
-            let fullNameText = basicProfileItem?.fullName
-            
-            let genderProfileItem = profileData.first { $0.profileItemVO?.fieldNameUI == FieldNameUI.profileGender.rawValue }?.profileItemVO as? GenderProfileItem
-            let profileGenderText = genderProfileItem?.personGender
-            
-            let birthInfoProfileItem = profileData.first { $0.profileItemVO?.fieldNameUI == FieldNameUI.birthInfo.rawValue }?.profileItemVO as? BirthInfoProfileItem
-            let birthDateText = birthInfoProfileItem?.birthDate
-            let birthLocationText = birthInfoProfileItem?.birthLocationFormated
+            let nicknameText = viewModel?.basicProfileItem?.nickname
+            let fullNameText = viewModel?.basicProfileItem?.fullName
+            let profileGenderText = viewModel?.profileGenderProfileItem?.personGender
+            let birthDateText = viewModel?.birthInfoProfileItem?.birthDate
+            let birthLocationText = viewModel?.birthInfoProfileItem?.birthLocationFormated
 
             cell.configure(fullName: fullNameText, nickname: nicknameText, gender: profileGenderText, birthDate: birthDateText, birthLocation: birthLocationText)
 
@@ -260,7 +249,6 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
-                    
                     profileAboutVC.viewModel = self?.viewModel
                     
                     let navigationVC = NavigationController(rootViewController: profileAboutVC)
@@ -273,6 +261,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
                 headerCell.buttonAction = { [weak self] in
                     let profilePernalInformationVC = UIViewController.create(withIdentifier: .profilePersonalInfoPage, from: .profile) as! PublicProfilePersonalInfoViewController
+                    profilePernalInformationVC.viewModel = self?.viewModel
                     
                     let navigationVC = NavigationController(rootViewController: profilePernalInformationVC)
                     navigationVC.modalPresentationStyle = .fullScreen
