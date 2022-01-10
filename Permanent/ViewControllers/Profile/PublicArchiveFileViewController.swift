@@ -86,10 +86,9 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     
     @IBAction
     func backButtonAction(_ sender: UIButton) {
-        guard
-            let viewModel = viewModel,
-            let _ = viewModel.removeCurrentFolderFromHierarchy(),
-            let destinationFolder = viewModel.currentFolder
+        guard let viewModel = viewModel,
+              let destinationFolder = viewModel.currentFolder,
+              viewModel.removeCurrentFolderFromHierarchy() != nil
         else {
             return
         }
@@ -106,16 +105,12 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     @IBAction func linkButtonPressed(_ sender: Any) {
-        guard let file = viewModel?.currentFolder,
-              let url = viewModel?.publicURL(forFile: file)
-        else { return }
+        guard let file = viewModel?.currentFolder, let url = viewModel?.publicURL(forFile: file) else { return }
         
         share(url: url)
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true,
-                                      then handler: VoidAction? = nil)
-    {
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         guard
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
@@ -129,10 +124,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         )
         
         // Back navigation set to `true` so it's not considered a in-depth navigation.
-        navigateToFolder(withParams: params,
-                         backNavigation: true,
-                         shouldDisplaySpinner: shouldDisplaySpinner,
-                         then: handler)
+        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
     }
     
     @objc
@@ -160,10 +152,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams,
-                                  backNavigation: Bool,
-                                  shouldDisplaySpinner: Bool = true,
-                                  then handler: VoidAction? = nil) {
+    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
@@ -331,7 +320,7 @@ extension PublicArchiveFileViewController {
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
         refreshCollectionView()
         
-        guard let _ = url else {
+        guard url != nil else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -350,16 +339,20 @@ extension PublicArchiveFileViewController {
         var actions: [PRMNTAction] = []
         
         if file.type.isFolder == false {
-            actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
-                shareWithOtherApps(file: file)
-            }))
+            actions.append(
+                PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+                    shareWithOtherApps(file: file)
+                })
+            )
         }
         
-        actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
-            guard let url = viewModel?.publicURL(forFile: file) else { return }
-
-            share(url: url)
-        }))
+        actions.append(
+            PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+                guard let url = viewModel?.publicURL(forFile: file) else { return }
+                
+                share(url: url)
+            })
+        )
         
         let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
         present(actionSheet, animated: true, completion: nil)
@@ -386,9 +379,11 @@ extension PublicArchiveFileViewController {
             share(url: localURL)
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
-            preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
-                self.viewModel?.cancelDownload()
-            }))
+            preparingAlert.addAction(
+                UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
+                    self.viewModel?.cancelDownload()
+                })
+            )
             
             present(preparingAlert, animated: true) {
                 self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in

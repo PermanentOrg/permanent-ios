@@ -10,7 +10,10 @@ import Foundation
 struct APIPayload<T: Model>: Model {
     let requestVO: RequestVOData<T>
     
-    // TODO: Make csrf global
+    enum CodingKeys: String, CodingKey {
+        case requestVO = "RequestVO"
+    }
+    
     static func make(fromData data: [T]) -> APIPayload<T> {
         let voData = RequestVOData(
             data: data,

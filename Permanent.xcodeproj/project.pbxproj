@@ -80,10 +80,6 @@
 		5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E980AB62657D3D400ED5764 /* BundleExtension.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
-		5EAAB292273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */; };
-		5EAAB293273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */; };
-		5EAAB296273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */; };
-		5EAAB297273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
 		5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */; };
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
@@ -499,10 +495,6 @@
 		5E980AB62657D3D400ED5764 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
-		5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageTopCollectionViewCell.swift; sourceTree = "<group>"; };
-		5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageTopCollectionViewCell.xib; sourceTree = "<group>"; };
-		5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMenuCollectionViewCell.swift; sourceTree = "<group>"; };
-		5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageMenuCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1140,10 +1132,6 @@
 		5EAAB28F273BF59D009D41E6 /* ProfilePageCollectionViewCells */ = {
 			isa = PBXGroup;
 			children = (
-				5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */,
-				5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */,
-				5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */,
-				5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */,
 				5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */,
 				5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */,
 				5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */,
@@ -1985,7 +1973,6 @@
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
-				5EAAB297273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.xib in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */,
 				BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */,
@@ -2027,7 +2014,6 @@
 				5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */,
 				5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
-				5EAAB293273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
@@ -2423,7 +2409,6 @@
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
-				5EAAB296273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.swift in Sources */,
 				F5616189270E49250038D29E /* FileCollectionViewCell.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */,
@@ -2455,7 +2440,6 @@
 				BC59BAB525C2B7D6005A45D3 /* SharePreviewViewModel.swift in Sources */,
 				F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */,
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
-				5EAAB292273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,

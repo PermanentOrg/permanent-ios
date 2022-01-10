@@ -15,7 +15,6 @@ protocol PublicArchiveChildDelegate: AnyObject {
 }
 
 class PublicArchiveViewController: UIViewController {
-
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
