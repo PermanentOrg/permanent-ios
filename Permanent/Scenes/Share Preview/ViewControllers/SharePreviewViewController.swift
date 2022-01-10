@@ -220,10 +220,10 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             actionButton.isHidden = false
             actionButton.configureActionButtonUI(title: .ok)
             actionButton.addTarget(self, action: #selector(dismissScreen), for: .touchUpInside)
-            collectionView.backgroundView = EmptyFolderView(
-                title: .linkNotAvailable,
-                image: .chicken
-            )
+            
+            let emptyView = EmptyFolderView(title: .linkNotAvailable, image: .chicken)
+            emptyView.frame = collectionView.bounds
+            collectionView.backgroundView = emptyView
         }
     }
     
