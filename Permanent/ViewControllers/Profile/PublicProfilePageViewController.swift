@@ -9,11 +9,10 @@ import UIKit
 
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     var archiveData: ArchiveVOData!
+    weak var delegate: PublicArchiveChildDelegate?
     var profileData: [ProfileItemVO] = []
     
     enum CellType {
-        case thumbnails
-        case segmentedControl
         case archiveGallery
         case about
         case personalInformation
@@ -22,9 +21,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     var readMoreIsEnabled: [CellType: Bool] = [:]
     
-    let topSectionCells: [CellType] = [.thumbnails, .segmentedControl]
-    var bottomSectionCells: [CellType] = [.archiveGallery]
-    var numberOfBottomSections: Int = 1
+    var bottomSectionCells: [CellType] = [.about, .personalInformation, .onlinePresence, .milestones]
+    var numberOfBottomSections: Int = 4
     var currentSegmentValue: Int = 0
     
     var editAction: ButtonAction?
@@ -60,9 +58,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .white
         
-        collectionView.register(ProfilePageTopCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageTopCollectionViewCell.identifier)
-        collectionView.register(ProfilePageMenuCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageMenuCollectionViewCell.identifier)
-        
         collectionView.register(ProfilePageArchiveCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier)
         collectionView.register(ProfilePageAboutCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier)
         collectionView.register(ProfilePagePersonInfoCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier)
@@ -93,40 +88,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         readMoreIsEnabled[.about] = false
     }
     
-    private func segmentedControlChangedAction() -> ((ProfilePageMenuCollectionViewCell) -> Void) {
-        return { [weak self] cell in
-            guard let strongSelf = self else { return }
-            
-            if cell.segmentedControl.selectedSegmentIndex == 0 {
-                self?.currentSegmentValue = 0
-                
-                strongSelf.bottomSectionCells = [.archiveGallery]
-                self?.numberOfBottomSections = 1
-                
-                let deleteIndexSet = IndexSet(integersIn: 2...4)
-                
-                self?.collectionView.performBatchUpdates {
-                    self?.collectionView.deleteSections(deleteIndexSet)
-                    self?.collectionView.reloadSections([1])
-                }
-            } else {
-                self?.currentSegmentValue = 1
-                
-                self?.numberOfBottomSections = 4
-                strongSelf.bottomSectionCells = [.about, .personalInformation, .onlinePresence, .milestones]
-                
-                let addedIndexSet = IndexSet(integersIn: 2...4)
-                self?.collectionView.insertSections(addedIndexSet)
-                
-                let reloadIndexSet = IndexSet(integersIn: 1...4)
-                
-                self?.collectionView.performBatchUpdates {
-                    self?.collectionView.reloadSections(reloadIndexSet)
-                }
-            }
-        }
-    }
-    
     func getAllByArchiveNbr(_ archive: ArchiveVOData) {
         showSpinner()
         
@@ -137,7 +98,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                 self.profileData = profileItemVOs
                 
                 collectionView.performBatchUpdates {
-                    collectionView.reloadSections([1])
+                    collectionView.reloadSections([0])
                 }
             } else {
                 showAlert(title: .error, message: .errorMessage)
@@ -153,42 +114,21 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
 // MARK: - UICollectionViewDataSource
 extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return topSectionCells.count
-        }
-        
         return 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return numberOfBottomSections + 1
+        return numberOfBottomSections
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        
-        if indexPath.section == 0 {
-            sectionCellType = topSectionCells
-        } else {
-            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
-        }
+        sectionCellType = [bottomSectionCells[indexPath.section]]
         
         let currentCellType = sectionCellType[indexPath.item]
         let returnedCell: UICollectionViewCell
         
         switch currentCellType {
-        case .thumbnails:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageTopCollectionViewCell.identifier, for: indexPath) as! ProfilePageTopCollectionViewCell
-            cell.configure(profileBannerImageUrl: nil, profilePhotoImageUrl: self.viewModel?.archiveData?.thumbURL1000)
-            
-            returnedCell = cell
-            
-        case .segmentedControl:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMenuCollectionViewCell.identifier, for: indexPath) as! ProfilePageMenuCollectionViewCell
-            cell.segmentedControlAction = segmentedControlChangedAction()
-            
-            returnedCell = cell
-            
         case .archiveGallery:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier, for: indexPath) as! ProfilePageArchiveCollectionViewCell
             returnedCell = cell
@@ -203,7 +143,6 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             returnedCell = cell
             
         case .personalInformation:
-            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
             
             let basicProfileItem = profileData.first(where: { element in
@@ -237,14 +176,10 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         
         return returnedCell
     }
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        
-        if indexPath.section == 0 {
-            sectionCellType = topSectionCells
-        } else {
-            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
-        }
+        sectionCellType = [bottomSectionCells[indexPath.section]]
         
         let currentCellType = sectionCellType[indexPath.item]
         
@@ -331,22 +266,11 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
 extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        
-        if indexPath.section == 0 {
-            sectionCellType = topSectionCells
-        } else {
-            sectionCellType = [bottomSectionCells[indexPath.section - 1]]
-        }
+        sectionCellType = [bottomSectionCells[indexPath.section]]
         
         let currentCellType = sectionCellType[indexPath.item]
         
         switch currentCellType {
-        case .thumbnails:
-            return CGSize(width: UIScreen.main.bounds.width, height: 270)
-            
-        case .segmentedControl:
-            return CGSize(width: UIScreen.main.bounds.width, height: 40)
-            
         case .about:
             let shortDescriptionValue: String = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             let longDescriptionValue: String = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
@@ -389,22 +313,16 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        var height: CGFloat = 40
-        
-        if section == 0 {
-            height = 0
-        }
-        
-        return CGSize(width: collectionView.frame.width, height: height)
+        return CGSize(width: collectionView.frame.width, height: 40)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        var height: CGFloat = 40
-        
-        if section == 0 {
-            height = 0
+        return CGSize(width: collectionView.frame.width, height: 40)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
+            scrollView.contentOffset = .zero
         }
-        
-        return CGSize(width: collectionView.frame.width, height: height)
     }
 }

@@ -12,6 +12,7 @@ import AVKit
 class FilePreviewViewModel: ViewModelInterface {
     let file: FileViewModel
     var name: String
+    var publicURL: URL?
     
     var recordVO: RecordVO?
     var isEditable: Bool {

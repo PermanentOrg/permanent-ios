@@ -13,6 +13,7 @@ enum FilesEndpoint {
     // NAVIGATION
     /// Retrieves the “root” of an archive: the parent folder that contains the My Files and Public folders.
     case getRoot
+    case getPublicRoot(archiveNbr: String)
     case navigateMin(params: NavigateMinParams)
     case getLeanItems(params: GetLeanItemsParams)
     
@@ -40,6 +41,8 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .getRoot:
             return "/folder/getRoot"
+        case .getPublicRoot:
+            return "/folder/getPublicRoot"
         case .navigateMin:
             return "/folder/navigateMin"
         case .getLeanItems:
@@ -153,6 +156,12 @@ extension FilesEndpoint: RequestProtocol {
     
     var bodyData: Data? {
         switch self {
+        case .getPublicRoot(let archiveNbr):
+            let archiveVO = ArchiveVOPayload(archiveNbr: archiveNbr)
+            let requestVO = APIPayload.make(fromData: [archiveVO])
+            
+            return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
+
         case .delete(let parameters):
             if parameters.type.isFolder {
                 let folderVO = FolderVOPayload(folderLinkId: parameters.folderLinkId)

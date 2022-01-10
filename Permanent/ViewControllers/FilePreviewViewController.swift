@@ -250,7 +250,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
             shareWithOtherApps()
         }))
-        if self.file.permissions.contains(.ownership) {
+        
+        if let publicURL = viewModel?.publicURL {
+            actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+                share(url: publicURL)
+            }))
+        } else if self.file.permissions.contains(.ownership) {
             actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
                 if let file = self.viewModel?.file {
                     shareInApp(file: file)
