@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,40 +11,53 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EmptyFolderView" customModule="Permanent" customModuleProvider="target">
             <connections>
-                <outlet property="contentView" destination="iN0-l3-epB" id="Vbo-JI-Uwf"/>
-                <outlet property="emptyFolderLabel" destination="f4I-nQ-dzD" id="tNA-8D-gVw"/>
-                <outlet property="emptyImageView" destination="PKt-za-Ccd" id="Qf2-JL-nEt"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="OH8-Mt-ciX"/>
+                <outlet property="emptyFolderLabel" destination="bA9-ga-xSZ" id="0fs-aP-1kH"/>
+                <outlet property="emptyImageView" destination="AeP-aN-hFz" id="f3R-dQ-cwQ"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" restorationIdentifier="EmptyFolderView" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="330" height="320"/>
+            <rect key="frame" x="0.0" y="0.0" width="330" height="429"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="sTT-MH-Pdg">
-                    <rect key="frame" x="60" y="31.5" width="210" height="190"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Rlp-wV-Zxh">
+                    <rect key="frame" x="30" y="151.5" width="270" height="170"/>
                     <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PKt-za-Ccd" userLabel="Empty Folder Image View">
-                            <rect key="frame" x="20" y="0.0" width="170" height="170"/>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AeP-aN-hFz" userLabel="Empty Folder Image View">
+                            <rect key="frame" x="60" y="10" width="150" height="150"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="AeP-aN-hFz" secondAttribute="height" id="Ch0-4W-DtR"/>
+                            </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4I-nQ-dzD" userLabel="Empty Folder Label">
-                            <rect key="frame" x="105" y="190" width="0.0" height="0.0"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bA9-ga-xSZ" userLabel="Empty Folder Label">
+                            <rect key="frame" x="0.0" y="170" width="270" height="0.0"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                </stackView>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="AeP-aN-hFz" firstAttribute="top" secondItem="Rlp-wV-Zxh" secondAttribute="top" constant="10" id="Pax-Tc-1Iv"/>
+                        <constraint firstAttribute="trailing" secondItem="bA9-ga-xSZ" secondAttribute="trailing" id="QeO-Ah-PvJ"/>
+                        <constraint firstItem="bA9-ga-xSZ" firstAttribute="leading" secondItem="Rlp-wV-Zxh" secondAttribute="leading" id="WHM-KU-kHg"/>
+                        <constraint firstAttribute="trailing" secondItem="AeP-aN-hFz" secondAttribute="trailing" constant="60" id="XuM-aJ-ofN"/>
+                        <constraint firstItem="bA9-ga-xSZ" firstAttribute="top" secondItem="AeP-aN-hFz" secondAttribute="bottom" constant="10" id="dA5-C8-51V"/>
+                        <constraint firstItem="AeP-aN-hFz" firstAttribute="leading" secondItem="Rlp-wV-Zxh" secondAttribute="leading" constant="60" id="dOb-tL-XNL"/>
+                        <constraint firstAttribute="bottom" secondItem="bA9-ga-xSZ" secondAttribute="bottom" id="icn-Xe-FGx"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="sTT-MH-Pdg" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="60" id="His-eE-WaL"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="sTT-MH-Pdg" secondAttribute="trailing" constant="60" id="SxJ-bH-rJH"/>
-                <constraint firstItem="sTT-MH-Pdg" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" multiplier="2/3" id="uey-W6-D9b"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Rlp-wV-Zxh" secondAttribute="trailing" constant="30" id="FtE-CA-MvV"/>
+                <constraint firstItem="Rlp-wV-Zxh" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="HyQ-sl-PQU"/>
+                <constraint firstItem="Rlp-wV-Zxh" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="dZn-Wz-EOW"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="79.710144927536234" y="-58.928571428571423"/>
+            <point key="canvasLocation" x="79.710144927536234" y="-22.433035714285712"/>
         </view>
     </objects>
     <resources>
