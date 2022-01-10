@@ -133,8 +133,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
-            collectionView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
-                                                       image: .emptyFolder)
+            let emptyView = EmptyFolderView(title: .emptyFolderMessage, image: .emptyFolder)
+            emptyView.frame = collectionView.bounds
+            collectionView.backgroundView = emptyView
+            
             return
         }
 

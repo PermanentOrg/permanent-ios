@@ -101,7 +101,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func configureCollectionViewBgView() {
         if let items = viewModel?.viewModels, items.isEmpty {
-            collectionView.backgroundView = EmptyFolderView(title: .shareActionMessage, image: .shares)
+            let emptyView = EmptyFolderView(title: .shareActionMessage, image: .shares)
+            emptyView.frame = collectionView.bounds
+            collectionView.backgroundView = emptyView
         } else {
             collectionView.backgroundView = nil
         }

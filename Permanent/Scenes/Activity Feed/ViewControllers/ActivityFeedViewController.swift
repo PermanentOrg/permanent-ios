@@ -41,6 +41,17 @@ class ActivityFeedViewController: UITableViewController {
         tableView.separatorInset = .zero
         tableView.tableFooterView = UIView()
         tableView.registerNib(cellClass: NotificationTableViewCell.self)
+        updateBackgroundView()
+    }
+    
+    func updateBackgroundView() {
+        if viewModel.numberOfItems == 0 {
+            let emptyView = EmptyFolderView(title: "No notifications".localized(), image: .emptyNotification)
+            emptyView.frame = tableView.bounds
+            tableView.backgroundView = emptyView
+        } else {
+            tableView.backgroundView = nil
+        }
     }
 }
 
@@ -66,6 +77,8 @@ extension ActivityFeedViewController {
 
 extension ActivityFeedViewController: ActivityFeedViewModelViewDelegate {
     func updateScreen(status: RequestStatus) {
+        updateBackgroundView()
+        
         switch status {
         case .success:
             tableView.reloadData()
@@ -76,8 +89,6 @@ extension ActivityFeedViewController: ActivityFeedViewModelViewDelegate {
     }
     
     func updateSpinner(isLoading: Bool) {
-        print("View bounds when updating spinner: \(view.bounds)")
-        
         isLoading ? showSpinner() : hideSpinner()
     }
 }
