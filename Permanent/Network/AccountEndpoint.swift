@@ -31,7 +31,7 @@ enum AccountEndpoint {
     /// Update Share request
     case updateShareRequest(shareVO: ShareVOData)
     /// Revoke Share request
-    case deleteShareRequest(shareId: Int,folderLinkId: Int,archiveId: Int)
+    case deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -64,24 +64,34 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp(let credentials):
             return Payloads.signUpPayload(for: credentials)
+            
         case .delete(let accountId):
             return Payloads.deleteAccountPayload(accountId: accountId)
+            
         case .updateEmailAndPhone(let accountId, let data):
             return Payloads.updateEmailAndPhone(accountId: accountId, updateData: data)
+            
         case .update(let accountVO):
             return Payloads.update(accountVO: accountVO)
+            
         case .sendVerificationCodeSMS(let id, let email):
             return Payloads.smsVerificationCodePayload(accountId: id, email: email)
+            
         case .changePassword(let id, let passData):
-            return Payloads.updatePassword(accountId: id,updateData: passData)
+            return Payloads.updatePassword(accountId: id, updateData: passData)
+            
         case .getValidCsrf:
             return Payloads.getValidCsrf()
+            
         case .getUserData(let id):
             return Payloads.getUserData(accountId: id)
+            
         case .updateUserData(accountId: let accountId, updateData: let updateData):
-            return Payloads.updateUserData(accountId: accountId,updateUserData: updateData)
+            return Payloads.updateUserData(accountId: accountId, updateUserData: updateData)
+            
         case .updateShareRequest(let shareVO):
             return Payloads.updateShareRequest(shareVO: shareVO)
+            
         case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
             return Payloads.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
         }
@@ -97,7 +107,8 @@ extension AccountEndpoint: RequestProtocol {
     
     var progressHandler: ProgressHandler? {
         get { nil }
-        set {}
+        // swiftlint:disable:next unused_setter_value
+        set { }
     }
     
     var bodyData: Data? { nil }
