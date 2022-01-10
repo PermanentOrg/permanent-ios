@@ -98,7 +98,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                 self.profileData = profileItemVOs
                 
                 collectionView.performBatchUpdates {
-                    collectionView.reloadSections([1])
+                    collectionView.reloadSections([0])
                 }
             } else {
                 showAlert(title: .error, message: .errorMessage)
