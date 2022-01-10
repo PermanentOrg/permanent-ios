@@ -107,9 +107,8 @@ extension AccountEndpoint: RequestProtocol {
     
     var progressHandler: ProgressHandler? {
         get { nil }
-        // swiftlint:disable unused_setter_value
+        // swiftlint:disable:next unused_setter_value
         set { }
-        // swiftlint:enable unused_setter_value
     }
     
     var bodyData: Data? { nil }
