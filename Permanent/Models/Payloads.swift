@@ -288,19 +288,22 @@ struct Payloads {
     static func updateUserData(accountId: String, updateUserData: UpdateUserData) -> RequestParameters {
         return [
             "RequestVO": [
-                "data": [[
-                    "AccountVO": [
-                        "accountId": accountId,
-                        "fullName": updateUserData.fullName,
-                        "primaryEmail": updateUserData.primaryEmail,
-                        "primaryPhone": updateUserData.primaryPhone,
-                        "address": updateUserData.address,
-                        "city": updateUserData.city,
-                        "state": updateUserData.state,
-                        "zip": updateUserData.zip,
-                        "country": updateUserData.country
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId,
+                            "fullName": updateUserData.fullName,
+                            "primaryEmail": updateUserData.primaryEmail,
+                            "primaryPhone": updateUserData.primaryPhone,
+                            "address": updateUserData.address,
+                            "address2": updateUserData.address2,
+                            "city": updateUserData.city,
+                            "state": updateUserData.state,
+                            "zip": updateUserData.zip,
+                            "country": updateUserData.country
+                        ]
                     ]
-                ]],
+                ],
                 "csrf": Self.csrf
             ]
         ]

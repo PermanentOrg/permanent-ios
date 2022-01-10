@@ -8,16 +8,17 @@
 import UIKit
 
 class AccountInfoViewController: BaseViewController<InfoViewModel> {
-    @IBOutlet var scrollView: UIScrollView!
-    @IBOutlet var accountNameView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var primaryEmailView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var mobilePhoneView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var addressView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var cityView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var stateView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var postalCodeView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var countryView: InputTextWithLabelElementViewViewController!
-    @IBOutlet var contentUpdateButton: RoundedButton!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var accountNameView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var primaryEmailView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var mobilePhoneView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var addressView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var addressView2: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var cityView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var stateView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var postalCodeView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var countryView: InputTextWithLabelElementViewViewController!
+    @IBOutlet weak var contentUpdateButton: RoundedButton!
     @IBOutlet weak var deleteAccountButton: RoundedButton!
     
     override func viewDidLoad() {
@@ -33,7 +34,8 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         accountNameView.configureElementUI(label: .accountName, returnKey: UIReturnKeyType.next)
         primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: UIReturnKeyType.next)
         mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.next, keyboardType: .numbersAndPunctuation)
-        addressView.configureElementUI(label: .address, returnKey: UIReturnKeyType.next)
+        addressView.configureElementUI(label: "Address Line 1".localized(), returnKey: UIReturnKeyType.next)
+        addressView2.configureElementUI(label: "Address Line 2".localized(), returnKey: UIReturnKeyType.next)
         cityView.configureElementUI(label: .city, returnKey: UIReturnKeyType.next)
         stateView.configureElementUI(label: .stateOrRegion, returnKey: UIReturnKeyType.next)
         postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.next)
@@ -45,6 +47,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         primaryEmailView.delegate = self
         mobilePhoneView.delegate = self
         addressView.delegate = self
+        addressView2.delegate = self
         cityView.delegate = self
         stateView.delegate = self
         postalCodeView.delegate = self
@@ -64,75 +67,50 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     }
     
     func getUserDetails() {
-        let groupAccountInfo = DispatchGroup()
-        
         showSpinner()
-        guard
-            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-        else {
-            return
-        }
-        groupAccountInfo.enter()
-        viewModel?.getNewCsrf(then: { _ in
-            DispatchQueue.main.async {
-                self.viewModel!.accountId = String(accountID)
-                groupAccountInfo.leave()
+        
+        self.viewModel?.getUserData(then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success(message: _):
+                self.updateUserDetailsFields()
+                
+            case .error(message: let message):
+                self.showErrorAlert(message: message)
             }
         })
-
-        groupAccountInfo.notify(queue: DispatchQueue.global()) {
-            guard
-                let accountID: String = self.viewModel?.accountId
-            else {
-                return
-            }
-            self.viewModel?.getUserData(with: accountID, then: { status in
-                switch status {
-                case .success(message: _):
-                    self.updateUserDetailsFields()
-                case .error(message: let message):
-                    self.showErrorAlert(message: message)
-                }
-            })
-            DispatchQueue.main.async {
-                self.hideSpinner()
-            }
-        }
     }
     
     func attemptValuesChange() {
         showSpinner()
-        viewModel?.getValuesFromTextFieldValue(receivedData: (accountNameView.value,
-                                                              primaryEmailView.value,
-                                                              mobilePhoneView.value,
-                                                              addressView.value,
-                                                              cityView.value,
-                                                              stateView.value,
-                                                              postalCodeView.value,
-                                                              countryView.value))
+        viewModel?.getValuesFromTextFieldValue(receivedData: (
+            accountNameView.value,
+            primaryEmailView.value,
+            mobilePhoneView.value,
+            addressView.value,
+            addressView2.value,
+            cityView.value,
+            stateView.value,
+            postalCodeView.value,
+            countryView.value
+        ))
 
-        guard
-            let accountID: String = viewModel?.accountId,
-            let userData: UpdateUserData = viewModel?.userData
-        else {
+        guard let userData: UpdateUserData = viewModel?.userData else {
             showAlert(title: .error, message: .errorMessage)
             return
         }
-        viewModel?.updateUserData(with: accountID, userData: userData, then: { status in
+        
+        viewModel?.updateUserData(userData, then: { status in
             switch status {
             case .success(message: let message):
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,
-                                                     title: message!)
-                }
+                self.hideSpinner()
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: message!)
+                
             case .error(message: let message):
-                DispatchQueue.main.async {
-                    self.hideSpinner()
-                    self.showAlert(title: .error, message: message)
-                }
+                self.hideSpinner()
+                self.showAlert(title: .error, message: message)
             }
-            
         })
     }
     
@@ -140,6 +118,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         primaryEmailView.setTextFieldValue(text: viewModel?.userData.primaryEmail ?? "")
         accountNameView.setTextFieldValue(text: viewModel?.userData.fullName ?? "")
         addressView.setTextFieldValue(text: viewModel?.userData.address ?? "")
+        addressView2.setTextFieldValue(text: viewModel?.userData.address2 ?? "")
         cityView.setTextFieldValue(text: viewModel?.userData.city ?? "")
         stateView.setTextFieldValue(text: viewModel?.userData.state ?? "")
         postalCodeView.setTextFieldValue(text: viewModel?.userData.zip ?? "")
@@ -168,40 +147,55 @@ extension AccountInfoViewController: UITextFieldDelegate {
         switch textField {
         case accountNameView.textField:
             primaryEmailView.textField.becomeFirstResponder()
+            
         case primaryEmailView.textField:
             mobilePhoneView.textField.becomeFirstResponder()
+            
         case mobilePhoneView.textField:
             addressView.textField.becomeFirstResponder()
+            
         case addressView.textField:
+            addressView2.textField.becomeFirstResponder()
+            
+        case addressView2.textField:
             cityView.textField.becomeFirstResponder()
+            
         case cityView.textField:
             stateView.textField.becomeFirstResponder()
+            
         case stateView.textField:
             postalCodeView.textField.becomeFirstResponder()
+            
         case postalCodeView.textField:
             countryView.textField.becomeFirstResponder()
+            
         default:
             countryView.textField.resignFirstResponder()
-            let point = CGPoint(x: 0, y: 0)
+            let point = CGPoint.zero
             scrollView.setContentOffset(point, animated: true)
         }
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        var point = CGPoint(x: 0, y: 0)
-        let changePosition: [CGFloat] = [view.frame.height/10,view.frame.height/7]
+        let changePosition: [CGFloat] = [view.frame.height / 10, view.frame.height / 7]
         (textField as? TextField)?.toggleBorder(active: true)
+        
+        let point: CGPoint
         switch textField {
         case cityView.textField:
             point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
+            
         case stateView.textField:
             point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[0])
+            
         case postalCodeView.textField:
             point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
+            
         case countryView.textField:
             point = CGPoint(x: 0, y: textField.frame.origin.y + changePosition[1])
+            
         default:
-            point = CGPoint(x: 0, y: 0)
+            point = CGPoint.zero
         }
         scrollView.setContentOffset(point, animated: true)
     }
