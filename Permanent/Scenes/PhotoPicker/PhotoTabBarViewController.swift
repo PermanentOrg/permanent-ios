@@ -1,7 +1,8 @@
 //
-//  PhotoTabBarViewController.swift
+//  FileDetailsBaseCollectionViewCell.swift
 //  Permanent
 //
+//  Created by Vlad Rusu on 25.08.2021.
 //
 
 import UIKit

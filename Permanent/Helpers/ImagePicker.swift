@@ -9,8 +9,6 @@ import UIKit
 
 public protocol ImagePickerDelegate: class {
     func didSelect(image: UIImage?)
-    
-    
 }
 
 open class MediaRecorder: NSObject {
@@ -49,15 +47,10 @@ extension MediaRecorder: UIImagePickerControllerDelegate {
         self.pickerController(picker, didSelect: nil)
     }
 
-    public func imagePickerController(_ picker: UIImagePickerController,
-                                      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any])
-    {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         guard let image = info[.editedImage] as? UIImage else {
             return self.pickerController(picker, didSelect: nil)
         }
-        
-        
-        
         
         self.pickerController(picker, didSelect: image)
     }

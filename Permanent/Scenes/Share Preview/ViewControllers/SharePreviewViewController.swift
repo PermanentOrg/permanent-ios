@@ -24,7 +24,6 @@ class SharePreviewViewController: UIViewController {
     @IBOutlet weak var currentArchiveDefaultButton: UIButton!
     @IBOutlet weak var selectArchiveLabel: UILabel!
     
-    
     var viewModel: SharePreviewViewModelDelegate! {
         didSet {
             viewModel.viewDelegate = self
@@ -32,7 +31,6 @@ class SharePreviewViewController: UIViewController {
     }
     
     // MARK: - UIViewController
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     
@@ -222,10 +220,10 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             actionButton.isHidden = false
             actionButton.configureActionButtonUI(title: .ok)
             actionButton.addTarget(self, action: #selector(dismissScreen), for: .touchUpInside)
-            collectionView.backgroundView = EmptyFolderView(
-                title: .linkNotAvailable,
-                image: .chicken
-            )
+            
+            let emptyView = EmptyFolderView(title: .linkNotAvailable, image: .chicken)
+            emptyView.frame = collectionView.bounds
+            collectionView.backgroundView = emptyView
         }
     }
     

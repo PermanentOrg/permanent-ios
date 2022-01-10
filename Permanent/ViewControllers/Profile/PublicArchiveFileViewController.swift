@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel> {
-    
     @IBOutlet weak var directoryLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var linkButton: UIButton!
@@ -78,8 +77,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     
     func handleTableBackgroundView() {
         guard viewModel?.shouldDisplayBackgroundView == false else {
-            collectionView.backgroundView = EmptyFolderView(title: .emptyFolderMessage,
-                                                       image: .emptyFolder)
+            collectionView.backgroundView = EmptyFolderView(title: .emptyFolderMessage, image: .emptyFolder)
             return
         }
 
@@ -279,9 +277,7 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
 // MARK: - Table View Delegates
 
 extension PublicArchiveFileViewController {
-    private func cellRightButtonAction(atPosition position: Int) {
-        
-    }
+    private func cellRightButtonAction(atPosition position: Int) { }
     
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
@@ -350,7 +346,6 @@ extension PublicArchiveFileViewController {
 }
 
 extension PublicArchiveFileViewController {
-
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         
@@ -440,7 +435,5 @@ extension PublicArchiveFileViewController: FilePreviewNavigationControllerDelega
         }
     }
     
-    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        
-    }
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) { }
 }

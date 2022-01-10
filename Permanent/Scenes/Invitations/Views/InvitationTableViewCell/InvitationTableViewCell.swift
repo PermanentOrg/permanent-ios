@@ -8,9 +8,7 @@
 import UIKit
 
 class InvitationTableViewCell: UITableViewCell {
-    
     // MARK: - Properties
-    
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var resendButton: RoundedButton!
@@ -42,8 +40,6 @@ class InvitationTableViewCell: UITableViewCell {
     }
 
     // MARK: - Actions
-    
-    
     @IBAction func resendAction(_ sender: UIButton) {
         resendAction?()
     }
@@ -51,5 +47,4 @@ class InvitationTableViewCell: UITableViewCell {
     @IBAction func revokeAction(_ sender: UIButton) {
         revokeAction?()
     }
-    
 }

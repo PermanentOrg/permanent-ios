@@ -8,7 +8,6 @@
 import Foundation
 
 class PublicArchiveViewModel: FilesViewModel {
-    
     private var _currentArchive: ArchiveVOData?
     override var currentArchive: ArchiveVOData? {
         get {
@@ -57,7 +56,6 @@ class PublicArchiveViewModel: FilesViewModel {
                 
                 if model.isSuccessful == true {
                     self.onGetRootSuccess(model, handler)
-                    
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -86,8 +84,7 @@ class PublicArchiveViewModel: FilesViewModel {
     }
     
     func publicURL(forFile file: FileViewModel) -> URL? {
-        guard let currentArchive = currentArchive,
-              let currentFolder = currentFolder else { return nil }
+        guard let currentArchive = currentArchive, let currentFolder = currentFolder else { return nil }
         
         let baseURLString = APIEnvironment.defaultEnv.publicURL
         let url: URL

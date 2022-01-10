@@ -8,14 +8,12 @@
 import UIKit
 
 class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
-    
     static let identifier = "ProfilePageMilestonesCollectionViewCell"
     
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!
     @IBOutlet weak var milestoneTextLabel: UILabel!
-    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,7 +33,6 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         milestoneTextLabel.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim"
         milestoneTextLabel.textColor = .darkGray
         milestoneTextLabel.font = Text.style12.font
-        
     }
 
     static func nib() -> UINib {

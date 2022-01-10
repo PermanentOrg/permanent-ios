@@ -96,7 +96,7 @@ extension RequestProtocol {
             return nil
         }
         // Add the request path to the existing base URL path
-        urlComponents.path = urlComponents.path + path
+        urlComponents.path += path
         // Add query items to the request URL if needed
         if queryItems != nil {
             urlComponents.queryItems = queryItems

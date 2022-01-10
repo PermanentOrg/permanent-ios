@@ -8,9 +8,9 @@
 import UIKit
 
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     var archiveData: ArchiveVOData!
     weak var delegate: PublicArchiveChildDelegate?
+    var profileData: [ProfileItemVO] = []
     
     enum CellType {
         case thumbnails
@@ -21,22 +21,29 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         case onlinePresence
         case milestones
     }
+    var readMoreIsEnabled: [CellType: Bool] = [:]
     
     let topSectionCells: [CellType] = []
     var bottomSectionCells: [CellType] = [.about, .personalInformation, .onlinePresence, .milestones]
     var numberOfBottomSections: Int = 4
     var currentSegmentValue: Int = 0
     
+    var editAction: ButtonAction?
+    var readMoreAction: ButtonAction?
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel = PublicProfilePageViewModel(archiveData: archiveData)
+        viewModel = PublicProfilePageViewModel(archiveData)
         
+        getAllByArchiveNbr(archiveData)
         initUI()
-        
+        initButtonStates()
         initCollectionView()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onDataIsUpdated(_:)), name: .publicProfilePageAboutUpdate, object: nil)
     }
     
     func initUI() {
@@ -44,11 +51,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
         view.backgroundColor = .white
-        
     }
     
     func initCollectionView() {
         let layout = UICollectionViewFlowLayout()
+        layout.estimatedItemSize = .zero
         layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
 
         collectionView.collectionViewLayout = layout
@@ -77,6 +84,16 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         view.endEditing(true)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+    
+        collectionView.reloadSections([1])
+    }
+    
+    func initButtonStates() {
+        readMoreIsEnabled[.about] = false
+    }
+    
     private func segmentedControlChangedAction() -> ((ProfilePageMenuCollectionViewCell) -> Void) {
         return { [weak self] cell in
             guard let strongSelf = self else { return }
@@ -93,7 +110,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                     self?.collectionView.deleteSections(deleteIndexSet)
                     self?.collectionView.reloadSections([1])
                 }
-                
             } else {
                 self?.currentSegmentValue = 1
                 
@@ -110,6 +126,28 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                 }
             }
         }
+    }
+    
+    func getAllByArchiveNbr(_ archive: ArchiveVOData) {
+        showSpinner()
+        
+        viewModel?.getAllByArchiveNbr(archive, { [self] profileItemVO, error in
+            hideSpinner()
+            
+            if let profileItemVOs = profileItemVO {
+                self.profileData = profileItemVOs
+                
+                collectionView.performBatchUpdates {
+                    collectionView.reloadSections([1])
+                }
+            } else {
+                showAlert(title: .error, message: .errorMessage)
+            }
+        })
+    }
+    
+    @objc func onDataIsUpdated(_ notification: Notification) {
+        getAllByArchiveNbr(archiveData)
     }
 }
 
@@ -140,7 +178,6 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         let returnedCell: UICollectionViewCell
         
         switch currentCellType {
-            
         case .thumbnails:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageTopCollectionViewCell.identifier, for: indexPath) as! ProfilePageTopCollectionViewCell
             cell.configure(profileBannerImageUrl: nil, profilePhotoImageUrl: self.viewModel?.archiveData?.thumbURL1000)
@@ -160,11 +197,32 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .about:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
             
+            let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
+            let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
+            
+            cell.configure(shortDescriptionValue, longDescriptionValue, viewModel?.archiveType)
             returnedCell = cell
             
         case .personalInformation:
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
             
+            let basicProfileItem = profileData.first(where: { element in
+                element.profileItemVO?.fieldNameUI == FieldNameUI.basic.rawValue
+            })?.profileItemVO as? BasicProfileItem
+            let nicknameText = basicProfileItem?.nickname
+            
+            let fullNameText = basicProfileItem?.fullName
+            
+            let genderProfileItem = profileData.first { $0.profileItemVO?.fieldNameUI == FieldNameUI.profileGender.rawValue }?.profileItemVO as? GenderProfileItem
+            let profileGenderText = genderProfileItem?.personGender
+            
+            let birthInfoProfileItem = profileData.first { $0.profileItemVO?.fieldNameUI == FieldNameUI.birthInfo.rawValue }?.profileItemVO as? BirthInfoProfileItem
+            let birthDateText = birthInfoProfileItem?.birthDate
+            let birthLocationText = birthInfoProfileItem?.birthLocationFormated
+
+            cell.configure(fullName: fullNameText, nickname: nicknameText, gender: profileGenderText, birthDate: birthDateText, birthLocation: birthLocationText)
+
             returnedCell = cell
             
         case .onlinePresence:
@@ -180,7 +238,6 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         
         return returnedCell
     }
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         var sectionCellType: [PublicProfilePageViewController.CellType] = []
         
@@ -193,20 +250,42 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         let currentCellType = sectionCellType[indexPath.item]
         
         switch kind {
-            
         case UICollectionView.elementKindSectionHeader:
             let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier, for: indexPath) as! ProfilePageHeaderCollectionViewCell
             switch currentCellType {
             case .archiveGallery:
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
+                
             case .about:
                 headerCell.configure(titleLabel: "About", buttonText: "Edit")
+                
+                headerCell.buttonAction = { [weak self] in
+                    let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
+                    
+                    profileAboutVC.viewModel = self?.viewModel
+                    
+                    let navigationVC = NavigationController(rootViewController: profileAboutVC)
+                    navigationVC.modalPresentationStyle = .fullScreen
+                    self?.present(navigationVC, animated: true)
+                }
+                
             case .personalInformation:
-                headerCell.configure(titleLabel: "Personal Information", buttonText: "", buttonIsHidden: true)
+                headerCell.configure(titleLabel: "Personal Information", buttonText: "Edit")
+                
+                headerCell.buttonAction = { [weak self] in
+                    let profilePernalInformationVC = UIViewController.create(withIdentifier: .profilePersonalInfoPage, from: .profile) as! PublicProfilePersonalInfoViewController
+                    
+                    let navigationVC = NavigationController(rootViewController: profilePernalInformationVC)
+                    navigationVC.modalPresentationStyle = .fullScreen
+                    self?.present(navigationVC, animated: true)
+                }
+                    
             case .onlinePresence:
-                headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit")
+                headerCell.configure(titleLabel: "Online Presence", buttonText: "Edit", buttonIsHidden: true)
+                
             case .milestones:
-                headerCell.configure(titleLabel: "Milestones", buttonText: "Edit")
+                headerCell.configure(titleLabel: "Milestones", buttonText: "Edit", buttonIsHidden: true)
+                
             default:
                 break
             }
@@ -217,14 +296,27 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             switch currentCellType {
             case .archiveGallery:
                 footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: true)
+                
             case .personalInformation:
                 footerCell.configure(isReadMoreButtonHidden: true)
+                
             case .milestones:
                 footerCell.configure(isReadMoreButtonHidden: true)
+                
             case .about:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
+                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: self.readMoreIsEnabled[.about] ?? false)
+                
+                footerCell.readMoreButtonAction = { [weak self] in
+                    if let readMoreForAbout = self?.readMoreIsEnabled[.about] {
+                        self?.readMoreIsEnabled[.about] = !readMoreForAbout
+                        footerCell.readMoreIsEnabled = !readMoreForAbout
+                        collectionView.reloadSections([1])
+                    }
+                }
+                
             case .onlinePresence:
                 footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false)
+                
             default:
                 break
             }
@@ -252,16 +344,34 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         switch currentCellType {
         case .thumbnails:
             return CGSize(width: UIScreen.main.bounds.width, height: 270)
+            
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
+            
         case .about:
-            return CGSize(width: UIScreen.main.bounds.width, height: 110)
+            let shortDescriptionValue: String = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
+            let longDescriptionValue: String = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
+            
+            var descriptionText = shortDescriptionValue
+
+            if readMoreIsEnabled[.about] ?? false {
+                descriptionText.append(contentsOf: "\n\n\(longDescriptionValue)")
+            }
+            
+            let currentText: NSAttributedString = NSAttributedString(string: descriptionText, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+            let textHeight = currentText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
+ 
+            return CGSize(width: UIScreen.main.bounds.width, height: textHeight + 20)
+            
         case .personalInformation:
-            return CGSize(width: UIScreen.main.bounds.width, height: 170)
+            return CGSize(width: UIScreen.main.bounds.width, height: 260)
+            
         case .onlinePresence:
             return CGSize(width: UIScreen.main.bounds.width, height: 100)
+            
         case .milestones:
             return CGSize(width: UIScreen.main.bounds.width, height: 130)
+            
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 120)
         }

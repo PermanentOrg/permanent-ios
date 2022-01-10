@@ -55,6 +55,8 @@ enum ViewControllerId: String {
     case archives
     case passwordUpdate
     case profilePage
+    case profileAboutPage
+    case profilePersonalInfoPage
     case search
     case publicArchive
     case publicArchiveFileBrowser
@@ -99,6 +101,10 @@ enum ViewControllerId: String {
             return "PasswordUpdate"
         case .profilePage:
             return "ProfilePage"
+        case .profileAboutPage:
+            return "AboutPage"
+        case .profilePersonalInfoPage:
+            return "PersonalInformationPage"
         case .search:
             return "Search"
         case .publicArchive:

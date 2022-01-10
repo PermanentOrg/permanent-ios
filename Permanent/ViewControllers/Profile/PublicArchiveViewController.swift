@@ -101,7 +101,6 @@ class PublicArchiveViewController: UIViewController {
             profilePageVC.collectionView.contentOffset.y = 0
         }
     }
-    
 }
 
 extension PublicArchiveViewController: PublicArchiveChildDelegate {

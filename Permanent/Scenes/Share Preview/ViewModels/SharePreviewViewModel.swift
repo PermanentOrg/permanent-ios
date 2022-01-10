@@ -63,34 +63,25 @@ class SharePreviewViewModel {
             
             switch result {
             case .json(let response, _):
-                guard
-                    let model: APIResults<SharebyURLVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<SharebyURLVO>.decoder
-                    ),
-
-                    model.isSuccessful,
-                    let shareByURL = model.results.first?.data?.first?.shareByURLVO else {
-                    
-                    self.viewDelegate?.updateScreen(
-                        status: .error(message: .errorMessage),
-                        shareDetails: nil)
-                    return
-                }
+                guard let model: APIResults<SharebyURLVO> = JSONHelper.decoding(
+                    from: response,
+                    with: APIResults<SharebyURLVO>.decoder
+                ),
+                      model.isSuccessful,
+                      let shareByURL = model.results.first?.data?.first?.shareByURLVO else {
+                          self.viewDelegate?.updateScreen(status: .error(message: .errorMessage), shareDetails: nil)
+                          return
+                      }
                 
                 self.onFetchSharedItemsSuccess(shareByURL)
                 
-               
             case .error(let error, _):
-                self.viewDelegate?.updateScreen(
-                    status: .error(message: error?.localizedDescription),
-                    shareDetails: nil)
+                self.viewDelegate?.updateScreen(status: .error(message: error?.localizedDescription), shareDetails: nil)
                 
             default:
                 return
             }
         }
-        
     }
     
     func requestShareAccess(urlToken: String) {
@@ -136,8 +127,6 @@ class SharePreviewViewModel {
         }
         
     }
-    
-    
     
     fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVOData) {
         if let folderData = model.folderData {
@@ -205,11 +194,9 @@ class SharePreviewViewModel {
             }
         }
     }
-    
 }
 
 extension SharePreviewViewModel: SharePreviewViewModelDelegate {
-    
     var numberOfItems: Int {
         return files.count
     }
@@ -217,5 +204,4 @@ extension SharePreviewViewModel: SharePreviewViewModelDelegate {
     func itemFor(row: Int) -> File {
         return files[row]
     }
-    
 }

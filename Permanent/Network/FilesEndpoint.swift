@@ -33,7 +33,6 @@ enum FilesEndpoint {
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
     
     //RENAME
-    
     case renameFolder(params: UpdateRecordParams)
 }
 
@@ -212,7 +211,6 @@ extension FilesEndpoint: RequestProtocol {
         }
     }
 
-    
     var customURL: String? {
         switch self {
         case .download(let url, _, _):

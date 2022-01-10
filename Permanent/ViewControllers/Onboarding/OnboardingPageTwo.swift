@@ -8,7 +8,6 @@
 import UIKit
 
 class OnboardingPageTwo: UIViewController {
-    
     @IBOutlet weak var labelOne: UILabel!
     @IBOutlet weak var labelTwo: UILabel!
     
@@ -29,6 +28,4 @@ class OnboardingPageTwo: UIViewController {
         labelTwo.textAlignment = Text.style2.alignment
         labelTwo.numberOfLines = 3
     }
-    
-    
 }

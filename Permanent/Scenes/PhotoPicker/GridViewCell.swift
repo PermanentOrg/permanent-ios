@@ -2,12 +2,12 @@
 //  GridViewCell.swift
 //  Permanent
 //
+//  Created by Vlad Alexandru Rusu on 25.08.2021.
 //
 
 import UIKit
 
 class GridViewCell: UICollectionViewCell {
-    
     @IBOutlet var imageView: UIImageView!
     
     var representedAssetIdentifier: String!
@@ -32,6 +32,4 @@ class GridViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
     }
-    
-    
 }

@@ -238,33 +238,37 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="394" height="470"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2P9-DV-xhR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="394" height="48.5"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <userDefinedRuntimeAttributes>
                                                             <userDefinedRuntimeAttribute type="string" keyPath="value" value="ghjghj"/>
                                                         </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ogg-ze-DAE" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="82" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="70.5" width="394" height="48"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tvS-OK-oYe" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="164" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="140.5" width="394" height="48.5"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4cx-DB-j2J" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="246" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="211" width="394" height="48"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TX9-m2-qMR" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="281" width="394" height="48.5"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="eyu-gu-hgn">
-                                                        <rect key="frame" x="0.0" y="328" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="351.5" width="394" height="48"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o1Z-Ao-tzj" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="48"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ekB-PT-q6z" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="48"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                         </subviews>
@@ -276,14 +280,14 @@
                                                         </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZMe-dh-uGc">
-                                                        <rect key="frame" x="0.0" y="410" width="394" height="60"/>
+                                                        <rect key="frame" x="0.0" y="421.5" width="394" height="48.5"/>
                                                         <subviews>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eX1-Fa-Ugn" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="60"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="48.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-5h-O9O" customClass="InputTextWithLabelElementViewViewController" customModule="Permanent" customModuleProvider="target">
-                                                                <rect key="frame" x="197" y="0.0" width="197" height="60"/>
+                                                                <rect key="frame" x="197" y="0.0" width="197" height="48.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
                                                         </subviews>
@@ -340,6 +344,7 @@
                     <connections>
                         <outlet property="accountNameView" destination="2P9-DV-xhR" id="0VZ-f9-XkZ"/>
                         <outlet property="addressView" destination="4cx-DB-j2J" id="fAh-kf-dbU"/>
+                        <outlet property="addressView2" destination="TX9-m2-qMR" id="ewf-Rh-btj"/>
                         <outlet property="cityView" destination="o1Z-Ao-tzj" id="bXS-g4-vVc"/>
                         <outlet property="contentUpdateButton" destination="68J-lr-Pzv" id="C8a-vd-tmQ"/>
                         <outlet property="countryView" destination="ZrA-5h-O9O" id="8Du-IW-NbV"/>
@@ -457,19 +462,19 @@ The account deletion action will not delete any archives that you own or persona
     </scenes>
     <designables>
         <designable name="68J-lr-Pzv">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="ICb-Y6-aLK">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
         <designable name="S4H-vw-aNZ">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="fUa-8S-g3h">
-            <size key="intrinsicContentSize" width="30" height="30"/>
+            <size key="intrinsicContentSize" width="30" height="40"/>
         </designable>
         <designable name="xJt-MI-I2f">
-            <size key="intrinsicContentSize" width="46" height="30"/>
+            <size key="intrinsicContentSize" width="70" height="40"/>
         </designable>
     </designables>
     <resources>

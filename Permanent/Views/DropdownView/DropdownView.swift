@@ -32,7 +32,6 @@ class DropdownView: UIView {
         commonInit()
     }
     
-    
     fileprivate func commonInit() {
         loadNib()
         setupView(contentView)
@@ -66,5 +65,4 @@ class DropdownView: UIView {
             arrowImage.transform = CGAffineTransform.identity
         }
     }
-    
 }
