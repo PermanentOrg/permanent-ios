@@ -66,34 +66,37 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(fullName: String?, nickname: String?, gender: String?, birthDate: String?, birthLocation: String?) {
-        
-        if let fullName = fullName {
-            fullNameLabel.text = fullName
+        if let fullNameValue = fullName,
+            fullNameValue.isNotEmpty {
+            fullNameLabel.text = fullNameValue
         } else {
             fullNameLabel.text = "Full name".localized()
         }
         
-        if let nickname = nickname,
-           !nickname.isEmpty {
-            nicknameLabel.text = nickname
+        if let nicknameValue = nickname,
+           nicknameValue.isNotEmpty {
+            nicknameLabel.text = nicknameValue
         } else {
             nicknameLabel.text = "Aliases or nicknames".localized()
         }
         
-        if let gender = gender {
-            genderLabel.text = gender
+        if let genderValue = gender,
+            genderValue.isNotEmpty {
+            genderLabel.text = genderValue
         } else {
-            genderLabel.text = "Gender "
+            genderLabel.text = "Gender"
         }
         
-        if let birthDate = birthDate {
-            birthDateLabel.text = birthDate
+        if let birthDateValue = birthDate,
+            birthDateValue.isNotEmpty {
+            birthDateLabel.text = birthDateValue
         } else {
             birthDateLabel.text = "YYYY-MM-DD"
         }
         
-        if let birthLocation = birthLocation {
-            birthLocationLabel.text = birthLocation
+        if let birthLocationValue = birthLocation,
+            birthLocationValue.isNotEmpty {
+            birthLocationLabel.text = birthLocationValue
         } else {
             birthLocationLabel.text = "Choose a location".localized()
         }

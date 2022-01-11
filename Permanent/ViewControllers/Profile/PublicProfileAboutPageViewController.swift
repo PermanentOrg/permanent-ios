@@ -39,10 +39,6 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         view.endEditing(true)
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     func setupNavigationBar() {
         styleNavBar()
         

@@ -25,4 +25,13 @@ class BasicProfileItem: ProfileItemModel {
             string3 = newValue
         }
     }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.basic.rawValue)
+        self.type = "type.widget.string"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
 }

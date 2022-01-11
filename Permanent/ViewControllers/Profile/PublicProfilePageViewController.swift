@@ -41,7 +41,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initButtonStates()
         initCollectionView()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onDataIsUpdated(_:)), name: .publicProfilePageAboutUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onDataIsUpdated(_:)), name: .publicProfilePageUpdate, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func initUI() {
@@ -84,8 +88,13 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-    
-        collectionView.reloadSections([1])
+        
+        if currentSegmentValue == 0 {
+            collectionView.reloadSections([1])
+        } else {
+            let bottomSectionsSet = IndexSet(integersIn: 1...4)
+            collectionView.reloadSections(bottomSectionsSet)
+        }
     }
     
     func initButtonStates() {

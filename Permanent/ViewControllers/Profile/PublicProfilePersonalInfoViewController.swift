@@ -140,7 +140,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         nicknameHintLabel.text = "Aliases or nicknames".localized()
         genderHintLabel.text = "Gender".localized()
         birthDateHintLabel.text = "YYYY-MM-DD"
-        birthLocationHintLabel.text = "Choose a location".localized()
+        birthLocationHintLabel.text = "Location".localized()
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -148,7 +148,27 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func doneButtonAction(_ sender: Any) {
-        dismiss(animated: true)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (true, true)
+        
+        let group = DispatchGroup()
+        
+        showSpinner()
+        
+        group.enter()
+        
+        viewModel?.updateBasicProfileItem(fullNameNewValue: fullNameTextField.text, nicknameNewValue: nicknameTextField.text) { result in
+            publicProfileUpdateIsSuccessfully.0 = result
+        }
+        group.leave()
+        
+        group.notify(queue: DispatchQueue.main) {
+            self.hideSpinner()
+            if publicProfileUpdateIsSuccessfully == (true, true) {
+                self.dismiss(animated: true)
+            } else {
+                self.showAlert(title: .error, message: .errorMessage)
+            }
+        }
     }
     
     func setFieldValues() {
@@ -160,7 +180,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
-        if let savedValue = value {
+        if let savedValue = value,
+            savedValue.isNotEmpty {
             textField.text = savedValue
             associatedLabel.isHidden = true
         } else {

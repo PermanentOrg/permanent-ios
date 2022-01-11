@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import AVFAudio
+import AVFoundation
 
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
@@ -70,24 +72,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     
-    func modifyBlurbProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newBlurbItem = BlurbProfileItem()
-        newBlurbItem.shortDescription = newValue
-        newBlurbItem.archiveId = archiveData.archiveID
-        newBlurbItem.profileItemId = profileItemId
-        
-        modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
-    }
-    
-    func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newDescriptionItem = DescriptionProfileItem()
-        newDescriptionItem.longDescription = newValue
-        newDescriptionItem.archiveId = archiveData.archiveID
-        newDescriptionItem.profileItemId = profileItemId
-        
-        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
-    }
-    
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let apiOperation: APIOperation
         
@@ -110,7 +94,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse, nil)
                     return
                 }
-                NotificationCenter.default.post(name: .publicProfilePageAboutUpdate, object: self)
+                NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
                 if operationType == .delete {
                     completionBlock(true, nil, nil)
                     return
@@ -127,5 +111,86 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 return
             }
         }
+    }
+    
+    func modifyBlurbProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newBlurbItem = BlurbProfileItem()
+        newBlurbItem.shortDescription = newValue
+        newBlurbItem.archiveId = archiveData.archiveID
+        newBlurbItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
+    }
+    
+    func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newDescriptionItem = DescriptionProfileItem()
+        newDescriptionItem.longDescription = newValue
+        newDescriptionItem.archiveId = archiveData.archiveID
+        newDescriptionItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+    }
+    
+    func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newDescriptionItem = BasicProfileItem()
+        newDescriptionItem.fullName = newValueFullname
+        newDescriptionItem.nickname = newValueNickName
+        newDescriptionItem.archiveId = archiveData.archiveID
+        newDescriptionItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+    }
+    
+    func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldIsEmpty = (false, false)
+        var textFieldHaveNewValue = (false, false)
+        
+        textFieldHaveNewValue.0 = fullNameNewValue != basicProfileItem?.fullName
+        textFieldHaveNewValue.1 = nicknameNewValue != basicProfileItem?.nickname
+        
+        if let fullName = fullNameNewValue,
+            fullName.isEmpty {
+            textFieldIsEmpty.0 = true
+        }
+        
+        if let nickname = nicknameNewValue,
+            nickname.isEmpty {
+            textFieldIsEmpty.1 = true
+        }
+        
+        if textFieldHaveNewValue == (false, false) {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1,
+            textFieldIsEmpty == (true, true) {
+            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
+                if result {
+                    self.basicProfileItem?.profileItemId = nil
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+                return
+            })
+        }
+        
+        modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
+            if result {
+                if self.basicProfileItem?.profileItemId == nil {
+                    self.basicProfileItem?.profileItemId = itemId
+                }
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        })
+    }
+    
+    func areParametersDifferent(_ parameterOne: String, _ parameterTwo: String) -> Bool {
+        return parameterOne != parameterTwo ? true : false
     }
 }
