@@ -123,31 +123,40 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newDescriptionItem = DescriptionProfileItem()
-        newDescriptionItem.longDescription = newValue
-        newDescriptionItem.archiveId = archiveData.archiveID
-        newDescriptionItem.profileItemId = profileItemId
+        let newProfileItem = DescriptionProfileItem()
+        newProfileItem.longDescription = newValue
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
         
-        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
     
     func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newDescriptionItem = BasicProfileItem()
-        newDescriptionItem.fullName = newValueFullname
-        newDescriptionItem.nickname = newValueNickName
-        newDescriptionItem.archiveId = archiveData.archiveID
-        newDescriptionItem.profileItemId = profileItemId
+        let newProfileItem = BasicProfileItem()
+        newProfileItem.fullName = newValueFullname
+        newProfileItem.nickname = newValueNickName
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
         
-        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
     
     func modifyGenderProfileItem(profileItemId: Int? = nil, newValueGender: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newDescriptionItem = GenderProfileItem()
-        newDescriptionItem.personGender = newValueGender
-        newDescriptionItem.archiveId = archiveData.archiveID
-        newDescriptionItem.profileItemId = profileItemId
+        let newProfileItem = GenderProfileItem()
+        newProfileItem.personGender = newValueGender
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
         
-        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifyBirthInfoProfileItem(profileItemId: Int? = nil, newValueBirthDate: String? = nil, newValueBirthLocation: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = BirthInfoProfileItem()
+        newProfileItem.birthDate = newValueBirthDate
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
     
     func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
@@ -162,7 +171,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         
         if let savedNickname = basicProfileItem?.nickname,
-           savedNickname != nicknameNewValue {
+            savedNickname != nicknameNewValue {
             textFieldHaveNewValue.1 = true
         } else if (nicknameNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue.1 = true
@@ -260,7 +269,55 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     
-    func areParametersDifferent(_ parameterOne: String, _ parameterTwo: String) -> Bool {
-        return parameterOne != parameterTwo ? true : false
+    func updateBirthInfoProfileItem(birthDateNewValue: String?, birthLocationNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldIsEmpty = (false, false)
+        var textFieldHaveNewValue = (false, false)
+        
+        if let savedBirthDate = birthInfoProfileItem?.birthDate,
+            savedBirthDate != birthDateNewValue {
+            textFieldHaveNewValue.0 = true
+        } else if (birthDateNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.0 = true
+        }
+        
+        if let savedBirthLocation = birthInfoProfileItem?.birthLocationFormated,
+            savedBirthLocation != birthLocationNewValue {
+            textFieldHaveNewValue.1 = true
+        } else if (birthLocationNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.1 = true
+        }
+        
+        if let birthDate = birthDateNewValue,
+            birthDate.isEmpty {
+            textFieldIsEmpty.0 = true
+        }
+        
+        if let birthLocation = birthLocationNewValue,
+            birthLocation.isEmpty {
+            textFieldIsEmpty.1 = true
+        }
+        
+        if textFieldHaveNewValue == (false, false) {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1 {
+            modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, newValueBirthLocation: nil, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.basicProfileItem?.profileItemId == nil {
+                        self.basicProfileItem?.profileItemId = itemId
+                    }
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        } else {
+            completion(true)
+            return
+        }
     }
 }

@@ -88,14 +88,19 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         switch cellType {
         case .uploaded:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.createdDT ?? "")
+            
         case .lastModified:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.updatedDT ?? "")
+            
         case .date:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.displayDT ?? "")
+            
         case .created:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedDT ?? "")
+            
         case .fileCreated:
             date = dateFormatter.date(from: viewModel?.recordVO?.recordVO?.derivedCreatedDT ?? "")
+            
         default:
             date = nil
         }
@@ -128,7 +133,7 @@ extension FileDetailsDateCollectionViewCell: UITextFieldDelegate {
             return
         } else if let file = viewModel?.file {
             let initialValue = viewModel?.recordVO?.recordVO?.displayDT ?? ""
-            viewModel?.update(file: file, name: nil, description:  nil, date: date, location: nil, completion: { (success) in
+            viewModel?.update(file: file, name: nil, description: nil, date: date, location: nil, completion: { (success) in
                 if !success, let date = dateFormatter.date(from: initialValue) {
                     textField.text = FileDetailsDateCollectionViewCell.dateFormatter.string(from: date)
                 }

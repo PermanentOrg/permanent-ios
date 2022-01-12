@@ -141,6 +141,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         genderHintLabel.text = "Gender".localized()
         birthDateHintLabel.text = "YYYY-MM-DD"
         birthLocationHintLabel.text = "Location".localized()
+        
+        setupDatePicker()
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -148,7 +150,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func doneButtonAction(_ sender: Any) {
-        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (false, false)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool, Bool) = (false, false, false)
         
         let group = DispatchGroup()
         
@@ -156,19 +158,25 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         
         group.enter()
         group.enter()
-        viewModel?.updateBasicProfileItem(fullNameNewValue: fullNameTextField.text, nicknameNewValue: nicknameTextField.text) { result in
+        group.enter()
+        viewModel?.updateBasicProfileItem(fullNameNewValue: fullNameTextField.text, nicknameNewValue: nicknameTextField.text, { result in
             publicProfileUpdateIsSuccessfully.0 = result
             group.leave()
-        }
+        })
 
         viewModel?.updateGenderProfileItem(genderNewValue: genderTextField.text, { result in
             publicProfileUpdateIsSuccessfully.1 = result
             group.leave()
         })
+        
+        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, birthLocationNewValue: nil, { result in
+            publicProfileUpdateIsSuccessfully.2 = result
+            group.leave()
+        })
 
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
-            if publicProfileUpdateIsSuccessfully == (true, true) {
+            if publicProfileUpdateIsSuccessfully == (true, true, true) {
                 self.dismiss(animated: true)
             } else {
                 self.showAlert(title: .error, message: .errorMessage)
@@ -192,6 +200,52 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         } else {
             associatedLabel.isHidden = false
         }
+    }
+    
+    func setupDatePicker() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
+        
+        let datePicker = UIDatePicker()
+        datePicker.date = date ?? Date()
+        datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
+        datePicker.datePickerMode = .date
+        datePicker.maximumDate = Date()
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
+        }
+        datePicker.sizeToFit()
+        
+        let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 40))
+        let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 90, height: doneContainerView.frame.height))
+        doneButton.autoresizingMask = [.flexibleLeftMargin]
+        doneButton.setup()
+        doneButton.setFont(UIFont.systemFont(ofSize: 17))
+        doneButton.configureActionButtonUI(title: "done", bgColor: .systemBlue)
+        doneButton.addTarget(self, action: #selector(datePickerDoneButtonPressed(_:)), for: .touchUpInside)
+        doneContainerView.addSubview(doneButton)
+        
+        let stackView = UIStackView(arrangedSubviews: [datePicker, doneContainerView])
+        stackView.axis = .vertical
+        stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 40)
+        
+        birthDateTextField.inputView = stackView
+    }
+    
+    @objc func datePickerDoneButtonPressed(_ sender: Any) {
+        birthDateTextField.resignFirstResponder()
+    }
+    
+    @objc func datePickerDidChange(_ sender: UIDatePicker) {
+        let date = sender.date
+    
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        birthDateTextField.text = dateFormatter.string(from: date)
     }
 }
 
@@ -239,7 +293,11 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             
         case birthDateTextField:
             if textFieldText.isEmpty {
-                birthDateHintLabel.isHidden = false
+                if let birthDate = viewModel?.birthInfoProfileItem?.birthDate {
+                    birthDateTextField.text = birthDate
+                } else {
+                    birthDateHintLabel.isHidden = false
+                }
             }
             
         case locationTextField:

@@ -44,4 +44,13 @@ class BirthInfoProfileItem: ProfileItemModel {
 
         return address
     }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.birthInfo.rawValue)
+        self.type = "type.widget.date"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
 }
