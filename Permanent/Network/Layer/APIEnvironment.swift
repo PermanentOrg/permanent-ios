@@ -49,6 +49,17 @@ enum APIEnvironment: EnvironmentProtocol {
         return "https://desk.zoho.com/portal/permanent/en/home"
     }
     
+    var publicURL: String {
+        switch self {
+        case .staging:
+            return "https://staging.permanent.org/p"
+        case .development:
+            return "https://dev.permanent.org/p"
+        case .production:
+            return "https://www.permanent.org/p"
+        }
+    }
+    
     #if STAGING_ENVIRONMENT
     static let defaultEnv: APIEnvironment = .staging
     #else

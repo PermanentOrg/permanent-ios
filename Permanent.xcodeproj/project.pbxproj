@@ -79,10 +79,6 @@
 		5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E980AB62657D3D400ED5764 /* BundleExtension.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
-		5EAAB292273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */; };
-		5EAAB293273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */; };
-		5EAAB296273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */; };
-		5EAAB297273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
 		5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */; };
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
@@ -367,6 +363,9 @@
 		F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */; };
 		F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853D1F26E9FA5A0050E377 /* Permission.swift */; };
+		F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58B8B9B2757F67A00D43606 /* PublicArchiveViewController.swift */; };
+		F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58B8B9D2758047200D43606 /* PublicArchiveFileViewController.swift */; };
+		F58B8BA02758100500D43606 /* PublicArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58B8B9F2758100500D43606 /* PublicArchiveViewModel.swift */; };
 		F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */; };
 		F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */; };
 		F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */; };
@@ -494,10 +493,6 @@
 		5E980AB62657D3D400ED5764 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
-		5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageTopCollectionViewCell.swift; sourceTree = "<group>"; };
-		5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageTopCollectionViewCell.xib; sourceTree = "<group>"; };
-		5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMenuCollectionViewCell.swift; sourceTree = "<group>"; };
-		5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageMenuCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -792,6 +787,9 @@
 		F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceEndpoint.swift; sourceTree = "<group>"; };
 		F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMNTActionSheetViewController.swift; sourceTree = "<group>"; };
 		F5853D1F26E9FA5A0050E377 /* Permission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
+		F58B8B9B2757F67A00D43606 /* PublicArchiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicArchiveViewController.swift; sourceTree = "<group>"; };
+		F58B8B9D2758047200D43606 /* PublicArchiveFileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicArchiveFileViewController.swift; sourceTree = "<group>"; };
+		F58B8B9F2758100500D43606 /* PublicArchiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicArchiveViewModel.swift; sourceTree = "<group>"; };
 		F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesViewModel.swift; sourceTree = "<group>"; };
 		F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFilesViewModel.swift; sourceTree = "<group>"; };
 		F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PARequestNotificationPayload.swift; sourceTree = "<group>"; };
@@ -991,6 +989,7 @@
 				F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */,
 				F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */,
 				F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */,
+				F58B8B9F2758100500D43606 /* PublicArchiveViewModel.swift */,
 				BCD414D6257F74780019548F /* ShareLinkViewModel.swift */,
 				BC6AF9A825933EAF00483BBA /* MembersViewModel.swift */,
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
@@ -1089,6 +1088,8 @@
 			isa = PBXGroup;
 			children = (
 				5E5EF855273B23C3004F7EBC /* PublicProfilePageViewController.swift */,
+				F58B8B9B2757F67A00D43606 /* PublicArchiveViewController.swift */,
+				F58B8B9D2758047200D43606 /* PublicArchiveFileViewController.swift */,
 				5E2CFA26275116480055941C /* PublicProfileAboutPageViewController.swift */,
 				5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */,
 			);
@@ -1128,10 +1129,6 @@
 		5EAAB28F273BF59D009D41E6 /* ProfilePageCollectionViewCells */ = {
 			isa = PBXGroup;
 			children = (
-				5EAAB290273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift */,
-				5EAAB291273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib */,
-				5EAAB294273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.swift */,
-				5EAAB295273BF698009D41E6 /* ProfilePageMenuCollectionViewCell.xib */,
 				5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */,
 				5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */,
 				5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */,
@@ -1973,7 +1970,6 @@
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
-				5EAAB297273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.xib in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */,
 				BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */,
@@ -2015,7 +2011,6 @@
 				5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */,
 				5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
-				5EAAB293273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.xib in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
@@ -2151,7 +2146,6 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(PROJECT_DIR)/Permanent/EnvVars.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2306,6 +2300,7 @@
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
 				F540A676267B618A00962B2D /* AccountDeleteViewController.swift in Sources */,
 				BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */,
+				F58B8BA02758100500D43606 /* PublicArchiveViewModel.swift in Sources */,
 				5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */,
 				5E56FDBF2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift in Sources */,
 				5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */,
@@ -2380,6 +2375,7 @@
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
+				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
@@ -2409,7 +2405,6 @@
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
-				5EAAB296273BF699009D41E6 /* ProfilePageMenuCollectionViewCell.swift in Sources */,
 				F5616189270E49250038D29E /* FileCollectionViewCell.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */,
@@ -2441,7 +2436,6 @@
 				BC59BAB525C2B7D6005A45D3 /* SharePreviewViewModel.swift in Sources */,
 				F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */,
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
-				5EAAB292273BF67D009D41E6 /* ProfilePageTopCollectionViewCell.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
@@ -2458,6 +2452,7 @@
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
+				F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,

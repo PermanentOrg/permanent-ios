@@ -171,9 +171,14 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
                     self?.dequeueViewController(atIndex: index + 1, preloadLeftRightLevel: preloadLeftRightLevel + 1)
                 }
             }
-            fileDetailsVC.file = filteredFiles[index]
+            let file = filteredFiles[index]
+            fileDetailsVC.file = file
             fileDetailsVC.view.isHidden = false // preload the view
             fileDetailsVC.loadVM()
+            
+            if let publicArchiveVM = viewModel as? PublicArchiveViewModel {
+                fileDetailsVC.viewModel?.publicURL = publicArchiveVM.publicURL(forFile: file)
+            }
             
             controllersCache.setObject(fileDetailsVC, forKey: NSNumber(value: index))
             

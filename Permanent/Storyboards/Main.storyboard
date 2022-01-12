@@ -629,7 +629,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NyA-JK-Omz" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="167" y="483.5" width="80" height="40"/>
+                                <rect key="frame" x="167" y="483.5" width="80" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="r1k-AS-275"/>
                                 </constraints>
@@ -1247,9 +1247,6 @@
         </designable>
         <designable name="NyA-JK-Omz">
             <size key="intrinsicContentSize" width="37" height="30"/>
-        </designable>
-        <designable name="NyA-JK-Omz">
-            <size key="intrinsicContentSize" width="55" height="40"/>
         </designable>
         <designable name="POQ-5N-4NZ">
             <size key="intrinsicContentSize" width="46" height="30"/>

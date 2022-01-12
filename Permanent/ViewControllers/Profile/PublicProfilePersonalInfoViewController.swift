@@ -148,19 +148,24 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func doneButtonAction(_ sender: Any) {
-        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (true, true)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool) = (false, false)
         
         let group = DispatchGroup()
         
         showSpinner()
         
         group.enter()
-        
+        group.enter()
         viewModel?.updateBasicProfileItem(fullNameNewValue: fullNameTextField.text, nicknameNewValue: nicknameTextField.text) { result in
             publicProfileUpdateIsSuccessfully.0 = result
+            group.leave()
         }
-        group.leave()
-        
+
+        viewModel?.updateGenderProfileItem(genderNewValue: genderTextField.text, { result in
+            publicProfileUpdateIsSuccessfully.1 = result
+            group.leave()
+        })
+
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             if publicProfileUpdateIsSuccessfully == (true, true) {

@@ -36,6 +36,7 @@ extension UIImage {
     static let editAction = UIImage(named: "editAction")!
     static let emptyFolder = UIImage(named: "emptyFolder")!
     static let emptySearch = UIImage(named: "emptySearch")!
+    static let emptyNotification = UIImage(named: "emptyNotification")!
     static let expand = UIImage(named: "expand")!
     static let folder = UIImage(named: "folder")!
     static let group = UIImage(named: "group")!

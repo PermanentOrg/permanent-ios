@@ -141,12 +141,32 @@ class PublicProfilePageViewModel: ViewModelInterface {
         modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
     }
     
+    func modifyGenderProfileItem(profileItemId: Int? = nil, newValueGender: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newDescriptionItem = GenderProfileItem()
+        newDescriptionItem.personGender = newValueGender
+        newDescriptionItem.archiveId = archiveData.archiveID
+        newDescriptionItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
+    }
+    
     func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
         var textFieldIsEmpty = (false, false)
         var textFieldHaveNewValue = (false, false)
         
-        textFieldHaveNewValue.0 = fullNameNewValue != basicProfileItem?.fullName
-        textFieldHaveNewValue.1 = nicknameNewValue != basicProfileItem?.nickname
+        if let savedFullName = basicProfileItem?.fullName,
+           savedFullName != fullNameNewValue {
+            textFieldHaveNewValue.0 = true
+        } else if (fullNameNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.0 = true
+        }
+        
+        if let savedNickname = basicProfileItem?.nickname,
+           savedNickname != nicknameNewValue {
+            textFieldHaveNewValue.1 = true
+        } else if (nicknameNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.1 = true
+        }
         
         if let fullName = fullNameNewValue,
             fullName.isEmpty {
@@ -169,25 +189,75 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 if result {
                     self.basicProfileItem?.profileItemId = nil
                     completion(true)
+                    return
                 } else {
                     completion(false)
+                    return
                 }
-                return
+            })
+        } else {
+            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.basicProfileItem?.profileItemId == nil {
+                        self.basicProfileItem?.profileItemId = itemId
+                    }
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
             })
         }
+    }
+    
+    func updateGenderProfileItem(genderNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldIsEmpty = false
+        var textFieldHaveNewValue = false
         
-        modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
-            if result {
-                if self.basicProfileItem?.profileItemId == nil {
-                    self.basicProfileItem?.profileItemId = itemId
+        if let savedProfileGender = profileGenderProfileItem?.personGender,
+            savedProfileGender != genderNewValue {
+            textFieldHaveNewValue = true
+        } else if (genderNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue = true
+        }
+        
+        if let value = genderNewValue,
+            value.isEmpty {
+            textFieldIsEmpty = true
+        }
+        
+        if textFieldHaveNewValue == false {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue,
+            textFieldIsEmpty {
+            modifyGenderProfileItem(profileItemId: profileGenderProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
+                if result {
+                    self.profileGenderProfileItem?.profileItemId = nil
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
                 }
-                completion(true)
-                return
-            } else {
-                completion(false)
-                return
-            }
-        })
+            })
+        } else {
+            modifyGenderProfileItem(profileItemId: profileGenderProfileItem?.profileItemId, newValueGender: genderNewValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.profileGenderProfileItem?.profileItemId == nil {
+                        self.profileGenderProfileItem?.profileItemId = itemId
+                    }
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        }
     }
     
     func areParametersDifferent(_ parameterOne: String, _ parameterTwo: String) -> Bool {
