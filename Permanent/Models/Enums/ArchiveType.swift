@@ -40,39 +40,21 @@ enum ArchiveType: String, CaseIterable {
     var personalInformationPublicPageTitle: String {
         switch self {
         case .person:
-            return "Personal Information".localized()
+            return "Person Information".localized()
             
         case .family:
-            return "Personal Information".localized()
+            return "Family Information".localized()
             
         case .organization:
-            return "Personal Information".localized()
+            return "Organization Information".localized()
         }
     }
     
     var shortDescriptionTitle: String {
-        switch self {
-        case .person:
-            return "What is this Archive for?".localized()
-            
-        case .family:
-            return ""
-            
-        case .organization:
-            return ""
-        }
+        return "What is this Archive for?".localized()
     }
     var shortDescriptionHint: String {
-        switch self {
-        case .person:
-            return "Add a short description about the purpose of this Archive".localized()
-            
-        case .family:
-            return ""
-            
-        case .organization:
-            return ""
-        }
+        return "Add a short description about the purpose of this Archive".localized()
     }
     
     var longDescriptionTitle: String {
