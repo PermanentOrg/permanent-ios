@@ -89,6 +89,7 @@ class RootViewController: UIViewController {
             mainViewController = sharesVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
+            (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
         }
         let navController = RootNavigationController(viewController: mainViewController)
         return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, rightSideMenuController: rightSideMenuController)

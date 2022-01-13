@@ -33,8 +33,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel = MyFilesViewModel()
-        
         initUI()
         setupCollectionView()
         setupBottomActionSheet()
@@ -81,7 +79,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.title = .myFiles
+        navigationItem.title = viewModel?.rootFolderName
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = .white
 
@@ -94,6 +92,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         directoryLabel.font = Text.style3.font
         directoryLabel.textColor = .primary
+        directoryLabel.text = viewModel?.rootFolderName
         backButton.tintColor = .primary
         backButton.isHidden = true
         
@@ -204,13 +203,12 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             // If we got to the root, hide the back button.
             if viewModel.currentFolderIsRoot {
                 self.backButton.isHidden = true
+                self.directoryLabel.text = viewModel.rootFolderName
             }
         })
     }
     
-    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true,
-                                      then handler: VoidAction? = nil)
-    {
+    private func refreshCurrentFolder(shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         guard
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
@@ -224,10 +222,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         )
         
         // Back navigation set to `true` so it's not considered a in-depth navigation.
-        navigateToFolder(withParams: params,
-                         backNavigation: true,
-                         shouldDisplaySpinner: shouldDisplaySpinner,
-                         then: handler)
+        navigateToFolder(withParams: params, backNavigation: true, shouldDisplaySpinner: shouldDisplaySpinner, then: handler)
     }
     
     @objc
@@ -265,18 +260,20 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let title = "Cancel all uploads".localized()
         let description = "Are you sure you want to cancel all uploads?".localized()
         
-        self.showActionDialog(styled: .simpleWithDescription,
-                              withTitle: title,
-                              description: description,
-                              positiveButtonTitle: .cancelAll,
-                              positiveAction: {
-                                self.actionDialog?.dismiss()
-                                self.viewModel?.cancelUploadsInFolder()
-                              },
-                              cancelButtonTitle: "No".localized(),
-                              positiveButtonColor: .brightRed,
-                              cancelButtonColor: .primary,
-                              overlayView: self.overlayView)
+        self.showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: description,
+            positiveButtonTitle: .cancelAll,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.viewModel?.cancelUploadsInFolder()
+            },
+            cancelButtonTitle: "No".localized(),
+            positiveButtonColor: .brightRed,
+            cancelButtonColor: .primary,
+            overlayView: self.overlayView
+        )
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
@@ -322,10 +319,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams,
-                                  backNavigation: Bool,
-                                  shouldDisplaySpinner: Bool = true,
-                                  then handler: VoidAction? = nil) {
+    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
@@ -403,17 +397,18 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFilePayload.toArchiveName)
             let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFilePayload.toArchiveName)
-            showActionDialog(styled: .simpleWithDescription,
-                             withTitle: title,
-                             description: description,
-                             positiveButtonTitle: "Switch".localized(),
-                             positiveAction: action,
-                             cancelButtonTitle: "Cancel".localized(),
-                             overlayView: overlayView)
+            showActionDialog(
+                styled: .simpleWithDescription,
+                withTitle: title,
+                description: description,
+                positiveButtonTitle: "Switch".localized(),
+                positiveAction: action,
+                cancelButtonTitle: "Cancel".localized(),
+                overlayView: overlayView
+            )
         } else {
             _presentShare()
         }
-        
     }
     
     private func upload(files: [FileInfo]) {
@@ -458,28 +453,26 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             case .error(let message):
                 self.showErrorAlert(message: message)
             }
-            
         })
     }
     
-    func rename(_ file: FileViewModel,_ name:String, atIndexPath indexPath: IndexPath) {
+    func rename(_ file: FileViewModel, _ name: String, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.rename(file: file, name: name, then: { status in
             self.hideSpinner()
             
             switch status {
             case .success:
-                    self.pullToRefreshAction()
+                self.pullToRefreshAction()
                 if file.type.isFolder {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Folder rename was successfully".localized())
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successfully".localized())
                 } else {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "File rename was successfully".localized())
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successfully".localized())
                 }
                 
             case .error( _):
                 self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
             }
-            
         })
     }
     
@@ -493,8 +486,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self.viewModel?.viewModels.prepend(file)
                 
                 DispatchQueue.main.async {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight,
-                                                     title: self.viewModel?.fileAction.action ?? .success)
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
                     self.setupUIForAction(.none)
                 }
                 
@@ -614,7 +606,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
     }
-    
 }
 
 // MARK: - Table View Delegates
@@ -643,15 +634,17 @@ extension MainViewController {
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.showActionDialog(styled: .simple,
-                                  withTitle: title,
-                                  positiveButtonTitle: .delete,
-                                  positiveAction: {
-                                      self.actionDialog?.dismiss()
-                                      self.deleteFile(file, atIndexPath: indexPath)
-                                  }, positiveButtonColor: .brightRed,
-                                  cancelButtonColor: .primary,
-                                  overlayView: self.overlayView)
+            self.showActionDialog(
+                styled: .simple,
+                withTitle: title,
+                positiveButtonTitle: .delete,
+                positiveAction: {
+                    self.actionDialog?.dismiss()
+                    self.deleteFile(file, atIndexPath: indexPath)
+                }, positiveButtonColor: .brightRed,
+                cancelButtonColor: .primary,
+                overlayView: self.overlayView
+            )
         }
     }
     
@@ -660,13 +653,16 @@ extension MainViewController {
         
         let title = String(format: "\(fileAction.title) \"%@\"?", source.name)
         
-        showActionDialog(styled: .simple,
-                         withTitle: title,
-                         positiveButtonTitle: fileAction.title,
-                         positiveAction: {
-                             self.actionDialog?.dismiss()
-                             self.relocate(file: source, to: destination)
-                         }, overlayView: overlayView)
+        showActionDialog(
+            styled: .simple,
+            withTitle: title,
+            positiveButtonTitle: fileAction.title,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.relocate(file: source, to: destination)
+            },
+            overlayView: overlayView
+        )
     }
     
     private func download(_ file: FileViewModel) {
@@ -696,7 +692,7 @@ extension MainViewController {
     fileprivate func onFileDownloaded(url: URL?, error: Error?) {
         refreshCollectionView()
         
-        guard let _ = url else {
+        guard url != nil else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -727,7 +723,32 @@ extension MainViewController: FABViewDelegate {
 
 extension MainViewController: FABActionSheetDelegate {
     func didTapUpload() {
-        showActionSheet()
+        if viewModel is PublicFilesViewModel {
+            let title = ""
+            let description = "This is a public folder. Are you sure you want to upload here?".localized()
+            showActionDialog(
+                styled: .simpleWithDescription,
+                withTitle: title,
+                description: description,
+                positiveButtonTitle: "Upload".localized(),
+                positiveAction: { [weak self] in
+                    self?.view.dismissPopup(
+                        self?.actionDialog,
+                        overlayView: self?.overlayView,
+                        completion: { _ in
+                            self?.actionDialog?.removeFromSuperview()
+                            self?.actionDialog = nil
+                            
+                            self?.showActionSheet()
+                        }
+                    )
+                },
+                cancelButtonTitle: "Cancel".localized(),
+                overlayView: overlayView
+            )
+        } else {
+            showActionSheet()
+        }
     }
     
     func didTapNewFolder() {
@@ -774,11 +795,18 @@ extension MainViewController: FABActionSheetDelegate {
                     shareWithOtherApps(file: file)
                 }))
             }
-            if file.permissions.contains(.ownership) {
+            
+            if file.permissions.contains(.ownership) && viewModel is PublicFilesViewModel == false {
                 actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
                     shareInApp(file: file)
                 }))
             }
+        }
+        
+        if let viewModel = viewModel as? PublicFilesViewModel, let url = viewModel.publicURL(forFile: file) {
+            actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+                share(url: url)
+            }))
         }
         
         if file.permissions.contains(.edit) {
@@ -979,23 +1007,26 @@ extension MainViewController {
     func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.rename) \"%@\"", file.name)
         
-        self.showActionDialog(styled: .singleField,
-                              withTitle: title,
-                              prefilledValues: ["Name".localized()],
-                              positiveButtonTitle: .rename,
-                              positiveAction: {
-            guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
-            if inputName.isEmpty {
-                self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-            } else {
-                self.actionDialog?.dismiss()
-                self.actionDialog = nil
-                self.rename(file, inputName, atIndexPath: indexPath)
-                self.view.endEditing(true)
-            }
-        }, positiveButtonColor: .primary,
-                              cancelButtonColor: .brightRed,
-                              overlayView: self.overlayView)
+        self.showActionDialog(
+            styled: .singleField,
+            withTitle: title,
+            prefilledValues: ["Name".localized()],
+            positiveButtonTitle: .rename,
+            positiveAction: {
+                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
+                if inputName.isEmpty {
+                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                } else {
+                    self.actionDialog?.dismiss()
+                    self.actionDialog = nil
+                    self.rename(file, inputName, atIndexPath: indexPath)
+                    self.view.endEditing(true)
+                }
+            },
+            positiveButtonColor: .primary,
+            cancelButtonColor: .brightRed,
+            overlayView: self.overlayView
+        )
     }
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -1029,9 +1060,7 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
         }
     }
     
-    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        
-    }
+    func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) { }
 }
 
 // MARK: - PhotoPickerViewControllerDelegate
@@ -1046,4 +1075,3 @@ extension MainViewController: PhotoPickerViewControllerDelegate {
         })
     }
 }
-

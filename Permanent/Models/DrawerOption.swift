@@ -11,6 +11,7 @@ enum DrawerOption {
     case archives
     case files
     case shares
+    case publicFiles
     case members
     case addStorage
     case accountInfo
@@ -25,6 +26,7 @@ enum DrawerOption {
     var icon: UIImage? {
         switch self {
         case .files: return .folder
+        case .publicFiles: return .folder
         case .shares: return .share
         case .members: return .group
         case .addStorage: return .storage
@@ -43,6 +45,7 @@ enum DrawerOption {
     var title: String {
         switch self {
         case .files: return .myFiles
+        case .publicFiles: return "Public Files".localized()
         case .shares: return .shares
         case .members: return String.member.pluralized()
         case .invitations: return .invitations

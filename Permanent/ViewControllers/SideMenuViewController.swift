@@ -7,6 +7,12 @@
 
 import UIKit
 
+enum LeftDrawerSection: Int {
+    case header
+    case leftFiles
+    case leftOthers
+}
+
 class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var versionLabel: UILabel!
@@ -20,7 +26,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         LeftDrawerSection.leftFiles: [
             DrawerOption.files,
-            DrawerOption.shares
+            DrawerOption.shares,
+            DrawerOption.publicFiles
         ],
         
         LeftDrawerSection.leftOthers: [
@@ -39,7 +46,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         if viewModel?.getCurrentArchive() == nil {
             viewModel?.refreshCurrentArchive({ [self] archive in
-                tableView.reloadRows(at: [[0,0]], with: .none)
+                tableView.reloadRows(at: [[0, 0]], with: .none)
             })
         }
     }
@@ -56,10 +63,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: DrawerTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: DrawerTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: DrawerTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: DrawerTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
     }
@@ -67,7 +72,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     func adjustUIForAnimation(isOpening: Bool) {
         tableView.reloadData()
         
-        if (tableView.contentSize.height < tableView.frame.size.height) {
+        if tableView.contentSize.height < tableView.frame.size.height {
             tableView.isScrollEnabled = false
         } else {
             tableView.isScrollEnabled = true
@@ -100,7 +105,6 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         
         if menuOption == .archives {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
-                
                 if let archive = viewModel?.getCurrentArchive(),
                    let archiveName: String = archive.fullName {
                     let archiveThumbURL: String = archive.thumbURL500 ?? ""
@@ -114,11 +118,11 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             }
         } else {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
-            tableViewCell.updateCell(with: menuOption)
-            cell = tableViewCell
+                tableViewCell.updateCell(with: menuOption)
+                cell = tableViewCell
             }
         }
-    
+        
         return cell
     }
     
@@ -224,7 +228,13 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
         switch option {
         case .files:
-            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main)
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            newRootVC.viewModel = MyFilesViewModel()
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .publicFiles:
+            let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+            newRootVC.viewModel = PublicFilesViewModel()
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .shares:
@@ -254,10 +264,4 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         let newRootVC = UIViewController.create(withIdentifier: id, from: storyboard)
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
     }
-}
-
-enum LeftDrawerSection: Int {
-    case header
-    case leftFiles
-    case leftOthers
 }
