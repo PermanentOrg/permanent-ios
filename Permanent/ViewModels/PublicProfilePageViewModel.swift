@@ -269,40 +269,22 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     
-    func updateBirthInfoProfileItem(birthDateNewValue: String?, birthLocationNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
-        var textFieldIsEmpty = (false, false)
-        var textFieldHaveNewValue = (false, false)
+    func updateBirthInfoProfileItem(birthDateNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldHaveNewValue = false
         
         if let savedBirthDate = birthInfoProfileItem?.birthDate,
             savedBirthDate != birthDateNewValue {
-            textFieldHaveNewValue.0 = true
+            textFieldHaveNewValue = true
         } else if (birthDateNewValue ?? "").isNotEmpty {
-            textFieldHaveNewValue.0 = true
+            textFieldHaveNewValue = true
         }
         
-        if let savedBirthLocation = birthInfoProfileItem?.birthLocationFormated,
-            savedBirthLocation != birthLocationNewValue {
-            textFieldHaveNewValue.1 = true
-        } else if (birthLocationNewValue ?? "").isNotEmpty {
-            textFieldHaveNewValue.1 = true
-        }
-        
-        if let birthDate = birthDateNewValue,
-            birthDate.isEmpty {
-            textFieldIsEmpty.0 = true
-        }
-        
-        if let birthLocation = birthLocationNewValue,
-            birthLocation.isEmpty {
-            textFieldIsEmpty.1 = true
-        }
-        
-        if textFieldHaveNewValue == (false, false) {
+        if textFieldHaveNewValue == false {
             completion(true)
             return
         }
         
-        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1 {
+        if textFieldHaveNewValue {
             modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, newValueBirthLocation: nil, operationType: .update, { result, error, itemId in
                 if result {
                     if self.basicProfileItem?.profileItemId == nil {
@@ -318,6 +300,27 @@ class PublicProfilePageViewModel: ViewModelInterface {
         } else {
             completion(true)
             return
+        }
+    }
+    
+    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
+        let params: GeomapLatLongParams = (lat, long)
+        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
+                completion(locnVO)
+            case .error(_, _):
+                completion(nil)
+            default:
+                completion(nil)
+            }
         }
     }
 }

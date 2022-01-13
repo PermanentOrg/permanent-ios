@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -562,7 +562,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jMt-0E-zTt">
-                                <rect key="frame" x="344.5" y="49" width="49.5" height="40"/>
+                                <rect key="frame" x="343.5" y="49" width="50.5" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="u4Z-Lp-ezJ"/>
                                 </constraints>
@@ -849,6 +849,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CpA-91-LN6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="374" y="819"/>
+        </scene>
+        <!--Public Profile Location Set View Controller-->
+        <scene sceneID="apC-W5-zhi">
+            <objects>
+                <viewController storyboardIdentifier="LocationSetOnTap" id="OrC-ZS-ibx" customClass="PublicProfileLocationSetViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="22n-4j-Pvv">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MIW-9q-OKj">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hdt-SN-k4A">
+                                <rect key="frame" x="0.0" y="49" width="414" height="45"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="j32-Tz-3SF"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="4zh-fE-e4U"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="hdt-SN-k4A" firstAttribute="top" secondItem="4zh-fE-e4U" secondAttribute="top" constant="5" id="A82-U0-cjv"/>
+                            <constraint firstItem="4zh-fE-e4U" firstAttribute="bottom" secondItem="MIW-9q-OKj" secondAttribute="bottom" id="J50-bx-9zA"/>
+                            <constraint firstItem="hdt-SN-k4A" firstAttribute="trailing" secondItem="4zh-fE-e4U" secondAttribute="trailing" id="Ml3-Le-i3n"/>
+                            <constraint firstItem="MIW-9q-OKj" firstAttribute="top" secondItem="4zh-fE-e4U" secondAttribute="top" id="WYe-pc-PRa"/>
+                            <constraint firstItem="MIW-9q-OKj" firstAttribute="leading" secondItem="4zh-fE-e4U" secondAttribute="leading" id="cLu-kW-JCG"/>
+                            <constraint firstItem="hdt-SN-k4A" firstAttribute="leading" secondItem="4zh-fE-e4U" secondAttribute="leading" id="d2K-Cf-eh3"/>
+                            <constraint firstItem="4zh-fE-e4U" firstAttribute="trailing" secondItem="MIW-9q-OKj" secondAttribute="trailing" id="hL0-An-tfe"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="mapContainerView" destination="MIW-9q-OKj" id="Q8C-H9-heE"/>
+                        <outlet property="searchBarContainer" destination="hdt-SN-k4A" id="uR9-O7-AFb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GLw-UV-BJA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1061" y="819"/>
         </scene>
     </scenes>
     <resources>

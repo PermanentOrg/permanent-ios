@@ -169,7 +169,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             group.leave()
         })
         
-        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, birthLocationNewValue: nil, { result in
+        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
             publicProfileUpdateIsSuccessfully.2 = result
             group.leave()
         })
@@ -267,10 +267,9 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
         case locationTextField:
            // birthLocationHintLabel.isHidden = true
             
-            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
-            // locationSetVC.delegate = self
-            // locationSetVC.file = file
-            // locationSetVC.viewModel = viewModel
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
+            locationSetVC.delegate = self
+            locationSetVC.viewModel = viewModel
             
             let navigationVC = NavigationController(rootViewController: locationSetVC)
             navigationVC.modalPresentationStyle = .fullScreen
@@ -317,5 +316,12 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
         default:
             return
         }
+    }
+}
+
+// MARK: - PublicProfileLocationSetViewControllerDelegate
+extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewControllerDelegate {
+    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
+        
     }
 }

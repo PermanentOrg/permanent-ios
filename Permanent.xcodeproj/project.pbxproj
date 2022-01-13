@@ -22,6 +22,7 @@
 		06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */; };
 		43BE7DD760CA538BC613FA36 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49354157BE776FBE58B7772C /* Pods_Permanent.framework */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
+		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
@@ -433,6 +434,7 @@
 		49354157BE776FBE58B7772C /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AAB8F1B2B36DA9AF8C4EB52 /* Pods-PermanentTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.release.xcconfig"; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
+		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
@@ -1092,6 +1094,7 @@
 				F58B8B9D2758047200D43606 /* PublicArchiveFileViewController.swift */,
 				5E2CFA26275116480055941C /* PublicProfileAboutPageViewController.swift */,
 				5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */,
+				5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -2427,6 +2430,7 @@
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
+				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
