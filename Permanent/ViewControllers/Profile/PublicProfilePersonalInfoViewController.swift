@@ -265,7 +265,16 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             birthDateHintLabel.isHidden = true
             
         case locationTextField:
-            birthLocationHintLabel.isHidden = true
+           // birthLocationHintLabel.isHidden = true
+            
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .main) as! LocationSetViewController
+            // locationSetVC.delegate = self
+            // locationSetVC.file = file
+            // locationSetVC.viewModel = viewModel
+            
+            let navigationVC = NavigationController(rootViewController: locationSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
             
         default:
             return
@@ -304,7 +313,7 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             if textFieldText.isEmpty {
                 birthLocationHintLabel.isHidden = false
             }
-            
+        
         default:
             return
         }

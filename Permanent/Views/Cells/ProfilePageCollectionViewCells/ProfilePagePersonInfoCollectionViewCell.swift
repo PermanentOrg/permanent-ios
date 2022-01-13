@@ -49,19 +49,19 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
         birthLocationTitleLabel.textColor = .darkGray
         birthLocationTitleLabel.font = Text.style12.font
         
-        fullNameLabel.textColor = .primary
+        fullNameLabel.textColor = .black
         fullNameLabel.font = Text.style13.font
         
-        nicknameLabel.textColor = .primary
+        nicknameLabel.textColor = .black
         nicknameLabel.font = Text.style13.font
         
-        genderLabel.textColor = .primary
+        genderLabel.textColor = .black
         genderLabel.font = Text.style13.font
         
-        birthDateLabel.textColor = .primary
+        birthDateLabel.textColor = .black
         birthDateLabel.font = Text.style13.font
         
-        birthLocationLabel.textColor = .primary
+        birthLocationLabel.textColor = .black
         birthLocationLabel.font = Text.style13.font
     }
     
