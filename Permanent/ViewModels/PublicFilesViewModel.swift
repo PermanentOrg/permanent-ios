@@ -1,22 +1,19 @@
 //
-//  MyFilesViewModel.swift
+//  PublicFilesViewModel.swift
 //  Permanent
 //
-//  Created by Vlad Alexandru Rusu on 19.02.2021.
+//  Created by Vlad Alexandru Rusu on 11.01.2022.
 //
 
 import Foundation
 
-class MyFilesViewModel: FilesViewModel {
-    
-    override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
-    
-    var rootFolderName: String {
-        return .myFiles
+class PublicFilesViewModel: MyFilesViewModel {
+    override var rootFolderName: String {
+        return "Public Files".localized()
     }
     
-    func getRoot(then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRoot)
+    override func getRoot(then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: currentArchive!.archiveNbr!))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -44,9 +41,8 @@ class MyFilesViewModel: FilesViewModel {
     private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
-            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder }),
-            let archiveNo = myFilesFolder.archiveNbr,
-            let folderLinkId = myFilesFolder.folderLinkID
+            let archiveNo = folderVO.archiveNbr,
+            let folderLinkId = folderVO.folderLinkID
         else {
             handler(.error(message: .errorMessage))
             return
@@ -54,5 +50,19 @@ class MyFilesViewModel: FilesViewModel {
         
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
+    }
+    
+    func publicURL(forFile file: FileViewModel) -> URL? {
+        guard let currentArchive = currentArchive, let currentFolder = currentFolder else { return nil }
+        
+        let baseURLString = APIEnvironment.defaultEnv.publicURL
+        let url: URL
+        if file.type.isFolder {
+            url = URL(string: "\(baseURLString)/archive/\(currentArchive.archiveNbr!)/\(file.archiveNo)/\(file.folderLinkId)")!
+        } else {
+            url = URL(string: "\(baseURLString)/archive/\(currentArchive.archiveNbr!)/\(currentFolder.archiveNo)/\(currentFolder.folderLinkId)/record/\(file.archiveNo)")!
+        }
+        
+        return url
     }
 }

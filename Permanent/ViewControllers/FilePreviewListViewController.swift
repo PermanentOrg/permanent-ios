@@ -8,23 +8,19 @@
 import UIKit
 
 class FilePreviewListViewController: BaseViewController<FilesViewModel> {
-    
     var pageVC: UIPageViewController!
 
     let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
     
     var filteredFiles: [FileViewModel] {
-        get {
-            viewModel?.viewModels.filter({ $0.type.isFolder == false }) ?? []
-        }
+        viewModel?.viewModels.filter({ $0.type.isFolder == false }) ?? []
     }
 
     var currentFile: FileViewModel!
     
     // Transition Variables
-    var nextFile: FileViewModel? = nil
-    var nextTitle: String? = nil
-    
+    var nextFile: FileViewModel?
+    var nextTitle: String?
     var hasChanges: Bool = false
         
     override func viewDidLoad() {
@@ -87,7 +83,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     @objc private func infoButtonAction(_ sender: Any) {
         let viewModel = (pageVC.viewControllers?.first as! FilePreviewViewController).viewModel
         
-        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
         fileDetailsVC.file = currentFile
         fileDetailsVC.viewModel = viewModel
         fileDetailsVC.delegate = self
@@ -108,7 +104,7 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
     }
 }
 
-//MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
+// MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
 extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         let nextVC = pendingViewControllers.first as! FilePreviewViewController
@@ -162,7 +158,7 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             
             return fileDetailsVC
         } else if index >= 0 && index < filteredFiles.count {
-            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview , from: .main) as! FilePreviewViewController
+            let fileDetailsVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
             
             // Preload left and right controllers after the current one is loaded
             if preloadLeftRightLevel <= 2 {
@@ -177,6 +173,10 @@ extension FilePreviewListViewController: UIPageViewControllerDataSource, UIPageV
             fileDetailsVC.loadVM()
             
             if let publicArchiveVM = viewModel as? PublicArchiveViewModel {
+                fileDetailsVC.viewModel?.publicURL = publicArchiveVM.publicURL(forFile: file)
+            }
+            
+            if let publicArchiveVM = viewModel as? PublicFilesViewModel {
                 fileDetailsVC.viewModel?.publicURL = publicArchiveVM.publicURL(forFile: file)
             }
             

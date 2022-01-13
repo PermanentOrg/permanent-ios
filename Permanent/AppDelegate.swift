@@ -187,6 +187,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         mainVC.checkForRequestShareAccess()
                     } else {
                         let rootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+                        rootVC.viewModel = MyFilesViewModel()
                         self.rootViewController.changeDrawerRoot(viewController: rootVC)
                     }
                 }
