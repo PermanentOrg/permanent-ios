@@ -52,6 +52,8 @@ class UploadOperation: BaseOperation {
     var didAppendPrefix = false
     var isEOF = false
     
+    var uploadedFile: RecordVOData?
+    
     init(file:FileInfo, handler: @escaping ((Error?) -> Void)) {
         self.file = file
         self.handler = handler
@@ -211,6 +213,7 @@ class UploadOperation: BaseOperation {
                 }
 
                 if model.isSuccessful == true {
+                    uploadedFile = model.results?.first?.data?.first?.recordVO
                     handler(nil)
                     finish()
                 } else {

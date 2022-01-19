@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 protocol PublicArchiveChildDelegate: AnyObject {
     /// - Parameter vc: the child view controller
@@ -14,7 +15,7 @@ protocol PublicArchiveChildDelegate: AnyObject {
     func childVC(_ vc: UIViewController, didScrollToOffset offset: CGPoint) -> Bool
 }
 
-class PublicArchiveViewController: UIViewController {
+class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewModel> {
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
@@ -35,6 +36,9 @@ class PublicArchiveViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel = PublicProfilePicturesViewModel()
+        viewModel?.archiveData = archiveData
         
         if let archiveName = archiveData.fullName {
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
@@ -87,6 +91,22 @@ class PublicArchiveViewController: UIViewController {
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
         profilePhotoImageView.sd_setImage(with: URL(string: archiveData.thumbURL200!))
+        
+        viewModel?.getPublicRoot(then: { status in
+            if status == .success {
+                self.profileBannerImageView.sd_setImage(with: URL(string: self.viewModel!.publicRootFolder!.thumbURL2000!))
+            }
+            
+            if self.viewModel?.rootFolder != nil {
+                self.changeProfileBannerButton.isEnabled = true
+            }
+        })
+        
+        viewModel?.getRoot(then: { status in
+            if self.viewModel?.publicRootFolder != nil {
+                self.changeProfileBannerButton.isEnabled = true
+            }
+        })
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {
@@ -98,6 +118,43 @@ class PublicArchiveViewController: UIViewController {
             archiveVC.view.isHidden = true
             profilePageVC.view.isHidden = false
             profilePageVC.collectionView.contentOffset.y = 0
+        }
+    }
+    
+    @IBAction func changeBannerButtonPressed(_ sender: Any) {
+        PHPhotoLibrary.requestAuthorization { (authStatus) in
+            switch authStatus {
+            case .authorized, .limited:
+                DispatchQueue.main.async {
+                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
+                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
+                    imagePicker.pickerDelegate = self
+                    
+                    self.present(imagePicker, animated: true, completion: nil)
+                }
+                
+            case .denied:
+                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
+                
+                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        return
+                    }
+                    if UIApplication.shared.canOpenURL(settingsUrl) {
+                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+                    }
+                }
+                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(settingsAction)
+                
+                DispatchQueue.main.async {
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                
+            default: break
+            }
         }
     }
 }
@@ -116,6 +173,28 @@ extension PublicArchiveViewController: PublicArchiveChildDelegate {
             }
             
             return true
+        }
+    }
+}
+
+// MARK: - PhotoPickerViewControllerDelegate
+extension PublicArchiveViewController: PhotoPickerViewControllerDelegate {
+    func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+        let alert = UIAlertController(title: "Uploading...", message: "Please wait while your banner is being uploaded", preferredStyle: .alert)
+            self.present(alert, animated: true, completion: {
+            self.viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
+                let folderInfo = FolderInfo(folderId: viewModel!.rootFolder!.folderID!, folderLinkId: viewModel!.rootFolder!.folderLinkID!)
+                
+                let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: false)
+                viewModel?.uploadFile(files.first!, completionBlock: {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                        self.setupHeaderView()
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                })
+            })
+        })
         }
     }
 }

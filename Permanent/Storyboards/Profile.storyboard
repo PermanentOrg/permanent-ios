@@ -43,6 +43,9 @@
                                                         <state key="normal" image="cameraIcon">
                                                             <attributedString key="attributedTitle"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="changeBannerButtonPressed:" destination="cje-R0-eyw" eventType="touchUpInside" id="QOk-Z9-jVZ"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
