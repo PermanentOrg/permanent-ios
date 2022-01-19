@@ -21,7 +21,7 @@ class DrawerViewController: UIViewController {
     let backgroundView = UIView()
     
     fileprivate var leftSideMenuOrigin: CGPoint { CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
-    fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 2 / 3), y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
+    fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 0.75), y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
     fileprivate var leftSideMenuHeight: CGFloat { view.bounds.height - leftSideMenuOrigin.y }
     fileprivate var rightSideMenuHeight: CGFloat { view.bounds.height - rightSideMenuOrigin.y }
     
@@ -70,15 +70,15 @@ class DrawerViewController: UIViewController {
         }
         
         leftSideMenuController.view.frame = CGRect(
-            origin: CGPoint(x: isLeftMenuExpanded ? -(view.bounds.width * 2 / 3) : 0, y: leftSideMenuOrigin.y),
-            size: CGSize(width: view.bounds.width * 2 / 3, height: leftSideMenuHeight)
+            origin: CGPoint(x: isLeftMenuExpanded ? -(view.bounds.width * 0.75) : 0, y: leftSideMenuOrigin.y),
+            size: CGSize(width: view.bounds.width * 0.75, height: leftSideMenuHeight)
         )
         leftSideMenuController.adjustUIForAnimation(isOpening: isLeftMenuExpanded)
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: { [self] in
             leftSideMenuController.view.frame = CGRect(
-                origin: CGPoint(x: isLeftMenuExpanded ? 0 : -(view.bounds.width * 2 / 3), y: leftSideMenuOrigin.y),
-                size: CGSize(width: view.bounds.width * 2 / 3, height: leftSideMenuHeight)
+                origin: CGPoint(x: isLeftMenuExpanded ? 0 : -(view.bounds.width * 0.75), y: leftSideMenuOrigin.y),
+                size: CGSize(width: view.bounds.width * 0.75, height: leftSideMenuHeight)
             )
             
             if animateBg {
@@ -110,7 +110,7 @@ class DrawerViewController: UIViewController {
             rightSideMenuController.didMove(toParent: self)
         }
         
-        let width: CGFloat = view.bounds.width * 2 / 3
+        let width: CGFloat = view.bounds.width * 0.75
         
         rightSideMenuController.view.frame = CGRect(
             origin: isRightMenuExpanded ? CGPoint(x: view.bounds.width, y: rightSideMenuOrigin.y) : rightSideMenuOrigin,
@@ -151,47 +151,46 @@ class DrawerViewController: UIViewController {
         case _ where viewController is AccountInfoViewController:
             leftSideMenuController.selectedMenuOption = .none
             rightSideMenuController.selectedMenuOption = .accountInfo
-            break
             
         case _ where viewController is ActivityFeedViewController:
             leftSideMenuController.selectedMenuOption = .none
             rightSideMenuController.selectedMenuOption = .activityFeed
-            break
             
         case _ where viewController is InvitesViewController:
             leftSideMenuController.selectedMenuOption = .none
             rightSideMenuController.selectedMenuOption = .invitations
-            break
             
         case _ where viewController is AccountSettingsViewController:
             leftSideMenuController.selectedMenuOption = .none
             rightSideMenuController.selectedMenuOption = .security
-            break
             
         case _ where viewController is AccountSettingsViewController:
             leftSideMenuController.selectedMenuOption = .none
             rightSideMenuController.selectedMenuOption = .security
-            break
             
         case _ where viewController is MainViewController:
-            leftSideMenuController.selectedMenuOption = .files
+            if (viewController as! MainViewController).viewModel is PublicFilesViewModel {
+                leftSideMenuController.selectedMenuOption = .publicFiles
+            } else {
+                leftSideMenuController.selectedMenuOption = .files
+            }
             rightSideMenuController.selectedMenuOption = .none
-            break
             
         case _ where viewController is SharesViewController:
             leftSideMenuController.selectedMenuOption = .shares
             rightSideMenuController.selectedMenuOption = .none
-            break
             
         case _ where viewController is MembersViewController:
             leftSideMenuController.selectedMenuOption = .members
             rightSideMenuController.selectedMenuOption = .none
-            break
             
         case _ where viewController is ArchivesViewController:
-            leftSideMenuController.selectedMenuOption = .none
+            leftSideMenuController.selectedMenuOption = .manageArchives
             rightSideMenuController.selectedMenuOption = .none
-            break
+            
+        case _ where viewController is PublicArchiveViewController:
+            leftSideMenuController.selectedMenuOption = .archives
+            rightSideMenuController.selectedMenuOption = .none
             
         default:
             break

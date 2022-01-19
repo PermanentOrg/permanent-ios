@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,18 +17,18 @@
                 <rect key="frame" x="0.0" y="0.0" width="279" height="83"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="AWw-Pt-1mx">
-                        <rect key="frame" x="20" y="20" width="76.5" height="43"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="AWw-Pt-1mx">
+                        <rect key="frame" x="24" y="20" width="85.5" height="43"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZhP-3S-MBW">
-                                <rect key="frame" x="0.0" y="11.5" width="20" height="20"/>
+                                <rect key="frame" x="0.0" y="6.5" width="30" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="Deu-kE-r9D"/>
-                                    <constraint firstAttribute="width" constant="20" id="vfk-GY-Aem"/>
+                                    <constraint firstAttribute="height" constant="30" id="Deu-kE-r9D"/>
+                                    <constraint firstAttribute="width" constant="30" id="vfk-GY-Aem"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MkG-eS-8NU">
-                                <rect key="frame" x="35" y="11.5" width="41.5" height="20.5"/>
+                                <rect key="frame" x="44" y="11.5" width="41.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -37,7 +37,7 @@
                     </stackView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="MGI-PO-AND"/>
+                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="MGI-PO-AND"/>
                     <constraint firstItem="AWw-Pt-1mx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="UCa-pV-CC8"/>
                     <constraint firstAttribute="bottom" secondItem="AWw-Pt-1mx" secondAttribute="bottom" constant="20" id="pjj-k6-15x"/>
                 </constraints>
