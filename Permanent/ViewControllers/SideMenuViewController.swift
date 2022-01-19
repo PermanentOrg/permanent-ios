@@ -9,8 +9,9 @@ import UIKit
 
 enum LeftDrawerSection: Int {
     case header
-    case leftFiles
-    case leftOthers
+    case files
+    case manage
+    case publicGallery
 }
 
 class SideMenuViewController: BaseViewController<AuthViewModel> {
@@ -23,16 +24,17 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         LeftDrawerSection.header: [
             DrawerOption.archives
         ],
-        
-        LeftDrawerSection.leftFiles: [
+        LeftDrawerSection.files: [
             DrawerOption.files,
             DrawerOption.shares,
             DrawerOption.publicFiles
         ],
-        
-        LeftDrawerSection.leftOthers: [
-            DrawerOption.members,
-            DrawerOption.profilePage
+        LeftDrawerSection.manage: [
+            DrawerOption.manageArchives,
+            DrawerOption.members
+        ],
+        LeftDrawerSection.publicGallery: [
+            DrawerOption.publicGallery
         ]
     ]
     
@@ -86,8 +88,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let drawerSection = LeftDrawerSection(rawValue: section),
-              let numberOfItems = tableViewData[drawerSection]?.count else {
+        guard let drawerSection = LeftDrawerSection(rawValue: section), let numberOfItems = tableViewData[drawerSection]?.count else {
             return 0
         }
         return numberOfItems
@@ -105,8 +106,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         
         if menuOption == .archives {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
-                if let archive = viewModel?.getCurrentArchive(),
-                   let archiveName: String = archive.fullName {
+                if let archive = viewModel?.getCurrentArchive(), let archiveName: String = archive.fullName {
                     let archiveThumbURL: String = archive.thumbURL500 ?? ""
                     tableViewCell.updateCell(with: archiveThumbURL, archiveName: archiveName)
                     tableViewCell.isEnabled = true
@@ -168,21 +168,21 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard section == LeftDrawerSection.leftFiles.rawValue else {
+        if section == LeftDrawerSection.publicGallery.rawValue || section == LeftDrawerSection.header.rawValue {
             return nil
         }
         
         let headerView = UIView()
         
         let lineView = UIView()
-        lineView.backgroundColor = .backgroundPrimary
+        lineView.backgroundColor = .white.withAlphaComponent(0.25)
         headerView.addSubview(lineView)
         
         lineView.enableAutoLayout()
         
         NSLayoutConstraint.activate([
             lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 10),
+            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 20),
             lineView.heightAnchor.constraint(equalToConstant: 1),
             lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
         ])
@@ -191,38 +191,19 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard section == LeftDrawerSection.leftFiles.rawValue else {
-            return nil
-        }
-        
-        let headerView = UIView()
-        
-        let lineView = UIView()
-        lineView.backgroundColor = .backgroundPrimary
-        headerView.addSubview(lineView)
-        
-        lineView.enableAutoLayout()
-        
-        NSLayoutConstraint.activate([
-            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 10),
-            lineView.heightAnchor.constraint(equalToConstant: 1),
-            lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
-        ])
-        
-        return headerView
+        return nil
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
+        if section == LeftDrawerSection.publicGallery.rawValue || section == LeftDrawerSection.header.rawValue {
+            return 0
+        }
         
         return 21
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard section == LeftDrawerSection.leftFiles.rawValue else { return 0 }
-        
-        return 21
+        return 0
     }
     
     fileprivate func handleMenuOptionTap(forOption option: DrawerOption) {
@@ -245,11 +226,11 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
 
-        case .archives:
+        case .manageArchives:
             let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
-        case .profilePage:
+        case .archives:
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
             newRootVC.archiveData = archive

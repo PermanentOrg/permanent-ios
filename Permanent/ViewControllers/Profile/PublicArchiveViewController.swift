@@ -52,7 +52,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         profilePageVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionViewContainer.addSubview(profilePageVC.view)
         profilePageVC.didMove(toParent: self)
-        profilePageVC.view.isHidden = true
+        profilePageVC.view.isHidden = false
         
         archiveVC = UIViewController.create(withIdentifier: .publicArchiveFileBrowser, from: .profile) as? PublicArchiveFileViewController
         archiveVC.delegate = self
@@ -62,6 +62,9 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         archiveVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionViewContainer.addSubview(archiveVC.view)
         archiveVC.didMove(toParent: self)
+        archiveVC.view.isHidden = true
+        
+        segmentedControl.selectedSegmentIndex = 1
         
         setupHeaderView()
     }

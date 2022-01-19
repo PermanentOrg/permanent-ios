@@ -20,12 +20,14 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         
         selectionStyle = .none
         
-        archiveNameLabel.font = Text.style7.font
+        archiveNameLabel.font = Text.style9.font
+        archiveNameLabel.adjustsFontSizeToFitWidth = true
+        archiveNameLabel.minimumScaleFactor = 2 / 3
         archiveNameLabel.textColor = .white
         
-        actionDescriptionLabel.font = Text.style16.font
+        actionDescriptionLabel.font = Text.style12.font
         actionDescriptionLabel.textColor = .white
-        actionDescriptionLabel.text = "Tap to manage archives".localized()
+        actionDescriptionLabel.text = "View Profile".localized()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -38,8 +40,9 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
     
     func updateCell(with thumbnailURL: String, archiveName: String) {
         archiveImage.image = nil
-        archiveImage.load(urlString: thumbnailURL)
-        
         archiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+        
+        guard let url = URL(string: thumbnailURL) else { return }
+        archiveImage.sd_setImage(with: url)
     }
 }
