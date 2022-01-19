@@ -13,28 +13,30 @@ enum DrawerOption {
     case shares
     case publicFiles
     case members
+    case manageArchives
+    case publicGallery
     case addStorage
     case accountInfo
     case security
     case activityFeed
     case invitations
-    case profilePage
     case help
     case logOut
     case none
     
     var icon: UIImage? {
         switch self {
-        case .files: return .folder
-        case .publicFiles: return .folder
-        case .shares: return .share
-        case .members: return .group
+        case .files: return UIImage(named: "privateFilesIcon")!
+        case .publicFiles: return UIImage(named: "publicFilesIcon")!
+        case .shares: return UIImage(named: "sharedFilesIcon")!
+        case .members: return UIImage(named: "manageMembersIcon")!
+        case .manageArchives: return UIImage(named: "manageArchivesIcon")!
+        case .publicGallery: return UIImage(named: "publicGalleryIcon")!
         case .addStorage: return .storage
         case .security: return .security
         case .accountInfo: return .accountInfo
         case .invitations: return .mail
         case .activityFeed: return .alert
-        case .profilePage: return .cloud
         case .help: return .help
         case .archives: return nil
         case .logOut: return UIImage.logOut.templated
@@ -44,10 +46,12 @@ enum DrawerOption {
     
     var title: String {
         switch self {
-        case .files: return .myFiles
+        case .files: return "Private Files".localized()
         case .publicFiles: return "Public Files".localized()
-        case .shares: return .shares
-        case .members: return String.member.pluralized()
+        case .shares: return "Shared Files".localized()
+        case .members: return "Manage Members".localized()
+        case .manageArchives: return "Manage Archives".localized()
+        case .publicGallery: return "Public Gallery".localized()
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed
         case .addStorage: return String.addStorage
@@ -56,7 +60,6 @@ enum DrawerOption {
         case .help: return String.help
         case .logOut: return .logOut
         case .archives: return ""
-        case .profilePage: return "View Profile"
         case .none: return ""
         }
     }
