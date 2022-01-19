@@ -9,8 +9,8 @@ target 'Permanent' do
   pod 'ObjectMapper', '4.2.0'
   pod 'SDWebImage', '5.10.0'
   pod 'Sourcery', '1.4.1'
-  pod 'GoogleMaps', '4.2.0'
-  pod 'GooglePlaces', '4.2.0'
+  pod 'GoogleMaps', '6.0.1'
+  pod 'GooglePlaces', '6.0.0'
 
   target 'PermanentTests' do
         inherit! :search_paths
