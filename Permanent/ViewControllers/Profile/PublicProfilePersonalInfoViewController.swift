@@ -146,6 +146,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func closeButtonAction(_ sender: Any) {
+        NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
         dismiss(animated: true)
     }
     
