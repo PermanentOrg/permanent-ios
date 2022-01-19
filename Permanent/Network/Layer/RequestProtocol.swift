@@ -69,12 +69,11 @@ extension RequestProtocol {
     /// - Parameter environment: The environment against which the `URLRequest` must be constructed.
     /// - Returns: An optional `URLRequest`.
     public func urlRequest(with environment: EnvironmentProtocol) -> URLRequest? {
-        
         var request: URLRequest
         
         // If we have a custom URL, we just use it as is.
         if let stringURL = customURL,
-           let url = URL(string: stringURL) {
+            let url = URL(string: stringURL) {
             request = URLRequest(url: url)
         } else if let url = url(with: environment.baseURL) {
             request = URLRequest(url: url)
@@ -87,6 +86,8 @@ extension RequestProtocol {
         request.allHTTPHeaderFields = headers
         request.httpBody = bodyData ?? jsonBody
 
+        NetworkLogger.log(request: request)
+        
         return request
     }
 

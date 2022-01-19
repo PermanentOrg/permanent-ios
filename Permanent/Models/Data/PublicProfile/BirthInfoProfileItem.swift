@@ -15,6 +15,7 @@ class BirthInfoProfileItem: ProfileItemModel {
             day1 = newValue
         }
     }
+    
     var birthLocation: LocnVO? {
         get {
             return locnVOs?.first
@@ -35,6 +36,15 @@ class BirthInfoProfileItem: ProfileItemModel {
         }
         set {
             self.birthLocationFormated = newValue
+        }
+    }
+    
+    var locationID: Int? {
+        get {
+            return locnId1
+        }
+        set {
+            locnId1 = newValue
         }
     }
     

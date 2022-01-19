@@ -12,6 +12,7 @@ import AVFoundation
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
     var archiveType: ArchiveType!
+    var newLocnId: Int?
     
     var profileItems = [ProfileItemModel]()
     
@@ -94,7 +95,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse, nil)
                     return
                 }
-                NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
                 if operationType == .delete {
                     completionBlock(true, nil, nil)
                     return
@@ -150,13 +150,33 @@ class PublicProfilePageViewModel: ViewModelInterface {
         modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
     
-    func modifyBirthInfoProfileItem(profileItemId: Int? = nil, newValueBirthDate: String? = nil, newValueBirthLocation: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+    func modifyBirthInfoProfileItem(profileItemId: Int? = nil, newValueBirthDate: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let newProfileItem = BirthInfoProfileItem()
-        newProfileItem.birthDate = newValueBirthDate
+        if let valueBirthDate = newValueBirthDate,
+            valueBirthDate.isEmpty {
+            newProfileItem.birthDate = nil
+        } else {
+            newProfileItem.birthDate = newValueBirthDate
+        }
+        newProfileItem.birthLocation = birthInfoProfileItem?.birthLocation
         newProfileItem.archiveId = archiveData.archiveID
         newProfileItem.profileItemId = profileItemId
+        if let newLocnId = newLocnId {
+            newProfileItem.locnId1 = newLocnId
+        } else {
+            newProfileItem.locnId1 = birthInfoProfileItem?.locationID
+        }
         
         modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func createNewBirthProfileItem(newLocation: LocnVO?) {
+        let newProfileItem = BirthInfoProfileItem()
+        newProfileItem.birthLocation = newLocation
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.locnId1 = newLocation?.locnID
+        
+        profileItems.append(newProfileItem)
     }
     
     func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
@@ -164,7 +184,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         var textFieldHaveNewValue = (false, false)
         
         if let savedFullName = basicProfileItem?.fullName,
-           savedFullName != fullNameNewValue {
+            savedFullName != fullNameNewValue {
             textFieldHaveNewValue.0 = true
         } else if (fullNameNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue.0 = true
@@ -279,17 +299,22 @@ class PublicProfilePageViewModel: ViewModelInterface {
             textFieldHaveNewValue = true
         }
         
-        if textFieldHaveNewValue == false {
+        if textFieldHaveNewValue == false && newLocnId == nil {
             completion(true)
             return
         }
         
-        if textFieldHaveNewValue {
-            modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, newValueBirthLocation: nil, operationType: .update, { result, error, itemId in
+        if textFieldHaveNewValue || (newLocnId != nil) {
+            modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, operationType: .update, { result, error, itemId in
                 if result {
                     if self.basicProfileItem?.profileItemId == nil {
                         self.basicProfileItem?.profileItemId = itemId
                     }
+                    
+                    if self.newLocnId != nil {
+                        self.newLocnId = nil
+                    }
+                    
                     completion(true)
                     return
                 } else {
@@ -314,10 +339,43 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completion(nil)
                     return
                 }
-                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
-                completion(locnVO)
+                guard let locnVO = model.results.first?.data?.first?.locnVO else {
+                    completion(nil)
+                    return
+                }
+                self.postLocation(location: locnVO) { result in
+                    if let postLocnVO = result {
+                        completion(postLocnVO)
+                    } else {
+                        completion(nil)
+                    }
+                }
+                
             case .error(_, _):
                 completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
+    func postLocation(location: LocnVO, completion: @escaping ((LocnVO?) -> Void)) {
+        let apiOperation = APIOperation(LocationEndpoint.locnPost(location: location))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
+                completion(locnVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
             default:
                 completion(nil)
             }

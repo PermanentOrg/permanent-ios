@@ -202,7 +202,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                 
             case .personalInformation:
-                headerCell.configure(titleLabel: "Personal Information", buttonText: "Edit")
+                headerCell.configure(titleLabel: "Person Information", buttonText: "Edit")
                 
                 headerCell.buttonAction = { [weak self] in
                     let profilePernalInformationVC = UIViewController.create(withIdentifier: .profilePersonalInfoPage, from: .profile) as! PublicProfilePersonalInfoViewController

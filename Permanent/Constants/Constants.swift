@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 typealias ButtonAction = () -> Void
 typealias TooltipAction = (CGPoint, String) -> Void
@@ -46,6 +47,7 @@ struct Constants {
         struct AccountStatus {}
         struct InviteStatus {}
         struct NotificationType {}
+        struct Locations{}
     }
 
     struct Design {}
@@ -152,4 +154,8 @@ extension Constants.Keys.StorageKeys {
     static let defaultArchiveId = "defaultArchiveId"
     static let modelVersion = "modelVersion"
     static let isGridView = "isGridView"
+}
+
+extension Constants.API.Locations {
+    static let initialLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 30.286807215890345, longitude: -97.81482923937635)
 }

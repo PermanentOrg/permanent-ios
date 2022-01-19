@@ -11,7 +11,7 @@ import GoogleMaps
 import GooglePlaces
 
 protocol PublicProfileLocationSetViewControllerDelegate: AnyObject {
-    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController)
+    func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController)
 }
 
 class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePageViewModel> {
@@ -86,6 +86,10 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
         if let latitude = locnVO?.latitude,
            let longitude = locnVO?.longitude {
             setLocation(latitude, longitude)
+        } else {
+            let coordinate = Constants.API.Locations.initialLocation
+            setLocation(coordinate.latitude, coordinate.longitude)
+            saveLocation(coordinate)
         }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
@@ -98,7 +102,9 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
     }
     
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
-
+        dismiss(animated: true, completion: {
+            self.delegate?.locationSetViewControllerDidUpdate(self)
+        })
     }
     
     func setLocation(_ latitude: Double, _ longitude: Double) {
@@ -112,7 +118,7 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
         marker.position = coordinate
         marker.map = mapView
     }
-    
+
     func saveLocation(_ location: CLLocationCoordinate2D) {
         viewModel?.validateLocation(lat: location.latitude, long: location.longitude, completion: { status in
             if let locnVO = status {
@@ -132,24 +138,24 @@ extension PublicProfileLocationSetViewController: GMSMapViewDelegate {
 }
 
 extension PublicProfileLocationSetViewController: GMSAutocompleteResultsViewControllerDelegate {
-  func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
-                         didAutocompleteWith place: GMSPlace) {
-    searchController?.isActive = false
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                           didAutocompleteWith place: GMSPlace) {
+        searchController?.isActive = false
+        
+        saveLocation(place.coordinate)
+    }
     
-    saveLocation(place.coordinate)
-  }
-
-  func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
-                         didFailAutocompleteWithError error: Error){
-    print("Error: ", error.localizedDescription)
-  }
-
-  // Turn the network activity indicator on and off again.
-  func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
-    UIApplication.shared.isNetworkActivityIndicatorVisible = true
-  }
-
-  func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
-    UIApplication.shared.isNetworkActivityIndicatorVisible = false
-  }
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                           didFailAutocompleteWithError error: Error) {
+        print("Error: ", error.localizedDescription)
+    }
+    
+    // Turn the network activity indicator on and off again.
+    func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+    }
+    
+    func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+    }
 }

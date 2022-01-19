@@ -77,6 +77,7 @@
 		5E8A3E4F24F3AF4800812361 /* PageViewModelInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */; };
 		5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */; };
 		5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */; };
+		5E96F03F279223D90099C0E7 /* NetworkLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E96F03E279223D90099C0E7 /* NetworkLogger.swift */; };
 		5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E980AB62657D3D400ED5764 /* BundleExtension.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
@@ -493,6 +494,7 @@
 		5E8A3E4E24F3AF4800812361 /* PageViewModelInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelInterface.swift; sourceTree = "<group>"; };
 		5E8A3E5024F3AFCE00812361 /* PageViewModelDelegateInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModelDelegateInterface.swift; sourceTree = "<group>"; };
 		5E8BFEA825DEA02C00454F16 /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
+		5E96F03E279223D90099C0E7 /* NetworkLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLogger.swift; sourceTree = "<group>"; };
 		5E980AB62657D3D400ED5764 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
@@ -1430,6 +1432,7 @@
 				BCC5501E255AB31800CA1574 /* FileHelper.swift */,
 				BD95ECC025D53E58009B443F /* ScreenLockManager.swift */,
 				5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */,
+				5E96F03E279223D90099C0E7 /* NetworkLogger.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -2422,6 +2425,7 @@
 				BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */,
 				BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
+				5E96F03F279223D90099C0E7 /* NetworkLogger.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,

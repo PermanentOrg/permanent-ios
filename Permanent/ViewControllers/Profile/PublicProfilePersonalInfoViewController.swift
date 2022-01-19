@@ -177,6 +177,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             if publicProfileUpdateIsSuccessfully == (true, true, true) {
+                NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
                 self.dismiss(animated: true)
             } else {
                 self.showAlert(title: .error, message: .errorMessage)
@@ -265,8 +266,6 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             birthDateHintLabel.isHidden = true
             
         case locationTextField:
-           // birthLocationHintLabel.isHidden = true
-            
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
             locationSetVC.delegate = self
             locationSetVC.viewModel = viewModel
@@ -321,7 +320,15 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
 
 // MARK: - PublicProfileLocationSetViewControllerDelegate
 extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewControllerDelegate {
-    func locationSetViewControllerDidUpdate(_ locationVC: LocationSetViewController) {
+    func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
+        if viewModel?.birthInfoProfileItem == nil {
+            viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
+        } else {
+            viewModel?.birthInfoProfileItem?.birthLocation = locationVC.pickedLocation
+        }
         
+        birthLocationHintLabel.isHidden = true
+        viewModel?.newLocnId = locationVC.pickedLocation?.locnID
+        locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
     }
 }
