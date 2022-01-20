@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import AVFAudio
-import AVFoundation
 
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!

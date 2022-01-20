@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePageViewModel> {
     @IBOutlet weak var shortAboutDescriptionTitleLabel: UILabel!
