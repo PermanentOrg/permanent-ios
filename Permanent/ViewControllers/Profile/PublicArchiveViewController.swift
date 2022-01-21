@@ -81,6 +81,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         changeProfileBannerPhotoButtonView.layer.cornerRadius = changeProfileBannerPhotoButtonView.frame.width / 2
         changeProfileBannerPhotoButtonView.layer.borderColor = UIColor.white.cgColor
         changeProfileBannerPhotoButtonView.layer.borderWidth = 1
+        changeProfileBannerPhotoButtonView.isHidden = true
         
         changeProfilePhotoButton.setImage(UIImage(named: "cameraIcon")!, for: .normal)
         changeProfilePhotoButton.tintColor = .primary
@@ -90,6 +91,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         changeProfilePhotoButtonView.layer.cornerRadius = changeProfilePhotoButtonView.frame.width / 2
         changeProfilePhotoButtonView.layer.borderColor = UIColor.white.cgColor
         changeProfilePhotoButtonView.layer.borderWidth = 1
+        changeProfilePhotoButtonView.isHidden = true
         
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
@@ -101,15 +103,23 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             }
             
             if self.viewModel?.rootFolder != nil {
-                self.changeProfileBannerButton.isEnabled = true
+                self.changeProfilePhotoButtonView.isHidden = false
+                self.changeProfileBannerPhotoButtonView.isHidden = false
             }
         })
         
         viewModel?.getRoot(then: { status in
             if self.viewModel?.publicRootFolder != nil {
-                self.changeProfileBannerButton.isEnabled = true
+                self.changeProfilePhotoButtonView.isHidden = false
+                self.changeProfileBannerPhotoButtonView.isHidden = false
             }
         })
+
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+        if #available(iOS 13.0, *) {
+            segmentedControl.selectedSegmentTintColor = .primary
+        }
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {

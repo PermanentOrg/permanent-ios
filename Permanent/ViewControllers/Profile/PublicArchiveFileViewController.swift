@@ -87,8 +87,8 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     @IBAction
     func backButtonAction(_ sender: UIButton) {
         guard let viewModel = viewModel,
-              let destinationFolder = viewModel.currentFolder,
-              viewModel.removeCurrentFolderFromHierarchy() != nil
+              let _ = viewModel.removeCurrentFolderFromHierarchy(),
+              let destinationFolder = viewModel.currentFolder
         else {
             return
         }

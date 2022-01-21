@@ -11,6 +11,7 @@ typealias GeomapLatLongParams = (lat: Double, long: Double)
 
 enum LocationEndpoint {
     case geomapLatLong(params: GeomapLatLongParams)
+    case locnPost(location: LocnVO)
 }
 
 extension LocationEndpoint: RequestProtocol {
@@ -18,19 +19,21 @@ extension LocationEndpoint: RequestProtocol {
         switch self {
         case .geomapLatLong:
             return "/locn/geomapLatLong"
+        case .locnPost:
+            return "/locn/post"
         }
     }
     
     var method: RequestMethod {
         switch self {
-        case .geomapLatLong:
+        case .geomapLatLong, .locnPost:
             return .post
         }
     }
     
     var headers: RequestHeaders? {
         switch self {
-        case .geomapLatLong:
+        case .geomapLatLong, .locnPost:
             return [
                 "content-type": "application/json"
             ]
@@ -39,14 +42,14 @@ extension LocationEndpoint: RequestProtocol {
     
     var requestType: RequestType {
         switch self {
-        case .geomapLatLong:
+        case .geomapLatLong, .locnPost:
             return .data
         }
     }
     
     var responseType: ResponseType {
         switch self {
-        case .geomapLatLong:
+        case .geomapLatLong, .locnPost:
             return .json
         }
     }
@@ -55,6 +58,9 @@ extension LocationEndpoint: RequestProtocol {
         switch self {
         case .geomapLatLong(let params):
             return Payloads.geomapLatLong(params: params)
+            
+        case .locnPost(let location):
+            return Payloads.locnPost(location: location)
         }
     }
     

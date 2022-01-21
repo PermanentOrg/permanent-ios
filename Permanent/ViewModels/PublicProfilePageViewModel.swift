@@ -10,6 +10,7 @@ import UIKit
 class PublicProfilePageViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
     var archiveType: ArchiveType!
+    var newLocnId: Int?
     
     var profileItems = [ProfileItemModel]()
     
@@ -19,6 +20,18 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var descriptionProfileItem: DescriptionProfileItem? {
         return profileItems.first(where: {$0 is DescriptionProfileItem}) as? DescriptionProfileItem
     }
+    var basicProfileItem: BasicProfileItem? {
+        return profileItems.first(where: {$0 is BasicProfileItem}) as? BasicProfileItem
+    }
+    var emailProfileItem: EmailProfileItem? {
+        return profileItems.first(where: {$0 is EmailProfileItem}) as? EmailProfileItem
+    }
+    var profileGenderProfileItem: GenderProfileItem? {
+        return profileItems.first(where: {$0 is GenderProfileItem}) as? GenderProfileItem
+    }
+    var birthInfoProfileItem: BirthInfoProfileItem? {
+        return profileItems.first(where: {$0 is BirthInfoProfileItem}) as? BirthInfoProfileItem
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
@@ -26,9 +39,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
         self.archiveType = ArchiveType(rawValue: archiveType)
     }
     
-    func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping (([ProfileItemVO]?, Error?) -> Void)) {
+    func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Error?) -> Void)) {
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
-            completionBlock(nil, APIError.unknown)
+            completionBlock(APIError.unknown)
             return
         }
         
@@ -40,40 +53,22 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful
                 else {
-                    completionBlock(nil, APIError.invalidResponse)
+                    completionBlock(APIError.invalidResponse)
                     return
                 }
                 self.profileItems = model.results.first?.data?.compactMap({ $0.profileItemVO }) ?? []
-                completionBlock(model.results.first?.data, nil)
+                completionBlock(nil)
                 return
             
             case .error:
-                completionBlock(nil, APIError.invalidResponse)
+                completionBlock(APIError.invalidResponse)
                 return
                 
             default:
-                completionBlock(nil, APIError.invalidResponse)
+                completionBlock(APIError.invalidResponse)
                 return
             }
         }
-    }
-    
-    func modifyBlurbProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newBlurbItem = BlurbProfileItem()
-        newBlurbItem.shortDescription = newValue
-        newBlurbItem.archiveId = archiveData.archiveID
-        newBlurbItem.profileItemId = profileItemId
-        
-        modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
-    }
-    
-    func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newDescriptionItem = DescriptionProfileItem()
-        newDescriptionItem.longDescription = newValue
-        newDescriptionItem.archiveId = archiveData.archiveID
-        newDescriptionItem.profileItemId = profileItemId
-        
-        modifyPublicProfileItem(newDescriptionItem, operationType, completionBlock)
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
@@ -98,7 +93,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse, nil)
                     return
                 }
-                NotificationCenter.default.post(name: .publicProfilePageAboutUpdate, object: self)
                 if operationType == .delete {
                     completionBlock(true, nil, nil)
                     return
@@ -113,6 +107,275 @@ class PublicProfilePageViewModel: ViewModelInterface {
             default:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
+            }
+        }
+    }
+    
+    func modifyBlurbProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newBlurbItem = BlurbProfileItem()
+        newBlurbItem.shortDescription = newValue
+        newBlurbItem.archiveId = archiveData.archiveID
+        newBlurbItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
+    }
+    
+    func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = DescriptionProfileItem()
+        newProfileItem.longDescription = newValue
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = BasicProfileItem()
+        newProfileItem.fullName = newValueFullname
+        newProfileItem.nickname = newValueNickName
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifyGenderProfileItem(profileItemId: Int? = nil, newValueGender: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = GenderProfileItem()
+        newProfileItem.personGender = newValueGender
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifyBirthInfoProfileItem(profileItemId: Int? = nil, newValueBirthDate: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = BirthInfoProfileItem()
+        if let valueBirthDate = newValueBirthDate,
+            valueBirthDate.isEmpty {
+            newProfileItem.birthDate = nil
+        } else {
+            newProfileItem.birthDate = newValueBirthDate
+        }
+        newProfileItem.birthLocation = birthInfoProfileItem?.birthLocation
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        if let newLocnId = newLocnId {
+            newProfileItem.locnId1 = newLocnId
+        } else {
+            newProfileItem.locnId1 = birthInfoProfileItem?.locationID
+        }
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func createNewBirthProfileItem(newLocation: LocnVO?) {
+        let newProfileItem = BirthInfoProfileItem()
+        newProfileItem.birthLocation = newLocation
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.locnId1 = newLocation?.locnID
+        
+        profileItems.append(newProfileItem)
+    }
+    
+    func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldIsEmpty = (false, false)
+        var textFieldHaveNewValue = (false, false)
+        
+        if let savedFullName = basicProfileItem?.fullName,
+            savedFullName != fullNameNewValue {
+            textFieldHaveNewValue.0 = true
+        } else if (fullNameNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.0 = true
+        }
+        
+        if let savedNickname = basicProfileItem?.nickname,
+            savedNickname != nicknameNewValue {
+            textFieldHaveNewValue.1 = true
+        } else if (nicknameNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue.1 = true
+        }
+        
+        if let fullName = fullNameNewValue,
+            fullName.isEmpty {
+            textFieldIsEmpty.0 = true
+        }
+        
+        if let nickname = nicknameNewValue,
+            nickname.isEmpty {
+            textFieldIsEmpty.1 = true
+        }
+        
+        if textFieldHaveNewValue == (false, false) {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1,
+            textFieldIsEmpty == (true, true) {
+            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
+                if result {
+                    self.basicProfileItem?.profileItemId = nil
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        } else {
+            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.basicProfileItem?.profileItemId == nil {
+                        self.basicProfileItem?.profileItemId = itemId
+                    }
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        }
+    }
+    
+    func updateGenderProfileItem(genderNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldIsEmpty = false
+        var textFieldHaveNewValue = false
+        
+        if let savedProfileGender = profileGenderProfileItem?.personGender,
+            savedProfileGender != genderNewValue {
+            textFieldHaveNewValue = true
+        } else if (genderNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue = true
+        }
+        
+        if let value = genderNewValue,
+            value.isEmpty {
+            textFieldIsEmpty = true
+        }
+        
+        if textFieldHaveNewValue == false {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue,
+            textFieldIsEmpty {
+            modifyGenderProfileItem(profileItemId: profileGenderProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
+                if result {
+                    self.profileGenderProfileItem?.profileItemId = nil
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        } else {
+            modifyGenderProfileItem(profileItemId: profileGenderProfileItem?.profileItemId, newValueGender: genderNewValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.profileGenderProfileItem?.profileItemId == nil {
+                        self.profileGenderProfileItem?.profileItemId = itemId
+                    }
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        }
+    }
+    
+    func updateBirthInfoProfileItem(birthDateNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldHaveNewValue = false
+        
+        if let savedBirthDate = birthInfoProfileItem?.birthDate,
+            savedBirthDate != birthDateNewValue {
+            textFieldHaveNewValue = true
+        } else if (birthDateNewValue ?? "").isNotEmpty {
+            textFieldHaveNewValue = true
+        }
+        
+        if textFieldHaveNewValue == false && newLocnId == nil {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue || (newLocnId != nil) {
+            modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.basicProfileItem?.profileItemId == nil {
+                        self.basicProfileItem?.profileItemId = itemId
+                    }
+                    
+                    if self.newLocnId != nil {
+                        self.newLocnId = nil
+                    }
+                    
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        } else {
+            completion(true)
+            return
+        }
+    }
+    
+    func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {
+        let params: GeomapLatLongParams = (lat, long)
+        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                guard let locnVO = model.results.first?.data?.first?.locnVO else {
+                    completion(nil)
+                    return
+                }
+                self.postLocation(location: locnVO) { result in
+                    if let postLocnVO = result {
+                        completion(postLocnVO)
+                    } else {
+                        completion(nil)
+                    }
+                }
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
+            }
+        }
+    }
+    
+    func postLocation(location: LocnVO, completion: @escaping ((LocnVO?) -> Void)) {
+        let apiOperation = APIOperation(LocationEndpoint.locnPost(location: location))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                let locnVO: LocnVO? = model.results.first?.data?.first?.locnVO
+                completion(locnVO)
+                
+            case .error(_, _):
+                completion(nil)
+                
+            default:
+                completion(nil)
             }
         }
     }

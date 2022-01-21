@@ -382,15 +382,33 @@ struct Payloads {
             "longitude": params.long
         ]
         
-        return [ "RequestVO":
-                    [
-                        "csrf": Self.csrf,
-                        "data": [
-                            [
-                                "LocnVO": locnVO
-                            ]
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "LocnVO": locnVO
                         ]
                     ]
+                ]
+        ]
+    }
+    
+    static func locnPost(location: LocnVO) -> RequestParameters {
+        guard let locationJson = try? JSONEncoder().encode(location),
+                let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) else { return [] }
+
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "LocnVO": locationDict
+                        ]
+                    ]
+                ]
         ]
     }
     
@@ -425,11 +443,12 @@ struct Payloads {
             ]
         ]}
         
-        return [ "RequestVO":
-                    [
-                        "csrf": Self.csrf,
-                        "data": data
-                    ]
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": data
+                ]
         ]
     }
     
@@ -655,7 +674,6 @@ struct Payloads {
                     ]
                 ]
         ]
-        
     }
         
     static func searchFolderAndRecord(text: String, tags: [TagVOData]) -> RequestParameters {

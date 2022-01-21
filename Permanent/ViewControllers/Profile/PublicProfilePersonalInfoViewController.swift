@@ -8,7 +8,6 @@
 import UIKit
 
 class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     @IBOutlet weak var fullNameTitleLabel: UILabel!
     @IBOutlet weak var fullNameTextField: UITextField!
     @IBOutlet weak var nicknameTitleLabel: UILabel!
@@ -26,18 +25,10 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
-    var screenTitle: String = "Personal Information".localized()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = screenTitle.localized()
-        
-        extendedLayoutIncludesOpaqueBars = true
-        edgesForExtendedLayout = .all
-        
         setupNavigationBar()
-        
         initUI()
         
         fullNameTextField.delegate = self
@@ -45,6 +36,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         genderTextField.delegate = self
         birthDateTextField.delegate = self
         locationTextField.delegate = self
+        
+        setFieldValues()
         
         addDismissKeyboardGesture()
     }
@@ -55,8 +48,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        //      NotificationCenter.default.removeObserver(self)
+    
         view.endEditing(true)
     }
     
@@ -64,11 +56,14 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         styleNavBar()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(closeButtonAction(_:)))
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction(_:)))
     }
     
     func initUI() {
+        title = viewModel?.archiveType.personalInformationPublicPageTitle
+        
+        extendedLayoutIncludesOpaqueBars = true
+        edgesForExtendedLayout = .all
         
         fullNameTitleLabel.textColor = .middleGray
         fullNameTitleLabel.font = Text.style12.font
@@ -145,15 +140,114 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         nicknameHintLabel.text = "Aliases or nicknames".localized()
         genderHintLabel.text = "Gender".localized()
         birthDateHintLabel.text = "YYYY-MM-DD"
-        birthLocationHintLabel.text = "Choose a location".localized()
+        birthLocationHintLabel.text = "Location".localized()
+        
+        setupDatePicker()
     }
     
     @objc func closeButtonAction(_ sender: Any) {
+        NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
         dismiss(animated: true)
     }
     
     @objc func doneButtonAction(_ sender: Any) {
-        dismiss(animated: true)
+        var publicProfileUpdateIsSuccessfully: (Bool, Bool, Bool) = (false, false, false)
+        
+        let group = DispatchGroup()
+        
+        showSpinner()
+        
+        group.enter()
+        group.enter()
+        group.enter()
+        viewModel?.updateBasicProfileItem(fullNameNewValue: fullNameTextField.text, nicknameNewValue: nicknameTextField.text, { result in
+            publicProfileUpdateIsSuccessfully.0 = result
+            group.leave()
+        })
+
+        viewModel?.updateGenderProfileItem(genderNewValue: genderTextField.text, { result in
+            publicProfileUpdateIsSuccessfully.1 = result
+            group.leave()
+        })
+        
+        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
+            publicProfileUpdateIsSuccessfully.2 = result
+            group.leave()
+        })
+
+        group.notify(queue: DispatchQueue.main) {
+            self.hideSpinner()
+            if publicProfileUpdateIsSuccessfully == (true, true, true) {
+                NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
+                self.dismiss(animated: true)
+            } else {
+                self.showAlert(title: .error, message: .errorMessage)
+            }
+        }
+    }
+    
+    func setFieldValues() {
+        setInitialLabelValueForTextField(fullNameTextField, value: viewModel?.basicProfileItem?.fullName, associatedLabel: fullNameHintLabel)
+        setInitialLabelValueForTextField(nicknameTextField, value: viewModel?.basicProfileItem?.nickname, associatedLabel: nicknameHintLabel)
+        setInitialLabelValueForTextField(genderTextField, value: viewModel?.profileGenderProfileItem?.personGender, associatedLabel: genderHintLabel)
+        setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
+        setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+    }
+    
+    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
+        if let savedValue = value,
+            savedValue.isNotEmpty {
+            textField.text = savedValue
+            associatedLabel.isHidden = true
+        } else {
+            associatedLabel.isHidden = false
+        }
+    }
+    
+    func setupDatePicker() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
+        
+        let datePicker = UIDatePicker()
+        datePicker.date = date ?? Date()
+        datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
+        datePicker.datePickerMode = .date
+        datePicker.maximumDate = Date()
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
+        }
+        datePicker.sizeToFit()
+        
+        let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 40))
+        let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 90, height: doneContainerView.frame.height))
+        doneButton.autoresizingMask = [.flexibleLeftMargin]
+        doneButton.setup()
+        doneButton.setFont(UIFont.systemFont(ofSize: 17))
+        doneButton.configureActionButtonUI(title: "done", bgColor: .systemBlue)
+        doneButton.addTarget(self, action: #selector(datePickerDoneButtonPressed(_:)), for: .touchUpInside)
+        doneContainerView.addSubview(doneButton)
+        
+        let stackView = UIStackView(arrangedSubviews: [datePicker, doneContainerView])
+        stackView.axis = .vertical
+        stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 40)
+        
+        birthDateTextField.inputView = stackView
+    }
+    
+    @objc func datePickerDoneButtonPressed(_ sender: Any) {
+        birthDateTextField.resignFirstResponder()
+    }
+    
+    @objc func datePickerDidChange(_ sender: UIDatePicker) {
+        let date = sender.date
+    
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        birthDateTextField.text = dateFormatter.string(from: date)
     }
 }
 
@@ -173,12 +267,19 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             birthDateHintLabel.isHidden = true
             
         case locationTextField:
-            birthLocationHintLabel.isHidden = true
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
+            locationSetVC.delegate = self
+            locationSetVC.viewModel = viewModel
+            
+            let navigationVC = NavigationController(rootViewController: locationSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
             
         default:
             return
         }
     }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let textFieldText = textField.text else { return }
         
@@ -200,16 +301,35 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             
         case birthDateTextField:
             if textFieldText.isEmpty {
-                birthDateHintLabel.isHidden = false
+                if let birthDate = viewModel?.birthInfoProfileItem?.birthDate {
+                    birthDateTextField.text = birthDate
+                } else {
+                    birthDateHintLabel.isHidden = false
+                }
             }
             
         case locationTextField:
             if textFieldText.isEmpty {
                 birthLocationHintLabel.isHidden = false
             }
-            
+        
         default:
             return
         }
+    }
+}
+
+// MARK: - PublicProfileLocationSetViewControllerDelegate
+extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewControllerDelegate {
+    func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
+        if viewModel?.birthInfoProfileItem == nil {
+            viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
+        } else {
+            viewModel?.birthInfoProfileItem?.birthLocation = locationVC.pickedLocation
+        }
+        
+        birthLocationHintLabel.isHidden = true
+        viewModel?.newLocnId = locationVC.pickedLocation?.locnID
+        locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
     }
 }

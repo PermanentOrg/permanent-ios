@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePageViewModel> {
     @IBOutlet weak var shortAboutDescriptionTitleLabel: UILabel!
@@ -39,10 +38,6 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         view.endEditing(true)
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
     func setupNavigationBar() {
         styleNavBar()
         
@@ -52,7 +47,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
     }
     
     func initUI() {
-        title = "About This Archive".localized()
+        title = viewModel?.archiveType.aboutPublicPageTitle
         
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all
@@ -83,7 +78,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longAboutDescriptionTitleLabel.textColor = .middleGray
         longAboutDescriptionTitleLabel.font = Text.style12.font
         
-        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
+        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
         shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint
         
         if let shortDescription = viewModel?.blurbProfileItem?.shortDescription {
@@ -213,9 +208,9 @@ extension PublicProfileAboutPageViewController: UITextFieldDelegate {
         
         let textCount = textFieldText.count + string.count - range.length
         
-        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/280)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+        shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
         
-        if textCount < 280 {
+        if textCount < 200 {
             return true
         }
         
