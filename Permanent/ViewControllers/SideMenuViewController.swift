@@ -32,9 +32,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         LeftDrawerSection.manage: [
             DrawerOption.manageArchives,
             DrawerOption.members
-        ],
-        LeftDrawerSection.publicGallery: [
-            DrawerOption.publicGallery
         ]
     ]
     
@@ -168,7 +165,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if section == LeftDrawerSection.publicGallery.rawValue || section == LeftDrawerSection.header.rawValue {
+        if [LeftDrawerSection.publicGallery.rawValue, LeftDrawerSection.header.rawValue, LeftDrawerSection.manage.rawValue].contains(section) {
             return nil
         }
         
