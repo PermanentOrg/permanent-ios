@@ -29,10 +29,10 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
     func configure(titleLabel: String = "", buttonText: String = "", buttonIsHidden: Bool = false ) {
         self.titleLabel.text = titleLabel.localized()
         
-        editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.darkGray]), for: .normal)
-        editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
+        editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.primary]), for: .normal)
+        editButton.setAttributedTitle(NSAttributedString(string: buttonText.localized(), attributes: [.font: Text.style17.font, .foregroundColor: UIColor.lightBlue]), for: .highlighted)
         
-        editButton.isHidden  = buttonIsHidden
+        editButton.isHidden = buttonIsHidden
     }
 
     static func nib() -> UINib {

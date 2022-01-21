@@ -16,4 +16,13 @@ class GenderProfileItem: ProfileItemModel {
             string1 = newValue
         }
     }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.profileGender.rawValue)
+        self.type = "type.widget.string"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
 }

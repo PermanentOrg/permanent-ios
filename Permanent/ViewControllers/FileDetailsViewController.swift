@@ -311,10 +311,12 @@ extension FileDetailsViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsMapViewCellCollectionViewCell.identifier, for: indexPath) as! FileDetailsMapViewCellCollectionViewCell
             
             returnedCell = cell
+            
         case .tags:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagsNamesCollectionViewCell.identifier, for: indexPath) as! TagsNamesCollectionViewCell
             
             returnedCell = cell
+            
         case .date, .uploaded, .lastModified, .created, .fileCreated:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileDetailsDateCollectionViewCell.identifier, for: indexPath) as! FileDetailsDateCollectionViewCell
             
@@ -368,8 +370,10 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
         switch currentCellType {
         case .thumbnail:
             return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
+            
         case .segmentedControl:
             return CGSize(width: UIScreen.main.bounds.width, height: 40)
+            
         case .location:
             if let _ = viewModel?.recordVO?.recordVO?.locnVO?.latitude,
                let _ = viewModel?.recordVO?.recordVO?.locnVO?.longitude {
@@ -377,6 +381,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             } else {
                 return CGSize(width: UIScreen.main.bounds.width, height: 65)
             }
+            
         case .tags:
             /*
              | - ( tag1 ) - (tag 2) - (tag abc) - |

@@ -15,6 +15,7 @@ class BirthInfoProfileItem: ProfileItemModel {
             day1 = newValue
         }
     }
+    
     var birthLocation: LocnVO? {
         get {
             return locnVOs?.first
@@ -38,10 +39,28 @@ class BirthInfoProfileItem: ProfileItemModel {
         }
     }
     
+    var locationID: Int? {
+        get {
+            return locnId1
+        }
+        set {
+            locnId1 = newValue
+        }
+    }
+    
     func getAddressString(_ items: [String?]) -> String {
         var address = items.compactMap { $0 }.joined(separator: ", ")
         address.isEmpty ? (address = "Choose a location".localized()) : ()
 
         return address
+    }
+    
+    init() {
+        super.init(fieldNameUI: FieldNameUI.birthInfo.rawValue)
+        self.type = "type.widget.date"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }

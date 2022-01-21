@@ -90,6 +90,12 @@ class PublicArchiveViewController: UIViewController {
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
         profilePhotoImageView.sd_setImage(with: URL(string: archiveData.thumbURL200!))
+        
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+        if #available(iOS 13.0, *) {
+            segmentedControl.selectedSegmentTintColor = .primary
+        }
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {
