@@ -43,11 +43,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         initUI()
         setupTableView()
         
-        if viewModel?.getCurrentArchive() == nil {
-            viewModel?.refreshCurrentArchive({ [self] archive in
-                tableView.reloadRows(at: [[0, 0]], with: .none)
-            })
-        }
+        refreshCurrentArchive()
     }
     
     fileprivate func initUI() {
@@ -66,6 +62,12 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
+    }
+    
+    func refreshCurrentArchive() {
+        viewModel?.refreshCurrentArchive({ [self] archive in
+            tableView.reloadRows(at: [[0, 0]], with: .none)
+        })
     }
     
     func adjustUIForAnimation(isOpening: Bool) {

@@ -58,6 +58,7 @@ class DrawerViewController: UIViewController {
     func toggleMenu(animateBg: Bool = true) {
         isLeftMenuExpanded.toggle()
         rootViewController.view.hideKeyboard()
+        leftSideMenuController.refreshCurrentArchive()
         
         if leftSideMenuController.parent == nil {
             let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight)
