@@ -133,8 +133,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         birthLocationHintLabel.textAlignment = .left
         
         if let archiveType = viewModel?.archiveType {
-            fullNameTitleLabel.text = ProfilePageData.nameTitle(archiveType: archiveType)
-            nicknameTitleLabel.text = ProfilePageData.nickNameTitle(archiveType: archiveType)
+            fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.fullName?.count ?? 0)")
+            nicknameTitleLabel.text = "\(ProfilePageData.nickNameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.nickname?.count ?? 0)")
             genderTitleLabel.text = ProfilePageData.genderTitle(archiveType: archiveType)
             birthDateTitleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
             locationTitleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
@@ -284,6 +284,33 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             
         default:
             return
+        }
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text,
+              let archiveType = viewModel?.archiveType else { return false }
+        let textCount = textFieldText.count + string.count - range.length
+        
+        switch textField {
+        case fullNameTextField:
+            fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+            
+            if textCount < 120 {
+                return true
+            }
+            return false
+            
+        case nicknameTextField:
+            nicknameTitleLabel.text = "\(ProfilePageData.nickNameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+            
+            if textCount < 120 {
+                return true
+            }
+            return false
+            
+        default:
+            return true
         }
     }
     
