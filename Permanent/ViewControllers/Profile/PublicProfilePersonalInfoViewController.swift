@@ -25,6 +25,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
+    @IBOutlet weak var genderItemsView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -130,18 +132,23 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         birthLocationHintLabel.font = Text.style8.font
         birthLocationHintLabel.textAlignment = .left
         
-        fullNameTitleLabel.text = "Full Name".localized()
-        nicknameTitleLabel.text = "Nickname".localized()
-        genderTitleLabel.text = "Gender".localized()
-        birthDateTitleLabel.text = "Birth Date".localized()
-        locationTitleLabel.text = "Birth Location".localized()
-        
-        fullNameHintLabel.text = "Full name".localized()
-        nicknameHintLabel.text = "Aliases or nicknames".localized()
-        genderHintLabel.text = "Gender".localized()
-        birthDateHintLabel.text = "YYYY-MM-DD"
-        birthLocationHintLabel.text = "Location".localized()
-        
+        if let archiveType = viewModel?.archiveType {
+            fullNameTitleLabel.text = ProfilePageData.nameTitle(archiveType: archiveType)
+            nicknameTitleLabel.text = ProfilePageData.nickNameTitle(archiveType: archiveType)
+            genderTitleLabel.text = ProfilePageData.genderTitle(archiveType: archiveType)
+            birthDateTitleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
+            locationTitleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
+            
+            fullNameHintLabel.text = ProfilePageData.nameHint(archiveType: archiveType)
+            nicknameHintLabel.text = ProfilePageData.nickNameHint(archiveType: archiveType)
+            genderHintLabel.text = ProfilePageData.genderHint(archiveType: archiveType)
+            birthDateHintLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
+            birthLocationHintLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+            
+            if archiveType == .organization || archiveType == .family {
+                genderItemsView.isHidden = true
+            }
+        }
         setupDatePicker()
     }
     

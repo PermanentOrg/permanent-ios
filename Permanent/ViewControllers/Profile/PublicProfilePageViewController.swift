@@ -33,10 +33,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     var readMoreIsEnabled: [ProfileSection: Bool] = [:]
-    
     private var profileViewData: [ProfileSection: [ProfileCellType]] = [:]
 
-    //var bottomSectionCells: [ProfileSection] = [.about, .information, .onlinePresence, .milestones]
     var numberOfBottomSections: Int = 4
     var currentSegmentValue: Int = 0
     
@@ -178,9 +176,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
         let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
-        
-        //guard let sectionCellType = profileViewData[ProfileSection(rawValue: indexPath.section)!] else { return UICollectionViewCell() }
-    
+
         let returnedCell: UICollectionViewCell
         
         switch currentCellType {
@@ -211,6 +207,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             cell.configure(with: nicknameText, archiveType: viewModel?.archiveType, cellType: currentCellType)
 
             returnedCell = cell
+            
         case .gender:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let profileGenderText = viewModel?.profileGenderProfileItem?.personGender
@@ -270,7 +267,9 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                 
             case .information:
-                headerCell.configure(titleLabel: "Person Information", buttonText: "Edit")
+                if let title = viewModel?.archiveType.personalInformationPublicPageTitle {
+                    headerCell.configure(titleLabel: title, buttonText: "Edit".localized())
+                }
                 
                 headerCell.buttonAction = { [weak self] in
                     let profilePernalInformationVC = UIViewController.create(withIdentifier: .profilePersonalInfoPage, from: .profile) as! PublicProfilePersonalInfoViewController

@@ -31,48 +31,48 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
         
         switch cellType {
         case .fullName:
-            titleLabel.text = nameTitle(archiveType: archiveType)
+            titleLabel.text = ProfilePageData.nameTitle(archiveType: archiveType)
             if let fullNameValue = content,
-               fullNameValue.isNotEmpty {
+                fullNameValue.isNotEmpty {
                 contentLabel.text = fullNameValue
             } else {
-                contentLabel.text = "Full name".localized()
+                contentLabel.text = ProfilePageData.nameHint(archiveType: archiveType)
             }
             
         case .nickName:
-            titleLabel.text = nickNameTitle(archiveType: archiveType)
+            titleLabel.text = ProfilePageData.nickNameTitle(archiveType: archiveType)
             if let nicknameValue = content,
-               nicknameValue.isNotEmpty {
+                nicknameValue.isNotEmpty {
                 contentLabel.text = nicknameValue
             } else {
-                contentLabel.text = "Aliases or nicknames".localized()
+                contentLabel.text = ProfilePageData.nickNameHint(archiveType: archiveType)
             }
             
         case .gender:
-            titleLabel.text = genderTitle(archiveType: archiveType)
+            titleLabel.text = ProfilePageData.genderTitle(archiveType: archiveType)
             if let genderValue = content,
-               genderValue.isNotEmpty {
+                genderValue.isNotEmpty {
                 contentLabel.text = genderValue
             } else {
-                contentLabel.text = "Gender"
+                contentLabel.text = ProfilePageData.genderHint(archiveType: archiveType)
             }
             
         case .birthDate:
-            titleLabel.text = birthDateTitle(archiveType: archiveType)
+            titleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
             if let birthDateValue = content,
-               birthDateValue.isNotEmpty {
+                birthDateValue.isNotEmpty {
                 contentLabel.text = birthDateValue
             } else {
-                contentLabel.text = "YYYY-MM-DD"
+                contentLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
             }
             
         case .birthLocation:
-            titleLabel.text = birthLocationTitle(archiveType: archiveType)
+            titleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
             if let birthLocationValue = content,
-               birthLocationValue.isNotEmpty {
+                birthLocationValue.isNotEmpty {
                 contentLabel.text = birthLocationValue
             } else {
-                contentLabel.text = "Choose a location".localized()
+                contentLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
             }
             
         default:
@@ -83,60 +83,5 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
     
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
-    }
-    
-    private func nameTitle(archiveType: ArchiveType) -> String {
-        switch archiveType {
-        case .person:
-            return "Full Name".localized()
-        case .family:
-            return "Full Name"
-        case .organization:
-            return "Full Name"
-        }
-    }
-    
-    private func nickNameTitle(archiveType: ArchiveType) -> String {
-        switch archiveType {
-        case .person:
-            return "Nickname".localized()
-        case .family:
-            return "Nickname"
-        case .organization:
-            return "Nickname"
-        }
-    }
-    
-    private func genderTitle(archiveType: ArchiveType) -> String {
-        switch archiveType {
-        case .person:
-            return "Gender".localized()
-        case .family:
-            return ""
-        case .organization:
-            return ""
-        }
-    }
-    
-    private func birthDateTitle(archiveType: ArchiveType) -> String {
-        switch archiveType {
-        case .person:
-            return "Birth Date".localized()
-        case .family:
-            return ""
-        case .organization:
-            return ""
-        }
-    }
-    
-    private func birthLocationTitle(archiveType: ArchiveType) -> String {
-        switch archiveType {
-        case .person:
-            return "Birth Location".localized()
-        case .family:
-            return ""
-        case .organization:
-            return ""
-        }
     }
 }

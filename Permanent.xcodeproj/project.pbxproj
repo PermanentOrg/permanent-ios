@@ -128,6 +128,7 @@
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
 		5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */; };
 		5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */; };
+		5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
 		71B9D69F99F7766FC6E3CA7A /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09AB8F4D7E7FDEF41B5E3C60 /* Pods_PermanentTests.framework */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
@@ -553,6 +554,7 @@
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
 		5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageInformationCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageInformationCollectionViewCell.xib; sourceTree = "<group>"; };
+		5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageData.swift; sourceTree = "<group>"; };
 		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		6B6D56DDE327615466BB09CE /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6C8F6527F0E6C1B47A069802 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
@@ -1307,6 +1309,7 @@
 				BCA120CB2562C64300ECAD7B /* HighlightColor.swift */,
 				BC0D99AC256BD72200D29041 /* Colors.swift */,
 				BC0D99CB256E5BF000D29041 /* TableViewData.swift */,
+				5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -2248,6 +2251,7 @@
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
+				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
 				BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
