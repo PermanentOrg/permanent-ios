@@ -7,21 +7,36 @@
 
 import UIKit
 
+enum ProfileCellType {
+    case aboutCell
+    case fullName
+    case nickName
+    case gender
+    case birthDate
+    case birthLocation
+    case onlinePresenceLink
+    case milestone
+    case archiveGallery
+}
+
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     var archiveData: ArchiveVOData!
     weak var delegate: PublicArchiveChildDelegate?
     var profileData: [ProfileItemVO] = []
     
-    enum CellType {
-        case archiveGallery
-        case about
-        case personalInformation
-        case onlinePresence
-        case milestones
+    enum ProfileSection: Int {
+        case about = 0
+        case information = 1
+        case onlinePresence = 2
+        case milestones = 3
+        case archiveGallery = 4
     }
-    var readMoreIsEnabled: [CellType: Bool] = [:]
     
-    var bottomSectionCells: [CellType] = [.about, .personalInformation, .onlinePresence, .milestones]
+    var readMoreIsEnabled: [ProfileSection: Bool] = [:]
+    
+    private var profileViewData: [ProfileSection: [ProfileCellType]] = [:]
+
+    //var bottomSectionCells: [ProfileSection] = [.about, .information, .onlinePresence, .milestones]
     var numberOfBottomSections: Int = 4
     var currentSegmentValue: Int = 0
     
@@ -52,6 +67,37 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
         view.backgroundColor = .white
+        
+        profileViewData = [
+            ProfileSection.about: [
+                ProfileCellType.aboutCell
+            ],
+            ProfileSection.information: [
+                ProfileCellType.fullName,
+                ProfileCellType.nickName
+            ],
+            ProfileSection.onlinePresence: [
+                ProfileCellType.onlinePresenceLink
+            ],
+            ProfileSection.milestones: [
+                ProfileCellType.milestone
+            ]
+        ]
+        guard let archiveType = viewModel?.archiveType else { return }
+        switch archiveType {
+        case .person:
+            profileViewData[ProfileSection.information]?.append(contentsOf: [
+                ProfileCellType.gender,
+                ProfileCellType.birthDate,
+                ProfileCellType.birthLocation
+            ])
+            
+        case .family, .organization:
+            profileViewData[ProfileSection.information]?.append(contentsOf: [
+                ProfileCellType.birthDate,
+                ProfileCellType.birthLocation
+            ])
+        }
     }
     
     func initCollectionView() {
@@ -64,7 +110,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         
         collectionView.register(ProfilePageArchiveCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier)
         collectionView.register(ProfilePageAboutCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier)
-        collectionView.register(ProfilePagePersonInfoCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier)
+        collectionView.register(ProfilePageInformationCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier)
         collectionView.register(ProfilePageOnlinePresenceCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageOnlinePresenceCollectionViewCell.identifier)
         collectionView.register(ProfilePageMilestonesCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier)
         
@@ -121,7 +167,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
 // MARK: - UICollectionViewDataSource
 extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
+        let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        return profileViewData[sections[section]]?.count ?? 1
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -129,10 +176,11 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        sectionCellType = [bottomSectionCells[indexPath.section]]
+        let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
         
-        let currentCellType = sectionCellType[indexPath.item]
+        //guard let sectionCellType = profileViewData[ProfileSection(rawValue: indexPath.section)!] else { return UICollectionViewCell() }
+    
         let returnedCell: UICollectionViewCell
         
         switch currentCellType {
@@ -140,34 +188,56 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier, for: indexPath) as! ProfilePageArchiveCollectionViewCell
             returnedCell = cell
             
-        case .about:
+        case .aboutCell:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            
             let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
             let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
             
             cell.configure(shortDescriptionValue, longDescriptionValue, viewModel?.archiveType)
             returnedCell = cell
             
-        case .personalInformation:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePagePersonInfoCollectionViewCell.identifier, for: indexPath) as! ProfilePagePersonInfoCollectionViewCell
-            
-            let nicknameText = viewModel?.basicProfileItem?.nickname
+        case .fullName:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let fullNameText = viewModel?.basicProfileItem?.fullName
-            let profileGenderText = viewModel?.profileGenderProfileItem?.personGender
-            let birthDateText = viewModel?.birthInfoProfileItem?.birthDate
-            let birthLocationText = viewModel?.birthInfoProfileItem?.birthLocationFormated
-
-            cell.configure(fullName: fullNameText, nickname: nicknameText, gender: profileGenderText, birthDate: birthDateText, birthLocation: birthLocationText)
+    
+            cell.configure(with: fullNameText, archiveType: viewModel?.archiveType, cellType: currentCellType)
 
             returnedCell = cell
             
-        case .onlinePresence:
+        case . nickName:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let nicknameText = viewModel?.basicProfileItem?.nickname
+            
+            cell.configure(with: nicknameText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+
+            returnedCell = cell
+        case .gender:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let profileGenderText = viewModel?.profileGenderProfileItem?.personGender
+            
+            cell.configure(with: profileGenderText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            returnedCell = cell
+            
+        case .birthDate:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let birthDateText = viewModel?.birthInfoProfileItem?.birthDate
+            
+            cell.configure(with: birthDateText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            returnedCell = cell
+            
+        case .birthLocation:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let birthLocationText = viewModel?.birthInfoProfileItem?.birthLocationFormated
+            
+            cell.configure(with: birthLocationText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            returnedCell = cell
+            
+        case .onlinePresenceLink:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageOnlinePresenceCollectionViewCell.identifier, for: indexPath) as! ProfilePageOnlinePresenceCollectionViewCell
             
             returnedCell = cell
             
-        case .milestones:
+        case .milestone:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier, for: indexPath) as! ProfilePageMilestonesCollectionViewCell
             
             returnedCell = cell
@@ -177,15 +247,13 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        sectionCellType = [bottomSectionCells[indexPath.section]]
-        
-        let currentCellType = sectionCellType[indexPath.item]
+        let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentSectionType = sections[indexPath.section]
         
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier, for: indexPath) as! ProfilePageHeaderCollectionViewCell
-            switch currentCellType {
+            switch currentSectionType {
             case .archiveGallery:
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
@@ -201,7 +269,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                     self?.present(navigationVC, animated: true)
                 }
                 
-            case .personalInformation:
+            case .information:
                 headerCell.configure(titleLabel: "Person Information", buttonText: "Edit")
                 
                 headerCell.buttonAction = { [weak self] in
@@ -223,11 +291,11 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             
         case UICollectionView.elementKindSectionFooter:
             let footerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageFooterCollectionViewCell.identifier, for: indexPath) as! ProfilePageFooterCollectionViewCell
-            switch currentCellType {
+            switch currentSectionType {
             case .archiveGallery:
                 footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: true)
                 
-            case .personalInformation:
+            case .information:
                 footerCell.configure(isReadMoreButtonHidden: true)
                 
             case .milestones:
@@ -258,13 +326,11 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegateFlowLayout
 extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var sectionCellType: [PublicProfilePageViewController.CellType] = []
-        sectionCellType = [bottomSectionCells[indexPath.section]]
-        
-        let currentCellType = sectionCellType[indexPath.item]
-        
+        let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+
         switch currentCellType {
-        case .about:
+        case .aboutCell:
             let shortDescriptionValue: String = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             let longDescriptionValue: String = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
             
@@ -279,13 +345,13 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
  
             return CGSize(width: UIScreen.main.bounds.width, height: textHeight + 20)
             
-        case .personalInformation:
-            return CGSize(width: UIScreen.main.bounds.width, height: 260)
+        case .fullName, .nickName, .gender, .birthDate, .birthLocation:
+            return CGSize(width: UIScreen.main.bounds.width, height: 50)
             
-        case .onlinePresence:
-            return CGSize(width: UIScreen.main.bounds.width, height: 100)
+        case .onlinePresenceLink:
+            return CGSize(width: UIScreen.main.bounds.width, height: 50)
             
-        case .milestones:
+        case .milestone:
             return CGSize(width: UIScreen.main.bounds.width, height: 130)
             
         default:

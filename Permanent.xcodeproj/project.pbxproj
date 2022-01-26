@@ -126,6 +126,8 @@
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
+		5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */; };
+		5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
 		71B9D69F99F7766FC6E3CA7A /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09AB8F4D7E7FDEF41B5E3C60 /* Pods_PermanentTests.framework */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
@@ -549,6 +551,8 @@
 		5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
+		5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageInformationCollectionViewCell.swift; sourceTree = "<group>"; };
+		5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageInformationCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		6B6D56DDE327615466BB09CE /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6C8F6527F0E6C1B47A069802 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
@@ -1143,6 +1147,8 @@
 				5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */,
 				5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */,
 				5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */,
+				5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */,
+				5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */,
 				5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */,
 				5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */,
 				5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */,
@@ -1995,6 +2001,7 @@
 				BC59BABD25C2B7D6005A45D3 /* FileLargeCollectionViewCell.xib in Resources */,
 				BC63589A2535D35D00EEC48C /* FileTableViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
+				5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
@@ -2344,6 +2351,7 @@
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
 				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
+				5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */,
 				F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */,
