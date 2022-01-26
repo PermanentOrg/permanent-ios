@@ -521,6 +521,31 @@ struct Payloads {
         ]
     }
     
+    static func updateArchiveThumbPayload(archiveVO: ArchiveVOData, file: FileViewModel) -> RequestParameters {
+        var modifiedArchive: [String: Any] = [:]
+        if let archiveJson = try? JSONEncoder().encode(archiveVO),
+           let archiveDict = try? JSONSerialization.jsonObject(with: archiveJson, options: []) as? [String: Any] {
+            modifiedArchive = archiveDict
+        }
+        modifiedArchive["thumbArchiveNbr"] = file.archiveNo
+        modifiedArchive["thumbURL200"] = file.thumbnailURL
+        modifiedArchive["thumbURL500"] = file.thumbnailURL500
+        modifiedArchive["thumbURL1000"] = file.thumbnailURL1000
+        modifiedArchive["thumbURL2000"] = file.thumbnailURL2000
+        
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "ArchiveVO": modifiedArchive
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
     static func createArchivePayload(name: String, type: String) -> RequestParameters {
         return [
             "RequestVO":

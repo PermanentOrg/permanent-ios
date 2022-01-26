@@ -11,39 +11,17 @@ import Photos
 class PublicProfilePicturesViewModel: ViewModelInterface {
     var archiveData: ArchiveVOData!
     
-    var publicRootFolder: FolderVOData?
-    var rootFolder: FolderVOData?
-    
-    let uploadQueue = OperationQueue()
-    
-    func getRoot(then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRoot)
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                if model.isSuccessful == true {
-                    let mainFolder = model.results?.first?.data?.first?.folderVO
-                    self.rootFolder = mainFolder?.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder })
-                    
-                    handler(.success)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
+    var publicRootFolder: FolderVOData? {
+        didSet {
+            guard let thumbURL = publicRootFolder?.thumbURL2000 else { return }
+            bannerURL = URL(string: thumbURL)
         }
     }
+    
+    var bannerURL: URL?
+    var profilePicURL: URL?
+    
+    let uploadQueue = OperationQueue()
     
     func getPublicRoot(then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveData.archiveNbr!))
@@ -70,34 +48,6 @@ class PublicProfilePicturesViewModel: ViewModelInterface {
                 break
             }
         }
-    }
-    
-    func uploadFile(_ file: FileInfo, completionBlock: @escaping (() -> Void)) {
-        let fileHelper = FileHelper()
-        if let fileContents = file.fileContents {
-            file.url = fileHelper.saveFile(fileContents, named: file.id, withExtension: "jpeg", isDownload: false) ?? URL(fileURLWithPath: "")
-            file.fileContents = nil
-        } else {
-            do {
-                file.url = try fileHelper.copyFile(withURL: file.url)
-            } catch {
-                
-            }
-        }
-        
-        let uploadFileOp = UploadOperation(file: file) { error in
-            print(error)
-        }
-        let completionOp = BlockOperation { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
-                self?.updateBanner(thumbArchiveNbr: uploadFileOp.uploadedFile!.archiveNbr!, then: { status in
-                    completionBlock()
-                })
-            }
-        }
-        completionOp.addDependency(uploadFileOp)
-        
-        uploadQueue.addOperations([uploadFileOp, completionOp], waitUntilFinished: false)
     }
     
     func updateBanner(thumbArchiveNbr: String, then handler: @escaping ServerResponse) {
@@ -136,26 +86,29 @@ class PublicProfilePicturesViewModel: ViewModelInterface {
         }
     }
     
-    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
-        let dispatchGroup = DispatchGroup()
-        var urls: [URL] = []
+    func updateProfilePicture(file: FileViewModel, then handler: @escaping ServerResponse) {
+        let apiOperation = APIOperation(ArchivesEndpoint.update(archiveVO: archiveData, file: file))
         
-        assets.forEach { photo in
-            dispatchGroup.enter()
-            
-            photo.getURL { url in
-                guard let imageURL = url else {
-                    dispatchGroup.leave()
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
                     return
                 }
                 
-                urls.append(imageURL)
-                dispatchGroup.leave()
+                if model.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
             }
         }
-        
-        dispatchGroup.notify(queue: .main, execute: {
-            completion(urls)
-        })
     }
 }

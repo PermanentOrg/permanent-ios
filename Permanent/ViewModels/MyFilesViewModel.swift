@@ -7,7 +7,13 @@
 
 import Foundation
 
+protocol MyFilesViewModelPickerDelegate: AnyObject {
+    func myFilesVMDidPickFile(viewModel: MyFilesViewModel, file: FileViewModel)
+}
+
 class MyFilesViewModel: FilesViewModel {
+    var isPickingImage: Bool = false
+    weak var pickerDelegate: MyFilesViewModelPickerDelegate?
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     

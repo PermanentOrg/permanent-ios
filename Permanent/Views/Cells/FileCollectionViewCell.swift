@@ -21,7 +21,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var isGridCell: Bool = false
-    var isSearchCell:Bool = false
+    var isSearchCell: Bool = false
     
     var fileInfoId: String?
     
