@@ -37,6 +37,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var socialMediaProfileItems: [SocialMediaProfileItem] {
         return profileItems.filter({ $0 is SocialMediaProfileItem }) as! [SocialMediaProfileItem]
     }
+    var establishedInfoProfileItem: EstablishedInfoProfileItem? {
+        return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
@@ -211,6 +214,35 @@ class PublicProfilePageViewModel: ViewModelInterface {
         profileItems.append(newProfileItem)
     }
     
+    func modifyEstablishedInfoProfileItem(profileItemId: Int? = nil, newValue: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = EstablishedInfoProfileItem()
+        if let valueEstablishedDate = newValue,
+            valueEstablishedDate.isEmpty {
+            newProfileItem.establishedDate = nil
+        } else {
+            newProfileItem.establishedDate = newValue
+        }
+        newProfileItem.establishedLocation = establishedInfoProfileItem?.establishedLocation
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        if let newLocnId = newLocnId {
+            newProfileItem.locnId1 = newLocnId
+        } else {
+            newProfileItem.locnId1 = establishedInfoProfileItem?.locationID
+        }
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func createNewEstablishedInfoProfileItem(newLocation: LocnVO?) {
+        let newProfileItem = EstablishedInfoProfileItem()
+        newProfileItem.establishedLocation = newLocation
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.locnId1 = newLocation?.locnID
+        
+        profileItems.append(newProfileItem)
+    }
+    
     func updateBasicProfileItem(fullNameNewValue: String?, nicknameNewValue: String?, _ completion: @escaping (Bool) -> Void ) {
         var textFieldIsEmpty = (false, false)
         var textFieldHaveNewValue = (false, false)
@@ -339,8 +371,47 @@ class PublicProfilePageViewModel: ViewModelInterface {
         if textFieldHaveNewValue || (newLocnId != nil) {
             modifyBirthInfoProfileItem(profileItemId: birthInfoProfileItem?.profileItemId, newValueBirthDate: birthDateNewValue, operationType: .update, { result, error, itemId in
                 if result {
-                    if self.basicProfileItem?.profileItemId == nil {
-                        self.basicProfileItem?.profileItemId = itemId
+                    if self.birthInfoProfileItem?.profileItemId == nil {
+                        self.birthInfoProfileItem?.profileItemId = itemId
+                    }
+                    
+                    if self.newLocnId != nil {
+                        self.newLocnId = nil
+                    }
+                    
+                    completion(true)
+                    return
+                } else {
+                    completion(false)
+                    return
+                }
+            })
+        } else {
+            completion(true)
+            return
+        }
+    }
+    
+    func updateEstablishedInfoProfileItem(newValue: String?, _ completion: @escaping (Bool) -> Void ) {
+        var textFieldHaveNewValue = false
+        
+        if let savedDate = establishedInfoProfileItem?.establishedDate,
+            savedDate != newValue {
+            textFieldHaveNewValue = true
+        } else if (newValue ?? "").isNotEmpty {
+            textFieldHaveNewValue = true
+        }
+        
+        if textFieldHaveNewValue == false && newLocnId == nil {
+            completion(true)
+            return
+        }
+        
+        if textFieldHaveNewValue || (newLocnId != nil) {
+            modifyEstablishedInfoProfileItem(profileItemId: establishedInfoProfileItem?.profileItemId, newValue: newValue, operationType: .update, { result, error, itemId in
+                if result {
+                    if self.establishedInfoProfileItem?.profileItemId == nil {
+                        self.establishedInfoProfileItem?.profileItemId = itemId
                     }
                     
                     if self.newLocnId != nil {

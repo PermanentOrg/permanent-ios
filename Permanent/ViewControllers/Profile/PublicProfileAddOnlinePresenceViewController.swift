@@ -40,7 +40,7 @@ class PublicProfileAddOnlinePresenceViewController: BaseViewController<PublicPro
         titleLabel.font = Text.style12.font
         
         if fieldType == .email {
-            title = "Add Email".localized()
+            title = ((profileItem != nil ? "Update" : "Add") + " Email").localized()
             titleLabel.text = "Email".localized()
             
             characterLimit = 80
@@ -48,7 +48,7 @@ class PublicProfileAddOnlinePresenceViewController: BaseViewController<PublicPro
             textField.textContentType = .emailAddress
             textField.text = (profileItem as? EmailProfileItem)?.email
         } else if fieldType == .socialMedia {
-            title = "Add Social Media".localized()
+            title = ((profileItem != nil ? "Update" : "Add") + " Social Media").localized()
             titleLabel.text = "Social Media".localized()
             
             characterLimit = 120
