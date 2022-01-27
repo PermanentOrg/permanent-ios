@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFAudio
 
 class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfilePageViewModel> {
     @IBOutlet weak var fullNameTitleLabel: UILabel!
@@ -176,12 +177,19 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             publicProfileUpdateIsSuccessfully.1 = result
             group.leave()
         })
-        
-        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
-            publicProfileUpdateIsSuccessfully.2 = result
-            group.leave()
-        })
-
+        if let archiveType = viewModel?.archiveType {
+            if archiveType == .person {
+                viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
+                    publicProfileUpdateIsSuccessfully.2 = result
+                    group.leave()
+                })
+            } else {
+                viewModel?.updateEstablishedInfoProfileItem(newValue: birthDateTextField.text, { result in
+                    publicProfileUpdateIsSuccessfully.2 = result
+                    group.leave()
+                })
+            }
+        }
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             if publicProfileUpdateIsSuccessfully == (true, true, true) {
@@ -194,11 +202,19 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     func setFieldValues() {
+        guard let archiveType = viewModel?.archiveType else { return }
+        
         setInitialLabelValueForTextField(fullNameTextField, value: viewModel?.basicProfileItem?.fullName, associatedLabel: fullNameHintLabel)
         setInitialLabelValueForTextField(nicknameTextField, value: viewModel?.basicProfileItem?.nickname, associatedLabel: nicknameHintLabel)
         setInitialLabelValueForTextField(genderTextField, value: viewModel?.profileGenderProfileItem?.personGender, associatedLabel: genderHintLabel)
-        setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
-        setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+        
+        if archiveType == .person {
+            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+        } else {
+            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.establishedInfoProfileItem?.establishedDate, associatedLabel: birthDateHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: viewModel?.establishedInfoProfileItem?.establishedLocationFormated, associatedLabel: birthLocationHintLabel)
+        }
     }
     
     func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
@@ -213,11 +229,17 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     
     func setupDatePicker() {
         let dateFormatter = DateFormatter()
+        var date = dateFormatter.date(from: "")
         dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
-        
+        if let archiveType = viewModel?.archiveType {
+            if archiveType == .person {
+                date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
+            } else {
+                date = dateFormatter.date(from: viewModel?.establishedInfoProfileItem?.establishedDate ?? "")
+            }
+        }
         let datePicker = UIDatePicker()
         datePicker.date = date ?? Date()
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)

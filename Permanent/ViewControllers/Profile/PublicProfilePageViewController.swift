@@ -14,6 +14,8 @@ enum ProfileCellType {
     case gender
     case birthDate
     case birthLocation
+    case establishedDate
+    case establishedLocation
     case onlinePresenceLink
     case milestone
     case archiveGallery
@@ -92,8 +94,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             
         case .family, .organization:
             profileViewData[ProfileSection.information]?.append(contentsOf: [
-                ProfileCellType.birthDate,
-                ProfileCellType.birthLocation
+                ProfileCellType.establishedDate,
+                ProfileCellType.establishedLocation
             ])
         }
     }
@@ -229,6 +231,20 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             cell.configure(with: birthLocationText, archiveType: viewModel?.archiveType, cellType: currentCellType)
             returnedCell = cell
             
+        case .establishedDate:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let dateText = viewModel?.establishedInfoProfileItem?.establishedDate
+            
+            cell.configure(with: dateText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            returnedCell = cell
+            
+        case .establishedLocation:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
+            let locationText = viewModel?.establishedInfoProfileItem?.establishedLocationFormated
+            
+            cell.configure(with: locationText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            returnedCell = cell
+            
         case .onlinePresenceLink:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageOnlinePresenceCollectionViewCell.identifier, for: indexPath) as! ProfilePageOnlinePresenceCollectionViewCell
             
@@ -344,7 +360,7 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
  
             return CGSize(width: UIScreen.main.bounds.width, height: textHeight + 20)
             
-        case .fullName, .nickName, .gender, .birthDate, .birthLocation:
+        case .fullName, .nickName, .gender, .birthDate, .birthLocation, .establishedDate, .establishedLocation:
             return CGSize(width: UIScreen.main.bounds.width, height: 50)
             
         case .onlinePresenceLink:

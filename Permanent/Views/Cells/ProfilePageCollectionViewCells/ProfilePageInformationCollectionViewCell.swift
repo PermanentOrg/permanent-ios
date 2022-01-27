@@ -75,6 +75,24 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 contentLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
             }
             
+        case .establishedDate:
+            titleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
+            if let birthDateValue = content,
+                birthDateValue.isNotEmpty {
+                contentLabel.text = birthDateValue
+            } else {
+                contentLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
+            }
+            
+        case .establishedLocation:
+            titleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
+            if let birthLocationValue = content,
+                birthLocationValue.isNotEmpty {
+                contentLabel.text = birthLocationValue
+            } else {
+                contentLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+            }
+            
         default:
             titleLabel.text = ""
             contentLabel.text = ""
