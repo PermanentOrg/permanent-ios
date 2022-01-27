@@ -8,6 +8,8 @@
 import UIKit
 
 class PublicProfilePageViewModel: ViewModelInterface {
+    static let profileItemsUpdatedNotificationName = Notification.Name("PublicProfilePageViewModel.profileItemsUpdatedNotificationName")
+    
     var archiveData: ArchiveVOData!
     var archiveType: ArchiveType!
     var newLocnId: Int?
@@ -23,14 +25,17 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var basicProfileItem: BasicProfileItem? {
         return profileItems.first(where: {$0 is BasicProfileItem}) as? BasicProfileItem
     }
-    var emailProfileItem: EmailProfileItem? {
-        return profileItems.first(where: {$0 is EmailProfileItem}) as? EmailProfileItem
-    }
     var profileGenderProfileItem: GenderProfileItem? {
         return profileItems.first(where: {$0 is GenderProfileItem}) as? GenderProfileItem
     }
     var birthInfoProfileItem: BirthInfoProfileItem? {
         return profileItems.first(where: {$0 is BirthInfoProfileItem}) as? BirthInfoProfileItem
+    }
+    var emailProfileItems: [EmailProfileItem] {
+        return profileItems.filter({ $0 is EmailProfileItem }) as! [EmailProfileItem]
+    }
+    var socialMediaProfileItems: [SocialMediaProfileItem] {
+        return profileItems.filter({ $0 is SocialMediaProfileItem }) as! [SocialMediaProfileItem]
     }
     var establishedInfoProfileItem: EstablishedInfoProfileItem? {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
@@ -91,18 +96,29 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 guard
                     let model: APIResults<ProfileItemVO> = JSONHelper.decoding(from: response, with: APIResults<ProfileItemVO>.decoder),
                     model.isSuccessful,
-                    let newProfileItemId = model.results.first
+                    let profileItemVO = model.results.first
                 else {
                     completionBlock(false, APIError.invalidResponse, nil)
                     return
                 }
-                if operationType == .delete {
-                    completionBlock(true, nil, nil)
-                    return
-                }
-                completionBlock(true, nil, newProfileItemId.data?.first?.profileItemVO?.profileItemId)
-                return
                 
+                if operationType == .delete {
+                    self.profileItems.removeAll(where: { $0.profileItemId == profileItemModel.profileItemId })
+                    
+                    completionBlock(true, nil, nil)
+                } else if let newProfileItem = profileItemVO.data?.first?.profileItemVO {
+                    if let idx = self.profileItems.firstIndex(where: { $0.profileItemId == profileItemModel.profileItemId }) {
+                        self.profileItems.remove(at: idx)
+                        self.profileItems.insert(newProfileItem, at: idx)
+                    } else {
+                        self.profileItems.append(newProfileItem)
+                    }
+                    
+                    completionBlock(true, nil, newProfileItem.profileItemId)
+                }
+                
+                NotificationCenter.default.post(name: Self.profileItemsUpdatedNotificationName, object: nil)
+
             case .error:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
@@ -167,6 +183,24 @@ class PublicProfilePageViewModel: ViewModelInterface {
         } else {
             newProfileItem.locnId1 = birthInfoProfileItem?.locationID
         }
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifyEmailProfileItem(profileItemId: Int? = nil, newValue: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = EmailProfileItem()
+        newProfileItem.email = newValue
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
+    }
+    
+    func modifySocialMediaProfileItem(profileItemId: Int? = nil, newValue: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newProfileItem = SocialMediaProfileItem()
+        newProfileItem.link = newValue
+        newProfileItem.archiveId = archiveData.archiveID
+        newProfileItem.profileItemId = profileItemId
         
         modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }

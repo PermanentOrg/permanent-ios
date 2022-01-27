@@ -1,14 +1,12 @@
 //
-//  EmailProfileItem.swift
+//  SocialMediaProfileItem.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 04.01.2022.
+//  Created by Vlad Alexandru Rusu on 26.01.2022.
 //
 
-import Foundation
-
-class EmailProfileItem: ProfileItemModel {
-    var email: String? {
+class SocialMediaProfileItem: ProfileItemModel {
+    var link: String? {
         get {
             return string1
         }
@@ -18,7 +16,7 @@ class EmailProfileItem: ProfileItemModel {
     }
     
     init() {
-        super.init(fieldNameUI: FieldNameUI.email.rawValue)
+        super.init(fieldNameUI: FieldNameUI.socialMedia.rawValue)
         self.type = "type.widget.string"
     }
     
