@@ -8,7 +8,6 @@
 import UIKit
 
 class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
-
     static let identifier = "ProfilePageHeaderCollectionViewCell"
     
     @IBOutlet weak var titleLabel: UILabel!
@@ -20,7 +19,7 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
     
-        titleLabel.textColor = .primary
+        titleLabel.textColor = .black
         titleLabel.font = Text.style9.font
         
         configure(titleLabel: "About", buttonText: "Edit")
@@ -38,6 +37,7 @@ class ProfilePageHeaderCollectionViewCell: UICollectionReusableView {
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }
+    
     @IBAction func buttonAction(_ sender: Any) {
         buttonAction?()
     }
