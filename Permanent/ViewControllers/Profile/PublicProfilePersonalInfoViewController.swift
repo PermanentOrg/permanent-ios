@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFAudio
 
 class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfilePageViewModel> {
     @IBOutlet weak var fullNameTitleLabel: UILabel!
@@ -24,6 +25,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var genderHintLabel: UILabel!
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
+    
+    @IBOutlet weak var genderItemsView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -130,18 +133,23 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         birthLocationHintLabel.font = Text.style8.font
         birthLocationHintLabel.textAlignment = .left
         
-        fullNameTitleLabel.text = "Full Name".localized()
-        nicknameTitleLabel.text = "Nickname".localized()
-        genderTitleLabel.text = "Gender".localized()
-        birthDateTitleLabel.text = "Birth Date".localized()
-        locationTitleLabel.text = "Birth Location".localized()
-        
-        fullNameHintLabel.text = "Full name".localized()
-        nicknameHintLabel.text = "Aliases or nicknames".localized()
-        genderHintLabel.text = "Gender".localized()
-        birthDateHintLabel.text = "YYYY-MM-DD"
-        birthLocationHintLabel.text = "Location".localized()
-        
+        if let archiveType = viewModel?.archiveType {
+            fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.fullName?.count ?? 0)")
+            nicknameTitleLabel.text = "\(ProfilePageData.nickNameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.nickname?.count ?? 0)")
+            genderTitleLabel.text = ProfilePageData.genderTitle(archiveType: archiveType)
+            birthDateTitleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
+            locationTitleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
+            
+            fullNameHintLabel.text = ProfilePageData.nameHint(archiveType: archiveType)
+            nicknameHintLabel.text = ProfilePageData.nickNameHint(archiveType: archiveType)
+            genderHintLabel.text = ProfilePageData.genderHint(archiveType: archiveType)
+            birthDateHintLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
+            birthLocationHintLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+            
+            if archiveType == .organization || archiveType == .family {
+                genderItemsView.isHidden = true
+            }
+        }
         setupDatePicker()
     }
     
@@ -169,12 +177,19 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             publicProfileUpdateIsSuccessfully.1 = result
             group.leave()
         })
-        
-        viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
-            publicProfileUpdateIsSuccessfully.2 = result
-            group.leave()
-        })
-
+        if let archiveType = viewModel?.archiveType {
+            if archiveType == .person {
+                viewModel?.updateBirthInfoProfileItem(birthDateNewValue: birthDateTextField.text, { result in
+                    publicProfileUpdateIsSuccessfully.2 = result
+                    group.leave()
+                })
+            } else {
+                viewModel?.updateEstablishedInfoProfileItem(newValue: birthDateTextField.text, { result in
+                    publicProfileUpdateIsSuccessfully.2 = result
+                    group.leave()
+                })
+            }
+        }
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             if publicProfileUpdateIsSuccessfully == (true, true, true) {
@@ -187,11 +202,19 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     func setFieldValues() {
+        guard let archiveType = viewModel?.archiveType else { return }
+        
         setInitialLabelValueForTextField(fullNameTextField, value: viewModel?.basicProfileItem?.fullName, associatedLabel: fullNameHintLabel)
         setInitialLabelValueForTextField(nicknameTextField, value: viewModel?.basicProfileItem?.nickname, associatedLabel: nicknameHintLabel)
         setInitialLabelValueForTextField(genderTextField, value: viewModel?.profileGenderProfileItem?.personGender, associatedLabel: genderHintLabel)
-        setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
-        setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+        
+        if archiveType == .person {
+            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+        } else {
+            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.establishedInfoProfileItem?.establishedDate, associatedLabel: birthDateHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: viewModel?.establishedInfoProfileItem?.establishedLocationFormated, associatedLabel: birthLocationHintLabel)
+        }
     }
     
     func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
@@ -206,11 +229,17 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     
     func setupDatePicker() {
         let dateFormatter = DateFormatter()
+        var date = dateFormatter.date(from: "")
         dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
-        
+        if let archiveType = viewModel?.archiveType {
+            if archiveType == .person {
+                date = dateFormatter.date(from: viewModel?.birthInfoProfileItem?.birthDate ?? "")
+            } else {
+                date = dateFormatter.date(from: viewModel?.establishedInfoProfileItem?.establishedDate ?? "")
+            }
+        }
         let datePicker = UIDatePicker()
         datePicker.date = date ?? Date()
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
@@ -277,6 +306,33 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             
         default:
             return
+        }
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let textFieldText = textField.text,
+              let archiveType = viewModel?.archiveType else { return false }
+        let textCount = textFieldText.count + string.count - range.length
+        
+        switch textField {
+        case fullNameTextField:
+            fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+            
+            if textCount < 120 {
+                return true
+            }
+            return false
+            
+        case nicknameTextField:
+            nicknameTitleLabel.text = "\(ProfilePageData.nickNameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+            
+            if textCount < 120 {
+                return true
+            }
+            return false
+            
+        default:
+            return true
         }
     }
     

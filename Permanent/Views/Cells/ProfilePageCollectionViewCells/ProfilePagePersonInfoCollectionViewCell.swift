@@ -65,7 +65,11 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
         birthLocationLabel.font = Text.style13.font
     }
     
-    func configure(fullName: String?, nickname: String?, gender: String?, birthDate: String?, birthLocation: String?) {
+    func configure(fullName: String?, nickname: String?, gender: String?, birthDate: String?, birthLocation: String?, archiveType: ArchiveType?) {
+        guard let archiveType = archiveType else {
+            return
+        }
+        
         if let fullNameValue = fullName,
             fullNameValue.isNotEmpty {
             fullNameLabel.text = fullNameValue
@@ -74,12 +78,22 @@ class ProfilePagePersonInfoCollectionViewCell: UICollectionViewCell {
         }
         
         if let nicknameValue = nickname,
-           nicknameValue.isNotEmpty {
+            nicknameValue.isNotEmpty {
             nicknameLabel.text = nicknameValue
         } else {
             nicknameLabel.text = "Aliases or nicknames".localized()
         }
-        
+
+        switch archiveType {
+        case .person:
+            genderLabel.isHidden = false
+            genderTitleLabel.isHidden = false
+            
+        case .family, .organization:
+            genderLabel.isHidden = true
+            genderTitleLabel.isHidden = true
+        }
+
         if let genderValue = gender,
             genderValue.isNotEmpty {
             genderLabel.text = genderValue
