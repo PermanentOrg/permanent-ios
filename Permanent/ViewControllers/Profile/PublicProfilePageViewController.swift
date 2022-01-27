@@ -485,8 +485,11 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         let currentSectionType = sections[section]
         
         switch currentSectionType {
-        case .onlinePresenceEmail, .information:
+        case .onlinePresenceEmail:
             return CGSize.zero
+            
+        case .information:
+            return CGSize(width: collectionView.frame.width, height: 1)
             
         default:
             return CGSize(width: collectionView.frame.width, height: 40)

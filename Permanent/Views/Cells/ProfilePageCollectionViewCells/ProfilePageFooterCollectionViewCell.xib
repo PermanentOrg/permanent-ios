@@ -32,7 +32,7 @@
                                 </connections>
                             </button>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O6y-xi-vqI">
-                                <rect key="frame" x="0.0" y="37" width="833" height="1"/>
+                                <rect key="frame" x="0.0" y="130" width="833" height="1"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="CBM-7n-McZ"/>
@@ -41,9 +41,9 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="O6y-xi-vqI" secondAttribute="bottom" id="5lP-7G-pv9"/>
                             <constraint firstItem="wjm-bB-KBd" firstAttribute="top" secondItem="ET8-tU-NKM" secondAttribute="top" constant="10" id="Jmt-Jk-ZA4"/>
                             <constraint firstItem="wjm-bB-KBd" firstAttribute="leading" secondItem="ET8-tU-NKM" secondAttribute="leading" constant="20" id="OEm-UH-r69"/>
-                            <constraint firstItem="O6y-xi-vqI" firstAttribute="top" secondItem="wjm-bB-KBd" secondAttribute="bottom" constant="5" id="WGF-VC-2Y1"/>
                             <constraint firstItem="O6y-xi-vqI" firstAttribute="centerX" secondItem="ET8-tU-NKM" secondAttribute="centerX" id="hI8-Tg-BeO"/>
                             <constraint firstItem="O6y-xi-vqI" firstAttribute="leading" secondItem="ET8-tU-NKM" secondAttribute="leading" id="jvK-vA-VcK"/>
                             <constraint firstAttribute="trailing" secondItem="O6y-xi-vqI" secondAttribute="trailing" id="tqi-c5-e0W"/>
