@@ -22,7 +22,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="833" height="131"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wjm-bB-KBd">
-                                <rect key="frame" x="20" y="0.0" width="53" height="22"/>
+                                <rect key="frame" x="20" y="10" width="53" height="22"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button">
                                     <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="5" trailing="10"/>
@@ -32,7 +32,7 @@
                                 </connections>
                             </button>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O6y-xi-vqI">
-                                <rect key="frame" x="0.0" y="27" width="833" height="1"/>
+                                <rect key="frame" x="0.0" y="37" width="833" height="1"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="CBM-7n-McZ"/>
@@ -41,7 +41,7 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="wjm-bB-KBd" firstAttribute="top" secondItem="ET8-tU-NKM" secondAttribute="top" id="Jmt-Jk-ZA4"/>
+                            <constraint firstItem="wjm-bB-KBd" firstAttribute="top" secondItem="ET8-tU-NKM" secondAttribute="top" constant="10" id="Jmt-Jk-ZA4"/>
                             <constraint firstItem="wjm-bB-KBd" firstAttribute="leading" secondItem="ET8-tU-NKM" secondAttribute="leading" constant="20" id="OEm-UH-r69"/>
                             <constraint firstItem="O6y-xi-vqI" firstAttribute="top" secondItem="wjm-bB-KBd" secondAttribute="bottom" constant="5" id="WGF-VC-2Y1"/>
                             <constraint firstItem="O6y-xi-vqI" firstAttribute="centerX" secondItem="ET8-tU-NKM" secondAttribute="centerX" id="hI8-Tg-BeO"/>

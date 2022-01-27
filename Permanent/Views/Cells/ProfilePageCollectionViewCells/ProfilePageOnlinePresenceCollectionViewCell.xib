@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V41-bD-Qr7">
-                        <rect key="frame" x="20" y="10" width="394" height="21"/>
+                        <rect key="frame" x="20" y="124.5" width="394" height="20.5"/>
                         <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -27,9 +27,9 @@
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
-                <constraint firstItem="V41-bD-Qr7" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="0fl-8o-h8c"/>
                 <constraint firstAttribute="trailing" secondItem="V41-bD-Qr7" secondAttribute="trailing" constant="20" id="AF0-NH-r6M"/>
                 <constraint firstItem="V41-bD-Qr7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="eaL-AF-hmr"/>
+                <constraint firstItem="V41-bD-Qr7" firstAttribute="centerY" secondItem="ZTg-uK-7eu" secondAttribute="centerY" id="ul5-so-LoG"/>
             </constraints>
             <size key="customSize" width="434" height="259"/>
             <connections>

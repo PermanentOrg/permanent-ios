@@ -60,6 +60,8 @@ enum ViewControllerId: String {
     case search
     case publicArchive
     case publicArchiveFileBrowser
+    case onlinePresence
+    case addOnlinePresence
 
     var value: String {
         switch self {
@@ -111,6 +113,12 @@ enum ViewControllerId: String {
             return "publicArchiveVC"
         case .publicArchiveFileBrowser:
             return "publicArchiveFileBrowserVC"
+            
+        case .onlinePresence:
+            return "onlinePresenceVC"
+            
+        case .addOnlinePresence:
+            return "addOnlinePresenceVC"
             
         default:
             return self.rawValue.capitalized

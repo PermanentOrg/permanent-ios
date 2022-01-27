@@ -153,7 +153,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func closeButtonAction(_ sender: Any) {
-        NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
         dismiss(animated: true)
     }
     
@@ -185,7 +184,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             if publicProfileUpdateIsSuccessfully == (true, true, true) {
-                NotificationCenter.default.post(name: .publicProfilePageUpdate, object: self)
                 self.dismiss(animated: true)
             } else {
                 self.showAlert(title: .error, message: .errorMessage)

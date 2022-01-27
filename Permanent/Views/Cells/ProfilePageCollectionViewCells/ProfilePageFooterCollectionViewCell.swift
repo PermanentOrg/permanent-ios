@@ -35,11 +35,11 @@ class ProfilePageFooterCollectionViewCell: UICollectionReusableView {
     
     func updateButtonTitle() {
         if readMoreIsEnabled {
-            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show Less".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.darkGray]), for: .normal)
-            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show Less".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
+            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show Less".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
+            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show Less".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.lightBlue]), for: .highlighted)
         } else {
-            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show More".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.darkGray]), for: .normal)
-            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show More".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.lightGray]), for: .highlighted)
+            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show More".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
+            readMoreButton.setAttributedTitle(NSAttributedString(string: "Show More".localized(), attributes: [.font: Text.style16.font, .foregroundColor: UIColor.lightBlue]), for: .highlighted)
         }
     }
 
