@@ -83,9 +83,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = .white
 
-        if let rightBarItem = navigationItem.rightBarButtonItem {
+        if let rightBarItem = navigationItem.rightBarButtonItem, viewModel!.isPickingImage == false {
             let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonPressed(_:)))
             navigationItem.rightBarButtonItems = [rightBarItem, searchButton]
+        }
+        
+        if viewModel!.isPickingImage {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
+            navigationItem.leftBarButtonItem = cancelButton
         }
         
         styleNavBar()
@@ -102,7 +107,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false
+        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
     }
     
     fileprivate func setupCollectionView() {
@@ -184,6 +189,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         // If we try to move file in the same folder, disable the button
         let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
         fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
+    }
+    
+    @objc func cancelButtonPressed(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction
@@ -529,6 +538,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
+        cell.moreButton.isHidden = viewModel.isPickingImage
+        cell.rightButtonImageView.isHidden = viewModel.isPickingImage
+        
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
         }
@@ -563,17 +575,31 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 self.directoryLabel.text = file.name
             })
         } else {
-            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-            listPreviewVC.modalPresentationStyle = .fullScreen
-            listPreviewVC.viewModel = viewModel
-            listPreviewVC.currentFile = file
-            
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-            fileDetailsNavigationController.filePreviewNavDelegate = self
-            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-            
-            present(fileDetailsNavigationController, animated: true)
+            if viewModel.isPickingImage {
+                handleImagePickerSelection(file: file)
+            } else {
+                handlePreviewSelection(file: file)
+            }
         }
+    }
+    
+    func handleImagePickerSelection(file: FileViewModel) {
+        guard let viewModel = viewModel else { return }
+        
+        viewModel.pickerDelegate?.myFilesVMDidPickFile(viewModel: viewModel, file: file)
+    }
+    
+    func handlePreviewSelection(file: FileViewModel) {
+        let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+        listPreviewVC.modalPresentationStyle = .fullScreen
+        listPreviewVC.viewModel = viewModel
+        listPreviewVC.currentFile = file
+        
+        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
+        fileDetailsNavigationController.filePreviewNavDelegate = self
+        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+        
+        present(fileDetailsNavigationController, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

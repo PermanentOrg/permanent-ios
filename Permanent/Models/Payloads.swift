@@ -521,6 +521,24 @@ struct Payloads {
         ]
     }
     
+    static func updateArchiveThumbPayload(archiveVO: ArchiveVOData, file: FileViewModel) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveVO.archiveID!,
+                                "archiveNbr": archiveVO.archiveNbr!,
+                                "thumbArchiveNbr": file.archiveNo
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
     static func createArchivePayload(name: String, type: String) -> RequestParameters {
         return [
             "RequestVO":
@@ -696,6 +714,27 @@ struct Payloads {
                             ]
                         ]
                     ]
+        ]
+    }
+    
+    static func updateRootColumns(_ params: UpdateRootColumnsParams) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data":
+                        [
+                            [
+                                "FolderVO":
+                                    [
+                                        "archiveNbr": params.folderArchiveNbr,
+                                        "folderId": params.folderId,
+                                        "folder_linkId": params.folderLinkId,
+                                        "thumbArchiveNbr": params.thumbArchiveNbr
+                                    ]
+                            ]
+                        ]
+                ]
         ]
     }
 }

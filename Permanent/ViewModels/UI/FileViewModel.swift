@@ -9,6 +9,8 @@ import Foundation
 
 struct FileViewModel: Equatable {
     let thumbnailURL: String?
+    let thumbnailURL500: String?
+    let thumbnailURL1000: String?
     let thumbnailURL2000: String?
     let name: String
     let date: String
@@ -42,6 +44,8 @@ struct FileViewModel: Equatable {
         self.uploadFileName = ""
         self.archiveThumbnailURL = archiveThumbnailURL
         self.thumbnailURL = nil
+        self.thumbnailURL500 = nil
+        self.thumbnailURL1000 = nil
         self.thumbnailURL2000 = nil
         self.type = .image // TODO:
         self.archiveId = -1
@@ -65,6 +69,8 @@ struct FileViewModel: Equatable {
         self.uploadFileName = ""
         self.archiveThumbnailURL = ""
         self.thumbnailURL = nil
+        self.thumbnailURL500 = nil
+        self.thumbnailURL1000 = nil
         self.thumbnailURL2000 = nil
         self.type = FileType(rawValue: type) ?? .miscellaneous
         self.archiveId = -1
@@ -83,6 +89,8 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL500 = model.thumbURL500
+        self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
         self.description = model.itemVODescription ?? ""
         self.size = model.size ?? -1
@@ -108,11 +116,9 @@ struct FileViewModel: Equatable {
                let thumbnailURL = $0.archiveVO?.thumbURL200,
                let shareStatusURL = $0.status,
                let shareIdURL = $0.shareID,
-               let archiveIdURL = $0.archiveVO?.archiveID
-            {
+               let archiveIdURL = $0.archiveVO?.archiveID {
                 let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
                 self.minArchiveVOS.append(minArchive)
-                
             }
         }
     }
@@ -122,6 +128,8 @@ struct FileViewModel: Equatable {
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
         self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL500 = model.thumbURL500
+        self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         self.description = model.childFolderVOS?.description ?? ""
@@ -132,7 +140,7 @@ struct FileViewModel: Equatable {
         self.archiveId = model.archiveID ?? -1
         self.archiveNo = model.archiveNbr ?? ""
         
-        self.recordId = model.childItemVOS?.first?.recordID ?? -1 // TODO:
+        self.recordId = model.childItemVOS?.first?.recordID ?? -1
         
         self.folderId = model.folderID ?? -1
         self.parentFolderId = model.parentFolderID ?? -1
@@ -146,8 +154,7 @@ struct FileViewModel: Equatable {
                let thumbnailURL = $0.archiveVO?.thumbURL200,
                let shareStatusURL = $0.status,
                let shareIdURL = $0.shareID,
-               let archiveIdURL = $0.archiveVO?.archiveID
-            {
+               let archiveIdURL = $0.archiveVO?.archiveID {
                 let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
                 self.minArchiveVOS.append(minArchive)
             }

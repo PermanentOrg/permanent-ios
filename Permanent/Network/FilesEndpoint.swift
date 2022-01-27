@@ -8,6 +8,7 @@
 import Foundation
 
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
+typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
 
 enum FilesEndpoint {
     // NAVIGATION
@@ -34,6 +35,8 @@ enum FilesEndpoint {
     
     //RENAME
     case renameFolder(params: UpdateRecordParams)
+    
+    case updateRootColumns(params: UpdateRootColumnsParams)
 }
 
 extension FilesEndpoint: RequestProtocol {
@@ -77,6 +80,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .renameFolder:
             return "/folder/update"
+            
+        case .updateRootColumns:
+            return "/folder/updateRootColumns"
 
         default:
             return ""
@@ -119,6 +125,8 @@ extension FilesEndpoint: RequestProtocol {
             return Payloads.updateRecordRequest(params: params)
         case .renameFolder(let params):
             return Payloads.renameFolderRequest(params: params)
+        case .updateRootColumns(let params):
+            return Payloads.updateRootColumns(params)
         default:
             return nil
         }

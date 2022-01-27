@@ -10,6 +10,7 @@ import Foundation
 class UploadManager {
     
     static let didRefreshQueueNotification = Notification.Name("UploadManager.didRefreshQueueNotification")
+    static let didUploadFileNotification = Notification.Name("UploadManager.didUploadFileNotification")
     static let quotaExceededNotification = Notification.Name("UploadManager.quotaExceededNotification")
     
     static let shared: UploadManager = UploadManager()
@@ -113,6 +114,7 @@ class UploadManager {
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
                 let uploadOperation = UploadOperation(file: file) { error in
                     DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: Self.didUploadFileNotification, object: nil, userInfo: ["file": file])
                         // Clear everything once the upload succeded
                         if error == nil {
                             var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)

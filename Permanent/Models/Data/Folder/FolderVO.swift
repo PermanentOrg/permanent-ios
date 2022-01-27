@@ -28,7 +28,7 @@ struct FolderVOData: Model {
     let locnID: Int?
     let timeZoneID: Int?
     let view: String?
-    let viewProperty, thumbArchiveNbr: JSONAny?
+    let viewProperty, thumbArchiveNbr: String?
     let type, thumbStatus: String?
     let imageRatio: JSONAny?
     let thumbURL200: String?

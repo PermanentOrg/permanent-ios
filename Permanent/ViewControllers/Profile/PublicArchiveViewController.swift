@@ -14,7 +14,7 @@ protocol PublicArchiveChildDelegate: AnyObject {
     func childVC(_ vc: UIViewController, didScrollToOffset offset: CGPoint) -> Bool
 }
 
-class PublicArchiveViewController: UIViewController {
+class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewModel> {
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
@@ -33,8 +33,13 @@ class PublicArchiveViewController: UIViewController {
     var profilePageVC: PublicProfilePageViewController!
     var archiveVC: PublicArchiveFileViewController!
     
+    var isPickingProfilePicture: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel = PublicProfilePicturesViewModel()
+        viewModel?.archiveData = archiveData
         
         if let archiveName = archiveData.fullName {
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
@@ -70,6 +75,7 @@ class PublicArchiveViewController: UIViewController {
         profilePhotoImageView.backgroundColor = .darkGray
         
         changeProfileBannerButton.setImage(UIImage(named: "cameraIcon")!, for: .normal)
+        changeProfileBannerButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         changeProfileBannerButton.tintColor = .primary
 
         changeProfileBannerPhotoButtonView.backgroundColor = .galleryGray
@@ -77,8 +83,10 @@ class PublicArchiveViewController: UIViewController {
         changeProfileBannerPhotoButtonView.layer.cornerRadius = changeProfileBannerPhotoButtonView.frame.width / 2
         changeProfileBannerPhotoButtonView.layer.borderColor = UIColor.white.cgColor
         changeProfileBannerPhotoButtonView.layer.borderWidth = 1
+        changeProfileBannerPhotoButtonView.isHidden = true
         
         changeProfilePhotoButton.setImage(UIImage(named: "cameraIcon")!, for: .normal)
+        changeProfilePhotoButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         changeProfilePhotoButton.tintColor = .primary
         
         changeProfilePhotoButtonView.backgroundColor = .galleryGray
@@ -86,11 +94,21 @@ class PublicArchiveViewController: UIViewController {
         changeProfilePhotoButtonView.layer.cornerRadius = changeProfilePhotoButtonView.frame.width / 2
         changeProfilePhotoButtonView.layer.borderColor = UIColor.white.cgColor
         changeProfilePhotoButtonView.layer.borderWidth = 1
+        changeProfilePhotoButtonView.isHidden = true
         
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
         profilePhotoImageView.sd_setImage(with: URL(string: archiveData.thumbURL200!))
         
+        viewModel?.getPublicRoot(then: { status in
+            if status == .success, let bannerURL = self.viewModel?.bannerURL {
+                self.profileBannerImageView.sd_setImage(with: bannerURL)
+            }
+            
+            self.changeProfilePhotoButtonView.isHidden = false
+            self.changeProfileBannerPhotoButtonView.isHidden = false
+        })
+
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
         if #available(iOS 13.0, *) {
@@ -109,6 +127,34 @@ class PublicArchiveViewController: UIViewController {
             profilePageVC.collectionView.contentOffset.y = 0
         }
     }
+    
+    @IBAction func changeBannerButtonPressed(_ sender: Any) {
+        isPickingProfilePicture = false
+        
+        let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+        let myFilesVM = MyFilesViewModel()
+        myFilesVM.isPickingImage = true
+        myFilesVM.pickerDelegate = self
+        myFilesVC.viewModel = myFilesVM
+        
+        let navigationController = NavigationController(rootViewController: myFilesVC)
+        
+        present(navigationController, animated: true, completion: nil)
+    }
+    
+    @IBAction func changeProfileButtonPressed(_ sender: Any) {
+        isPickingProfilePicture = true
+        
+        let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
+        let myFilesVM = MyFilesViewModel()
+        myFilesVM.isPickingImage = true
+        myFilesVM.pickerDelegate = self
+        myFilesVC.viewModel = myFilesVM
+        
+        let navigationController = NavigationController(rootViewController: myFilesVC)
+        
+        present(navigationController, animated: true, completion: nil)
+    }
 }
 
 extension PublicArchiveViewController: PublicArchiveChildDelegate {
@@ -125,6 +171,38 @@ extension PublicArchiveViewController: PublicArchiveChildDelegate {
             }
             
             return true
+        }
+    }
+}
+
+// MARK: - MyFilesViewModelPickerDelegate
+extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
+    func myFilesVMDidPickFile(viewModel: MyFilesViewModel, file: FileViewModel) {
+        dismiss(animated: true) {
+            let alert = UIAlertController(title: "Updating...".localized(), message: "Please wait while your banner is being updated".localized(), preferredStyle: .alert)
+            self.present(alert, animated: true, completion: {
+                if self.isPickingProfilePicture {
+                    self.viewModel?.updateProfilePicture(file: file, then: { status in
+                        self.dismiss(animated: true, completion: {
+                            if status == .success, let thumbURL = URL(string: file.thumbnailURL2000) {
+                                self.profilePhotoImageView.sd_setImage(with: thumbURL)
+                            } else {
+                                self.showErrorAlert(message: .errorMessage)
+                            }
+                        })
+                    })
+                } else {
+                    self.viewModel?.updateBanner(thumbArchiveNbr: file.archiveNo, then: { status in
+                        self.dismiss(animated: true, completion: {
+                            if status == .success, let thumbURL = URL(string: file.thumbnailURL2000) {
+                                self.profileBannerImageView.sd_setImage(with: thumbURL)
+                            } else {
+                                self.showErrorAlert(message: .errorMessage)
+                            }
+                        })
+                    })
+                }
+            })
         }
     }
 }

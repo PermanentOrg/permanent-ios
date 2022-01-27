@@ -21,6 +21,7 @@ struct ArchiveVOData: Model {
         case ok = "status.generic.ok"
         case pending = "status.generic.pending"
         case orphaned = "status.generic.orphaned"
+        case genAvatar = "status.archive.gen_avatar"
         
         case unknown = "N/A"
         
@@ -40,8 +41,9 @@ struct ArchiveVOData: Model {
     let view, viewProperty: JSONAny?
     let archiveVOPublic: Int?
     let vaultKey: String?
-    let thumbArchiveNbr: JSONAny?
-    let type, thumbStatus: String?
+    let thumbArchiveNbr: String?
+    let type: String?
+    let thumbStatus: Status?
     let imageRatio: JSONAny?
     let thumbURL200: String?
     let thumbURL500: String?

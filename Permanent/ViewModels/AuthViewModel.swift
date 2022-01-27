@@ -11,7 +11,6 @@ import UIKit.UIAlertController
 typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface {
-    
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void) ) {
@@ -36,9 +35,11 @@ class AuthViewModel: ViewModelInterface {
                 completionBlock(accountData, nil)
                
                 return
+                
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -68,9 +69,11 @@ class AuthViewModel: ViewModelInterface {
                 
                 completionBlock(accountArchives, nil)
                 return
+                
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -253,6 +256,7 @@ class AuthViewModel: ViewModelInterface {
             }
             self.forgotPassword(email: email, then: handler)
         }))
+        
         return alert
     }
 
@@ -294,12 +298,22 @@ class AuthViewModel: ViewModelInterface {
     
     func refreshCurrentArchive(_ updateHandler: @escaping ((ArchiveVOData?) -> Void)) {
         getAccountArchives { [self] archives, error in
-            if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
-                setCurrentArchive(defaultArchive)
-                
-                updateHandler(defaultArchive)
+            if getCurrentArchive() == nil {
+                if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
+                    setCurrentArchive(defaultArchive)
+                    
+                    updateHandler(defaultArchive)
+                } else {
+                    updateHandler(nil)
+                }
             } else {
-                updateHandler(nil)
+                if let currentArchive = archives?.first(where: { $0.archiveVO?.archiveID == getCurrentArchive()?.archiveID })?.archiveVO {
+                    setCurrentArchive(currentArchive)
+                    
+                    updateHandler(currentArchive)
+                } else {
+                    updateHandler(nil)
+                }
             }
         }
     }
@@ -308,11 +322,11 @@ class AuthViewModel: ViewModelInterface {
         return (emailField?.isValidEmail ?? false) && (passwordField?.isNotEmpty ?? false)
     }
     
-    func areFieldsValid(nameField: String?, emailField:String?, passwordField:String?) -> Bool {
-        return (nameField?.isNotEmpty ?? false)&&(emailField?.isNotEmpty ?? false)&&(emailField?.isValidEmail ?? false)&&(passwordField?.count ?? 0 >= 8)
+    func areFieldsValid(nameField: String?, emailField: String?, passwordField: String?) -> Bool {
+        return (nameField?.isNotEmpty ?? false) && (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false) && (passwordField?.count ?? 0 >= 8)
     }
     
-    func bytesToReadableForm(sizeInBytes: Int,useDecimal: Bool = true) -> String {
+    func bytesToReadableForm(sizeInBytes: Int, useDecimal: Bool = true) -> String {
         var unit = "B"
         var exp = 0
         var transformedSizeInBytes = Float(sizeInBytes)
@@ -320,9 +334,9 @@ class AuthViewModel: ViewModelInterface {
         let byteSize: Float = 1024
         let unitsOfMeasure = ["KB", "MB", "GB", "TB", "PB"]
         
-        if (sizeInBytes < Int(byteSize)) { return "\(sizeInBytes) \(unit)" }
+        if sizeInBytes < Int(byteSize) { return "\(sizeInBytes) \(unit)" }
         
-        while (transformedSizeInBytes >= byteSize) {
+        while transformedSizeInBytes >= byteSize {
             transformedSizeInBytes /= byteSize
             exp += 1
         }
