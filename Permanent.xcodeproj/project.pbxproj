@@ -49,8 +49,6 @@
 		5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */; };
 		5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */; };
 		5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */; };
-		5E56FDC7274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */; };
-		5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */; };
 		5E56FDCB274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */; };
 		5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */; };
 		5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */; };
@@ -474,8 +472,6 @@
 		5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageArchiveCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageAboutCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageAboutCollectionViewCell.xib; sourceTree = "<group>"; };
-		5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagePersonInfoCollectionViewCell.swift; sourceTree = "<group>"; };
-		5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePagePersonInfoCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageOnlinePresenceCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageOnlinePresenceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMilestonesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1164,8 +1160,6 @@
 				5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */,
 				5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */,
 				5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */,
-				5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */,
-				5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */,
 				5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */,
 				5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */,
 				5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */,
@@ -2057,7 +2051,6 @@
 				5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
-				5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
 				5E5DFA712746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib in Resources */,
 				5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */,
@@ -2300,7 +2293,6 @@
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
-				5E56FDC7274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,

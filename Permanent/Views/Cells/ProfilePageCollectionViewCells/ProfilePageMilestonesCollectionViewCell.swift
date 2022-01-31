@@ -34,8 +34,15 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         milestoneTextLabel.textColor = .darkGray
         milestoneTextLabel.font = Text.style12.font
     }
+    
+    func configure() {
+    }
 
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
+    }
+    
+    static func size(collectionView: UICollectionView) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 130)
     }
 }
