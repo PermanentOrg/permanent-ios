@@ -18,7 +18,15 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
     
     var file: FileViewModel!
     var locnVO: LocnVO? {
-        return viewModel?.birthInfoProfileItem?.locnVOs?.first
+        if let archiveType = viewModel?.archiveType {
+            switch archiveType {
+            case .person:
+                return viewModel?.birthInfoProfileItem?.locnVOs?.first
+            case .family, .organization:
+                return viewModel?.establishedInfoProfileItem?.locnVOs?.first
+            }
+        }
+        return nil
     }
     
     weak var delegate: PublicProfileLocationSetViewControllerDelegate?

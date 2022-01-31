@@ -7,6 +7,8 @@
 
 import UIKit
 import AVFAudio
+import GoogleMaps
+import CoreLocation
 
 class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfilePageViewModel> {
     @IBOutlet weak var fullNameTitleLabel: UILabel!
@@ -27,6 +29,10 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
     @IBOutlet weak var genderItemsView: UIView!
+    @IBOutlet weak var mapView: UIView!
+    
+    var map: GMSMapView!
+    var marker: GMSMarker!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +47,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         locationTextField.delegate = self
         
         setFieldValues()
+        initMapView()
         
         addDismissKeyboardGesture()
     }
@@ -151,6 +158,32 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             }
         }
         setupDatePicker()
+    }
+    
+    func initMapView() {
+        
+        let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 9.9)
+        map = GMSMapView.map(withFrame: mapView.bounds, camera: camera)
+        map.isUserInteractionEnabled = false
+        map.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mapView.addSubview(map)
+        
+        let locationDetails = getLocationDetails()
+        mapView.isHidden = locationDetails == (0,0)
+        
+        setLocation(locationDetails.latitude, locationDetails.longitude)
+    }
+    
+    func setLocation(_ latitude: Double, _ longitude: Double) {
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
+        
+        map.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 9.9))
+
+        if marker == nil {
+            marker = GMSMarker()
+        }
+        marker.position = coordinate
+        marker.map = map
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -276,6 +309,28 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         
         birthDateTextField.text = dateFormatter.string(from: date)
     }
+    
+    func getLocationDetails() -> (latitude: Double, longitude: Double) {
+        if let archiveType = viewModel?.archiveType {
+            switch archiveType {
+            case .person:
+                if let latitude = viewModel?.birthInfoProfileItem?.birthLocation?.latitude,
+                   let longitude =  viewModel?.birthInfoProfileItem?.birthLocation?.longitude {
+                    return (latitude,longitude)
+                } else {
+                    return (0,0)
+                }
+            case .family, .organization:
+                if let latitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.latitude,
+                   let longitude =  viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
+                    return (latitude,longitude)
+                } else {
+                    return (0,0)
+                }
+            }
+        }
+        return (0,0)
+    }
 }
 
 extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
@@ -376,14 +431,31 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
 // MARK: - PublicProfileLocationSetViewControllerDelegate
 extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
-        if viewModel?.birthInfoProfileItem == nil {
-            viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
-        } else {
-            viewModel?.birthInfoProfileItem?.birthLocation = locationVC.pickedLocation
+        if let archiveType = viewModel?.archiveType {
+            switch archiveType {
+            case .person:
+                if viewModel?.birthInfoProfileItem == nil {
+                    viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
+                } else {
+                    viewModel?.birthInfoProfileItem?.birthLocation = locationVC.pickedLocation
+                }
+                locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
+            case .organization, .family:
+                if viewModel?.establishedInfoProfileItem == nil {
+                    viewModel?.createNewEstablishedInfoProfileItem(newLocation: locationVC.pickedLocation)
+                } else {
+                    viewModel?.establishedInfoProfileItem?.establishedLocation = locationVC.pickedLocation
+                }
+                locationTextField.text = viewModel?.establishedInfoProfileItem?.establishedLocationFormated
+            }
         }
         
         birthLocationHintLabel.isHidden = true
         viewModel?.newLocnId = locationVC.pickedLocation?.locnID
-        locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
+        
+        let locationDetails = getLocationDetails()
+        mapView.isHidden = locationDetails == (0,0)
+        
+        setLocation(locationDetails.latitude, locationDetails.longitude)
     }
 }
