@@ -62,55 +62,80 @@ enum ViewControllerId: String {
     case publicArchiveFileBrowser
     case onlinePresence
     case addOnlinePresence
+    case milestones
+    case addMilestones
 
     var value: String {
         switch self {
         case .signUp:
             return "SignUp"
+            
         case .verificationCode:
             return "VerificationCode"
+            
         case .termsConditions:
             return "TermsConditions"
+            
         case .twoStepVerification:
             return "TwoStepVerification"
+            
         case .fabActionSheet:
             return "FABActionSheet"
+            
         case .sideMenu:
             return "SideMenu"
+            
         case .rightSideMenu:
             return "RightSideMenu"
+            
         case .manageLink:
             return "ManageLink"
+            
         case .accountInfo:
             return "AccountInfo"
+            
         case .accountDelete:
             return "AccountDelete"
+            
         case .accountSettings:
             return "AccountSettings"
+            
         case .sharePreview:
             return "SharePreview"
+            
         case .filePreview:
             return "WebViewer"
+            
         case .fileDetailsOnTap:
             return "FileDetailsOnTap"
+            
         case .locationSetOnTap:
             return "LocationSetOnTap"
+            
         case .tagDetails:
             return "TagDetails"
+            
         case .welcomePage:
             return "WelcomePage"
+            
         case .passwordUpdate:
             return "PasswordUpdate"
+            
         case .profilePage:
             return "ProfilePage"
+            
         case .profileAboutPage:
             return "AboutPage"
+            
         case .profilePersonalInfoPage:
             return "PersonalInformationPage"
+            
         case .search:
             return "Search"
+            
         case .publicArchive:
             return "publicArchiveVC"
+            
         case .publicArchiveFileBrowser:
             return "publicArchiveFileBrowserVC"
             
@@ -119,6 +144,12 @@ enum ViewControllerId: String {
             
         case .addOnlinePresence:
             return "addOnlinePresenceVC"
+            
+        case .milestones:
+            return "milestonesVC"
+            
+        case .addMilestones:
+            return "addMilestonesVC"
             
         default:
             return self.rawValue.capitalized

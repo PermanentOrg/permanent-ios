@@ -13,29 +13,52 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!
+    
     @IBOutlet weak var milestoneTextLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        milestoneTitleLabel.text = "Lizard Creek Hill"
-        milestoneTitleLabel.textColor = .primary
+        milestoneTitleLabel.textColor = .lightGray
         milestoneTitleLabel.font = Text.style32.font
-        
-        milestoneLocationLabel.text = "Johnson Township, IA, USA"
-        milestoneLocationLabel.textColor = .primary
+        milestoneTitleLabel.text = "Title".localized()
+    
+        milestoneLocationLabel.textColor = .lightGray
         milestoneLocationLabel.font = Text.style11.font
+        milestoneLocationLabel.text = "Location not set".localized()
         
-        milestoneDateLabel.text = "Jun 22, 2015"
         milestoneDateLabel.textColor = .lightGray
         milestoneDateLabel.font = Text.style11.font
+        milestoneDateLabel.text = "Start date".localized()
         
-        milestoneTextLabel.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim"
-        milestoneTextLabel.textColor = .darkGray
+        milestoneTextLabel.textColor = .lightGray
         milestoneTextLabel.font = Text.style12.font
+        milestoneTextLabel.text = "Description".localized()
     }
     
-    func configure() {
+    func configure(milestone: MilestoneProfileItem?) {
+        if let title = milestone?.title {
+            milestoneTitleLabel.textColor = .primary
+            milestoneTitleLabel.text = title
+        }
+        
+        if let location = milestone?.locationFormated {
+            milestoneLocationLabel.textColor = .primary
+            milestoneLocationLabel.text = location
+        }
+        
+        if let startDate = milestone?.startDate {
+            milestoneDateLabel.text = startDate
+        }
+        
+        if let endDate = milestone?.endDate {
+            milestoneDateLabel.text?.append(" - \(endDate)")
+        }
+        
+        if let description = milestone?.description {
+            milestoneTextLabel.textColor = .darkGray
+            milestoneTextLabel.text = description
+        }
     }
 
     static func nib() -> UINib {

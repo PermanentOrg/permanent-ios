@@ -150,7 +150,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             ProfileSection.onlinePresenceEmail: [
             ],
             ProfileSection.milestones: [
-                ProfileCellType.milestone
             ]
         ]
         guard let archiveType = viewModel?.archiveType else { return }
@@ -171,6 +170,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         
         profileViewData[.onlinePresenceEmail] = viewModel?.emailProfileItems.map({ _ in .onlinePresenceEmail }) ?? []
         profileViewData[.onlinePresenceLink] = viewModel?.socialMediaProfileItems.map({ _ in .onlinePresenceLink }) ?? []
+        
+        profileViewData[.milestones] = viewModel?.milestonesProfileItems.map({ _ in .milestone }) ?? []
     }
 }
 
@@ -191,6 +192,10 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .onlinePresenceLink:
             let rowCount = profileViewData[currentSection]?.count ?? 0
             return (readMoreIsEnabled[.onlinePresenceEmail] ?? false) ? rowCount : min(1, rowCount)
+            
+        case .milestones:
+            let rowCount = profileViewData[currentSection]?.count ?? 0
+            return rowCount
             
         default:
             return profileViewData[currentSection]?.count ?? 1
@@ -292,7 +297,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .milestone:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier, for: indexPath) as! ProfilePageMilestonesCollectionViewCell
             
-            cell.configure()
+            cell.configure(milestone: viewModel?.milestonesProfileItems[indexPath.row])
             returnedCell = cell
         }
         
@@ -349,7 +354,15 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
                 
             case .milestones:
-                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized(), buttonIsHidden: true)
+                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized())
+                
+                headerCell.buttonAction = { [weak self] in
+                    let vc = UIViewController.create(withIdentifier: .milestones, from: .profile) as! PublicProfileMilestonesViewController
+                    vc.viewModel = self?.viewModel
+                    
+                    let navigationVC = NavigationController(rootViewController: vc)
+                    self?.present(navigationVC, animated: true)
+                }
             }
             
             return headerCell

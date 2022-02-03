@@ -40,6 +40,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var establishedInfoProfileItem: EstablishedInfoProfileItem? {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
+    var milestonesProfileItems: [MilestoneProfileItem] {
+        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData

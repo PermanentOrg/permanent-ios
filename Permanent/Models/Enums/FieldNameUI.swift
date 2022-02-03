@@ -14,4 +14,5 @@ enum FieldNameUI: String, CaseIterable {
     case birthInfo = "profile.birth_info"
     case socialMedia = "profile.social_media"
     case establishedInfo = "profile.established_info"
+    case milestone = "profile.milestone"
 }

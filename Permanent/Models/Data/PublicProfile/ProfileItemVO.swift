@@ -48,6 +48,9 @@ struct ProfileItemVO: Model {
         case FieldNameUI.socialMedia.rawValue:
             profileItemVO = try container.decode(SocialMediaProfileItem?.self, forKey: .profileItemVO)
             
+        case FieldNameUI.milestone.rawValue:
+            profileItemVO = try container.decode(MilestoneProfileItem?.self, forKey: .profileItemVO)
+            
         default:
             profileItemVO = nil
         }

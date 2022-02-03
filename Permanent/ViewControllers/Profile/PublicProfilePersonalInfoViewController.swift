@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFAudio
 import GoogleMaps
 import CoreLocation
 
@@ -315,21 +314,22 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             switch archiveType {
             case .person:
                 if let latitude = viewModel?.birthInfoProfileItem?.birthLocation?.latitude,
-                   let longitude =  viewModel?.birthInfoProfileItem?.birthLocation?.longitude {
-                    return (latitude,longitude)
+                    let longitude = viewModel?.birthInfoProfileItem?.birthLocation?.longitude {
+                    return (latitude, longitude)
                 } else {
-                    return (0,0)
+                    return (0, 0)
                 }
+                
             case .family, .organization:
                 if let latitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.latitude,
-                   let longitude =  viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
-                    return (latitude,longitude)
+                    let longitude =  viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
+                    return (latitude, longitude)
                 } else {
-                    return (0,0)
+                    return (0, 0)
                 }
             }
         }
-        return (0,0)
+        return (0, 0)
     }
 }
 
