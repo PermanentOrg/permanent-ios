@@ -47,6 +47,8 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         descriptionTextField.delegate = self
         locationTextField.delegate = self
         
+        setFieldValues()
+        initMapView()
         addDismissKeyboardGesture()
     }
     
@@ -88,7 +90,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         titleLabel.text = "\(ProfilePageData.milestoneTitle()) (<COUNT>/140)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.title?.count ?? 0)")
         startDateLabel.text = ProfilePageData.milestoneStartDate()
         endDateLabel.text = ProfilePageData.milestoneEndDate()
-        descriptionLabel.text = "\(ProfilePageData.milestoneDescription())(<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.description?.count ?? 0)")
+        descriptionLabel.text = "\(ProfilePageData.milestoneDescription()) (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.description?.count ?? 0)")
         locationLabel.text = ProfilePageData.milestoneLocation()
         
         titleHintLabel.text = ProfilePageData.milestoneTitleHint()
@@ -96,6 +98,8 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         endDateHintLabel.text = ProfilePageData.milestoneEndDateHint()
         descriptionHintLabel.text = ProfilePageData.milestoneDescriptionHint()
         locationHintLabel.text = ProfilePageData.milestoneLocationHint()
+        
+        setupDatePickers()
     }
     
     func setupNavigationBar() {
@@ -103,6 +107,125 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(closeButtonAction(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonAction(_:)))
+    }
+    
+    func setFieldValues() {
+        if !isNewItem {
+            setInitialLabelValueForTextField(titleTextField, value: milestone?.title, associatedLabel: titleHintLabel)
+            setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDate, associatedLabel: startDateHintLabel)
+            setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate, associatedLabel: endDateHintLabel)
+            setInitialLabelValueForTextField(descriptionTextField, value: milestone?.description, associatedLabel: descriptionHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated, associatedLabel: locationHintLabel)
+        }
+    }
+    
+    func setupDatePicker(dateDidChange: Selector, dateDoneButtonPressed: Selector, savedDate: String?) -> UIStackView {
+        let dateFormatter = DateFormatter()
+        var date = dateFormatter.date(from: "")
+        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        date = dateFormatter.date(from: savedDate ?? "")
+        
+        let datePicker = UIDatePicker()
+        datePicker.date = date ?? Date()
+        datePicker.addTarget(self, action: dateDidChange, for: .valueChanged)
+        datePicker.datePickerMode = .date
+        datePicker.maximumDate = Date()
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .wheels
+        }
+        datePicker.sizeToFit()
+        
+        let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 40))
+        let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 90, height: doneContainerView.frame.height))
+        doneButton.autoresizingMask = [.flexibleLeftMargin]
+        doneButton.setup()
+        doneButton.setFont(UIFont.systemFont(ofSize: 17))
+        doneButton.configureActionButtonUI(title: "done", bgColor: .systemBlue)
+        doneButton.addTarget(self, action: dateDoneButtonPressed, for: .touchUpInside)
+        doneContainerView.addSubview(doneButton)
+        
+        let stackView = UIStackView(arrangedSubviews: [datePicker, doneContainerView])
+        stackView.axis = .vertical
+        stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 40)
+        
+        return stackView
+    }
+    
+    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
+        if let savedValue = value,
+            savedValue.isNotEmpty {
+            textField.text = savedValue
+            associatedLabel.isHidden = true
+        } else {
+            associatedLabel.isHidden = false
+        }
+    }
+    
+    func setupDatePickers() {
+        startDateTextField.inputView = setupDatePicker(dateDidChange: #selector(startDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(startDatePickerDoneButtonPressed(_:)), savedDate: milestone?.startDate)
+        endDateTextField.inputView = setupDatePicker(dateDidChange: #selector(endDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(endDatePickerDoneButtonPressed(_:)), savedDate: milestone?.endDate)
+    }
+    
+    func initMapView() {
+        
+        let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 9.9)
+        map = GMSMapView.map(withFrame: mapView.bounds, camera: camera)
+        map.isUserInteractionEnabled = false
+        map.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mapView.addSubview(map)
+        
+        let locationDetails = getLocationDetails(location: milestone?.location)
+        mapView.isHidden = locationDetails == (0,0)
+        
+        setLocation(locationDetails.latitude, locationDetails.longitude)
+    }
+    
+    func setLocation(_ latitude: Double, _ longitude: Double) {
+        let coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: CLLocationDegrees(latitude), longitude: CLLocationDegrees(longitude))
+        
+        map.moveCamera(GMSCameraUpdate.setTarget(coordinate, zoom: 9.9))
+
+        if marker == nil {
+            marker = GMSMarker()
+        }
+        marker.position = coordinate
+        marker.map = map
+    }
+    
+    func getLocationDetails(location: LocnVO?) -> (latitude: Double, longitude: Double) {
+        if let latitude = location?.latitude,
+            let longitude = location?.longitude {
+                    return (latitude, longitude)
+                }
+        return (0, 0)
+    }
+    
+    @objc func startDatePickerDoneButtonPressed(_ sender: Any) {
+        startDateTextField.resignFirstResponder()
+    }
+    
+    @objc func startDatePickerDidChange(_ sender: UIDatePicker) {
+        let date = sender.date
+    
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        startDateTextField.text = dateFormatter.string(from: date)
+    }
+    
+    @objc func endDatePickerDoneButtonPressed(_ sender: Any) {
+        startDateTextField.resignFirstResponder()
+    }
+    
+    @objc func endDatePickerDidChange(_ sender: UIDatePicker) {
+        let date = sender.date
+    
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        endDateTextField.text = dateFormatter.string(from: date)
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -131,7 +254,14 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
             descriptionHintLabel.isHidden = true
             
         case locationTextField:
-            locationHintLabel.isHidden = true
+            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
+            locationSetVC.delegate = self
+            locationSetVC.viewModel = viewModel
+            locationSetVC.locnVO = milestone?.location
+            
+            let navigationVC = NavigationController(rootViewController: locationSetVC)
+            navigationVC.modalPresentationStyle = .fullScreen
+            present(navigationVC, animated: true)
             
         default:
             return
@@ -196,5 +326,11 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
         default:
             return
         }
+    }
+}
+
+extension PublicProfileAddMilestonesViewController: PublicProfileLocationSetViewControllerDelegate {
+    func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
+        print("from location")
     }
 }

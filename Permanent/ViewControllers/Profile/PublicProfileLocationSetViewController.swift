@@ -15,20 +15,8 @@ protocol PublicProfileLocationSetViewControllerDelegate: AnyObject {
 }
 
 class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     var file: FileViewModel!
-    var locnVO: LocnVO? {
-        if let archiveType = viewModel?.archiveType {
-            switch archiveType {
-            case .person:
-                return viewModel?.birthInfoProfileItem?.locnVOs?.first
-                
-            case .family, .organization:
-                return viewModel?.establishedInfoProfileItem?.locnVOs?.first
-            }
-        }
-        return nil
-    }
+    var locnVO: LocnVO?
     
     weak var delegate: PublicProfileLocationSetViewControllerDelegate?
     

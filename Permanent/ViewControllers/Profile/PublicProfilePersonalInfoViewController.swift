@@ -353,6 +353,10 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
             locationSetVC.delegate = self
             locationSetVC.viewModel = viewModel
             
+            if let archiveType = viewModel?.archiveType {
+                locationSetVC.locnVO = archiveType == .person ? viewModel?.birthInfoProfileItem?.locnVOs?.first : viewModel?.establishedInfoProfileItem?.locnVOs?.first
+            }
+            
             let navigationVC = NavigationController(rootViewController: locationSetVC)
             navigationVC.modalPresentationStyle = .fullScreen
             present(navigationVC, animated: true)
