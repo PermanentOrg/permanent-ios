@@ -16,8 +16,6 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     @IBOutlet weak var switchViewButton: UIButton!
     @IBOutlet weak var collectionViewTopConstraint: NSLayoutConstraint!
     
-    private var isGridView = false
-    
     private let overlayView = UIView()
     private let refreshControl = UIRefreshControl()
     
@@ -92,13 +90,6 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     }
     
     fileprivate func setupCollectionView() {
-        isGridView = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isGridView) ?? false
-        if #available(iOS 13.0, *) {
-            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
-        } else {
-            // Fallback on earlier versions
-        }
-        
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
@@ -185,27 +176,6 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     private func headerButtonAction(_ sender: UIButton) {
     }
     
-    @IBAction func switchViewButtonPressed(_ sender: Any) {
-        isGridView.toggle()
-        PreferencesManager.shared.set(isGridView, forKey: Constants.Keys.StorageKeys.isGridView)
-        
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
-        
-        if #available(iOS 13.0, *) {
-            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
-        } else {
-            // Fallback on earlier versions
-        }
-        
-        collectionView.reloadData()
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 6
-        flowLayout.minimumLineSpacing = 0
-        flowLayout.estimatedItemSize = .zero
-        collectionView.collectionViewLayout = flowLayout
-        collectionView.collectionViewLayout.invalidateLayout()
-    }
-    
     @objc func closeButtonAction(_ sender: Any) {
         dismiss(animated: false)
     }
@@ -255,11 +225,11 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         
         let reuseIdentifier: String
         if indexPath.section == 1 {
-            reuseIdentifier = isGridView ? "FileGridCell" : "FileCell"
+            reuseIdentifier = "FileCell"
             
             let newCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
             let file = viewModel.fileForRowAt(indexPath: indexPath)
-            newCell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: true)
+            newCell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: false, isSearchCell: true)
             
             newCell.rightButtonTapAction = { _ in
                 self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -281,15 +251,8 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 70)
-        // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
-        // Vertical size: 30 is the height of the title label
-        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
-        
-        if indexPath.section == FileListType.synced.rawValue {
-            return isGridView ? gridItemSize : listItemSize
-        } else {
-            return listItemSize
-        }
+
+        return listItemSize
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
