@@ -166,7 +166,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                   let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                self.loadImage(withURL: URL(string: file.thumbnailURL2000 ?? "")!, contentType: contentType)
+                guard let url = URL(string: viewModel?.recordVO?.recordVO?.thumbURL2000 ?? "") else { return }
+                self.loadImage(withURL: url, contentType: contentType)
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
             default:
