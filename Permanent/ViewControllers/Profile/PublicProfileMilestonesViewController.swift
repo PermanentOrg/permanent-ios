@@ -17,6 +17,10 @@ class PublicProfileMilestonesViewController: BaseViewController<PublicProfilePag
         
         initUI()
         setupNavigationBar()
+        
+        NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: nil) { [weak self] notification in
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,7 +50,7 @@ class PublicProfileMilestonesViewController: BaseViewController<PublicProfilePag
     @IBAction func addMilestoneButton(_ sender: Any) {
         let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController
         vc.viewModel = viewModel
-        
+        NetworkLogger.isEnabled = true
         let navigationVC = NavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
     }
@@ -67,6 +71,16 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         cell.moreButtonAction = { [weak self] cell in
             let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
                 PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { action in
+                    self?.showSpinner()
+                    
+                    self?.viewModel?.deleteMilestoneProfileItem(milestone: item, { status in
+                        self?.hideSpinner()
+                        if status {
+                            tableView.reloadData()
+                        } else {
+                            self?.showAlert(title: .error, message: .errorMessage)
+                        }
+                    })
                 }),
                 PRMNTAction(title: "Edit".localized(), handler: { action in
                     let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController

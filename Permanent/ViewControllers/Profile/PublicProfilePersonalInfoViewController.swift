@@ -160,7 +160,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     func initMapView() {
-        
         let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 9.9)
         map = GMSMapView.map(withFrame: mapView.bounds, camera: camera)
         map.isUserInteractionEnabled = false
@@ -168,7 +167,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         mapView.addSubview(map)
         
         let locationDetails = getLocationDetails()
-        mapView.isHidden = locationDetails == (0,0)
+        mapView.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
     }
@@ -260,7 +259,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     func setupDatePicker() {
         let dateFormatter = DateFormatter()
         var date = dateFormatter.date(from: "")
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.timeZone = .init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         if let archiveType = viewModel?.archiveType {
@@ -322,7 +321,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
                 
             case .family, .organization:
                 if let latitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.latitude,
-                    let longitude =  viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
+                    let longitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
                     return (latitude, longitude)
                 } else {
                     return (0, 0)
@@ -368,7 +367,7 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let textFieldText = textField.text,
-              let archiveType = viewModel?.archiveType else { return false }
+            let archiveType = viewModel?.archiveType else { return false }
         let textCount = textFieldText.count + string.count - range.length
         
         switch textField {
@@ -444,6 +443,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
                     viewModel?.birthInfoProfileItem?.birthLocation = locationVC.pickedLocation
                 }
                 locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
+                
             case .organization, .family:
                 if viewModel?.establishedInfoProfileItem == nil {
                     viewModel?.createNewEstablishedInfoProfileItem(newLocation: locationVC.pickedLocation)
@@ -458,7 +458,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
         viewModel?.newLocnId = locationVC.pickedLocation?.locnID
         
         let locationDetails = getLocationDetails()
-        mapView.isHidden = locationDetails == (0,0)
+        mapView.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
     }

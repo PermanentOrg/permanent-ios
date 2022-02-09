@@ -81,6 +81,7 @@ class ProfileItemModel: Model {
     var recordArchiveNbr: Int?
     var folderArchiveNbr: Int?
     var isVisible: Bool?
+    var isNewlyCreated: Bool?
     var isPendingAction: Bool?
     var publicDT: String?
     var status: String?
@@ -119,6 +120,7 @@ class ProfileItemModel: Model {
         case recordArchiveNbr
         case folderArchiveNbr
         case isVisible
+        case isNewlyCreated
         case isPendingAction
         case publicDT
         case status

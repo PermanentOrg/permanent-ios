@@ -116,13 +116,18 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate, associatedLabel: endDateHintLabel)
             setInitialLabelValueForTextField(descriptionTextField, value: milestone?.description, associatedLabel: descriptionHintLabel)
             setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated, associatedLabel: locationHintLabel)
+        } else {
+            milestone = MilestoneProfileItem()
+            milestone?.archiveId = viewModel?.archiveData.archiveID
+            milestone?.isNewlyCreated = true
+            milestone?.isPendingAction = true
         }
     }
     
     func setupDatePicker(dateDidChange: Selector, dateDoneButtonPressed: Selector, savedDate: String?) -> UIStackView {
         let dateFormatter = DateFormatter()
         var date = dateFormatter.date(from: "")
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.timeZone = .init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         date = dateFormatter.date(from: savedDate ?? "")
@@ -159,6 +164,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             textField.text = savedValue
             associatedLabel.isHidden = true
         } else {
+            textField.text = nil
             associatedLabel.isHidden = false
         }
     }
@@ -169,7 +175,6 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     func initMapView() {
-        
         let camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 9.9)
         map = GMSMapView.map(withFrame: mapView.bounds, camera: camera)
         map.isUserInteractionEnabled = false
@@ -177,7 +182,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         mapView.addSubview(map)
         
         let locationDetails = getLocationDetails(location: milestone?.location)
-        mapView.isHidden = locationDetails == (0,0)
+        mapView.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
     }
@@ -197,7 +202,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     func getLocationDetails(location: LocnVO?) -> (latitude: Double, longitude: Double) {
         if let latitude = location?.latitude,
             let longitude = location?.longitude {
-                    return (latitude, longitude)
+            return (latitude, longitude)
                 }
         return (0, 0)
     }
@@ -216,7 +221,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     @objc func endDatePickerDoneButtonPressed(_ sender: Any) {
-        startDateTextField.resignFirstResponder()
+        endDateTextField.resignFirstResponder()
     }
     
     @objc func endDatePickerDidChange(_ sender: UIDatePicker) {
@@ -233,7 +238,44 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     @objc func doneButtonAction(_ sender: Any) {
-        dismiss(animated: true)
+        var titleNotEmpty: Bool = false
+        
+        if let value = titleTextField.text,
+            value.isNotEmpty {
+            milestone?.title = value
+            titleNotEmpty = true
+        }
+        
+        if let value = startDateTextField.text,
+            value.isNotEmpty {
+            milestone?.startDate = value
+        }
+        
+        if let value = endDateTextField.text,
+            value.isNotEmpty {
+            milestone?.endDate = value
+        }
+        
+        if let value = descriptionTextField.text,
+            value.isNotEmpty {
+            milestone?.description = value
+        }
+        
+        if titleNotEmpty {
+            guard let milestone = milestone else { return }
+            showSpinner()
+            
+            viewModel?.updateMilestoneProfileItem(newValue: milestone, { status in
+                self.hideSpinner()
+                if status {
+                    self.dismiss(animated: true)
+                } else {
+                    self.showAlert(title: .error, message: .errorMessage)
+                }
+            })
+        } else {
+            showAlert(title: .error, message: "Please enter a title for your milestone".localized())
+        }
     }
 }
 
@@ -331,6 +373,16 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
 
 extension PublicProfileAddMilestonesViewController: PublicProfileLocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
-        print("from location")
+        locationHintLabel.isHidden = true
+        
+        let locationDetails = getLocationDetails(location: locationVC.pickedLocation)
+        milestone?.location = locationVC.pickedLocation
+        milestone?.locnId1 = locationVC.pickedLocation?.locnID
+        
+        locationTextField.text = milestone?.locationFormated
+        
+        mapView.isHidden = locationDetails == (0, 0)
+        
+        setLocation(locationDetails.latitude, locationDetails.longitude)
     }
 }
