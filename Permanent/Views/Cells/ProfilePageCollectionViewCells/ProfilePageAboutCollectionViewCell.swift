@@ -21,24 +21,18 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
         contentLabel.font = Text.style8.font
     }
     
-    func configure(_ shortDescription: String?, _ longDescription: String?, _ archiveType: ArchiveType?) {
-        var contentText = ""
-        if let shortDescription = shortDescription {
-            contentText.append(contentsOf: "\(shortDescription) \n\n")
-        } else if let archiveType = archiveType {
-            contentText.append(contentsOf: "\(archiveType.shortDescriptionHint) \n\n")
-        }
-        
-        if let longDescription = longDescription {
-            contentText.append(contentsOf: longDescription)
-        } else if let archiveType = archiveType {
-            contentText.append(contentsOf: "\(archiveType.longDescriptionHint) \n\n")
-        }
-        
-        contentLabel.text = contentText
+    func configure(_ text: String?) {
+        contentLabel.text = text
     }
     
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
+    }
+    
+    static func size(withText text: String?, collectionView: UICollectionView) -> CGSize {
+        let currentText: NSAttributedString = NSAttributedString(string: text ?? "", attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+        let textHeight = currentText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
+
+        return CGSize(width: collectionView.bounds.width, height: textHeight + 20)
     }
 }

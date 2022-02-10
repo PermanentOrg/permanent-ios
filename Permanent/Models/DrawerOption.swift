@@ -50,7 +50,7 @@ enum DrawerOption {
         case .publicFiles: return "Public Files".localized()
         case .shares: return "Shared Files".localized()
         case .members: return "Manage Members".localized()
-        case .manageArchives: return "Manage Archives".localized()
+        case .manageArchives: return "Switch Archives".localized()
         case .publicGallery: return "Public Gallery".localized()
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed

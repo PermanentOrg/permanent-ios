@@ -12,7 +12,6 @@ protocol ArchivesViewControllerDelegate: AnyObject {
 }
 
 class ArchivesViewController: BaseViewController<ArchivesViewModel> {
-    
     @IBOutlet weak var currentArchiveContainer: UIView!
     @IBOutlet weak var currentArhiveImage: UIImageView!
     @IBOutlet weak var currentArchiveLabel: UILabel!
@@ -24,7 +23,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     weak var delegate: ArchivesViewControllerDelegate?
     var isManaging = true
     
-    var accountArchives : [ArchiveVOData]?
+    var accountArchives: [ArchiveVOData]?
     
     private let overlayView = UIView()
     private var tableViewSections: [ArchiveVOData.Status] = []
@@ -50,7 +49,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         super.styleNavBar()
         
         if isManaging {
-            title = "Manage Archives".localized()
+            title = "Switch Archives".localized()
         } else {
             title = "Change Archive".localized()
             
@@ -81,10 +80,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     fileprivate func setupTableView() {
         tableView.separatorColor = .clear
         
-        tableView.register(UINib(nibName: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self))
-        tableView.register(UINib(nibName: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self))
         tableView.register(UINib(nibName: String(describing: ArchiveScreenSectionTitleTableViewCell.self), bundle: nil), forHeaderFooterViewReuseIdentifier: String(describing: ArchiveScreenSectionTitleTableViewCell.self))
     }
     
@@ -175,8 +172,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     // MARK: - UI
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-           let archiveName: String = archive.fullName,
-           let archiveThumbURL: String = archive.thumbURL500 {
+            let archiveName: String = archive.fullName,
+            let archiveThumbURL: String = archive.thumbURL500 {
             currentArhiveImage.image = nil
             currentArhiveImage.load(urlString: archiveThumbURL)
             
@@ -252,19 +249,20 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
                     let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
                     
-                    self?.showActionDialog(styled: .simpleWithDescription,
-                                           withTitle: description,
-                                           description: "",
-                                           positiveButtonTitle: "Delete".localized(),
-                                           positiveAction: {
-                                            self?.actionDialog?.dismiss()
-                                            self?.deleteArchive(archiveVO)
-                                           },
-                                           cancelButtonTitle: "Cancel".localized(),
-                                           positiveButtonColor: .brightRed,
-                                           cancelButtonColor: .primary,
-                                           overlayView: self?.overlayView)
-                    
+                    self?.showActionDialog(
+                        styled: .simpleWithDescription,
+                        withTitle: description,
+                        description: "",
+                        positiveButtonTitle: "Delete".localized(),
+                        positiveAction: {
+                            self?.actionDialog?.dismiss()
+                            self?.deleteArchive(archiveVO)
+                        },
+                        cancelButtonTitle: "Cancel".localized(),
+                        positiveButtonColor: .brightRed,
+                        cancelButtonColor: .primary,
+                        overlayView: self?.overlayView
+                    )
                 }), at: 0)
             }
             
@@ -322,7 +320,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
         var cell = UITableViewCell()
         if tableViewSections[indexPath.section] == .ok {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenChooseArchiveDetailsTableViewCell.self)) as? ArchiveScreenChooseArchiveDetailsTableViewCell,
-               let tableViewData = viewModel?.selectableArchives {
+                let tableViewData = viewModel?.selectableArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
                 
@@ -330,10 +328,9 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 
                 cell = tableViewCell
             }
-            
         } else if tableViewSections[indexPath.section] == .pending {
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: ArchiveScreenPendingArchiveDetailsTableViewCell.self)) as? ArchiveScreenPendingArchiveDetailsTableViewCell,
-               let tableViewData = viewModel?.pendingArchives {
+                let tableViewData = viewModel?.pendingArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO)
                 
@@ -361,12 +358,12 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         tableViewSections = []
         if let pendingArchives = viewModel?.pendingArchives,
-           pendingArchives.count > 0,
-           isManaging {
+            !pendingArchives.isEmpty,
+            isManaging {
             tableViewSections.append(ArchiveVOData.Status.pending)
         }
         if let selectableArchives = viewModel?.selectableArchives,
-           selectableArchives.count > 0{
+            !selectableArchives.isEmpty {
             tableViewSections.append(ArchiveVOData.Status.ok)
         }
         return tableViewSections.count

@@ -40,6 +40,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var establishedInfoProfileItem: EstablishedInfoProfileItem? {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
+    var milestonesProfileItems: [MilestoneProfileItem] {
+        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
@@ -429,6 +432,35 @@ class PublicProfilePageViewModel: ViewModelInterface {
             completion(true)
             return
         }
+    }
+    
+    func updateMilestoneProfileItem(newValue: MilestoneProfileItem, _ completion: @escaping (Bool) -> Void ) {
+        modifyPublicProfileItem(newValue, .update, { result, error, itemId in
+            if result {
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        })
+    }
+    
+    func deleteMilestoneProfileItem(milestone: MilestoneProfileItem?, _ completion: @escaping (Bool) -> Void ) {
+        guard let milestone = milestone else {
+            completion(false)
+            return
+        }
+        
+        modifyPublicProfileItem(milestone, .delete, { result, error, itemId in
+            if result {
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        })
     }
     
     func validateLocation(lat: Double, long: Double, completion: @escaping ((LocnVO?) -> Void)) {

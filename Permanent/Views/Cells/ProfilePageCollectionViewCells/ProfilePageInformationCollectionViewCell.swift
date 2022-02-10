@@ -98,8 +98,12 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
             contentLabel.text = ""
         }
     }
-    
+
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
+    }
+    
+    static func size(collectionView: UICollectionView) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 60)
     }
 }

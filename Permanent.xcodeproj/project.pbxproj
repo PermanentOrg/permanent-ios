@@ -38,6 +38,7 @@
 		5E2E3D1926D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */; };
 		5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */; };
 		5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */; };
+		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
 		5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */; };
 		5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217125C17C5A007642BE /* AccountInfoViewController.swift */; };
@@ -49,8 +50,6 @@
 		5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */; };
 		5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */; };
 		5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */; };
-		5E56FDC7274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */; };
-		5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */; };
 		5E56FDCB274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */; };
 		5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */; };
 		5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */; };
@@ -67,6 +66,9 @@
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
 		5E647334263C22F900E6566D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E647333263C22F900E6566D /* NotificationName.swift */; };
+		5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */; };
+		5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */; };
+		5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */; };
 		5E68F2CF26A74FCD00CC936E /* LoginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2CE26A74FCD00CC936E /* LoginTests.swift */; };
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
@@ -463,6 +465,7 @@
 		5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeftSideHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveType.swift; sourceTree = "<group>"; };
 		5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuViewController.swift; sourceTree = "<group>"; };
+		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNameUI.swift; sourceTree = "<group>"; };
 		5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
 		5E46217125C17C5A007642BE /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
@@ -474,8 +477,6 @@
 		5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageArchiveCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageAboutCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageAboutCollectionViewCell.xib; sourceTree = "<group>"; };
-		5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagePersonInfoCollectionViewCell.swift; sourceTree = "<group>"; };
-		5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePagePersonInfoCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageOnlinePresenceCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageOnlinePresenceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMilestonesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -491,6 +492,9 @@
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
+		5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileMilestonesViewController.swift; sourceTree = "<group>"; };
+		5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddMilestonesViewController.swift; sourceTree = "<group>"; };
+		5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneProfileItem.swift; sourceTree = "<group>"; };
 		5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E68F2CE26A74FCD00CC936E /* LoginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTests.swift; sourceTree = "<group>"; };
 		5E68F2D026A74FCD00CC936E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1099,8 +1103,17 @@
 				5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */,
 				F557A64127A190F900C061D4 /* SocialMediaProfileItem.swift */,
 				5EE9D8C527A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift */,
+				5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */,
 			);
 			path = PublicProfile;
+			sourceTree = "<group>";
+		};
+		5E381F0927AB0B3A00F7E277 /* MilestonesTableCells */ = {
+			isa = PBXGroup;
+			children = (
+				5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */,
+			);
+			path = MilestonesTableCells;
 			sourceTree = "<group>";
 		};
 		5E46217725C194E8007642BE /* AccountInfo */ = {
@@ -1123,6 +1136,8 @@
 				5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */,
 				F557A64327A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift */,
 				F5AA5E0C27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift */,
+				5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */,
+				5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -1164,8 +1179,6 @@
 				5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */,
 				5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */,
 				5E56FDC2274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib */,
-				5E56FDC5274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift */,
-				5E56FDC6274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib */,
 				5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */,
 				5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */,
 				5E56FDC9274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift */,
@@ -1601,6 +1614,7 @@
 			isa = PBXGroup;
 			children = (
 				F557A64727A1C81600C061D4 /* OnlinePresenceTableCells */,
+				5E381F0927AB0B3A00F7E277 /* MilestonesTableCells */,
 				5E611E36261CFDD000B17491 /* TagDetailsTableViewCells */,
 				5ED581BD25EF7F6F00A5A79E /* FileDetailsCollectionViewCells */,
 				BCF906692587B1C100DF1B64 /* Members */,
@@ -2057,7 +2071,6 @@
 				5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
-				5E56FDC8274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
 				5E5DFA712746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib in Resources */,
 				5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */,
@@ -2300,10 +2313,10 @@
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
-				5E56FDC7274424E100BC3BE0 /* ProfilePagePersonInfoCollectionViewCell.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
+				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
@@ -2338,6 +2351,8 @@
 				5E5DFA702746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
 				F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */,
+				5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */,
+				5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				5E5EF856273B23C3004F7EBC /* PublicProfilePageViewController.swift in Sources */,
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
@@ -2481,6 +2496,7 @@
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
+				5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */,
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,

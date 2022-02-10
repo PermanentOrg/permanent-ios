@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V41-bD-Qr7">
-                        <rect key="frame" x="20" y="124.5" width="394" height="20.5"/>
+                        <rect key="frame" x="20" y="10" width="394" height="249"/>
                         <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -28,8 +28,9 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="V41-bD-Qr7" secondAttribute="trailing" constant="20" id="AF0-NH-r6M"/>
+                <constraint firstItem="V41-bD-Qr7" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="M0M-qo-dtQ"/>
                 <constraint firstItem="V41-bD-Qr7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="eaL-AF-hmr"/>
-                <constraint firstItem="V41-bD-Qr7" firstAttribute="centerY" secondItem="ZTg-uK-7eu" secondAttribute="centerY" id="ul5-so-LoG"/>
+                <constraint firstAttribute="bottom" secondItem="V41-bD-Qr7" secondAttribute="bottom" id="sSO-9I-AdM"/>
             </constraints>
             <size key="customSize" width="434" height="259"/>
             <connections>
