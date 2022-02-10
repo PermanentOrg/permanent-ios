@@ -13,7 +13,6 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!
-    
     @IBOutlet weak var milestoneTextLabel: UILabel!
     
     override func awakeFromNib() {
@@ -59,6 +58,14 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
             milestoneTextLabel.textColor = .darkGray
             milestoneTextLabel.text = description
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        milestoneTitleLabel.text = "Title".localized()
+        milestoneLocationLabel.text = "Location not set".localized()
+        milestoneDateLabel.text = "Start date".localized()
+        milestoneTextLabel.text = "Description".localized()
     }
 
     static func nib() -> UINib {

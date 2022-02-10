@@ -50,7 +50,7 @@ class PublicProfileMilestonesViewController: BaseViewController<PublicProfilePag
     @IBAction func addMilestoneButton(_ sender: Any) {
         let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController
         vc.viewModel = viewModel
-        NetworkLogger.isEnabled = true
+
         let navigationVC = NavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
     }
