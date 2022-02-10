@@ -17,19 +17,15 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var titleTextField: UITextField!
-    @IBOutlet weak var titleHintLabel: UILabel!
     @IBOutlet weak var startDateLabel: UILabel!
     @IBOutlet weak var startDateTextField: UITextField!
-    @IBOutlet weak var startDateHintLabel: UILabel!
     @IBOutlet weak var endDateLabel: UILabel!
     @IBOutlet weak var endDateTextField: UITextField!
-    @IBOutlet weak var endDateHintLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var descriptionTextField: UITextField!
     @IBOutlet weak var descriptionHintLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var locationTextField: UITextField!
-    @IBOutlet weak var locationHintLabel: UILabel!
     @IBOutlet weak var mapView: UIView!
     
     var map: GMSMapView!
@@ -66,7 +62,6 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         title = isNewItem ? "Add Milestone".localized() : "Edit Milestone".localized()
         let titleLabels = [titleLabel, startDateLabel, endDateLabel, descriptionLabel, locationLabel]
         let textFields = [titleTextField, startDateTextField, endDateTextField, descriptionTextField, locationTextField]
-        let hintLabels = [titleHintLabel, startDateHintLabel, endDateHintLabel, descriptionHintLabel, locationHintLabel]
         
         for label in titleLabels {
             label?.textColor = .middleGray
@@ -81,11 +76,9 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             textField?.font = Text.style7.font
         }
         
-        for label in hintLabels {
-            label?.textColor = .lightGray
-            label?.font = Text.style8.font
-            label?.textAlignment = .left
-        }
+        descriptionHintLabel?.textColor = .lightGray
+        descriptionHintLabel?.font = Text.style8.font
+        descriptionHintLabel?.textAlignment = .left
         
         titleLabel.text = "\(ProfilePageData.milestoneTitle()) (<COUNT>/140)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.title?.count ?? 0)")
         startDateLabel.text = ProfilePageData.milestoneStartDate()
@@ -93,11 +86,11 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         descriptionLabel.text = "\(ProfilePageData.milestoneDescription()) (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.description?.count ?? 0)")
         locationLabel.text = ProfilePageData.milestoneLocation()
         
-        titleHintLabel.text = ProfilePageData.milestoneTitleHint()
-        startDateHintLabel.text = ProfilePageData.milestoneStartDateHint()
-        endDateHintLabel.text = ProfilePageData.milestoneEndDateHint()
+        titleTextField.placeholder = ProfilePageData.milestoneTitleHint()
+        startDateTextField.placeholder = ProfilePageData.milestoneStartDateHint()
+        endDateTextField.placeholder = ProfilePageData.milestoneEndDateHint()
         descriptionHintLabel.text = ProfilePageData.milestoneDescriptionHint()
-        locationHintLabel.text = ProfilePageData.milestoneLocationHint()
+        locationTextField.placeholder = ProfilePageData.milestoneLocationHint()
         
         setupDatePickers()
     }
@@ -111,11 +104,11 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     
     func setFieldValues() {
         if !isNewItem {
-            setInitialLabelValueForTextField(titleTextField, value: milestone?.title, associatedLabel: titleHintLabel)
-            setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDate, associatedLabel: startDateHintLabel)
-            setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate, associatedLabel: endDateHintLabel)
+            setInitialLabelValueForTextField(titleTextField, value: milestone?.title)
+            setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDate)
+            setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate)
             setInitialLabelValueForTextField(descriptionTextField, value: milestone?.description, associatedLabel: descriptionHintLabel)
-            setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated, associatedLabel: locationHintLabel)
+            setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated)
         } else {
             milestone = MilestoneProfileItem()
             milestone?.archiveId = viewModel?.archiveData.archiveID
@@ -158,7 +151,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         return stackView
     }
     
-    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
+    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel = UILabel() ) {
         if let savedValue = value,
             savedValue.isNotEmpty {
             textField.text = savedValue
@@ -283,15 +276,6 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
 extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         switch textField {
-        case titleTextField:
-            titleHintLabel.isHidden = true
-            
-        case startDateTextField:
-            startDateHintLabel.isHidden = true
-            
-        case endDateTextField:
-            endDateHintLabel.isHidden = true
-            
         case descriptionTextField:
             descriptionHintLabel.isHidden = true
             
@@ -340,29 +324,9 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
         guard let textFieldText = textField.text else { return }
         
         switch textField {
-        case titleTextField:
-            if textFieldText.isEmpty {
-                titleHintLabel.isHidden = false
-            }
-            
-        case startDateTextField:
-            if textFieldText.isEmpty {
-                startDateHintLabel.isHidden = false
-            }
-            
-        case endDateTextField:
-            if textFieldText.isEmpty {
-                endDateHintLabel.isHidden = false
-            }
-            
         case descriptionTextField:
             if textFieldText.isEmpty {
                 descriptionHintLabel.isHidden = false
-            }
-            
-        case locationTextField:
-            if textFieldText.isEmpty {
-                locationHintLabel.isHidden = false
             }
         
         default:
@@ -373,8 +337,6 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
 
 extension PublicProfileAddMilestonesViewController: PublicProfileLocationSetViewControllerDelegate {
     func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
-        locationHintLabel.isHidden = true
-        
         let locationDetails = getLocationDetails(location: locationVC.pickedLocation)
         milestone?.location = locationVC.pickedLocation
         milestone?.locnId1 = locationVC.pickedLocation?.locnID
