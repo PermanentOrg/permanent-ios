@@ -22,7 +22,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     @IBOutlet weak var endDateLabel: UILabel!
     @IBOutlet weak var endDateTextField: UITextField!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var descriptionTextField: UITextField!
+    @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var descriptionHintLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var locationTextField: UITextField!
@@ -40,7 +40,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         titleTextField.delegate = self
         startDateTextField.delegate = self
         endDateTextField.delegate = self
-        descriptionTextField.delegate = self
+        descriptionTextView.delegate = self
         locationTextField.delegate = self
         
         setFieldValues()
@@ -61,7 +61,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     func initUI() {
         title = isNewItem ? "Add Milestone".localized() : "Edit Milestone".localized()
         let titleLabels = [titleLabel, startDateLabel, endDateLabel, descriptionLabel, locationLabel]
-        let textFields = [titleTextField, startDateTextField, endDateTextField, descriptionTextField, locationTextField]
+        let textFields = [titleTextField, startDateTextField, endDateTextField, locationTextField]
         
         for label in titleLabels {
             label?.textColor = .middleGray
@@ -76,8 +76,14 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             textField?.font = Text.style7.font
         }
         
+        descriptionTextView.layer.borderColor = UIColor.lightGray.cgColor
+        descriptionTextView.layer.borderWidth = 0.5
+        descriptionTextView.layer.cornerRadius = 3
+        descriptionTextView.textColor = .middleGray
+        descriptionTextView.font = Text.style7.font
+        
         descriptionHintLabel?.textColor = .lightGray
-        descriptionHintLabel?.font = Text.style8.font
+        descriptionHintLabel?.font = Text.style7.font
         descriptionHintLabel?.textAlignment = .left
         
         titleLabel.text = "\(ProfilePageData.milestoneTitle()) (<COUNT>/140)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.title?.count ?? 0)")
@@ -107,8 +113,16 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             setInitialLabelValueForTextField(titleTextField, value: milestone?.title)
             setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDate)
             setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate)
-            setInitialLabelValueForTextField(descriptionTextField, value: milestone?.description, associatedLabel: descriptionHintLabel)
             setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated)
+            
+            if let savedValue = milestone?.description,
+                savedValue.isNotEmpty {
+                descriptionTextView.text = savedValue
+                descriptionHintLabel.isHidden = true
+            } else {
+                descriptionTextView.text = nil
+                descriptionHintLabel.isHidden = false
+            }
         } else {
             milestone = MilestoneProfileItem()
             milestone?.archiveId = viewModel?.archiveData.archiveID
@@ -249,7 +263,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             milestone?.endDate = value
         }
         
-        if let value = descriptionTextField.text,
+        if let value = descriptionTextView.text,
             value.isNotEmpty {
             milestone?.description = value
         }
@@ -275,11 +289,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
 // MARK: - UITextFieldDelegate
 extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        switch textField {
-        case descriptionTextField:
-            descriptionHintLabel.isHidden = true
-            
-        case locationTextField:
+        if textField == locationTextField {
             let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
             locationSetVC.delegate = self
             locationSetVC.viewModel = viewModel
@@ -288,9 +298,6 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
             let navigationVC = NavigationController(rootViewController: locationSetVC)
             navigationVC.modalPresentationStyle = .fullScreen
             present(navigationVC, animated: true)
-            
-        default:
-            return
         }
     }
     
@@ -306,31 +313,9 @@ extension PublicProfileAddMilestonesViewController: UITextFieldDelegate {
                 return true
             }
             return false
-            
-        case descriptionTextField:
-            descriptionLabel.text = "\(ProfilePageData.milestoneDescription())(<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
-            
-            if textCount < 200 {
-                return true
-            }
-            return false
-            
+
         default:
             return true
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let textFieldText = textField.text else { return }
-        
-        switch textField {
-        case descriptionTextField:
-            if textFieldText.isEmpty {
-                descriptionHintLabel.isHidden = false
-            }
-        
-        default:
-            return
         }
     }
 }
@@ -346,5 +331,30 @@ extension PublicProfileAddMilestonesViewController: PublicProfileLocationSetView
         mapView.isHidden = locationDetails == (0, 0)
         
         setLocation(locationDetails.latitude, locationDetails.longitude)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension PublicProfileAddMilestonesViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        descriptionHintLabel.isHidden = true
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let textFieldText = textView.text else { return false }
+        let textCount = textFieldText.count + text.count - range.length
+        
+        descriptionLabel.text = "\(ProfilePageData.milestoneDescription())(<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(textCount)")
+        
+        if textCount < 200 {
+            return true
+        }
+        return false
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            descriptionHintLabel.isHidden = false
+        }
     }
 }
