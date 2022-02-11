@@ -27,6 +27,8 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var locationTextField: UITextField!
     @IBOutlet weak var mapView: UIView!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var contentView: UIView!
     
     var map: GMSMapView!
     var marker: GMSMarker!
@@ -46,6 +48,9 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         setFieldValues()
         initMapView()
         addDismissKeyboardGesture()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -283,6 +288,38 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         } else {
             showAlert(title: .error, message: "Please enter a title for your milestone".localized())
         }
+    }
+    
+    // MARK: - Keyboard
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let scrollView = scrollView,
+            let keyBoardInfo = notification.userInfo,
+            let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+            let window = scrollView.window
+        else { return }
+        
+        let keyBoardFrame = window.convert(endFrame.cgRectValue, to: scrollView.superview)
+        
+        UIView.beginAnimations(nil, context: nil)
+        UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
+        UIView.setAnimationCurve(UIView.AnimationCurve(rawValue: (keyBoardInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int))!)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyBoardFrame.height, right: 0)
+        UIView.commitAnimations()
+        
+        guard let firstResponder: UIView = contentView.subviews.first(where: { $0.isFirstResponder }) else { return }
+        
+        scrollView.scrollRectToVisible(firstResponder.frame, animated: true)
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        let keyBoardInfo = notification.userInfo!
+        var tableInsets = scrollView.contentInset
+        tableInsets.bottom = 0
+        UIView.beginAnimations(nil, context: nil)
+        UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
+        UIView.setAnimationCurve(UIView.AnimationCurve(rawValue: (keyBoardInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int))!)
+        scrollView.contentInset = tableInsets
+        UIView.commitAnimations()
     }
 }
 
