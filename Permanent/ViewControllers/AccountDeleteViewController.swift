@@ -34,7 +34,7 @@ class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    //MARK: - Actions
+    // MARK: - Actions
     @IBAction func deleteButtonPressed(_ sender: Any) {
         if confirmTextField.text == "DELETE" {
             showSpinner()
@@ -69,7 +69,7 @@ class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
         deleteButton.isEnabled = confirmTextField.text == "DELETE"
     }
     
-    //MARK: - Keyboard
+    // MARK: - Keyboard
     @objc func keyboardWillShow(_ notification: Notification) {
         guard let scrollView = scrollView,
               let keyBoardInfo = notification.userInfo,

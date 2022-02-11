@@ -66,7 +66,7 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         let cell = tableView.dequeueReusableCell(withIdentifier: "milestoneCell") as! MilestonesTableViewCell
         
         let item = viewModel?.milestonesProfileItems[indexPath.row]
-        cell.milestoneTitleLabel.text = item?.title
+        cell.configure(milestone: item)
         
         cell.moreButtonAction = { [weak self] cell in
             let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
