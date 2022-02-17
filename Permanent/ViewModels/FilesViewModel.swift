@@ -167,8 +167,8 @@ extension FilesViewModel {
                     let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
                     let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                     let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
-                    
-                    return handler(.error(message: .errorMessage))
+                        handler(.error(message: .errorMessage))
+                        return
                 }
                 
                 handler(.success)
@@ -180,6 +180,27 @@ extension FilesViewModel {
                 break
             }
         }
+    }
+    
+    func publish(file: FileViewModel, then handler: @escaping ServerResponse) {
+        fileAction = .copy
+        guard let archiveNbr = currentArchive?.archiveNbr else { return }
+        
+        getPublicRoot(archiveNbr: archiveNbr, then: { status in
+            switch status {
+            case .success(let folder):
+                if let rootFolder = folder {
+                    let publicRoot = FileViewModel(model: rootFolder)
+                    NetworkLogger.isEnabled = true
+                    self.relocate(file: file, to: publicRoot, then: handler)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let message):
+                handler(.error(message: message))
+            }
+        })
     }
     
     func cancelDownload() {
@@ -481,4 +502,39 @@ extension FilesViewModel {
             }
         }
     }
+    
+    func getPublicRoot(archiveNbr: String, then handler: @escaping (PublicRootRequestStatus) -> Void) {
+        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                if model.isSuccessful == true {
+                    handler(.success(folder: model.results?.first?.data?.first?.folderVO))
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
+}
+
+enum PublicRootRequestStatus: Equatable {
+    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
+        return true
+    }
+    
+    case success(folder: FolderVOData?)
+    case error(message: String?)
 }

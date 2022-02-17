@@ -493,11 +493,29 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
+
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
+                self.setupUIForAction(.none)
                 
-                DispatchQueue.main.async {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
-                    self.setupUIForAction(.none)
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        })
+    }
+    
+    func publish(file: FileViewModel) {
+        showSpinner()
+        viewModel?.publish(file: file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                if file.type.isFolder {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder published successfully".localized())
+                } else {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                 }
+                self.setupUIForAction(.none)
                 
             case .error(let message):
                 self.showErrorAlert(message: message)
@@ -658,8 +676,7 @@ extension MainViewController {
     
     private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+    
             self.showActionDialog(
                 styled: .simple,
                 withTitle: title,
@@ -672,6 +689,20 @@ extension MainViewController {
                 overlayView: self.overlayView
             )
         }
+    
+    private func didTapPublish(source: FileViewModel) {
+        let title = String(format: "\(String.publish) \"%@\"?", source.name)
+        self.showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: .publishDescription,
+            positiveButtonTitle: .publish,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.publish(file: source)
+            },
+            overlayView: self.overlayView
+        )
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -832,6 +863,12 @@ extension MainViewController: FABActionSheetDelegate {
         if let viewModel = viewModel as? PublicFilesViewModel, let url = viewModel.publicURL(forFile: file) {
             actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
                 share(url: url)
+            }))
+        }
+        
+        if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
+            actions.append(PRMNTAction(title: "Publish".localized(), color: .primary, handler: { [self] action in
+                publishAction(file: file)
             }))
         }
         
@@ -1067,6 +1104,10 @@ extension MainViewController {
         viewModel?.selectedFile = file
         
         setupUIForAction(action)
+    }
+    
+    func publishAction(file: FileViewModel) {
+        didTapPublish(source: file)
     }
 }
 

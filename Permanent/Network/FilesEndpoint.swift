@@ -208,7 +208,11 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 let relocateVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
                                                        folderDestLinkId: parameters.items.destination.folderLinkId,
-                                                       parentFolderLinkId: parameters.items.source.parentFolderLinkId)
+                                                       parentFolderLinkId: parameters.items.source.parentFolderLinkId,
+                                                       archiveNbr: parameters.items.source.archiveNo,
+                                                       uploadFileName: parameters.items.source.uploadFileName,
+                                                       recordId: parameters.items.source.recordId,
+                                                       parentFolderId: parameters.items.source.parentFolderId)
                 let requestVO = APIPayload.make(fromData: [relocateVO])
                 
                 return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)

@@ -160,4 +160,31 @@ struct FileViewModel: Equatable {
             }
         }
     }
+    
+    init(model: FolderVOData) {
+        self.name = model.displayName ?? "-"
+        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+            
+        self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL500 = model.thumbURL500
+        self.thumbnailURL1000 = model.thumbURL1000
+        self.thumbnailURL2000 = model.thumbURL2000
+        self.type = FileType.publicRootFolder
+        self.description = model.childFolderVOS?.description ?? ""
+        self.size = -1
+        self.uploadFileName = ""
+        
+        self.archiveThumbnailURL = ""
+        self.archiveId = model.archiveID ?? -1
+        self.archiveNo = model.archiveNbr ?? ""
+        
+        self.recordId = -1
+        
+        self.folderId = model.folderID ?? -1
+        self.parentFolderId = model.parentFolderID ?? -1
+        self.parentFolderLinkId = model.parentFolderLinkID ?? -1
+        self.folderLinkId = model.folderLinkID ?? -1
+        
+        self.permissions = []
+    }
 }
