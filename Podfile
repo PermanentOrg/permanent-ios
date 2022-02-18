@@ -11,6 +11,8 @@ target 'Permanent' do
   pod 'Sourcery', '1.4.1'
   pod 'GoogleMaps', '4.2.0'
   pod 'GooglePlaces', '4.2.0'
+  pod 'AppAuth', '1.4.0'
+  pod 'KeychainSwift', '20.0'
 
   target 'PermanentTests' do
         inherit! :search_paths

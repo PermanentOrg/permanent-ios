@@ -96,7 +96,7 @@ class DownloadManagerGCD: Downloader {
                     model.isSuccessful
                     
                 else {
-                    handler(nil, APIError.parseError(nil))
+                    handler(nil, APIError.invalidResponse)
                     return
                 }
                  
@@ -126,7 +126,7 @@ class DownloadManagerGCD: Downloader {
                     model.isSuccessful
                     
                 else {
-                    handler(nil, APIError.parseError(nil))
+                    handler(nil, APIError.invalidResponse)
                     return
                 }
                  

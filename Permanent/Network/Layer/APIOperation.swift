@@ -10,6 +10,7 @@ import Foundation
 class APIOperation: OperationProtocol {
     typealias Output = OperationResult
     
+    private var cancelled: Bool = false
     private var task: URLSessionTask?
     
     internal var request: RequestProtocol
@@ -19,14 +20,26 @@ class APIOperation: OperationProtocol {
     }
     
     func execute(in requestDispatcher: RequestDispatcherProtocol, completion: @escaping (OperationResult) -> Void) {
-        task = requestDispatcher.execute(request: request, completion: { result in
-            DispatchQueue.main.async {
-                completion(result)
+        requestDispatcher.execute(
+            request: request,
+            createdTask: { task in
+                self.task = task
+                
+                if self.cancelled {
+                    task?.cancel()
+                }
+            },
+            completion: { result in
+                DispatchQueue.main.async {
+                    completion(result)
+                }
             }
-        })
+        )
     }
     
     func cancel() {
+        cancelled = true
+        
         task?.cancel()
     }
 }

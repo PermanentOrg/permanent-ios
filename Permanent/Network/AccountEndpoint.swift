@@ -22,8 +22,6 @@ enum AccountEndpoint {
     case sendVerificationCodeSMS(accountId: String, email: String)
     /// Change user password
     case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials)
-    /// Get valid CSRF parameter
-    case getValidCsrf
     /// Get user data
     case getUserData(accountId: String)
     /// Updates user data
@@ -32,6 +30,7 @@ enum AccountEndpoint {
     case updateShareRequest(shareVO: ShareVOData)
     /// Revoke Share request
     case deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int)
+    case getSessionAccount
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -47,8 +46,6 @@ extension AccountEndpoint: RequestProtocol {
             return "/auth/resendTextCreatedAccount"
         case .changePassword:
             return "/account/changePassword"
-        case .getValidCsrf:
-            return "/auth/loggedIn"
         case .getUserData:
             return "/account/get"
         case .updateUserData:
@@ -57,6 +54,8 @@ extension AccountEndpoint: RequestProtocol {
             return "/share/upsert"
         case .deleteShareRequest:
             return "/share/delete"
+        case .getSessionAccount:
+            return "/account/getsessionaccount"
         }
     }
 
@@ -80,9 +79,6 @@ extension AccountEndpoint: RequestProtocol {
         case .changePassword(let id, let passData):
             return Payloads.updatePassword(accountId: id, updateData: passData)
             
-        case .getValidCsrf:
-            return Payloads.getValidCsrf()
-            
         case .getUserData(let id):
             return Payloads.getUserData(accountId: id)
             
@@ -94,12 +90,17 @@ extension AccountEndpoint: RequestProtocol {
             
         case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
             return Payloads.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
+            
+        case .getSessionAccount:
+            return Payloads.getSessionAccount()
         }
     }
 
     var method: RequestMethod { .post }
 
-    var headers: RequestHeaders? { nil }
+    var headers: RequestHeaders? {
+        return ["content-type": "application/json; charset=utf-8"]
+    }
 
     var requestType: RequestType { .data }
 

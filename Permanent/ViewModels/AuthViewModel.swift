@@ -115,6 +115,8 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func logout(then handler: @escaping ServerResponse) {
+        AuthenticationManager.shared.logout()
+        
         let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
 
         logoutOperation.execute(in: APIRequestDispatcher()) { result in
@@ -139,38 +141,60 @@ class AuthViewModel: ViewModelInterface {
             }
         }
     }
-
-    func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(AuthenticationEndpoint.login(credentials: credentials))
+    
+    func syncSession(then handler: @escaping ServerResponse) {
+        isLoggedIn { [self] status in
+            if status == .success {
+                getSessionAccount { status in
+                    if status == .success {
+                        refreshCurrentArchive { archive in
+                            if archive != nil {
+                                AuthenticationManager.shared.saveSession()
+                                handler(.success)
+                            } else {
+                                handler(.error(message: .errorMessage))
+                            }
+                        }
+                    } else {
+                        handler(status)
+                    }
+                }
+            } else {
+                handler(.error(message: .errorMessage))
+            }
+        }
+    }
+    
+    func getSessionAccount(then handler: @escaping ServerResponse) {
+        let op = APIOperation(AccountEndpoint.getSessionAccount)
         
         let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
-        apiDispatch.ignoresMFAWarning = true
-        loginOperation.execute(in: apiDispatch) { result in
+        op.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
-                guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
+                guard let model: APIResults<AccountVO> = JSONHelper.convertToModel(from: response) else {
                     handler(.error(message: .errorMessage))
                     return
                 }
 
                 if model.isSuccessful == true {
-                    self.saveStorageData(model)
-                    handler(.success)
-                } else {
-                    guard
-                        let message = model.results?.first?.message?.first,
-                        let loginError = LoginError(rawValue: message)
-                    else {
-                        handler(.error(message: .errorMessage))
-                        return
+                    PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
+                    
+                    if let email = model.results.first?.data?.first?.accountVO?.primaryEmail {
+                        PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
                     }
 
-                    if loginError == .mfaToken {
-                        self.saveStorageData(model)
-                        handler(.mfaToken)
-                    } else {
-                        handler(.error(message: loginError.description))
+                    if let accountId = model.results.first?.data?.first?.accountVO?.accountID {
+                        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
                     }
+                    
+                    if let archiveId = model.results.first?.data?.first?.accountVO?.defaultArchiveID {
+                        PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+                    }
+                    
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
                 }
 
             case .error:
@@ -181,23 +205,28 @@ class AuthViewModel: ViewModelInterface {
             }
         }
     }
-
-    func forgotPassword(email: String, then handler: @escaping (String?, RequestStatus) -> Void) {
-        let forgotPasswordOperation = APIOperation(AuthenticationEndpoint.forgotPassword(email: email))
-
-        forgotPasswordOperation.execute(in: APIRequestDispatcher()) { result in
+    
+    func isLoggedIn(then handler: @escaping (LoginStatus) -> Void) {
+        let loginOperation = APIOperation(AuthenticationEndpoint.verifyAuth)
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
+        loginOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
-                // TODO: Change LoginResponse and see the appropiate errors.
-                let model: LoginResponse? = JSONHelper.convertToModel(from: response)
-                if model?.isSuccessful == true {
-                    handler(email, .success)
+                guard let model: APIResults<NoDataModel> = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    handler(.success)
                 } else {
-                    handler(nil, .error(message: .errorMessage))
+                    handler(.error(message: .errorMessage))
                 }
 
             case .error:
-                handler(nil, .error(message: .errorMessage))
+                handler(.error(message: .errorMessage))
 
             default:
                 break
@@ -238,49 +267,6 @@ class AuthViewModel: ViewModelInterface {
             }
         }
     }
-
-    func createEmailInputAlert(then handler: @escaping (String?, RequestStatus) -> Void) -> UIAlertController {
-        let alert = UIAlertController(title: .resetPassword, message: nil, preferredStyle: .alert)
-
-        alert.addTextField(configurationHandler: { textField in
-            textField.placeholder = .enterEmail
-        })
-
-        alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
-            guard let email: String = alert.textFields?.first?.text else { return }
-            
-            if !email.isValidEmail {
-                handler(nil, .error(message: .emailIsNotValid))
-                return
-            }
-            self.forgotPassword(email: email, then: handler)
-        }))
-        
-        return alert
-    }
-
-    fileprivate func saveStorageData(_ response: LoginResponse) {
-        PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
-        
-        if let email = response.results?.first?.data?.first?.accountVO?.primaryEmail {
-            PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-        }
-
-        if let accountId = response.results?.first?.data?.first?.accountVO?.accountID {
-            PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-        }
-        
-        if let archiveVO = response.results?.first?.data?.first?.archiveVO {
-            setCurrentArchive(archiveVO)
-        } else {
-            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
-        }
-        
-        if let archiveId = response.results?.first?.data?.first?.accountVO?.defaultArchiveID {
-            PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
-        }
-    }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
         do {
@@ -316,10 +302,6 @@ class AuthViewModel: ViewModelInterface {
                 }
             }
         }
-    }
-    
-    func areFieldsValid (emailField: String?, passwordField: String?) -> Bool {
-        return (emailField?.isValidEmail ?? false) && (passwordField?.isNotEmpty ?? false)
     }
     
     func areFieldsValid(nameField: String?, emailField: String?, passwordField: String?) -> Bool {

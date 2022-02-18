@@ -8,6 +8,8 @@
 import Foundation
 
 class APIRequestDispatcher: RequestDispatcherProtocol {
+    static let sessionExpiredNotificationName = Notification.Name("APIRequestDispatcher.sessionExpiredNotificationName")
+    
     var ignoresMFAWarning = false
     
     /// The environment configuration.
@@ -25,22 +27,38 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         self.environment = environment
         self.networkSession = networkSession
     }
-
+    
     /// Executes a request.
     /// - Parameters:
     ///   - request: Instance conforming to `RequestProtocol`
     ///   - completion: Completion handler.
-    func execute(request: RequestProtocol, completion: @escaping (OperationResult) -> Void) -> URLSessionTask? {
+    func execute(request: RequestProtocol, createdTask: @escaping (URLSessionTask?) -> Void, completion: @escaping (OperationResult) -> Void) {
         // Create a URL request.
         guard var urlRequest = request.urlRequest(with: environment) else {
-            completion(.error(APIError.badRequest("Invalid URL for: \(request)"), nil))
-            return nil
+            completion(.error(APIError.badRequest, nil))
+            createdTask(nil)
+            return
         }
+        
         // Add the environment specific headers.
         environment.headers?.forEach { (key: String, value: String) in
             urlRequest.addValue(value, forHTTPHeaderField: key)
         }
-
+        
+        if let cookies = HTTPCookieStorage.shared.cookies(for: urlRequest.url!) {
+            let cookieHeaders = HTTPCookie.requestHeaderFields(with: cookies)
+            
+            cookieHeaders.forEach { (key: String, value: String) in
+                urlRequest.addValue(value, forHTTPHeaderField: key)
+            }
+        }
+        
+        if let token = AuthenticationManager.shared.authState?.lastTokenResponse?.accessToken {
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        NetworkLogger.log(request: urlRequest)
+        
         // Create a URLSessionTask to execute the URLRequest.
         var task: URLSessionTask?
         switch request.requestType {
@@ -48,18 +66,20 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             task = networkSession.dataTask(with: urlRequest, completionHandler: { data, urlResponse, error in
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
-
+            
         case .upload:
             task = networkSession.uploadTask(with: urlRequest, progressHandler: request.progressHandler, completion: { data, urlResponse, error in
                 self.handleJsonTaskResponse(data: data, urlResponse: urlResponse, error: error, completion: completion)
             })
-
-        case .download: // TODO: [weak self]
+            
+        case .download:
             guard
                 let parameters = request.parameters as? [String: Any?],
                 let fileName = parameters["filename"] as? String
             else {
-                return nil
+                completion(.error(APIError.badRequest, nil))
+                createdTask(nil)
+                return
             }
             
             task = networkSession.downloadTask(with: urlRequest, fileName: fileName, progressHandler: request.progressHandler, completion: { fileUrl, urlResponse, error in
@@ -68,8 +88,8 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         }
         // Start the task.
         task?.resume()
-
-        return task
+        
+        createdTask(task)
     }
 
     /// Handles the data response that is expected as a JSON object output.
@@ -79,17 +99,18 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - error: The received  optional `Error` instance.
     ///   - completion: Completion handler.
     private func handleJsonTaskResponse(data: Data?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
-        
         // Check for errors
         if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
             return completion(.error(apiError, nil))
         }
-        NetworkLogger.log(response: urlResponse as? HTTPURLResponse, data: data, error: error)
+
         // Check if the response is valid.
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             completion(OperationResult.error(APIError.invalidResponse, nil))
             return
         }
+        NetworkLogger.log(response: urlResponse, data: data, error: error)
+        
         // Verify the HTTP status code.
         let result = verify(data: data, urlResponse: urlResponse, error: error)
         switch result {
@@ -98,22 +119,34 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             let parseResult = parse(data: data as? Data)
             switch parseResult {
             case .success(let json):
-                if let mfaError = json as? [String:Any],
-                   let results = mfaError["Results"] as? [[String:Any]],
+                if let mfaError = json as? [String: Any],
+                   let results = mfaError["Results"] as? [[String: Any]],
                    let message = (results[0]["message"] as? [String])?.first,
                    (message == "warning.auth.mfaToken" && !ignoresMFAWarning) || message == "error.generic.invalid_csrf" {
-                    AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
+                    }
                 } else {
                     if let csrf: String = (json as? [String: Any])?["csrf"] as? String {
                         PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
                     }
                     completion(OperationResult.json(json, urlResponse))
                 }
+                
             case .failure(let error):
-                    completion(OperationResult.error(error, urlResponse))
-            }
-        case .failure(let error):
                 completion(OperationResult.error(error, urlResponse))
+            }
+            
+        case .failure(let error):
+            if error as? APIError == APIError.unauthorized {
+                completion(OperationResult.error(error, urlResponse))
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
+                }
+            } else {
+                completion(OperationResult.error(error, urlResponse))
+            }
         }
     }
     
@@ -124,7 +157,6 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     ///   - error: The received  optional `Error` instance.
     ///   - completion: Completion handler.
     private func handleFileTaskResponse(fileUrl: URL?, urlResponse: URLResponse?, error: Error?, completion: @escaping (OperationResult) -> Void) {
-        
         // Check for errors
         if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
             return completion(.error(apiError, nil))
@@ -153,19 +185,19 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     /// - Parameter data: `Data` instance to be parsed.
     /// - Returns: A `Result` instance.
     private func parse(data: Data?) -> Result<Any?, Error> {
-        guard let data = data, data.count > 0 else {
+        guard let data = data, !data.isEmpty else {
             return .success(nil)
         }
 
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
             return .success(json)
-        } catch (let exception) {
+        } catch {
             let stringResponse = String(decoding: data, as: UTF8.self)
             if stringResponse.isNotEmpty {
                 return .success(stringResponse)
             }
-            return .failure(APIError.parseError(exception.localizedDescription))
+            return .failure(APIError.invalidResponse)
         }
     }
 
@@ -179,10 +211,22 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         switch urlResponse.statusCode {
         case 200...299:
             return .success(data as Any)
+            
+        case 400:
+            return .failure(APIError.badRequest)
+            
+        case 401:
+            return .failure(APIError.unauthorized)
+            
+        case 403:
+            return .failure(APIError.forbidden)
+            
         case 400...499:
-            return .failure(APIError.badRequest(error?.localizedDescription))
+            return .failure(APIError.clientError)
+            
         case 500...599:
-            return .failure(APIError.serverError(error?.localizedDescription))
+            return .failure(APIError.serverError)
+            
         default:
             return .failure(APIError.unknown)
         }

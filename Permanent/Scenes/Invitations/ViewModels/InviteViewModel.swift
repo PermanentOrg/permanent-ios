@@ -9,11 +9,9 @@ import Foundation
 
 class InviteViewModel {
     // MARK: - Delegates
-    
-    var viewDelegate: InviteViewModelViewDelegate?
+    weak var viewDelegate: InviteViewModelViewDelegate?
     
     // MARK: - Properties
-    
     fileprivate var invites: [Invite] = []
     
     var isBusy: Bool = false {
@@ -41,17 +39,13 @@ class InviteViewModel {
             
             switch result {
             case .json(let response, _):
-                
                 guard
-                    let model: APIResults<InviteVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<InviteVO>.decoder),
-                    
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(from: response, with: APIResults<InviteVO>.decoder),
                     model.isSuccessful,
                     let inviteVOS = model.results.first?.data
                     
                 else {
-                    self.viewDelegate?.updateScreen(status: .error(message: APIError.parseError(nil).message))
+                    self.viewDelegate?.updateScreen(status: .error(message: APIError.invalidResponse.message))
                     return
                 }
                 
@@ -78,22 +72,17 @@ class InviteViewModel {
             case .json(let response, _):
                 
                 guard
-                    let model: APIResults<InviteVO> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<InviteVO>.decoder),
-                    
+                    let model: APIResults<InviteVO> = JSONHelper.decoding(from: response, with: APIResults<InviteVO>.decoder),
                     model.isSuccessful
-                    
                 else {
-                    self.viewDelegate?.refreshList(afterOperation: operation, status: .error(message: APIError.parseError(nil).message))
+                    self.viewDelegate?.refreshList(afterOperation: operation, status: .error(message: APIError.invalidResponse.message))
                     return
                 }
                 
                 self.viewDelegate?.refreshList(afterOperation: operation, status: .success)
                 
             case .error(let error, _):
-                self.viewDelegate?.refreshList(afterOperation: operation,
-                                               status: .error(message: (error as? APIError)?.message))
+                self.viewDelegate?.refreshList(afterOperation: operation, status: .error(message: (error as? APIError)?.message))
                 
             default:
                 fatalError()
@@ -124,7 +113,6 @@ class InviteViewModel {
             if inviteVM.status == .pending {
                 self.invites.append(inviteVM)
             }
-            
         }
     }
 }

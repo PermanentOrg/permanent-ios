@@ -8,17 +8,23 @@
 import Foundation
 
 /// Enum of API Errors
-enum APIError: Error, Equatable {
+enum APIError: Error {
     /// No data received from the server.
     case noData
     /// The server response was invalid (unexpected format).
     case invalidResponse
-    /// The request was rejected: 400-499
-    case badRequest(String?)
+    /// The request was rejected: 400
+    case badRequest
+    /// The request was rejected: 401
+    case unauthorized
+    /// The request was rejected: 403
+    case forbidden
+    /// The request was rejected: 40x that is not handled by the above
+    case clientError
     /// Encoutered a server error.
-    case serverError(String?)
+    case serverError
     /// There was an error parsing the data.
-    case parseError(String?)
+    case parseError
     /// Unknown error.
     case unknown
     /// Request cancelled.
