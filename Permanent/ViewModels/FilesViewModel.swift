@@ -199,7 +199,6 @@ extension FilesViewModel {
             case .success(let folder):
                 if let rootFolder = folder {
                     let publicRoot = FileViewModel(model: rootFolder)
-                    NetworkLogger.isEnabled = true
                     self.relocate(file: file, to: publicRoot, then: handler)
                 } else {
                     handler(.error(message: .errorMessage))
