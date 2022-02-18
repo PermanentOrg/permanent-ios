@@ -705,8 +705,6 @@ extension MainViewController {
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
-        guard let fileAction = viewModel?.fileAction else { return }
-        
         self.relocate(file: source, to: destination)
     }
     
