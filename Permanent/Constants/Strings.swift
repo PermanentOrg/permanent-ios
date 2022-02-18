@@ -88,6 +88,7 @@ extension String {
     static var download: String { return "Download".localized() }
     static var copy: String { return "Copy".localized() }
     static var move: String { return "Move".localized() }
+    static var paste: String { return "Paste".localized() }
     static var publish: String { return "Publish".localized() }
     static var publishDescription: String { return "Create a publicly viewable copy of this item in your Public workspace and get a public link to share with anyone.".localized()}
     static var edit: String { return "Edit".localized() }

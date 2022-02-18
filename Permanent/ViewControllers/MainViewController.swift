@@ -705,20 +705,7 @@ extension MainViewController {
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
-        guard let fileAction = viewModel?.fileAction else { return }
-        
-        let title = String(format: "\(fileAction.title) \"%@\"?", source.name)
-        
-        showActionDialog(
-            styled: .simple,
-            withTitle: title,
-            positiveButtonTitle: fileAction.title,
-            positiveAction: {
-                self.actionDialog?.dismiss()
-                self.relocate(file: source, to: destination)
-            },
-            overlayView: overlayView
-        )
+        self.relocate(file: source, to: destination)
     }
     
     private func download(_ file: FileViewModel) {
