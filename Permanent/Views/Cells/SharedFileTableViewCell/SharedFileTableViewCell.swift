@@ -103,7 +103,7 @@ class SharedFileTableViewCell: UITableViewCell {
             case .downloading:
                 fileImageView.image = .download
                 
-            case .uploading, .waiting:
+            case .uploading, .waiting, .failed:
                 fileImageView.image = .cloud // TODO: waiting can be used on download, too.
             }
         }

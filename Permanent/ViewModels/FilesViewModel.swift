@@ -123,6 +123,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
             let currentFileUpload = UploadManager.shared.inProgressUpload()
             fileViewModel.fileStatus = currentFileUpload?.id == fileInfo.id ? .uploading : .waiting
             
+            fileViewModel.fileStatus = fileInfo.didFailUpload ? .failed : fileViewModel.fileStatus
+            
             return fileViewModel
             
         case FileListType.synced.rawValue:
