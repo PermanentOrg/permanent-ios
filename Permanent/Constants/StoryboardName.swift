@@ -28,7 +28,6 @@ enum StoryboardName: String {
 
 enum ViewControllerId: String {
     case main
-    case login
     case signUp
     case onboarding
     case welcomePage

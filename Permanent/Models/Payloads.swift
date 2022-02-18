@@ -11,7 +11,7 @@ struct Payloads {
     
     static var csrf: String {
         get {
-            PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!
+            PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) ?? ""
         }
     }
     
@@ -335,6 +335,28 @@ struct Payloads {
                     ]
                 ]],
                 "csrf": Self.csrf
+            ]
+        ]
+    }
+    
+    static func getSessionAccount() -> RequestParameters {
+        return [
+            "RequestVO": [
+                "csrf": Self.csrf,
+                "data": [
+                    [:]
+                ]
+            ]
+        ]
+    }
+    
+    static func verifyAuth() -> RequestParameters {
+        return [
+            "RequestVO": [
+                "csrf": "",
+                "data": [
+                    [:]
+                ]
             ]
         ]
     }

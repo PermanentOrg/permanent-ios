@@ -53,6 +53,9 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     }
 
     @IBAction func signUpAction(_ sender: RoundedButton) {
+        closeKeyboard()
+        scrollView.setContentOffset(.zero, animated: false)
+        
         guard
             viewModel?.areFieldsValid(nameField: nameField.text, emailField: emailField.text, passwordField: passwordField.text) ?? false,
             let termsConditionsVC = UIViewController.create(
@@ -70,12 +73,24 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     
     @IBAction
     func alreadyMemberAction(_ sender: UIButton) {
-        let vc = UIViewController.create(withIdentifier: .login, from: .authentication)
-        navigationController?.pushViewController(vc, animated: true)
+        AuthenticationManager.shared.performLoginFlow(fromPresentingVC: self) { [self] status in
+            if status == .success {
+                showSpinner()
+                
+                viewModel?.syncSession(then: { status in
+                    hideSpinner()
+                    
+                    if status == .success {
+                        AppDelegate.shared.rootViewController.setDrawerRoot()
+                    } else {
+                        showErrorAlert(message: .errorMessage)
+                    }
+                })
+            }
+        }
     }
     
     func signUp() {
-        // TODO: Modify SignUpCredentials to use codable protocol
         let loginCredentials = LoginCredentials(emailField.text!, passwordField.text!)
         
         let signUpCredentials = SignUpCredentials(
@@ -84,7 +99,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         )
         
         showSpinner(colored: .white)
-        closeKeyboard()
         
         viewModel?.signUp(with: signUpCredentials, then: { status in
             DispatchQueue.main.async {
@@ -93,40 +107,14 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         })
     }
     
-    func performBackgroundLogin() {
-        guard
-            let email = emailField.text,
-            let password = passwordField.text else { return }
-        
-        let credentials = LoginCredentials(email, password)
-        
-        viewModel?.login(with: credentials, then: { status in
-            DispatchQueue.main.async {
-                self.handleLoginStatus(status, credentials: credentials)
-            }
-        })
-    }
-    
     private func handleSignUpStatus(_ status: RequestStatus) {
-        switch status {
-        case .success:
-            UserDefaults.standard.setValue(nameField.text, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
-            performBackgroundLogin()
-        case .error(let message):
-            hideSpinner()
-            showAlert(title: .error, message: message)
-        }
-    }
-    
-    private func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
         hideSpinner()
         
         switch status {
         case .success:
-            navigationController?.display(.twoStepVerification, from: .authentication)
-        case .mfaToken:
-            PreferencesManager.shared.set(credentials.email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-            navigationController?.display(.verificationCode, from: .authentication)
+            UserDefaults.standard.setValue(nameField.text, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
+            
+            view.showNotificationBanner(height: 80, title: "Your account was successfully created".localized())
         case .error(let message):
             showAlert(title: .error, message: message)
         }

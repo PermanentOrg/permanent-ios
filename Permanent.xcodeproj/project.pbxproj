@@ -67,7 +67,6 @@
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
 		5E647334263C22F900E6566D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E647333263C22F900E6566D /* NotificationName.swift */; };
-		5E68F2CF26A74FCD00CC936E /* LoginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2CE26A74FCD00CC936E /* LoginTests.swift */; };
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
 		5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E781EA72787006B0007E397 /* ProfileItemOperation.swift */; };
@@ -185,8 +184,6 @@
 		BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC4526F0251CD6B600E24A51 /* Main.storyboard */; };
 		BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */; };
 		BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F4251DF5AE00E24A51 /* RootViewController.swift */; };
-		BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F6251DF5E900E24A51 /* SplashViewController.swift */; };
-		BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */; };
 		BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4526FA251E1D7500E24A51 /* AuthResponse.swift */; };
 		BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5596F025A345ED00BF55DA /* DropdownView.swift */; };
 		BC55970425A3462900BF55DA /* DropdownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BC55970325A3462900BF55DA /* DropdownView.xib */; };
@@ -244,7 +241,6 @@
 		BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9B5259343BE00483BBA /* AccountVM.swift */; };
 		BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */; };
 		BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC6D3B3D251363A900390927 /* Authentication.storyboard */; };
-		BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B40251363E800390927 /* LoginViewController.swift */; };
 		BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B422513664C00390927 /* AuthViewModel.swift */; };
 		BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B462514E2D100390927 /* RequestProtocol.swift */; };
@@ -351,6 +347,7 @@
 		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
+		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
@@ -492,7 +489,6 @@
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
 		5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E68F2CE26A74FCD00CC936E /* LoginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginTests.swift; sourceTree = "<group>"; };
 		5E68F2D026A74FCD00CC936E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E68F2D826A9A2CD00CC936E /* TestURLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestURLs.swift; sourceTree = "<group>"; };
 		5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseURLProtocol.swift; sourceTree = "<group>"; };
@@ -620,8 +616,6 @@
 		BC4526F0251CD6B600E24A51 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
 		BC4526F4251DF5AE00E24A51 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		BC4526F6251DF5E900E24A51 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
-		BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		BC4526FA251E1D7500E24A51 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		BC5596F025A345ED00BF55DA /* DropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownView.swift; sourceTree = "<group>"; };
 		BC55970325A3462900BF55DA /* DropdownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropdownView.xib; sourceTree = "<group>"; };
@@ -679,7 +673,6 @@
 		BC6AF9B5259343BE00483BBA /* AccountVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountVM.swift; sourceTree = "<group>"; };
 		BC6AF9B82593675600483BBA /* ArchiveVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveVOPayload.swift; sourceTree = "<group>"; };
 		BC6D3B3D251363A900390927 /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
-		BC6D3B40251363E800390927 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BC6D3B422513664C00390927 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
 		BC6D3B462514E2D100390927 /* RequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProtocol.swift; sourceTree = "<group>"; };
@@ -788,6 +781,7 @@
 		F509D6FB2742E265007E4594 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
+		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -913,7 +907,6 @@
 				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
 				BC4526EC251CD62C00E24A51 /* MainViewController.swift */,
 				BC4526F4251DF5AE00E24A51 /* RootViewController.swift */,
-				BC4526F6251DF5E900E24A51 /* SplashViewController.swift */,
 				BC6358832535C7D000EEC48C /* NavigationController.swift */,
 				BC0D99AF256C08F000D29041 /* SideMenuViewController.swift */,
 				5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */,
@@ -1008,7 +1001,6 @@
 				06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */,
 				BC6D3B422513664C00390927 /* AuthViewModel.swift */,
 				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
-				BC4526F8251DF60A00E24A51 /* SplashViewModel.swift */,
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
 				F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */,
 				F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */,
@@ -1146,7 +1138,6 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
-				5E68F2CE26A74FCD00CC936E /* LoginTests.swift */,
 				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
 				5E5F37CC26B0B3C700031927 /* VerificationCodeTests.swift */,
 				5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */,
@@ -1652,7 +1643,6 @@
 			isa = PBXGroup;
 			children = (
 				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
-				BC6D3B40251363E800390927 /* LoginViewController.swift */,
 				BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */,
 				BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */,
 				BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */,
@@ -1769,6 +1759,7 @@
 				BCEECDAD25B0591B00A4520E /* Download */,
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
+				F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -2194,7 +2185,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID\n\n";
+			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET\n\n";
 		};
 		F5A784992785D84A00738389 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2225,7 +2216,6 @@
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
-				BC6D3B41251363E800390927 /* LoginViewController.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
@@ -2443,6 +2433,7 @@
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
+				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */,
@@ -2450,7 +2441,6 @@
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */,
 				F5EC701E270F21BE0052E53D /* FileCollectionViewHeader.swift in Sources */,
-				BC4526F9251DF60A00E24A51 /* SplashViewModel.swift in Sources */,
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
@@ -2495,7 +2485,6 @@
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
-				BC4526F7251DF5E900E24A51 /* SplashViewController.swift in Sources */,
 				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				F5AA5E0D27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift in Sources */,
@@ -2546,7 +2535,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E68F2CF26A74FCD00CC936E /* LoginTests.swift in Sources */,
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
@@ -2731,6 +2719,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
