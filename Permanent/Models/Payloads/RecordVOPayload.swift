@@ -11,13 +11,14 @@ struct RecordVOPayload: Model {
     let recordVO: RecordVOPayloadData
     
     init(folderLinkId: Int, parentFolderLinkId: Int, archiveNbr: String? = nil, uploadFileName: String? = nil, recordId: Int? = nil, parentFolderId: Int? = nil) {
-        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId,
-                                            parentFolderLinkId: parentFolderLinkId,
-                                            archiveNbr: archiveNbr,
-                                            uploadFileName: uploadFileName,
-                                            recordId: recordId,
-                                            parentFolderId: parentFolderId)
-    }
+        self.recordVO = RecordVOPayloadData(
+            folderLinkId: folderLinkId,
+            parentFolderLinkId: parentFolderLinkId,
+            archiveNbr: archiveNbr,
+            uploadFileName: uploadFileName,
+            recordId: recordId,
+            parentFolderId: parentFolderId
+    )}
     
     enum CodingKeys: String, CodingKey {
         case recordVO = "RecordVO"

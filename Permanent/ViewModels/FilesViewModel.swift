@@ -26,6 +26,14 @@ typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
+enum PublicRootRequestStatus: Equatable {
+    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
+        return true
+    }
+    case success(folder: FolderVOData?)
+    case error(message: String?)
+}
+
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
@@ -222,19 +230,18 @@ extension FilesViewModel {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.download(downloadInfo,
-                            onDownloadStart: onDownloadStart,
-                            onFileDownloaded: onFileDownloaded,
-                            progressHandler: progressHandler,
-                            completion: {
-                                self.downloader = nil
-                                self.downloadQueue.safeRemoveFirst()
-                            })
+        downloader?.download(
+            downloadInfo,
+            onDownloadStart: onDownloadStart,
+            onFileDownloaded: onFileDownloaded,
+            progressHandler: progressHandler,
+            completion: {
+                self.downloader = nil
+                self.downloadQueue.safeRemoveFirst()
+            }
+        )}
 
-    }
-
-    func download(file: FileViewModel,onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
-        
+    func download(file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
@@ -242,15 +249,16 @@ extension FilesViewModel {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.download(downloadInfo,
-                             onDownloadStart: onDownloadStart,
-                             onFileDownloaded: onFileDownloaded,
-                             progressHandler: nil,
-                             completion: {
-                                self.downloader = nil
-                                self.downloadQueue.safeRemoveFirst()
-                            })
-    }
+        downloader?.download(
+            downloadInfo,
+            onDownloadStart: onDownloadStart,
+            onFileDownloaded: onFileDownloaded,
+            progressHandler: nil,
+            completion: {
+                self.downloader = nil
+                self.downloadQueue.safeRemoveFirst()
+            }
+        )}
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
@@ -455,9 +463,11 @@ extension FilesViewModel {
                 
                 completion(true)
                 return
+                
             case .error:
                 completion(false)
                 return
+                
             default:
                 completion(false)
                 return
@@ -528,13 +538,4 @@ extension FilesViewModel {
             }
         }
     }
-}
-
-enum PublicRootRequestStatus: Equatable {
-    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
-        return true
-    }
-    
-    case success(folder: FolderVOData?)
-    case error(message: String?)
 }

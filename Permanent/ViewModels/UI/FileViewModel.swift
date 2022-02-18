@@ -113,10 +113,10 @@ struct FileViewModel: Equatable {
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
-               let thumbnailURL = $0.archiveVO?.thumbURL200,
-               let shareStatusURL = $0.status,
-               let shareIdURL = $0.shareID,
-               let archiveIdURL = $0.archiveVO?.archiveID {
+                let thumbnailURL = $0.archiveVO?.thumbURL200,
+                let shareStatusURL = $0.status,
+                let shareIdURL = $0.shareID,
+                let archiveIdURL = $0.archiveVO?.archiveID {
                 let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
                 self.minArchiveVOS.append(minArchive)
             }
@@ -151,10 +151,10 @@ struct FileViewModel: Equatable {
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
-               let thumbnailURL = $0.archiveVO?.thumbURL200,
-               let shareStatusURL = $0.status,
-               let shareIdURL = $0.shareID,
-               let archiveIdURL = $0.archiveVO?.archiveID {
+                let thumbnailURL = $0.archiveVO?.thumbURL200,
+                let shareStatusURL = $0.status,
+                let shareIdURL = $0.shareID,
+                let archiveIdURL = $0.archiveVO?.archiveID {
                 let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
                 self.minArchiveVOS.append(minArchive)
             }
