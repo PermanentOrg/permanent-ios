@@ -103,7 +103,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
         if let apiError = APIError.error(withCode: (error as NSError?)?.code) {
             return completion(.error(apiError, nil))
         }
-        
+
         // Check if the response is valid.
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             completion(OperationResult.error(APIError.invalidResponse, nil))

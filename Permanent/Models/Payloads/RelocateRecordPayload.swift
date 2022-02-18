@@ -11,8 +11,8 @@ struct RelocateRecordPayload: Model {
     let recordVO: RecordVOPayloadData
     let folderDestVO: FolderDestVOPayloadData
 
-    init(folderLinkId: Int, folderDestLinkId: Int, parentFolderLinkId: Int) {
-        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId, parentFolderLinkId: parentFolderLinkId)
+    init(folderLinkId: Int, folderDestLinkId: Int, parentFolderLinkId: Int, archiveNbr: String, uploadFileName: String, recordId: Int, parentFolderId: Int) {
+        self.recordVO = RecordVOPayloadData(folderLinkId: folderLinkId, parentFolderLinkId: parentFolderLinkId, archiveNbr: archiveNbr, uploadFileName: uploadFileName, recordId: recordId, parentFolderId: parentFolderId)
         self.folderDestVO = FolderDestVOPayloadData(folderLinkId: folderDestLinkId)
     }
 

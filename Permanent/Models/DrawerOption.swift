@@ -20,8 +20,8 @@ enum DrawerOption {
     case security
     case activityFeed
     case invitations
-    case help
     case logOut
+    case contactSupport
     case none
     
     var icon: UIImage? {
@@ -37,9 +37,9 @@ enum DrawerOption {
         case .accountInfo: return .accountInfo
         case .invitations: return .mail
         case .activityFeed: return .alert
-        case .help: return .help
         case .archives: return nil
         case .logOut: return UIImage.logOut.templated
+        case .contactSupport: return nil
         case .none: return nil
         }
     }
@@ -50,16 +50,16 @@ enum DrawerOption {
         case .publicFiles: return "Public Files".localized()
         case .shares: return "Shared Files".localized()
         case .members: return "Manage Members".localized()
-        case .manageArchives: return "Manage Archives".localized()
+        case .manageArchives: return "Switch Archives".localized()
         case .publicGallery: return "Public Gallery".localized()
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed
         case .addStorage: return String.addStorage
         case .accountInfo: return String.accountInfo
         case .security: return String.security
-        case .help: return String.help
         case .logOut: return .logOut
         case .archives: return ""
+        case .contactSupport: return .contactSupport
         case .none: return ""
         }
     }

@@ -180,9 +180,11 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                 }
                 
                 return
+                
             case .error:
                 handler(.error(message: .errorMessage))
                 return
+                
             default:
                 break
             }
@@ -191,7 +193,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
         guard let folderLinkId = shareVO.folderLinkID,
-              let archiveId = shareVO.archiveID else {
+                let archiveId = shareVO.archiveID else {
             handler(RequestStatus.error(message: nil))
             return
         }
@@ -214,9 +216,11 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                 }
                 handler(.success)
                 return
+                
             case .error:
                 handler(.error(message: .errorMessage))
                 return
+                
             default:
                 break
             }

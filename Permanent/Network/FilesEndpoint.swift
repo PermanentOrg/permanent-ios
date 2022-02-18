@@ -33,7 +33,7 @@ enum FilesEndpoint {
     case getFolder(itemInfo: GetRecordParams)
     case download(url: URL, filename: String, progressHandler: ProgressHandler?)
     
-    //RENAME
+    // RENAME
     case renameFolder(params: UpdateRecordParams)
     
     case updateRootColumns(params: UpdateRootColumnsParams)
@@ -62,12 +62,11 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/delete"
             }
+            
         case .getRecord:
             return "/record/get"
-            
         case .getFolder:
             return "/folder/get"
-            
         case .relocate(let parameters):
             if parameters.items.source.type.isFolder {
                 return "/folder/\(parameters.action.endpointValue)"
@@ -77,13 +76,10 @@ extension FilesEndpoint: RequestProtocol {
             
         case .update:
             return "/record/update"
-            
         case .renameFolder:
             return "/folder/update"
-            
         case .updateRootColumns:
             return "/folder/updateRootColumns"
-
         default:
             return ""
         }
@@ -93,6 +89,7 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .download:
             return .get
+            
         default:
             return .post
         }
@@ -111,22 +108,31 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .navigateMin(let params):
             return Payloads.navigateMinPayload(for: params)
+            
         case .getLeanItems(let params):
             return Payloads.getLeanItemsPayload(for: params)
+            
         case .getPresignedUrl(let params):
             return Payloads.getPresignedUrlPayload(for: params)
+            
         case .registerRecord(let params):
             return Payloads.registerRecord(for: params)
+            
         case .newFolder(let params):
             return Payloads.newFolderPayload(for: params)
+            
         case .download(_, let filename, _):
             return ["filename": filename]
+            
         case .update(let params):
             return Payloads.updateRecordRequest(params: params)
+            
         case .renameFolder(let params):
             return Payloads.renameFolderRequest(params: params)
+            
         case .updateRootColumns(let params):
             return Payloads.updateRootColumns(params)
+            
         default:
             return nil
         }
@@ -159,7 +165,8 @@ extension FilesEndpoint: RequestProtocol {
             default: return nil
             }
         }
-        set {}
+        // swiftlint:disable:next unused_setter_value
+        set { }
     }
     
     var bodyData: Data? {
@@ -176,7 +183,6 @@ extension FilesEndpoint: RequestProtocol {
                 let requestVO = APIPayload.make(fromData: [folderVO])
                 
                 return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
-                
             } else {
                 let recordVO = RecordVOPayload(folderLinkId: parameters.folderLinkId, parentFolderLinkId: parameters.parentFolderLinkId)
                 let requestVO = APIPayload.make(fromData: [recordVO])
@@ -200,15 +206,23 @@ extension FilesEndpoint: RequestProtocol {
             
         case .relocate(let parameters):
             if parameters.items.source.type.isFolder {
-                let copyVO = RelocateFolderPayload(folderLinkId: parameters.items.source.folderLinkId,
-                                                   folderDestLinkId: parameters.items.destination.folderLinkId)
+                let copyVO = RelocateFolderPayload(
+                    folderLinkId: parameters.items.source.folderLinkId,
+                    folderDestLinkId: parameters.items.destination.folderLinkId
+                )
                 let requestVO = APIPayload.make(fromData: [copyVO])
                 
                 return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
             } else {
-                let relocateVO = RelocateRecordPayload(folderLinkId: parameters.items.source.folderLinkId,
-                                                       folderDestLinkId: parameters.items.destination.folderLinkId,
-                                                       parentFolderLinkId: parameters.items.source.parentFolderLinkId)
+                let relocateVO = RelocateRecordPayload(
+                    folderLinkId: parameters.items.source.folderLinkId,
+                    folderDestLinkId: parameters.items.destination.folderLinkId,
+                    parentFolderLinkId: parameters.items.source.parentFolderLinkId,
+                    archiveNbr: parameters.items.source.archiveNo,
+                    uploadFileName: parameters.items.source.uploadFileName,
+                    recordId: parameters.items.source.recordId,
+                    parentFolderId: parameters.items.source.parentFolderId
+                )
                 let requestVO = APIPayload.make(fromData: [relocateVO])
                 
                 return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
@@ -223,6 +237,7 @@ extension FilesEndpoint: RequestProtocol {
         switch self {
         case .download(let url, _, _):
             return url.absoluteString
+            
         default:
             return nil
         }

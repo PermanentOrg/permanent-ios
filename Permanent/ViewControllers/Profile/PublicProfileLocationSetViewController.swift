@@ -15,19 +15,8 @@ protocol PublicProfileLocationSetViewControllerDelegate: AnyObject {
 }
 
 class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePageViewModel> {
-    
     var file: FileViewModel!
-    var locnVO: LocnVO? {
-        if let archiveType = viewModel?.archiveType {
-            switch archiveType {
-            case .person:
-                return viewModel?.birthInfoProfileItem?.locnVOs?.first
-            case .family, .organization:
-                return viewModel?.establishedInfoProfileItem?.locnVOs?.first
-            }
-        }
-        return nil
-    }
+    var locnVO: LocnVO?
     
     weak var delegate: PublicProfileLocationSetViewControllerDelegate?
     
@@ -41,14 +30,14 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
     
     let placesClient = GMSPlacesClient()
     
-    var pickedLocation: LocnVO? = nil
+    var pickedLocation: LocnVO?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         styleNavBar()
         initUI()
-   }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -92,7 +81,7 @@ class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePa
         definesPresentationContext = true
         
         if let latitude = locnVO?.latitude,
-           let longitude = locnVO?.longitude {
+            let longitude = locnVO?.longitude {
             setLocation(latitude, longitude)
         } else {
             let coordinate = Constants.API.Locations.initialLocation
@@ -146,15 +135,13 @@ extension PublicProfileLocationSetViewController: GMSMapViewDelegate {
 }
 
 extension PublicProfileLocationSetViewController: GMSAutocompleteResultsViewControllerDelegate {
-    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
-                           didAutocompleteWith place: GMSPlace) {
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController, didAutocompleteWith place: GMSPlace) {
         searchController?.isActive = false
         
         saveLocation(place.coordinate)
     }
     
-    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
-                           didFailAutocompleteWithError error: Error) {
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController, didFailAutocompleteWithError error: Error) {
         print("Error: ", error.localizedDescription)
     }
     

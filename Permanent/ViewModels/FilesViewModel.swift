@@ -26,6 +26,14 @@ typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
+enum PublicRootRequestStatus: Equatable {
+    static func == (lhs: PublicRootRequestStatus, rhs: PublicRootRequestStatus) -> Bool {
+        return true
+    }
+    case success(folder: FolderVOData?)
+    case error(message: String?)
+}
+
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
@@ -167,8 +175,8 @@ extension FilesViewModel {
                     let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
                     let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                     let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
-                    
-                    return handler(.error(message: .errorMessage))
+                        handler(.error(message: .errorMessage))
+                        return
                 }
                 
                 handler(.success)
@@ -180,6 +188,26 @@ extension FilesViewModel {
                 break
             }
         }
+    }
+    
+    func publish(file: FileViewModel, then handler: @escaping ServerResponse) {
+        fileAction = .copy
+        guard let archiveNbr = currentArchive?.archiveNbr else { return }
+        
+        getPublicRoot(archiveNbr: archiveNbr, then: { status in
+            switch status {
+            case .success(let folder):
+                if let rootFolder = folder {
+                    let publicRoot = FileViewModel(model: rootFolder)
+                    self.relocate(file: file, to: publicRoot, then: handler)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let message):
+                handler(.error(message: message))
+            }
+        })
     }
     
     func cancelDownload() {
@@ -201,19 +229,18 @@ extension FilesViewModel {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.download(downloadInfo,
-                            onDownloadStart: onDownloadStart,
-                            onFileDownloaded: onFileDownloaded,
-                            progressHandler: progressHandler,
-                            completion: {
-                                self.downloader = nil
-                                self.downloadQueue.safeRemoveFirst()
-                            })
+        downloader?.download(
+            downloadInfo,
+            onDownloadStart: onDownloadStart,
+            onFileDownloaded: onFileDownloaded,
+            progressHandler: progressHandler,
+            completion: {
+                self.downloader = nil
+                self.downloadQueue.safeRemoveFirst()
+            }
+        )}
 
-    }
-
-    func download(file: FileViewModel,onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
-        
+    func download(file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
@@ -221,15 +248,16 @@ extension FilesViewModel {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.download(downloadInfo,
-                             onDownloadStart: onDownloadStart,
-                             onFileDownloaded: onFileDownloaded,
-                             progressHandler: nil,
-                             completion: {
-                                self.downloader = nil
-                                self.downloadQueue.safeRemoveFirst()
-                            })
-    }
+        downloader?.download(
+            downloadInfo,
+            onDownloadStart: onDownloadStart,
+            onFileDownloaded: onFileDownloaded,
+            progressHandler: nil,
+            completion: {
+                self.downloader = nil
+                self.downloadQueue.safeRemoveFirst()
+            }
+        )}
     
     func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
@@ -434,9 +462,11 @@ extension FilesViewModel {
                 
                 completion(true)
                 return
+                
             case .error:
                 completion(false)
                 return
+                
             default:
                 completion(false)
                 return
@@ -476,6 +506,32 @@ extension FilesViewModel {
             case .error(let error, _):
                 handler(.error(message: error?.localizedDescription))
 
+            default:
+                break
+            }
+        }
+    }
+    
+    func getPublicRoot(archiveNbr: String, then handler: @escaping (PublicRootRequestStatus) -> Void) {
+        let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: archiveNbr))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                if model.isSuccessful == true {
+                    handler(.success(folder: model.results?.first?.data?.first?.folderVO))
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
             default:
                 break
             }

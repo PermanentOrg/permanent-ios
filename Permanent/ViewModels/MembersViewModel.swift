@@ -39,7 +39,6 @@ class MembersViewModel: ViewModelInterface {
         
         let operation = APIOperation(MembersEndpoint.members(archiveNbr: archiveNbr))
         operation.execute(in: APIRequestDispatcher()) { result in
-            
             switch result {
             case .json(let response, _):
                 
@@ -48,7 +47,6 @@ class MembersViewModel: ViewModelInterface {
                         from: response,
                         with: APIResults<AccountVO>.decoder
                     ), model.isSuccessful else {
-                    
                     return handler(.error(message: .errorMessage))
                 }
             
@@ -66,7 +64,6 @@ class MembersViewModel: ViewModelInterface {
     }
     
     func modifyMember(_ operation: MemberOperation, params: AddMemberParams, then handler: @escaping ServerResponse) {
-        
         guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
             let archiveNbr: String = currentArchive.archiveNbr else {
             return
@@ -81,7 +78,6 @@ class MembersViewModel: ViewModelInterface {
                         from: response,
                         with: APIResults<AccountVO>.decoder
                     ), model.isSuccessful else {
-                    
                     return handler(.error(message: .errorMessage))
                 }
                                 
@@ -107,14 +103,19 @@ class MembersViewModel: ViewModelInterface {
         switch accessRole {
         case .owner:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership]
+            
         case .manager:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]
+            
         case .curator:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share]
+            
         case .editor:
             return [.read, .create, .upload, .edit]
+            
         case .contributor:
             return [.read, .create, .upload]
+            
         case .viewer:
             return [.read]
         }
@@ -138,9 +139,11 @@ class MembersViewModel: ViewModelInterface {
                 
                 completion(true)
                 return
+                
             case .error:
                 completion(false)
                 return
+                
             default:
                 completion(false)
                 return
@@ -161,7 +164,9 @@ class MembersViewModel: ViewModelInterface {
                 guard
                     let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<AccountVO>.decoder) else { return handler(.error(message: .errorMessage)) }
+                        with: APIResults<AccountVO>.decoder
+                    ) else { return handler(.error(message: .errorMessage)) }
+                
                 guard
                     model.isSuccessful
                 else {

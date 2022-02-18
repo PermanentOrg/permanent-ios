@@ -52,9 +52,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
                 guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
-                UIApplication.shared.open(url)
-            }))
-            
+                UIApplication.shared.open(url) })
+            )
             self?.present(alertVC, animated: true, completion: nil)
         }
         
@@ -493,11 +492,29 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
+
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
+                self.setupUIForAction(.none)
                 
-                DispatchQueue.main.async {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
-                    self.setupUIForAction(.none)
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        })
+    }
+    
+    func publish(file: FileViewModel) {
+        showSpinner()
+        viewModel?.publish(file: file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                if file.type.isFolder {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder published successfully".localized())
+                } else {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                 }
+                self.setupUIForAction(.none)
                 
             case .error(let message):
                 self.showErrorAlert(message: message)
@@ -658,8 +675,7 @@ extension MainViewController {
     
     private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+    
             self.showActionDialog(
                 styled: .simple,
                 withTitle: title,
@@ -672,6 +688,20 @@ extension MainViewController {
                 overlayView: self.overlayView
             )
         }
+    
+    private func didTapPublish(source: FileViewModel) {
+        let title = String(format: "\(String.publish) \"%@\"?", source.name)
+        self.showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: .publishDescription,
+            positiveButtonTitle: .publish,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.publish(file: source)
+            },
+            overlayView: self.overlayView
+        )
     }
     
     private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
@@ -818,52 +848,49 @@ extension MainViewController: FABActionSheetDelegate {
         if file.permissions.contains(.share) {
             if file.type.isFolder == false {
                 actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
-                    shareWithOtherApps(file: file)
-                }))
-            }
+                    shareWithOtherApps(file: file) })
+                )}
             
             if file.permissions.contains(.ownership) && viewModel is PublicFilesViewModel == false {
                 actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
-                    shareInApp(file: file)
-                }))
-            }
+                    shareInApp(file: file) })
+                )}
         }
         
         if let viewModel = viewModel as? PublicFilesViewModel, let url = viewModel.publicURL(forFile: file) {
             actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
-                share(url: url)
-            }))
-        }
+                share(url: url) })
+            )}
+        
+        if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
+            actions.append(PRMNTAction(title: "Publish".localized(), color: .primary, handler: { [self] action in
+                publishAction(file: file) })
+            )}
         
         if file.permissions.contains(.edit) {
             actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
-                renameAction(file: file, atIndexPath: indexPath)
-            }))
-        }
+                renameAction(file: file, atIndexPath: indexPath) })
+            )}
         
         if file.permissions.contains(.delete) {
             actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
+                deleteAction(file: file, atIndexPath: indexPath) })
+            )}
         
         if file.permissions.contains(.move) {
             actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
-                relocateAction(file: file, action: .move)
-            }))
-        }
+                relocateAction(file: file, action: .move) })
+            )}
         
         if file.permissions.contains(.create) {
             actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
-                relocateAction(file: file, action: .copy)
-            }))
-        }
+                relocateAction(file: file, action: .copy) })
+            )}
         
         if file.permissions.contains(.read) && file.type.isFolder == false {
             actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
-                downloadAction(file: file)
-            }))
-        }
+                downloadAction(file: file) })
+            )}
         
         let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
         present(actionSheet, animated: true, completion: nil)
@@ -1003,9 +1030,8 @@ extension MainViewController {
         } else {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
             preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
-                self.viewModel?.cancelDownload()
-            }))
-            
+                self.viewModel?.cancelDownload() })
+            )
             present(preparingAlert, animated: true) {
                 self.viewModel?.download(file: file, onDownloadStart: { }, onFileDownloaded: { url, errorMessage in
                     if let url = url {
@@ -1067,6 +1093,10 @@ extension MainViewController {
         viewModel?.selectedFile = file
         
         setupUIForAction(action)
+    }
+    
+    func publishAction(file: FileViewModel) {
+        didTapPublish(source: file)
     }
 }
 

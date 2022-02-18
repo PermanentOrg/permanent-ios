@@ -67,6 +67,26 @@ struct ProfilePageData {
         }
     }
     
+    static func milestoneTitle() -> String {
+        return "Title".localized()
+    }
+    
+    static func milestoneStartDate() -> String {
+        return "Start Date".localized()
+    }
+    
+    static func milestoneEndDate() -> String {
+        return "End Date".localized()
+    }
+    
+    static func milestoneDescription() -> String {
+        return "Description".localized()
+    }
+    
+    static func milestoneLocation() -> String {
+        return "Location".localized()
+    }
+    
     static func nameHint(archiveType: ArchiveType) -> String {
         switch archiveType {
         case .person:
@@ -118,5 +138,25 @@ struct ProfilePageData {
         case .person, .family, .organization:
             return "Choose a location".localized()
         }
+    }
+    
+    static func milestoneTitleHint() -> String {
+        return "What was this milestone?".localized()
+    }
+    
+    static func milestoneStartDateHint() -> String {
+        return "YYYY-MM-DD".localized()
+    }
+    
+    static func milestoneEndDateHint() -> String {
+        return "YYYY-MM-DD".localized()
+    }
+    
+    static func milestoneDescriptionHint() -> String {
+        return "More details and information about this milestone".localized()
+    }
+    
+    static func milestoneLocationHint() -> String {
+        return "Choose a location".localized()
     }
 }

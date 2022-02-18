@@ -51,9 +51,9 @@ extension String {
     static var incorrectOldPassword: String { return "IncorrectOldPassword".localized() }
     static var lowPasswordComplexity: String { return "LowPasswordComplexity".localized() }
     static var passwordMatchError: String { return "PasswordMatchError".localized() }
-    static var passwordChangedSuccessfully: String{ return "PasswordChangedSuccessfully".localized()}
-    static var userDetailsChangedSuccessfully: String{ return "UserDetailsChangedSuccessfully".localized()}
-    static var getUserDetailsWasSuccessfully: String{ return "GetUserDetailsWasSuccessfully".localized()}
+    static var passwordChangedSuccessfully: String { return "PasswordChangedSuccessfully".localized() }
+    static var userDetailsChangedSuccessfully: String { return "UserDetailsChangedSuccessfully".localized() }
+    static var getUserDetailsWasSuccessfully: String { return "GetUserDetailsWasSuccessfully".localized() }
     static var usePasscode: String { return "UsePasscode".localized() }
     static var welcomeMessage: String { return "WelcomeMessage".localized() }
     static var unlockWithBiometrics: String { return "UnlockWithBiometrics".localized() }
@@ -89,6 +89,7 @@ extension String {
     static var copy: String { return "Copy".localized() }
     static var move: String { return "Move".localized() }
     static var publish: String { return "Publish".localized() }
+    static var publishDescription: String { return "Create a publicly viewable copy of this item in your Public workspace and get a public link to share with anyone.".localized()}
     static var edit: String { return "Edit".localized() }
     static var share: String { return "Share".localized() }
     static var rename: String { return "Rename".localized()}
@@ -153,7 +154,7 @@ extension String {
     static var accessLevel: String { return "AccessLevel".localized() }
     static var memberEmail: String { return "\(member) \(email)" }
     static var security: String { return "Security".localized() }
-    static var help: String { return "Help".localized() }
+    static var contactSupport: String { return "Contact Support".localized() }
     static var accountInfo: String { return "AccountInfo".localized() }
     static var updatePassword: String { return "UpdatePassword".localized()}
     static var currentPassword: String { return "CurrentPassword".localized()}
@@ -161,8 +162,8 @@ extension String {
     static var newPassword: String { return "NewPassword".localized()}
     static var logInWithBiometrics: String { return "LogInWithBiometrics".localized()}
     static var logInWith: String { return "Log in with ".localized()}
-    static var LogInFaceId: String{ return "LogInFaceId".localized()}
-    static var LogInTouchId: String{ return "LogInTouchId".localized()}
+    static var LogInFaceId: String { return "LogInFaceId".localized()}
+    static var LogInTouchId: String { return "LogInTouchId".localized()}
     static var twoStepVerification: String { return "TwoStepVerification".localized()}
     static var sharedBy: String { return "SharedBy".localized() }
     static var fromArchive: String { return "FromArchive".localized() }
@@ -192,8 +193,8 @@ extension String {
     static var invitations: String { return "Invitations".localized() }
     static var send: String { return "Send".localized() }
     static var sendInvitation: String { return "SendInvitation".localized() }
-    static var recipientName: String { return String.init(format: "RecipientInfo".localized(), String.name.lowercased()) }
-    static var recipientEmail: String { return String.init(format: "RecipientInfo".localized(), String.email.lowercased()) }
+    static var recipientName: String { return .init(format: "RecipientInfo".localized(), String.name.lowercased()) }
+    static var recipientEmail: String { return .init(format: "RecipientInfo".localized(), String.email.lowercased()) }
     static var activityFeed: String { return "ActivityFeed".localized() }
     static var inviteSent: String { return "InviteSent".localized()}
     static var inviteRevoked: String { return "InviteRevoked".localized()}

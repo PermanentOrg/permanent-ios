@@ -1,27 +1,32 @@
 //
-//  ProfilePageMilestonesCollectionViewCell.swift
+//  MilestonesTableViewCell.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 16.11.2021.
+//  Created by Lucian Cerbu on 02.02.2022.
 //
-
 import UIKit
 
-class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
-    static let identifier = "ProfilePageMilestonesCollectionViewCell"
-    
+class MilestonesTableViewCell: UITableViewCell {
+
     @IBOutlet weak var milestoneTitleLabel: UILabel!
     @IBOutlet weak var milestoneLocationLabel: UILabel!
     @IBOutlet weak var milestoneDateLabel: UILabel!
-    @IBOutlet weak var milestoneTextLabel: UILabel!
+    @IBOutlet weak var moreButton: UIButton!
+    
+    var moreButtonAction: ((MilestonesTableViewCell) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        moreButton.setTitle("", for: .normal)
+        let image = UIImage(named: "more")?.templated
+        moreButton.setImage(image, for: .normal)
+        moreButton.tintColor = .darkBlue
         
-        milestoneTitleLabel.textColor = .lightGray
+        milestoneTitleLabel.textColor = .primary
         milestoneTitleLabel.font = Text.style32.font
         milestoneTitleLabel.text = "Title".localized()
-    
+        
         milestoneLocationLabel.textColor = .lightGray
         milestoneLocationLabel.font = Text.style11.font
         milestoneLocationLabel.text = "Location not set".localized()
@@ -29,17 +34,14 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         milestoneDateLabel.textColor = .lightGray
         milestoneDateLabel.font = Text.style11.font
         milestoneDateLabel.text = "Start date".localized()
-        
-        milestoneTextLabel.textColor = .lightGray
-        milestoneTextLabel.font = Text.style12.font
-        milestoneTextLabel.text = "Description".localized()
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
     }
     
     func configure(milestone: MilestoneProfileItem?) {
-        if let title = milestone?.title {
-            milestoneTitleLabel.textColor = .primary
-            milestoneTitleLabel.text = title
-        }
+        milestoneTitleLabel.text = milestone?.title
         
         if let location = milestone?.locationFormated {
             milestoneLocationLabel.textColor = .primary
@@ -53,11 +55,6 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         if let endDate = milestone?.endDate {
             milestoneDateLabel.text?.append(" - \(endDate)")
         }
-        
-        if let description = milestone?.description {
-            milestoneTextLabel.textColor = .darkGray
-            milestoneTextLabel.text = description
-        }
     }
     
     override func prepareForReuse() {
@@ -65,14 +62,9 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         milestoneTitleLabel.text = "Title".localized()
         milestoneLocationLabel.text = "Location not set".localized()
         milestoneDateLabel.text = "Start date".localized()
-        milestoneTextLabel.text = "Description".localized()
-    }
-
-    static func nib() -> UINib {
-        return UINib(nibName: identifier, bundle: nil)
     }
     
-    static func size(collectionView: UICollectionView) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 130)
+    @IBAction func moreButtonPressed(_ sender: Any) {
+        moreButtonAction?(self)
     }
 }

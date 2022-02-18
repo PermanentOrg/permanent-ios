@@ -6,8 +6,12 @@
 //
 import UIKit
 
+enum RightDrawerSection: Int {
+    case rightSideMenu
+    case rightOthers
+}
+
 class RightSideMenuViewController: BaseViewController<AuthViewModel> {
-    
     @IBOutlet weak var loggedInLabel: UILabel!
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var storageProgressBar: UIProgressView!
@@ -24,7 +28,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.activityFeed,
             DrawerOption.invitations,
             DrawerOption.security,
-            DrawerOption.help,
+            DrawerOption.contactSupport,
             DrawerOption.logOut
         ],
         
@@ -50,7 +54,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         
         storageProgressBar.tintColor = .mainPurple
         
-        loggedInLabel.text = "Logged in as".localized()+":"
+        loggedInLabel.text = "Logged in as".localized() + ":"
         loggedInLabel.font = Text.style8.font
         loggedInLabel.textColor = .middleGray
         
@@ -62,8 +66,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: RightSideDrawerTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: RightSideDrawerTableViewCell.self))
+        tableView.register(UINib(nibName: String(describing: RightSideDrawerTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: RightSideDrawerTableViewCell.self))
         
         tableView.tableFooterView = UIView()
     }
@@ -71,7 +74,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     func adjustUIForAnimation(isOpening: Bool) {
         tableView.reloadData()
         
-        if (tableView.contentSize.height < tableView.frame.size.height) {
+        if tableView.contentSize.height < tableView.frame.size.height {
             tableView.isScrollEnabled = false
         } else {
             tableView.isScrollEnabled = true
@@ -85,8 +88,8 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
                 let spaceLeft = (accountData.spaceLeft ?? 0)
                 let spaceUsed = spaceTotal - spaceLeft
                 
-                guard let spaceTotalHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceTotal,useDecimal: false),
-                      let spaceUsedHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceUsed) else {
+                guard let spaceTotalHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceTotal, useDecimal: false),
+                    let spaceUsedHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceUsed) else {
                     return
                 }
                 
@@ -120,16 +123,13 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
 }
 
 extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return tableViewData.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let drawerSection = RightDrawerSection(rawValue: section),
-              let numberOfItems = tableViewData[drawerSection]?.count else {
-            return 0
-        }
+            let numberOfItems = tableViewData[drawerSection]?.count else { return 0 }
         return numberOfItems
     }
     
@@ -169,7 +169,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         let menuOption = sectionData[indexPath.row]
         
         let previousMenuOption = selectedMenuOption
-        if menuOption != .addStorage && menuOption != .help {
+        if menuOption != .addStorage && menuOption != .contactSupport {
             selectedMenuOption = menuOption
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
@@ -241,7 +241,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             inviteVC.viewModel = InviteViewModel()
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: inviteVC)
             
-        case .help:
+        case .contactSupport:
             guard let url = URL(string: APIEnvironment.defaultEnv.helpURL) else { return }
             UIApplication.shared.open(url)
             
@@ -257,9 +257,4 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         let newRootVC = UIViewController.create(withIdentifier: id, from: storyboard)
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
     }
-}
-
-enum RightDrawerSection: Int {
-    case rightSideMenu
-    case rightOthers
 }
