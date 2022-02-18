@@ -8,7 +8,6 @@
 import UIKit
 
 class RootViewController: UIViewController {
-    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return [.portrait]
@@ -17,22 +16,60 @@ class RootViewController: UIViewController {
         }
     }
     
-    var current: UIViewController
+    var current: UIViewController?
+    var sessionExpiredObserver: NSObjectProtocol?
     
     init() {
-        self.current = SplashViewController()
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        self.current = SplashViewController()
         super.init(coder: coder)
+    }
+    
+    deinit {
+        guard let sessionExpiredObserver = sessionExpiredObserver else {
+            return
+        }
+
+        NotificationCenter.default.removeObserver(sessionExpiredObserver, name: nil, object: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupChild(current)
+        if AuthenticationManager.shared.reloadSession() {
+            let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+            let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
+            
+            if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
+                setDrawerRoot()
+            } else {
+                setRoot(named: .biometrics, from: .authentication)
+            }
+        } else {
+            let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
+            let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
+            
+            let navController = NavigationController()
+            let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
+            navController.viewControllers = [viewController]
+            
+            current = navController
+            setupChild(current)
+        }
+        
+        sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
+            guard self?.current is SignUpViewController == false else { return }
+            
+            self?.dismiss(animated: false) {
+                self?.setRoot(named: .signUp, from: .authentication)
+                
+                let alert = UIAlertController(title: "Session expired".localized(), message: "Your session has expired, please login again.".localized(), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
+                self?.present(alert, animated: true, completion: nil)
+            }
+        }
     }
     
     var isDrawerRootActive: Bool {
@@ -106,14 +143,22 @@ class RootViewController: UIViewController {
         current = navController
     }
     
-    fileprivate func setupChild(_ viewController: UIViewController) {
+    fileprivate func setupChild(_ viewController: UIViewController?) {
+        guard let viewController = viewController else {
+            return
+        }
+        
         addChild(viewController)
         viewController.view.frame = view.bounds
         view.addSubview(viewController.view)
         viewController.didMove(toParent: self)
     }
     
-    fileprivate func removeChild(_ viewController: UIViewController) {
+    fileprivate func removeChild(_ viewController: UIViewController?) {
+        guard let viewController = viewController else {
+            return
+        }
+        
         viewController.willMove(toParent: nil)
         viewController.view.removeFromSuperview()
         viewController.removeFromParent()
@@ -126,8 +171,6 @@ class RootViewController: UIViewController {
         let newDeviceParams = NewDeviceParams(token)
         let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            
-        }
+        apiOperation.execute(in: APIRequestDispatcher()) { result in }
     }
 }

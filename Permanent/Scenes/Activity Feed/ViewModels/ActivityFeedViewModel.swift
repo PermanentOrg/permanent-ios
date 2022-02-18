@@ -37,7 +37,6 @@ class ActivityFeedViewModel: ActivityFeedViewModelDelegate {
     // MARK: - Network
     
     func fetchNotifications() {
-        
         isBusy = true
         
         let apiOperation = APIOperation(NotificationsEndpoint.getMyNotifications)
@@ -52,10 +51,9 @@ class ActivityFeedViewModel: ActivityFeedViewModelDelegate {
                         from: response,
                         with: APIResults<NotificationVO>.decoder
                     ),
-
                     model.isSuccessful,
                     let notifications = model.results.first?.data else {
-                    self.viewDelegate?.updateScreen(status: .error(message: APIError.parseError(nil).message))
+                        self.viewDelegate?.updateScreen(status: .error(message: APIError.invalidResponse.message))
                     return
                 }
                         

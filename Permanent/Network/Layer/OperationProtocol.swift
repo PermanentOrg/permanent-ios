@@ -12,9 +12,9 @@ protocol OperationProtocol {
     
     var request: RequestProtocol { get }
     
-    func execute(in requestDispatcher: RequestDispatcherProtocol, completion: @escaping (Output) -> Void) -> Void
+    func execute(in requestDispatcher: RequestDispatcherProtocol, completion: @escaping (Output) -> Void)
     
-    func cancel() -> Void
+    func cancel()
 }
 
 enum OperationResult {
@@ -28,5 +28,5 @@ enum OperationResult {
 protocol RequestDispatcherProtocol {
     init(environment: EnvironmentProtocol, networkSession: NetworkSessionProtocol)
     
-    func execute(request: RequestProtocol, completion: @escaping (OperationResult) -> Void) -> URLSessionTask?
+    func execute(request: RequestProtocol, createdTask: @escaping (URLSessionTask?) -> Void, completion: @escaping (OperationResult) -> Void)
 }

@@ -69,7 +69,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
             switch logoutStatus {
             case .success:
                 DispatchQueue.main.async {
-                    self.navigationController?.display(.login, from: .authentication)
+                    self.navigationController?.display(.signUp, from: .authentication)
                 }
                     
             case .error(let message):

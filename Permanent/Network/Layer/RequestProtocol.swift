@@ -85,8 +85,6 @@ extension RequestProtocol {
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
         request.httpBody = bodyData ?? jsonBody
-
-        NetworkLogger.log(request: request)
         
         return request
     }
@@ -130,8 +128,7 @@ extension RequestProtocol {
         // Convert parameters to JSON data
         var jsonBody: Data?
         do {
-            jsonBody = try JSONSerialization.data(withJSONObject: parameters,
-                                                  options: .prettyPrinted)
+            jsonBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
         } catch {
             print(error)
         }

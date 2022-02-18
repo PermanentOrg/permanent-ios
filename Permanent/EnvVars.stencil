@@ -17,4 +17,11 @@ public struct GoogleServiceInfo {
     let googleAppId: String
 }
 
+public struct AuthServiceInfo {
+    let clientId: String
+    let clientSecret: String
+}
+
 public let googleServiceInfo = GoogleServiceInfo(clientId: "{{ argument.clientId }}", reversedClientId: "{{ argument.reversedClientId }}", apiKey: "{{ argument.apiKey }}", gcmSenderId: "{{ argument.gcmSenderId }}", projectId: "{{ argument.projectId }}", storageBucket: "{{ argument.storageBucket }}", googleAppId: "{{ argument.googleAppId }}")
+
+public let authServiceInfo = AuthServiceInfo(clientId: "{{ argument.authClientId }}", clientSecret: "{{ argument.authClientSecret }}")

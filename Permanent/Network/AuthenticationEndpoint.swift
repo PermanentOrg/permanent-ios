@@ -26,7 +26,7 @@ enum AuthenticationEndpoint {
 
 extension AuthenticationEndpoint: RequestProtocol {
     var headers: RequestHeaders? {
-        return nil
+        return ["content-type": "application/json; charset=utf-8"]
     }
 
     var parameters: RequestParameters? {
@@ -37,6 +37,8 @@ extension AuthenticationEndpoint: RequestProtocol {
             return Payloads.verifyPayload(for: credentials)
         case .forgotPassword(let email):
             return Payloads.forgotPasswordPayload(for: email)
+        case .verifyAuth:
+            return Payloads.verifyAuth()
 
         default:
             return nil
@@ -72,7 +74,7 @@ extension AuthenticationEndpoint: RequestProtocol {
     
     var progressHandler: ProgressHandler? {
         get { nil }
-        
+        // swiftlint:disable:next unused_setter_value
         set {}
     }
     
