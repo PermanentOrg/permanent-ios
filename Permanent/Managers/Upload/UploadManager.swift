@@ -8,7 +8,6 @@
 import Foundation
 
 class UploadManager {
-    
     static let didRefreshQueueNotification = Notification.Name("UploadManager.didRefreshQueueNotification")
     static let didUploadFileNotification = Notification.Name("UploadManager.didUploadFileNotification")
     static let quotaExceededNotification = Notification.Name("UploadManager.quotaExceededNotification")
@@ -28,7 +27,7 @@ class UploadManager {
     func upload(files: [FileInfo]) {
         var filesSize = 0
         files.forEach { file in
-            if let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]) {
+            if let resources = try? file.url.resourceValues(forKeys: [.fileSizeKey]) {
                 filesSize += resources.fileSize!
             } else if let fileContents = file.fileContents {
                 filesSize += fileContents.count
@@ -64,8 +63,10 @@ class UploadManager {
                 }
                
                 return
+                
             case .error:
                 return
+                
             default:
                 break
             }
@@ -81,9 +82,7 @@ class UploadManager {
         } else {
             do {
                 file.url = try fileHelper.copyFile(withURL: file.url)
-            } catch {
-                
-            }
+            } catch { }
         }
         
         // Save file metadata
@@ -114,17 +113,25 @@ class UploadManager {
             for file in savedFiles ?? [] where uploadNames.contains(file.id) == false {
                 let uploadOperation = UploadOperation(file: file) { error in
                     DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: Self.didUploadFileNotification, object: nil, userInfo: ["file": file])
-                        // Clear everything once the upload succeded
+                        var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                        savedFiles?.removeAll(where: { $0.id == file.id })
+                        
                         if error == nil {
-                            var savedFiles: [FileInfo]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-                            savedFiles?.removeAll(where: { $0.id == file.id })
-                            try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
-                            
                             FileHelper().deleteFile(at: file.url)
+                            
+                            try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
                         } else {
-                            // Find a neat way to print the error?
+                            file.didFailUpload = true
+                            
+                            if var savedFiles = savedFiles {
+                                savedFiles.append(file)
+                                try? PreferencesManager.shared.setCustomObject(savedFiles, forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                            } else {
+                                try? PreferencesManager.shared.setCustomObject([file], forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+                            }
                         }
+                        
+                        NotificationCenter.default.post(name: Self.didUploadFileNotification, object: nil, userInfo: ["file": file])
                     }
                 }
                 uploadOperation.name = file.id
@@ -135,7 +142,7 @@ class UploadManager {
             }
             
             if didRefresh {
-                NotificationCenter.default.post(name: UploadManager.didRefreshQueueNotification, object: nil, userInfo: nil)
+                NotificationCenter.default.post(name: Self.didRefreshQueueNotification, object: nil, userInfo: nil)
             }
         }
     }
@@ -171,12 +178,11 @@ class UploadManager {
         return (executingOp as? UploadOperation)?.file
     }
     
-    func queuedFiles() -> [FileInfo]? {
-        let files = (uploadQueue.operations as! [UploadOperation]).map(\.file)
-        return try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)
+    func queuedFiles() -> [FileInfo] {
+        return (try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.uploadFilesKey)) ?? []
     }
     
     func operation(forFileId id: String) -> UploadOperation? {
-        return uploadQueue.operations.filter({ $0.name == id }).first as? UploadOperation
+        return uploadQueue.operations.first(where: { $0.name == id }) as? UploadOperation
     }
 }

@@ -145,7 +145,7 @@ class FileCollectionViewCell: UICollectionViewCell {
                 fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .download
                 
-            case .uploading, .waiting:
+            case .uploading, .waiting, .failed:
                 fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .cloud // TODO: waiting can be used on download, too.
             }
@@ -160,6 +160,13 @@ class FileCollectionViewCell: UICollectionViewCell {
         case .waiting:
             progressView.isHidden = true
             statusLabel.isHidden = false
+            statusLabel.text = .waiting
+            updateUploadOrDownloadUI()
+            
+        case .failed:
+            progressView.isHidden = true
+            statusLabel.isHidden = false
+            statusLabel.text = "Failed to upload. Retrying...".localized()
             updateUploadOrDownloadUI()
             
         case .uploading, .downloading:

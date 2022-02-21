@@ -17,6 +17,9 @@ enum FileStatus {
     /// File is pending to be uploaded or downloaded. It must be displayed on the `FileListType.uploading` or `FileListType.downloading` list.
     case waiting
     
+    /// File is pending to be uploaded or downloaded. It must be displayed on the `FileListType.uploading` list.
+    case failed
+    
     /// File is currently downloading . It must be displayed on the `FileListType.downloading` list.
     case downloading
 }

@@ -431,7 +431,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             
             collectionView.reloadData()
             
-        case .uploading, .waiting:
+        case .uploading, .waiting, .failed:
             break
         }
     }

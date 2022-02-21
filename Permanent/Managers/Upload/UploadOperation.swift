@@ -84,6 +84,7 @@ class UploadOperation: BaseOperation {
                 let userInfo: [String: Any]?
                 if let error = self.error {
                     userInfo = ["error": error]
+                    self.file.didFailUpload = true
                 } else {
                     userInfo = nil
                 }
@@ -100,6 +101,7 @@ class UploadOperation: BaseOperation {
             let userInfo: [String: Any]?
             if let error = self.error {
                 userInfo = ["error": error]
+                self.file.didFailUpload = true
             } else {
                 userInfo = nil
             }

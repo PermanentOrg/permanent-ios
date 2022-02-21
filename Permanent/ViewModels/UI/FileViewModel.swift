@@ -123,6 +123,45 @@ struct FileViewModel: Equatable {
         }
     }
     
+    init(model: RecordVOData, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
+        self.name = model.displayName ?? "-"
+        self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+            
+        self.thumbnailURL = model.thumbURL200
+        self.thumbnailURL500 = model.thumbURL500
+        self.thumbnailURL1000 = model.thumbURL1000
+        self.thumbnailURL2000 = model.thumbURL2000
+        self.description = model.recordVODescription ?? ""
+        self.size = Int64(model.size ?? -1)
+        self.uploadFileName = model.uploadFileName ?? ""
+        
+        self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
+        
+        self.archiveThumbnailURL = archiveThumbnailURL
+        self.archiveId = model.archiveID ?? -1
+        self.archiveNo = model.archiveNbr ?? ""
+        
+        self.recordId = model.recordID ?? -1
+        
+        self.folderId = -1
+        self.parentFolderId = model.parentFolderID ?? -1
+        self.parentFolderLinkId = model.parentFolderLinkID ?? -1
+        self.folderLinkId = model.folderLinkID ?? -1
+        
+        self.permissions = permissions
+        
+        model.shareVOS?.forEach {
+            if let fullName = $0.archiveVO?.fullName,
+               let thumbnailURL = $0.archiveVO?.thumbURL200,
+               let shareStatusURL = $0.status,
+               let shareIdURL = $0.shareID,
+               let archiveIdURL = $0.archiveVO?.archiveID {
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
+                self.minArchiveVOS.append(minArchive)
+            }
+        }
+    }
+    
     init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"

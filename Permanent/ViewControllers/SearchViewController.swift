@@ -147,8 +147,6 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
             let viewModel = viewModel,
             let currentFolder = viewModel.currentFolder else { return }
         
-        viewModel.refreshUploadQueue()
-        
         let params: NavigateMinParams = (
             currentFolder.archiveNo,
             currentFolder.folderLinkId,

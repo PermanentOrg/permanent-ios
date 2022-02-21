@@ -82,8 +82,9 @@ class AssetGridViewController: UICollectionViewController {
         }
         
         let location = sender.location(in: collectionView)
-        let ip = collectionView.indexPathForItem(at: location)
-        if let ip = ip, (collectionView.indexPathsForSelectedItems?.contains(ip) ?? false) == true {
+        guard let ip = collectionView.indexPathForItem(at: location) else { return }
+        
+        if (collectionView.indexPathsForSelectedItems?.contains(ip) ?? false) == true {
             if isSelectGesture == nil {
                 isSelectGesture = false
             }

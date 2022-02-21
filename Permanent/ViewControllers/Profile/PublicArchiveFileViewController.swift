@@ -278,7 +278,7 @@ extension PublicArchiveFileViewController {
             
             self.collectionView.reloadData()
             
-        case .uploading, .waiting:
+        case .uploading, .waiting, .failed:
             cellRightButtonAction(atPosition: indexPath.row)
         }
     }

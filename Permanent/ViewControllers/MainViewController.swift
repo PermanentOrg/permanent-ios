@@ -58,9 +58,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let operation = notif.object as? UploadOperation else { return }
             // if the upload is in this screen's list, refresh the list of models
-            if self?.viewModel?.currentFolder?.folderLinkId == (notif.object as! UploadOperation).file.folder.folderLinkId && (notif.userInfo?["error"] == nil) {
-                self?.refreshCurrentFolder()
+            if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
+                if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
+                    self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
+                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
+                    self?.refreshCollectionView()
+                } else {
+                    self?.viewModel?.refreshUploadQueue()
+                    self?.refreshCollectionView()
+                }
             }
         }
     }
@@ -254,11 +262,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     @objc
-    private func removeFromQueue(atPosition position: Int) {
-        viewModel?.removeFromQueue(position)
-    }
-    
-    @objc
     private func headerButtonAction(_ sender: UIButton) {
         showSortActionSheetDialog()
     }
@@ -276,6 +279,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             positiveAction: {
                 self.actionDialog?.dismiss()
                 self.viewModel?.cancelUploadsInFolder()
+                
+                if self.viewModel?.refreshUploadQueue() == true {
+                    self.refreshCollectionView()
+                }
             },
             cancelButtonTitle: "No".localized(),
             positiveButtonColor: .brightRed,
@@ -340,14 +347,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         DispatchQueue.main.async {
             self.hideSpinner()
         }
+        
+        viewModel?.refreshUploadQueue()
 
         switch status {
         case .success:
-            self.refreshCollectionView()
-            self.toggleFileAction(self.viewModel?.fileAction)
+            refreshCollectionView()
+            toggleFileAction(viewModel?.fileAction)
             
             if let userName = UserDefaults.standard.string(forKey: Constants.Keys.StorageKeys.signUpNameStorageKey) {
-                self.displayWelcomePage(archiveName: userName)
+                displayWelcomePage(archiveName: userName)
             }
             
         case .error(let message):
@@ -654,10 +663,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 // MARK: - Table View Delegates
 
 extension MainViewController {
-    private func cellRightButtonAction(atPosition position: Int) {
-        removeFromQueue(atPosition: position)
-    }
-    
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
@@ -668,8 +673,12 @@ extension MainViewController {
             
             self.collectionView.reloadData()
             
-        case .uploading, .waiting:
-            cellRightButtonAction(atPosition: indexPath.row)
+        case .uploading, .waiting, .failed:
+            viewModel?.removeFromQueue(indexPath.row)
+            
+            if viewModel?.refreshUploadQueue() == true {
+                refreshCollectionView()
+            }
         }
     }
     

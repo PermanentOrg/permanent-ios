@@ -140,7 +140,7 @@ class FileTableViewCell: UITableViewCell {
                 fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .download
                 
-            case .uploading, .waiting:
+            case .uploading, .waiting, .failed:
                 fileImageView.contentMode = .scaleAspectFit
                 fileImageView.image = .cloud // TODO: waiting can be used on download, too.
             }
@@ -152,7 +152,7 @@ class FileTableViewCell: UITableViewCell {
         case .synced:
             updateSyncedUI()
             
-        case .waiting:
+        case .waiting, .failed:
             progressView.isHidden = true
             statusLabel.isHidden = false
             updateUploadOrDownloadUI()
