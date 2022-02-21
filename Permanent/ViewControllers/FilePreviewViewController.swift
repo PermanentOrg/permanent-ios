@@ -68,7 +68,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func loadVM() {
         guard recordLoaded == false else { return }
         
-        activityIndicator.startAnimating()
+        if isViewLoaded {
+            activityIndicator.startAnimating()
+        }
         
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
@@ -116,7 +118,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all
-
     }
     
     override func styleNavBar() {
@@ -145,31 +146,35 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     // MARK: - Load methods
     func loadRecord() {
         guard let fileVO = self.viewModel?.fileVO(),
-              let fileName = self.viewModel?.fileName()
+            let fileName = self.viewModel?.fileName()
         else {
             return
         }
         let fileType = FileType(rawValue: self.viewModel?.recordVO?.recordVO?.type ?? "") ?? .miscellaneous
         
         if let localURL = self.fileHelper.url(forFileNamed: fileName),
-           let contentType = fileVO.contentType {
+            let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
                 self.loadImage(withURL: localURL, contentType: contentType)
+                
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
+                
             default:
                 self.loadMisc(withURL: localURL)
             }
         } else if let downloadURLString = fileVO.downloadURL,
-                  let contentType = fileVO.contentType,
-                  let downloadURL = URL(string: downloadURLString) {
+            let contentType = fileVO.contentType,
+            let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
                 guard let url = URL(string: viewModel?.recordVO?.recordVO?.thumbURL2000 ?? "") else { return }
                 self.loadImage(withURL: url, contentType: contentType)
+                
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
+                
             default:
                 self.loadMisc(withURL: downloadURL)
             }
@@ -250,18 +255,21 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
             shareWithOtherApps()
-        }))
+        })
+        )
         
         if let publicURL = viewModel?.publicURL {
             actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
                 share(url: publicURL)
-            }))
+            })
+            )
         } else if self.file.permissions.contains(.ownership) {
             actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
                 if let file = self.viewModel?.file {
                     shareInApp(file: file)
                 }
-            }))
+            })
+            )
         }
     
         let actionSheet = PRMNTActionSheetViewController(title: "", actions: actions)
@@ -269,7 +277,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func infoButtonAction(_ sender: Any) {
-        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap , from: .main) as! FileDetailsViewController
+        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
         fileDetailsVC.file = viewModel?.file
         fileDetailsVC.viewModel = viewModel
         fileDetailsVC.delegate = self
@@ -295,7 +303,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     // MARK: - KVO
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &playerItemContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
@@ -320,7 +328,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    //MARK: -
+    // MARK: - Menu dismiss
     private func share(url: URL) {
         // For now, dismiss the menu in case another one opens so we avoid crash.
         documentInteractionController.dismissMenu(animated: true)
@@ -343,7 +351,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let preparingAlert = UIAlertController(title: "Preparing File..".localized(), message: nil, preferredStyle: .alert)
             preparingAlert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: { _ in
                 self.viewModel?.cancelDownload()
-            }))
+            })
+            )
 
             present(preparingAlert, animated: true) {
                 if let record = self.viewModel?.recordVO {
