@@ -63,22 +63,22 @@ enum APIEnvironment: EnvironmentProtocol {
     var authorizationURL: String {
         switch self {
         case .staging:
-            return "http://permanent-dev.fusionauth.io/oauth2/authorize"
+            return "https://permanent-dev.fusionauth.io/oauth2/authorize"
         case .development:
-            return "http://permanent-dev.fusionauth.io/oauth2/authorize"
+            return "https://permanent-dev.fusionauth.io/oauth2/authorize"
         case .production:
-            return "http://auth.permanent.org/oauth2/authorize"
+            return "https://auth.permanent.org/oauth2/authorize"
         }
     }
     
     var tokenURL: String {
         switch self {
         case .staging:
-            return "http://permanent-dev.fusionauth.io/oauth2/token"
+            return "https://permanent-dev.fusionauth.io/oauth2/token"
         case .development:
-            return "http://permanent-dev.fusionauth.io/oauth2/token"
+            return "https://permanent-dev.fusionauth.io/oauth2/token"
         case .production:
-            return "http://auth.permanent.org/oauth2/token"
+            return "https://auth.permanent.org/oauth2/token"
         }
     }
     
