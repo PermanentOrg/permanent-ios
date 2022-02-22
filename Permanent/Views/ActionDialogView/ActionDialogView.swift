@@ -178,7 +178,6 @@ class ActionDialogView: UIView {
     
     fileprivate func styleFields() {
         for (index, field) in fieldsStackView.arrangedSubviews.enumerated() {
-
             let fieldValue = prefilledValues?[index] ?? placeholders?[index]
             
             if let textField = field as? TextField {
@@ -253,5 +252,4 @@ extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
         let dropdownView = fieldsStackView.arrangedSubviews.last as? DropdownView
         dropdownView?.value = dropdownValues?[row]
     }
-    
 }

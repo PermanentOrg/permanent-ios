@@ -81,7 +81,6 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         textFieldKeyboardType: UIKeyboardType = .default,
         overlayView: UIView?
     ) {
-        
         guard actionDialog == nil else { return }
         
         actionDialog = ActionDialogView(
@@ -104,7 +103,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
                     completion: { _ in
                         self.actionDialog?.removeFromSuperview()
                         self.actionDialog = nil
-                    })
+                    }
+                )
             }
         )
         

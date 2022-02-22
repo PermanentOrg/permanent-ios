@@ -52,8 +52,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         navigationItem.title = .shares
         view.backgroundColor = .backgroundPrimary
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white,
-                                                 .font: Text.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
@@ -146,7 +145,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     
                     self?.viewModel?.changeArchive(withArchiveId: sharedFile.toArchiveId, archiveNbr: sharedFile.toArchiveNbr, completion: { success in
                         if success {
-                            self?.getShares() {
+                            self?.getShares {
                                 _presentFileDetails()
                             }
                         }
@@ -155,15 +154,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 
                 let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFile.toArchiveName)
                 let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFile.toArchiveName)
-                showActionDialog(styled: .simpleWithDescription,
-                                 withTitle: title,
-                                 description: description,
-                                 positiveButtonTitle: "Switch".localized(),
-                                 positiveAction: action,
-                                 cancelButtonTitle: "Cancel".localized(),
-                                 overlayView: overlayView)
+                showActionDialog(
+                    styled: .simpleWithDescription,
+                    withTitle: title,
+                    description: description,
+                    positiveButtonTitle: "Switch".localized(),
+                    positiveAction: action,
+                    cancelButtonTitle: "Cancel".localized(),
+                    overlayView: overlayView
+                )
             } else {
-                getShares() {
+                getShares {
                     _presentFileDetails()
                 }
             }
@@ -189,7 +190,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     
                     self?.viewModel?.changeArchive(withArchiveId: sharedFolder.toArchiveId, archiveNbr: sharedFolder.toArchiveNbr, completion: { success in
                         if success {
-                            self?.getShares() {
+                            self?.getShares {
                                 self?.navigateToFolder(withParams: navigationParams, backNavigation: false) {
                                     self?.backButton.isHidden = false
                                     self?.directoryLabel.text = navigationParams.folderName
@@ -203,15 +204,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 
                 let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFolder.toArchiveName)
                 let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sharedFolder.toArchiveName)
-                showActionDialog(styled: .simpleWithDescription,
-                                 withTitle: title,
-                                 description: description,
-                                 positiveButtonTitle: "Switch".localized(),
-                                 positiveAction: action,
-                                 cancelButtonTitle: "Cancel".localized(),
-                                 overlayView: overlayView)
+                showActionDialog(
+                    styled: .simpleWithDescription,
+                    withTitle: title,
+                    description: description,
+                    positiveButtonTitle: "Switch".localized(),
+                    positiveAction: action,
+                    cancelButtonTitle: "Cancel".localized(),
+                    overlayView: overlayView
+                )
             } else {
-                getShares() { [self] in
+                getShares { [self] in
                     navigateToFolder(withParams: navigationParams, backNavigation: false) {
                         backButton.isHidden = false
                         directoryLabel.text = navigationParams.folderName
@@ -374,6 +377,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self.directoryLabel.text = "Shares".localized()
                     self.backButton.isHidden = true
                 }
+                
             case .error(let message):
                 self.showErrorAlert(message: message)
             }
@@ -439,7 +443,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     private func handleProgress(forFile file: FileViewModel, withValue value: Float) {
         guard let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }),
-              let downloadingCell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? FileCollectionViewCell
+            let downloadingCell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? FileCollectionViewCell
         else {
             return
         }
@@ -555,7 +559,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         let section = indexPath.section
         let title = viewModel?.title(forSection: section) ?? ""
         
-        if kind == UICollectionView.elementKindSectionHeader && title.count > 0 {
+        if kind == UICollectionView.elementKindSectionHeader && title.isNotEmpty {
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
             headerView.leftButtonTitle = title
             if viewModel?.shouldPerformAction(forSection: section) == true {
@@ -574,10 +578,9 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 && (viewModel?.title(forSection: section) ?? "").count > 0 ? 40 : 0
+        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 && (viewModel?.title(forSection: section) ?? "").isNotEmpty ? 40 : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
     }
-    
 }
 
 // MARK: - CollectionView Related
@@ -611,7 +614,6 @@ extension SharesViewController: FilePreviewNavigationControllerDelegate {
     }
     
     func filePreviewNavigationControllerDidChange(_ filePreviewNavigationVC: UIViewController, hasChanges: Bool) {
-        
     }
 }
 

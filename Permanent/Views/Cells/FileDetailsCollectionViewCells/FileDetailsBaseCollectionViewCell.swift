@@ -19,28 +19,39 @@ class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
             
         case .description:
             return "Description".localized()
+            
         case .date:
             return "Date".localized()
+            
         case .location:
             return "Location".localized()
+            
         case .tags:
             return "Tags".localized()
+            
         case .uploaded:
             return "Uploaded".localized()
         case .lastModified:
             return "Last Modified".localized()
+            
         case .created:
             return "Created".localized()
+            
         case .fileCreated:
             return "File Created".localized()
+            
         case .size:
             return "Size".localized()
+            
         case .fileType:
             return "File Type".localized()
+            
         case .originalFileName:
             return "Original File Name".localized()
+            
         case .originalFileType:
             return "Original File Type".localized()
+            
         default: return ""
         }
     }
@@ -58,5 +69,4 @@ class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
         self.viewModel = viewModel
         self.cellType = type
     }
-    
 }
