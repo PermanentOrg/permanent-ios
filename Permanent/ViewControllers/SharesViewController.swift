@@ -391,7 +391,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }
         }, onFileDownloaded: { url, error in
             DispatchQueue.main.async {
-                self.onFileDownloaded(url: url, error: error)
+                self.onFileDownloaded(url: url, name: file.name, error: error)
             }
         }, progressHandler: { progress in
             DispatchQueue.main.async {
@@ -400,10 +400,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         })
     }
     
-    fileprivate func onFileDownloaded(url: URL?, error: Error?) {
+    fileprivate func onFileDownloaded(url: URL?, name: String?, error: Error?) {
         self.refreshCollectionView()
         
-        guard let _ = url else {
+        guard url != nil else {
             let apiError = (error as? APIError) ?? .unknown
             
             if apiError == .cancelled {
@@ -411,9 +411,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             } else {
                 showErrorAlert(message: apiError.message)
             }
-
             return
         }
+        let name = name ?? "File"
+        view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "'\(name)' " + "download completed".localized(), animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
     }
     
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {

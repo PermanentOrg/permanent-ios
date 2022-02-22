@@ -99,7 +99,7 @@ class InputSettingsView: UIView {
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let cancelButton = UIBarButtonItem(title: .cancel, style: .plain, target: self, action: #selector(cancel))
         
-        toolbar.setItems([doneButton,spaceButton,cancelButton], animated: false)
+        toolbar.setItems([cancelButton,spaceButton,doneButton], animated: false)
         
         textField.inputView = datePicker
         textField.inputAccessoryView = toolbar

@@ -78,6 +78,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         cancelButtonTitle: String = .cancel,
         positiveButtonColor: UIColor = .primary,
         cancelButtonColor: UIColor = .brightRed,
+        textFieldKeyboardType: UIKeyboardType = .default,
         overlayView: UIView?
     ) {
         
@@ -95,6 +96,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             placeholders: placeholders,
             prefilledValues: prefilledValues,
             dropdownValues: dropdownValues,
+            textFieldKeyboardType: textFieldKeyboardType,
             onDismiss: {
                 self.view.dismissPopup(
                     self.actionDialog,

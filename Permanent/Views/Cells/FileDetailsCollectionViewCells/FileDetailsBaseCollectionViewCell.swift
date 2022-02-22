@@ -16,6 +16,7 @@ class FileDetailsBaseCollectionViewCell: UICollectionViewCell {
         switch cellType {
         case .name:
             return "Name".localized()
+            
         case .description:
             return "Description".localized()
         case .date:

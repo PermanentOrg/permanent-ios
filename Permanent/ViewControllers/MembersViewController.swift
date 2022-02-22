@@ -15,7 +15,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
-    var parametersActionDialog: AddMemberParams = (nil,"","")
+    var parametersActionDialog: AddMemberParams = (nil, "", "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,6 +120,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                     }
                 }
             },
+            textFieldKeyboardType: .emailAddress,
             overlayView: self.overlayView)
     }
     
