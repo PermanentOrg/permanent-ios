@@ -8,6 +8,7 @@
 import UIKit
 import KeychainSwift
 import AppAuth
+import FirebaseMessaging
 
 class AuthenticationManager {
     static let keychainAuthDataKey = "org.permanent.authData"
@@ -19,8 +20,7 @@ class AuthenticationManager {
     
     init() {
         NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
-            self?.authState = nil
-            KeychainSwift().delete(Self.keychainAuthDataKey)
+            self?.logout()
         }
     }
     
@@ -58,7 +58,6 @@ class AuthenticationManager {
         currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: presentingVC) { authState, error in
             if let authState = authState {
                 self.authState = authState
-                print("\n\nAuthorization token: \(authState.lastTokenResponse?.accessToken)\n\n")
                 
                 completion(.success)
             } else {
@@ -85,5 +84,8 @@ class AuthenticationManager {
     func logout() {
         authState = nil
         KeychainSwift().delete(Self.keychainAuthDataKey)
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
+        
+        Messaging.messaging().deleteFCMToken(forSenderID: googleServiceInfo.gcmSenderId) { _ in }
     }
 }

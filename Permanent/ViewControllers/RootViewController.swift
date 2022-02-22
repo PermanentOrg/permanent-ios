@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseMessaging
 
 class RootViewController: UIViewController {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -165,12 +166,13 @@ class RootViewController: UIViewController {
     }
     
     func sendPushNotificationToken() {
-        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
-        else { return }
-        
-        let newDeviceParams = NewDeviceParams(token)
-        let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in }
+        Messaging.messaging().retrieveFCMToken(forSenderID: googleServiceInfo.gcmSenderId, completion: { token, error in
+            guard let token: String = token else { return }
+            
+            let newDeviceParams = NewDeviceParams(token)
+            let apiOperation = APIOperation(DeviceEndpoint.new(params: newDeviceParams))
+            
+            apiOperation.execute(in: APIRequestDispatcher()) { result in }
+        })
     }
 }
