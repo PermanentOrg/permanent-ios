@@ -89,6 +89,7 @@ enum PasswordChangeError: String {
 enum MembersOperationsError: String {
     case ownerAccountPending = "error.pr.pending_owner"
     case emailNotValid = "warning.archive.no_email_found"
+    case duplicateAccount = "error.pr.duplicate_share"
     
     var description: String {
         switch self {
@@ -96,6 +97,8 @@ enum MembersOperationsError: String {
             return "There is already a pending owner for this Permanent Archive".localized()
         case .emailNotValid:
             return .emailIsNotValid
+        case .duplicateAccount:
+            return "This account already has access to the Permanent Archive".localized()
         default:
             return .errorMessage
         }

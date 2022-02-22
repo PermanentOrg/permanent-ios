@@ -86,7 +86,7 @@ class InputSettingsView: UIView {
     func configureNumericUI() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(cancel));
+        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(cancel))
         
         toolbar.setItems([doneButton], animated: false)
         textField.inputAccessoryView = toolbar
@@ -95,18 +95,18 @@ class InputSettingsView: UIView {
     func configureDatePickerUI() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(doneDatePicker));
+        let doneButton = UIBarButtonItem(title: .done, style: .plain, target: self, action: #selector(doneDatePicker))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let cancelButton = UIBarButtonItem(title: .cancel, style: .plain, target: self, action: #selector(cancel))
         
-        toolbar.setItems([doneButton,spaceButton,cancelButton], animated: false)
+        toolbar.setItems([cancelButton,spaceButton,doneButton], animated: false)
         
         textField.inputView = datePicker
         textField.inputAccessoryView = toolbar
     }
     
     @objc
-    private func doneDatePicker(){
+    private func doneDatePicker() {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         textField.text = formatter.string(from: datePicker.date)
@@ -114,7 +114,7 @@ class InputSettingsView: UIView {
     }
 
     @objc
-    private func cancel(){
+    private func cancel() {
         self.endEditing(true)
     }
 }

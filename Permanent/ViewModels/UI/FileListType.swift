@@ -8,7 +8,6 @@
 import Foundation
 
 enum FileListType: Int {
-    
     case downloading = 0
     
     case uploading

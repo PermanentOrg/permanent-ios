@@ -77,10 +77,15 @@ class MembersViewModel: ViewModelInterface {
                     let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
                         with: APIResults<AccountVO>.decoder
-                    ), model.isSuccessful else {
+                    ) else {
                     return handler(.error(message: .errorMessage))
                 }
-                                
+                guard model.isSuccessful  else {
+                    let message = model.results.first?.message.first
+                    let memberOperationFailedMessage = MembersOperationsError(rawValue: message ?? .errorUnknown)
+                    handler(.error(message: memberOperationFailedMessage?.description))
+                    return
+                }
                 handler(.success)
                 
             case .error(let error, _):

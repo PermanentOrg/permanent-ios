@@ -78,9 +78,9 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         cancelButtonTitle: String = .cancel,
         positiveButtonColor: UIColor = .primary,
         cancelButtonColor: UIColor = .brightRed,
+        textFieldKeyboardType: UIKeyboardType = .default,
         overlayView: UIView?
     ) {
-        
         guard actionDialog == nil else { return }
         
         actionDialog = ActionDialogView(
@@ -95,6 +95,7 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             placeholders: placeholders,
             prefilledValues: prefilledValues,
             dropdownValues: dropdownValues,
+            textFieldKeyboardType: textFieldKeyboardType,
             onDismiss: {
                 self.view.dismissPopup(
                     self.actionDialog,
@@ -102,7 +103,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
                     completion: { _ in
                         self.actionDialog?.removeFromSuperview()
                         self.actionDialog = nil
-                    })
+                    }
+                )
             }
         )
         

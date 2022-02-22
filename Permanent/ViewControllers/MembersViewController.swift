@@ -15,7 +15,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     
     lazy var tooltipView = TooltipView(frame: .zero)
     
-    var parametersActionDialog: AddMemberParams = (nil,"","")
+    var parametersActionDialog: AddMemberParams = (nil, "", "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,13 +81,15 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                 
                 let title = "Switch to The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: requestPAAccess.toArchiveName)
                 let description = "In order to access this content you need to switch to The <ARCHIVE_NAME> Archive.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: requestPAAccess.toArchiveName)
-                showActionDialog(styled: .simpleWithDescription,
-                                 withTitle: title,
-                                 description: description,
-                                 positiveButtonTitle: "Switch".localized(),
-                                 positiveAction: action,
-                                 cancelButtonTitle: "Cancel".localized(),
-                                 overlayView: overlayView)
+                showActionDialog(
+                    styled: .simpleWithDescription,
+                    withTitle: title,
+                    description: description,
+                    positiveButtonTitle: "Switch".localized(),
+                    positiveAction: action,
+                    cancelButtonTitle: "Cancel".localized(),
+                    overlayView: overlayView
+                )
             } else {
                 getMembers()
             }
@@ -120,11 +122,12 @@ class MembersViewController: BaseViewController<MembersViewModel> {
                     }
                 }
             },
-            overlayView: self.overlayView)
+            textFieldKeyboardType: .emailAddress,
+            overlayView: self.overlayView
+        )
     }
     
     fileprivate func showTooltip(anchorPoint: CGPoint, text: String) {
-    
         // Check if tooltip view is already presented on screen.
         // If it is visible, we remove it, before presenting it to the new location.
         if tooltipView.isDescendant(of: view) {
@@ -138,7 +141,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         NSLayoutConstraint.activate([
             tooltipView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: anchorPoint.x),
             tooltipView.topAnchor.constraint(equalTo: view.topAnchor, constant: anchorPoint.y),
-            tooltipView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            tooltipView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
     
@@ -223,38 +226,40 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     }
     
     fileprivate func didTapDelete(forAccount account: Account) {
-        self.showActionDialog(styled: .simple,
-                              withTitle: String.init(format: .removeMember, account.name),
-                              positiveButtonTitle: .remove,
-                              positiveAction: { [weak self] in
-                                self?.modifyMember(account, withOperation: .remove)
-                              },
-                              overlayView: self.overlayView
+        self.showActionDialog(
+            styled: .simple,
+            withTitle: .init(format: .removeMember, account.name),
+            positiveButtonTitle: .remove,
+            positiveAction: { [weak self] in
+                self?.modifyMember(account, withOperation: .remove)
+            },
+            overlayView: self.overlayView
         )
     }
     
     fileprivate func didTapEdit(forAccount account: Account) {
-        self.showActionDialog(styled: .dropdownWithDescription,
-                            withTitle: account.name,
-                            description: account.email,
-                            placeholders: [.accessLevel],
-                            prefilledValues: [account.accessRole.groupName],
-                            dropdownValues: StaticData.allAccessRoles,
-                            positiveButtonTitle: .save,
-                            positiveAction: {
-                                if let newMemberRole = self.actionDialog?.fieldsInput.last,
-                                   newMemberRole == .owner {
-                                        self.transferOwnership(account, withOperation: .transferOwnership)
-                                    } else {
-                                        if account.accessRole != .owner {
-                                            self.modifyMember(account, withOperation: .edit)
-                                        } else {
-                                            self.actionDialog?.dismiss()
-                                            self.view.showNotificationBanner(height: 60, title: "You cannot change the access level of the Permanent Archive owner".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-                                        }
-                                    }
-                            },
-                            overlayView: self.overlayView
+        self.showActionDialog(
+            styled: .dropdownWithDescription,
+            withTitle: account.name,
+            description: account.email,
+            placeholders: [.accessLevel],
+            prefilledValues: [account.accessRole.groupName],
+            dropdownValues: StaticData.allAccessRoles,
+            positiveButtonTitle: .save,
+            positiveAction: {
+                if let newMemberRole = self.actionDialog?.fieldsInput.last,
+                newMemberRole == .owner {
+                    self.transferOwnership(account, withOperation: .transferOwnership)
+                } else {
+                    if account.accessRole != .owner {
+                        self.modifyMember(account, withOperation: .edit)
+                    } else {
+                        self.actionDialog?.dismiss()
+                        self.view.showNotificationBanner(height: 60, title: "You cannot change the access level of the Permanent Archive owner".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                    }
+                }
+            },
+            overlayView: self.overlayView
         )
     }
     
@@ -266,29 +271,32 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         actionDialog?.dismiss()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.showActionDialog(styled: .simpleWithDescription,
-                                  withTitle: .transferOwnership,
-                                  description: String.transferOwnershipInfo,
-                                  placeholders: [.accessLevel],
-                                  positiveButtonTitle: String.transferButtonText,
-                                  positiveAction: { [self] in
-                                    actionDialog?.dismiss()
-                                    actionDialog = nil
-                                    showSpinner()
-                
-                                    viewModel?.transferOwnership(email: self.parametersActionDialog.email , then: { status in
-                                        hideSpinner()
-                                        switch status {
-                                        case .success:
-                                            self.view.showNotificationBanner(height: Constants.Design.bannerHeight,title: "Ownership transfer request sent".localized())
-                                            self.getMembers()
-                                        case .error(message: let message):
-                                            self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
-                                        }
-                                    })
-                                  },
-                                  overlayView: self.overlayView
-            )}
+            self.showActionDialog(
+                styled: .simpleWithDescription,
+                withTitle: .transferOwnership,
+                description: String.transferOwnershipInfo,
+                placeholders: [.accessLevel],
+                positiveButtonTitle: String.transferButtonText,
+                positiveAction: { [self] in
+                    actionDialog?.dismiss()
+                    actionDialog = nil
+                    showSpinner()
+                    
+                    viewModel?.transferOwnership(email: self.parametersActionDialog.email, then: { status in
+                        hideSpinner()
+                        switch status {
+                        case .success:
+                            self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Ownership transfer request sent".localized())
+                            self.getMembers()
+                            
+                        case .error(message: let message):
+                            self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                        }
+                    })
+                },
+                overlayView: self.overlayView
+            )
+        }
     }
     
     func showEmailWarning(_ message: String) {
@@ -296,9 +304,11 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         
         alert.addAction(UIAlertAction(title: .cancel, style: .cancel, handler: {_ in
             self.actionDialog?.dismiss()
-        }))
+        })
+        )
         alert.addAction(UIAlertAction(title: .retry, style: .default, handler: {_ in
-        }))
+        })
+        )
         
         self.present(alert, animated: true)
     }
@@ -308,11 +318,13 @@ class MembersViewController: BaseViewController<MembersViewModel> {
         
         actions.append(PRMNTAction(title: "Remove".localized(), color: .brightRed, handler: { [self] action in
             modifyMember(account, withOperation: .remove)
-        }))
+        })
+        )
         
         actions.append(PRMNTAction(title: "Edit".localized(), color: .primary, handler: { [self] action in
             didTapEdit(forAccount: account)
-        }))
+        })
+        )
     
         let actionSheet = PRMNTActionSheetViewController(title: account.email, actions: actions)
         present(actionSheet, animated: true, completion: nil)
@@ -341,7 +353,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         cell.member = member
         
         let hasEditPermission = viewModel?.archivePermissions.contains(.archiveShare) ?? false
-        cell.editButton.isHidden = !((hasEditPermission && member?.accessRole != .owner)||(member?.accessRole == .owner && member?.status == .pending))
+        cell.editButton.isHidden = !((hasEditPermission && member?.accessRole != .owner) || (member?.accessRole == .owner && member?.status == .pending))
         
         cell.editButtonAction = { [weak self] cell in
             guard let viewModel = self?.viewModel,
@@ -350,7 +362,7 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
                 return
             }
             
-            self?.showFileActionSheet(forAccount:account, atIndexPath: indexPath)
+            self?.showFileActionSheet(forAccount: account, atIndexPath: indexPath)
         }
         
         return cell
@@ -361,7 +373,6 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
         guard
             let accessRole = AccessRole(rawValue: section),
             let tooltipText = StaticData.rolesTooltipData[accessRole] else {
@@ -377,7 +388,8 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             tooltipText: tooltipText,
             action: { point, text in
                 self.showTooltip(anchorPoint: point, text: text)
-            })
+            }
+        )
         
         let numberOfItems = viewModel?.numberOfItemsForRole(accessRole)
         headerView.isSectionEmpty = numberOfItems == 0
@@ -401,7 +413,6 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         guard
             let viewModel = viewModel,
             let accessRole = AccessRole(rawValue: indexPath.section),
@@ -432,5 +443,4 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
             deleteAction
         ])
     }
-
 }

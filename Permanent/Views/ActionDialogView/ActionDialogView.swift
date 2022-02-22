@@ -26,6 +26,7 @@ class ActionDialogView: UIView {
     private var prefilledValues: [String]?
     private var dropdownValues: [String]?
     private var dialogStyle: ActionDialogStyle = .simple
+    private var textFieldKeyboardType: UIKeyboardType = .default
     
     var positiveAction: ButtonAction?
     var removeAction: ButtonAction? {
@@ -56,7 +57,7 @@ class ActionDialogView: UIView {
         return inputArray
     }
     
-    convenience init(frame: CGRect, style: ActionDialogStyle, title: String?, description: String? = nil, positiveButtonTitle: String?, cancelButtonTitle:String? ,positiveButtonColor: UIColor?, cancelButtonColor: UIColor?, placeholders: [String]? = nil, prefilledValues: [String]? = nil, dropdownValues: [String]? = nil, onDismiss: @escaping ButtonAction) {
+    convenience init(frame: CGRect, style: ActionDialogStyle, title: String?, description: String? = nil, positiveButtonTitle: String?, cancelButtonTitle: String?, positiveButtonColor: UIColor?, cancelButtonColor: UIColor?, placeholders: [String]? = nil, prefilledValues: [String]? = nil, dropdownValues: [String]? = nil, textFieldKeyboardType: UIKeyboardType = .default, onDismiss: @escaping ButtonAction) {
         self.init(frame: frame)
         
         self.onDismiss = onDismiss
@@ -64,6 +65,7 @@ class ActionDialogView: UIView {
         self.placeholders = placeholders
         self.prefilledValues = prefilledValues
         self.dropdownValues = dropdownValues
+        self.textFieldKeyboardType = textFieldKeyboardType
         
         commonInit()
         
@@ -170,12 +172,12 @@ class ActionDialogView: UIView {
         field.textColor = .dustyGray
         field.placeholderColor = .dustyGray
         field.placeholder = placeholder
+        field.keyboardType = textFieldKeyboardType
         field.delegate = self
     }
     
     fileprivate func styleFields() {
         for (index, field) in fieldsStackView.arrangedSubviews.enumerated() {
-
             let fieldValue = prefilledValues?[index] ?? placeholders?[index]
             
             if let textField = field as? TextField {
@@ -250,5 +252,4 @@ extension ActionDialogView: UIPickerViewDelegate, UIPickerViewDataSource {
         let dropdownView = fieldsStackView.arrangedSubviews.last as? DropdownView
         dropdownView?.value = dropdownValues?[row]
     }
-    
 }

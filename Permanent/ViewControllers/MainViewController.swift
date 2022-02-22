@@ -729,7 +729,7 @@ extension MainViewController {
             
             onFileDownloaded: { url, error in
                 DispatchQueue.main.async {
-                    self.onFileDownloaded(url: url, error: error)
+                    self.onFileDownloaded(url: url, name: file.name, error: error)
                 }
             },
             
@@ -741,7 +741,7 @@ extension MainViewController {
         )
     }
     
-    fileprivate func onFileDownloaded(url: URL?, error: Error?) {
+    fileprivate func onFileDownloaded(url: URL?, name: String?, error: Error?) {
         refreshCollectionView()
         
         guard url != nil else {
@@ -752,9 +752,10 @@ extension MainViewController {
             } else {
                 showErrorAlert(message: apiError.message)
             }
-
             return
         }
+        let name = name ?? "File" 
+        view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "'\(name)' " + "download completed".localized(), animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
     }
 }
 
