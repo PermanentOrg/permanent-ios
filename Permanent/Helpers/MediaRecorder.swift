@@ -53,7 +53,7 @@ open class MediaRecorder: NSObject {
 
 extension MediaRecorder: UIImagePickerControllerDelegate {
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.pickerController(picker, didSelect: nil, isLocal: false)
+        picker.dismiss(animated: true, completion: nil)
     }
 
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
