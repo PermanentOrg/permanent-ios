@@ -482,9 +482,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             case .success:
                 self.pullToRefreshAction()
                 if file.type.isFolder {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successfully".localized())
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
                 } else {
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successfully".localized())
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
                 }
                 
             case .error( _):
@@ -1059,7 +1059,8 @@ extension MainViewController {
         self.showActionDialog(
             styled: .singleField,
             withTitle: title,
-            prefilledValues: ["Name".localized()],
+            placeholders: ["Name".localized()],
+            prefilledValues: ["\(file.name)"],
             positiveButtonTitle: .rename,
             positiveAction: {
                 guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }

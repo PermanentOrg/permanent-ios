@@ -19,6 +19,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     @IBOutlet weak var createNewArchiveButton: RoundedButton!
     @IBOutlet weak var currentArchiveRightButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
     
     weak var delegate: ArchivesViewControllerDelegate?
     var isManaging = true
@@ -71,6 +72,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         
         createNewArchiveButton.configureActionButtonUI(title: String("Create new archive".localized()))
         createNewArchiveButton.isHidden = !isManaging
+        tableViewBottomConstraint.constant = isManaging ? 80 : 20
         
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
@@ -351,6 +353,9 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 switchToArchive(archive)
                 
                 tableView.deselectRow(at: indexPath, animated: true)
+                if !isManaging {
+                    dismiss(animated: true, completion: nil)
+                }
             }
         }
     }

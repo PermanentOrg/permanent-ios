@@ -165,26 +165,28 @@ class ActionDialogView: UIView {
         button.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
     
-    fileprivate func styleTextField(_ field: TextField, placeholder: String?) {
+    fileprivate func styleTextField(_ field: TextField, placeholder: String?, fieldValue: String? = nil) {
         field.backgroundColor = .galleryGray
         field.layer.borderColor = UIColor.doveGray.cgColor
         field.tintColor = .dustyGray
         field.textColor = .dustyGray
         field.placeholderColor = .dustyGray
         field.placeholder = placeholder
+        field.text = fieldValue
         field.keyboardType = textFieldKeyboardType
         field.delegate = self
     }
     
     fileprivate func styleFields() {
         for (index, field) in fieldsStackView.arrangedSubviews.enumerated() {
-            let fieldValue = prefilledValues?[index] ?? placeholders?[index]
+            let fieldValue = prefilledValues?[index] ?? ""
+            let fieldPlaceholder = placeholders?[index]
             
             if let textField = field as? TextField {
-                styleTextField(textField, placeholder: fieldValue)
+                styleTextField(textField, placeholder: fieldPlaceholder, fieldValue: fieldValue)
             } else {
                 if let dropdownView = field as? DropdownView {
-                    dropdownView.value = fieldValue
+                    dropdownView.value = fieldValue.isEmpty ? fieldPlaceholder : fieldValue
                 }
             }
         }
