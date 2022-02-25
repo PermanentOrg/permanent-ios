@@ -139,17 +139,17 @@ extension AccountInfoViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        switchBasedNextTextField(textField)
-        return true
-    }
-    
-    private func switchBasedNextTextField(_ textField: UITextField) {
         textField.resignFirstResponder()
         
-        if textField == postalCodeView.textField || textField == countryView.textField {
+        switch textField {
+        case postalCodeView.textField, countryView.textField, cityView.textField, stateView.textField:
             let point = CGPoint.zero
             scrollView.setContentOffset(point, animated: true)
+            
+        default:
+            break
         }
+        return true
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
