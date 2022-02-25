@@ -50,7 +50,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         super.styleNavBar()
         
         if isManaging {
-            title = "Switch Archives".localized()
+            title = "Archives".localized()
         } else {
             title = "Change Archive".localized()
             
