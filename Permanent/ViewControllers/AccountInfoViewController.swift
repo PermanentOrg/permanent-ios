@@ -31,14 +31,14 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         title = .accountInfo
         view.backgroundColor = .white
         
-        accountNameView.configureElementUI(label: .accountName, returnKey: UIReturnKeyType.next)
-        primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: UIReturnKeyType.next)
-        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.next, keyboardType: .numbersAndPunctuation)
-        addressView.configureElementUI(label: "Address Line 1".localized(), returnKey: UIReturnKeyType.next)
-        addressView2.configureElementUI(label: "Address Line 2".localized(), returnKey: UIReturnKeyType.next)
-        cityView.configureElementUI(label: .city, returnKey: UIReturnKeyType.next)
-        stateView.configureElementUI(label: .stateOrRegion, returnKey: UIReturnKeyType.next)
-        postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.next)
+        accountNameView.configureElementUI(label: .accountName, returnKey: UIReturnKeyType.done)
+        primaryEmailView.configureElementUI(label: .primaryEmail, returnKey: UIReturnKeyType.done)
+        mobilePhoneView.configureElementUI(label: .mobilePhone, returnKey: UIReturnKeyType.done, keyboardType: .numbersAndPunctuation)
+        addressView.configureElementUI(label: "Address Line 1".localized(), returnKey: UIReturnKeyType.done)
+        addressView2.configureElementUI(label: "Address Line 2".localized(), returnKey: UIReturnKeyType.done)
+        cityView.configureElementUI(label: .city, returnKey: UIReturnKeyType.done)
+        stateView.configureElementUI(label: .stateOrRegion, returnKey: UIReturnKeyType.done)
+        postalCodeView.configureElementUI(label: .postalcode, returnKey: UIReturnKeyType.done)
         countryView.configureElementUI(label: .country, returnKey: UIReturnKeyType.done)
         contentUpdateButton.configureActionButtonUI(title: .save)
         deleteAccountButton.configureActionButtonUI(title: "Delete Account".localized(), bgColor: .deepRed)
@@ -144,33 +144,9 @@ extension AccountInfoViewController: UITextFieldDelegate {
     }
     
     private func switchBasedNextTextField(_ textField: UITextField) {
-        switch textField {
-        case accountNameView.textField:
-            primaryEmailView.textField.becomeFirstResponder()
-            
-        case primaryEmailView.textField:
-            mobilePhoneView.textField.becomeFirstResponder()
-            
-        case mobilePhoneView.textField:
-            addressView.textField.becomeFirstResponder()
-            
-        case addressView.textField:
-            addressView2.textField.becomeFirstResponder()
-            
-        case addressView2.textField:
-            cityView.textField.becomeFirstResponder()
-            
-        case cityView.textField:
-            stateView.textField.becomeFirstResponder()
-            
-        case stateView.textField:
-            postalCodeView.textField.becomeFirstResponder()
-            
-        case postalCodeView.textField:
-            countryView.textField.becomeFirstResponder()
-            
-        default:
-            countryView.textField.resignFirstResponder()
+        textField.resignFirstResponder()
+        
+        if textField == postalCodeView.textField || textField == countryView.textField {
             let point = CGPoint.zero
             scrollView.setContentOffset(point, animated: true)
         }
