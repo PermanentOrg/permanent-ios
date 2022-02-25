@@ -26,6 +26,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.addStorage,
             DrawerOption.accountInfo,
             DrawerOption.activityFeed,
+            DrawerOption.manageArchives,
             DrawerOption.invitations,
             DrawerOption.security,
             DrawerOption.contactSupport,
@@ -216,6 +217,10 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         switch option {
         case .accountInfo:
             let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .manageArchives:
+            let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .security:

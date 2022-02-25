@@ -30,7 +30,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.publicFiles
         ],
         LeftDrawerSection.manage: [
-            DrawerOption.manageArchives,
             DrawerOption.members
         ]
     ]
@@ -225,10 +224,6 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
 
-        case .manageArchives:
-            let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
         case .archives:
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController

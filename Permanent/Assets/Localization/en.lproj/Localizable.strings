@@ -146,7 +146,7 @@
 "PasswordMatchError" = "Passwords must match.";
 "PasswordChangedSuccessfully" = "Password updated.";
 "Security" = "Security";
-"AccountInfo" = "Account Info";
+"AccountInfo" = "Account";
 "UpdatePassword" = "Update Password";
 "CurrentPassword" = "Current Password";
 "ReTypePassword" = "Re-type New Password";
