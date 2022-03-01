@@ -192,6 +192,10 @@ class AuthViewModel: ViewModelInterface {
                         PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
                     }
                     
+                    if let fullName = model.results.first?.data?.first?.accountVO?.fullName {
+                        PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
+                    }
+                    
                     handler(.success)
                 } else {
                     handler(.error(message: .errorMessage))

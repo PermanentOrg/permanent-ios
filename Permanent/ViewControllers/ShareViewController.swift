@@ -69,8 +69,10 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     fileprivate func setupTableView() {
-        tableView.register(UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
-                           forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self))
+        tableView.register(
+            UINib(nibName: String(describing: ArchiveTableViewCell.self), bundle: nil),
+            forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self)
+        )
         tableView.tableFooterView = UIView()
         tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ?
             UIView.tableViewBgView(withTitle: .noSharesMessage) :
@@ -109,6 +111,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                         switch status {
                         case .success:
                             self?.view.showNotificationBanner(title: "Access role was successfully changed".localized())
+                            
                         case .error(let errorMessage):
                             self?.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
                         }
@@ -161,8 +164,9 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                 self.createLinkButton.isHidden = true
                 UIView.animate(
                     animations: {
-                        self.linkOptionsStackView.isHidden = false
-                    })
+                    self.linkOptionsStackView.isHidden = false
+                    }
+                )
             }
         })
         
@@ -266,30 +270,31 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                 print("remove")
                 let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: model.archiveVO?.fullName ?? "")
                 
-                self?.showActionDialog(styled: .simpleWithDescription,
-                                       withTitle: description,
-                                       description: "",
-                                       positiveButtonTitle: "Remove".localized(),
-                                       positiveAction: { [weak self] in
-                                        self?.actionDialog?.dismiss()
-                                        self?.actionDialog = nil
-                                        
-                                        self?.showSpinner()
-                                        self?.viewModel?.denyButtonAction(shareVO: model, then: { status in
-                                            self?.hideSpinner()
-                                            if status == .success {
-                                                self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
-                                            } else {
-                                                self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
-                                            }
-                                            self?.getShareLink(option: .retrieve)
-                                        })
-                                       },
-                                       cancelButtonTitle: "Cancel".localized(),
-                                       positiveButtonColor: .brightRed,
-                                       cancelButtonColor: .primary,
-                                       overlayView: self?.overlayView)
-                
+                self?.showActionDialog(
+                    styled: .simpleWithDescription,
+                    withTitle: description,
+                    description: "",
+                    positiveButtonTitle: "Remove".localized(),
+                    positiveAction: { [weak self] in
+                        self?.actionDialog?.dismiss()
+                        self?.actionDialog = nil
+                        
+                        self?.showSpinner()
+                        self?.viewModel?.denyButtonAction(shareVO: model, then: { status in
+                            self?.hideSpinner()
+                            if status == .success {
+                                self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
+                            } else {
+                                self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                            }
+                            self?.getShareLink(option: .retrieve)
+                        })
+                    },
+                    cancelButtonTitle: "Cancel".localized(),
+                    positiveButtonColor: .brightRed,
+                    cancelButtonColor: .primary,
+                    overlayView: self?.overlayView
+                )
             }), at: 0)
             
             let actionSheet = PRMNTActionSheetViewController(actions: actions)
@@ -306,11 +311,19 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ShareViewController: LinkOptionsViewDelegate {
     func copyLinkAction() {
-        guard let link = linkOptionsView.link else {
+        var emailSubject = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you".localized()
+        var emailBody = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you.\n <LINK>".localized()
+        
+        guard let link = linkOptionsView.link,
+            let name = viewModel?.getAccountName() else {
             return
         }
-        
-        let activityViewController = UIActivityViewController(activityItems: [link], applicationActivities: nil)
+        emailSubject = emailSubject.replacingOccurrences(of: "<ACCOUNTNAME>", with: "\(name)")
+        emailBody = emailBody.replacingOccurrences(of: "<ACCOUNTNAME>", with: "\(name)")
+        emailBody = emailBody.replacingOccurrences(of: "<LINK>", with: "\(link)")
+    
+        let activityViewController = UIActivityViewController(activityItems: [emailBody], applicationActivities: nil)
+        activityViewController.setValue(emailSubject, forKey: "Subject")
         activityViewController.popoverPresentationController?.sourceView = view
         present(activityViewController, animated: true, completion: nil)
     }
@@ -327,13 +340,15 @@ extension ShareViewController: LinkOptionsViewDelegate {
     }
     
     func revokeLinkAction() {
-        showActionDialog(styled: .simple,
-                         withTitle: "\(String.revokeLink)?",
-                         positiveButtonTitle: .revoke,
-                         positiveAction: {
-                             self.actionDialog?.dismiss()
-                             self.revokeLink()
-                         },
-                         overlayView: overlayView)
+        showActionDialog(
+            styled: .simple,
+            withTitle: "\(String.revokeLink)?",
+            positiveButtonTitle: .revoke,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.revokeLink()
+            },
+            overlayView: overlayView
+        )
     }
 }

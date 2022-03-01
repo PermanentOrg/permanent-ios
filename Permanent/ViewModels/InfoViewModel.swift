@@ -136,7 +136,8 @@ class InfoViewModel: ViewModelInterface {
                     handler(.error(message: userDetailsFaieldMessage?.description))
                     return
                 }
-                
+                PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
+
                 handler(.success(message: .userDetailsChangedSuccessfully))
 
             case .error:
