@@ -20,7 +20,7 @@ class SuccessfulSignUpTestURLs: TestURLs {
 class FailedSignUpTestURLs: TestURLs {
     override var urls: [URL? : Data] {
         return [
-            URL(string: "https://www.permanent.org/api/account/post"):"{\"Results\":[{\"data\":null,\"message\":[\"warning.registration.duplicate_email\"],\"status\":false,\"resultDT\":\"2021-07-26T13:59:05\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[0],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"ed88b0eb1557a7d5e7591683d154c625\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
+            URL(string: "https://www.permanent.org/api/account/post"): "{\"Results\":[{\"data\":null,\"message\":[\"warning.registration.duplicate_email\"],\"status\":false,\"resultDT\":\"2021-07-26T13:59:05\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":false,\"actionFailKeys\":[0],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"csrf\":\"ed88b0eb1557a7d5e7591683d154c625\",\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
         ]
     }
 }

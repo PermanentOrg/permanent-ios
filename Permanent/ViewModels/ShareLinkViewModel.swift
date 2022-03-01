@@ -193,7 +193,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
         guard let folderLinkId = shareVO.folderLinkID,
-                let archiveId = shareVO.archiveID else {
+            let archiveId = shareVO.archiveID else {
             handler(RequestStatus.error(message: nil))
             return
         }
@@ -242,5 +242,10 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         shareVO?.previewToggle = model?.previewToggle
         shareVO?.autoApproveToggle = model?.autoApproveToggle
         shareVO?.expiresDT = model?.expiresDT
+    }
+    
+    func getAccountName() -> String? {
+        let accountName: String? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.nameStorageKey)
+        return accountName
     }
 }

@@ -11,7 +11,6 @@ import Photos
 private let reuseIdentifier = "AlbumCollectionViewCell"
 
 class AlbumsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
-    
     enum Section: Int {
         case userCollections = 0
         
@@ -114,6 +113,7 @@ class AlbumsViewController: UICollectionViewController, UICollectionViewDelegate
         switch Section(rawValue: indexPath.section) {
         case .userCollections:
             collection = userCollections.object(at: indexPath.row)
+            
         case .none:
             collection = nil
         }
@@ -144,7 +144,6 @@ class AlbumsViewController: UICollectionViewController, UICollectionViewDelegate
         let edgeSize = (view.bounds.width - 30) / 2
         return CGSize(width: edgeSize, height: edgeSize)
     }
-    
 }
 
 // MARK: PHPhotoLibraryChangeObserver
@@ -164,4 +163,3 @@ extension AlbumsViewController: PHPhotoLibraryChangeObserver {
         }
     }
 }
-

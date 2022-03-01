@@ -22,8 +22,10 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
     /// - Parameters:
     ///   - environment: Instance conforming to `EnvironmentProtocol` used to determine on which environment the requests will be executed.
     ///   - networkSession: Instance conforming to `NetworkSessionProtocol` used for executing requests with a specific configuration.
-    required init(environment: EnvironmentProtocol = APIEnvironment.defaultEnv,
-                  networkSession: NetworkSessionProtocol = APINetworkSession()) {
+    required init(
+        environment: EnvironmentProtocol = APIEnvironment.defaultEnv,
+        networkSession: NetworkSessionProtocol = APINetworkSession()
+    ) {
         self.environment = environment
         self.networkSession = networkSession
     }
@@ -120,9 +122,9 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             switch parseResult {
             case .success(let json):
                 if let mfaError = json as? [String: Any],
-                   let results = mfaError["Results"] as? [[String: Any]],
-                   let message = (results[0]["message"] as? [String])?.first,
-                   (message == "warning.auth.mfaToken" && !ignoresMFAWarning) || message == "error.generic.invalid_csrf" {
+                let results = mfaError["Results"] as? [[String: Any]],
+                let message = (results[0]["message"] as? [String])?.first,
+                (message == "warning.auth.mfaToken" && !ignoresMFAWarning) || message == "error.generic.invalid_csrf" {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
                     }

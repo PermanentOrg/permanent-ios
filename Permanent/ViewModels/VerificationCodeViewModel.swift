@@ -95,9 +95,11 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
                 
                 handler(.success)
                 return
+                
             case .error:
                 handler(.error(message: .errorMessage))
                 return
+                
             default:
                 handler(.error(message: .errorMessage))
                 return
@@ -116,6 +118,10 @@ extension VerificationCodeViewModel: VerificationCodeViewModelDelegate {
         
         if let archiveId = response.results?.first?.data?.first?.accountVO?.defaultArchiveID {
             PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+        }
+        
+        if let fullName = response.results?.first?.data?.first?.accountVO?.fullName {
+            PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
         }
     }
     

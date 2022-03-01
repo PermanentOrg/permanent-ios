@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -53,17 +53,17 @@
                                         <rect key="frame" x="0.0" y="178" width="333" height="40"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="6jh-Sm-L0U">
-                                                <rect key="frame" x="0.0" y="5" width="333" height="30"/>
+                                                <rect key="frame" x="0.0" y="5" width="313" height="30"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tE3-Dy-rD8" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="161.5" height="30"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="151.5" height="30"/>
                                                         <state key="normal" title="Button"/>
                                                         <connections>
                                                             <action selector="denyAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="IW4-IM-jr8"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKI-ko-seh" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="171.5" y="0.0" width="161.5" height="30"/>
+                                                        <rect key="frame" x="161.5" y="0.0" width="151.5" height="30"/>
                                                         <state key="normal" title="Button"/>
                                                         <connections>
                                                             <action selector="approveAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="riT-2d-ODf"/>
@@ -76,7 +76,7 @@
                                         <constraints>
                                             <constraint firstItem="6jh-Sm-L0U" firstAttribute="top" secondItem="CFp-XX-kbh" secondAttribute="top" constant="5" id="089-u2-RP6"/>
                                             <constraint firstItem="6jh-Sm-L0U" firstAttribute="leading" secondItem="CFp-XX-kbh" secondAttribute="leading" id="TOh-0K-PfO"/>
-                                            <constraint firstAttribute="trailing" secondItem="6jh-Sm-L0U" secondAttribute="trailing" id="tpI-sz-bcn"/>
+                                            <constraint firstAttribute="trailing" secondItem="6jh-Sm-L0U" secondAttribute="trailing" constant="20" id="tpI-sz-bcn"/>
                                             <constraint firstAttribute="bottom" secondItem="6jh-Sm-L0U" secondAttribute="bottom" constant="5" id="zPE-57-3gh"/>
                                         </constraints>
                                     </view>
@@ -122,7 +122,7 @@
                 <outlet property="moreButton" destination="PnZ-48-hYf" id="ptB-GQ-WgB"/>
                 <outlet property="relationshipLabel" destination="Tdl-In-Vb7" id="nW8-tC-ibu"/>
             </connections>
-            <point key="canvasLocation" x="-143" y="-39"/>
+            <point key="canvasLocation" x="226" y="-65"/>
         </tableViewCell>
     </objects>
     <designables>
