@@ -296,6 +296,12 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
+        let date = Date()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        birthDateTextField.text = dateFormatter.string(from: date)
+        
         birthDateTextField.resignFirstResponder()
     }
     

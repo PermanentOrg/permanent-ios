@@ -220,6 +220,12 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     @objc func startDatePickerDoneButtonPressed(_ sender: Any) {
+        let date = Date()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        startDateTextField.text = dateFormatter.string(from: date)
+        
         startDateTextField.resignFirstResponder()
     }
     
@@ -233,6 +239,12 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     @objc func endDatePickerDoneButtonPressed(_ sender: Any) {
+        let date = Date()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        endDateTextField.text = dateFormatter.string(from: date)
+        
         endDateTextField.resignFirstResponder()
     }
     

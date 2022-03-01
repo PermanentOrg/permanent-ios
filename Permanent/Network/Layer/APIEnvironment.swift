@@ -15,8 +15,10 @@ enum APIEnvironment: EnvironmentProtocol {
         switch self {
         case .staging:
             return [:]
+            
         case .development:
             return [:]
+            
         case .production:
             return [:]
         }

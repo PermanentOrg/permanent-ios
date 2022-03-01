@@ -72,9 +72,9 @@ class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
     // MARK: - Keyboard
     @objc func keyboardWillShow(_ notification: Notification) {
         guard let scrollView = scrollView,
-              let keyBoardInfo = notification.userInfo,
-              let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
-              let window = scrollView.window
+            let keyBoardInfo = notification.userInfo,
+            let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+            let window = scrollView.window
         else { return }
         
         let keyBoardFrame = window.convert(endFrame.cgRectValue, to: scrollView.superview)

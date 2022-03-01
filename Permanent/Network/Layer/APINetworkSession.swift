@@ -37,7 +37,6 @@ extension APINetworkSession: NetworkSessionProtocol {
     }
 
     func uploadTask(with request: URLRequest, progressHandler: ProgressHandler?, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionUploadTask? {
-        
         completion(nil, nil, NSError(domain: "org.permanent", code: 1000, userInfo: nil))
         return nil
     }

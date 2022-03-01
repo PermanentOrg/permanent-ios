@@ -22,13 +22,10 @@ protocol ActivityFeedViewModelDelegate {
     func start()
     
     var isBusy: Bool { get }
-    
 }
 
 protocol ActivityFeedViewModelViewDelegate: AnyObject {
-    
     func updateScreen(status: RequestStatus)
     
     func updateSpinner(isLoading: Bool)
-    
 }

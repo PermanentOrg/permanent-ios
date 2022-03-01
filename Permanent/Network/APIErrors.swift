@@ -15,6 +15,7 @@ enum LoginError: String {
         switch self {
         case .mfaToken:
             return .MFARequired
+            
         case .unknown:
             return .incorrectCredentials
         }
@@ -29,6 +30,7 @@ enum VerifyCodeError: String {
         switch self {
         case .tokenExpired:
             return .tokenExpired
+            
         case .tokenIncorrect:
             return .tokenIncorrect
         }
@@ -57,12 +59,16 @@ enum AccountUpdateError: String {
         switch self {
         case .phoneInvalid:
             return .invalidPhone
+            
         case .nameFieldIsEmpty:
             return .emptyNameField
+            
         case .dataIsNotModified:
             return .noDataModification
+            
         case .emailIsEmpty:
             return .emailFieldIsEmpty
+            
         case .emailIsNotValid:
             return .emailIsNotValid
         }
@@ -78,8 +84,10 @@ enum PasswordChangeError: String {
         switch self {
         case .incorrectOldPassword:
             return .incorrectOldPassword
+            
         case .lowPasswordComplexity:
             return .lowPasswordComplexity
+            
         case .passwordMatchError:
             return .passwordMatchError
         }
@@ -95,10 +103,13 @@ enum MembersOperationsError: String {
         switch self {
         case .ownerAccountPending:
             return "There is already a pending owner for this Permanent Archive".localized()
+            
         case .emailNotValid:
             return .emailIsNotValid
+            
         case .duplicateAccount:
             return "This account already has access to the Permanent Archive".localized()
+            
         default:
             return .errorMessage
         }
@@ -110,9 +121,9 @@ enum ShareOperationsError: String {
     
     var description: String {
         switch self {
-
         case .noShareSelf:
             return "You cannot share an item with yourself".localized()
+            
         default:
             return .errorMessage
         }

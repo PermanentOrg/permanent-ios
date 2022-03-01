@@ -37,8 +37,8 @@ struct APIResultData<T: Model>: Model {
     let createdDT, updatedDT: String?
 }
 
+struct NoDataModel: Model {}
+
 extension APIResults {
     static var decoder: JSONDecoder { T.decoder }
 }
-
-struct NoDataModel: Model {}
