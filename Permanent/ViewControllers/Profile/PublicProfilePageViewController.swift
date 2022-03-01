@@ -8,6 +8,7 @@
 import UIKit
 
 enum ProfileCellType {
+    case profileVisibility
     case blurb
     case longDescription
     case fullName
@@ -29,12 +30,13 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     var profileData: [ProfileItemVO] = []
     
     enum ProfileSection: Int {
-        case about = 0
-        case information = 1
-        case onlinePresenceEmail = 2
-        case onlinePresenceLink = 3
-        case milestones = 4
-        case archiveGallery = 5
+        case profileVisibility = 0
+        case about = 1
+        case information = 2
+        case onlinePresenceEmail = 3
+        case onlinePresenceLink = 4
+        case milestones = 5
+        case archiveGallery = 6
     }
     
     var readMoreIsEnabled: [ProfileSection: Bool] = [:]
@@ -90,7 +92,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         collectionView.register(ProfilePageInformationCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier)
         collectionView.register(ProfilePageOnlinePresenceCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageOnlinePresenceCollectionViewCell.identifier)
         collectionView.register(ProfilePageMilestonesCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier)
-        
+        collectionView.register(ProfilePageVisibilityCollectionViewCell.nib(), forCellWithReuseIdentifier: ProfilePageVisibilityCollectionViewCell.identifier)
+
         collectionView.register(ProfilePageHeaderCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier)
         collectionView.register(ProfilePageFooterCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ProfilePageFooterCollectionViewCell.identifier)
     }
@@ -139,6 +142,9 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     func refreshProfileViewData() {
         profileViewData = [
+            ProfileSection.profileVisibility: [
+                ProfileCellType.profileVisibility
+            ],
             ProfileSection.about: [
                 ProfileCellType.blurb,
                 ProfileCellType.longDescription
@@ -215,6 +221,28 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         switch currentCellType {
         case .archiveGallery:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageArchiveCollectionViewCell.identifier, for: indexPath) as! ProfilePageArchiveCollectionViewCell
+            returnedCell = cell
+            
+        case .profileVisibility:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageVisibilityCollectionViewCell.identifier, for: indexPath) as! ProfilePageVisibilityCollectionViewCell
+            cell.isPublicSwitch.isOn = viewModel?.isPubliclyVisible ?? false
+            cell.switchAction = { [weak self] cell in
+                guard let viewModel = self?.viewModel else { return }
+                
+                cell.isPublicSwitch.isEnabled = false
+                
+                viewModel.isPubliclyVisible.toggle()
+                viewModel.updateProfileVisibility(isVisible: viewModel.isPubliclyVisible, completion: { status in
+                    cell.isPublicSwitch.isEnabled = true
+                    
+                    // This view is part of a container view. banners have to be presented on the parent.
+                    if status == .success {
+                        self?.parent?.view.showNotificationBanner(title: "Successfully updated profile visibility".localized())
+                    } else {
+                        self?.parent?.view.showNotificationBanner(title: "Failed to update profile visibility".localized(), backgroundColor: .deepRed)
+                    }
+                })
+            }
             returnedCell = cell
             
         case .blurb:
@@ -312,6 +340,9 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case UICollectionView.elementKindSectionHeader:
             let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfilePageHeaderCollectionViewCell.identifier, for: indexPath) as! ProfilePageHeaderCollectionViewCell
             switch currentSectionType {
+            case .profileVisibility:
+                headerCell.configure(titleLabel: "Profile Visibility".localized(), buttonText: "")
+                
             case .archiveGallery:
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
@@ -321,7 +352,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
                     profileAboutVC.viewModel = self?.viewModel
-                    
+
                     let navigationVC = NavigationController(rootViewController: profileAboutVC)
                     self?.present(navigationVC, animated: true)
                 }
@@ -372,6 +403,9 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             switch currentSectionType {
             case .archiveGallery:
                 footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: true)
+                
+            case .profileVisibility:
+                footerCell.configure(isReadMoreButtonHidden: true)
                 
             case .information:
                 footerCell.configure(isReadMoreButtonHidden: true)
@@ -425,6 +459,9 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
         
         switch currentCellType {
+        case .profileVisibility:
+            return CGSize(width: UIScreen.main.bounds.width, height: 80)
+            
         case .blurb:
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
@@ -515,7 +552,7 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .onlinePresenceEmail:
             return CGSize.zero
             
-        case .information:
+        case .information, .profileVisibility:
             return CGSize(width: collectionView.frame.width, height: 1)
             
         default:
