@@ -54,7 +54,7 @@
 "UsePasscode" = "Use passcode";
 "WelcomeMessage" = "Nice to see you again";
 "BiometricsSetup" = "Permanent works best with %@ and requires a passcode.";
-"MyFiles" = "My Files";
+"MyFiles" = "Private Files";
 "UploadFilesMessage" = "Files in your archive appear here first.\nClick the “+” button below to upload files.";
 "EmptyFolderMessage" = "This folder is empty";
 "Name" = "Name";
