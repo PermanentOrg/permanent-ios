@@ -715,6 +715,25 @@ struct Payloads {
                 ]
         ]
     }
+    
+    static func updateProfileVisibility(profileItemVOData: [ProfileItemModel], isVisible: Bool) -> RequestParameters {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        let publicDT: Any = isVisible ? dateFormatter.string(from: Date()) : NSNull()
+        let profileVOItems: [[String: Any]] = profileItemVOData.map { model in
+            return ["Profile_itemVO": ["profile_itemId": model.profileItemId ?? 0, "publicDT": publicDT]]
+        }
+        
+        return [
+            "RequestVO":
+                [
+                    "csrf": Self.csrf,
+                    "data": profileVOItems
+                ]
+        ]
+    }
         
     static func searchFolderAndRecord(text: String, tags: [TagVOData]) -> RequestParameters {
         var tagVOs: Any = []

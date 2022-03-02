@@ -14,6 +14,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var archiveType: ArchiveType!
     var newLocnId: Int?
     
+    var isPubliclyVisible = false
+    
     var profileItems = [ProfileItemModel]()
     
     var blurbProfileItem: BlurbProfileItem? {
@@ -67,7 +69,10 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(APIError.invalidResponse)
                     return
                 }
+                
                 self.profileItems = model.results.first?.data?.compactMap({ $0.profileItemVO }) ?? []
+                self.isPubliclyVisible = self.profileItems.allSatisfy({ $0.publicDT != nil })
+                
                 completionBlock(nil)
                 return
             
@@ -82,11 +87,52 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     
+    func updateProfileVisibility(isVisible: Bool, completion: @escaping ServerResponse) {
+        let itemsToUpdate = profileItems.filter { item in
+            item.fieldNameUI != "profile.basic" && item.fieldNameUI != "profile.timezone" && item.fieldNameUI != "profile.description"
+        }
+        
+        let apiOperation: APIOperation
+        apiOperation = APIOperation(PublicProfileEndpoint.updateProfileVisibility(profileItemVOData: itemsToUpdate, isVisible: isVisible))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completion(.error(message: .errorMessage))
+                    return
+                }
+                
+                completion(.success)
+                NotificationCenter.default.post(name: Self.profileItemsUpdatedNotificationName, object: nil)
+
+            case .error:
+                completion(.error(message: .errorMessage))
+                return
+                
+            default:
+                completion(.error(message: .errorMessage))
+                return
+            }
+        }
+    }
+    
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let apiOperation: APIOperation
         
         switch operationType {
         case .update, .create:
+            if profileItemModel.publicDT == nil && isPubliclyVisible {
+                let dateFormatter = DateFormatter()
+                dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+                
+                profileItemModel.publicDT = dateFormatter.string(from: Date())
+            }
+            
             apiOperation = APIOperation(PublicProfileEndpoint.safeAddUpdate(profileItemVOData: profileItemModel))
             
         case .delete:
@@ -148,6 +194,13 @@ class PublicProfilePageViewModel: ViewModelInterface {
         newProfileItem.archiveId = archiveData.archiveID
         newProfileItem.profileItemId = profileItemId
         
+        // Description is always public
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        newProfileItem.publicDT = dateFormatter.string(from: Date())
+        
         modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
     
@@ -157,6 +210,13 @@ class PublicProfilePageViewModel: ViewModelInterface {
         newProfileItem.nickname = newValueNickName
         newProfileItem.archiveId = archiveData.archiveID
         newProfileItem.profileItemId = profileItemId
+        
+        // Basic item is always public
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        newProfileItem.publicDT = dateFormatter.string(from: Date())
         
         modifyPublicProfileItem(newProfileItem, operationType, completionBlock)
     }
