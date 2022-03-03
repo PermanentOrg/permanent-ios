@@ -40,14 +40,14 @@ class ArchivesViewModel: ViewModelInterface {
                     completionBlock(nil, APIError.invalidResponse)
                     return
                 }
-                
                 self.account = model.results[0].data?[0].accountVO
                 completionBlock(self.account, nil)
-               
                 return
+                
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -79,11 +79,12 @@ class ArchivesViewModel: ViewModelInterface {
                 
                 self.account = model.results[0].data?[0].accountVO
                 completionBlock(self.account, nil)
-               
                 return
+                
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -117,12 +118,13 @@ class ArchivesViewModel: ViewModelInterface {
                         self.allArchives.append(archiveVOData)
                     }
                 }
-                
                 completionBlock(accountArchives, nil)
                 return
+                
             case .error:
                 completionBlock(nil, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(nil, APIError.invalidResponse)
                 return
@@ -155,14 +157,14 @@ class ArchivesViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse)
                     return
                 }
-                
                 self.setCurrentArchive(archive)
-                
                 completionBlock(true, nil)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse)
                 return
@@ -182,12 +184,13 @@ class ArchivesViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse)
                     return
                 }
-                
                 completionBlock(true, nil)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse)
                 return
@@ -212,12 +215,13 @@ class ArchivesViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse)
                     return
                 }
-                
                 completionBlock(true, nil)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse)
                 return
@@ -243,17 +247,17 @@ class ArchivesViewModel: ViewModelInterface {
                     completionBlock(false, APIError.invalidResponse)
                     return
                 }
-                
                 completionBlock(true, nil)
                 return
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse)
                 return
+                
             default:
                 completionBlock(false, APIError.invalidResponse)
                 return
             }
         }
     }
-    
 }

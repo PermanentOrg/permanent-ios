@@ -74,9 +74,8 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             forCellReuseIdentifier: String(describing: ArchiveTableViewCell.self)
         )
         tableView.tableFooterView = UIView()
-        tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ?
-            UIView.tableViewBgView(withTitle: .noSharesMessage) :
-            nil
+        tableView.backgroundView = sharedFile.minArchiveVOS.isEmpty ? UIView.tableViewBgView(withTitle: .noSharesMessage) : nil
+        tableView.allowsSelection = false
     }
     
     fileprivate func styleHeaderLabels(_ labels: [UILabel]) {
@@ -101,7 +100,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             positiveButtonTitle: "Update".localized(),
             positiveAction: { [weak self] in
                 if let fieldsInput = self?.actionDialog?.fieldsInput,
-                   let roleValue = fieldsInput.first {
+                let roleValue = fieldsInput.first {
                     self?.showSpinner()
                     
                     let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
@@ -238,6 +237,9 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.view.showNotificationBanner(title: .approveShareRequest)
                     cell.hideBottomButtons(status: true)
                     
+                    self?.getShareLink(option: .retrieve)
+                    tableView.reloadData()
+                    
                 case .error(message: let message):
                     self?.showErrorAlert(message: message)
                 }
@@ -252,6 +254,7 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.hideBottomButtons(status: true)
                     
                     self?.getShareLink(option: .retrieve)
+                    tableView.reloadData()
                     
                 case .error(message: let message):
                     self?.showErrorAlert(message: message)
@@ -302,10 +305,6 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

@@ -80,7 +80,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
             options: authOptions,
-            completionHandler: {_, _ in })
+            completionHandler: {_, _ in }
+        )
         
         Messaging.messaging().delegate = self
         
@@ -104,7 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     fileprivate func saveUnivesalLinkToken(_ token: String) {
         PreferencesManager.shared.set(token, forKey: Constants.Keys.StorageKeys.shareURLToken)
     }
-    
 }
 
 extension AppDelegate {
@@ -150,10 +150,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             switch notificationType {
             case "type.notification.share":
                 openShareNotification(response.notification)
+                
             case "type.notification.pa_response_non_transfer":
                 openPARequestNotification(response.notification)
-            case "type.notification.sharelink.request","type.notification.share.invitation.acceptance":
+                
+            case "type.notification.sharelink.request", "type.notification.share.invitation.acceptance":
                 openShareLinkRequestNotification(response.notification)
+                
             default:
                 break
             }
@@ -168,15 +171,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let folderLinkId: Int
         
         if let linkId: Int = Int(userInfo["shareFolderLinkId"] as? String ?? ""),
-           let itemName = userInfo["shareName"] as? String {
+        let itemName = userInfo["shareName"] as? String {
             folderLinkId = linkId
             name = itemName
         } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-                  let itemName = userInfo["folderName"] as? String {
-                   folderLinkId = linkId
-                   name = itemName
+            let itemName = userInfo["folderName"] as? String {
+            folderLinkId = linkId
+            name = itemName
         } else if let linkId: Int = Int(userInfo["folderLinkId"] as? String ?? ""),
-                  let itemName = userInfo["recordName"] as? String {
+            let itemName = userInfo["recordName"] as? String {
                    folderLinkId = linkId
                    name = itemName
         } else {
@@ -221,7 +224,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
         
         if let name: String = userInfo["recordName"] as? String,
-           let recordId: Int = Int(userInfo["recordId"] as? String ?? "") {
+        let recordId: Int = Int(userInfo["recordId"] as? String ?? "") {
             DispatchQueue.main.async {
                 let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
@@ -302,11 +305,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func clearShareDeepLinks() {
-        PreferencesManager.shared.removeValues(forKeys: [
+        PreferencesManager.shared.removeValues(
+            forKeys: [
             Constants.Keys.StorageKeys.requestPAAccess,
             Constants.Keys.StorageKeys.sharedFolderKey,
             Constants.Keys.StorageKeys.sharedFileKey,
             Constants.Keys.StorageKeys.requestLinkAccess,
-            Constants.Keys.StorageKeys.shareURLToken])
+            Constants.Keys.StorageKeys.shareURLToken
+            ]
+        )
     }
 }

@@ -8,7 +8,6 @@
 import UIKit
 
 class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
-
     @IBOutlet weak var archiveThumbnailImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archiveAccessLabel: UILabel!
@@ -40,8 +39,8 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
     
     func updateCell(withArchiveVO archiveVO: ArchiveVOData, isDefault: Bool, isManaging: Bool) {
         guard let thumbURL = URL(string: archiveVO.thumbURL500),
-              let archiveName = archiveVO.fullName,
-              let accessLevel = archiveVO.accessRole else { return }
+            let archiveName = archiveVO.fullName,
+            let accessLevel = archiveVO.accessRole else { return }
         archiveThumbnailImage.image = nil
         archiveThumbnailImage.sd_setImage(with: thumbURL)
         

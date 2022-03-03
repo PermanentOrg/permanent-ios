@@ -6,5 +6,4 @@
 //
 
 struct AttachmentRecordVO: Model {
-    
 }
