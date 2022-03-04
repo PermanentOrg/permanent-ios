@@ -91,7 +91,7 @@ extension ArchivesEndpoint: RequestProtocol {
             return Payloads.updateArchiveThumbPayload(archiveVO: archiveVO, file: file)
             
         case .transferOwnership(archiveNbr: let archiveNbr, primaryEmail: let primaryEmail):
-            return Payloads.transferOwnership(archiveNbr:archiveNbr, primaryEmail:primaryEmail)
+            return Payloads.transferOwnership(archiveNbr: archiveNbr, primaryEmail: primaryEmail)
         }
     }
     

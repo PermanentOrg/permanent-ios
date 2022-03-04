@@ -7,7 +7,6 @@
 
 import UIKit
 class BasePageViewController<T: PageViewModelInterface>: UIPageViewController {
-    
     var viewModel: T?
     var currentViewControllers = [UIViewController]()
     var pageControl = UIPageControl.appearance()

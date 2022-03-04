@@ -45,7 +45,7 @@ class ArchiveTableViewCell: UITableViewCell {
     
     func updateCell(model: ShareVOData) {
         archiveImageView.load(urlString: model.archiveVO?.thumbURL200 ?? "")
-        archiveNameLabel.text = String.init(format: .archiveName, model.archiveVO?.fullName ?? "")
+        archiveNameLabel.text = .init(format: .archiveName, model.archiveVO?.fullName ?? "")
         relationshipLabel.text = "Friend" // TODO
         
         bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending

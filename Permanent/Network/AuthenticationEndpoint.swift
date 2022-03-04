@@ -33,10 +33,13 @@ extension AuthenticationEndpoint: RequestProtocol {
         switch self {
         case .login(let credentials):
             return Payloads.loginPayload(for: credentials)
+            
         case .verify(let credentials):
             return Payloads.verifyPayload(for: credentials)
+            
         case .forgotPassword(let email):
             return Payloads.forgotPasswordPayload(for: email)
+            
         case .verifyAuth:
             return Payloads.verifyAuth()
 

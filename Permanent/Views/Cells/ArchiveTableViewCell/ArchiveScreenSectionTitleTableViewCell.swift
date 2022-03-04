@@ -27,11 +27,12 @@ class ArchiveScreenSectionTitleTableViewCell: UITableViewHeaderFooterView {
         switch type {
         case .pending:
             topSectionTitleLabel.text = "Pending Archives:".localized()
+            
         case .ok:
             topSectionTitleLabel.text = "Choose Archive:".localized()
+            
         default:
             topSectionTitleLabel.text = ""
         }
     }
-    
 }
