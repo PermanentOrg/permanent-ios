@@ -59,4 +59,6 @@ extension UIImage {
     static let shares = UIImage(named: "shares")!
     static let storage = UIImage(named: "storage")!
     static let help = UIImage(named: "helpCircle")!
+    static let editActionFilled = UIImage(named: "editActionFilled")!
+    static let deleteActionRed = UIImage(named: "deleteActionRed")!
 }

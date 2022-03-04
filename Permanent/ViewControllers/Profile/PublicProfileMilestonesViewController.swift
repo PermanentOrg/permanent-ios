@@ -34,6 +34,7 @@ class PublicProfileMilestonesViewController: BaseViewController<PublicProfilePag
     
     func initUI() {
         addMilestoneButton.configureActionButtonUI(title: "Add Milestone".localized())
+        tableView.allowsSelection = false
     }
     
     func setupNavigationBar() {
@@ -98,7 +99,44 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let item = viewModel?.milestonesProfileItems[indexPath.row]
+        
+        let deleteAction = UIContextualAction.make(
+            withImage: .deleteActionRed,
+            backgroundColor: .destructive,
+            handler: { _, _, completion in
+                self.showSpinner()
+                
+                self.viewModel?.deleteMilestoneProfileItem(milestone: item, { status in
+                    self.hideSpinner()
+                    if status {
+                        tableView.reloadData()
+                    } else {
+                        self.showAlert(title: .error, message: .errorMessage)
+                    }
+                })
+                completion(true)
+            }
+        )
+    
+        let editAction = UIContextualAction.make(
+            withImage: .editActionFilled,
+            backgroundColor: .primary,
+            handler: { _, _, completion in
+                let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController
+                vc.viewModel = self.viewModel
+                vc.milestone = item
+                
+                let navigationVC = NavigationController(rootViewController: vc)
+                self.present(navigationVC, animated: true)
+                completion(true)
+            }
+        )
+        
+        return UISwipeActionsConfiguration(actions: [
+            editAction,
+            deleteAction
+        ])
     }
 }
