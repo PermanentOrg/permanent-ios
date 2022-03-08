@@ -105,15 +105,15 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         let deleteAction = UIContextualAction.make(
             withImage: .deleteActionRed,
             backgroundColor: .destructive,
-            handler: { _, _, completion in
-                self.showSpinner()
+            handler: {[weak self] _, _, completion in
+                self?.showSpinner()
                 
-                self.viewModel?.deleteMilestoneProfileItem(milestone: item, { status in
-                    self.hideSpinner()
+                self?.viewModel?.deleteMilestoneProfileItem(milestone: item, { status in
+                    self?.hideSpinner()
                     if status {
                         tableView.reloadData()
                     } else {
-                        self.showAlert(title: .error, message: .errorMessage)
+                        self?.showAlert(title: .error, message: .errorMessage)
                     }
                 })
                 completion(true)
@@ -123,13 +123,13 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         let editAction = UIContextualAction.make(
             withImage: .editActionFilled,
             backgroundColor: .primary,
-            handler: { _, _, completion in
+            handler: {[weak self] _, _, completion in
                 let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController
-                vc.viewModel = self.viewModel
+                vc.viewModel = self?.viewModel
                 vc.milestone = item
                 
                 let navigationVC = NavigationController(rootViewController: vc)
-                self.present(navigationVC, animated: true)
+                self?.present(navigationVC, animated: true)
                 completion(true)
             }
         )

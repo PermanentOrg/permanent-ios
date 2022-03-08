@@ -155,16 +155,16 @@ extension PublicProfileOnlinePresenceViewController: UITableViewDataSource, UITa
         let deleteAction = UIContextualAction.make(
             withImage: .deleteActionRed,
             backgroundColor: .destructive,
-            handler: { _, _, completion in
-                self.showSpinner()
+            handler: {[weak self] _, _, completion in
+                self?.showSpinner()
                 
                 if indexPath.section == 0 {
-                    self.viewModel?.modifyEmailProfileItem(profileItemId: item?.profileItemId, newValue: nil, operationType: .delete, { success, error, id in
-                        self.hideSpinner()
+                    self?.viewModel?.modifyEmailProfileItem(profileItemId: item?.profileItemId, newValue: nil, operationType: .delete, { success, error, id in
+                        self?.hideSpinner()
                     })
                 } else {
-                    self.viewModel?.modifySocialMediaProfileItem(profileItemId: item?.profileItemId, newValue: nil, operationType: .delete, { success, error, id in
-                        self.hideSpinner()
+                    self?.viewModel?.modifySocialMediaProfileItem(profileItemId: item?.profileItemId, newValue: nil, operationType: .delete, { success, error, id in
+                        self?.hideSpinner()
                     })
                 }
                 completion(true)
@@ -174,14 +174,14 @@ extension PublicProfileOnlinePresenceViewController: UITableViewDataSource, UITa
         let editAction = UIContextualAction.make(
             withImage: .editActionFilled,
             backgroundColor: .primary,
-            handler: { _, _, completion in
+            handler: {[weak self] _, _, completion in
                 let vc = UIViewController.create(withIdentifier: .addOnlinePresence, from: .profile) as! PublicProfileAddOnlinePresenceViewController
-                vc.viewModel = self.viewModel
+                vc.viewModel = self?.viewModel
                 vc.fieldType = indexPath.section == 0 ? .email : .socialMedia
                 vc.profileItem = item
                 
                 let navigationVC = NavigationController(rootViewController: vc)
-                self.present(navigationVC, animated: true)
+                self?.present(navigationVC, animated: true)
                 completion(true)
             }
         )
