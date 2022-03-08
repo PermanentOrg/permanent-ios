@@ -423,8 +423,8 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         let deleteAction = UIContextualAction.make(
             withImage: .removeAction,
             backgroundColor: .destructive,
-            handler: { _, _, completion in
-                self.didTapDelete(forAccount: account)
+            handler: {[weak self] _, _, completion in
+                self?.didTapDelete(forAccount: account)
                 completion(true)
             }
         )
@@ -432,8 +432,8 @@ extension MembersViewController: UITableViewDelegate, UITableViewDataSource {
         let editAction = UIContextualAction.make(
             withImage: .editAction,
             backgroundColor: .primary,
-            handler: { _, _, completion in
-                self.didTapEdit(forAccount: account)
+            handler: {[weak self] _, _, completion in
+                self?.didTapEdit(forAccount: account)
                 completion(true)
             }
         )
