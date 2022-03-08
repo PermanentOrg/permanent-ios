@@ -27,16 +27,11 @@ class EstablishedInfoProfileItem: ProfileItemModel {
     }
     
     var establishedLocationFormated: String? {
-        get {
-            guard let locnVO = establishedLocation else { return nil }
-            
-            let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
-            
-            return locationString
-        }
-        set {
-            self.establishedLocationFormated = newValue
-        }
+        guard let locnVO = establishedLocation else { return nil }
+        
+        let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+        
+        return locationString
     }
     
     var locationID: Int? {

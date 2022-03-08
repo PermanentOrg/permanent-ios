@@ -54,16 +54,11 @@ class MilestoneProfileItem: ProfileItemModel {
     }
     
     var locationFormated: String? {
-        get {
-            guard let locnVO = location else { return nil }
-            
-            let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
-            
-            return locationString
-        }
-        set {
-            self.locationFormated = newValue
-        }
+        guard let locnVO = location else { return nil }
+        
+        let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+        
+        return locationString
     }
     
     var locationID: Int? {
