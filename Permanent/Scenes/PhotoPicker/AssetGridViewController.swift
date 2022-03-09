@@ -123,26 +123,6 @@ class AssetGridViewController: UICollectionViewController {
         }
         
         updateToolbar()
-        
-//        if (collectionView.indexPathsForSelectedItems?.contains(ip) ?? false) == true {
-//            if isSelectGesture == nil {
-//                isSelectGesture = false
-//            }
-//            if isSelectGesture == false {
-//                collectionView.deselectItem(at: ip, animated: true)
-//
-//                updateToolbar()
-//            }
-//        } else {
-//            if isSelectGesture == nil {
-//                isSelectGesture = true
-//            }
-//            if isSelectGesture == true {
-//                collectionView.selectItem(at: ip, animated: true, scrollPosition: [])
-//
-//                updateToolbar()
-//            }
-//        }
     }
     
     override func viewWillLayoutSubviews() {
@@ -164,10 +144,6 @@ class AssetGridViewController: UICollectionViewController {
         let scale = UIScreen.main.scale
         let cellSize = collectionViewFlowLayout.itemSize
         thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
-        
-//        selectButtonItem = UIBarButtonItem(title: "Select".localized(), style: .plain, target: self, action: #selector(selectButtonPressed(_:)))
-//        selectButtonItem.tintColor = .white
-//        navigationItem.rightBarButtonItem = selectButtonItem
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -206,25 +182,6 @@ class AssetGridViewController: UICollectionViewController {
     @IBAction func dismissButtonPressed(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-    
-//    @objc func selectButtonPressed(_ sender: Any) {
-//        collectionView.allowsSelection.toggle()
-//
-//        if collectionView.allowsSelection {
-//            collectionView.allowsMultipleSelection = true
-//            navigationController?.setToolbarHidden(false, animated: true)
-//            selectButtonItem.title = "Cancel".localized()
-//        } else {
-//            selectButtonItem.title = "Select".localized()
-//
-//            navigationController?.setToolbarHidden(true, animated: true)
-//            collectionView.indexPathsForSelectedItems?.forEach({ ip in
-//                collectionView.deselectItem(at: ip, animated: true)
-//            })
-//        }
-//
-//        updateToolbar()
-//    }
     
     @objc func selectAllPhotos(_ sender: Any) {
         if collectionView.indexPathsForSelectedItems?.count == fetchResult.count {
