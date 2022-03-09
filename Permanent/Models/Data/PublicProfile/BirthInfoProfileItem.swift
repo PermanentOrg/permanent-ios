@@ -27,16 +27,11 @@ class BirthInfoProfileItem: ProfileItemModel {
     }
     
     var birthLocationFormated: String? {
-        get {
-            guard let locnVO = birthLocation else { return nil }
-            
-            let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
-            
-            return locationString
-        }
-        set {
-            self.birthLocationFormated = newValue
-        }
+        guard let locnVO = birthLocation else { return nil }
+        
+        let locationString = getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
+        
+        return locationString
     }
     
     var locationID: Int? {
