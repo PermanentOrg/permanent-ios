@@ -37,9 +37,9 @@ class AssetGridViewController: UICollectionViewController {
     fileprivate var previousPreheatRect = CGRect.zero
     
     var isSelectGesture: Bool?
-    fileprivate var startGestureCoordinates: [CGPoint] = []
-    fileprivate var stopGestureCoordinates: [CGPoint] = []
-    fileprivate var currentCoordinates: [CGPoint] = [.zero, .zero]
+    fileprivate var startGestureCoordinates: CGPoint = .zero
+    fileprivate var stopGestureCoordinates: CGPoint = .zero
+    fileprivate var previousSelectedElements = 0
     
     // MARK: UIViewController / Life Cycle
     
@@ -88,27 +88,14 @@ class AssetGridViewController: UICollectionViewController {
         let location = sender.location(in: collectionView)
         
         if sender.state == .began {
-            currentCoordinates[0] = location
-            guard let firstTapCell = collectionView.indexPathForItem(at: currentCoordinates[0]) else { return }
+            startGestureCoordinates = location
+            guard let firstTapCell = collectionView.indexPathForItem(at: startGestureCoordinates) else { return }
             isSelectGesture = !(collectionView.indexPathsForSelectedItems?.contains(firstTapCell) ?? false)
-            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: 1, height: 1)
-        } else if sender.state == .changed {
-            currentCoordinates[1] = location
-            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: currentCoordinates[1].x - currentCoordinates[0].x, height: currentCoordinates[1].y - currentCoordinates[0].y)
-        } else if sender.state == .ended {
-            currentCoordinates[1] = location
-            
-            startGestureCoordinates.append(currentCoordinates[0])
-            stopGestureCoordinates.append(currentCoordinates[1])
-            
-            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: currentCoordinates[1].x - currentCoordinates[0].x, height: currentCoordinates[1].y - currentCoordinates[0].y)
+            selectionFrame = CGRect(x: startGestureCoordinates.x, y: startGestureCoordinates.y, width: 1, height: 1)
+        } else if sender.state == .changed || sender.state == .ended {
+            stopGestureCoordinates = location
+            selectionFrame = CGRect(x: startGestureCoordinates.x, y: startGestureCoordinates.y, width: stopGestureCoordinates.x - startGestureCoordinates.x, height: stopGestureCoordinates.y - startGestureCoordinates.y)
         }
-        
-        guard let firstTapCell = collectionView.indexPathForItem(at: currentCoordinates[0]) else { return }
-        let isSelectingCells: Bool = (collectionView.indexPathsForSelectedItems?.contains(firstTapCell) ?? false)
-        
-        print("is selection on : \(isSelectingCells)")
-        print("frame coordinate /n x:\(selectionFrame.origin.x)/n y:\(selectionFrame.origin.x)/n width: \(selectionFrame.width)/n height: \(selectionFrame.height)")
         
         let select = collectionView.indexPathsForElements(in: selectionFrame)
         
@@ -121,8 +108,11 @@ class AssetGridViewController: UICollectionViewController {
                 collectionView.deselectItem(at: each, animated: true)
             }
         }
+        if (collectionView.indexPathsForSelectedItems?.count ?? 0) != previousSelectedElements {
+            updateToolbar()
+        }
         
-        updateToolbar()
+        previousSelectedElements = collectionView.indexPathsForSelectedItems?.count ?? 0
     }
     
     override func viewWillLayoutSubviews() {
@@ -152,7 +142,6 @@ class AssetGridViewController: UICollectionViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
     }
     
     func styleNavBar() {
@@ -237,7 +226,7 @@ class AssetGridViewController: UICollectionViewController {
         // Dequeue a GridViewCell.
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridViewCell", for: indexPath) as? GridViewCell
             else { return UICollectionViewCell() }
-        
+        cell.configure()
         // Request an image for the asset from the PHCachingImageManager.
         cell.representedAssetIdentifier = asset.localIdentifier
         imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
@@ -293,10 +282,18 @@ class AssetGridViewController: UICollectionViewController {
             .map { indexPath in fetchResult.object(at: indexPath.item) }
         
         // Update the assets the PHCachingImageManager is caching.
-        imageManager.startCachingImages(for: addedAssets,
-                                        targetSize: thumbnailSize, contentMode: .aspectFill, options: nil)
-        imageManager.stopCachingImages(for: removedAssets,
-                                       targetSize: thumbnailSize, contentMode: .aspectFill, options: nil)
+        imageManager.startCachingImages(
+            for: addedAssets,
+            targetSize: thumbnailSize,
+            contentMode: .aspectFill,
+            options: nil
+        )
+        imageManager.stopCachingImages(
+            for: removedAssets,
+            targetSize: thumbnailSize,
+            contentMode: .aspectFill,
+            options: nil
+        )
         // Store the computed rectangle for future comparison.
         previousPreheatRect = preheatRect
     }
@@ -305,21 +302,45 @@ class AssetGridViewController: UICollectionViewController {
         if old.intersects(new) {
             var added = [CGRect]()
             if new.maxY > old.maxY {
-                added += [CGRect(x: new.origin.x, y: old.maxY,
-                                 width: new.width, height: new.maxY - old.maxY)]
+                added += [
+                    CGRect(
+                        x: new.origin.x,
+                        y: old.maxY,
+                        width: new.width,
+                        height: new.maxY - old.maxY
+                    )
+                ]
             }
             if old.minY > new.minY {
-                added += [CGRect(x: new.origin.x, y: new.minY,
-                                 width: new.width, height: old.minY - new.minY)]
+                added += [
+                    CGRect(
+                        x: new.origin.x,
+                        y: new.minY,
+                        width: new.width,
+                        height: old.minY - new.minY
+                    )
+                ]
             }
             var removed = [CGRect]()
             if new.maxY < old.maxY {
-                removed += [CGRect(x: new.origin.x, y: new.maxY,
-                                   width: new.width, height: old.maxY - new.maxY)]
+                removed += [
+                    CGRect(
+                        x: new.origin.x,
+                        y: new.maxY,
+                        width: new.width,
+                        height: old.maxY - new.maxY
+                    )
+                ]
             }
             if old.minY < new.minY {
-                removed += [CGRect(x: new.origin.x, y: old.minY,
-                                   width: new.width, height: new.minY - old.minY)]
+                removed += [
+                    CGRect(
+                        x: new.origin.x,
+                        y: old.minY,
+                        width: new.width,
+                        height: new.minY - old.minY
+                    )
+                ]
             }
             return (added, removed)
         } else {
@@ -331,7 +352,6 @@ class AssetGridViewController: UICollectionViewController {
 // MARK: PHPhotoLibraryChangeObserver
 extension AssetGridViewController: PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange) {
-        
         guard let changes = changeInstance.changeDetails(for: fetchResult)
             else { return }
         
@@ -353,8 +373,10 @@ extension AssetGridViewController: PHPhotoLibraryChangeObserver {
                         collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: 0) }))
                     }
                     changes.enumerateMoves { fromIndex, toIndex in
-                        collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
-                                                to: IndexPath(item: toIndex, section: 0))
+                        collectionView.moveItem(
+                            at: IndexPath(item: fromIndex, section: 0),
+                            to: IndexPath(item: toIndex, section: 0)
+                        )
                     }
                 })
                 // We are reloading items after the batch update since `PHFetchResultChangeDetails.changedIndexes` refers to
