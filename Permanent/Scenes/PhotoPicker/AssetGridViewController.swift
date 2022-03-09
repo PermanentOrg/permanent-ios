@@ -21,7 +21,6 @@ protocol AssetPickerDelegate: AnyObject {
 }
 
 class AssetGridViewController: UICollectionViewController {
-    
     var fetchResult: PHFetchResult<PHAsset>!
     var assetCollection: PHAssetCollection!
     var availableWidth: CGFloat = 0
@@ -38,6 +37,9 @@ class AssetGridViewController: UICollectionViewController {
     fileprivate var previousPreheatRect = CGRect.zero
     
     var isSelectGesture: Bool?
+    fileprivate var startGestureCoordinates: [CGPoint] = []
+    fileprivate var stopGestureCoordinates: [CGPoint] = []
+    fileprivate var currentCoordinates: [CGPoint] = [.zero, .zero]
     
     // MARK: UIViewController / Life Cycle
     
@@ -61,7 +63,9 @@ class AssetGridViewController: UICollectionViewController {
         panGesture.cancelsTouchesInView = false
         collectionView.addGestureRecognizer(panGesture)
         
-        navigationController?.setToolbarHidden(true, animated: false)
+        collectionView.allowsSelection = true
+        collectionView.allowsMultipleSelection = true
+        updateToolbar()
         
         styleNavBar()
         navigationController?.toolbar.tintColor = .primary
@@ -76,33 +80,69 @@ class AssetGridViewController: UICollectionViewController {
     }
     
     @objc func panGestureRecognized(_ sender: UIPanGestureRecognizer) {
+        var selectionFrame: CGRect = CGRect()
         if sender.state == .ended || sender.state == .failed || collectionView.allowsSelection == false {
             isSelectGesture = nil
             return
         }
-        
         let location = sender.location(in: collectionView)
-        guard let ip = collectionView.indexPathForItem(at: location) else { return }
         
-        if (collectionView.indexPathsForSelectedItems?.contains(ip) ?? false) == true {
-            if isSelectGesture == nil {
-                isSelectGesture = false
-            }
-            if isSelectGesture == false {
-                collectionView.deselectItem(at: ip, animated: true)
-                
-                updateToolbar()
+        if sender.state == .began {
+            currentCoordinates[0] = location
+            guard let firstTapCell = collectionView.indexPathForItem(at: currentCoordinates[0]) else { return }
+            isSelectGesture = !(collectionView.indexPathsForSelectedItems?.contains(firstTapCell) ?? false)
+            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: 1, height: 1)
+        } else if sender.state == .changed {
+            currentCoordinates[1] = location
+            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: currentCoordinates[1].x - currentCoordinates[0].x, height: currentCoordinates[1].y - currentCoordinates[0].y)
+        } else if sender.state == .ended {
+            currentCoordinates[1] = location
+            
+            startGestureCoordinates.append(currentCoordinates[0])
+            stopGestureCoordinates.append(currentCoordinates[1])
+            
+            selectionFrame = CGRect(x: currentCoordinates[0].x, y: currentCoordinates[0].y, width: currentCoordinates[1].x - currentCoordinates[0].x, height: currentCoordinates[1].y - currentCoordinates[0].y)
+        }
+        
+        guard let firstTapCell = collectionView.indexPathForItem(at: currentCoordinates[0]) else { return }
+        let isSelectingCells: Bool = (collectionView.indexPathsForSelectedItems?.contains(firstTapCell) ?? false)
+        
+        print("is selection on : \(isSelectingCells)")
+        print("frame coordinate /n x:\(selectionFrame.origin.x)/n y:\(selectionFrame.origin.x)/n width: \(selectionFrame.width)/n height: \(selectionFrame.height)")
+        
+        let select = collectionView.indexPathsForElements(in: selectionFrame)
+        
+        if isSelectGesture ?? false {
+            for each in select {
+                collectionView.selectItem(at: each, animated: true, scrollPosition: [])
             }
         } else {
-            if isSelectGesture == nil {
-                isSelectGesture = true
-            }
-            if isSelectGesture == true {
-                collectionView.selectItem(at: ip, animated: true, scrollPosition: [])
-                
-                updateToolbar()
+            for each in select {
+                collectionView.deselectItem(at: each, animated: true)
             }
         }
+        
+        updateToolbar()
+        
+//        if (collectionView.indexPathsForSelectedItems?.contains(ip) ?? false) == true {
+//            if isSelectGesture == nil {
+//                isSelectGesture = false
+//            }
+//            if isSelectGesture == false {
+//                collectionView.deselectItem(at: ip, animated: true)
+//
+//                updateToolbar()
+//            }
+//        } else {
+//            if isSelectGesture == nil {
+//                isSelectGesture = true
+//            }
+//            if isSelectGesture == true {
+//                collectionView.selectItem(at: ip, animated: true, scrollPosition: [])
+//
+//                updateToolbar()
+//            }
+//        }
     }
     
     override func viewWillLayoutSubviews() {
@@ -125,11 +165,9 @@ class AssetGridViewController: UICollectionViewController {
         let cellSize = collectionViewFlowLayout.itemSize
         thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
         
-        collectionView.allowsSelection = false
-        
-        selectButtonItem = UIBarButtonItem(title: "Select".localized(), style: .plain, target: self, action: #selector(selectButtonPressed(_:)))
-        selectButtonItem.tintColor = .white
-        navigationItem.rightBarButtonItem = selectButtonItem
+//        selectButtonItem = UIBarButtonItem(title: "Select".localized(), style: .plain, target: self, action: #selector(selectButtonPressed(_:)))
+//        selectButtonItem.tintColor = .white
+//        navigationItem.rightBarButtonItem = selectButtonItem
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -169,24 +207,24 @@ class AssetGridViewController: UICollectionViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    @objc func selectButtonPressed(_ sender: Any) {
-        collectionView.allowsSelection.toggle()
-        
-        if collectionView.allowsSelection {
-            collectionView.allowsMultipleSelection = true
-            navigationController?.setToolbarHidden(false, animated: true)
-            selectButtonItem.title = "Cancel".localized()
-        } else {
-            selectButtonItem.title = "Select".localized()
-            
-            navigationController?.setToolbarHidden(true, animated: true)
-            collectionView.indexPathsForSelectedItems?.forEach({ ip in
-                collectionView.deselectItem(at: ip, animated: true)
-            })
-        }
-        
-        updateToolbar()
-    }
+//    @objc func selectButtonPressed(_ sender: Any) {
+//        collectionView.allowsSelection.toggle()
+//
+//        if collectionView.allowsSelection {
+//            collectionView.allowsMultipleSelection = true
+//            navigationController?.setToolbarHidden(false, animated: true)
+//            selectButtonItem.title = "Cancel".localized()
+//        } else {
+//            selectButtonItem.title = "Select".localized()
+//
+//            navigationController?.setToolbarHidden(true, animated: true)
+//            collectionView.indexPathsForSelectedItems?.forEach({ ip in
+//                collectionView.deselectItem(at: ip, animated: true)
+//            })
+//        }
+//
+//        updateToolbar()
+//    }
     
     @objc func selectAllPhotos(_ sender: Any) {
         if collectionView.indexPathsForSelectedItems?.count == fetchResult.count {
