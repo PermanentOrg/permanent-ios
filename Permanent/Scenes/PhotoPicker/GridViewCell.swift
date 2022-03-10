@@ -32,4 +32,16 @@ class GridViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
     }
+    
+    func configure() {
+        if #available(iOS 13.0, *) {
+            selectedImage.image = UIImage(systemName: "checkmark.circle.fill")
+            selectedImage.tintColor = .primary
+            selectedImage.backgroundColor = .white
+            selectedImage.contentMode = .scaleAspectFill
+            selectedImage.layer.masksToBounds = true
+            selectedImage.layer.shouldRasterize = true
+            selectedImage.layer.cornerRadius = selectedImage.frame.height / 2
+        }
+    }
 }
