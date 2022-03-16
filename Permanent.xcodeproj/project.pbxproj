@@ -22,6 +22,7 @@
 		06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
+		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
@@ -115,6 +116,7 @@
 		5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */; };
 		5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
 		5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B3726143ED5002F9861 /* TagLinkVO.swift */; };
+		5ED9153A27DD220C00ECB6C2 /* RemoteConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED9153927DD220C00ECB6C2 /* RemoteConfigExtension.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
 		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
 		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
@@ -446,6 +448,7 @@
 		4B4116624E9E4DA693083A8B /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
+		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
@@ -548,6 +551,7 @@
 		5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsBottomCollectionViewCell.xib; sourceTree = "<group>"; };
 		5ED73B242613C30E002F9861 /* TagEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEndpoint.swift; sourceTree = "<group>"; };
 		5ED73B3726143ED5002F9861 /* TagLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLinkVO.swift; sourceTree = "<group>"; };
+		5ED9153927DD220C00ECB6C2 /* RemoteConfigExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigExtension.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
 		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
@@ -938,6 +942,7 @@
 				5E2E3D1026D0F6840090EF02 /* ArchivesViewController.swift */,
 				F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */,
 				F509D6FB2742E265007E4594 /* SearchViewController.swift */,
+				5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -965,6 +970,7 @@
 				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
 				5E647333263C22F900E6566D /* NotificationName.swift */,
 				5E980AB62657D3D400ED5764 /* BundleExtension.swift */,
+				5ED9153927DD220C00ECB6C2 /* RemoteConfigExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2316,6 +2322,7 @@
 				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
+				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
@@ -2412,6 +2419,7 @@
 				5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */,
 				BC4526F5251DF5AE00E24A51 /* RootViewController.swift in Sources */,
 				BC6D3B572514F28800390927 /* APIRequestDispatcher.swift in Sources */,
+				5ED9153A27DD220C00ECB6C2 /* RemoteConfigExtension.swift in Sources */,
 				5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */,
 				F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */,
 				5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */,

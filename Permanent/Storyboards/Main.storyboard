@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -567,17 +567,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="720" width="414" height="142"/>
+                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="90"/>
+                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="50" width="374" height="40"/>
+                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -629,7 +629,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NyA-JK-Omz" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="167" y="483.5" width="80" height="40"/>
+                                <rect key="frame" x="167" y="483.5" width="80" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="r1k-AS-275"/>
                                 </constraints>
@@ -822,6 +822,35 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="48m-Rh-ePI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2823" y="1632"/>
+        </scene>
+        <!--Update Necessary View Controller-->
+        <scene sceneID="q5d-C3-mIO">
+            <objects>
+                <viewController storyboardIdentifier="UpdateNecessary" id="3IN-Hk-arY" customClass="UpdateNecessaryViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="W7B-0w-PGA">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Permanent application needs to  be updated" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jJu-dF-EI5">
+                                <rect key="frame" x="76" y="403" width="263" height="90"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="htF-5C-WRX">
+                                <rect key="frame" x="139" y="735" width="137" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Update"/>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="xmI-3B-d4t"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FzL-4a-HfM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3747.826086956522" y="1631.9196428571429"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="v6x-6g-cTd">
@@ -1243,16 +1272,16 @@
     </scenes>
     <designables>
         <designable name="Ern-RS-tpK">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="NyA-JK-Omz">
-            <size key="intrinsicContentSize" width="55" height="40"/>
+            <size key="intrinsicContentSize" width="37" height="30"/>
         </designable>
         <designable name="POQ-5N-4NZ">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
         <designable name="qjy-La-xkC">
-            <size key="intrinsicContentSize" width="70" height="40"/>
+            <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
     </designables>
     <resources>
