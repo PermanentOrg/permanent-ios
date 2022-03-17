@@ -36,15 +36,15 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera access is required in order to take photos and videos.</string>
+	<string>Use your camera to capture photos and videos to be uploaded directly into your archive.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>This allows you to securely sign into the app.</string>
+	<string>You can use FaceID to securely sign into your Permanent.org account</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Add location information to your stored files.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is required in order to record videos.</string>
+	<string>Use your microphone to capture audio for videos to be uploaded directly into your archive.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo Library access is required in order to upload photos and videos.</string>
+	<string>Allow access to your Photo Library in order to upload photos and videos from this device to your archive.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>OpenSans-Italic.ttf</string>
