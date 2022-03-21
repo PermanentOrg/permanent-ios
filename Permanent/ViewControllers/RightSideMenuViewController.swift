@@ -23,7 +23,6 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     
     private let tableViewData: [RightDrawerSection: [DrawerOption]] = [
         RightDrawerSection.rightSideMenu: [
-            DrawerOption.addStorage,
             DrawerOption.accountInfo,
             DrawerOption.activityFeed,
             DrawerOption.manageArchives,
