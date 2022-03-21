@@ -36,23 +36,22 @@ class RCValues {
     
     static func activateDebugMode() {
         let settings = RemoteConfigSettings()
-        // WARNING: Don't actually do this in production!
+        /// WARNING: Don't actually do this in production!
         settings.minimumFetchInterval = 0
         RemoteConfig.remoteConfig().configSettings = settings
     }
     
     static func fetchCloudValues(completion: @escaping (Bool) -> Void) {
-        // 1
-        activateDebugMode()
+        if APIEnvironment.defaultEnv == .staging {
+            activateDebugMode()
+        }
         
-        // 2
         RemoteConfig.remoteConfig().fetch { _, error in
             if let _ = error {
                 completion(false)
                 return
             }
             
-            // 3
             RemoteConfig.remoteConfig().activate { _, _ in
                 completion(true)
             }
@@ -69,8 +68,7 @@ class RCValues {
     static func verifyAppVersion() {
         let currentVersionArray = RCValues.sharedInstance.version(forKey: .appMinValue)
         let deviceVersionArray = Bundle.release.components(separatedBy: ".")
-        
-        print("minAppVersion: \(currentVersionArray) \ninstalledVersion: \(deviceVersionArray)")
+
         if currentVersionArray == ["0", "0", "0"] {
             return
         }
