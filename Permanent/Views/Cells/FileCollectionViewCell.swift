@@ -50,6 +50,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         rightButtonTapAction = nil
 
         fileImageView.image = nil
+        progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
     }
     
