@@ -79,17 +79,23 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
             
-            viewModel?.getRecord(file: file, then: { record in
-                if record != nil {
-                    self.loadRecord()
-                } else {
-                    self.activityIndicator.stopAnimating()
-                    self.thumbnailImageView.isHidden = true
-                    
-                    self.errorLabel.isHidden = false
-                    self.retryButton.isHidden = false
-                }
-            })
+            if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+                loadImage(withURL: url)
+            } else {
+                viewModel?.getRecord(file: file, then: { record in
+                    if record != nil {
+                        self.loadRecord()
+                    } else {
+                        self.activityIndicator.stopAnimating()
+                        self.thumbnailImageView.isHidden = true
+                        
+                        self.errorLabel.isHidden = false
+                        self.retryButton.isHidden = false
+                    }
+                })
+            }
+        } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+            loadImage(withURL: url)
         } else {
             loadRecord()
         }
@@ -161,7 +167,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                self.loadImage(withURL: localURL, contentType: contentType)
+                break
                 
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
@@ -174,8 +180,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                guard let url = URL(string: viewModel?.recordVO?.recordVO?.thumbURL2000 ?? "") else { return }
-                self.loadImage(withURL: url, contentType: contentType)
+                break
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
@@ -193,7 +198,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
+    func loadImage(withURL url: URL) {
         let imagePreviewVC = ImagePreviewViewController()
         imagePreviewVC.delegate = self
         addChild(imagePreviewVC)
@@ -217,20 +222,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 imagePreviewVC.newImageLoaded()
             }
         }
-//        viewModel?.fileData(withURL: url, onCompletion: { (data, error) in
-//            self.activityIndicator.stopAnimating()
-//
-//            if let data = data {
-//                imagePreviewVC.image = UIImage(data: data)
-//            } else {
-//                self.errorLabel.isHidden = false
-//                self.retryButton.isHidden = false
-//
-//                imagePreviewVC.view.removeFromSuperview()
-//                imagePreviewVC.removeFromParent()
-//                imagePreviewVC.didMove(toParent: nil)
-//            }
-//        })
     }
     
     func loadVideo(withURL url: URL, contentType: String) {
