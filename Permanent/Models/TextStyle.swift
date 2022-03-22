@@ -6,32 +6,32 @@
 //
 
 import UIKit
-//MARK: - Font Parts
 
+// MARK: - Font Parts
 struct TextStyle {
     let font: UIFont
     let lineHeight: CGFloat
     let alignment: NSTextAlignment
     
-    init(_ font: UIFont,_ lineHeight: CGFloat,_ alignment: NSTextAlignment) {
+    init(_ font: UIFont, _ lineHeight: CGFloat, _ alignment: NSTextAlignment) {
         self.font = font
         self.lineHeight = lineHeight
         self.alignment = alignment
     }
     
-    //MARK: - Calculate line spacing
-    
+    // MARK: - Calculate line spacing
     static func calculateSpacing(fontSize: CGFloat, lineHeight: CGFloat) -> CGFloat {
         (lineHeight - fontSize) / 2
     }
-    //Usage label.attributtedText =  setTextWithLineSpacing(text:String)
-    mutating func setTextWithLineSpacing(text:String) -> NSMutableAttributedString
-    {
+    
+    /// Usage label.attributtedText =  setTextWithLineSpacing(text:String)
+    func setTextWithLineSpacing(text: String) -> NSMutableAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = self.lineHeight
         
         let attrString = NSMutableAttributedString(string: text)
-        attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+        
+        attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attrString.length))
         return attrString
     }
 }

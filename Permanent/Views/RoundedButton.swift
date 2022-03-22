@@ -9,7 +9,6 @@ import UIKit
 
 @IBDesignable
 class RoundedButton: CustomButton {
-    
     var color: HighlightColor = (.secondary, UIColor.secondary.lighter(by: 5) ?? .secondary)
     
     var bgColor: UIColor? {
