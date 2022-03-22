@@ -19,12 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         clearShareDeepLinks()
         
+        initFirebase()
+        initNotifications()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()
         window?.makeKeyAndVisible()
-
-        initFirebase()
-        initNotifications()
 
         return true
     }
@@ -69,6 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         firebaseOpts.storageBucket = googleServiceInfo.storageBucket
 
         FirebaseApp.configure(options: firebaseOpts)
+        _ = RCValues.sharedInstance
         
         GMSServices.provideAPIKey(googleServiceInfo.apiKey)
         GMSPlacesClient.provideAPIKey(googleServiceInfo.apiKey)
@@ -90,8 +91,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func navigateFromUniversalLink(url: URL) -> Bool {
         guard let sharePreviewVC = UIViewController.create(
-                withIdentifier: .sharePreview,
-                from: .share
+            withIdentifier: .sharePreview,
+            from: .share
         ) as? SharePreviewViewController else { return false }
         
         let viewModel = SharePreviewViewModel()

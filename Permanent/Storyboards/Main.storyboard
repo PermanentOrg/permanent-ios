@@ -1248,6 +1248,87 @@
             </objects>
             <point key="canvasLocation" x="781" y="919"/>
         </scene>
+        <!--Loading Screen View Controller-->
+        <scene sceneID="Knb-ke-bJS">
+            <objects>
+                <viewController storyboardIdentifier="loadingScreen" id="6oz-R6-sZ0" customClass="LoadingScreenViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zew-Cv-ojT">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNameLarge" translatesAutoresizingMaskIntoConstraints="NO" id="oo9-hm-gbO" userLabel="Logo Image View">
+                                <rect key="frame" x="103.5" y="265" width="207" height="226"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="F77-pf-aVM"/>
+                        <color key="backgroundColor" red="0.073621921239999999" green="0.1067599133" blue="0.29004743700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="centerY" secondItem="oo9-hm-gbO" secondAttribute="centerY" constant="70" id="4kg-pi-x2O"/>
+                            <constraint firstItem="oo9-hm-gbO" firstAttribute="centerX" secondItem="zew-Cv-ojT" secondAttribute="centerX" id="Lj8-oE-5vf"/>
+                            <constraint firstItem="oo9-hm-gbO" firstAttribute="width" secondItem="zew-Cv-ojT" secondAttribute="width" multiplier="0.5" id="rHo-rN-9ZK"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7fE-Y0-bSq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2725" y="215"/>
+        </scene>
+        <!--Update Necessary View Controller-->
+        <scene sceneID="vRg-pe-f26">
+            <objects>
+                <viewController storyboardIdentifier="updateApplication" id="POe-fL-qzC" customClass="UpdateNecessaryViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="bcV-OS-krO">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNameLarge" translatesAutoresizingMaskIntoConstraints="NO" id="7Uy-la-0d5" userLabel="Logo Image View">
+                                <rect key="frame" x="103.5" y="265" width="207" height="226"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DpQ-kV-g0n">
+                                <rect key="frame" x="40" y="591" width="334" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l0J-D5-XH6" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="40" y="897" width="334" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="ITt-47-afL"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Update"/>
+                                <connections>
+                                    <action selector="updateButtonAction:" destination="POe-fL-qzC" eventType="touchUpInside" id="gkL-2l-obI"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="kaY-O8-Q7D"/>
+                        <color key="backgroundColor" red="0.073621921239999999" green="0.1067599133" blue="0.29004743700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="7Uy-la-0d5" firstAttribute="width" secondItem="bcV-OS-krO" secondAttribute="width" multiplier="0.5" id="3uC-OB-Bzh"/>
+                            <constraint firstItem="DpQ-kV-g0n" firstAttribute="leading" secondItem="kaY-O8-Q7D" secondAttribute="leading" constant="40" id="Igi-c6-165"/>
+                            <constraint firstItem="kaY-O8-Q7D" firstAttribute="bottom" secondItem="l0J-D5-XH6" secondAttribute="bottom" constant="-80" id="OOd-9f-u7t"/>
+                            <constraint firstItem="DpQ-kV-g0n" firstAttribute="top" secondItem="7Uy-la-0d5" secondAttribute="bottom" constant="100" id="bYN-sG-AoO"/>
+                            <constraint firstItem="kaY-O8-Q7D" firstAttribute="trailing" secondItem="l0J-D5-XH6" secondAttribute="trailing" constant="40" id="emC-QA-jBj"/>
+                            <constraint firstItem="7Uy-la-0d5" firstAttribute="centerY" secondItem="bcV-OS-krO" secondAttribute="centerY" constant="-70" id="iVz-0L-uBo"/>
+                            <constraint firstItem="kaY-O8-Q7D" firstAttribute="trailing" secondItem="DpQ-kV-g0n" secondAttribute="trailing" constant="40" id="kmU-oR-R46"/>
+                            <constraint firstItem="7Uy-la-0d5" firstAttribute="centerX" secondItem="bcV-OS-krO" secondAttribute="centerX" id="rYV-70-vUp"/>
+                            <constraint firstItem="l0J-D5-XH6" firstAttribute="leading" secondItem="kaY-O8-Q7D" secondAttribute="leading" constant="40" id="tas-k5-3kW"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="7Uy-la-0d5" id="rk1-Kf-vWC"/>
+                        <outlet property="imageViewCenterConstraint" destination="iVz-0L-uBo" id="RJB-eZ-sI8"/>
+                        <outlet property="updateButton" destination="l0J-D5-XH6" id="GSI-MJ-H5B"/>
+                        <outlet property="updateButtonConstraint" destination="OOd-9f-u7t" id="12a-In-rJ5"/>
+                        <outlet property="updateTextLabel" destination="DpQ-kV-g0n" id="wAm-tt-CAw"/>
+                        <outlet property="updateTextTopConstraint" destination="bYN-sG-AoO" id="1Tz-3f-icz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wI1-JL-Tas" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3642" y="215"/>
+        </scene>
     </scenes>
     <designables>
         <designable name="Ern-RS-tpK">
@@ -1259,11 +1340,15 @@
         <designable name="POQ-5N-4NZ">
             <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
+        <designable name="l0J-D5-XH6">
+            <size key="intrinsicContentSize" width="71.5" height="31"/>
+        </designable>
         <designable name="qjy-La-xkC">
             <size key="intrinsicContentSize" width="46" height="30"/>
         </designable>
     </designables>
     <resources>
+        <image name="LogoNameLarge" width="226" height="226"/>
         <image name="chevron.left" width="13" height="21"/>
         <image name="folder" width="21" height="17"/>
         <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
