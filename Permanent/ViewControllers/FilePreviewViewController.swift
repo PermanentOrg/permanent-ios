@@ -14,6 +14,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         return UIDevice.current.userInterfaceIdiom == .phone ? [.allButUpsideDown] : [.all]
     }
     
+    @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var retryButton: RoundedButton!
     
@@ -70,21 +71,31 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         if isViewLoaded {
             activityIndicator.startAnimating()
+            if let url = URL(string: file.thumbnailURL) {
+                thumbnailImageView.sd_setImage(with: url)
+            }
         }
         
         if viewModel == nil || viewModel?.recordVO == nil {
             viewModel = FilePreviewViewModel(file: file)
             
-            viewModel?.getRecord(file: file, then: { record in
-                if record != nil {
-                    self.loadRecord()
-                } else {
-                    self.activityIndicator.stopAnimating()
-                    
-                    self.errorLabel.isHidden = false
-                    self.retryButton.isHidden = false
-                }
-            })
+            if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+                loadImage(withURL: url)
+            } else {
+                viewModel?.getRecord(file: file, then: { record in
+                    if record != nil {
+                        self.loadRecord()
+                    } else {
+                        self.activityIndicator.stopAnimating()
+                        self.thumbnailImageView.isHidden = true
+                        
+                        self.errorLabel.isHidden = false
+                        self.retryButton.isHidden = false
+                    }
+                })
+            }
+        } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
+            loadImage(withURL: url)
         } else {
             loadRecord()
         }
@@ -156,7 +167,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                self.loadImage(withURL: localURL, contentType: contentType)
+                break
                 
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
@@ -169,8 +180,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                guard let url = URL(string: viewModel?.recordVO?.recordVO?.thumbURL2000 ?? "") else { return }
-                self.loadImage(withURL: url, contentType: contentType)
+                break
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
@@ -188,7 +198,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    func loadImage(withURL url: URL, contentType: String, size: CGSize = .zero) {
+    func loadImage(withURL url: URL) {
         let imagePreviewVC = ImagePreviewViewController()
         imagePreviewVC.delegate = self
         addChild(imagePreviewVC)
@@ -197,21 +207,21 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         // Insert view under the spinner
         view.insertSubview(imagePreviewVC.view, at: 0)
         imagePreviewVC.didMove(toParent: self)
-        
-        viewModel?.fileData(withURL: url, onCompletion: { (data, error) in
+        imagePreviewVC.imageView.sd_setImage(with: url) { _, error, _, _ in
             self.activityIndicator.stopAnimating()
+            self.thumbnailImageView.isHidden = true
             
-            if let data = data {
-                imagePreviewVC.image = UIImage(data: data)
-            } else {
+            if error != nil {
                 self.errorLabel.isHidden = false
                 self.retryButton.isHidden = false
-                
+
                 imagePreviewVC.view.removeFromSuperview()
                 imagePreviewVC.removeFromParent()
                 imagePreviewVC.didMove(toParent: nil)
+            } else {
+                imagePreviewVC.newImageLoaded()
             }
-        })
+        }
     }
     
     func loadVideo(withURL url: URL, contentType: String) {
@@ -231,6 +241,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         videoPlayer!.didMove(toParent: self)
         
         activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
     }
     
     func loadMisc(withURL url: URL) {
@@ -310,6 +321,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
         
         activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
         
         if keyPath == #keyPath(AVPlayerItem.status) {
             let status: AVPlayerItem.Status
@@ -391,10 +403,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
 extension FilePreviewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
         
         self.errorLabel.isHidden = false
         self.retryButton.isHidden = false

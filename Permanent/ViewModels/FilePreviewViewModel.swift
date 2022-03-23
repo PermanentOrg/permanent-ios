@@ -36,10 +36,18 @@ class FilePreviewViewModel: ViewModelInterface {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.getRecord(downloadInfo) { (record, error) in
-            self.recordVO = record
+        downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
+            self?.onRecordCallback(file: file, record: record, error: error, then: handler)
+        }
+    }
+    
+    func onRecordCallback(file: FileViewModel, record: RecordVO?, error: Error?, then handler: @escaping (RecordVO?) -> Void) {
+        if record != nil && error == nil {
+            recordVO = record
             
             handler(record)
+        } else {
+            getRecord(file: file, then: handler)
         }
     }
     

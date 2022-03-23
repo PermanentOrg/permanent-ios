@@ -618,12 +618,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H1M-5i-MUw">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="3UD-hv-DwU">
                                 <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
                                 <color key="color" systemColor="systemGray5Color"/>
                             </activityIndicatorView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Something went wrong. Please try again." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7sT-rm-bn7">
-                                <rect key="frame" x="33.5" y="443" width="347" height="20.5"/>
+                                <rect key="frame" x="0.0" y="443" width="414" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -642,12 +645,16 @@
                         <viewLayoutGuide key="safeArea" id="Td9-LP-dcb"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="H1M-5i-MUw" firstAttribute="leading" secondItem="4XN-bc-sW9" secondAttribute="leading" id="7cr-xy-tqD"/>
+                            <constraint firstAttribute="bottom" secondItem="H1M-5i-MUw" secondAttribute="bottom" id="B9F-Ux-xEw"/>
                             <constraint firstItem="7sT-rm-bn7" firstAttribute="centerY" secondItem="Td9-LP-dcb" secondAttribute="centerY" id="BNz-iF-5Ow"/>
-                            <constraint firstItem="7sT-rm-bn7" firstAttribute="leading" secondItem="Td9-LP-dcb" secondAttribute="leading" constant="33.5" id="TL7-TX-MhX"/>
-                            <constraint firstItem="Td9-LP-dcb" firstAttribute="trailing" secondItem="7sT-rm-bn7" secondAttribute="trailing" constant="33.5" id="cLr-e0-x27"/>
+                            <constraint firstItem="7sT-rm-bn7" firstAttribute="leading" secondItem="Td9-LP-dcb" secondAttribute="leading" id="TL7-TX-MhX"/>
+                            <constraint firstAttribute="trailing" secondItem="7sT-rm-bn7" secondAttribute="trailing" id="cLr-e0-x27"/>
                             <constraint firstItem="NyA-JK-Omz" firstAttribute="top" secondItem="7sT-rm-bn7" secondAttribute="bottom" constant="20" id="dWc-YX-P0s"/>
                             <constraint firstItem="3UD-hv-DwU" firstAttribute="centerY" secondItem="Td9-LP-dcb" secondAttribute="centerY" id="lbI-Ky-yi0"/>
                             <constraint firstItem="NyA-JK-Omz" firstAttribute="centerX" secondItem="Td9-LP-dcb" secondAttribute="centerX" id="nef-WY-kJY"/>
+                            <constraint firstAttribute="trailing" secondItem="H1M-5i-MUw" secondAttribute="trailing" id="ow0-1x-lol"/>
+                            <constraint firstItem="H1M-5i-MUw" firstAttribute="top" secondItem="4XN-bc-sW9" secondAttribute="top" id="uFz-lI-GFG"/>
                             <constraint firstItem="3UD-hv-DwU" firstAttribute="centerX" secondItem="Td9-LP-dcb" secondAttribute="centerX" id="yrn-It-SK6"/>
                         </constraints>
                     </view>
@@ -655,6 +662,7 @@
                         <outlet property="activityIndicator" destination="3UD-hv-DwU" id="QCB-j7-b8b"/>
                         <outlet property="errorLabel" destination="7sT-rm-bn7" id="jVB-rE-SXo"/>
                         <outlet property="retryButton" destination="NyA-JK-Omz" id="TDe-VE-mAG"/>
+                        <outlet property="thumbnailImageView" destination="H1M-5i-MUw" id="znb-b2-Z6f"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="A9w-Uu-zo2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
