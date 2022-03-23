@@ -30,6 +30,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
     
+    var timer: Timer?
+    var timerRunCount: Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,6 +72,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.refreshUploadQueue()
                     self?.refreshCollectionView()
                 }
+            }
+            if let queueUploadCount = self?.viewModel?.uploadQueue.count,
+                queueUploadCount == 0 {
+                self?.timer = Timer.scheduledTimer(timeInterval: 3, target: self as Any, selector: #selector(self?.timerActions), userInfo: nil, repeats: true)
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] _ in
+            if self?.timer != nil {
+                self?.timer?.invalidate()
+                self?.timerRunCount = 0
             }
         }
     }
@@ -221,6 +235,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self.backButton.isHidden = true
                 self.directoryLabel.text = viewModel.rootFolderName
             }
+            self.timer?.invalidate()
         })
     }
     
@@ -657,6 +672,17 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
+    }
+    
+    @objc
+    private func timerActions() {
+        timerRunCount += 1
+        pullToRefreshAction()
+        
+        if timerRunCount == 3 {
+            timerRunCount = 0
+            timer?.invalidate()
+        }
     }
 }
 
