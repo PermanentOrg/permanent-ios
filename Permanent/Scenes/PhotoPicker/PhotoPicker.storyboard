@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Ezi-WF-kAp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Ezi-WF-kAp">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,7 +11,7 @@
         <!--Recents-->
         <scene sceneID="r7l-gg-dq7">
             <objects>
-                <navigationController toolbarHidden="NO" id="vC3-pB-5Vb" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="assets" toolbarHidden="NO" id="vC3-pB-5Vb" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Recents" image="recents" id="k1C-7l-XVI"/>
                     <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="DjV-YW-jjY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
@@ -28,7 +28,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SLD-UC-DBI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2223" y="1066"/>
+            <point key="canvasLocation" x="2231" y="1066"/>
         </scene>
         <!--Photo Tab Bar View Controller-->
         <scene sceneID="bsx-Pe-hRY">
@@ -39,10 +39,6 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
-                    <connections>
-                        <segue destination="vC3-pB-5Vb" kind="relationship" relationship="viewControllers" id="QKj-PW-vaE"/>
-                        <segue destination="avX-hO-y01" kind="relationship" relationship="viewControllers" id="zZm-3g-bfr"/>
-                    </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R3A-Cv-2of" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -120,6 +116,11 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="ibCollectionType">
+                            <integer key="value" value="0"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <outlet property="addButtonItem" destination="haJ-ZN-72v" id="V4J-Wr-qeE"/>
                         <outlet property="collectionViewFlowLayout" destination="DJA-Lb-Xgj" id="52G-0D-PGQ"/>
@@ -137,7 +138,7 @@
         <!--Albums-->
         <scene sceneID="QXK-2o-FCj">
             <objects>
-                <navigationController id="avX-hO-y01" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="albums" id="avX-hO-y01" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Albums" image="albums" id="ByY-d4-t3e"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ek8-Tb-xWZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -223,9 +224,6 @@
             <point key="canvasLocation" x="1425" y="1431"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="4X9-Gz-qeG"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="albums" width="20" height="21"/>
         <image name="checkmark" width="19" height="19"/>

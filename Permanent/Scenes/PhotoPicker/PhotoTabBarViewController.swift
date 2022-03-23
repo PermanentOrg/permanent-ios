@@ -19,6 +19,30 @@ class PhotoTabBarViewController: UITabBarController {
         super.viewDidLoad()
 
         tabBar.tintColor = .primary
+        
+        var tabViewControllers: [UIViewController] = [
+            UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "assets"),
+            UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "albums")
+        ]
+        
+        let assetFetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: nil)
+        if let assetCollection = assetFetchResult.firstObject {
+            let favoritesVC = UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "assets")
+            if #available(iOS 13.0, *) {
+                favoritesVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "star.fill"), selectedImage: nil)
+            } else {
+                favoritesVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(named: "star-fill"), selectedImage: nil)
+            }
+            
+            let assetGridVC = (favoritesVC as! UINavigationController).viewControllers.first as! AssetGridViewController
+            assetGridVC.assetCollection = assetCollection
+            assetGridVC.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)
+            assetGridVC.title = "Favorites".localized()
+            
+            tabViewControllers.insert(favoritesVC, at: 1)
+        }
+        
+        setViewControllers(tabViewControllers, animated: false)
     }
 }
 
