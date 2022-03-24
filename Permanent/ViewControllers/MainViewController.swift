@@ -65,9 +65,24 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
                     self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
                     self?.refreshCollectionView()
+                    
+                    if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
+                        queueUploadCount == 0 {
+                        self?.viewModel?.timer = Timer.scheduledTimer(timeInterval: 9, target: self as Any, selector: #selector(self?.timerActions), userInfo: nil, repeats: true)
+                    }
                 } else {
                     self?.viewModel?.refreshUploadQueue()
                     self?.refreshCollectionView()
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let operation = notif.object as? UploadOperation else { return }
+            if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
+                if self?.viewModel?.timer != nil {
+                    self?.viewModel?.timer?.invalidate()
+                    self?.viewModel?.timerRunCount = 0
                 }
             }
         }
@@ -341,6 +356,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self.onFilesFetchCompletion(status)
             handler?()
         })
+        viewModel?.timer?.invalidate()
     }
     
     private func onFilesFetchCompletion(_ status: RequestStatus) {
@@ -657,6 +673,12 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
         return CGSize(width: UIScreen.main.bounds.width, height: height)
+    }
+    
+    @objc
+    private func timerActions() {
+        pullToRefreshAction()
+        viewModel?.updateTimerCount()
     }
 }
 
