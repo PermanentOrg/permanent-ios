@@ -169,7 +169,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         timerRunCount += 1
         if timerRunCount == 1 {
             timerRunCount = 0
+            invalidateTimer()
+        }
+    }
+    
+    func invalidateTimer() {
+        if timer != nil {
             timer?.invalidate()
+            timerRunCount = 0
         }
     }
 }

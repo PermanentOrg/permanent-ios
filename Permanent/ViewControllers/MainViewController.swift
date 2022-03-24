@@ -264,6 +264,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self.refreshControl.endRefreshing()
             }
         )
+        viewModel?.invalidateTimer()
     }
     
     private func handleProgress(withValue value: Float, listSection section: FileListType) {
