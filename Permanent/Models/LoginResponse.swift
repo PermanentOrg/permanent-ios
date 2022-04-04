@@ -15,14 +15,13 @@ struct LoginResponse: Codable {
     let isSystemUp: Bool?
     let systemMessage: String?
     let sessionID: JSONAny?
-    let csrf: String?
     let createdDT, updatedDT: String?
     
     enum CodingKeys: String, CodingKey {
         case results = "Results"
         case isSuccessful, actionFailKeys, isSystemUp, systemMessage
         case sessionID = "sessionId"
-        case csrf, createdDT, updatedDT
+        case createdDT, updatedDT
     }
 }
 

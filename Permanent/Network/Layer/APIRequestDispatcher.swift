@@ -124,14 +124,11 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
                 if let mfaError = json as? [String: Any],
                 let results = mfaError["Results"] as? [[String: Any]],
                 let message = (results[0]["message"] as? [String])?.first,
-                (message == "warning.auth.mfaToken" && !ignoresMFAWarning) || message == "error.generic.invalid_csrf" {
+                (message == "warning.auth.mfaToken" && !ignoresMFAWarning) {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Self.sessionExpiredNotificationName, object: self)
                     }
                 } else {
-                    if let csrf: String = (json as? [String: Any])?["csrf"] as? String {
-                        PreferencesManager.shared.set(csrf, forKey: Constants.Keys.StorageKeys.csrfStorageKey)
-                    }
                     completion(OperationResult.json(json, urlResponse))
                 }
                 

@@ -16,8 +16,7 @@ struct APIPayload<T: Model>: Model {
     
     static func make(fromData data: [T]) -> APIPayload<T> {
         let voData = RequestVOData(
-            data: data,
-            csrf: PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey)
+            data: data
         )
         return APIPayload(requestVO: voData)
     }
@@ -25,5 +24,4 @@ struct APIPayload<T: Model>: Model {
 
 struct RequestVOData<T: Model>: Model {
     let data: [T]
-    let csrf: String?
 }
