@@ -44,6 +44,15 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         if let archiveName = archiveData.fullName {
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
+        
+        let leftButtonImage: UIImage!
+        if #available(iOS 13.0, *) {
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+        } else {
+            leftButtonImage = UIImage(named: "close")
+        }
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
 
         profilePageVC = UIViewController.create(withIdentifier: .profilePage, from: .profile) as? PublicProfilePageViewController
         profilePageVC.delegate = self
@@ -154,6 +163,10 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         let navigationController = NavigationController(rootViewController: myFilesVC)
         
         present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc func closeButtonAction(_ sender: Any) {
+        dismiss(animated: true)
     }
 }
 

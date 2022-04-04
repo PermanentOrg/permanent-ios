@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  PublicProfilePageViewController.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.11.2021.
