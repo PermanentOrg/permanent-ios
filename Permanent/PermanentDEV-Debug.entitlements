@@ -3,11 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>aps-environment</key>
-	<string>Production</string>
+	<string>Staging</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:permanent.org</string>
-		<string>applinks:www.permanent.org</string>
+		<string>applinks:staging.permanent.org</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
