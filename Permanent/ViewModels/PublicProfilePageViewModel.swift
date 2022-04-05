@@ -45,6 +45,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     var milestonesProfileItems: [MilestoneProfileItem] {
         return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
     }
+    var isEditDataEnabled: Bool {
+        archiveData.permissions().contains(.ownership)
+    }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData

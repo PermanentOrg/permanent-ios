@@ -37,16 +37,14 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     private func initUI() {
         searchBar.updateHeight(height: archiveImageView.frame.height, radius: 2)
-        archiveImageView.layer.cornerRadius = archiveImageView.frame.height / 2
+        archiveImageView.layer.cornerRadius = 2
         
         title = "Public Gallery".localized()
-
     }
     
     private func initCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.estimatedItemSize = .zero
-        //layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.45)
         
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .white
@@ -116,6 +114,7 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
         switch collectionViewSections[section] {
         case .onlineArchives:
             numberOfItemsInSection = viewModel?.userPublicArchives.count ?? 0
+            
         case .popularPublicArchives:
             numberOfItemsInSection = viewModel?.publicArchives.count ?? 0
         }
@@ -137,7 +136,6 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
             guard let archiveName = viewModel?.publicArchives[indexPath.item].fullName else { return returnedCell }
             
-            //cell.configure(title: archiveName)
             returnedCell = cell
         }
         
@@ -145,14 +143,15 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PublicGalleryHeaderCollectionViewCell.identifier, for: indexPath) as! PublicGalleryHeaderCollectionViewCell
             headerCell.configure(section: collectionViewSections[indexPath.section])
             return headerCell
+            
         case UICollectionView.elementKindSectionFooter:
             return UICollectionReusableView()
+            
         default:
             return UICollectionReusableView()
         }

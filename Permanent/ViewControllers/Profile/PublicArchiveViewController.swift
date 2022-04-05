@@ -45,15 +45,24 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
         
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
+        if navigationController?.presentingViewController != nil {
+            let leftButtonImage: UIImage!
+            if #available(iOS 13.0, *) {
+                leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+            } else {
+                leftButtonImage = UIImage(named: "close")
+            }
+            
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         }
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
-
+        if !archiveData.permissions().contains(.ownership) {
+            changeProfilePhotoButton.isHidden = true
+            changeProfilePhotoButtonView.alpha = 0
+            changeProfileBannerPhotoButtonView.alpha = 0
+            changeProfileBannerButton.isHidden = true
+        }
+        
         profilePageVC = UIViewController.create(withIdentifier: .profilePage, from: .profile) as? PublicProfilePageViewController
         profilePageVC.delegate = self
         profilePageVC.archiveData = archiveData

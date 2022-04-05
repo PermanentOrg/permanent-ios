@@ -22,8 +22,8 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
     
     func configure(archive: ArchiveVOData?) {
         guard let thumbnail = archive?.thumbURL1000,
-              let name = archive?.fullName,
-              let role = archive?.accessRole else { return }
+            let name = archive?.fullName,
+            let role = archive?.accessRole else { return }
         
         initUIforLocalArchive()
         
@@ -40,10 +40,9 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         rightSideBackgroundView.backgroundColor = .primary
         
         archiveTitleLabel.textColor = .white
-        archiveTitleLabel.font = Text.style3.font
+        archiveTitleLabel.font = Text.style9.font
         archiveUserRole.textColor = .white
         archiveUserRole.font = Text.style12.font
         linkIcon.tintColor = .white
-        
     }
 }

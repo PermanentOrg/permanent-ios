@@ -21,13 +21,13 @@ class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
         switch section {
             
         case .onlineArchives:
-            sectionNameLabel.font = Text.style17.font
+            sectionNameLabel.font = Text.style32.font
             sectionNameLabel.textColor = .primary
-            sectionNameLabel.text = "Your Public Archives".localized()
+            sectionNameLabel.text = "Your Public Galleries".localized()
+            
         case .popularPublicArchives:
             sectionNameLabel.text = "Public Popular Archives".localized()
         }
-        
     }
     
     static func nib() -> UINib {
