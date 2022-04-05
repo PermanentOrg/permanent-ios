@@ -8,6 +8,7 @@
 import UIKit
 import WebKit
 import AVKit
+import PDFKit
 
 class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -81,26 +82,26 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             
             if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
                 loadImage(withURL: url)
-            } else {
-                viewModel?.getRecord(file: file, then: { record in
-                    if record != nil {
-                        self.loadRecord()
-                    } else {
-                        self.activityIndicator.stopAnimating()
-                        self.thumbnailImageView.isHidden = true
-                        
-                        self.errorLabel.isHidden = false
-                        self.retryButton.isHidden = false
-                    }
-                })
             }
+            
+            viewModel?.getRecord(file: file, then: { record in
+                if record != nil {
+                    self.loadRecord()
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    self.thumbnailImageView.isHidden = true
+                    
+                    self.errorLabel.isHidden = false
+                    self.retryButton.isHidden = false
+                }
+            })
         } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
             loadImage(withURL: url)
         } else {
             loadRecord()
         }
     }
-    
+
     func initUI() {
         styleNavBar()
         
@@ -172,6 +173,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
                 
+            case FileType.pdf:
+                self.loadPDF(withURL: localURL)
+                
             default:
                 self.loadMisc(withURL: localURL)
             }
@@ -184,6 +188,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
+                
+            case FileType.pdf:
+                self.loadPDF(withURL: downloadURL)
                 
             default:
                 self.loadMisc(withURL: downloadURL)
@@ -220,6 +227,27 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 imagePreviewVC.didMove(toParent: nil)
             } else {
                 imagePreviewVC.newImageLoaded()
+            }
+        }
+    }
+    
+    func loadPDF(withURL url: URL) {
+        DispatchQueue.global().async {
+            if let document = PDFDocument(url: url) {
+                DispatchQueue.main.async { [self] in
+                    let pdfView = PDFView()
+                    pdfView.autoScales = true
+
+                    pdfView.translatesAutoresizingMaskIntoConstraints = false
+                    view.addSubview(pdfView)
+
+                    pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+                    pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+                    pdfView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+                    pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
+                    pdfView.document = document
+                }
             }
         }
     }
