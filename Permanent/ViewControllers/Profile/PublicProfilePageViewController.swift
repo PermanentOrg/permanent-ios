@@ -76,10 +76,10 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         }
         view.backgroundColor = .white
         
-        refreshProfileViewData()
-        
         guard let isEditDataEnabled = viewModel?.isEditDataEnabled else { return }
         self.isEditDataEnabled = isEditDataEnabled
+        
+        refreshProfileViewData()
     }
     
     func initCollectionView() {
@@ -146,12 +146,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     func refreshProfileViewData() {
         profileViewData = [
-            ProfileSection.profileVisibility: [
-                ProfileCellType.profileVisibility
-            ],
             ProfileSection.about: [
-                ProfileCellType.blurb,
-                ProfileCellType.longDescription
             ],
             ProfileSection.information: [
                 ProfileCellType.fullName,
@@ -162,6 +157,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             ProfileSection.milestones: [
             ]
         ]
+        
+        if isEditDataEnabled {
+            profileViewData[ProfileSection.profileVisibility] = [ ProfileCellType.profileVisibility ]
+        }
+        
         guard let archiveType = viewModel?.archiveType else { return }
         switch archiveType {
         case .person:
@@ -178,6 +178,15 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             ])
         }
         
+        var aboutCells = [ProfileCellType]()
+        if viewModel?.blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
+            aboutCells.append(.blurb)
+        }
+        if viewModel?.descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
+            aboutCells.append(.longDescription)
+        }
+        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+        
         profileViewData[.onlinePresenceEmail] = viewModel?.emailProfileItems.map({ _ in .onlinePresenceEmail }) ?? []
         profileViewData[.onlinePresenceLink] = viewModel?.socialMediaProfileItems.map({ _ in .onlinePresenceLink }) ?? []
         
@@ -193,7 +202,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         
         switch currentSection {
         case .about:
-            return (readMoreIsEnabled[.about] ?? false) ? 2 : 1
+            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, 1)
             
         case .onlinePresenceEmail:
             let rowCount = profileViewData[currentSection]?.count ?? 0
@@ -230,7 +239,6 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .profileVisibility:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageVisibilityCollectionViewCell.identifier, for: indexPath) as! ProfilePageVisibilityCollectionViewCell
             cell.isPublicSwitch.isOn = viewModel?.isPubliclyVisible ?? false
-            cell.isHidden = !isEditDataEnabled
             cell.switchAction = { [weak self] cell in
                 guard let viewModel = self?.viewModel else { return }
                 
@@ -428,7 +436,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 footerCell.configure(isReadMoreButtonHidden: true)
                 
             case .about:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.about] ?? false)
+                footerCell.configure(isReadMoreButtonHidden: profileViewData[.about]!.count <= 1, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.about] ?? false)
                 
                 footerCell.readMoreButtonAction = { [weak self] in
                     if let readMore = self?.readMoreIsEnabled[.about] {
@@ -474,20 +482,14 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         
         switch currentCellType {
         case .profileVisibility:
-            return isEditDataEnabled ? CGSize(width: UIScreen.main.bounds.width, height: 80) : CGSize(width: UIScreen.main.bounds.width, height: 1)
+            return CGSize(width: UIScreen.main.bounds.width, height: 80)
             
         case .blurb:
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
-            if !isEditDataEnabled && text == viewModel?.archiveType.shortDescriptionHint {
-                return CGSize(width: UIScreen.main.bounds.width, height: 1)
-            }
             return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
             
         case .longDescription:
             let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
-            if !isEditDataEnabled && text == viewModel?.archiveType.longDescriptionHint {
-                return CGSize.zero
-            }
             return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
 
         case .fullName, .nickName, .gender, .birthDate, .birthLocation, .establishedDate, .establishedLocation:
@@ -558,9 +560,6 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         switch currentSectionType {
         case .onlinePresenceLink:
             return CGSize.zero
-        
-        case .profileVisibility:
-            return isEditDataEnabled ? CGSize(width: collectionView.frame.width, height: 40) : CGSize.zero
             
         default:
             return CGSize(width: collectionView.frame.width, height: 40)
@@ -572,6 +571,9 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         let currentSectionType = sections[section]
         
         switch currentSectionType {
+        case .about:
+            return profileViewData[.about]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+            
         case .onlinePresenceEmail:
             return CGSize.zero
             
