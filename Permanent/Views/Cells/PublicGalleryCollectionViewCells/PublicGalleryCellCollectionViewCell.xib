@@ -34,28 +34,31 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x0v-oe-i2s">
-                                <rect key="frame" x="10" y="74" width="204" height="21"/>
+                                <rect key="frame" x="10" y="74" width="41.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="link" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="dZ8-EX-UX1">
-                                <rect key="frame" x="224" y="69.5" width="25" height="26"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bge-bt-GS0">
+                                <rect key="frame" x="224" y="70" width="25" height="25"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="dZ8-EX-UX1" secondAttribute="height" multiplier="1:1" id="C3G-6i-jRl"/>
-                                    <constraint firstAttribute="height" constant="25" id="DX5-XC-t4N"/>
+                                    <constraint firstAttribute="width" secondItem="Bge-bt-GS0" secondAttribute="height" multiplier="1:1" id="FSa-WN-ktL"/>
+                                    <constraint firstAttribute="height" constant="25" id="tAO-hg-xtf"/>
                                 </constraints>
-                            </imageView>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="link" catalog="system"/>
+                                <connections>
+                                    <action selector="buttonAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="h61-Xe-eI4"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="dZ8-EX-UX1" secondAttribute="trailing" constant="5" id="0Fd-kX-tWW"/>
                             <constraint firstAttribute="bottom" secondItem="x0v-oe-i2s" secondAttribute="bottom" constant="5" id="1i8-zt-uzc"/>
-                            <constraint firstAttribute="bottom" secondItem="dZ8-EX-UX1" secondAttribute="bottom" constant="5" id="I0k-3D-nqM"/>
+                            <constraint firstAttribute="bottom" secondItem="Bge-bt-GS0" secondAttribute="bottom" constant="5" id="9jq-8E-WeG"/>
+                            <constraint firstAttribute="trailing" secondItem="Bge-bt-GS0" secondAttribute="trailing" constant="5" id="Mfb-us-yHF"/>
                             <constraint firstItem="JP7-ly-Qsp" firstAttribute="leading" secondItem="Jef-ks-MNd" secondAttribute="leading" constant="10" id="Q0T-2S-weH"/>
                             <constraint firstItem="JP7-ly-Qsp" firstAttribute="top" secondItem="Jef-ks-MNd" secondAttribute="top" constant="10" id="Q7J-f6-yeh"/>
-                            <constraint firstItem="dZ8-EX-UX1" firstAttribute="leading" secondItem="x0v-oe-i2s" secondAttribute="trailing" constant="10" id="RKP-ym-Wqn"/>
                             <constraint firstAttribute="trailing" secondItem="JP7-ly-Qsp" secondAttribute="trailing" constant="40" id="aHW-G2-NNl"/>
                             <constraint firstItem="x0v-oe-i2s" firstAttribute="leading" secondItem="Jef-ks-MNd" secondAttribute="leading" constant="10" id="ter-Wo-mO5"/>
                         </constraints>
@@ -77,14 +80,14 @@
                 <outlet property="archiveImage" destination="rCL-0i-gV1" id="rtN-rT-b4T"/>
                 <outlet property="archiveTitleLabel" destination="JP7-ly-Qsp" id="U13-6N-qPx"/>
                 <outlet property="archiveUserRole" destination="x0v-oe-i2s" id="eat-Lp-2UN"/>
-                <outlet property="linkIcon" destination="dZ8-EX-UX1" id="XbG-8U-Ke7"/>
+                <outlet property="linkIconButton" destination="Bge-bt-GS0" id="hKZ-ZK-b4c"/>
                 <outlet property="rightSideBackgroundView" destination="Jef-ks-MNd" id="AxR-m5-bvl"/>
             </connections>
             <point key="canvasLocation" x="302.89855072463769" y="95.758928571428569"/>
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="link" catalog="system" width="32" height="32"/>
+        <image name="link" catalog="system" width="128" height="122"/>
         <image name="placeholder" width="34" height="34"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

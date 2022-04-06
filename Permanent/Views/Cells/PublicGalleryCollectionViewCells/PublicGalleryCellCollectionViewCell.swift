@@ -8,13 +8,14 @@
 import UIKit
 
 class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
-    
     static let identifier = "PublicGalleryCellCollectionViewCell"
     @IBOutlet weak var archiveImage: UIImageView!
     @IBOutlet weak var archiveTitleLabel: UILabel!
     @IBOutlet weak var archiveUserRole: UILabel!
-    @IBOutlet weak var linkIcon: UIImageView!
+    @IBOutlet weak var linkIconButton: UIButton!
     @IBOutlet weak var rightSideBackgroundView: UIView!
+    
+    var buttonAction: ButtonAction?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,10 +33,6 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveUserRole.text = AccessRole.roleForValue(role).groupName
     }
     
-    static func nib() -> UINib {
-        return UINib(nibName: identifier, bundle: nil)
-    }
-    
     private func initUIforLocalArchive() {
         rightSideBackgroundView.backgroundColor = .primary
         
@@ -43,6 +40,15 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveTitleLabel.font = Text.style9.font
         archiveUserRole.textColor = .white
         archiveUserRole.font = Text.style12.font
-        linkIcon.tintColor = .white
+        linkIconButton.tintColor = .white
+        linkIconButton.setAttributedTitle(NSAttributedString(string: "", attributes: [.font: Text.style17.font, .foregroundColor: UIColor.primary]), for: .normal)
+    }
+    
+    static func nib() -> UINib {
+        return UINib(nibName: identifier, bundle: nil)
+    }
+    
+    @IBAction func buttonAction(_ sender: Any) {
+        buttonAction?()
     }
 }

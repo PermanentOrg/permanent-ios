@@ -149,8 +149,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             ProfileSection.about: [
             ],
             ProfileSection.information: [
-                ProfileCellType.fullName,
-                ProfileCellType.nickName
             ],
             ProfileSection.onlinePresenceEmail: [
             ],
@@ -162,22 +160,6 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             profileViewData[ProfileSection.profileVisibility] = [ ProfileCellType.profileVisibility ]
         }
         
-        guard let archiveType = viewModel?.archiveType else { return }
-        switch archiveType {
-        case .person:
-            profileViewData[ProfileSection.information]?.append(contentsOf: [
-                ProfileCellType.gender,
-                ProfileCellType.birthDate,
-                ProfileCellType.birthLocation
-            ])
-            
-        case .family, .organization:
-            profileViewData[ProfileSection.information]?.append(contentsOf: [
-                ProfileCellType.establishedDate,
-                ProfileCellType.establishedLocation
-            ])
-        }
-        
         var aboutCells = [ProfileCellType]()
         if viewModel?.blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
             aboutCells.append(.blurb)
@@ -186,6 +168,38 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             aboutCells.append(.longDescription)
         }
         profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+        
+        var informationCells = [ProfileCellType]()
+        if viewModel?.basicProfileItem?.fullName?.isNotEmpty ?? false {
+            informationCells.append(.fullName)
+        }
+        if viewModel?.basicProfileItem?.nickname?.isNotEmpty ?? false {
+            informationCells.append(.nickName)
+        }
+        guard let archiveType = viewModel?.archiveType else { return }
+        switch archiveType {
+        case .person:
+            if viewModel?.profileGenderProfileItem?.personGender?.isNotEmpty ?? false {
+                informationCells.append(.gender)
+            }
+            if viewModel?.birthInfoProfileItem?.birthDate?.isNotEmpty ?? false {
+                informationCells.append(.birthDate)
+            }
+            if viewModel?.birthInfoProfileItem?.birthLocationFormated?.isNotEmpty ?? false {
+                informationCells.append(.birthLocation)
+            }
+            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
+            
+        case .family, .organization:
+            if viewModel?.establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
+                informationCells.append(.establishedDate)
+            }
+            if viewModel?.establishedInfoProfileItem?.establishedLocationFormated?.isNotEmpty ?? false {
+                informationCells.append(.establishedLocation)
+            }
+            
+            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.establishedDate, ProfileCellType.establishedLocation] : informationCells
+        }
         
         profileViewData[.onlinePresenceEmail] = viewModel?.emailProfileItems.map({ _ in .onlinePresenceEmail }) ?? []
         profileViewData[.onlinePresenceLink] = viewModel?.socialMediaProfileItems.map({ _ in .onlinePresenceLink }) ?? []
@@ -449,7 +463,8 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                 
             case .onlinePresenceLink:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
+                let numberOfItems = (profileViewData[.onlinePresenceLink]?.count ?? 0) + (profileViewData[.onlinePresenceEmail]?.count ?? 0)
+                footerCell.configure(isReadMoreButtonHidden: numberOfItems <= 1, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
                 
                 footerCell.readMoreButtonAction = { [weak self] in
                     if let readMore = self?.readMoreIsEnabled[.onlinePresenceEmail] {
@@ -576,6 +591,12 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             
         case .onlinePresenceEmail:
             return CGSize.zero
+            
+        case .onlinePresenceLink:
+            return profileViewData[.onlinePresenceLink]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+        
+        case .milestones:
+            return profileViewData[.milestones]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
             
         case .information, .profileVisibility:
             return CGSize(width: collectionView.frame.width, height: 1)

@@ -22,6 +22,9 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     var collectionViewSections: [PublicGalleryCellType] = [.onlineArchives]
     var accountArchives: [ArchiveVOData]?
     var popularArchives: [ArchiveVOData]?
+    var linkIconButton: ButtonAction?
+    
+    let documentInteractionController = UIDocumentInteractionController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -130,6 +133,18 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
     
             cell.configure(archive: viewModel?.userPublicArchives[indexPath.item])
+            cell.buttonAction = {
+                guard let url = self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.userPublicArchives[indexPath.item].archiveNbr) else { return }
+                
+                // For now, dismiss the menu in case another one opens so we avoid crash.
+                self.documentInteractionController.dismissMenu(animated: true)
+                    
+                self.documentInteractionController.url = url
+                self.documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+                self.documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+                self.documentInteractionController.presentOptionsMenu(from: .zero, in: self.view, animated: true)
+            }
+            
             returnedCell = cell
             
         case .popularPublicArchives:

@@ -144,4 +144,15 @@ class PublicGalleryViewModel: ViewModelInterface {
         let getJson = RCValues.getPublicArchives()
         completionBlock(true, nil)
     }
+    
+    func publicProfileURL(archiveNbr: String?) -> URL? {
+        let baseURLString = APIEnvironment.defaultEnv.publicURL
+        let url: URL
+        
+        guard let archiveNbr = archiveNbr else { return nil }
+        
+        url = URL(string: "\(baseURLString)/archive/\(archiveNbr)/profile")!
+        
+        return url
+    }
 }
