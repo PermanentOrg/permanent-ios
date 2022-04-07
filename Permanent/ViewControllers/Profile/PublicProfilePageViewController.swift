@@ -24,20 +24,20 @@ enum ProfileCellType {
     case archiveGallery
 }
 
+enum ProfileSection: Int {
+    case profileVisibility = 0
+    case about = 1
+    case information = 2
+    case onlinePresenceEmail = 3
+    case onlinePresenceLink = 4
+    case milestones = 5
+    case archiveGallery = 6
+}
+
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     var archiveData: ArchiveVOData!
     weak var delegate: PublicArchiveChildDelegate?
     var profileData: [ProfileItemVO] = []
-    
-    enum ProfileSection: Int {
-        case profileVisibility = 0
-        case about = 1
-        case information = 2
-        case onlinePresenceEmail = 3
-        case onlinePresenceLink = 4
-        case milestones = 5
-        case archiveGallery = 6
-    }
     
     var readMoreIsEnabled: [ProfileSection: Bool] = [:]
     private var profileViewData: [ProfileSection: [ProfileCellType]] = [:]
@@ -145,66 +145,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     func refreshProfileViewData() {
-        profileViewData = [
-            ProfileSection.about: [
-            ],
-            ProfileSection.information: [
-            ],
-            ProfileSection.onlinePresenceEmail: [
-            ],
-            ProfileSection.milestones: [
-            ]
-        ]
-        
-        if isEditDataEnabled {
-            profileViewData[ProfileSection.profileVisibility] = [ ProfileCellType.profileVisibility ]
-        }
-        
-        var aboutCells = [ProfileCellType]()
-        if viewModel?.blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
-            aboutCells.append(.blurb)
-        }
-        if viewModel?.descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
-            aboutCells.append(.longDescription)
-        }
-        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
-        
-        var informationCells = [ProfileCellType]()
-        if viewModel?.basicProfileItem?.fullName?.isNotEmpty ?? false {
-            informationCells.append(.fullName)
-        }
-        if viewModel?.basicProfileItem?.nickname?.isNotEmpty ?? false {
-            informationCells.append(.nickName)
-        }
-        guard let archiveType = viewModel?.archiveType else { return }
-        switch archiveType {
-        case .person:
-            if viewModel?.profileGenderProfileItem?.personGender?.isNotEmpty ?? false {
-                informationCells.append(.gender)
-            }
-            if viewModel?.birthInfoProfileItem?.birthDate?.isNotEmpty ?? false {
-                informationCells.append(.birthDate)
-            }
-            if viewModel?.birthInfoProfileItem?.birthLocationFormated?.isNotEmpty ?? false {
-                informationCells.append(.birthLocation)
-            }
-            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
-            
-        case .family, .organization:
-            if viewModel?.establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
-                informationCells.append(.establishedDate)
-            }
-            if viewModel?.establishedInfoProfileItem?.establishedLocationFormated?.isNotEmpty ?? false {
-                informationCells.append(.establishedLocation)
-            }
-            
-            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.establishedDate, ProfileCellType.establishedLocation] : informationCells
-        }
-        
-        profileViewData[.onlinePresenceEmail] = viewModel?.emailProfileItems.map({ _ in .onlinePresenceEmail }) ?? []
-        profileViewData[.onlinePresenceLink] = viewModel?.socialMediaProfileItems.map({ _ in .onlinePresenceLink }) ?? []
-        
-        profileViewData[.milestones] = viewModel?.milestonesProfileItems.map({ _ in .milestone }) ?? []
+        profileViewData = viewModel?.getProfileViewData() ?? [:]
     }
 }
 
@@ -593,7 +534,8 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return CGSize.zero
             
         case .onlinePresenceLink:
-            return profileViewData[.onlinePresenceLink]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+            let numberOfItems = (profileViewData[.onlinePresenceLink]?.count ?? 0) + (profileViewData[.onlinePresenceEmail]?.count ?? 0)
+            return numberOfItems <= 2 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
         
         case .milestones:
             return profileViewData[.milestones]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
