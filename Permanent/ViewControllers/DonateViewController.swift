@@ -11,6 +11,8 @@ import PassKit
 
 class DonateViewController: BaseViewController<FilesViewModel> {
     
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var vfxView: UIVisualEffectView!
     @IBOutlet weak var donateStackBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var amountContainerView: UIView!
     @IBOutlet weak var donateTextField: UITextField!
@@ -27,6 +29,8 @@ class DonateViewController: BaseViewController<FilesViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        title = "Storage".localized()
+        
         amountContainerView.layer.borderColor = UIColor.systemOrange.cgColor
         amountContainerView.layer.borderWidth = 1
         amountContainerView.layer.cornerRadius = 5
@@ -56,6 +60,12 @@ class DonateViewController: BaseViewController<FilesViewModel> {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: vfxView.frame.height - 50, right: 0)
     }
     
     func amountView(atIndex index: Int) -> UIView {
@@ -206,7 +216,6 @@ extension DonateViewController: UITextFieldDelegate {
         guard textField == donateTextField else { return }
         
         donateTextField.layer.borderColor = UIColor.systemOrange.cgColor
-        setAmountSelected(atIndex: -1)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -216,13 +225,15 @@ extension DonateViewController: UITextFieldDelegate {
     }
 }
 
+// MARK: - ApplePayContextDelegate
 extension DonateViewController: ApplePayContextDelegate {
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
         var req = URLRequest(url: URL(string: "https://api.stripe.com/v1/payment_intents")!)
         req.httpMethod = "POST"
         req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        req.setValue("Basic ", forHTTPHeaderField: "Authorization")
-        req.httpBody = "amount=\(donateTextField.text!)&currency=usd".data(using: .utf8)
+        req.setValue("Basic", forHTTPHeaderField: "Authorization")
+        let selectedAmount = Int(floor((Double(donateTextField.text!) ?? 0) * 100))
+        req.httpBody = "amount=\(selectedAmount)&currency=usd".data(using: .utf8)
         
         let dt = URLSession.shared.dataTask(with: req) { data, urlresponse, error in
             if let data = data {
@@ -246,5 +257,90 @@ extension DonateViewController: ApplePayContextDelegate {
         case .userCancellation:
             break
         }
+    }
+}
+
+// MARK: - UITableViewDelegate, UITableViewDataSource
+extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 5
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? 0 : 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "donateInfoCell", for: indexPath)
+        
+        switch indexPath.section {
+        case 1:
+            cell.textLabel?.text = "Permanence means no subscriptions; a one-time payment for dedicated storage that preserves your most precious memories and an institution that will be there to protect the digital legacy of all people for all time.".localized()
+            
+        case 2:
+            cell.textLabel?.text = "We are leveraging the same funding models used by museums, libraries, and universities for centuries. As a public charity, we can pool all our one-time storage fees into an endowment. We use income generated from this tax-exempt investment fund to pay our ongoing operations and storage costs, in perpetuity.".localized()
+            
+        case 3:
+            cell.textLabel?.text = "Today, our daily operations are supported by our founder and board chair, Mr. Dean Drako. As we grow our endowment through donations and storage contributions, the returns on that investment will gradually replace his contributions until we are fully independent.".localized()
+            
+        case 4:
+            cell.textLabel?.text = "No matter how you found us, we welcome all people to join our movement to democratize permanence and preserve the digital legacy of all people. Choosing Permanent.org isn’t only good for you, it’s a vote for better consumer technology options. Every storage fee donation is also a gift to the nonprofit organizations we through in our byte for byte program.".localized()
+            
+        default: break
+        }
+        cell.textLabel?.font = Text.style8.font
+        cell.textLabel?.numberOfLines = 0
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
+        let label = UILabel(frame: CGRect(x: 16, y: 8, width: view.frame.width - 32, height: 22))
+        label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        label.font = Text.style3.font
+        label.textColor = .primary
+        
+        view.addSubview(label)
+        
+        switch section {
+        case 0:
+            label.frame = CGRect(x: 16, y: 16, width: view.frame.width - 32, height: 23)
+            label.font = Text.style33.font
+            label.textAlignment = .center
+            label.text = "Become a Founding Supporter".localized()
+            
+            let secondaryLabel = UILabel(frame: CGRect(x: 16, y: label.frame.maxY, width: view.frame.width - 32, height: 22))
+            secondaryLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            secondaryLabel.font = Text.style4.font
+            secondaryLabel.textColor = .primary
+            secondaryLabel.textAlignment = .center
+            secondaryLabel.text = "Back the new paradigm for cloud storage".localized()
+            view.addSubview(secondaryLabel)
+            
+        case 1:
+            label.text = "Our goal is permanence.".localized()
+            
+        case 2:
+            label.text = "How is that possible?".localized()
+            
+        case 3:
+            label.text = "So how does Permanent work now?".localized()
+            
+        case 4:
+            label.text = "It's a win-win for our digital future.".localized()
+            
+        default: break
+        }
+        
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 80 : 30
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
 }

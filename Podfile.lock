@@ -136,7 +136,7 @@ DEPENDENCIES:
   - ObjectMapper (= 4.2.0)
   - SDWebImage (= 5.10.0)
   - Sourcery (= 1.4.1)
-  - StripeApplePay
+  - StripeApplePay (= 22.0.0)
 
 SPEC REPOS:
   trunk:
@@ -193,6 +193,6 @@ SPEC CHECKSUMS:
   StripeApplePay: e09964f3e2c6b318e53a05c12f3cb7efc592484d
   StripeCore: 689b9605ccb78e507f59ddc5e677615e0af16583
 
-PODFILE CHECKSUM: 00fe9bcfb92d74861e2c57bf6516516d3a5513c1
+PODFILE CHECKSUM: 65097389ad4f3731c1341230d4bd287c08e68cc8
 
 COCOAPODS: 1.11.2
