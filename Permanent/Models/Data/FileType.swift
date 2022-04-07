@@ -14,11 +14,12 @@ enum FileType: String {
     case privateRootFolder = "type.folder.root.private"
     case image = "type.record.image"
     case video = "type.record.video"
+    case pdf = "type.record.pdf"
     case miscellaneous = "type.record.misc"
     
     var isFolder: Bool {
         switch self {
-        case .image, .miscellaneous, .video:
+        case .image, .miscellaneous, .video, .pdf:
             return false
             
         default:
