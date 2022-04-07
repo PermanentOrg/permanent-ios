@@ -10,8 +10,8 @@ target 'Permanent' do
   pod 'ObjectMapper', '4.2.0'
   pod 'SDWebImage', '5.10.0'
   pod 'Sourcery', '1.4.1'
-  pod 'GoogleMaps', '4.2.0'
-  pod 'GooglePlaces', '4.2.0'
+  pod 'GoogleMaps', '6.1.1.0'
+  pod 'GooglePlaces', '6.1.1.0'
   pod 'AppAuth', '1.4.0'
   pod 'KeychainSwift', '20.0'
 
