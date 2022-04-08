@@ -18,7 +18,6 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var archive: ArchiveVOData!
     var collectionViewSections: [PublicGalleryCellType] = [.onlineArchives]
     var accountArchives: [ArchiveVOData]?
     var popularArchives: [ArchiveVOData]?
@@ -61,8 +60,8 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-           let archiveName: String = archive.fullName,
-           let archiveThumbURL: String = archive.thumbURL500 {
+                let archiveName: String = archive.fullName,
+                let archiveThumbURL: String = archive.thumbURL500 {
             archiveImageView.image = nil
             archiveImageView.load(urlString: archiveThumbURL)
         }
@@ -71,36 +70,13 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     func updateArchivesList() {
         showSpinner()
         
-        viewModel?.getAccountInfo({ [self] account, error in
-            if error == nil {
-                if let currentArchives = self.accountArchives {
-                    hideSpinner()
-                    
-                    viewModel?.allArchives = currentArchives
-                    self.accountArchives = nil
-                    collectionView.reloadData()
-                    updateCurrentArchive()
-                } else {
-                    viewModel?.getAccountArchives { [self] accountArchives, error in
-                        hideSpinner()
-                        
-                        if error == nil {
-                            collectionView.reloadData()
-                            updateCurrentArchive()
-                        } else {
-                            showAlert(title: .error, message: .errorMessage)
-                        }
-                    }
-                }
+        viewModel?.getArchives({ result in
+            self.hideSpinner()
+            if result == nil {
+                self.collectionView.reloadData()
+                self.updateCurrentArchive()
             } else {
-                showAlert(title: .error, message: .errorMessage)
-            }
-        })
-        viewModel?.getPopularArchives({ result, error in
-            if error == nil {
-                print("worked")
-            } else {
-                self.showAlert(title: .error, message: .errorMessage)
+                self.showErrorAlert(message: .errorMessage)
             }
         })
     }

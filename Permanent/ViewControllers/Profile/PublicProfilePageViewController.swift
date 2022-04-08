@@ -217,22 +217,16 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
             let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
             
-            if isEditDataEnabled {
-                cell.configure(shortDescriptionValue ?? viewModel?.archiveType.shortDescriptionHint)
-            } else {
-                cell.configure(shortDescriptionValue)
-            }
+            cell.configure(shortDescriptionValue ?? viewModel?.archiveType.shortDescriptionHint)
+
             returnedCell = cell
             
         case .longDescription:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
             let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
             
-            if isEditDataEnabled {
-                cell.configure(longDescriptionValue ?? viewModel?.archiveType.longDescriptionHint)
-            } else {
-                cell.configure(longDescriptionValue)
-            }
+            cell.configure(longDescriptionValue ?? viewModel?.archiveType.longDescriptionHint)
+
             returnedCell = cell
             
         case .fullName:
@@ -405,7 +399,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
             case .onlinePresenceLink:
                 let numberOfItems = (profileViewData[.onlinePresenceLink]?.count ?? 0) + (profileViewData[.onlinePresenceEmail]?.count ?? 0)
-                footerCell.configure(isReadMoreButtonHidden: numberOfItems <= 1, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
+                footerCell.configure(isReadMoreButtonHidden: numberOfItems <= 2, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
                 
                 footerCell.readMoreButtonAction = { [weak self] in
                     if let readMore = self?.readMoreIsEnabled[.onlinePresenceEmail] {

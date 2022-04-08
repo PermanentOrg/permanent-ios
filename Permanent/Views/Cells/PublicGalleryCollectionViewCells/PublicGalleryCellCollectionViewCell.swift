@@ -41,7 +41,6 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveUserRole.textColor = .white
         archiveUserRole.font = Text.style12.font
         linkIconButton.tintColor = .white
-        linkIconButton.setAttributedTitle(NSAttributedString(string: "", attributes: [.font: Text.style17.font, .foregroundColor: UIColor.primary]), for: .normal)
     }
     
     static func nib() -> UINib {

@@ -21,13 +21,6 @@ class PublicGalleryViewModel: ViewModelInterface {
     }
     var publicArchives: [ArchiveVOData] = []
     
-    var selectableArchives: [ArchiveVOData] {
-        return availableArchives.filter({ $0.status == ArchiveVOData.Status.ok })
-    }
-    var publicLocalArchives: [ArchiveVOData] {
-        return allArchives.filter({ $0.status == ArchiveVOData.Status.pending })
-    }
-    
     func currentArchive() -> ArchiveVOData? {
         return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
     }
@@ -62,6 +55,18 @@ class PublicGalleryViewModel: ViewModelInterface {
                 return
             }
         }
+    }
+    
+    func getArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
+        getAccountInfo({ [self] account, error in
+            if error == nil {
+                getAccountArchives { _, error in
+                    completionBlock(error)
+                }
+            } else {
+                completionBlock(error)
+            }
+        })
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
@@ -99,42 +104,6 @@ class PublicGalleryViewModel: ViewModelInterface {
                 
             default:
                 completionBlock(nil, APIError.invalidResponse)
-                return
-            }
-        }
-    }
-    
-    func setCurrentArchive(_ archive: ArchiveVOData) {
-        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
-    }
-    
-    func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
-        guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
-            completionBlock(false, APIError.unknown)
-            return
-        }
-        
-        let changeArchiveOperation = APIOperation(ArchivesEndpoint.change(archiveId: archiveId, archiveNbr: archiveNbr))
-        changeArchiveOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(false, APIError.invalidResponse)
-                    return
-                }
-                self.setCurrentArchive(archive)
-                completionBlock(true, nil)
-                return
-                
-            case .error:
-                completionBlock(false, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(false, APIError.invalidResponse)
                 return
             }
         }
