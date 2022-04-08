@@ -23,7 +23,7 @@ class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
         case .onlineArchives:
             sectionNameLabel.font = Text.style32.font
             sectionNameLabel.textColor = .primary
-            sectionNameLabel.text = "Your Public Galleries".localized()
+            sectionNameLabel.text = "Your Public Archives".localized()
             
         case .popularPublicArchives:
             sectionNameLabel.text = "Public Popular Archives".localized()

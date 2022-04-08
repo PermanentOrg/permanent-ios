@@ -8,10 +8,6 @@
 import Foundation
 
 class PublicGalleryViewModel: ViewModelInterface {
-    
-    var account: AccountVOData?
-    var defaultArchiveId: Int? { account?.defaultArchiveID }
-    
     var allArchives: [ArchiveVOData] = []
     var availableArchives: [ArchiveVOData] {
         return allArchives.filter({ $0.archiveNbr != currentArchive()?.archiveNbr })
@@ -25,48 +21,10 @@ class PublicGalleryViewModel: ViewModelInterface {
         return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
     }
     
-    func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
-            completionBlock(nil, APIError.unknown)
-            return
-        }
-        
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
-        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(nil, APIError.invalidResponse)
-                    return
-                }
-                self.account = model.results[0].data?[0].accountVO
-                completionBlock(self.account, nil)
-                return
-                
-            case .error:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            }
-        }
-    }
-    
     func getArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
-        getAccountInfo({ [self] account, error in
-            if error == nil {
-                getAccountArchives { _, error in
-                    completionBlock(error)
-                }
-            } else {
-                completionBlock(error)
-            }
-        })
+        getAccountArchives { _, error in
+            completionBlock(error)
+        }
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
