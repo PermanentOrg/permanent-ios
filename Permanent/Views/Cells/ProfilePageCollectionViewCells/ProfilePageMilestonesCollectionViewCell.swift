@@ -35,7 +35,7 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         milestoneTextLabel.text = "Description".localized()
     }
     
-    func configure(milestone: MilestoneProfileItem?) {
+    func configure(milestone: MilestoneProfileItem?, editMode: Bool) {
         if let title = milestone?.title {
             milestoneTitleLabel.textColor = .primary
             milestoneTitleLabel.text = title
@@ -44,6 +44,8 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         if let location = milestone?.locationFormated {
             milestoneLocationLabel.textColor = .primary
             milestoneLocationLabel.text = location
+        } else if !editMode {
+            milestoneLocationLabel.isHidden = true
         }
         
         if let startDate = milestone?.startDate {
@@ -57,6 +59,8 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         if let description = milestone?.description {
             milestoneTextLabel.textColor = .darkGray
             milestoneTextLabel.text = description
+        } else if !editMode {
+            milestoneTextLabel.isHidden = true
         }
     }
     

@@ -12,12 +12,14 @@ enum ArchiveType: String, CaseIterable {
     case person = "type.archive.person"
     case family = "type.archive.family"
     case organization = "type.archive.organization"
+    case nonProfit = "type.archive.nonprofit"
     
     var archiveName: String {
         switch self {
         case .person: return "Person".localized()
         case .family: return "Family".localized()
         case .organization: return "Organization".localized()
+        case .nonProfit: return "Nonprofit".localized()
         }
     }
     
@@ -29,6 +31,8 @@ enum ArchiveType: String, CaseIterable {
             return .family
         case "Organization".localized():
             return .organization
+        case "Nonprofit".localized():
+            return .nonProfit
         default:
             return nil
         }
@@ -47,6 +51,8 @@ enum ArchiveType: String, CaseIterable {
             
         case .organization:
             return "Organization Information".localized()
+        case .nonProfit:
+            return "Nonprofit Information".localized()
         }
     }
     
@@ -67,6 +73,9 @@ enum ArchiveType: String, CaseIterable {
             
         case .organization:
             return "Tell us about this Organization".localized()
+            
+        case .nonProfit:
+            return "Tell us about this nonprofit Organization".localized()
         }
     }
     var longDescriptionHint: String {
@@ -79,6 +88,9 @@ enum ArchiveType: String, CaseIterable {
             
         case .organization:
             return "Tell the story of the Organization this Archive is for".localized()
+            
+        case .nonProfit:
+            return "Tell the story of the nonprofit Organization this Archive is for".localized()
         }
     }
 }

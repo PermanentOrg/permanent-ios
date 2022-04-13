@@ -22,8 +22,27 @@ class PublicGalleryViewModel: ViewModelInterface {
     }
     
     func getArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
+        let group = DispatchGroup()
+        var storedError: Error?
+        
+        group.enter()
         getAccountArchives { _, error in
-            completionBlock(error)
+            if error != nil {
+                storedError = error
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        getPopularArchives { error in
+            if error != nil {
+                storedError = error
+            }
+            group.leave()
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            completionBlock(nil)
         }
     }
     
@@ -67,9 +86,44 @@ class PublicGalleryViewModel: ViewModelInterface {
         }
     }
     
-    func getPopularArchives(_ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+    func getPopularArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
         let getJson = RCValues.getPublicArchives()
-        completionBlock(true, nil)
+        let archivesNbr: [String] = getJson.compactMap({$0.archiveNbr})
+        
+        let getArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByArchivesNbr(archivesNbr: archivesNbr))
+        getArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(APIError.invalidResponse)
+                    return
+                }
+                
+                let archives = model.results
+                
+                self.publicArchives.removeAll()
+                for archive in archives {
+                    if let archiveVOData = archive.data?.first,
+                        let archiveVO = archiveVOData.archiveVO,
+                        archiveVO.status != .pending || archiveVO.status != .unknown {
+                        self.publicArchives.append(archiveVO)
+                    }
+                }
+                completionBlock(nil)
+                return
+                
+            case .error:
+                completionBlock(APIError.invalidResponse)
+                return
+                
+            default:
+                completionBlock(APIError.invalidResponse)
+                return
+            }
+        }
     }
     
     func publicProfileURL(archiveNbr: String?) -> URL? {

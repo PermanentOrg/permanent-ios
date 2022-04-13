@@ -21,16 +21,21 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
     }
     
-    func configure(archive: ArchiveVOData?) {
+    func configure(archive: ArchiveVOData?, section: PublicGalleryCellType) {
         guard let thumbnail = archive?.thumbURL1000,
-            let name = archive?.fullName,
-            let role = archive?.accessRole else { return }
-        
-        initUIforLocalArchive()
+            let name = archive?.fullName else { return }
+        let role = archive?.accessRole ?? ""
         
         archiveImage.load(urlString: thumbnail)
         archiveTitleLabel.text = name
         archiveUserRole.text = AccessRole.roleForValue(role).groupName
+        
+        switch section {
+        case .onlineArchives:
+            initUIforLocalArchive()
+        case .popularPublicArchives:
+            initUIforPublicArchive()
+        }
     }
     
     private func initUIforLocalArchive() {
@@ -41,6 +46,15 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveUserRole.textColor = .white
         archiveUserRole.font = Text.style12.font
         linkIconButton.tintColor = .white
+    }
+    
+    private func initUIforPublicArchive() {
+        rightSideBackgroundView.backgroundColor = .galleryGray
+        
+        archiveTitleLabel.textColor = .primary
+        archiveTitleLabel.font = Text.style9.font
+        archiveUserRole.isHidden = true
+        linkIconButton.tintColor = .doveGray
     }
     
     static func nib() -> UINib {
