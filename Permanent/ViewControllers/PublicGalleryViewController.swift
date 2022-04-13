@@ -25,6 +25,8 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     let documentInteractionController = UIDocumentInteractionController()
     
+    var initialArchiveNbr: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,6 +37,13 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         updateArchivesList()
         
         searchBar.isUserInteractionEnabled = false
+        
+        if initialArchiveNbr != nil {
+            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+            newRootVC.archiveData = try! PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+            let newNav = NavigationController(rootViewController: newRootVC)
+            present(newNav, animated: false)
+        }
     }
     
     private func initUI() {
