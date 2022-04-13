@@ -295,7 +295,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .milestone:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier, for: indexPath) as! ProfilePageMilestonesCollectionViewCell
             
-            cell.configure(milestone: viewModel?.milestonesProfileItems[indexPath.row])
+            cell.configure(milestone: viewModel?.milestonesProfileItems[indexPath.row], editMode: isEditDataEnabled)
             returnedCell = cell
         }
         

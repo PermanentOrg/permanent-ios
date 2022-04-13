@@ -102,7 +102,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             }
             profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
 
-        case .family, .organization:
+        case .family, .organization, .nonProfit:
             if establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
                 informationCells.append(.establishedDate)
             }
