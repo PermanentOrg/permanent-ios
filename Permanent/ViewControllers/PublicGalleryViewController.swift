@@ -25,24 +25,20 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     let documentInteractionController = UIDocumentInteractionController()
     
     var initialArchiveNbr: String?
-    
+     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         viewModel = PublicGalleryViewModel()
         
+        styleNavBar()
         initUI()
         initCollectionView()
         updateArchivesList()
         
         searchBar.isUserInteractionEnabled = false
         
-        if initialArchiveNbr != nil {
-            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
-            newRootVC.archiveData = try! PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
-            let newNav = NavigationController(rootViewController: newRootVC)
-            present(newNav, animated: false)
-        }
+        checkDeeplinkedArchive()
     }
     
     private func initUI() {
@@ -93,6 +89,18 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
             self.collectionView.reloadData()
             self.updateCurrentArchive()
         })
+    }
+    
+    func checkDeeplinkedArchive() {
+        if let initialArchiveNbr = initialArchiveNbr {
+            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+            newRootVC.archiveNbr = initialArchiveNbr
+            let newNav = NavigationController(rootViewController: newRootVC)
+            present(newNav, animated: true)
+            
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.publicURLToken)
+            self.initialArchiveNbr = nil
+        }
     }
 }
 

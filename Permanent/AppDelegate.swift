@@ -46,12 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return false
             }
             
-        case "p", "public":
+        case "p":
             let archiveNbr = url.pathComponents[3]
             if rootViewController.isDrawerRootActive {
                 return navigateFromPublicLink(archiveNbr)
             } else {
-                saveUnivesalLinkToken(archiveNbr)
+                savePublicLinkToken(archiveNbr)
                 return false
             }
             
@@ -119,9 +119,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromPublicLink(_ archiveNbr: String) -> Bool {
-        guard let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as? PublicGalleryViewController else { return false }
-        newRootVC.initialArchiveNbr = archiveNbr
-        rootViewController.navigateTo(viewController: newRootVC)
+        let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+        newRootVC.archiveNbr = archiveNbr
+        let newNav = NavigationController(rootViewController: newRootVC)
+        
+        if let presentedVC = rootViewController.presentedViewController {
+            presentedVC.dismiss(animated: false) {
+                self.rootViewController.present(newNav, animated: true)
+            }
+        } else {
+            rootViewController.present(newNav, animated: true)
+        }
+        
         return true
     }
     

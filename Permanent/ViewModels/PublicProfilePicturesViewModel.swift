@@ -111,4 +111,33 @@ class PublicProfilePicturesViewModel: ViewModelInterface {
             }
         }
     }
+    
+    func getPublicArchive(withArchiveNbr archiveNbr: String, _ completionBlock: @escaping ((ArchiveVOData?) -> Void)) {
+        let getArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByArchivesNbr(archivesNbr: [archiveNbr]))
+        getArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<ArchiveVO>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(nil)
+                    return
+                }
+                
+                let archives = model.results
+                if let archiveVOData = archives.first?.data?.first?.archiveVO {
+                    completionBlock(archiveVOData)
+                } else {
+                    completionBlock(nil)
+                }
+                
+            case .error:
+                completionBlock(nil)
+                
+            default:
+                completionBlock(nil)
+            }
+        }
+    }
 }
