@@ -170,6 +170,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
+        setupUIForAction(viewModel?.fileAction ?? .none)
+        
         fileActionBottomView.closeAction = {
             self.setupUIForAction(.none)
         }

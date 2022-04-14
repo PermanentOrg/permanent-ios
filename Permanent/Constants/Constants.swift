@@ -154,6 +154,8 @@ extension Constants.Keys.StorageKeys {
     static let modelVersion = "modelVersion"
     static let isGridView = "isGridView"
     static let minAppVersion = "minAppVersion"
+    static let selectedFileKey = "selectedFileKey"
+    static let selectedFileActionKey = "selectedFileActionKey"
 }
 
 extension Constants.API.Locations {

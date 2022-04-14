@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FileStatus {
+enum FileStatus: Codable {
     /// File is synced on the device. It must be displayed on the `FileListType.synced` list.
     case synced
     

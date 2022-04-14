@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Permission {
+enum Permission: Codable {
     case read
     case create
     case upload
