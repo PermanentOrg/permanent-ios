@@ -9,12 +9,6 @@ import Foundation
 
 struct Payloads {
     
-    static var csrf: String {
-        get {
-            PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.csrfStorageKey) ?? ""
-        }
-    }
-    
     static func forgotPasswordPayload(for email: String) -> RequestParameters {
         return [
             "RequestVO": [
@@ -68,8 +62,7 @@ struct Payloads {
                     "AccountVO": [
                         "accountId": accountId
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -83,8 +76,7 @@ struct Payloads {
                         "primaryPhone": updateData.phone,
                         "primaryEmail": updateData.email
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -101,8 +93,7 @@ struct Payloads {
             "RequestVO": [
                 "data": [[
                     "AccountVO": accountDict
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -144,8 +135,7 @@ struct Payloads {
                         "archiveNbr": params.archiveNo,
                         "folder_linkId": "\(params.folderLinkId)"
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -166,8 +156,7 @@ struct Payloads {
                         "ChildItemVOs": childItemsDict,
                         "folder_linkId": params.folderLinkId
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
         
@@ -184,8 +173,7 @@ struct Payloads {
                         "displayName": params.filename,
                         "uploadFileName": params.filename
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -206,8 +194,7 @@ struct Payloads {
                         "key": "type",
                         "value": params.fileMimeType ?? "application/octet-stream"
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
         return dict
@@ -232,8 +219,7 @@ struct Payloads {
                         "key": params.s3Url,
                         "value": params.destinationUrl
                     ]
-                ],
-                "csrf": Self.csrf
+                ]
             ]
         ]
 
@@ -248,8 +234,7 @@ struct Payloads {
                         "displayName": params.filename,
                         "parentFolder_linkId": params.folderLinkId
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -265,14 +250,11 @@ struct Payloads {
                         "passwordVerify": updateData.passwordVerify,
                         "passwordOld":updateData.passwordOld
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
-    static func getValidCsrf() -> RequestParameters  {
-        return ["data":"none"]
-    }
+    
     static func getUserData(accountId: String) -> RequestParameters {
         return [
             "RequestVO": [
@@ -280,8 +262,7 @@ struct Payloads {
                     "AccountVO": [
                         "accountId": accountId
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -303,8 +284,7 @@ struct Payloads {
                             "country": updateUserData.country
                         ]
                     ]
-                ],
-                "csrf": Self.csrf
+                ]
             ]
         ]
     }
@@ -318,8 +298,7 @@ struct Payloads {
             "RequestVO": [
                 "data": [[
                     "ShareVO": shareVODict
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
         return updateDict
@@ -333,8 +312,7 @@ struct Payloads {
                         "folder_linkId": folderLinkId,
                         "archiveId": archiveId
                     ]
-                ]],
-                "csrf": Self.csrf
+                ]]
             ]
         ]
     }
@@ -342,7 +320,6 @@ struct Payloads {
     static func getSessionAccount() -> RequestParameters {
         return [
             "RequestVO": [
-                "csrf": Self.csrf,
                 "data": [
                     [:]
                 ]
@@ -353,7 +330,6 @@ struct Payloads {
     static func verifyAuth() -> RequestParameters {
         return [
             "RequestVO": [
-                "csrf": "",
                 "data": [
                     [:]
                 ]
@@ -388,7 +364,6 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "RecordVO": recordVO
@@ -407,7 +382,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "LocnVO": locnVO
@@ -424,7 +398,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "LocnVO": locationDict
@@ -439,7 +412,6 @@ struct Payloads {
             [
                 "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "SimpleVO": [
@@ -468,7 +440,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": data
                 ]
         ]
@@ -490,7 +461,6 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": data
                     ]
         ]
@@ -499,7 +469,6 @@ struct Payloads {
     static func getTagsByArchive(params: GetTagsByArchiveParams) -> RequestParameters {
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "ArchiveVO": [
@@ -514,7 +483,6 @@ struct Payloads {
     static func getArchivesByAccountId(accountId: GetArchivesByAccountId) -> RequestParameters {
         return [ "RequestVO":
                     [
-                        "csrf": UserDefaults.standard.value(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                         "data": [
                             [
                                 "AccountVO": [
@@ -530,7 +498,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "ArchiveVO": [
@@ -547,7 +514,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "ArchiveVO": [
@@ -565,7 +531,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "ArchiveVO": [
@@ -583,7 +548,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "ArchiveVO": [
@@ -606,7 +570,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": UserDefaults.standard.value(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                     "data": [
                         [
                             "ArchiveVO": modifiedArchive
@@ -626,7 +589,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": UserDefaults.standard.value(forKey: Constants.Keys.StorageKeys.csrfStorageKey)!,
                     "data": [
                         [
                             "ArchiveVO": modifiedArchive
@@ -639,7 +601,6 @@ struct Payloads {
     static func transferOwnership(archiveNbr: String, primaryEmail: String) -> RequestParameters {
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "ArchiveVO": [
@@ -668,7 +629,6 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "FolderVO": folderVO
@@ -682,7 +642,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "Profile_itemVO": [
@@ -706,7 +665,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": [
                         [
                             "Profile_itemVO": profileDict
@@ -729,7 +687,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data": profileVOItems
                 ]
         ]
@@ -744,7 +701,6 @@ struct Payloads {
         
         return [ "RequestVO":
                     [
-                        "csrf": Self.csrf,
                         "data": [
                             [
                                 "SearchVO": [
@@ -762,7 +718,6 @@ struct Payloads {
         return [
             "RequestVO":
                 [
-                    "csrf": Self.csrf,
                     "data":
                         [
                             [

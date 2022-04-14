@@ -19,7 +19,7 @@ class UploadManager {
     var timer: Timer?
     
     init() {
-        uploadQueue.maxConcurrentOperationCount = 1
+        uploadQueue.maxConcurrentOperationCount = 3
         
         timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(refreshQueue), userInfo: nil, repeats: true)
     }

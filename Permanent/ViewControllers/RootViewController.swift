@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseMessaging
+import FirebaseRemoteConfig
 
 class RootViewController: UIViewController {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -37,38 +38,67 @@ class RootViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        let dispatchGroup = DispatchGroup()
         super.viewDidLoad()
         
-        if AuthenticationManager.shared.reloadSession() {
-            let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
-            let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
-            
-            if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
-                setDrawerRoot()
-            } else {
-                setRoot(named: .biometrics, from: .authentication)
+        let updateAppVC = UIViewController.create(withIdentifier: .loadingScreen, from: .main) as! LoadingScreenViewController
+        
+        let navController = NavigationController()
+        navController.viewControllers = [updateAppVC]
+        
+        current = navController
+        setupChild(current)
+        
+        dispatchGroup.enter()
+        RCValues.fetchCloudValues { result in
+            if result {
+                RCValues.verifyAppVersion()
             }
-        } else {
-            let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
-            let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
-            
-            let navController = NavigationController()
-            let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
-            navController.viewControllers = [viewController]
-            
-            current = navController
-            setupChild(current)
+            dispatchGroup.leave()
         }
         
-        sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
-            guard self?.current is SignUpViewController == false else { return }
-            
-            self?.dismiss(animated: false) {
-                self?.setRoot(named: .signUp, from: .authentication)
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            if RCValues.appNeedUpdate {
+                let updateAppVC = UIViewController.create(withIdentifier: .updateApp, from: .main) as! UpdateNecessaryViewController
                 
-                let alert = UIAlertController(title: "Session expired".localized(), message: "Your session has expired, please login again.".localized(), preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
-                self?.present(alert, animated: true, completion: nil)
+                let navController = NavigationController()
+                navController.viewControllers = [updateAppVC]
+                
+                self?.current = navController
+                self?.setupChild(self?.current)
+                return
+            }
+            
+            if AuthenticationManager.shared.reloadSession() {
+                let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+                let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
+                
+                if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
+                    self?.setDrawerRoot()
+                } else {
+                    self?.setRoot(named: .biometrics, from: .authentication)
+                }
+            } else {
+                let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
+                let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
+                
+                let navController = NavigationController()
+                let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
+                navController.viewControllers = [viewController]
+                
+                self?.current = navController
+                self?.setupChild(self?.current)
+            }
+            self?.sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
+                guard self?.current is SignUpViewController == false else { return }
+                
+                self?.dismiss(animated: false) {
+                    self?.setRoot(named: .signUp, from: .authentication)
+                    
+                    let alert = UIAlertController(title: "Session expired".localized(), message: "Your session has expired, please login again.".localized(), preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: nil))
+                    self?.present(alert, animated: true, completion: nil)
+                }
             }
         }
     }

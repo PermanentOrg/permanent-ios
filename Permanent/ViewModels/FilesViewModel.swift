@@ -59,6 +59,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return currentArchive?.permissions() ?? [.read]
     }
     
+    var timer: Timer?
+    var timerRunCount: Int = 0
+    
     // MARK: - Table View Logic
     
     var currentFolderIsRoot: Bool { true }
@@ -160,6 +163,21 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.remove(at: index)
+    }
+    
+    func updateTimerCount() {
+        timerRunCount += 1
+        if timerRunCount == 1 {
+            timerRunCount = 0
+            invalidateTimer()
+        }
+    }
+    
+    func invalidateTimer() {
+        if timer != nil {
+            timer?.invalidate()
+            timerRunCount = 0
+        }
     }
 }
 

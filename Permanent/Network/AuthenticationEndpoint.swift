@@ -25,10 +25,6 @@ enum AuthenticationEndpoint {
 }
 
 extension AuthenticationEndpoint: RequestProtocol {
-    var headers: RequestHeaders? {
-        return ["content-type": "application/json; charset=utf-8"]
-    }
-
     var parameters: RequestParameters? {
         switch self {
         case .login(let credentials):

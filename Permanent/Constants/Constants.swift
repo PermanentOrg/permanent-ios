@@ -15,8 +15,8 @@ typealias CellButtonTapAction = (UITableViewCell) -> Void
 struct Font { }
 
 struct Text {
-    static var style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
-    static var style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
+    static let style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
+    static let style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
     static let style3 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(24)), NSTextAlignment.natural)
     static let style4 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
     static let style5 = TextStyle(UIFont(name: "OpenSans-Regular", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(20)), NSTextAlignment.natural)
@@ -26,9 +26,9 @@ struct Text {
     static let style9 = TextStyle(UIFont(name: "OpenSans-Bold", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(24)), NSTextAlignment.natural)
     static let style10 = TextStyle(UIFont(name: "OpenSans-Bold", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(45)), NSTextAlignment.natural)
     static let style11 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
-    static var style12 = TextStyle(UIFont(name: "OpenSans-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.center)
+    static let style12 = TextStyle(UIFont(name: "OpenSans-Regular", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.center)
     static let style13 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
-    static var style14 = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
+    static let style14 = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
     static let style15 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
     static let style16 = TextStyle(UIFont(name: "OpenSans-Bold", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style17 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
@@ -36,8 +36,8 @@ struct Text {
     static let style19 = TextStyle(UIFont(name: "OpenSans-Italic", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
     static let style20 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 12)!, TextStyle.calculateSpacing(fontSize: CGFloat(12), lineHeight: CGFloat(17)), NSTextAlignment.natural)
     static let style29 = TextStyle(UIFont(name: "OpenSans-Regular", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(45)), NSTextAlignment.center)
-    static var style30 = TextStyle(UIFont(name: "OpenSans-Regular", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
-    static var style31 = TextStyle(UIFont(name: "OpenSans-Bold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style30 = TextStyle(UIFont(name: "OpenSans-Regular", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style31 = TextStyle(UIFont(name: "OpenSans-Bold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style32 = TextStyle(UIFont(name: "OpenSans-Bold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
 }
 
@@ -139,7 +139,6 @@ extension Constants.Keys.StorageKeys {
     static let nameStorageKey = "nameStorageKey"
     static let accountIdStorageKey = "accountIdStorageKey"
     static let emailStorageKey = "emailStorageKey"
-    static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
@@ -154,6 +153,7 @@ extension Constants.Keys.StorageKeys {
     static let defaultArchiveId = "defaultArchiveId"
     static let modelVersion = "modelVersion"
     static let isGridView = "isGridView"
+    static let minAppVersion = "minAppVersion"
 }
 
 extension Constants.API.Locations {

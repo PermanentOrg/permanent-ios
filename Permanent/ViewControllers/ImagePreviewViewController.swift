@@ -35,6 +35,8 @@ class ImagePreviewViewController: UIViewController {
         
         scrollView = UIScrollView(frame: view.bounds)
         scrollView.delegate = self
+        scrollView.delaysContentTouches = false
+        
         view.addSubview(scrollView)
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         scrollView.backgroundColor = .black
@@ -55,6 +57,15 @@ class ImagePreviewViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         setZoomScale()
+    }
+    
+    func newImageLoaded() {
+        initialZoomScale = nil
+        imageView.sizeToFit()
+        
+        if isViewLoaded {
+            setZoomScale()
+        }
     }
     
     func setZoomScale() {
