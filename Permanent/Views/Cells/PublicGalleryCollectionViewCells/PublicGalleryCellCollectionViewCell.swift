@@ -54,7 +54,7 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveTitleLabel.textColor = .primary
         archiveTitleLabel.font = Text.style9.font
         archiveUserRole.isHidden = true
-        linkIconButton.tintColor = .doveGray
+        linkIconButton.tintColor = .primary
     }
     
     static func nib() -> UINib {

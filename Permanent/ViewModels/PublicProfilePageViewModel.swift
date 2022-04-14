@@ -43,7 +43,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
     var milestonesProfileItems: [MilestoneProfileItem] {
-        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+        let profileItems = profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+        
+        return profileItems.reversed()
     }
     var isEditDataEnabled: Bool {
         archiveData.permissions().contains(.ownership)

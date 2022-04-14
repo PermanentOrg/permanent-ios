@@ -449,7 +449,12 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return ProfilePageOnlinePresenceCollectionViewCell.size(collectionView: collectionView)
 
         case .milestone:
-            return ProfilePageMilestonesCollectionViewCell.size(collectionView: collectionView)
+            let titleText = viewModel?.milestonesProfileItems[indexPath.row].title ?? (viewModel?.archiveType.milestoneTitleHint)!
+            let descriptionText = viewModel?.milestonesProfileItems[indexPath.row].description ?? (viewModel?.archiveType.milestoneDescriptionTextHint)!
+            let dateText = viewModel?.milestonesProfileItems[indexPath.row].textData1 ?? (viewModel?.archiveType.milestoneDateLabelHint)!
+            let locationText = viewModel?.milestonesProfileItems[indexPath.row].locationFormated ?? (viewModel?.archiveType.milestoneLocationLabelHint)!
+            
+            return ProfilePageMilestonesCollectionViewCell.size(withTitleText: titleText, withDescriptionText: descriptionText, withDateText: dateText, withLocationText: locationText, isEditEnabled: isEditDataEnabled, collectionView: collectionView)
 
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 120)
