@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MinArchiveVO: Equatable {
+struct MinArchiveVO: Equatable, Codable {
     let name: String
     let thumbnail: String
     let shareStatus: String
