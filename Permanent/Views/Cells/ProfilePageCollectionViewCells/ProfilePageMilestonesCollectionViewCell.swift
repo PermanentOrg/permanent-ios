@@ -45,14 +45,14 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
             milestoneLocationLabel.textColor = .primary
             milestoneLocationLabel.text = location
         } else if !editMode {
-            milestoneLocationLabel.isHidden = true
+            milestoneLocationLabel.text = nil
         }
         
-        if let startDate = milestone?.startDate {
+        if let startDate = milestone?.startDateString {
             milestoneDateLabel.text = startDate
         }
         
-        if let endDate = milestone?.endDate {
+        if let endDate = milestone?.endDateString {
             milestoneDateLabel.text?.append(" - \(endDate)")
         }
         
@@ -60,7 +60,7 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
             milestoneTextLabel.textColor = .darkGray
             milestoneTextLabel.text = description
         } else if !editMode {
-            milestoneTextLabel.isHidden = true
+            milestoneTextLabel.text = nil
         }
     }
     
@@ -78,39 +78,36 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
     
     static func size(withTitleText titleText: String?, withDescriptionText descriptionText: String?, withDateText dateText: String?, withLocationText locationText: String?, isEditEnabled: Bool,  collectionView: UICollectionView) -> CGSize {
         var fieldHeight: CGFloat = 0
+        let horizontalMargin: CGFloat = 40
+        let verticalMargin: CGFloat = 20
         
         let currentTitleText: NSAttributedString = NSAttributedString(string: titleText ?? "", attributes: [NSAttributedString.Key.font: Text.style32.font as Any])
         let currentDescriptionText: NSAttributedString = NSAttributedString(string: descriptionText ?? "", attributes: [NSAttributedString.Key.font: Text.style12.font as Any])
         
-        let titleTextHeight = currentTitleText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
+        let maxTitleHeight: CGFloat = 54 // Equivalent of 2 rows
+        let titleTextHeight = currentTitleText.boundingRect(with: CGSize(width: collectionView.bounds.width - horizontalMargin, height: maxTitleHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
         
-        let descriptionTextHeight = currentDescriptionText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up) + 20
+        let descriptionTextHeight = currentDescriptionText.boundingRect(with: CGSize(width: collectionView.bounds.width - horizontalMargin, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
         
-        if titleTextHeight >= 54 {
-            fieldHeight += 54
-        } else {
-            fieldHeight += titleTextHeight
-        }
+        fieldHeight += titleTextHeight
         
+        let dateLocationHeight: CGFloat = 21
         if isEditEnabled {
-            fieldHeight += 2 * 21
+            fieldHeight += 2 * dateLocationHeight
             fieldHeight += descriptionTextHeight
         } else {
-            if let descriptionText = descriptionText,
-                descriptionText != "Description".localized() {
+            if let descriptionText = descriptionText, descriptionText != "Description".localized() {
                 fieldHeight += descriptionTextHeight
             }
             
-            if let dateText = dateText,
-                dateText != "Start date".localized() {
-                fieldHeight += 21
+            if let dateText = dateText, dateText != "Start date".localized() {
+                fieldHeight += dateLocationHeight
             }
-            if let locationText = locationText,
-                locationText != "Location not set".localized() {
-                fieldHeight += 21
+            if let locationText = locationText, locationText != "Location not set".localized() {
+                fieldHeight += dateLocationHeight
             }
         }
         
-        return CGSize(width: collectionView.bounds.width, height: fieldHeight + 20)
+        return CGSize(width: collectionView.bounds.width, height: fieldHeight + verticalMargin)
     }
 }

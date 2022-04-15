@@ -43,7 +43,16 @@ class PublicProfilePageViewModel: ViewModelInterface {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
     var milestonesProfileItems: [MilestoneProfileItem] {
-        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+        return (profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]).sorted { lhs, rhs in
+            guard let lhsStartDate = lhs.startDate else {
+                return true
+            }
+            guard let rhsStartDate = rhs.startDate else {
+                return false
+            }
+            
+            return lhsStartDate > rhsStartDate
+        }
     }
     var isEditDataEnabled: Bool {
         archiveData.permissions().contains(.ownership)
