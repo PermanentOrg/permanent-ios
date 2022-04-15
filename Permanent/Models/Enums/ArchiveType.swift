@@ -93,4 +93,20 @@ enum ArchiveType: String, CaseIterable {
             return "Tell the story of the nonprofit Organization this Archive is for".localized()
         }
     }
+    
+    var milestoneTitleHint: String {
+        return "Title".localized()
+    }
+    
+    var milestoneLocationLabelHint: String {
+        return "Location not set".localized()
+    }
+    
+    var milestoneDateLabelHint: String {
+        return "Start date".localized()
+    }
+    
+    var milestoneDescriptionTextHint: String {
+        return "Description".localized()
+    }
 }

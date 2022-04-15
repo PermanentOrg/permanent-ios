@@ -449,7 +449,13 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return ProfilePageOnlinePresenceCollectionViewCell.size(collectionView: collectionView)
 
         case .milestone:
-            return ProfilePageMilestonesCollectionViewCell.size(collectionView: collectionView)
+            let titleText = viewModel?.milestonesProfileItems[indexPath.row].title ?? (viewModel?.archiveType.milestoneTitleHint)!
+            let descriptionText = viewModel?.milestonesProfileItems[indexPath.row].description ?? (viewModel?.archiveType.milestoneDescriptionTextHint)!
+            var dateText = viewModel?.milestonesProfileItems[indexPath.row].startDateString ?? (viewModel?.archiveType.milestoneDateLabelHint)!
+            dateText += viewModel?.milestonesProfileItems[indexPath.row].endDateString ?? ""
+            let locationText = viewModel?.milestonesProfileItems[indexPath.row].locationFormated ?? (viewModel?.archiveType.milestoneLocationLabelHint)!
+            
+            return ProfilePageMilestonesCollectionViewCell.size(withTitleText: titleText, withDescriptionText: descriptionText, withDateText: dateText, withLocationText: locationText, isEditEnabled: isEditDataEnabled, collectionView: collectionView)
 
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 120)
@@ -532,7 +538,7 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return numberOfItems <= 2 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
         
         case .milestones:
-            return profileViewData[.milestones]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+            return CGSize.zero
             
         case .information, .profileVisibility:
             return CGSize(width: collectionView.frame.width, height: 1)

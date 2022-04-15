@@ -7,6 +7,13 @@
 
 import Foundation
 class MilestoneProfileItem: ProfileItemModel {
+    static let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "YYYY-MM-dd"
+        
+        return df
+    }()
+    
     var title: String? {
         get {
             return string1
@@ -16,7 +23,7 @@ class MilestoneProfileItem: ProfileItemModel {
         }
     }
     
-    var startDate: String? {
+    var startDateString: String? {
         get {
             return day1
         }
@@ -25,12 +32,28 @@ class MilestoneProfileItem: ProfileItemModel {
         }
     }
     
-    var endDate: String? {
+    var startDate: Date? {
+        if let startDateString = startDateString {
+            return Self.dateFormatter.date(from: startDateString)
+        } else {
+            return nil
+        }
+    }
+    
+    var endDateString: String? {
         get {
             return day2
         }
         set {
             day2 = newValue
+        }
+    }
+    
+    var endDate: Date? {
+        if let endDateString = endDateString {
+            return Self.dateFormatter.date(from: endDateString)
+        } else {
+            return nil
         }
     }
     
