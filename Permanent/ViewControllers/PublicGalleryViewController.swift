@@ -13,12 +13,11 @@ enum PublicGalleryCellType {
 }
 
 class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
-    
     @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var collectionViewSections: [PublicGalleryCellType] = [.onlineArchives]
+    var collectionViewSections: [PublicGalleryCellType] = []
     var accountArchives: [ArchiveVOData]?
     var popularArchives: [ArchiveVOData]?
     var linkIconButton: ButtonAction?
@@ -60,8 +59,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-                let archiveName: String = archive.fullName,
-                let archiveThumbURL: String = archive.thumbURL500 {
+            let archiveThumbURL: String = archive.thumbURL500 {
             archiveImageView.image = nil
             archiveImageView.load(urlString: archiveThumbURL)
         }
@@ -72,12 +70,19 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         
         viewModel?.getArchives({ result in
             self.hideSpinner()
-            if result == nil {
-                self.collectionView.reloadData()
-                self.updateCurrentArchive()
-            } else {
-                self.showErrorAlert(message: .errorMessage)
+            
+            if let userPublicArchivesNbr = self.viewModel?.userPublicArchives.count,
+            userPublicArchivesNbr > 0 {
+                self.collectionViewSections.append(.onlineArchives)
             }
+            
+            if let publicArchivesNbr = self.viewModel?.publicArchives.count,
+            publicArchivesNbr > 0 {
+                self.collectionViewSections.append(.popularPublicArchives)
+            }
+            
+            self.collectionView.reloadData()
+            self.updateCurrentArchive()
         })
     }
 }
@@ -108,28 +113,22 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
         case .onlineArchives:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
     
-            cell.configure(archive: viewModel?.userPublicArchives[indexPath.item])
+            cell.configure(archive: viewModel?.userPublicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
             cell.buttonAction = {
-                guard let url = self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.userPublicArchives[indexPath.item].archiveNbr) else { return }
-                
-                // For now, dismiss the menu in case another one opens so we avoid crash.
-                self.documentInteractionController.dismissMenu(animated: true)
-                    
-                self.documentInteractionController.url = url
-                self.documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
-                self.documentInteractionController.name = url.localizedName ?? url.lastPathComponent
-                self.documentInteractionController.presentOptionsMenu(from: .zero, in: self.view, animated: true)
+                self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.userPublicArchives[indexPath.item].archiveNbr))
             }
-            
             returnedCell = cell
             
         case .popularPublicArchives:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
-            guard let archiveName = viewModel?.publicArchives[indexPath.item].fullName else { return returnedCell }
             
+            cell.configure(archive: viewModel?.publicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
+            cell.buttonAction = {
+                self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.publicArchives[indexPath.item].archiveNbr))
+            }
             returnedCell = cell
         }
-        
+
         return returnedCell
     }
     
@@ -141,10 +140,23 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             return headerCell
             
         case UICollectionView.elementKindSectionFooter:
-            return UICollectionReusableView()
+            let footerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: PublicGalleryFooterCollectionViewCell.identifier, for: indexPath) as! PublicGalleryFooterCollectionViewCell
+            return footerCell
             
         default:
             return UICollectionReusableView()
+        }
+    }
+    
+    private func openPopUpMenu(url: URL?) {
+        // For now, dismiss the menu in case another one opens so we avoid crash.
+        self.documentInteractionController.dismissMenu(animated: true)
+        
+        if let url = url {
+            self.documentInteractionController.url = url
+            self.documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+            self.documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+            self.documentInteractionController.presentOptionsMenu(from: .zero, in: self.view, animated: true)
         }
     }
 }
@@ -152,7 +164,6 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
 extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        showSpinner()
         
         switch collectionViewSections[indexPath.section] {
         case .onlineArchives:
@@ -164,7 +175,12 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
             present(newNav, animated: true)
             
         case .popularPublicArchives:
-            hideSpinner()
+            guard let selectedArchive = viewModel?.publicArchives[indexPath.item] else { return }
+            
+            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+            newRootVC.archiveData = selectedArchive
+            let newNav = NavigationController(rootViewController: newRootVC)
+            present(newNav, animated: true)
         }
     }
     
@@ -182,5 +198,9 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 40)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 20)
     }
 }

@@ -43,7 +43,16 @@ class PublicProfilePageViewModel: ViewModelInterface {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
     var milestonesProfileItems: [MilestoneProfileItem] {
-        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+        return (profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]).sorted { lhs, rhs in
+            guard let lhsStartDate = lhs.startDate else {
+                return true
+            }
+            guard let rhsStartDate = rhs.startDate else {
+                return false
+            }
+            
+            return lhsStartDate > rhsStartDate
+        }
     }
     var isEditDataEnabled: Bool {
         archiveData.permissions().contains(.ownership)
@@ -102,7 +111,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             }
             profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
 
-        case .family, .organization:
+        case .family, .organization, .nonProfit:
             if establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
                 informationCells.append(.establishedDate)
             }

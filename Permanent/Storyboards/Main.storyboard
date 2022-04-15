@@ -1373,8 +1373,8 @@
                                     </searchBar>
                                 </subviews>
                             </stackView>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3Eu-fx-84Y">
-                                <rect key="frame" x="20" y="122" width="374" height="720"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3Eu-fx-84Y">
+                                <rect key="frame" x="20" y="122" width="374" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="vIk-7O-2Zc">
                                     <size key="itemSize" width="128" height="128"/>
@@ -1401,7 +1401,7 @@
                         <viewLayoutGuide key="safeArea" id="Ydn-St-XzL"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Ydn-St-XzL" firstAttribute="bottom" secondItem="3Eu-fx-84Y" secondAttribute="bottom" constant="20" id="GPT-1N-cHs"/>
+                            <constraint firstAttribute="bottom" secondItem="3Eu-fx-84Y" secondAttribute="bottom" id="GPT-1N-cHs"/>
                             <constraint firstItem="Ydn-St-XzL" firstAttribute="trailing" secondItem="3Eu-fx-84Y" secondAttribute="trailing" constant="20" id="KEc-O9-Q8s"/>
                             <constraint firstItem="qap-3e-Ttc" firstAttribute="leading" secondItem="Ydn-St-XzL" secondAttribute="leading" constant="20" id="Mcv-tE-UFE"/>
                             <constraint firstItem="3Eu-fx-84Y" firstAttribute="top" secondItem="qap-3e-Ttc" secondAttribute="bottomMargin" constant="10" id="fqX-7I-eqh"/>
@@ -1443,7 +1443,7 @@
         <image name="chevron.left" width="13" height="21"/>
         <image name="folder" width="21" height="17"/>
         <image name="placeholder" width="34" height="34"/>
-        <image name="square.grid.2x2.fill" catalog="system" width="32" height="32"/>
+        <image name="square.grid.2x2.fill" catalog="system" width="128" height="114"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
