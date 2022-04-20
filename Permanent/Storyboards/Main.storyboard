@@ -1362,7 +1362,7 @@
                                     <searchBar contentMode="redraw" searchBarStyle="minimal" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdD-lH-UgV">
                                         <rect key="frame" x="43" y="0.0" width="331" height="58"/>
                                         <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="0.0"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
                                         <scopeButtonTitles>
                                             <string>Title</string>
                                             <string>Title</string>

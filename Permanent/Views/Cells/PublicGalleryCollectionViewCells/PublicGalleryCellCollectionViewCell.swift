@@ -22,18 +22,24 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(archive: ArchiveVOData?, section: PublicGalleryCellType) {
-        guard let thumbnail = archive?.thumbURL1000,
-            let name = archive?.fullName else { return }
+        if let name = archive?.fullName {
+            archiveTitleLabel.text = name
+        } else {
+            archiveTitleLabel.text = "Archive Name".localized()
+        }
+        
+        guard let thumbnail = archive?.thumbURL1000 else { return }
         let role = archive?.accessRole ?? ""
         
         archiveImage.load(urlString: thumbnail)
-        archiveTitleLabel.text = name
+
         archiveUserRole.text = AccessRole.roleForValue(role).groupName
         
         switch section {
         case .onlineArchives:
             initUIforLocalArchive()
-        case .popularPublicArchives:
+            
+        case .popularPublicArchives, .searchResultArchives:
             initUIforPublicArchive()
         }
     }

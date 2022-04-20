@@ -10,6 +10,7 @@ import UIKit
 enum PublicGalleryCellType {
     case onlineArchives
     case popularPublicArchives
+    case searchResultArchives
 }
 
 class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
@@ -22,6 +23,9 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     var popularArchives: [ArchiveVOData]?
     var linkIconButton: ButtonAction?
     
+    var searchInProgress: Bool = false
+    var collectionViewSectionsBeforeSearch: [PublicGalleryCellType] = []
+    
     let documentInteractionController = UIDocumentInteractionController()
     
     override func viewDidLoad() {
@@ -32,8 +36,6 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         initUI()
         initCollectionView()
         updateArchivesList()
-        
-        searchBar.isUserInteractionEnabled = false
     }
     
     private func initUI() {
@@ -41,6 +43,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         archiveImageView.layer.cornerRadius = 2
         
         title = "Public Gallery".localized()
+        searchBar.placeholder = "Search archives by name".localized()
     }
     
     private func initCollectionView() {
@@ -85,6 +88,25 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
             self.updateCurrentArchive()
         })
     }
+    
+    func updateSections() {
+        if searchInProgress {
+            if collectionViewSectionsBeforeSearch.isEmpty {
+                collectionViewSectionsBeforeSearch = collectionViewSections
+            }
+            collectionViewSections.removeAll()
+            if let searchArchivesNbr = self.viewModel?.searchPublicArchives.count,
+                searchArchivesNbr > 0 {
+                collectionViewSections.append(.searchResultArchives)
+            }
+        } else {
+            collectionViewSections.removeAll()
+            collectionViewSections = collectionViewSectionsBeforeSearch
+            collectionViewSectionsBeforeSearch.removeAll()
+            viewModel?.searchPublicArchives.removeAll()
+        }
+        collectionView.reloadData()
+    }
 }
 
 extension PublicGalleryViewController: UICollectionViewDataSource {
@@ -101,8 +123,10 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             
         case .popularPublicArchives:
             numberOfItemsInSection = viewModel?.publicArchives.count ?? 0
+            
+        case .searchResultArchives:
+            numberOfItemsInSection = viewModel?.searchPublicArchives.count ?? 0
         }
-        
         return numberOfItemsInSection
     }
     
@@ -125,6 +149,15 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             cell.configure(archive: viewModel?.publicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
             cell.buttonAction = {
                 self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.publicArchives[indexPath.item].archiveNbr))
+            }
+            returnedCell = cell
+            
+        case .searchResultArchives:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
+            
+            cell.configure(archive: viewModel?.searchPublicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
+            cell.buttonAction = {
+                self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.searchPublicArchives[indexPath.item].archiveNbr))
             }
             returnedCell = cell
         }
@@ -181,6 +214,14 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
             newRootVC.archiveData = selectedArchive
             let newNav = NavigationController(rootViewController: newRootVC)
             present(newNav, animated: true)
+            
+        case .searchResultArchives:
+            guard let selectedArchive = viewModel?.searchPublicArchives[indexPath.item] else { return }
+            
+            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+            newRootVC.archiveData = selectedArchive
+            let newNav = NavigationController(rootViewController: newRootVC)
+            present(newNav, animated: true)
         }
     }
     
@@ -202,5 +243,41 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 20)
+    }
+}
+
+extension PublicGalleryViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        view.endEditing(true)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isNotEmpty {
+            searchInProgress = true
+            if searchText.count > 2 {
+                print("search after \(searchText)")
+                viewModel?.searchArchives(byQuery: searchText, handler: { [self] result in
+                    updateSections()
+                })
+            } else {
+                updateSections()
+            }
+        } else {
+            searchInProgress = false
+            updateSections()
+        }
     }
 }
