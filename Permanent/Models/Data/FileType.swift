@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FileType: String {
+enum FileType: String, Codable {
     case publicFolder = "type.folder.public"
     case privateFolder = "type.folder.private"
     case publicRootFolder = "type.folder.root.public"

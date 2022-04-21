@@ -17,6 +17,26 @@ class MyFilesViewModel: FilesViewModel {
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
+    override var selectedFile: FileViewModel? {
+        get {
+            return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileKey)
+        }
+        
+        set {
+            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileKey)
+        }
+    }
+    
+    override var fileAction: FileAction {
+        get {
+            return (try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileActionKey)) ?? .none
+        }
+        
+        set {
+            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileActionKey)
+        }
+    }
+    
     var rootFolderName: String {
         return .myFiles
     }

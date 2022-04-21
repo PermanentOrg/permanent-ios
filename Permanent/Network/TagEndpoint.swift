@@ -36,15 +36,6 @@ extension TagEndpoint: RequestProtocol {
         }
     }
     
-    var headers: RequestHeaders? {
-        switch self {
-        case .tagPost,.tagDelete,.getTagsByArchive:
-            return [
-                "content-type": "application/json"
-            ]
-        }
-    }
-    
     var requestType: RequestType {
         switch self {
         case .tagPost,.tagDelete,.getTagsByArchive:

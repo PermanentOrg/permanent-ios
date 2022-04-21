@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct FileViewModel: Equatable {
+struct FileViewModel: Equatable, Codable {
     let thumbnailURL: String?
     let thumbnailURL500: String?
     let thumbnailURL1000: String?

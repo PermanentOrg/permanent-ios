@@ -134,4 +134,12 @@ extension RequestProtocol {
         }
         return jsonBody
     }
+    
+    var headers: RequestHeaders? {
+        if method == .post {
+            return ["content-type": "application/json; charset=utf-8"]
+        } else {
+            return nil
+        }
+    }
 }

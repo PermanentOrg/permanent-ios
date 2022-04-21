@@ -31,15 +31,6 @@ extension LocationEndpoint: RequestProtocol {
         }
     }
     
-    var headers: RequestHeaders? {
-        switch self {
-        case .geomapLatLong, .locnPost:
-            return [
-                "content-type": "application/json"
-            ]
-        }
-    }
-    
     var requestType: RequestType {
         switch self {
         case .geomapLatLong, .locnPost:

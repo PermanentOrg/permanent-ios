@@ -13,7 +13,7 @@ extension PHAsset {
             let options = PHContentEditingInputRequestOptions()
             options.isNetworkAccessAllowed = true
             options.canHandleAdjustmentData = { (_: PHAdjustmentData) -> Bool in
-                true
+                false
             }
             self.requestContentEditingInput(with: options, completionHandler: { (contentEditingInput: PHContentEditingInput?, _: [AnyHashable: Any]) -> Void in
                 completionHandler(contentEditingInput?.fullSizeImageURL as URL?)
