@@ -157,7 +157,7 @@ class PublicGalleryViewModel: ViewModelInterface {
     func reallySearchArchives(handler: @escaping ServerResponse) {
         searchOperation?.cancel()
         searchOperation = nil
-        guard searchQuery.count > 2 else {
+        guard searchQuery.count > 0 else {
             self.searchPublicArchives.removeAll()
             
             handler(.success)

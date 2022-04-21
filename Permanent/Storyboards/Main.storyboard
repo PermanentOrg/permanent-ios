@@ -1343,6 +1343,19 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WPO-iw-a8q">
                                         <rect key="frame" x="0.0" y="0.0" width="43" height="58"/>
                                         <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ByO-aC-j1k">
+                                                <rect key="frame" x="0.0" y="10" width="38" height="38"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="38" id="Bbr-bP-i9x"/>
+                                                    <constraint firstAttribute="width" secondItem="ByO-aC-j1k" secondAttribute="height" multiplier="1:1" id="wM3-9Q-UGc"/>
+                                                </constraints>
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" image="chevron.left"/>
+                                                <connections>
+                                                    <action selector="backButtonAction:" destination="zZF-ov-TVh" eventType="touchUpInside" id="1TL-Ad-45h"/>
+                                                </connections>
+                                            </button>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="2TD-QN-GOa">
                                                 <rect key="frame" x="0.0" y="10" width="38" height="38"/>
                                                 <constraints>
@@ -1353,10 +1366,14 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="ByO-aC-j1k" secondAttribute="bottom" constant="10" id="EUv-zP-SzT"/>
+                                            <constraint firstItem="ByO-aC-j1k" firstAttribute="leading" secondItem="WPO-iw-a8q" secondAttribute="leading" id="FW4-EU-gF2"/>
                                             <constraint firstItem="2TD-QN-GOa" firstAttribute="top" secondItem="WPO-iw-a8q" secondAttribute="top" constant="10" id="O60-IS-Qw7"/>
+                                            <constraint firstAttribute="trailing" secondItem="ByO-aC-j1k" secondAttribute="trailing" constant="5" id="Ysz-tV-zZp"/>
                                             <constraint firstAttribute="trailing" secondItem="2TD-QN-GOa" secondAttribute="trailing" constant="5" id="dGG-Qj-nBH"/>
                                             <constraint firstAttribute="bottom" secondItem="2TD-QN-GOa" secondAttribute="bottom" constant="10" id="eym-Ze-zMR"/>
                                             <constraint firstItem="2TD-QN-GOa" firstAttribute="leading" secondItem="WPO-iw-a8q" secondAttribute="leading" id="xsl-Ix-rOs"/>
+                                            <constraint firstItem="ByO-aC-j1k" firstAttribute="top" secondItem="WPO-iw-a8q" secondAttribute="top" constant="10" id="zBx-An-13d"/>
                                         </constraints>
                                     </view>
                                     <searchBar contentMode="redraw" searchBarStyle="minimal" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdD-lH-UgV">
@@ -1412,6 +1429,7 @@
                     </view>
                     <connections>
                         <outlet property="archiveImageView" destination="2TD-QN-GOa" id="pvV-jJ-pd3"/>
+                        <outlet property="backButton" destination="ByO-aC-j1k" id="qiU-Tu-7Ax"/>
                         <outlet property="collectionView" destination="3Eu-fx-84Y" id="sXv-hp-yH2"/>
                         <outlet property="searchBar" destination="xdD-lH-UgV" id="hPT-W9-ETC"/>
                     </connections>

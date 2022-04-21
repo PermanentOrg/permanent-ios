@@ -32,7 +32,7 @@ class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
         case .searchResultArchives:
             sectionNameLabel.font = Text.style32.font
             sectionNameLabel.textColor = .primary
-            sectionNameLabel.text = "Search Result Archives".localized()
+            sectionNameLabel.text = "Results".localized()
         }
     }
     

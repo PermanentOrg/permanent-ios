@@ -23,9 +23,9 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
     
     func configure(archive: ArchiveVOData?, section: PublicGalleryCellType) {
         if let name = archive?.fullName {
-            archiveTitleLabel.text = name
+            archiveTitleLabel.text = "The \(name) Archive"
         } else {
-            archiveTitleLabel.text = "Archive Name".localized()
+            archiveTitleLabel.text = "The Archive"
         }
         
         guard let thumbnail = archive?.thumbURL1000 else { return }
@@ -61,6 +61,13 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         archiveTitleLabel.font = Text.style9.font
         archiveUserRole.isHidden = true
         linkIconButton.tintColor = .primary
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        archiveTitleLabel.text = "The Archive"
+        archiveImage.image = .placeholder
     }
     
     static func nib() -> UINib {

@@ -17,6 +17,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var backButton: UIButton!
     
     var collectionViewSections: [PublicGalleryCellType] = []
     var accountArchives: [ArchiveVOData]?
@@ -44,6 +45,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         
         title = "Public Gallery".localized()
         searchBar.placeholder = "Search archives by name".localized()
+        backButton.alpha = 0
     }
     
     private func initCollectionView() {
@@ -93,10 +95,15 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         if searchInProgress {
             if collectionViewSectionsBeforeSearch.isEmpty {
                 collectionViewSectionsBeforeSearch = collectionViewSections
+                
+                UIView.animate(withDuration: 0.3, delay: 0) {
+                    self.archiveImageView.alpha = 0
+                    self.backButton.alpha = 1
+                }
             }
             collectionViewSections.removeAll()
             if let searchArchivesNbr = self.viewModel?.searchPublicArchives.count,
-                searchArchivesNbr > 0 {
+            searchArchivesNbr > 0 {
                 collectionViewSections.append(.searchResultArchives)
             }
         } else {
@@ -106,6 +113,29 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
             viewModel?.searchPublicArchives.removeAll()
         }
         collectionView.reloadData()
+        handleTableBackgroundView()
+    }
+    
+    func handleTableBackgroundView() {
+        if viewModel?.searchPublicArchives.isEmpty ?? true && searchInProgress {
+            let backgroundView = EmptyFolderView(title: "Search results will appear here.".localized(), image: .emptySearch, positionOffset: CGPoint(x: 0, y: -(collectionView.frame.height / 4)))
+            backgroundView.frame = collectionView.bounds
+            collectionView.backgroundView = backgroundView
+            return
+        }
+        collectionView.backgroundView = nil
+    }
+    
+    @IBAction func backButtonAction(_ sender: Any) {
+        view.endEditing(true)
+        UIView.animate(withDuration: 0.3, delay: 0) {
+            self.archiveImageView.alpha = 1
+            self.backButton.alpha = 0
+        }
+        
+        searchBar.text = ""
+        searchInProgress = false
+        updateSections()
     }
 }
 
@@ -248,35 +278,26 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
 
 extension PublicGalleryViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
         view.endEditing(true)
     }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        
-    }
-    
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        
+        searchInProgress = true
+        updateSections()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        
+        view.endEditing(true)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isNotEmpty {
-            searchInProgress = true
-            if searchText.count > 2 {
-                print("search after \(searchText)")
-                viewModel?.searchArchives(byQuery: searchText, handler: { [self] result in
-                    updateSections()
-                })
-            } else {
+        searchInProgress = true
+        if searchText.count > 0 {
+            viewModel?.searchArchives(byQuery: searchText, handler: { [self] result in
                 updateSections()
-            }
+            })
         } else {
-            searchInProgress = false
+            viewModel?.searchPublicArchives.removeAll()
             updateSections()
         }
     }
