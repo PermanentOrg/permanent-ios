@@ -35,8 +35,6 @@ extension InviteEndpoint: RequestProtocol {
     
     var method: RequestMethod { .post }
     
-    var headers: RequestHeaders? { nil }
-    
     var parameters: RequestParameters? { nil }
         
     var requestType: RequestType { .data }

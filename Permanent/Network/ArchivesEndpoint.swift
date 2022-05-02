@@ -57,12 +57,6 @@ extension ArchivesEndpoint: RequestProtocol {
         return .post
     }
     
-    var headers: RequestHeaders? {
-        return [
-            "content-type": "application/json"
-        ]
-    }
-    
     var requestType: RequestType {
         return .data
     }

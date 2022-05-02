@@ -95,15 +95,6 @@ extension FilesEndpoint: RequestProtocol {
         }
     }
     
-    var headers: RequestHeaders? {
-        switch self {
-        default:
-            return [
-                "content-type": "application/json"
-            ]
-        }
-    }
-    
     var parameters: RequestParameters? {
         switch self {
         case .navigateMin(let params):
