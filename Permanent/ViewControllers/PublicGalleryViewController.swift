@@ -141,7 +141,8 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     @IBAction func profilePageButtonAction(_ sender: Any) {
         let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
         newRootVC.archiveData = viewModel?.currentArchive()
-        AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        let newNav = NavigationController(rootViewController: newRootVC)
+        present(newNav, animated: true)
     }
 }
 
