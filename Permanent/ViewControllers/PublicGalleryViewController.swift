@@ -14,10 +14,10 @@ enum PublicGalleryCellType {
 }
 
 class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
-    @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var profilePageButton: UIButton!
     
     var collectionViewSections: [PublicGalleryCellType] = []
     var accountArchives: [ArchiveVOData]?
@@ -40,11 +40,12 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     }
     
     private func initUI() {
-        searchBar.updateHeight(height: archiveImageView.frame.height, radius: 2)
-        archiveImageView.layer.cornerRadius = 2
+        searchBar.updateHeight(height: profilePageButton.frame.height, radius: 2)
+        profilePageButton.layer.cornerRadius = 2
         
         title = "Public Gallery".localized()
         searchBar.placeholder = "Search archives by name".localized()
+        profilePageButton.alpha = 1
         backButton.alpha = 0
     }
     
@@ -64,9 +65,8 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-            let archiveThumbURL: String = archive.thumbURL500 {
-            archiveImageView.image = nil
-            archiveImageView.load(urlString: archiveThumbURL)
+           let archiveThumbURL: String = archive.thumbURL500 {
+            profilePageButton.sd_setImage(with: URL(string: archiveThumbURL), for: .normal)
         }
     }
     
@@ -97,7 +97,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
                 collectionViewSectionsBeforeSearch = collectionViewSections
                 
                 UIView.animate(withDuration: 0.3, delay: 0) {
-                    self.archiveImageView.alpha = 0
+                    self.profilePageButton.alpha = 0
                     self.backButton.alpha = 1
                 }
             }
@@ -129,13 +129,20 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     @IBAction func backButtonAction(_ sender: Any) {
         view.endEditing(true)
         UIView.animate(withDuration: 0.3, delay: 0) {
-            self.archiveImageView.alpha = 1
+            self.profilePageButton.alpha = 1
             self.backButton.alpha = 0
         }
         
         searchBar.text = ""
         searchInProgress = false
         updateSections()
+    }
+    
+    @IBAction func profilePageButtonAction(_ sender: Any) {
+        let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+        newRootVC.archiveData = viewModel?.currentArchive()
+        let newNav = NavigationController(rootViewController: newRootVC)
+        present(newNav, animated: true)
     }
 }
 

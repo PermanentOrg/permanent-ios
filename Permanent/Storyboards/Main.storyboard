@@ -1356,23 +1356,29 @@
                                                     <action selector="backButtonAction:" destination="zZF-ov-TVh" eventType="touchUpInside" id="1TL-Ad-45h"/>
                                                 </connections>
                                             </button>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="2TD-QN-GOa">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rJK-zV-91N">
                                                 <rect key="frame" x="0.0" y="10" width="38" height="38"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" secondItem="2TD-QN-GOa" secondAttribute="height" multiplier="1:1" id="8IQ-Tx-tmv"/>
-                                                    <constraint firstAttribute="height" constant="38" id="PXz-1T-rxt"/>
+                                                    <constraint firstAttribute="width" secondItem="rJK-zV-91N" secondAttribute="height" multiplier="1:1" id="DVg-Dl-jKl"/>
+                                                    <constraint firstAttribute="height" constant="38" id="UWY-uk-Rsu"/>
                                                 </constraints>
-                                            </imageView>
+                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" image="placeholder"/>
+                                                <connections>
+                                                    <action selector="profilePageButtonAction:" destination="zZF-ov-TVh" eventType="touchUpInside" id="9Q0-Sd-7g7"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
+                                            <constraint firstItem="rJK-zV-91N" firstAttribute="leading" secondItem="WPO-iw-a8q" secondAttribute="leading" id="5mx-gr-MD7"/>
                                             <constraint firstAttribute="bottom" secondItem="ByO-aC-j1k" secondAttribute="bottom" constant="10" id="EUv-zP-SzT"/>
                                             <constraint firstItem="ByO-aC-j1k" firstAttribute="leading" secondItem="WPO-iw-a8q" secondAttribute="leading" id="FW4-EU-gF2"/>
-                                            <constraint firstItem="2TD-QN-GOa" firstAttribute="top" secondItem="WPO-iw-a8q" secondAttribute="top" constant="10" id="O60-IS-Qw7"/>
+                                            <constraint firstItem="rJK-zV-91N" firstAttribute="top" secondItem="WPO-iw-a8q" secondAttribute="top" constant="10" id="QWd-vI-Iu3"/>
                                             <constraint firstAttribute="trailing" secondItem="ByO-aC-j1k" secondAttribute="trailing" constant="5" id="Ysz-tV-zZp"/>
-                                            <constraint firstAttribute="trailing" secondItem="2TD-QN-GOa" secondAttribute="trailing" constant="5" id="dGG-Qj-nBH"/>
-                                            <constraint firstAttribute="bottom" secondItem="2TD-QN-GOa" secondAttribute="bottom" constant="10" id="eym-Ze-zMR"/>
-                                            <constraint firstItem="2TD-QN-GOa" firstAttribute="leading" secondItem="WPO-iw-a8q" secondAttribute="leading" id="xsl-Ix-rOs"/>
+                                            <constraint firstAttribute="trailing" secondItem="rJK-zV-91N" secondAttribute="trailing" constant="5" id="fg3-ag-tSI"/>
+                                            <constraint firstAttribute="bottom" secondItem="rJK-zV-91N" secondAttribute="bottom" constant="10" id="uAZ-EM-rkn"/>
                                             <constraint firstItem="ByO-aC-j1k" firstAttribute="top" secondItem="WPO-iw-a8q" secondAttribute="top" constant="10" id="zBx-An-13d"/>
                                         </constraints>
                                     </view>
@@ -1428,9 +1434,9 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="archiveImageView" destination="2TD-QN-GOa" id="pvV-jJ-pd3"/>
                         <outlet property="backButton" destination="ByO-aC-j1k" id="qiU-Tu-7Ax"/>
                         <outlet property="collectionView" destination="3Eu-fx-84Y" id="sXv-hp-yH2"/>
+                        <outlet property="profilePageButton" destination="rJK-zV-91N" id="6Ef-vM-FKV"/>
                         <outlet property="searchBar" destination="xdD-lH-UgV" id="hPT-W9-ETC"/>
                     </connections>
                 </viewController>
