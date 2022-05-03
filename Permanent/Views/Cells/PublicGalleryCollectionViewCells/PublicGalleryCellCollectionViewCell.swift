@@ -31,7 +31,7 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         guard let thumbnail = archive?.thumbURL1000 else { return }
         let role = archive?.accessRole ?? ""
         
-        archiveImage.load(urlString: thumbnail)
+        archiveImage.sd_setImage(with: URL(string: thumbnail))
 
         archiveUserRole.text = AccessRole.roleForValue(role).groupName
         
