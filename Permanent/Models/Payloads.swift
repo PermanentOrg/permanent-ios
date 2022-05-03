@@ -714,6 +714,21 @@ struct Payloads {
         ]
     }
     
+    static func searchArchive(searchName: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "SearchVO": [
+                                "query": searchName
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
     static func safeAddUpdate(profileItemVOData: ProfileItemModel) -> RequestParameters {
         let profileDict: Any?
         if let profileJson = try? JSONEncoder().encode(profileItemVOData) {
