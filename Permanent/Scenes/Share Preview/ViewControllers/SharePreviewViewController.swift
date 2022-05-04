@@ -221,6 +221,7 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
         case .error:
             headerViewCollectionConstrain.constant = .zero
             actionButton.isHidden = true
+            currentArchiveContainer.isHidden = true
             actionButton.configureActionButtonUI(title: .ok)
             actionButton.addTarget(self, action: #selector(dismissScreen), for: .touchUpInside)
             
