@@ -24,6 +24,8 @@ class SharePreviewViewController: UIViewController {
     @IBOutlet weak var currentArchiveDefaultButton: UIButton!
     @IBOutlet weak var selectArchiveLabel: UILabel!
     
+    @IBOutlet weak var headerViewCollectionConstrain: NSLayoutConstraint!
+    
     var viewModel: SharePreviewViewModelDelegate! {
         didSet {
             viewModel.viewDelegate = self
@@ -93,7 +95,7 @@ class SharePreviewViewController: UIViewController {
         
         viewModel.updateAccountArchives { [self] in
             if let accountArchives = viewModel.accountArchives,
-               accountArchives.count == 1 {
+                accountArchives.count == 1 {
                 currentArchiveContainer.isHidden = true
             }
         }
@@ -217,7 +219,9 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             }
             
         case .error:
-            actionButton.isHidden = false
+            headerViewCollectionConstrain.constant = .zero
+            actionButton.isHidden = true
+            currentArchiveContainer.isHidden = true
             actionButton.configureActionButtonUI(title: .ok)
             actionButton.addTarget(self, action: #selector(dismissScreen), for: .touchUpInside)
             
