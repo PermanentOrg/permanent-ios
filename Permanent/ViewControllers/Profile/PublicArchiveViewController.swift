@@ -29,6 +29,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     @IBOutlet weak var profilePhotoBorderView: UIView!
     
     var archiveData: ArchiveVOData!
+    var archiveNbr: String?
     
     var profilePageVC: PublicProfilePageViewController!
     var archiveVC: PublicArchiveFileViewController!
@@ -39,6 +40,20 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         super.viewDidLoad()
         
         viewModel = PublicProfilePicturesViewModel()
+        
+        if archiveData == nil {
+            showSpinner()
+            viewModel?.getPublicArchive(withArchiveNbr: archiveNbr!, { archiveVOData in
+                self.hideSpinner()
+                self.archiveData = archiveVOData
+                self.initUI()
+            })
+        } else {
+            initUI()
+        }
+    }
+    
+    func initUI() {
         viewModel?.archiveData = archiveData
         
         if let archiveName = archiveData.fullName {
