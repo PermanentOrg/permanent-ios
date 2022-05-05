@@ -124,9 +124,7 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
             viewModel?.finishOnboard({ status in
                 self.hideSpinner()
                 if status == .success {
-                    let newRootVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
-                    newRootVC.viewModel = MyFilesViewModel()
-                    AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {
                     self.showErrorAlert(message: .errorMessage)
                 }
