@@ -10,17 +10,22 @@ import UIKit
 enum PublicGalleryCellType {
     case onlineArchives
     case popularPublicArchives
+    case searchResultArchives
 }
 
 class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
-    @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var profilePageButton: UIButton!
     
     var collectionViewSections: [PublicGalleryCellType] = []
     var accountArchives: [ArchiveVOData]?
     var popularArchives: [ArchiveVOData]?
     var linkIconButton: ButtonAction?
+    
+    var searchInProgress: Bool = false
+    var collectionViewSectionsBeforeSearch: [PublicGalleryCellType] = []
     
     let documentInteractionController = UIDocumentInteractionController()
     
@@ -36,16 +41,17 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         initCollectionView()
         updateArchivesList()
         
-        searchBar.isUserInteractionEnabled = false
-        
         checkDeeplinkedArchive()
     }
     
     private func initUI() {
-        searchBar.updateHeight(height: archiveImageView.frame.height, radius: 2)
-        archiveImageView.layer.cornerRadius = 2
+        searchBar.updateHeight(height: profilePageButton.frame.height, radius: 2)
+        profilePageButton.layer.cornerRadius = 2
         
         title = "Public Gallery".localized()
+        searchBar.placeholder = "Search archives by name".localized()
+        profilePageButton.alpha = 1
+        backButton.alpha = 0
     }
     
     private func initCollectionView() {
@@ -64,9 +70,8 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-            let archiveThumbURL: String = archive.thumbURL500 {
-            archiveImageView.image = nil
-            archiveImageView.load(urlString: archiveThumbURL)
+           let archiveThumbURL: String = archive.thumbURL500 {
+            profilePageButton.sd_setImage(with: URL(string: archiveThumbURL), for: .normal)
         }
     }
     
@@ -102,6 +107,60 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
             self.initialArchiveNbr = nil
         }
     }
+    
+    func updateSections() {
+        if searchInProgress {
+            if collectionViewSectionsBeforeSearch.isEmpty {
+                collectionViewSectionsBeforeSearch = collectionViewSections
+                
+                UIView.animate(withDuration: 0.3, delay: 0) {
+                    self.profilePageButton.alpha = 0
+                    self.backButton.alpha = 1
+                }
+            }
+            collectionViewSections.removeAll()
+            if let searchArchivesNbr = self.viewModel?.searchPublicArchives.count,
+            searchArchivesNbr > 0 {
+                collectionViewSections.append(.searchResultArchives)
+            }
+        } else {
+            collectionViewSections.removeAll()
+            collectionViewSections = collectionViewSectionsBeforeSearch
+            collectionViewSectionsBeforeSearch.removeAll()
+            viewModel?.searchPublicArchives.removeAll()
+        }
+        collectionView.reloadData()
+        handleTableBackgroundView()
+    }
+    
+    func handleTableBackgroundView() {
+        if viewModel?.searchPublicArchives.isEmpty ?? true && searchInProgress {
+            let backgroundView = EmptyFolderView(title: "Search results will appear here.".localized(), image: .emptySearch, positionOffset: CGPoint(x: 0, y: -(collectionView.frame.height / 4)))
+            backgroundView.frame = collectionView.bounds
+            collectionView.backgroundView = backgroundView
+            return
+        }
+        collectionView.backgroundView = nil
+    }
+    
+    @IBAction func backButtonAction(_ sender: Any) {
+        view.endEditing(true)
+        UIView.animate(withDuration: 0.3, delay: 0) {
+            self.profilePageButton.alpha = 1
+            self.backButton.alpha = 0
+        }
+        
+        searchBar.text = ""
+        searchInProgress = false
+        updateSections()
+    }
+    
+    @IBAction func profilePageButtonAction(_ sender: Any) {
+        let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+        newRootVC.archiveData = viewModel?.currentArchive()
+        let newNav = NavigationController(rootViewController: newRootVC)
+        present(newNav, animated: true)
+    }
 }
 
 extension PublicGalleryViewController: UICollectionViewDataSource {
@@ -118,8 +177,10 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             
         case .popularPublicArchives:
             numberOfItemsInSection = viewModel?.publicArchives.count ?? 0
+            
+        case .searchResultArchives:
+            numberOfItemsInSection = viewModel?.searchPublicArchives.count ?? 0
         }
-        
         return numberOfItemsInSection
     }
     
@@ -142,6 +203,15 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
             cell.configure(archive: viewModel?.publicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
             cell.buttonAction = {
                 self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.publicArchives[indexPath.item].archiveNbr))
+            }
+            returnedCell = cell
+            
+        case .searchResultArchives:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
+            
+            cell.configure(archive: viewModel?.searchPublicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
+            cell.buttonAction = {
+                self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.searchPublicArchives[indexPath.item].archiveNbr))
             }
             returnedCell = cell
         }
@@ -198,6 +268,14 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
             newRootVC.archiveData = selectedArchive
             let newNav = NavigationController(rootViewController: newRootVC)
             present(newNav, animated: true)
+            
+        case .searchResultArchives:
+            guard let selectedArchive = viewModel?.searchPublicArchives[indexPath.item] else { return }
+            
+            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+            newRootVC.archiveData = selectedArchive
+            let newNav = NavigationController(rootViewController: newRootVC)
+            present(newNav, animated: true)
         }
     }
     
@@ -219,5 +297,32 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 20)
+    }
+}
+
+extension PublicGalleryViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchInProgress = true
+        updateSections()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchInProgress = true
+        if searchText.count > 0 {
+            viewModel?.searchArchives(byQuery: searchText, handler: { [self] result in
+                updateSections()
+            })
+        } else {
+            viewModel?.searchPublicArchives.removeAll()
+            updateSections()
+        }
     }
 }

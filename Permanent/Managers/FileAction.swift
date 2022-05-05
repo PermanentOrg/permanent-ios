@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FileAction {
+enum FileAction: Codable {
     
     case copy
     

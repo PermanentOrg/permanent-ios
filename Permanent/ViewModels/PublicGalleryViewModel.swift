@@ -16,6 +16,11 @@ class PublicGalleryViewModel: ViewModelInterface {
         return allArchives.filter({ $0.archiveVOPublic == 1 })
     }
     var publicArchives: [ArchiveVOData] = []
+    var searchPublicArchives: [ArchiveVOData] = []
+    
+    var searchTimer: Timer?
+    var searchQuery: String = ""
+    var searchOperation: APIOperation?
     
     func currentArchive() -> ArchiveVOData? {
         return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
@@ -135,5 +140,61 @@ class PublicGalleryViewModel: ViewModelInterface {
         url = URL(string: "\(baseURLString)/archive/\(archiveNbr)/profile")!
         
         return url
+    }
+    
+    func searchArchives(byQuery query: String, handler: @escaping ServerResponse) {
+        searchTimer?.invalidate()
+        searchQuery = query
+
+        searchTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false, block: { timer in
+            self.reallySearchArchives(handler: handler)
+            
+            self.searchTimer?.invalidate()
+            self.searchTimer = nil
+        })
+    }
+    
+    func reallySearchArchives(handler: @escaping ServerResponse) {
+        searchOperation?.cancel()
+        searchOperation = nil
+        guard searchQuery.count > 0 else {
+            self.searchPublicArchives.removeAll()
+            
+            handler(.success)
+            return
+        }
+        
+        let searchArchivesDataOperation = APIOperation(ArchivesEndpoint.searchArchive(searchAfter: searchQuery))
+        searchArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                let accountArchives = model.results.first?.data
+                
+                self.searchPublicArchives.removeAll()
+                accountArchives?.forEach { archive in
+                    if let archiveVOData = archive.archiveVO, archiveVOData.status != .pending || archiveVOData.status != .unknown {
+                        self.searchPublicArchives.append(archiveVOData)
+                    }
+                }
+                handler(.success)
+                return
+                
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+                
+            default:
+                handler(.error(message: .errorMessage))
+                return
+            }
+        }
     }
 }

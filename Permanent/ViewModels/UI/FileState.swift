@@ -7,10 +7,7 @@
 
 import Foundation
 
-enum FileState {
-    
+enum FileState: Codable {
     case enabled
-    
     case disabled
-    
 }

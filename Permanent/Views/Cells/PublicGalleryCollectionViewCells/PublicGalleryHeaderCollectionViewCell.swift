@@ -28,6 +28,11 @@ class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
             sectionNameLabel.font = Text.style32.font
             sectionNameLabel.textColor = .primary
             sectionNameLabel.text = "Public Popular Archives".localized()
+            
+        case .searchResultArchives:
+            sectionNameLabel.font = Text.style32.font
+            sectionNameLabel.textColor = .primary
+            sectionNameLabel.text = "Results".localized()
         }
     }
     

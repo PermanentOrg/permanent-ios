@@ -32,15 +32,6 @@ extension DeviceEndpoint: RequestProtocol {
         }
     }
     
-    var headers: RequestHeaders? {
-        switch self {
-        case .new, .delete:
-            return [
-                "content-type": "application/json"
-            ]
-        }
-    }
-    
     var requestType: RequestType {
         switch self {
         case .new, .delete:

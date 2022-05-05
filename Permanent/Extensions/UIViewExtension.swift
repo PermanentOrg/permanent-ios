@@ -20,12 +20,14 @@ extension UIView {
         )
     }
     
-    func setupView(_ view: UIView) {
+    func setupView(_ view: UIView, positionOffset: CGPoint = CGPoint(x: 0.0, y: 0.0)) {
         addSubview(view)
         
         view.frame = bounds
         view.backgroundColor = .clear
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.frame.origin.x += positionOffset.x
+        view.frame.origin.y += positionOffset.y
     }
     
     static func animate(
