@@ -77,11 +77,15 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             if status == .success {
                 showSpinner()
                 
-                viewModel?.syncSession(then: { status in
+                viewModel?.syncSession(then: { [self] status in
                     hideSpinner()
                     
                     if status == .success {
-                        AppDelegate.shared.rootViewController.setDrawerRoot()
+                        if (PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) as Int?) != nil {
+                            AppDelegate.shared.rootViewController.setDrawerRoot()
+                        } else {
+                            AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                        }
                     } else {
                         showErrorAlert(message: .errorMessage)
                     }
@@ -115,6 +119,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             UserDefaults.standard.setValue(nameField.text, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
             
             view.showNotificationBanner(height: 80, title: "Your account was successfully created".localized())
+            
         case .error(let message):
             showAlert(title: .error, message: message)
         }

@@ -135,30 +135,31 @@ class RootViewController: UIViewController {
         
         if let _: PARequestNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestPAAccess) {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
-            
+
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![1]
         } else if let _: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFileKey) {
             let sharesVC: SharesViewController
-            
+
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-            
+
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
-            
+
             mainViewController = sharesVC
         } else if let _: ShareNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.sharedFolderKey) {
             let sharesVC: SharesViewController
-            
+
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
-            
+
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
-            
+
             mainViewController = sharesVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
             (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
         }
+        
         let navController = RootNavigationController(viewController: mainViewController)
         return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, rightSideMenuController: rightSideMenuController)
     }

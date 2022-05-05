@@ -64,7 +64,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func refreshCurrentArchive() {
-        viewModel?.refreshCurrentArchive({ [self] archive in
+        viewModel?.refreshCurrentArchive({ [self] success, archive in
             tableView.reloadRows(at: [[0, 0]], with: .none)
         })
     }
