@@ -55,7 +55,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
     }
     var isEditDataEnabled: Bool {
-        archiveData.permissions().contains(.ownership)
+        archiveData.permissions().contains(.archiveShare)
     }
     
     init(_ archiveData: ArchiveVOData) {
