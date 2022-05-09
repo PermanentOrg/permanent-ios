@@ -65,6 +65,7 @@ enum ViewControllerId: String {
     case addMilestones
     case updateApp
     case loadingScreen
+    case publicGallery
 
     var value: String {
         switch self {
@@ -157,6 +158,9 @@ enum ViewControllerId: String {
             
         case .loadingScreen:
             return "loadingScreen"
+            
+        case .publicGallery:
+            return "publicGallery"
             
         default:
             return self.rawValue.capitalized

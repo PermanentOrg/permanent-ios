@@ -43,13 +43,91 @@ class PublicProfilePageViewModel: ViewModelInterface {
         return profileItems.first(where: {$0 is EstablishedInfoProfileItem}) as? EstablishedInfoProfileItem
     }
     var milestonesProfileItems: [MilestoneProfileItem] {
-        return profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]
+        return (profileItems.filter({ $0 is MilestoneProfileItem }) as! [MilestoneProfileItem]).sorted { lhs, rhs in
+            guard let lhsStartDate = lhs.startDate else {
+                return true
+            }
+            guard let rhsStartDate = rhs.startDate else {
+                return false
+            }
+            
+            return lhsStartDate > rhsStartDate
+        }
+    }
+    var isEditDataEnabled: Bool {
+        archiveData.permissions().contains(.archiveShare)
     }
     
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
         guard let archiveType = archiveData.type else { return }
         self.archiveType = ArchiveType(rawValue: archiveType)
+    }
+    
+    func getProfileViewData() -> [ProfileSection: [ProfileCellType]] {
+        var profileViewData: [ProfileSection: [ProfileCellType]] = [:]
+        profileViewData = [
+            ProfileSection.about: [
+            ],
+            ProfileSection.information: [
+            ],
+            ProfileSection.onlinePresenceEmail: [
+            ],
+            ProfileSection.milestones: [
+            ]
+        ]
+
+        if isEditDataEnabled {
+            profileViewData[ProfileSection.profileVisibility] = [ ProfileCellType.profileVisibility ]
+        }
+
+        var aboutCells = [ProfileCellType]()
+        if blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
+            aboutCells.append(.blurb)
+        }
+        if descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
+            aboutCells.append(.longDescription)
+        }
+        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+
+        var informationCells = [ProfileCellType]()
+        if basicProfileItem?.fullName?.isNotEmpty ?? false {
+            informationCells.append(.fullName)
+        }
+        if basicProfileItem?.nickname?.isNotEmpty ?? false {
+            informationCells.append(.nickName)
+        }
+        guard let archiveType = archiveType else { return [:] }
+        switch archiveType {
+        case .person:
+            if profileGenderProfileItem?.personGender?.isNotEmpty ?? false {
+                informationCells.append(.gender)
+            }
+            if birthInfoProfileItem?.birthDate?.isNotEmpty ?? false {
+                informationCells.append(.birthDate)
+            }
+            if birthInfoProfileItem?.birthLocationFormated?.isNotEmpty ?? false {
+                informationCells.append(.birthLocation)
+            }
+            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
+
+        case .family, .organization, .nonProfit:
+            if establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
+                informationCells.append(.establishedDate)
+            }
+            if establishedInfoProfileItem?.establishedLocationFormated?.isNotEmpty ?? false {
+                informationCells.append(.establishedLocation)
+            }
+
+            profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.establishedDate, ProfileCellType.establishedLocation] : informationCells
+        }
+
+        profileViewData[.onlinePresenceEmail] = emailProfileItems.map({ _ in .onlinePresenceEmail })
+        profileViewData[.onlinePresenceLink] = socialMediaProfileItems.map({ _ in .onlinePresenceLink })
+
+        profileViewData[.milestones] = milestonesProfileItems.map({ _ in .milestone })
+        
+        return profileViewData
     }
     
     func getAllByArchiveNbr(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Error?) -> Void)) {

@@ -31,6 +31,9 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         ],
         LeftDrawerSection.manage: [
             DrawerOption.members
+        ],
+        LeftDrawerSection.publicGallery: [
+            DrawerOption.publicGallery
         ]
     ]
     
@@ -166,10 +169,6 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if [LeftDrawerSection.publicGallery.rawValue, LeftDrawerSection.header.rawValue, LeftDrawerSection.manage.rawValue].contains(section) {
-            return nil
-        }
-        
         let headerView = UIView()
         
         let lineView = UIView()
@@ -228,6 +227,10 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
             newRootVC.archiveData = archive
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .publicGallery:
+            let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as! PublicGalleryViewController
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         default:
