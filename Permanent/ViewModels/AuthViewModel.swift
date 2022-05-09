@@ -143,20 +143,29 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func syncSession(then handler: @escaping ServerResponse) {
+        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+        
         isLoggedIn { [self] status in
             if status == .success {
-                getSessionAccount { status in
+                getSessionAccount { [self] status in
                     if status == .success {
-                        refreshCurrentArchive { archive in
-                            if archive != nil {
-                                AuthenticationManager.shared.saveSession()
-                                handler(.success)
-                            } else {
-                                handler(.error(message: .errorMessage))
+                        if let archiveId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) {
+                            print(archiveId)
+                            refreshCurrentArchive { success, archive in
+                                if archive != nil {
+                                    AuthenticationManager.shared.saveSession()
+                                    handler(.success)
+                                } else {
+                                    handler(.error(message: .errorMessage))
+                                }
                             }
+                        } else {
+                            AuthenticationManager.shared.saveSession()
+                            handler(.success)
                         }
                     } else {
-                        handler(status)
+                        AuthenticationManager.shared.saveSession()
+                        handler(.success)
                     }
                 }
             } else {
@@ -286,23 +295,28 @@ class AuthViewModel: ViewModelInterface {
         return archiveVO
     }
     
-    func refreshCurrentArchive(_ updateHandler: @escaping ((ArchiveVOData?) -> Void)) {
+    func refreshCurrentArchive(_ updateHandler: @escaping ((Bool, ArchiveVOData?) -> Void)) {
         getAccountArchives { [self] archives, error in
+            if error != nil {
+                updateHandler(false, nil)
+                return
+            }
+            
             if getCurrentArchive() == nil {
                 if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
                     setCurrentArchive(defaultArchive)
                     
-                    updateHandler(defaultArchive)
+                    updateHandler(true, defaultArchive)
                 } else {
-                    updateHandler(nil)
+                    updateHandler(true, nil)
                 }
             } else {
                 if let currentArchive = archives?.first(where: { $0.archiveVO?.archiveID == getCurrentArchive()?.archiveID })?.archiveVO {
                     setCurrentArchive(currentArchive)
                     
-                    updateHandler(currentArchive)
+                    updateHandler(true, currentArchive)
                 } else {
-                    updateHandler(nil)
+                    updateHandler(true, nil)
                 }
             }
         }

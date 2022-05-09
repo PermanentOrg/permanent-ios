@@ -53,6 +53,10 @@ struct Payloads {
                         "AccountPasswordVO": [
                             "password": credentials.loginCredentials.password,
                             "passwordVerify": credentials.loginCredentials.password
+                        ],
+                        "SimpleVO": [
+                            "key": "createArchive",
+                            "value": false
                         ]
                     ]
                 ]
