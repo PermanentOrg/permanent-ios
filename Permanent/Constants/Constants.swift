@@ -140,10 +140,10 @@ extension Constants.Keys.StorageKeys {
     static let nameStorageKey = "nameStorageKey"
     static let accountIdStorageKey = "accountIdStorageKey"
     static let emailStorageKey = "emailStorageKey"
-    static let csrfStorageKey = "csrfStorageKey"
     static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
+    static let publicURLToken = "publicURLTokenKey"
     static let sharedFileKey = "sharedFileKey"
     static let sharedFolderKey = "sharedFolderKey"
     static let requestPAAccess = "requestPAAccess"
@@ -156,6 +156,8 @@ extension Constants.Keys.StorageKeys {
     static let modelVersion = "modelVersion"
     static let isGridView = "isGridView"
     static let minAppVersion = "minAppVersion"
+    static let selectedFileKey = "selectedFileKey"
+    static let selectedFileActionKey = "selectedFileActionKey"
 }
 
 extension Constants.API.Locations {

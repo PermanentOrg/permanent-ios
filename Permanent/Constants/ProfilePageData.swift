@@ -18,6 +18,9 @@ struct ProfilePageData {
             
         case .organization:
             return "This Organization's Legal Name".localized()
+            
+        case .nonProfit:
+            return "Legal Name".localized()
         }
     }
     
@@ -29,7 +32,7 @@ struct ProfilePageData {
         case .family:
             return "Previous Name".localized()
             
-        case .organization:
+        case .organization, .nonProfit:
             return "DBA Name".localized()
         }
     }
@@ -42,7 +45,7 @@ struct ProfilePageData {
         case .family:
             return ""
             
-        case .organization:
+        case .organization, .nonProfit:
             return ""
         }
     }
@@ -52,7 +55,7 @@ struct ProfilePageData {
         case .person:
             return "Birth Date".localized()
             
-        case .family, .organization:
+        case .family, .organization, .nonProfit:
             return "Date Established".localized()
         }
     }
@@ -62,7 +65,7 @@ struct ProfilePageData {
         case .person:
             return "Birth Location".localized()
             
-        case .family, .organization:
+        case .family, .organization, .nonProfit:
             return "Location Established".localized()
         }
     }
@@ -97,6 +100,9 @@ struct ProfilePageData {
             
         case .organization:
             return "Organization's Legal Name".localized()
+            
+        case .nonProfit:
+            return "Legal Name".localized()
         }
     }
     
@@ -108,7 +114,7 @@ struct ProfilePageData {
         case .family:
             return "Previous Name".localized()
             
-        case .organization:
+        case .organization, .nonProfit:
             return "DBA Name".localized()
         }
     }
@@ -118,24 +124,21 @@ struct ProfilePageData {
         case .person:
             return "Gender".localized()
             
-        case .family:
-            return ""
-            
-        case .organization:
+        case .family, .organization, .nonProfit:
             return ""
         }
     }
     
     static func birthDateHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .family, .organization:
+        case .person, .family, .organization, .nonProfit:
             return "YYYY-MM-DD"
         }
     }
     
     static func birthLocationHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .family, .organization:
+        case .person, .family, .organization, .nonProfit:
             return "Choose a location".localized()
         }
     }

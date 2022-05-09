@@ -14,7 +14,6 @@ struct APIResults<T: Model>: Model {
     let isSystemUp: Bool
     let systemMessage: String
     let sessionID: String?
-    let csrf: String
     let createdDT, updatedDT: String?
 
     enum CodingKeys: String, CodingKey {
@@ -24,7 +23,6 @@ struct APIResults<T: Model>: Model {
         case isSystemUp
         case systemMessage
         case sessionID
-        case csrf
         case createdDT, updatedDT
     }
 }

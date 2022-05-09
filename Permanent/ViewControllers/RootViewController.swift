@@ -153,8 +153,16 @@ class RootViewController: UIViewController {
             sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
             
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
-            
+             
             mainViewController = sharesVC
+        } else if let archiveNbr: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.publicURLToken) {
+            let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as! PublicGalleryViewController
+            newRootVC.initialArchiveNbr = archiveNbr
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+            leftSideMenuController.selectedMenuOption = .publicGallery
+            
+            mainViewController = newRootVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
             (mainViewController as! MainViewController).viewModel = MyFilesViewModel()

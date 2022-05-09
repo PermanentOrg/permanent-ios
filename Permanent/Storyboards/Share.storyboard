@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -762,6 +762,7 @@
                         <outlet property="currentArchiveImageView" destination="yZ1-PS-0bL" id="sDN-9e-vBN"/>
                         <outlet property="currentArchiveName" destination="VNw-45-876" id="ixR-kL-uXA"/>
                         <outlet property="headerView" destination="IIX-dP-AYX" id="7sb-px-9yk"/>
+                        <outlet property="headerViewCollectionConstrain" destination="t0b-Jw-UGT" id="mgE-nH-7ZQ"/>
                         <outlet property="selectArchiveLabel" destination="Pcx-W8-D5n" id="z1X-n3-6jH"/>
                         <outlet property="shareNameLabel" destination="P9R-bv-rnQ" id="Ahw-Rq-KV2"/>
                         <outlet property="sharedByLabel" destination="pIA-zP-Z7N" id="a7Y-gR-xh1"/>

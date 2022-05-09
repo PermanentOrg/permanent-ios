@@ -48,11 +48,11 @@ class MilestonesTableViewCell: UITableViewCell {
             milestoneLocationLabel.text = location
         }
         
-        if let startDate = milestone?.startDate {
+        if let startDate = milestone?.startDateString {
             milestoneDateLabel.text = startDate
         }
         
-        if let endDate = milestone?.endDate {
+        if let endDate = milestone?.endDateString {
             milestoneDateLabel.text?.append(" - \(endDate)")
         }
     }

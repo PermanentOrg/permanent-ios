@@ -12,8 +12,6 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
     @IBOutlet var imageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var imageLoadedCallback: ((FileDetailsTopCollectionViewCell) -> Void)?
-    
     static let identifier = "FileDetailsTopCollectionViewCell"
     
     override func awakeFromNib() {
@@ -26,12 +24,10 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
         activityIndicator.startAnimating()
         
         imageView.image = nil
-        let urlString = viewModel.recordVO?.recordVO?.thumbURL2000 ?? ""
-        imageView.load(urlString: urlString) { _ in
-            if let imageLoadedCallback = self.imageLoadedCallback {
-                imageLoadedCallback(self)
-            }
-            
+        let urlString = viewModel.file.thumbnailURL2000 ?? ""
+        guard let url = URL(string: urlString) else { return }
+        
+        imageView.sd_setImage(with: url) { image, error, cacheType, url in
             self.activityIndicator.stopAnimating()
         }
     }

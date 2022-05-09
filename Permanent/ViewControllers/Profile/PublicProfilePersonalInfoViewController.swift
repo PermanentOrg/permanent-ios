@@ -325,7 +325,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
                     return (0, 0)
                 }
                 
-            case .family, .organization:
+            case .family, .organization, .nonProfit:
                 if let latitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.latitude,
                     let longitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
                     return (latitude, longitude)
@@ -450,7 +450,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
                 }
                 locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
                 
-            case .organization, .family:
+            case .organization, .family, .nonProfit:
                 if viewModel?.establishedInfoProfileItem == nil {
                     viewModel?.createNewEstablishedInfoProfileItem(newLocation: locationVC.pickedLocation)
                 } else {

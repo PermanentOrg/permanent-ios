@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  PublicProfilePageViewController.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 09.11.2021.
@@ -24,20 +24,20 @@ enum ProfileCellType {
     case archiveGallery
 }
 
+enum ProfileSection: Int {
+    case profileVisibility = 0
+    case about = 1
+    case information = 2
+    case onlinePresenceEmail = 3
+    case onlinePresenceLink = 4
+    case milestones = 5
+    case archiveGallery = 6
+}
+
 class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewModel> {
     var archiveData: ArchiveVOData!
     weak var delegate: PublicArchiveChildDelegate?
     var profileData: [ProfileItemVO] = []
-    
-    enum ProfileSection: Int {
-        case profileVisibility = 0
-        case about = 1
-        case information = 2
-        case onlinePresenceEmail = 3
-        case onlinePresenceLink = 4
-        case milestones = 5
-        case archiveGallery = 6
-    }
     
     var readMoreIsEnabled: [ProfileSection: Bool] = [:]
     private var profileViewData: [ProfileSection: [ProfileCellType]] = [:]
@@ -46,6 +46,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     var editAction: ButtonAction?
     var readMoreAction: ButtonAction?
+    var isEditDataEnabled = false
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -74,6 +75,9 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             title = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }
         view.backgroundColor = .white
+        
+        guard let isEditDataEnabled = viewModel?.isEditDataEnabled else { return }
+        self.isEditDataEnabled = isEditDataEnabled
         
         refreshProfileViewData()
     }
@@ -141,43 +145,7 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     func refreshProfileViewData() {
-        profileViewData = [
-            ProfileSection.profileVisibility: [
-                ProfileCellType.profileVisibility
-            ],
-            ProfileSection.about: [
-                ProfileCellType.blurb,
-                ProfileCellType.longDescription
-            ],
-            ProfileSection.information: [
-                ProfileCellType.fullName,
-                ProfileCellType.nickName
-            ],
-            ProfileSection.onlinePresenceEmail: [
-            ],
-            ProfileSection.milestones: [
-            ]
-        ]
-        guard let archiveType = viewModel?.archiveType else { return }
-        switch archiveType {
-        case .person:
-            profileViewData[ProfileSection.information]?.append(contentsOf: [
-                ProfileCellType.gender,
-                ProfileCellType.birthDate,
-                ProfileCellType.birthLocation
-            ])
-            
-        case .family, .organization:
-            profileViewData[ProfileSection.information]?.append(contentsOf: [
-                ProfileCellType.establishedDate,
-                ProfileCellType.establishedLocation
-            ])
-        }
-        
-        profileViewData[.onlinePresenceEmail] = viewModel?.emailProfileItems.map({ _ in .onlinePresenceEmail }) ?? []
-        profileViewData[.onlinePresenceLink] = viewModel?.socialMediaProfileItems.map({ _ in .onlinePresenceLink }) ?? []
-        
-        profileViewData[.milestones] = viewModel?.milestonesProfileItems.map({ _ in .milestone }) ?? []
+        profileViewData = viewModel?.getProfileViewData() ?? [:]
     }
 }
 
@@ -189,7 +157,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         
         switch currentSection {
         case .about:
-            return (readMoreIsEnabled[.about] ?? false) ? 2 : 1
+            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, 1)
             
         case .onlinePresenceEmail:
             let rowCount = profileViewData[currentSection]?.count ?? 0
@@ -250,6 +218,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
             
             cell.configure(shortDescriptionValue ?? viewModel?.archiveType.shortDescriptionHint)
+
             returnedCell = cell
             
         case .longDescription:
@@ -257,13 +226,14 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
             
             cell.configure(longDescriptionValue ?? viewModel?.archiveType.longDescriptionHint)
+
             returnedCell = cell
             
         case .fullName:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let fullNameText = viewModel?.basicProfileItem?.fullName
     
-            cell.configure(with: fullNameText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            cell.configure(with: fullNameText, archiveType: viewModel?.archiveType, cellType: currentCellType, isEditDataEnabled: isEditDataEnabled)
 
             returnedCell = cell
             
@@ -271,7 +241,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let nicknameText = viewModel?.basicProfileItem?.nickname
             
-            cell.configure(with: nicknameText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            cell.configure(with: nicknameText, archiveType: viewModel?.archiveType, cellType: currentCellType, isEditDataEnabled: isEditDataEnabled)
 
             returnedCell = cell
             
@@ -279,21 +249,21 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let profileGenderText = viewModel?.profileGenderProfileItem?.personGender
             
-            cell.configure(with: profileGenderText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            cell.configure(with: profileGenderText, archiveType: viewModel?.archiveType, cellType: currentCellType, isEditDataEnabled: isEditDataEnabled)
             returnedCell = cell
             
         case .birthDate:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let birthDateText = viewModel?.birthInfoProfileItem?.birthDate
             
-            cell.configure(with: birthDateText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            cell.configure(with: birthDateText, archiveType: viewModel?.archiveType, cellType: currentCellType, isEditDataEnabled: isEditDataEnabled)
             returnedCell = cell
             
         case .birthLocation:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageInformationCollectionViewCell.identifier, for: indexPath) as! ProfilePageInformationCollectionViewCell
             let birthLocationText = viewModel?.birthInfoProfileItem?.birthLocationFormated
             
-            cell.configure(with: birthLocationText, archiveType: viewModel?.archiveType, cellType: currentCellType)
+            cell.configure(with: birthLocationText, archiveType: viewModel?.archiveType, cellType: currentCellType, isEditDataEnabled: isEditDataEnabled)
             returnedCell = cell
             
         case .onlinePresenceEmail:
@@ -325,13 +295,14 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .milestone:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageMilestonesCollectionViewCell.identifier, for: indexPath) as! ProfilePageMilestonesCollectionViewCell
             
-            cell.configure(milestone: viewModel?.milestonesProfileItems[indexPath.row])
+            cell.configure(milestone: viewModel?.milestonesProfileItems[indexPath.row], editMode: isEditDataEnabled)
             returnedCell = cell
         }
         
         return returnedCell
     }
     
+    // swiftlint:disable:next cyclomatic_complexity
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
         let currentSectionType = sections[indexPath.section]
@@ -347,7 +318,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
             case .about:
-                headerCell.configure(titleLabel: "About".localized(), buttonText: "Edit".localized())
+                headerCell.configure(titleLabel: "About".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
@@ -359,7 +330,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 
             case .information:
                 if let title = viewModel?.archiveType.personalInformationPublicPageTitle {
-                    headerCell.configure(titleLabel: title, buttonText: "Edit".localized())
+                    headerCell.configure(titleLabel: title, buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 }
                 
                 headerCell.buttonAction = { [weak self] in
@@ -371,7 +342,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                     
             case .onlinePresenceEmail:
-                headerCell.configure(titleLabel: "Online Presence".localized(), buttonText: "Edit".localized())
+                headerCell.configure(titleLabel: "Online Presence".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 
                 headerCell.buttonAction = { [weak self] in
                     let vc = UIViewController.create(withIdentifier: .onlinePresence, from: .profile) as! PublicProfileOnlinePresenceViewController
@@ -385,7 +356,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
                 
             case .milestones:
-                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized())
+                headerCell.configure(titleLabel: "Milestones".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 
                 headerCell.buttonAction = { [weak self] in
                     let vc = UIViewController.create(withIdentifier: .milestones, from: .profile) as! PublicProfileMilestonesViewController
@@ -405,7 +376,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: true)
                 
             case .profileVisibility:
-                footerCell.configure(isReadMoreButtonHidden: true)
+                footerCell.configure(isReadMoreButtonHidden: true, isBottomLineHidden: !isEditDataEnabled)
                 
             case .information:
                 footerCell.configure(isReadMoreButtonHidden: true)
@@ -414,7 +385,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 footerCell.configure(isReadMoreButtonHidden: true)
                 
             case .about:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.about] ?? false)
+                footerCell.configure(isReadMoreButtonHidden: profileViewData[.about]!.count <= 1, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.about] ?? false)
                 
                 footerCell.readMoreButtonAction = { [weak self] in
                     if let readMore = self?.readMoreIsEnabled[.about] {
@@ -427,7 +398,8 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 }
                 
             case .onlinePresenceLink:
-                footerCell.configure(isReadMoreButtonHidden: false, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
+                let numberOfItems = (profileViewData[.onlinePresenceLink]?.count ?? 0) + (profileViewData[.onlinePresenceEmail]?.count ?? 0)
+                footerCell.configure(isReadMoreButtonHidden: numberOfItems <= 2, isBottomLineHidden: false, isReadMoreEnabled: readMoreIsEnabled[.onlinePresenceEmail] ?? false)
                 
                 footerCell.readMoreButtonAction = { [weak self] in
                     if let readMore = self?.readMoreIsEnabled[.onlinePresenceEmail] {
@@ -477,7 +449,13 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return ProfilePageOnlinePresenceCollectionViewCell.size(collectionView: collectionView)
 
         case .milestone:
-            return ProfilePageMilestonesCollectionViewCell.size(collectionView: collectionView)
+            let titleText = viewModel?.milestonesProfileItems[indexPath.row].title ?? (viewModel?.archiveType.milestoneTitleHint)!
+            let descriptionText = viewModel?.milestonesProfileItems[indexPath.row].description ?? (viewModel?.archiveType.milestoneDescriptionTextHint)!
+            var dateText = viewModel?.milestonesProfileItems[indexPath.row].startDateString ?? (viewModel?.archiveType.milestoneDateLabelHint)!
+            dateText += viewModel?.milestonesProfileItems[indexPath.row].endDateString ?? ""
+            let locationText = viewModel?.milestonesProfileItems[indexPath.row].locationFormated ?? (viewModel?.archiveType.milestoneLocationLabelHint)!
+            
+            return ProfilePageMilestonesCollectionViewCell.size(withTitleText: titleText, withDescriptionText: descriptionText, withDateText: dateText, withLocationText: locationText, isEditEnabled: isEditDataEnabled, collectionView: collectionView)
 
         default:
             return CGSize(width: UIScreen.main.bounds.width, height: 120)
@@ -549,7 +527,17 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         let currentSectionType = sections[section]
         
         switch currentSectionType {
+        case .about:
+            return profileViewData[.about]!.count <= 1 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+            
         case .onlinePresenceEmail:
+            return CGSize.zero
+            
+        case .onlinePresenceLink:
+            let numberOfItems = (profileViewData[.onlinePresenceLink]?.count ?? 0) + (profileViewData[.onlinePresenceEmail]?.count ?? 0)
+            return numberOfItems <= 2 ? CGSize(width: collectionView.frame.width, height: 1) : CGSize(width: collectionView.frame.width, height: 40)
+        
+        case .milestones:
             return CGSize.zero
             
         case .information, .profileVisibility:

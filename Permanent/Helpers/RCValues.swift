@@ -6,7 +6,7 @@
 //
 
 import Firebase
-import CoreVideo
+import Foundation
 
 class RCValues {
     static let sharedInstance = RCValues()
@@ -63,6 +63,25 @@ class RCValues {
             .stringValue ?? "0.0.0"
         let convertedValue = value.components(separatedBy: ".")
         return convertedValue
+    }
+    
+    static func getPublicArchives() -> [PopularArchive] {
+        var archives: [PopularArchive] = []
+        var popularArchives: [PopularArchive]
+        let json = RemoteConfig.remoteConfig()["popular_public_galleries"].jsonValue ?? []
+        
+        if let value = json as? [String: [[String : Any]]],
+           let valueArchives = value["archives"]
+        {
+            for item in valueArchives {
+                if let name = item["name"] as? String,
+                   let archiveID = item["archiveID"] as? Int,
+                   let archiveNbr = item["archiveNbr"] as? String {
+                    archives.append(PopularArchive(name: name, archiveID: archiveID, archiveNbr: archiveNbr))
+                }
+            }
+        }
+        return archives
     }
     
     static func verifyAppVersion() {

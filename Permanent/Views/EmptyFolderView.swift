@@ -24,18 +24,18 @@ class EmptyFolderView: UIView {
         commonInit()
     }
     
-    convenience init(title: String, image: UIImage) {
+    convenience init(title: String, image: UIImage, positionOffset: CGPoint = CGPoint(x: 0.0, y: 0.0)) {
         self.init(frame: .zero)
         
-        commonInit()
+        commonInit(positionOffset: positionOffset)
         
         emptyFolderLabel.text = title
         emptyImageView.image = image
     }
     
-    private func commonInit() {
+    private func commonInit(positionOffset: CGPoint = CGPoint(x: 0.0, y: 0.0)) {
         loadNib()
-        setupView(contentView)
+        setupView(contentView, positionOffset: positionOffset)
         
         emptyFolderLabel.font = Text.style8.font
         emptyFolderLabel.textColor = .textPrimary

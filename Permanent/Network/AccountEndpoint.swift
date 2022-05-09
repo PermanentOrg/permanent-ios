@@ -98,10 +98,6 @@ extension AccountEndpoint: RequestProtocol {
 
     var method: RequestMethod { .post }
 
-    var headers: RequestHeaders? {
-        return ["content-type": "application/json; charset=utf-8"]
-    }
-
     var requestType: RequestType { .data }
 
     var responseType: ResponseType { .json }

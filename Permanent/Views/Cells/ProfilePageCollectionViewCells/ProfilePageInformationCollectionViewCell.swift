@@ -24,7 +24,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
         contentLabel.font = Text.style13.font
     }
     
-    func configure(with content: String?, archiveType: ArchiveType?, cellType: ProfileCellType) {
+    func configure(with content: String?, archiveType: ArchiveType?, cellType: ProfileCellType, isEditDataEnabled: Bool = true) {
         guard let archiveType = archiveType else {
             return
         }
@@ -36,7 +36,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 fullNameValue.isNotEmpty {
                 contentLabel.text = fullNameValue
             } else {
-                contentLabel.text = ProfilePageData.nameHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.nameHint(archiveType: archiveType) : ""
             }
             
         case .nickName:
@@ -45,7 +45,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 nicknameValue.isNotEmpty {
                 contentLabel.text = nicknameValue
             } else {
-                contentLabel.text = ProfilePageData.nickNameHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.nickNameHint(archiveType: archiveType) : ""
             }
             
         case .gender:
@@ -54,7 +54,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 genderValue.isNotEmpty {
                 contentLabel.text = genderValue
             } else {
-                contentLabel.text = ProfilePageData.genderHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.genderHint(archiveType: archiveType) : ""
             }
             
         case .birthDate:
@@ -63,7 +63,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 birthDateValue.isNotEmpty {
                 contentLabel.text = birthDateValue
             } else {
-                contentLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.birthDateHint(archiveType: archiveType) : ""
             }
             
         case .birthLocation:
@@ -72,7 +72,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 birthLocationValue.isNotEmpty {
                 contentLabel.text = birthLocationValue
             } else {
-                contentLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.birthLocationHint(archiveType: archiveType) : ""
             }
             
         case .establishedDate:
@@ -81,7 +81,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 birthDateValue.isNotEmpty {
                 contentLabel.text = birthDateValue
             } else {
-                contentLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.birthDateHint(archiveType: archiveType) : ""
             }
             
         case .establishedLocation:
@@ -90,7 +90,7 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
                 birthLocationValue.isNotEmpty {
                 contentLabel.text = birthLocationValue
             } else {
-                contentLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+                contentLabel.text = isEditDataEnabled ? ProfilePageData.birthLocationHint(archiveType: archiveType) : ""
             }
             
         default:
