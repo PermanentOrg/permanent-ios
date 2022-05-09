@@ -74,6 +74,7 @@ enum ViewControllerId: String {
     case accountOnboardingPg1
     case accountOnboardingPg2
     case accountOnboardingPg3
+    case publicGallery
 
     var value: String {
         switch self {
@@ -178,6 +179,9 @@ enum ViewControllerId: String {
             
         case .accountOnboardingPg3:
             return "accountOnboardingPg3"
+
+        case .publicGallery:
+            return "publicGallery"
             
         default:
             return self.rawValue.capitalized

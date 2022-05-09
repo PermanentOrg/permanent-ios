@@ -18,6 +18,8 @@ enum ArchivesEndpoint {
     case decline(archiveVO: ArchiveVOData)
     case update(archiveVO: ArchiveVOData, file: FileViewModel)
     case transferOwnership(archiveNbr: String, primaryEmail: String)
+    case getArchivesByArchivesNbr(archivesNbr: [String])
+    case searchArchive(searchAfter: String)
 }
 
 extension ArchivesEndpoint: RequestProtocol {
@@ -46,6 +48,12 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .transferOwnership:
             return "/archive/transferOwnership"
+            
+        case .getArchivesByArchivesNbr:
+            return "/archive/get"
+            
+        case .searchArchive:
+            return "/search/archive"
         }
     }
     
@@ -86,6 +94,12 @@ extension ArchivesEndpoint: RequestProtocol {
             
         case .transferOwnership(archiveNbr: let archiveNbr, primaryEmail: let primaryEmail):
             return Payloads.transferOwnership(archiveNbr: archiveNbr, primaryEmail: primaryEmail)
+            
+        case .getArchivesByArchivesNbr(archivesNbr: let archivesNbr):
+            return Payloads.getArchivesByArchivesNbr(archivesNbr: archivesNbr)
+            
+        case .searchArchive(searchAfter: let searchAfter):
+            return Payloads.searchArchive(searchName: searchAfter)
         }
     }
     

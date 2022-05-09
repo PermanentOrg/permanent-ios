@@ -116,8 +116,8 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     func setFieldValues() {
         if !isNewItem {
             setInitialLabelValueForTextField(titleTextField, value: milestone?.title)
-            setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDate)
-            setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDate)
+            setInitialLabelValueForTextField(startDateTextField, value: milestone?.startDateString)
+            setInitialLabelValueForTextField(endDateTextField, value: milestone?.endDateString)
             setInitialLabelValueForTextField(locationTextField, value: milestone?.locationFormated)
             
             if let savedValue = milestone?.description,
@@ -182,8 +182,8 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
     }
     
     func setupDatePickers() {
-        startDateTextField.inputView = setupDatePicker(dateDidChange: #selector(startDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(startDatePickerDoneButtonPressed(_:)), savedDate: milestone?.startDate)
-        endDateTextField.inputView = setupDatePicker(dateDidChange: #selector(endDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(endDatePickerDoneButtonPressed(_:)), savedDate: milestone?.endDate)
+        startDateTextField.inputView = setupDatePicker(dateDidChange: #selector(startDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(startDatePickerDoneButtonPressed(_:)), savedDate: milestone?.startDateString)
+        endDateTextField.inputView = setupDatePicker(dateDidChange: #selector(endDatePickerDidChange(_:)), dateDoneButtonPressed: #selector(endDatePickerDoneButtonPressed(_:)), savedDate: milestone?.endDateString)
     }
     
     func initMapView() {
@@ -272,12 +272,12 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         
         if let value = startDateTextField.text,
             value.isNotEmpty {
-            milestone?.startDate = value
+            milestone?.startDateString = value
         }
         
         if let value = endDateTextField.text,
             value.isNotEmpty {
-            milestone?.endDate = value
+            milestone?.endDateString = value
         }
         
         if let value = descriptionTextView.text,
