@@ -74,6 +74,8 @@ enum ViewControllerId: String {
     case accountOnboardingPg1
     case accountOnboardingPg2
     case accountOnboardingPg3
+    case accountOnboardingPg1Pending
+    case accountOnboardingPg2Pending
     case publicGallery
 
     var value: String {
@@ -179,6 +181,12 @@ enum ViewControllerId: String {
             
         case .accountOnboardingPg3:
             return "accountOnboardingPg3"
+            
+        case .accountOnboardingPg1Pending:
+            return "accountOnboardingPg1Pending"
+            
+        case .accountOnboardingPg2Pending:
+            return "accountOnboardingPg2Pending"
 
         case .publicGallery:
             return "publicGallery"

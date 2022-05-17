@@ -25,6 +25,8 @@
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
+		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
+		5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
@@ -46,6 +48,12 @@
 		5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */; };
 		5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */; };
 		5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */; };
+		5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */; };
+		5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */; };
+		5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */; };
+		5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */; };
+		5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */; };
+		5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */; };
 		5E56FDBF2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */; };
 		5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */; };
 		5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */; };
@@ -467,6 +475,8 @@
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
+		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
+		5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageTwoWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -490,6 +500,12 @@
 		5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextWithLabelElementViewViewController.swift; sourceTree = "<group>"; };
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
 		5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePersonalInfoViewController.swift; sourceTree = "<group>"; };
+		5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingAcceptArchiveTableViewCell.swift; sourceTree = "<group>"; };
+		5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingAcceptArchiveTableViewCell.xib; sourceTree = "<group>"; };
+		5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingMakeDefaultArchiveTableViewCell.swift; sourceTree = "<group>"; };
+		5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingMakeDefaultArchiveTableViewCell.xib; sourceTree = "<group>"; };
+		5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingHeaderTableViewCell.swift; sourceTree = "<group>"; };
+		5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageArchiveCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageArchiveCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageAboutCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1163,6 +1179,19 @@
 			path = AccountInfo;
 			sourceTree = "<group>";
 		};
+		5E4D0AE92832687E00C6439C /* AccountOnboarding */ = {
+			isa = PBXGroup;
+			children = (
+				5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */,
+				5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */,
+				5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */,
+				5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */,
+				5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */,
+				5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */,
+			);
+			path = AccountOnboarding;
+			sourceTree = "<group>";
+		};
 		5E5EF854273B23A3004F7EBC /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -1678,6 +1707,7 @@
 				BC0D99BA256DB04100D29041 /* DrawerTableViewCell */,
 				5EAAB28F273BF59D009D41E6 /* ProfilePageCollectionViewCells */,
 				5E62F7B727F5E5220046F6C8 /* PublicGalleryCollectionViewCells */,
+				5E4D0AE92832687E00C6439C /* AccountOnboarding */,
 				BC6358972535D35D00EEC48C /* FileTableViewCell.swift */,
 				BC6358982535D35D00EEC48C /* FileTableViewCell.xib */,
 				F5616188270E49250038D29E /* FileCollectionViewCell.swift */,
@@ -1972,7 +2002,9 @@
 			children = (
 				F5EEB4D32821537500D584AD /* AccountOnboardingViewController.swift */,
 				F5EAD0622822BBC700EC2584 /* AccountOnboardingPageOne.swift */,
+				5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */,
 				F5EAD0642822BBDC00EC2584 /* AccountOnboardingPageTwo.swift */,
+				5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */,
 				F5EAD0662822BBE900EC2584 /* AccountOnboardingPageThree.swift */,
 			);
 			path = AccountOnboarding;
@@ -2090,6 +2122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
+				5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */,
 				5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */,
 				BCC1CCF425792E950069E337 /* LinkOptionsView.xib in Resources */,
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
@@ -2128,10 +2161,12 @@
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
+				5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */,
 				5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
+				5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
 				5E62F7BF27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.xib in Resources */,
 				5E2E3D0F26D058940090EF02 /* Archives.storyboard in Resources */,
@@ -2311,6 +2346,7 @@
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
+				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
@@ -2325,6 +2361,7 @@
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
+				5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
@@ -2459,6 +2496,7 @@
 				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC59BAD125C2B8BD005A45D3 /* NotificationProtocol.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
+				5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
@@ -2560,6 +2598,7 @@
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
+				5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */,
 				BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */,
 				BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */,
 				06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */,
@@ -2605,6 +2644,7 @@
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
+				5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */,

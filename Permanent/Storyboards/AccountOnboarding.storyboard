@@ -67,9 +67,9 @@
                                 <rect key="frame" x="0.0" y="822" width="414" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMP-if-5Yi" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="20" y="0.0" width="100" height="31"/>
+                                        <rect key="frame" x="20" y="0.0" width="180" height="31"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="B6D-fI-PRd"/>
+                                            <constraint firstAttribute="width" constant="180" id="B6D-fI-PRd"/>
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Back"/>
@@ -498,6 +498,108 @@ You can always edit your archive's name later.</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PM9-Mk-xOm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="994" y="824"/>
+        </scene>
+        <!--Account Onboarding Page One With Pending Archives-->
+        <scene sceneID="Sem-g8-5II">
+            <objects>
+                <viewController storyboardIdentifier="accountOnboardingPg1Pending" id="czW-oC-6yB" customClass="AccountOnboardingPageOneWithPendingArchives" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gmw-rY-q5h">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Welcome to Permanent!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uip-lU-7RX">
+                                <rect key="frame" x="20" y="64" width="374" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TeQ-dg-GDw">
+                                <rect key="frame" x="20" y="108" width="374" height="84"/>
+                                <string key="text">You’ve been invited to collaborate on an archive as an archive member. A Permanent archive is the collection of digital materials about an individual, family or group, or organizational entity. Get started by accepting an invitation, or by creating a new archive of your own.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="b9v-oZ-XJe">
+                                <rect key="frame" x="20" y="192" width="374" height="704"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="czW-oC-6yB" id="Sdf-Tm-yeb"/>
+                                    <outlet property="delegate" destination="czW-oC-6yB" id="QJb-cG-1MJ"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="nSQ-ze-vpm"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="TeQ-dg-GDw" firstAttribute="top" secondItem="uip-lU-7RX" secondAttribute="bottom" constant="20" id="9ld-Hi-yNb"/>
+                            <constraint firstAttribute="bottom" secondItem="b9v-oZ-XJe" secondAttribute="bottom" id="Bop-M6-ePW"/>
+                            <constraint firstItem="uip-lU-7RX" firstAttribute="top" secondItem="nSQ-ze-vpm" secondAttribute="top" constant="20" id="GWa-9t-oE5"/>
+                            <constraint firstItem="TeQ-dg-GDw" firstAttribute="leading" secondItem="nSQ-ze-vpm" secondAttribute="leading" constant="20" id="Sr5-Te-xhL"/>
+                            <constraint firstItem="nSQ-ze-vpm" firstAttribute="trailing" secondItem="TeQ-dg-GDw" secondAttribute="trailing" constant="20" id="Vbk-H6-1gB"/>
+                            <constraint firstItem="b9v-oZ-XJe" firstAttribute="top" secondItem="TeQ-dg-GDw" secondAttribute="bottom" id="gCG-ul-ZaM"/>
+                            <constraint firstItem="nSQ-ze-vpm" firstAttribute="trailing" secondItem="uip-lU-7RX" secondAttribute="trailing" constant="20" id="nSF-Nb-Yfr"/>
+                            <constraint firstItem="b9v-oZ-XJe" firstAttribute="leading" secondItem="nSQ-ze-vpm" secondAttribute="leading" constant="20" id="pSF-n7-l7S"/>
+                            <constraint firstItem="uip-lU-7RX" firstAttribute="leading" secondItem="nSQ-ze-vpm" secondAttribute="leading" constant="20" id="phw-gu-lty"/>
+                            <constraint firstItem="nSQ-ze-vpm" firstAttribute="trailing" secondItem="b9v-oZ-XJe" secondAttribute="trailing" constant="20" id="wce-Wg-5tK"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="detailsLabel" destination="TeQ-dg-GDw" id="TR9-jj-zIQ"/>
+                        <outlet property="tableView" destination="b9v-oZ-XJe" id="gXa-CL-0wo"/>
+                        <outlet property="welcomeLabel" destination="uip-lU-7RX" id="xGm-mI-iVQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ah2-fd-dhp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-662" y="1527"/>
+        </scene>
+        <!--Account Onboarding Page Two With Pending Archives-->
+        <scene sceneID="Vqs-W8-fXC">
+            <objects>
+                <viewController storyboardIdentifier="accountOnboardingPg2Pending" id="oFW-fm-D7f" customClass="AccountOnboardingPageTwoWithPendingArchives" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="jvf-CZ-TjR">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Confirmation: Invitation Accepted" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DUK-hx-hDL">
+                                <rect key="frame" x="20" y="64" width="374" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oqb-mL-kTh">
+                                <rect key="frame" x="20" y="108" width="374" height="67"/>
+                                <string key="text">Congratulations! You’ve joined 3 archives. The last step is to choose which archive to set as your default, the first one you’ll see when you log in. Select your default archive below, or create a new one of your own to be your default.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Ehm-ZH-qRj">
+                                <rect key="frame" x="20" y="215" width="374" height="681"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="STQ-id-dty"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="STQ-id-dty" firstAttribute="trailing" secondItem="DUK-hx-hDL" secondAttribute="trailing" constant="20" id="C8a-42-wnl"/>
+                            <constraint firstItem="Ehm-ZH-qRj" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="Lj6-2J-QmY"/>
+                            <constraint firstItem="STQ-id-dty" firstAttribute="trailing" secondItem="Oqb-mL-kTh" secondAttribute="trailing" constant="20" id="Qmc-iC-gMF"/>
+                            <constraint firstItem="Oqb-mL-kTh" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="Rxw-oj-O6a"/>
+                            <constraint firstItem="DUK-hx-hDL" firstAttribute="top" secondItem="STQ-id-dty" secondAttribute="top" constant="20" id="SF8-db-mO4"/>
+                            <constraint firstAttribute="bottom" secondItem="Ehm-ZH-qRj" secondAttribute="bottom" id="ZU4-am-Ycj"/>
+                            <constraint firstItem="Ehm-ZH-qRj" firstAttribute="top" secondItem="Oqb-mL-kTh" secondAttribute="bottom" constant="40" id="eYh-6D-Yry"/>
+                            <constraint firstItem="Oqb-mL-kTh" firstAttribute="top" secondItem="DUK-hx-hDL" secondAttribute="bottom" constant="20" id="fGR-2K-Hor"/>
+                            <constraint firstItem="STQ-id-dty" firstAttribute="trailing" secondItem="Ehm-ZH-qRj" secondAttribute="trailing" constant="20" id="lzH-Lu-KnR"/>
+                            <constraint firstItem="DUK-hx-hDL" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="sgJ-fS-Aaj"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pbo-fO-53l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="132" y="1527"/>
         </scene>
     </scenes>
     <designables>

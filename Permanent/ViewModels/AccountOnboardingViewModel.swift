@@ -8,10 +8,65 @@
 import Foundation
 
 class AccountOnboardingViewModel: ViewModelInterface {
+    enum Page {
+        case getStarted
+        case nameArchive
+        case createArchive
+        case pendingInvitation
+        case acceptedInvitation
+        
+        var rightButtonTitle: String {
+            switch self {
+            case .getStarted:
+                return "Get Started".localized()
+                
+            case .nameArchive:
+                return "Next: Name Archive".localized()
+                
+            case .createArchive:
+                return "Create Archive".localized()
+                
+            case .pendingInvitation:
+                return "Accept All".localized()
+                
+            case .acceptedInvitation:
+                return ""
+            }
+        }
+        
+        var leftButtonTitle: String {
+            switch self {
+            case .getStarted:
+                return ""
+                
+            case .nameArchive:
+                return "Back".localized()
+                
+            case .createArchive:
+                return "Back".localized()
+                
+            case .pendingInvitation:
+                return "Create New Archive".localized()
+                
+            case .acceptedInvitation:
+                return "Create New Archive".localized()
+            }
+        }
+        
+        var nextButtonHidden: Bool {
+            return self == .acceptedInvitation
+        }
+        
+        var leftButtonEnabled: Bool {
+            return self != .getStarted
+        }
+    }
+    
     static let archiveTypeChanged = NSNotification.Name("AccountOnboardingViewModel.archiveTypeChanged")
     static let archiveNameChanged = NSNotification.Name("AccountOnboardingViewModel.archiveNameChanged")
     
     var account: AccountVOData?
+    var accountArchives: [ArchiveVO]?
     
     var archiveType: ArchiveType? {
         didSet {
@@ -24,24 +79,22 @@ class AccountOnboardingViewModel: ViewModelInterface {
         }
     }
     
-    var currentPage = 0
+    var currentPage: Page = .getStarted
     
     var hasBackButton: Bool {
-        currentPage != 0
+        currentPage != .getStarted
     }
     var nextButtonTitle: String {
-        switch currentPage {
-        case 0: return "Get Started".localized()
-        case 1: return "Next: Name Archive".localized()
-        case 2: return "Create Archive".localized()
-        default: return ""
-        }
+        return currentPage.rightButtonTitle
+    }
+    var backButtonTitle: String {
+        return currentPage.leftButtonTitle
     }
     var nextButtonEnabled: Bool {
         switch currentPage {
-        case 0: return true
-        case 1: return archiveType != nil
-        case 2: return archiveName != nil
+        case .getStarted: return true
+        case .createArchive: return archiveType != nil
+        case .nameArchive: return archiveName != nil
         default: return true
         }
     }
@@ -205,6 +258,40 @@ class AccountOnboardingViewModel: ViewModelInterface {
                 
             default:
                 completionBlock(nil, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
+    func getAccountArchives(_ completionBlock: @escaping ((Error?) -> Void) ) {
+        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+            completionBlock(APIError.unknown)
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { [self] result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(APIError.invalidResponse)
+                    return
+                }
+                
+                accountArchives = model.results.first?.data
+                
+                completionBlock(nil)
+                return
+                
+            case .error:
+                completionBlock(APIError.invalidResponse)
+                return
+                
+            default:
+                completionBlock(APIError.invalidResponse)
                 return
             }
         }
