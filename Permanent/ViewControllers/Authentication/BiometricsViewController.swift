@@ -48,11 +48,11 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 self.viewModel?.getAccountArchives({ result, error in
                     if let result = result,
                        result.allSatisfy({ archive in
-                           archive.archiveVO?.status == ArchiveVOData.Status.ok
+                           archive.archiveVO?.status == ArchiveVOData.Status.pending
                        }) {
-                        AppDelegate.shared.rootViewController.setDrawerRoot()
-                    } else {
                         AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                    } else {
+                        AppDelegate.shared.rootViewController.setDrawerRoot()
                     }
                 })
             }
