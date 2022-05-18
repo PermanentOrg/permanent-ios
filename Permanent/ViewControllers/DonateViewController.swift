@@ -9,8 +9,7 @@ import UIKit
 import StripeApplePay
 import PassKit
 
-class DonateViewController: BaseViewController<FilesViewModel> {
-    
+class DonateViewController: BaseViewController<DonateViewModel> {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var vfxView: UIVisualEffectView!
     @IBOutlet weak var donateStackBottomConstraint: NSLayoutConstraint!
@@ -28,6 +27,8 @@ class DonateViewController: BaseViewController<FilesViewModel> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel = DonateViewModel()
 
         title = "Storage".localized()
         
@@ -228,22 +229,11 @@ extension DonateViewController: UITextFieldDelegate {
 // MARK: - ApplePayContextDelegate
 extension DonateViewController: ApplePayContextDelegate {
     func applePayContext(_ context: STPApplePayContext, didCreatePaymentMethod paymentMethod: StripeAPI.PaymentMethod, paymentInformation: PKPayment, completion: @escaping STPIntentClientSecretCompletionBlock) {
-        var req = URLRequest(url: URL(string: "https://api.stripe.com/v1/payment_intents")!)
-        req.httpMethod = "POST"
-        req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        req.setValue("Basic", forHTTPHeaderField: "Authorization")
         let selectedAmount = Int(floor((Double(donateTextField.text!) ?? 0) * 100))
-        req.httpBody = "amount=\(selectedAmount)&currency=usd".data(using: .utf8)
         
-        let dt = URLSession.shared.dataTask(with: req) { data, urlresponse, error in
-            if let data = data {
-                let jsonObj = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
-                 
-                let clientSecret = jsonObj["client_secret"] as? String ?? ""
-                completion(clientSecret, nil)
-            }
-        }
-        dt.resume()
+        viewModel?.createPaymentIntent(amount: selectedAmount, { clientSecret in
+            completion(clientSecret, nil)
+        })
     }
     
     func applePayContext(_ context: STPApplePayContext, didCompleteWith status: STPApplePayContext.PaymentStatus, error: Error?) {

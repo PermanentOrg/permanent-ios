@@ -47,6 +47,17 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    var donationBaseURL: String {
+        switch self {
+        case .staging:
+            return "https://us-central1-prpledgestaging.cloudfunctions.net/donation"
+        case .development:
+            return "https://us-central1-prpledgedev.cloudfunctions.net/donation"
+        case .production:
+            return "https://us-central1-prpledgeprod.cloudfunctions.net/donation"
+        }
+    }
+    
     var helpURL: String {
         return "https://desk.zoho.com/portal/permanent/en/home"
     }
