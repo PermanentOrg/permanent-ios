@@ -31,6 +31,43 @@ class AccountOnboardingPageOneWithPendingArchives: BaseViewController<AccountOnb
         tableView.register(UINib(nibName: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self))
         tableView.register(UINib(nibName: String(describing: AccountOnboardingHeaderTableViewCell.self), bundle: nil), forHeaderFooterViewReuseIdentifier: String(describing: AccountOnboardingHeaderTableViewCell.self))
     }
+    
+    private func acceptButtonAction() -> ((AccountOnboardingAcceptArchiveTableViewCell) -> Void) {
+        return { [weak self] cell in
+            self?.showSpinner()
+            guard let archiveVOData = cell.archiveData else { return }
+            
+            self?.viewModel?.acceptArchiveOperation(archive: archiveVOData, { status, error in
+                if status {
+                    guard let archiveId = archiveVOData.archiveID else {
+                        self?.hideSpinner()
+                        self?.showErrorAlert(message: .errorMessage)
+                        return
+                    }
+                    self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVOdata, error in
+                        guard let _ = accountVOdata else {
+                            self?.hideSpinner()
+                            self?.showErrorAlert(message: .errorMessage)
+                            return
+                        }
+                        self?.viewModel?.changeArchive(archiveVOData, { status, error in
+                            if status {
+                                self?.hideSpinner()
+                                self?.showAlert(title: .success, message: "Pending archive was accepted.".localized())
+                                AppDelegate.shared.rootViewController.setDrawerRoot()
+                            } else {
+                                self?.hideSpinner()
+                                self?.showErrorAlert(message: .errorMessage)
+                            }
+                        })
+                    })
+                } else {
+                    self?.hideSpinner()
+                    self?.showErrorAlert(message: .errorMessage)
+                }
+            })
+        }
+    }
 }
 
 extension AccountOnboardingPageOneWithPendingArchives: UITableViewDataSource, UITableViewDelegate {
@@ -47,6 +84,8 @@ extension AccountOnboardingPageOneWithPendingArchives: UITableViewDataSource, UI
            let tableViewData = viewModel?.accountArchives,
            let archiveVO = tableViewData[indexPath.row].archiveVO {
             tableViewCell.configure(archive: archiveVO)
+            
+            tableViewCell.acceptButtonAction = acceptButtonAction()
             
             cell = tableViewCell
         }
