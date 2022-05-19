@@ -66,7 +66,8 @@ class AccountOnboardingViewModel: ViewModelInterface {
     static let archiveNameChanged = NSNotification.Name("AccountOnboardingViewModel.archiveNameChanged")
     
     var account: AccountVOData?
-    var accountArchives: [ArchiveVO]?
+    var accountArchives: [ArchiveVO]? = [] 
+    var acceptedArchives: [ArchiveVO]? = []
     
     var archiveType: ArchiveType? {
         didSet {
@@ -320,6 +321,43 @@ class AccountOnboardingViewModel: ViewModelInterface {
                 
             default:
                 completionBlock(false, APIError.invalidResponse)
+                return
+            }
+        }
+    }
+    
+    func acceptAllPendingArchives(_ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        let dispatchGroup = DispatchGroup()
+        var acceptArchivesResult: [Bool] = []
+        
+        guard let pendingArchives = accountArchives else {
+            completionBlock(false, APIError.noData)
+            return
+        }
+        
+        for archive in pendingArchives {
+            if let pendingArchive = archive.archiveVO,
+               pendingArchive.status == .pending,
+               let pendingArchiveId = pendingArchive.archiveID {
+                dispatchGroup.enter()
+                acceptArchiveOperation(archive: pendingArchive) { result, error in
+                    if result {
+                        self.acceptedArchives?.append(ArchiveVO(archiveVO: pendingArchive))
+                        acceptArchivesResult.append(true)
+                    } else {
+                        acceptArchivesResult.append(false)
+                    }
+                    dispatchGroup.leave()
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            if acceptArchivesResult.contains(false) {
+                completionBlock(false, APIError.invalidResponse)
+                return
+            } else {
+                completionBlock(true, nil)
                 return
             }
         }

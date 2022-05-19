@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreMIDI
 
 class AccountOnboardingPageOneWithPendingArchives: BaseViewController<AccountOnboardingViewModel> {
     @IBOutlet weak var welcomeLabel: UILabel!

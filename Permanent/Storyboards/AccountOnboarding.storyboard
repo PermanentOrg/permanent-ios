@@ -579,6 +579,10 @@ You can always edit your archive's name later.</string>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Ehm-ZH-qRj">
                                 <rect key="frame" x="20" y="215" width="374" height="681"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="oFW-fm-D7f" id="0kx-we-GV2"/>
+                                    <outlet property="delegate" destination="oFW-fm-D7f" id="X90-L3-EqE"/>
+                                </connections>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="STQ-id-dty"/>
@@ -596,6 +600,11 @@ You can always edit your archive's name later.</string>
                             <constraint firstItem="DUK-hx-hDL" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="sgJ-fS-Aaj"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="detailsLabel" destination="Oqb-mL-kTh" id="puU-NO-djN"/>
+                        <outlet property="tableView" destination="Ehm-ZH-qRj" id="7bN-BM-g4B"/>
+                        <outlet property="welcomeLabel" destination="DUK-hx-hDL" id="rI0-3u-SLu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pbo-fO-53l" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

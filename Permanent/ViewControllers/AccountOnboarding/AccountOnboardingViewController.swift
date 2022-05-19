@@ -184,7 +184,18 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
             
         case .nameArchive: viewModel?.currentPage = .nameArchive
             
-        case .pendingInvitation: viewModel?.currentPage = .acceptedInvitation
+        case .pendingInvitation:
+            showSpinner()
+            viewModel?.acceptAllPendingArchives({ [weak self] result, error in
+                self?.hideSpinner()
+                if result {
+                    self?.viewModel?.currentPage = .acceptedInvitation
+                    self?.updateCurrentPage(direction: .forward)
+                    return
+                } else {
+                    self?.showErrorAlert(message: .errorMessage)
+                }
+            })
             
         case .acceptedInvitation: viewModel?.currentPage = .acceptedInvitation
             
