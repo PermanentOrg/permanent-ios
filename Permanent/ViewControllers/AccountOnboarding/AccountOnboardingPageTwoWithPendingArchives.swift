@@ -8,11 +8,10 @@
 import UIKit
 
 class AccountOnboardingPageTwoWithPendingArchives: BaseViewController<AccountOnboardingViewModel> {
-    
     @IBOutlet weak var welcomeLabel: UILabel!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,6 +22,8 @@ class AccountOnboardingPageTwoWithPendingArchives: BaseViewController<AccountOnb
     private func initUI() {
         welcomeLabel.font = Text.style.font
         detailsLabel.font = Text.style5.font
+        
+        detailsLabel.text = "Congratulations! You’ve joined \(viewModel?.accountArchives?.count ?? 0) archives. The last step is to choose which archive to set as your default, the first one you’ll see when you log in. Select your default archive below, or create a new one of your own to be your default."
     }
     
     private func setupTableView() {
@@ -35,21 +36,20 @@ class AccountOnboardingPageTwoWithPendingArchives: BaseViewController<AccountOnb
     private func makeDefaultButtonAction() -> ((AccountOnboardingMakeDefaultArchiveTableViewCell) -> Void) {
         return { [weak self] cell in
             self?.showSpinner()
-            guard let archiveVOData = cell.archiveData,
-                  let archiveId = archiveVOData.archiveID else { return }
+            guard let archiveVOData = cell.archiveData, let archiveId = archiveVOData.archiveID else { return }
+            
             self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVOdata, error in
-                guard let _ = accountVOdata else {
+                guard accountVOdata != nil else {
                     self?.hideSpinner()
                     self?.showErrorAlert(message: .errorMessage)
                     return
                 }
                 self?.viewModel?.changeArchive(archiveVOData, { status, error in
-                    if status {
-                        self?.hideSpinner()
-                        self?.showAlert(title: .success, message: "Pending archive was accepted.".localized())
+                    self?.hideSpinner()
+                    
+                    if status {                        
                         AppDelegate.shared.rootViewController.setDrawerRoot()
                     } else {
-                        self?.hideSpinner()
                         self?.showErrorAlert(message: .errorMessage)
                     }
                 })
@@ -83,7 +83,7 @@ extension AccountOnboardingPageTwoWithPendingArchives: UITableViewDataSource, UI
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: AccountOnboardingHeaderTableViewCell.self)) as? AccountOnboardingHeaderTableViewCell {
-            headerCell.configure(label: "Archive Name")
+            headerCell.configure(label: "Archive Name".localized())
             headerView.addSubview(headerCell)
         }
         tableView.separatorInset.left = 0

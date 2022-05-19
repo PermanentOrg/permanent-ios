@@ -390,6 +390,7 @@
 		F5616189270E49250038D29E /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5616188270E49250038D29E /* FileCollectionViewCell.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
+		F56AF715283676FF0069725A /* UITapGestureRecognizerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */; };
 		F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */; };
 		F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */; };
@@ -855,6 +856,7 @@
 		F5616188270E49250038D29E /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceEndpoint.swift; sourceTree = "<group>"; };
+		F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapGestureRecognizerExtension.swift; sourceTree = "<group>"; };
 		F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePicturesViewModel.swift; sourceTree = "<group>"; };
 		F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMNTActionSheetViewController.swift; sourceTree = "<group>"; };
 		F5853D1F26E9FA5A0050E377 /* Permission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
@@ -1021,6 +1023,7 @@
 				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
 				5E647333263C22F900E6566D /* NotificationName.swift */,
 				5E980AB62657D3D400ED5764 /* BundleExtension.swift */,
+				F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2408,6 +2411,7 @@
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
 				BCE3C96425388C8D00EC3A66 /* UIImageExtension.swift in Sources */,
 				06644A8F24EBF72C003CD359 /* BigLogoView.swift in Sources */,
+				F56AF715283676FF0069725A /* UITapGestureRecognizerExtension.swift in Sources */,
 				BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */,
 				BC6AF9A32590E6EC00483BBA /* UILabelExtension.swift in Sources */,
 				5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */,

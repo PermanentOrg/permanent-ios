@@ -20,10 +20,10 @@ class AccountOnboardingViewModel: ViewModelInterface {
             case .getStarted:
                 return "Get Started".localized()
                 
-            case .nameArchive:
+            case .createArchive:
                 return "Next: Name Archive".localized()
                 
-            case .createArchive:
+            case .nameArchive:
                 return "Create Archive".localized()
                 
             case .pendingInvitation:
@@ -112,6 +112,8 @@ class AccountOnboardingViewModel: ViewModelInterface {
                     if accountVO != nil {
                         changeArchive(archiveVO) { success, error in
                             if success {
+                                UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
+                                
                                 completionBlock(.success)
                             } else {
                                 completionBlock(.error(message: .errorMessage))
@@ -336,9 +338,7 @@ class AccountOnboardingViewModel: ViewModelInterface {
         }
         
         for archive in pendingArchives {
-            if let pendingArchive = archive.archiveVO,
-               pendingArchive.status == .pending,
-               let pendingArchiveId = pendingArchive.archiveID {
+            if let pendingArchive = archive.archiveVO, pendingArchive.status == .pending, let pendingArchiveId = pendingArchive.archiveID {
                 dispatchGroup.enter()
                 acceptArchiveOperation(archive: pendingArchive) { result, error in
                     if result {
@@ -357,6 +357,7 @@ class AccountOnboardingViewModel: ViewModelInterface {
                 completionBlock(false, APIError.invalidResponse)
                 return
             } else {
+                UserDefaults.standard.set(2, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
                 completionBlock(true, nil)
                 return
             }

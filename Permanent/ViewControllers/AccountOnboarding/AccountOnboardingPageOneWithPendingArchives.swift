@@ -43,19 +43,22 @@ class AccountOnboardingPageOneWithPendingArchives: BaseViewController<AccountOnb
                         self?.showErrorAlert(message: .errorMessage)
                         return
                     }
+                    
                     self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVOdata, error in
                         guard let _ = accountVOdata else {
                             self?.hideSpinner()
                             self?.showErrorAlert(message: .errorMessage)
                             return
                         }
+                        
                         self?.viewModel?.changeArchive(archiveVOData, { status, error in
+                            self?.hideSpinner()
+                            
                             if status {
-                                self?.hideSpinner()
-                                self?.showAlert(title: .success, message: "Pending archive was accepted.".localized())
+                                UserDefaults.standard.set(1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
+                                
                                 AppDelegate.shared.rootViewController.setDrawerRoot()
                             } else {
-                                self?.hideSpinner()
                                 self?.showErrorAlert(message: .errorMessage)
                             }
                         })
@@ -94,7 +97,7 @@ extension AccountOnboardingPageOneWithPendingArchives: UITableViewDataSource, UI
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: AccountOnboardingHeaderTableViewCell.self)) as? AccountOnboardingHeaderTableViewCell {
-            headerCell.configure(label: "Pending invitations")
+            headerCell.configure(label: "Pending invitations".localized())
             headerView.addSubview(headerCell)
         }
         tableView.separatorInset.left = 0

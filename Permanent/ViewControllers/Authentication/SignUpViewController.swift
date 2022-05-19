@@ -116,8 +116,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         
         switch status {
         case .success:
-            UserDefaults.standard.setValue(nameField.text, forKey: Constants.Keys.StorageKeys.signUpNameStorageKey)
-            
             view.showNotificationBanner(height: 80, title: "Your account was successfully created".localized())
             
         case .error(let message):

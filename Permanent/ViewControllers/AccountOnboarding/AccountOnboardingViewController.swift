@@ -36,6 +36,7 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
         
         viewModel?.getAccountInfo({ _, _ in })
         
+        initUI()
         updatePageIndicator()
         updateNavButtons()
         
@@ -45,11 +46,16 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
         pageViewController.didMove(toParent: self)
         
         viewModel?.getAccountArchives({ [self] error in
-            if let pendingArchives = viewModel?.accountArchives,
-               pendingArchives.count > .zero {
-                viewModel?.currentPage = .pendingInvitation
+            if let archives = viewModel?.accountArchives, archives.count > .zero {
+                let hasPending = archives.allSatisfy({ archive in
+                    archive.archiveVO?.status == ArchiveVOData.Status.pending
+                })
+                
+                viewModel?.currentPage = hasPending ? .pendingInvitation : .acceptedInvitation
                 updateCurrentPage(direction: .forward)
-                pageViewController.setViewControllers([pageOnePendingVC], direction: .forward, animated: false)
+                
+                let vc = hasPending ? pageOnePendingVC : pageTwoPendingVC
+                pageViewController.setViewControllers([vc], direction: .forward, animated: false)
             } else {
                 pageViewController.setViewControllers([pageOneVC], direction: .forward, animated: false)
             }
@@ -64,27 +70,16 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
     }
     
     func initUI() {
-        if viewModel?.currentPage == .pendingInvitation {
-            nextButton.setup()
-            nextButton.setTitleColor(UIColor.white.darker(by: 30), for: .disabled)
-            nextButton.setTitleColor(UIColor.white, for: .highlighted)
-            nextButton.configureActionButtonUI(title: viewModel?.nextButtonTitle ?? "")
-            
-            backButton.setup()
-            backButton.setTitleColor(UIColor.white, for: .normal)
-            backButton.setTitleColor(UIColor.white, for: .highlighted)
-            backButton.configureActionButtonUI(title: viewModel?.backButtonTitle ?? "", bgColor: .doveGray)
-        } else {
-            nextButton.setup()
-            nextButton.setTitleColor(UIColor.white.darker(by: 30), for: .disabled)
-            nextButton.setTitleColor(UIColor.white, for: .highlighted)
-            nextButton.configureActionButtonUI(title: viewModel?.nextButtonTitle ?? "")
-            
-            backButton.setup()
-            backButton.setTitleColor(UIColor.white, for: .normal)
-            backButton.setTitleColor(UIColor.white, for: .highlighted)
-            backButton.configureActionButtonUI(title: "Back".localized(), bgColor: .doveGray)
-        }
+        nextButton.setup()
+        nextButton.setTitleColor(UIColor.white.darker(by: 30), for: .disabled)
+        nextButton.setTitleColor(UIColor.white, for: .highlighted)
+        nextButton.configureActionButtonUI(title: viewModel?.nextButtonTitle ?? "")
+        
+        backButton.setup()
+        backButton.setTitleColor(UIColor.white, for: .normal)
+        backButton.setTitleColor(UIColor.white, for: .highlighted)
+        backButton.configureActionButtonUI(title: viewModel?.backButtonTitle ?? "", bgColor: .doveGray)
+        backButton.setFont(UIFont.systemFont(ofSize: 18))
     }
     
     func updateCurrentPage(direction: UIPageViewController.NavigationDirection) {
@@ -98,8 +93,19 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
         nextButton.isEnabled = viewModel?.nextButtonEnabled ?? false
         nextButton.isHidden = viewModel?.currentPage.nextButtonHidden ?? false
         
-        backButton.configureActionButtonUI(title: viewModel?.backButtonTitle ?? "")
         backButton.isHidden = !(viewModel?.hasBackButton ?? false)
+        
+        if viewModel?.currentPage == .pendingInvitation || viewModel?.currentPage == .acceptedInvitation {
+            backButton.configureActionButtonUI(title: viewModel?.backButtonTitle ?? "", bgColor: .clear)
+            backButton.setTitleColor(.primary, for: .normal)
+            backButton.setTitleColor(.primary, for: .highlighted)
+            backButton.contentHorizontalAlignment = .left
+        } else {
+            backButton.configureActionButtonUI(title: viewModel?.backButtonTitle ?? "", bgColor: .dustyGray)
+            backButton.setTitleColor(.white, for: .normal)
+            backButton.setTitleColor(.white, for: .highlighted)
+            backButton.contentHorizontalAlignment = .center
+        }
     }
     
     func updatePageIndicator() {
@@ -119,7 +125,10 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
             secondStepIndicator.backgroundColor = .primary
             thirdStepIndicator.backgroundColor = .primary
             
-        default: break
+        default:
+            firstStepIndicator.backgroundColor = .clear
+            secondStepIndicator.backgroundColor = .clear
+            thirdStepIndicator.backgroundColor = .clear
         }
     }
     
@@ -147,18 +156,12 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
         var direction: UIPageViewController.NavigationDirection = .reverse
         switch viewModel?.currentPage {
         case .createArchive:
-            if let archives = viewModel?.accountArchives {
-                if archives.contains(where: { archive in
-                    archive.archiveVO?.status == .pending
-                }) {
-                    viewModel?.currentPage = .pendingInvitation
-                } else if archives.contains(where: { archive in
-                    archive.archiveVO?.status == .ok
-                }) {
-                    viewModel?.currentPage = .acceptedInvitation
-                } else {
-                    viewModel?.currentPage = .getStarted
-                }
+            if viewModel?.acceptedArchives?.isEmpty == false {
+                viewModel?.currentPage = .acceptedInvitation
+            } else if viewModel?.accountArchives?.isEmpty == false {
+                viewModel?.currentPage = .pendingInvitation
+            } else {
+                viewModel?.currentPage = .getStarted
             }
             
         case .nameArchive: viewModel?.currentPage = .createArchive
@@ -182,7 +185,16 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
     
         case .createArchive: viewModel?.currentPage = .nameArchive
             
-        case .nameArchive: viewModel?.currentPage = .nameArchive
+        case .nameArchive:
+            showSpinner()
+            viewModel?.finishOnboard({ status in
+                self.hideSpinner()
+                if status == .success {
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                } else {
+                    self.showErrorAlert(message: .errorMessage)
+                }
+            })
             
         case .pendingInvitation:
             showSpinner()
@@ -202,18 +214,6 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
         default: viewModel?.currentPage = .getStarted
         }
         
-        if viewModel?.currentPage == .nameArchive {
-            showSpinner()
-            viewModel?.finishOnboard({ status in
-                self.hideSpinner()
-                if status == .success {
-                    AppDelegate.shared.rootViewController.setDrawerRoot()
-                } else {
-                    self.showErrorAlert(message: .errorMessage)
-                }
-            })
-        } else {
-            updateCurrentPage(direction: .forward)
-        }
+        updateCurrentPage(direction: .forward)
     }
 }

@@ -66,13 +66,13 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IuI-i4-CU8">
                                 <rect key="frame" x="0.0" y="822" width="414" height="40"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMP-if-5Yi" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="20" y="0.0" width="180" height="31"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMP-if-5Yi" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="0.0" width="60" height="34"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="180" id="B6D-fI-PRd"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="tgQ-g4-qp3"/>
                                         </constraints>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Back"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Back"/>
                                         <connections>
                                             <action selector="backButtonPressed:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="Q4o-uC-TCw"/>
                                         </connections>
@@ -577,7 +577,7 @@ You can always edit your archive's name later.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Ehm-ZH-qRj">
-                                <rect key="frame" x="20" y="215" width="374" height="681"/>
+                                <rect key="frame" x="20" y="175" width="374" height="721"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="oFW-fm-D7f" id="0kx-we-GV2"/>
@@ -594,7 +594,7 @@ You can always edit your archive's name later.</string>
                             <constraint firstItem="Oqb-mL-kTh" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="Rxw-oj-O6a"/>
                             <constraint firstItem="DUK-hx-hDL" firstAttribute="top" secondItem="STQ-id-dty" secondAttribute="top" constant="20" id="SF8-db-mO4"/>
                             <constraint firstAttribute="bottom" secondItem="Ehm-ZH-qRj" secondAttribute="bottom" id="ZU4-am-Ycj"/>
-                            <constraint firstItem="Ehm-ZH-qRj" firstAttribute="top" secondItem="Oqb-mL-kTh" secondAttribute="bottom" constant="40" id="eYh-6D-Yry"/>
+                            <constraint firstItem="Ehm-ZH-qRj" firstAttribute="top" secondItem="Oqb-mL-kTh" secondAttribute="bottom" id="eYh-6D-Yry"/>
                             <constraint firstItem="Oqb-mL-kTh" firstAttribute="top" secondItem="DUK-hx-hDL" secondAttribute="bottom" constant="20" id="fGR-2K-Hor"/>
                             <constraint firstItem="STQ-id-dty" firstAttribute="trailing" secondItem="Ehm-ZH-qRj" secondAttribute="trailing" constant="20" id="lzH-Lu-KnR"/>
                             <constraint firstItem="DUK-hx-hDL" firstAttribute="leading" secondItem="STQ-id-dty" secondAttribute="leading" constant="20" id="sgJ-fS-Aaj"/>
@@ -613,7 +613,7 @@ You can always edit your archive's name later.</string>
     </scenes>
     <designables>
         <designable name="CMP-if-5Yi">
-            <size key="intrinsicContentSize" width="56" height="31"/>
+            <size key="intrinsicContentSize" width="40" height="34"/>
         </designable>
         <designable name="yPq-0E-f8p">
             <size key="intrinsicContentSize" width="54" height="31"/>

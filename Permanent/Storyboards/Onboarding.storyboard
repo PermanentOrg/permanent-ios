@@ -196,13 +196,13 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0zE-Of-RoX">
                                                 <rect key="frame" x="0.0" y="192" width="282" height="173"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.90000000000000002" translatesAutoresizingMaskIntoConstraints="NO" id="3ye-aj-Qq6">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.90000000000000002" translatesAutoresizingMaskIntoConstraints="NO" id="3ye-aj-Qq6">
                                                         <rect key="frame" x="10" y="0.0" width="262" height="132.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="752" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OLP-3T-HEc">
+                                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="752" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OLP-3T-HEc">
                                                         <rect key="frame" x="10" y="152.5" width="262" height="20.5"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
@@ -261,7 +261,6 @@
                                     <constraint firstItem="fxq-bJ-IiW" firstAttribute="top" secondItem="zoa-Lt-uGq" secondAttribute="top" constant="20" id="CQz-1v-OIW"/>
                                     <constraint firstItem="Zn7-t1-BHi" firstAttribute="top" secondItem="zoa-Lt-uGq" secondAttribute="top" constant="15" id="P9C-ea-v6Z"/>
                                     <constraint firstItem="fxq-bJ-IiW" firstAttribute="leading" secondItem="zoa-Lt-uGq" secondAttribute="leading" constant="10" id="g13-ch-Uhc"/>
-                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="480" id="h7r-hr-422"/>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="380" id="iNX-Au-Kv0"/>
                                     <constraint firstAttribute="bottom" secondItem="fxq-bJ-IiW" secondAttribute="bottom" id="luk-8U-pn5"/>
                                 </constraints>
