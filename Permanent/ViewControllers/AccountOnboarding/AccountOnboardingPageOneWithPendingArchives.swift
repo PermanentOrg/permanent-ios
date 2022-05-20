@@ -85,7 +85,7 @@ extension AccountOnboardingPageOneWithPendingArchives: UITableViewDataSource, UI
         if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self)) as? AccountOnboardingAcceptArchiveTableViewCell,
            let tableViewData = viewModel?.accountArchives,
            let archiveVO = tableViewData[indexPath.row].archiveVO {
-            tableViewCell.configure(archive: archiveVO)
+            tableViewCell.configure(archive: archiveVO, screenType: viewModel?.currentPage)
             
             tableViewCell.acceptButtonAction = acceptButtonAction()
             

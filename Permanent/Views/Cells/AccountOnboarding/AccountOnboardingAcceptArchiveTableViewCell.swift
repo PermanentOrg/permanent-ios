@@ -21,8 +21,8 @@ class AccountOnboardingAcceptArchiveTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
     
-    func configure(archive: ArchiveVOData?) {
-        initUI()
+    func configure(archive: ArchiveVOData?, screenType: AccountOnboardingViewModel.Page?) {
+        initUI(screenType: screenType)
         archiveData = archive
         if let name = archive?.fullName {
             archiveTitleLabel.text = "The \(name) Archive"
@@ -40,12 +40,13 @@ class AccountOnboardingAcceptArchiveTableViewCell: UITableViewCell {
         archiveInvitedByLabel.text = textLabel
     }
     
-    private func initUI() {
+    private func initUI(screenType: AccountOnboardingViewModel.Page?) {
         archiveTitleLabel.textColor = .black
         archiveTitleLabel.font = Text.style17.font
         archiveInvitedByLabel.textColor = .darkGray
         archiveInvitedByLabel.font = Text.style8.font
         
+        acceptButton.isHidden = (screenType == .acceptedInvitation)
         acceptButton.setFont(Text.style11.font)
         acceptButton.setTitleColor(.darkBlue, for: .normal)
     }

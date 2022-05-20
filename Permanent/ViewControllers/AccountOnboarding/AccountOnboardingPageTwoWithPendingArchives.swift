@@ -29,32 +29,10 @@ class AccountOnboardingPageTwoWithPendingArchives: BaseViewController<AccountOnb
     private func setupTableView() {
         tableView.separatorStyle = .none
         tableView.alwaysBounceVertical = false
-        tableView.register(UINib(nibName: String(describing: AccountOnboardingMakeDefaultArchiveTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AccountOnboardingMakeDefaultArchiveTableViewCell.self))
+        tableView.allowsSelection = true
+        
+        tableView.register(UINib(nibName: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self))
         tableView.register(UINib(nibName: String(describing: AccountOnboardingHeaderTableViewCell.self), bundle: nil), forHeaderFooterViewReuseIdentifier: String(describing: AccountOnboardingHeaderTableViewCell.self))
-    }
-    
-    private func makeDefaultButtonAction() -> ((AccountOnboardingMakeDefaultArchiveTableViewCell) -> Void) {
-        return { [weak self] cell in
-            self?.showSpinner()
-            guard let archiveVOData = cell.archiveData, let archiveId = archiveVOData.archiveID else { return }
-            
-            self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVOdata, error in
-                guard accountVOdata != nil else {
-                    self?.hideSpinner()
-                    self?.showErrorAlert(message: .errorMessage)
-                    return
-                }
-                self?.viewModel?.changeArchive(archiveVOData, { status, error in
-                    self?.hideSpinner()
-                    
-                    if status {                        
-                        AppDelegate.shared.rootViewController.setDrawerRoot()
-                    } else {
-                        self?.showErrorAlert(message: .errorMessage)
-                    }
-                })
-            })
-        }
     }
 }
 
@@ -68,22 +46,42 @@ extension AccountOnboardingPageTwoWithPendingArchives: UITableViewDataSource, UI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = UITableViewCell()
         
-        if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountOnboardingMakeDefaultArchiveTableViewCell.self)) as? AccountOnboardingMakeDefaultArchiveTableViewCell,
+        if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountOnboardingAcceptArchiveTableViewCell.self)) as? AccountOnboardingAcceptArchiveTableViewCell,
            let tableViewData = viewModel?.accountArchives,
            let archiveVO = tableViewData[indexPath.row].archiveVO {
-            tableViewCell.configure(archive: archiveVO)
-            
-            tableViewCell.makeDefaultButtonAction = makeDefaultButtonAction()
+            tableViewCell.configure(archive: archiveVO, screenType: viewModel?.currentPage)
             
             cell = tableViewCell
         }
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let tableViewData = viewModel?.accountArchives, let archiveVOData = tableViewData[indexPath.row].archiveVO, let archiveId = archiveVOData.archiveID else { return }
+        
+        showSpinner()
+        viewModel?.updateAccount(withDefaultArchiveId: archiveId, { [weak self] accountVOdata, error in
+            guard accountVOdata != nil else {
+                self?.hideSpinner()
+                self?.showErrorAlert(message: .errorMessage)
+                return
+            }
+            self?.viewModel?.changeArchive(archiveVOData, { status, error in
+                self?.hideSpinner()
+
+                if status {
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                } else {
+                    self?.showErrorAlert(message: .errorMessage)
+                }
+            })
+        })
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         if let headerCell = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: AccountOnboardingHeaderTableViewCell.self)) as? AccountOnboardingHeaderTableViewCell {
-            headerCell.configure(label: "Archive Name".localized())
+            headerCell.configure(label: "Choose a default archive".localized())
             headerView.addSubview(headerCell)
         }
         tableView.separatorInset.left = 0

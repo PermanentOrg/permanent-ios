@@ -11,11 +11,9 @@ class WelcomePageViewController: UIViewController  {
     var archiveName: String?
     
     @IBOutlet weak var welcomePageView: UIView!
-    @IBOutlet weak var pageImage: UIImageView!
     @IBOutlet weak var primaryLabelField: UILabel!
     @IBOutlet weak var secondaryLabelField: UILabel!
     @IBOutlet weak var acceptButton: RoundedButton!
-    @IBOutlet weak var closeButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,10 +88,6 @@ class WelcomePageViewController: UIViewController  {
     }
     
     @IBAction func acceptButton(_ sender: Any) {
-        closePopUp()
-    }
-    
-    @IBAction func closeButton(_ sender: Any) {
         closePopUp()
     }
     
