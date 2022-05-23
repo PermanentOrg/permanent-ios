@@ -152,7 +152,7 @@ class AuthViewModel: ViewModelInterface {
                         if let archiveId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) {
                             print(archiveId)
                             refreshCurrentArchive { success, archive in
-                                if archive != nil {
+                                if success {
                                     AuthenticationManager.shared.saveSession()
                                     handler(.success)
                                 } else {
@@ -303,11 +303,16 @@ class AuthViewModel: ViewModelInterface {
             }
             
             if getCurrentArchive() == nil {
-                if let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) })?.archiveVO {
+                let hasDefault = archives?.contains(where: { archive in
+                    archive.archiveVO?.status == ArchiveVOData.Status.ok
+                }) ?? false
+                
+                if hasDefault, let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) && $0.archiveVO?.status != .pending })?.archiveVO {
                     setCurrentArchive(defaultArchive)
                     
                     updateHandler(true, defaultArchive)
                 } else {
+                    PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
                     updateHandler(true, nil)
                 }
             } else {
