@@ -25,13 +25,13 @@ class PublicGalleryNoArchiveCellCollectionViewCell: UICollectionViewCell {
     private func initUI() {
         backgroudView.backgroundColor = .galleryGray
         
-        textLabel.textColor = .primary
+        textLabel.textColor = .darkGray
         textLabel.font = Text.style32.font
-        textLabel.text = "You don't have a Public Arhive yet".localized()
+        textLabel.text = "None of your archives are public.".localized()
         
         secondTextLabel.textColor = .primary
         secondTextLabel.font = Text.style9.font
-        secondTextLabel.text = "For more informations tap here".localized()
+        secondTextLabel.text = "Learn how to publish an archive".localized()
     }
     
     override func prepareForReuse() {
