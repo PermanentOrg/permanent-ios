@@ -55,7 +55,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="n5v-7d-9oE">
                                 <rect key="frame" x="16" y="637" width="382" height="225"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pick an amount" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZzC-DD-j7o">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose an amount" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZzC-DD-j7o">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="14.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
@@ -198,7 +198,7 @@
                                                     <constraint firstAttribute="height" constant="40" id="cka-ha-30u"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done"/>
                                             </textField>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Endow 1GB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n1y-Gg-6kM">
                                                 <rect key="frame" x="287.5" y="0.0" width="86.5" height="40"/>
@@ -221,8 +221,8 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87O-zq-Mny">
                                         <rect key="frame" x="0.0" y="141" width="382" height="31"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Anonymous donation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cYQ-uS-QEz">
-                                                <rect key="frame" x="0.0" y="0.0" width="161.5" height="31"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Make my donation anonymous" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cYQ-uS-QEz">
+                                                <rect key="frame" x="0.0" y="0.0" width="325" height="31"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -242,6 +242,7 @@
                                             <constraint firstItem="V2K-jl-Rfu" firstAttribute="top" secondItem="87O-zq-Mny" secondAttribute="top" id="RZd-pW-JFV"/>
                                             <constraint firstAttribute="bottom" secondItem="cYQ-uS-QEz" secondAttribute="bottom" id="cpz-iu-6bW"/>
                                             <constraint firstAttribute="bottom" secondItem="V2K-jl-Rfu" secondAttribute="bottom" id="jSv-bl-UAQ"/>
+                                            <constraint firstItem="V2K-jl-Rfu" firstAttribute="leading" secondItem="cYQ-uS-QEz" secondAttribute="trailing" constant="8" id="tXe-VI-iEb"/>
                                             <constraint firstAttribute="trailing" secondItem="V2K-jl-Rfu" secondAttribute="trailing" id="wvd-GS-Bt4"/>
                                         </constraints>
                                     </view>
