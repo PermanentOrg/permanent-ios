@@ -17,6 +17,8 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     @IBOutlet weak var donateTextField: UITextField!
     @IBOutlet weak var endowmentLabel: UILabel!
     @IBOutlet weak var paymentView: UIView!
+    @IBOutlet weak var anonymousSwitch: UISwitch!
+    
     let applePayButton: PKPaymentButton = PKPaymentButton(paymentButtonType: .donate, paymentButtonStyle: .black)
     
     static var invalidCharacterSet: CharacterSet = {
@@ -111,6 +113,10 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         endowmentLabel.text = "Endow 5 GB".localized()
     }
     
+    @IBAction func anonymousSwitchValueChanged(_ sender: Any) {
+        viewModel?.isAnonymous = anonymousSwitch.isOn
+    }
+    
     @objc func applePayButtonPressed(_ sender: Any) {
         let amount = NSDecimalNumber(string: donateTextField.text)
         guard amount != 0 else {
@@ -180,7 +186,7 @@ extension DonateViewController: UITextFieldDelegate {
         }
 
         // Do not allow dot as first character
-        if textField.text?.count == 0 && string.range(of: ".")?.isEmpty == false {
+        if textField.text?.isEmpty == false && string.range(of: ".")?.isEmpty == false {
             shouldChangeCharacters = false
         }
 
@@ -298,6 +304,8 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
             label.frame = CGRect(x: 16, y: 16, width: view.frame.width - 32, height: 23)
             label.font = Text.style33.font
             label.textAlignment = .center
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.5
             label.text = "Become a Founding Supporter".localized()
             
             let secondaryLabel = UILabel(frame: CGRect(x: 16, y: label.frame.maxY, width: view.frame.width - 32, height: 22))
@@ -305,6 +313,8 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
             secondaryLabel.font = Text.style4.font
             secondaryLabel.textColor = .primary
             secondaryLabel.textAlignment = .center
+            secondaryLabel.adjustsFontSizeToFitWidth = true
+            secondaryLabel.minimumScaleFactor = 0.5
             secondaryLabel.text = "Back the new paradigm for cloud storage".localized()
             view.addSubview(secondaryLabel)
             

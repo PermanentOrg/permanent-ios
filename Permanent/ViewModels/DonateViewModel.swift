@@ -12,12 +12,18 @@ class DonateViewModel: ViewModelInterface {
         return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
     }
     
+    var accountName: String? {
+        return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.nameStorageKey)
+    }
+    
     var email: String? {
         return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey)
     }
     
+    var isAnonymous: Bool = false
+    
     func createPaymentIntent(amount: Int, _ completion: @escaping ((String?) -> Void)) {
-        guard let accountId = accountId, let email = email else {
+        guard let accountId = accountId, let name = accountName, let email = email else {
             completion(nil)
             return
         }
@@ -28,16 +34,18 @@ class DonateViewModel: ViewModelInterface {
         let json: [String: Any] = [
             "accountId": accountId,
             "email": email,
-            "amount": amount
+            "amount": amount,
+            "anonymous": isAnonymous,
+            "name": name
         ]
         req.httpBody = try? JSONSerialization.data(withJSONObject: json, options: [])
         
         let dt = URLSession.shared.dataTask(with: req) { data, urlresponse, error in
-            if let data = data {
-                let jsonObj = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
-                 
+            if let data = data, let jsonObj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 let clientSecret = jsonObj["paymentIntent"] as? String
                 completion(clientSecret)
+            } else {
+                completion(nil)
             }
         }
         dt.resume()

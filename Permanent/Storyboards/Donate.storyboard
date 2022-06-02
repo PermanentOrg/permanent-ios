@@ -45,15 +45,15 @@
                                 </connections>
                             </tableView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ubY-wc-eHn">
-                                <rect key="frame" x="0.0" y="668" width="414" height="228"/>
+                                <rect key="frame" x="0.0" y="629" width="414" height="267"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="h5Q-sV-jDC">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="228"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="267"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <blurEffect style="regular"/>
                             </visualEffectView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="n5v-7d-9oE">
-                                <rect key="frame" x="16" y="676" width="382" height="186"/>
+                                <rect key="frame" x="16" y="637" width="382" height="225"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pick an amount" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZzC-DD-j7o">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="14.5"/>
@@ -218,8 +218,35 @@
                                             <constraint firstAttribute="bottom" secondItem="SF9-T7-Elx" secondAttribute="bottom" id="pdq-qm-iCj"/>
                                         </constraints>
                                     </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87O-zq-Mny">
+                                        <rect key="frame" x="0.0" y="141" width="382" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Anonymous donation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cYQ-uS-QEz">
+                                                <rect key="frame" x="0.0" y="0.0" width="161.5" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="V2K-jl-Rfu">
+                                                <rect key="frame" x="333" y="0.0" width="51" height="31"/>
+                                                <color key="onTintColor" systemColor="systemOrangeColor"/>
+                                                <connections>
+                                                    <action selector="anonymousSwitchValueChanged:" destination="Y6W-OH-hqX" eventType="valueChanged" id="ESE-aU-SBY"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="cYQ-uS-QEz" firstAttribute="top" secondItem="87O-zq-Mny" secondAttribute="top" id="EUF-t8-gIa"/>
+                                            <constraint firstItem="cYQ-uS-QEz" firstAttribute="leading" secondItem="87O-zq-Mny" secondAttribute="leading" id="Gnr-n3-itw"/>
+                                            <constraint firstItem="V2K-jl-Rfu" firstAttribute="top" secondItem="87O-zq-Mny" secondAttribute="top" id="RZd-pW-JFV"/>
+                                            <constraint firstAttribute="bottom" secondItem="cYQ-uS-QEz" secondAttribute="bottom" id="cpz-iu-6bW"/>
+                                            <constraint firstAttribute="bottom" secondItem="V2K-jl-Rfu" secondAttribute="bottom" id="jSv-bl-UAQ"/>
+                                            <constraint firstAttribute="trailing" secondItem="V2K-jl-Rfu" secondAttribute="trailing" id="wvd-GS-Bt4"/>
+                                        </constraints>
+                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tb1-a7-sj6">
-                                        <rect key="frame" x="0.0" y="141" width="382" height="45"/>
+                                        <rect key="frame" x="0.0" y="180" width="382" height="45"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="45" id="1CZ-PV-BSz"/>
@@ -228,6 +255,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="87O-zq-Mny" firstAttribute="width" secondItem="SlT-wU-qhc" secondAttribute="width" id="Mcs-dH-GFu"/>
                                     <constraint firstItem="dme-aj-yIH" firstAttribute="width" secondItem="n5v-7d-9oE" secondAttribute="width" id="VI3-h9-ANt"/>
                                     <constraint firstItem="tb1-a7-sj6" firstAttribute="width" secondItem="S1O-2x-f5h" secondAttribute="width" id="YsT-RV-5Wj"/>
                                     <constraint firstItem="S1O-2x-f5h" firstAttribute="width" secondItem="n5v-7d-9oE" secondAttribute="width" id="cW4-Aq-McF"/>
@@ -254,6 +282,7 @@
                     </view>
                     <connections>
                         <outlet property="amountContainerView" destination="S1O-2x-f5h" id="62c-gN-hz5"/>
+                        <outlet property="anonymousSwitch" destination="V2K-jl-Rfu" id="jjE-cj-a0o"/>
                         <outlet property="donateStackBottomConstraint" destination="ygS-p9-4rh" id="ugb-A7-fed"/>
                         <outlet property="donateTextField" destination="SF9-T7-Elx" id="Mqo-y8-f43"/>
                         <outlet property="endowmentLabel" destination="n1y-Gg-6kM" id="OSc-lL-Cvk"/>
