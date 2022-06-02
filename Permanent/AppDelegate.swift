@@ -11,6 +11,7 @@ import UIKit
 import GooglePlaces
 import GoogleMaps
 import AppAuth
+import StripeApplePay
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         initFirebase()
         initNotifications()
+        
+        StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()

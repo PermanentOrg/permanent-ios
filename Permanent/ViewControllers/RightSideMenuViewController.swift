@@ -23,6 +23,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     
     private let tableViewData: [RightDrawerSection: [DrawerOption]] = [
         RightDrawerSection.rightSideMenu: [
+            DrawerOption.addStorage,
             DrawerOption.accountInfo,
             DrawerOption.activityFeed,
             DrawerOption.manageArchives,
@@ -226,8 +227,8 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .addStorage:
-            guard let url = URL(string: APIEnvironment.defaultEnv.buyStorageURL) else { return }
-            UIApplication.shared.open(url)
+            let newRootVC = UIViewController.create(withIdentifier: .donate, from: .donate)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .activityFeed:
             let newRootVC = ActivityFeedViewController()

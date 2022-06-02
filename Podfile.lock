@@ -113,11 +113,14 @@ PODS:
   - nanopb/encode (1.30906.0)
   - ObjectMapper (4.2.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.20.1)
+  - Protobuf (3.19.4)
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
   - Sourcery (1.4.1)
+  - StripeApplePay (22.0.0):
+    - StripeCore (= 22.0.0)
+  - StripeCore (22.0.0)
 
 DEPENDENCIES:
   - AppAuth (= 1.4.0)
@@ -132,6 +135,7 @@ DEPENDENCIES:
   - ObjectMapper (= 4.2.0)
   - SDWebImage (= 5.10.0)
   - Sourcery (= 1.4.1)
+  - StripeApplePay (= 22.0.0)
 
 SPEC REPOS:
   trunk:
@@ -158,6 +162,8 @@ SPEC REPOS:
     - Protobuf
     - SDWebImage
     - Sourcery
+    - StripeApplePay
+    - StripeCore
 
 SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
@@ -180,10 +186,12 @@ SPEC CHECKSUMS:
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: b60ec2f51ad74765f44d0c09d2e0579d7de21745
+  Protobuf: 235750e4696ff59fb07d949a9dbbc92b3c0700fe
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
+  StripeApplePay: e09964f3e2c6b318e53a05c12f3cb7efc592484d
+  StripeCore: 689b9605ccb78e507f59ddc5e677615e0af16583
 
-PODFILE CHECKSUM: 3f0994be7bbef4c3f8eb63dc24ecca3105a34cfb
+PODFILE CHECKSUM: f20e9bcab04cee395c45fc24fbd7edd7b851851d
 
 COCOAPODS: 1.11.3
