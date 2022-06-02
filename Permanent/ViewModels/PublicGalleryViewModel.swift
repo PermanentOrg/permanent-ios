@@ -22,6 +22,8 @@ class PublicGalleryViewModel: ViewModelInterface {
     var searchQuery: String = ""
     var searchOperation: APIOperation?
     
+    var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    
     func currentArchive() -> ArchiveVOData? {
         return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
     }
@@ -135,7 +137,7 @@ class PublicGalleryViewModel: ViewModelInterface {
         let baseURLString = APIEnvironment.defaultEnv.publicURL
         let url: URL
         
-        guard let archiveNbr = archiveNbr else { return nil }
+        guard let archiveNbr = archiveNbr, archiveNbr.isNotEmpty else { return nil }
         
         url = URL(string: "\(baseURLString)/archive/\(archiveNbr)/profile")!
         
@@ -163,9 +165,10 @@ class PublicGalleryViewModel: ViewModelInterface {
             handler(.success)
             return
         }
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         
         let searchArchivesDataOperation = APIOperation(ArchivesEndpoint.searchArchive(searchAfter: searchQuery))
-        searchArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
+        searchArchivesDataOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 guard
