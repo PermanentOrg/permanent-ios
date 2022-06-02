@@ -374,8 +374,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             refreshCollectionView()
             toggleFileAction(viewModel?.fileAction)
             
-            if let userName = UserDefaults.standard.string(forKey: Constants.Keys.StorageKeys.signUpNameStorageKey) {
-                displayWelcomePage(archiveName: userName)
+            let pendingInvitations = UserDefaults.standard.integer(forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
+            if pendingInvitations != 0 {
+                displayWelcomePage()
             }
             
         case .error(let message):
@@ -550,9 +551,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func displayWelcomePage(archiveName: String) {
+    func displayWelcomePage() {
         let vc = UIViewController.create(withIdentifier: .welcomePage, from: .onboarding) as! WelcomePageViewController
-        vc.archiveName = archiveName
         self.present(vc, animated: true, completion: nil)
     }
 }

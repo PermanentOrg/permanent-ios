@@ -21,9 +21,14 @@ enum StoryboardName: String {
     case archives
     case profile
     case donate
+    case accountOnboarding
     
     var name: String {
-        return self.rawValue.capitalized
+        switch self {
+        case .accountOnboarding: return "AccountOnboarding"
+            
+        default: return self.rawValue.capitalized
+        }
     }
 }
 
@@ -67,6 +72,12 @@ enum ViewControllerId: String {
     case updateApp
     case loadingScreen
     case donate
+    case accountOnboarding
+    case accountOnboardingPg1
+    case accountOnboardingPg2
+    case accountOnboardingPg3
+    case accountOnboardingPg1Pending
+    case accountOnboardingPg2Pending
     case publicGallery
 
     var value: String {
@@ -163,6 +174,24 @@ enum ViewControllerId: String {
             
         case .donate:
             return "donate"
+
+        case .accountOnboarding:
+            return "accountOnboarding"
+            
+        case .accountOnboardingPg1:
+            return "accountOnboardingPg1"
+            
+        case .accountOnboardingPg2:
+            return "accountOnboardingPg2"
+            
+        case .accountOnboardingPg3:
+            return "accountOnboardingPg3"
+            
+        case .accountOnboardingPg1Pending:
+            return "accountOnboardingPg1Pending"
+            
+        case .accountOnboardingPg2Pending:
+            return "accountOnboardingPg2Pending"
 
         case .publicGallery:
             return "publicGallery"

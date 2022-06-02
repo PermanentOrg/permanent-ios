@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="200"
+   height="122"
+   viewBox="0 0 200 122"
+   fill="none"
+   version="1.1"
+   id="svg20"
+   sodipodi:docname="archive-group-2.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs24" />
+  <sodipodi:namedview
+     id="namedview22"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="4.27"
+     inkscape:cx="100"
+     inkscape:cy="61.007026"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     inkscape:window-x="1024"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg20" />
+  <path
+     d="M26 88.8037C26 76.722 35.7942 66.9277 47.876 66.9277H64.7037C76.7855 66.9277 86.5797 76.722 86.5797 88.8037C86.5797 93.4506 82.8127 97.2176 78.1659 97.2176H34.4138C29.767 97.2176 26 93.4506 26 88.8037Z"
+     fill="#41496E"
+     id="path4" />
+  <circle
+     cx="55.6014"
+     cy="45.587"
+     r="18.587"
+     fill="#41496E"
+     id="circle6" />
+  <path
+     d="M114.116 88.8037C114.116 76.722 123.91 66.9277 135.992 66.9277H152.82C164.901 66.9277 174.696 76.722 174.696 88.8037C174.696 93.4506 170.929 97.2176 166.282 97.2176H122.53C117.883 97.2176 114.116 93.4506 114.116 88.8037Z"
+     fill="#41496E"
+     id="path8" />
+  <circle
+     cx="143.717"
+     cy="45.587"
+     r="18.587"
+     fill="#41496E"
+     id="circle10" />
+  <path
+     d="M70.0579 108.079C70.0579 95.9973 79.8521 86.2031 91.9339 86.2031H108.762C120.843 86.2031 130.638 95.9973 130.638 108.079C130.638 112.726 126.871 116.493 122.224 116.493H78.4717C73.8249 116.493 70.0579 112.726 70.0579 108.079Z"
+     fill="#5261B7"
+     id="path16" />
+  <circle
+     cx="99.6595"
+     cy="64.8624"
+     r="18.587"
+     fill="#5261B7"
+     id="circle18" />
+</svg>
