@@ -15,6 +15,10 @@ class PublicGalleryViewModel: ViewModelInterface {
     var userPublicArchives: [ArchiveVOData] {
         return allArchives.filter({ $0.archiveVOPublic == 1 })
     }
+    var userHasPublicArchives: Bool {
+        return !allArchives.filter({ $0.archiveVOPublic == 1 }).isEmpty
+    }
+    
     var publicArchives: [ArchiveVOData] = []
     var searchPublicArchives: [ArchiveVOData] = []
     

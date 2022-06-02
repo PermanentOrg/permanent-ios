@@ -45,7 +45,13 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     private func attemptBiometricsAuth() {
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
             DispatchQueue.main.async {
-                AppDelegate.shared.rootViewController.setDrawerRoot()
+                let defaultArchive: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+                
+                if defaultArchive == nil {
+                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                } else {
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                }
             }
         }, onFailure: { error in
             self.handleBiometricsFailure(error)

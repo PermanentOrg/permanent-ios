@@ -39,6 +39,7 @@ struct Text {
     static let style30 = TextStyle(UIFont(name: "OpenSans-Regular", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style31 = TextStyle(UIFont(name: "OpenSans-Bold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style32 = TextStyle(UIFont(name: "OpenSans-Bold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
+    static let style33 = TextStyle(UIFont(name: "OpenSans-Bold", size: 24)!, TextStyle.calculateSpacing(fontSize: CGFloat(24), lineHeight: CGFloat(27)), NSTextAlignment.center)
 }
 
 struct Constants {
@@ -149,7 +150,7 @@ extension Constants.Keys.StorageKeys {
     static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
-    static let signUpNameStorageKey = "signUpNameStorageKey"
+    static let signUpInvitationsAccepted = "signUpInvitationsAccepted"
     static let archive = "archive"
     static let defaultArchiveId = "defaultArchiveId"
     static let modelVersion = "modelVersion"
