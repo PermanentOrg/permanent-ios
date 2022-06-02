@@ -63,6 +63,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         collectionView.alwaysBounceVertical = true
         
         collectionView.register(PublicGalleryCellCollectionViewCell.nib(), forCellWithReuseIdentifier: PublicGalleryCellCollectionViewCell.identifier)
+        collectionView.register(PublicGalleryNoArchiveCellCollectionViewCell.nib(), forCellWithReuseIdentifier: PublicGalleryNoArchiveCellCollectionViewCell.identifier)
 
         collectionView.register(PublicGalleryHeaderCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: PublicGalleryHeaderCollectionViewCell.identifier)
         collectionView.register(PublicGalleryFooterCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PublicGalleryFooterCollectionViewCell.identifier)
@@ -81,10 +82,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         viewModel?.getArchives({ result in
             self.hideSpinner()
             
-            if let userPublicArchivesNbr = self.viewModel?.userPublicArchives.count,
-            userPublicArchivesNbr > 0 {
-                self.collectionViewSections.append(.onlineArchives)
-            }
+            self.collectionViewSections.append(.onlineArchives)
             
             if let publicArchivesNbr = self.viewModel?.publicArchives.count,
             publicArchivesNbr > 0 {
@@ -173,7 +171,11 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
         
         switch collectionViewSections[section] {
         case .onlineArchives:
-            numberOfItemsInSection = viewModel?.userPublicArchives.count ?? 0
+            if let userHasPublicArchives = viewModel?.userHasPublicArchives, userHasPublicArchives {
+                numberOfItemsInSection = viewModel?.userPublicArchives.count ?? 0
+            } else {
+                numberOfItemsInSection = 1
+            }
             
         case .popularPublicArchives:
             numberOfItemsInSection = viewModel?.publicArchives.count ?? 0
@@ -189,13 +191,20 @@ extension PublicGalleryViewController: UICollectionViewDataSource {
         
         switch collectionViewSections[indexPath.section] {
         case .onlineArchives:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
-    
-            cell.configure(archive: viewModel?.userPublicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
-            cell.buttonAction = {
-                self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.userPublicArchives[indexPath.item].archiveNbr))
+            if let userHasPublicArchives = viewModel?.userHasPublicArchives, userHasPublicArchives {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
+                
+                cell.configure(archive: viewModel?.userPublicArchives[indexPath.item], section: collectionViewSections[indexPath.section])
+                cell.buttonAction = {
+                    self.openPopUpMenu(url: self.viewModel?.publicProfileURL(archiveNbr: self.viewModel?.userPublicArchives[indexPath.item].archiveNbr))
+                }
+                returnedCell = cell
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryNoArchiveCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryNoArchiveCellCollectionViewCell
+                cell.configure()
+                
+                returnedCell = cell
             }
-            returnedCell = cell
             
         case .popularPublicArchives:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PublicGalleryCellCollectionViewCell.identifier), for: indexPath) as! PublicGalleryCellCollectionViewCell
@@ -254,12 +263,18 @@ extension PublicGalleryViewController: UICollectionViewDelegateFlowLayout {
         
         switch collectionViewSections[indexPath.section] {
         case .onlineArchives:
-            guard let selectedArchive = viewModel?.userPublicArchives[indexPath.item] else { return }
-            
-            let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
-            newRootVC.archiveData = selectedArchive
-            let newNav = NavigationController(rootViewController: newRootVC)
-            present(newNav, animated: true)
+            if let userHasPublicArchives = viewModel?.userHasPublicArchives, userHasPublicArchives {
+                guard let selectedArchive = viewModel?.userPublicArchives[indexPath.item] else { return }
+                
+                let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
+                newRootVC.archiveData = selectedArchive
+                let newNav = NavigationController(rootViewController: newRootVC)
+                present(newNav, animated: true)
+            } else {
+                if let url = URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/public-archives-mobile"), UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            }
             
         case .popularPublicArchives:
             guard let selectedArchive = viewModel?.publicArchives[indexPath.item] else { return }
@@ -316,7 +331,7 @@ extension PublicGalleryViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchInProgress = true
-        if searchText.count > 0 {
+        if searchText.isNotEmpty {
             viewModel?.searchArchives(byQuery: searchText, handler: { [self] result in
                 updateSections()
             })
