@@ -43,13 +43,16 @@ class AccountInfoTests: XCTestCase {
     func testGetUserValidData() throws {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulAccountInfoTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config)
 
-        let accountId = "1234"
-        let userData = UpdateUserData(fullName: "testAccount", primaryEmail: "testaccount+prmnttst0001@server.com", primaryPhone: nil, address: nil, city: nil, state: nil, zip: nil, country: nil)
+        sut.sessionProtocol = APINetworkSession(configuration: config)
+        
+        let accountId: Int = 1234
+        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+
+        let userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", nil, nil, nil, nil, nil, nil, nil)
         let promise = expectation(description: "Test get of valid data from user.")
         
-        sut.getUserData(with: accountId, then: { [self] status in
+        sut.getUserData(then: { [self] status in
             XCTAssertEqual(status, .success(message: "User details were received"), "Failed!User data Not received.")
             XCTAssertEqual(sut.userData.fullName, userData.fullName, "Failed! User [fullName] not received correctly.")
             XCTAssertEqual(sut.userData.primaryEmail, userData.primaryEmail, "Failed! User [primaryEmail] not received correctly.")
@@ -68,28 +71,31 @@ class AccountInfoTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulAccountInfoTestURLs>.self]
         sut.sessionProtocol = APINetworkSession(configuration: config)
+        
+        let accountId:Int = 1234
+        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
 
-        let accountId = "1234"
-        var userData = UpdateUserData(fullName: "testAccount", primaryEmail: "testaccount+prmnttst0001@server.com", primaryPhone: nil, address: nil, city: nil, state: nil, zip: nil, country: nil)
+        var userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", nil, nil, nil, nil, nil, nil, nil)
+
         let validTestResult = expectation(description: "Test get of valid data from user.")
         let invalidUserNameResult = expectation(description: "Test invalid user name.")
         let dataWasNotModified = expectation(description: "Test update data was not modified.")
         
-        sut.updateUserData(with: accountId, userData: userData, then: { status in
+        sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .success(message: "Updates were saved"), "Failed!User data Not received.")
             validTestResult.fulfill()
         })
         
         userData.fullName = nil
         sut.dataIsNotModified = false
-        sut.updateUserData(with: accountId, userData: userData, then: { status in
+        sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .error(message: "Account name can\'t be empty."), "Failed!Tested invalid user name.")
             invalidUserNameResult.fulfill()
         })
         
         userData.fullName = "testAccount"
         sut.dataIsNotModified = true
-        sut.updateUserData(with: accountId, userData: userData, then: { status in
+        sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .error(message: "No modifications were done"), "Failed!Tested data was not modified.")
             dataWasNotModified.fulfill()
         })
@@ -101,11 +107,13 @@ class AccountInfoTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedAccountInfoTestURLs>.self]
         sut.sessionProtocol = APINetworkSession(configuration: config)
+        
+        let accountId:Int = 1234
+        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
 
-        let accountId = "1234"
         let promise = expectation(description: "Test error case, from get user data api.")
         
-        sut.getUserData(with: accountId, then: { status in
+        sut.getUserData(then: { status in
             XCTAssertEqual(status, .error(message: "Something went wrong. Please try again later."), "Failed!User data was received.")
             promise.fulfill()
         })
@@ -117,11 +125,10 @@ class AccountInfoTests: XCTestCase {
         config.protocolClasses = [ResponseURLProtocol<FailedAccountInfoTestURLs>.self]
         sut.sessionProtocol = APINetworkSession(configuration: config)
 
-        let accountId = "1234"
-        let userData = UpdateUserData(fullName: "testAccount", primaryEmail: "testaccount+prmnttst0001@server.com", primaryPhone: nil, address: nil, city: nil, state: nil, zip: nil, country: nil)
+        let userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", nil, nil, nil, nil, nil, nil, nil)
         let invalidTestResult = expectation(description: "Test invalid api response.")
         
-        sut.updateUserData(with: accountId, userData: userData, then: { status in
+        sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .error(message: nil), "Failed!User data Not received.")
             invalidTestResult.fulfill()
         })
@@ -142,7 +149,8 @@ class AccountInfoTests: XCTestCase {
     }
     
     func testValuesFromTestField() throws {
-        let userData = UpdateUserData(fullName: "testAccount", primaryEmail: "testaccount+prmnttst0001@server.com", primaryPhone: "+123456", address: "Test location", city: "Test city", state: "N/A", zip: nil, country: "RO")
+        
+        let userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", "+123456", "Test location", "Test location2", "Test city", "N/A", nil, "RO")
         sut.userData = userData
         
         sut.userData.zip = "123456"
