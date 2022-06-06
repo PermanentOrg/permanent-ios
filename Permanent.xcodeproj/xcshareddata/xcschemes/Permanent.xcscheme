@@ -38,6 +38,11 @@
                BlueprintName = "PermanentTests"
                ReferencedContainer = "container:Permanent.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "VerificationCodeTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

@@ -24,7 +24,6 @@ class FailedSignUpTestURLs: TestURLs {
         ]
     }
 }
-}
 
 class SignUpTests: XCTestCase {
     var sut: AuthViewModel!

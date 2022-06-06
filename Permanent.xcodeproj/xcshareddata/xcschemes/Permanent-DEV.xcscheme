@@ -23,11 +23,29 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "DEV-Debug"
+      buildConfiguration = "DEV-Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5E68F2CB26A74FCD00CC936E"
+               BuildableName = "PermanentTests.xctest"
+               BlueprintName = "PermanentTests"
+               ReferencedContainer = "container:Permanent.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "SignUpTests">
+               </Test>
+               <Test
+                  Identifier = "VerificationCodeTests">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
