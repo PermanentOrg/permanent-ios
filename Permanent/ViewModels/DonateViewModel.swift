@@ -47,6 +47,11 @@ class DonateViewModel: ViewModelInterface {
     }
     
     func storageSizeForAmount(_ amount: Double?) -> Int {
+        if let amount = amount {
+            if amount < .zero {
+                return 0
+            }
+        }
         return Int(floor((amount ?? 0) / 10))
     }
     
