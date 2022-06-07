@@ -25,8 +25,15 @@ class AuthenticationManager {
     }
     
     func reloadSession() -> Bool {
+        let email: String? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey)
+        let accountId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        let defaultArchiveId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+        let name: String? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.nameStorageKey)
+        
         if let authData = KeychainSwift().getData(Self.keychainAuthDataKey),
-            let authState = try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: authData) {
+           let authState = try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: authData),
+           authState.lastTokenResponse?.accessTokenExpirationDate ?? Date(timeIntervalSince1970: 0) > Date() &&
+            email != nil && accountId != nil && defaultArchiveId != nil && name != nil {
             self.authState = authState
             
             return true
