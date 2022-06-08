@@ -3,7 +3,6 @@
 //  PermanentTests
 //
 //  Created by Lucian Cerbu on 02.06.2022.
-//  Copyright © 2022 Victory Square Partners. All rights reserved.
 //
 
 import XCTest

@@ -31,13 +31,8 @@ class DonateViewModel: ViewModelInterface {
         var req = URLRequest(url: URL(string: "\(APIEnvironment.defaultEnv.donationBaseURL)/payment-sheet")!)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let json: [String: Any] = [
-            "accountId": accountId,
-            "email": email,
-            "amount": amount,
-            "anonymous": isAnonymous,
-            "name": name
-        ]
+        let json = paymentSheetPayload(accountId: accountId, email: email, amount: amount, isAnonymous: isAnonymous, name: name)
+
         req.httpBody = try? JSONSerialization.data(withJSONObject: json, options: [])
         
         let dt = URLSession.shared.dataTask(with: req) { data, urlresponse, error in
@@ -49,5 +44,25 @@ class DonateViewModel: ViewModelInterface {
             }
         }
         dt.resume()
+    }
+    
+    func storageSizeForAmount(_ amount: Double?) -> Int {
+        if let amount = amount {
+            if amount < .zero {
+                return 0
+            }
+        }
+        return Int(floor((amount ?? 0) / 10))
+    }
+    
+    func paymentSheetPayload(accountId: Int, email: String, amount: Int, isAnonymous: Bool, name: String) -> [String: Any] {
+        let json: [String: Any] = [
+            "accountId": accountId,
+            "email": email,
+            "amount": amount,
+            "anonymous": isAnonymous,
+            "name": name
+        ]
+        return json
     }
 }
