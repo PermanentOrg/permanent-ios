@@ -58,7 +58,7 @@ class DonateTests: XCTestCase {
         let isAnonymous = true
         let testName = "Test account"
         
-        let currentResult = sut.jsonInitWithValues(accountId: testAccountId, email: testEmail, amount: testAmount, isAnonymous: isAnonymous, name: testName)
+        let currentResult = sut.paymentSheetPayload(accountId: testAccountId, email: testEmail, amount: testAmount, isAnonymous: isAnonymous, name: testName)
         
         XCTAssertEqual(testAccountId, currentResult["accountId"] as? Int, "Verification of account id from JSON")
         XCTAssertEqual(testEmail, currentResult["email"] as? String, "Verification of email from JSON")

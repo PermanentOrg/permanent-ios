@@ -31,7 +31,7 @@ class DonateViewModel: ViewModelInterface {
         var req = URLRequest(url: URL(string: "\(APIEnvironment.defaultEnv.donationBaseURL)/payment-sheet")!)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let json = jsonInitWithValues(accountId: accountId, email: email, amount: amount, isAnonymous: isAnonymous, name: name)
+        let json = paymentSheetPayload(accountId: accountId, email: email, amount: amount, isAnonymous: isAnonymous, name: name)
 
         req.httpBody = try? JSONSerialization.data(withJSONObject: json, options: [])
         
@@ -55,7 +55,7 @@ class DonateViewModel: ViewModelInterface {
         return Int(floor((amount ?? 0) / 10))
     }
     
-    func jsonInitWithValues(accountId: Int, email: String, amount: Int, isAnonymous: Bool, name: String) -> [String: Any] {
+    func paymentSheetPayload(accountId: Int, email: String, amount: Int, isAnonymous: Bool, name: String) -> [String: Any] {
         let json: [String: Any] = [
             "accountId": accountId,
             "email": email,
