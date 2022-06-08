@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 public protocol MediaRecorderDelegate: AnyObject {
     func didSelect(url: URL?, isLocal: Bool)
@@ -41,7 +42,44 @@ open class MediaRecorder: NSObject {
     }
 
     func present() {
-        self.presentationController?.present(self.pickerController, animated: true)
+        AVCaptureDevice.authorizeVideo { status in
+            switch status {
+            case .justDenied, .alreadyDenied:
+                let alertController = UIAlertController(title: "Camera permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
+                
+                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        return
+                    }
+                    if UIApplication.shared.canOpenURL(settingsUrl) {
+                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+                    }
+                }
+                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+                
+                alertController.addAction(cancelAction)
+                alertController.addAction(settingsAction)
+                
+                DispatchQueue.main.async {
+                    self.presentationController?.present(alertController, animated: true, completion: nil)
+                }
+                
+            case .restricted:
+                let alertController = UIAlertController(title: "Unable to Access Camera".localized(), message: "Please remove any restrictions on the camera to use this feature.".localized(), preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay".localized(), style: .default, handler: nil)
+                alertController.addAction(okayAction)
+                
+                DispatchQueue.main.async {
+                    self.presentationController?.present(alertController, animated: true, completion: nil)
+                }
+                
+            case .justAuthorized, .alreadyAuthorized:
+                self.presentationController?.present(self.pickerController, animated: true)
+                
+            default:
+                break
+            }
+        }
     }
     
     func clearTemporaryFile(withURL url: URL?) {
