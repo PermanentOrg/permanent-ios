@@ -25,5 +25,9 @@ protocol ShareDetails {
     
     var status: ShareStatus { get set }
     
-    var isFolder: Bool { get }    
+    var recordId: Int? { get }
+    
+    var fileType: FileType? { get }
+    
+    var thumbURL2000: String? { get }
 }

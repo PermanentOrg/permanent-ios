@@ -61,7 +61,7 @@ struct FileViewModel: Equatable, Codable {
         self.permissions = permissions
     }
     
-    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, permissions: [Permission]) {
+    init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = name
         self.date = DateUtils.currentDate
         self.description = ""
@@ -71,7 +71,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL = nil
         self.thumbnailURL500 = nil
         self.thumbnailURL1000 = nil
-        self.thumbnailURL2000 = nil
+        self.thumbnailURL2000 = thumbnailURL2000
         self.type = FileType(rawValue: type) ?? .miscellaneous
         self.archiveId = -1
         self.archiveNo = archiveNbr

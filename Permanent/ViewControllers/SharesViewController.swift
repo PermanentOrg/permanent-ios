@@ -23,10 +23,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     var selectedFileId: Int?
     
-    var isSharedFolder: Bool = false
+    var fileType: FileType?
     var sharedFolderArchiveNo: String = ""
     var sharedFolderLinkId: Int = -1
     var sharedFolderName: String = ""
+    var sharedRecordId: Int = -1
+    var shareThumbnailURL: String?
     
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
@@ -44,13 +46,18 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         if !hasSavedFolder && !hasSavedFile {
             getShares()
-            if isSharedFolder {
-                isSharedFolder = false
-                let navigateParams: NavigateMinParams = (sharedFolderArchiveNo, sharedFolderLinkId, nil)
-                navigateToFolder(withParams: navigateParams, backNavigation: false, shouldDisplaySpinner: true, then: {
-                    self.backButton.isHidden = false
-                    self.directoryLabel.text = self.sharedFolderName
-                })
+            if let fileType = fileType {
+                self.fileType = nil
+                if fileType.isFolder {
+                    let navigateParams: NavigateMinParams = (sharedFolderArchiveNo, sharedFolderLinkId, nil)
+                    navigateToFolder(withParams: navigateParams, backNavigation: false, shouldDisplaySpinner: true, then: {
+                        self.backButton.isHidden = false
+                        self.directoryLabel.text = self.sharedFolderName
+                    })
+                } else {
+                    let sharedFile = ShareNotificationPayload(name: sharedFolderName, recordId: sharedRecordId, folderLinkId: sharedFolderLinkId, archiveNbr: sharedFolderArchiveNo, type: FileType.image.rawValue, toArchiveId: viewModel?.currentArchive?.archiveID ?? -1, toArchiveNbr: viewModel?.currentArchive?.archiveNbr ?? "", toArchiveName: viewModel?.currentArchive?.fullName ?? "")
+                    self.presentFileDetails(sharedFile: sharedFile, sharedFileThumbnailURL: shareThumbnailURL)
+                }
             }
         }
     }
@@ -135,22 +142,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             
             selectedIndex = ShareListType.sharedWithMe.rawValue
             
-            func _presentFileDetails() {
-                let currentArchive: ArchiveVOData? = viewModel?.currentArchive
-                let permissions = currentArchive?.permissions() ?? [.read]
-                let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions)
-                let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
-                filePreviewVC.file = fileVM
-                
-                let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
-                fileDetailsNavigationController.filePreviewNavDelegate = self
-                fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-                present(fileDetailsNavigationController, animated: true)
-                
-                // This has to be done after presentation, filePreviewVC has to have it's view loaded
-                filePreviewVC.loadVM()
-            }
-            
             let currentArchive: ArchiveVOData? = viewModel?.currentArchive
             if currentArchive?.archiveNbr != sharedFile.toArchiveNbr {
                 let action = { [weak self] in
@@ -159,7 +150,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self?.viewModel?.changeArchive(withArchiveId: sharedFile.toArchiveId, archiveNbr: sharedFile.toArchiveNbr, completion: { success in
                         if success {
                             self?.getShares {
-                                _presentFileDetails()
+                                self?.presentFileDetails(sharedFile: sharedFile)
                             }
                         }
                     })
@@ -178,7 +169,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 )
             } else {
                 getShares {
-                    _presentFileDetails()
+                    self.presentFileDetails(sharedFile: sharedFile)
                 }
             }
         }
@@ -250,6 +241,23 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         } else {
             getShares(shouldShowSpinner: false, completion: handler)
         }
+    }
+    
+    func presentFileDetails(sharedFile: ShareNotificationPayload, sharedFileThumbnailURL: String? = nil) {
+        let currentArchive: ArchiveVOData? = viewModel?.currentArchive
+        var permissions = currentArchive?.permissions() ?? [.read]
+        if sharedFileThumbnailURL != nil { permissions = [.read] }
+        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions, thumbnailURL2000: sharedFileThumbnailURL)
+        let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
+        filePreviewVC.file = fileVM
+        
+        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: filePreviewVC)
+        fileDetailsNavigationController.filePreviewNavDelegate = self
+        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+        present(fileDetailsNavigationController, animated: true)
+        
+        // This has to be done after presentation, filePreviewVC has to have it's view loaded
+        filePreviewVC.loadVM()
     }
     
     @objc private func pullToRefreshAction() {

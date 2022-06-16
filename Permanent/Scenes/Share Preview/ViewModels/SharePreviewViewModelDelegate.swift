@@ -8,7 +8,6 @@
 import Foundation
 
 protocol SharePreviewViewModelDelegate {
-    
     var viewDelegate: SharePreviewViewModelViewDelegate? { get set }
     
     // Data Source
@@ -32,11 +31,9 @@ protocol SharePreviewViewModelDelegate {
     var isBusy: Bool { get }
         
     var shareDetails: ShareDetails? { get }
-    
 }
 
 protocol SharePreviewViewModelViewDelegate: AnyObject {
-    
     func updateScreen(status: RequestStatus, shareDetails: ShareDetails?)
     
     func updateShareAccess(status: RequestStatus, shareStatus: ShareStatus?)
@@ -44,5 +41,4 @@ protocol SharePreviewViewModelViewDelegate: AnyObject {
     func viewInArchive()
     
     func updateSpinner(isLoading: Bool)
-    
 }
