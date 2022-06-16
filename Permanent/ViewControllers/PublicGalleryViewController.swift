@@ -47,6 +47,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     private func initUI() {
         searchBar.updateHeight(height: profilePageButton.frame.height, radius: 2)
         profilePageButton.layer.cornerRadius = 2
+        profilePageButton.imageView?.contentMode = .scaleAspectFill
         
         title = "Public Gallery".localized()
         searchBar.placeholder = "Search archives by name".localized()

@@ -40,8 +40,15 @@ class FileInfo: NSObject, NSCoding {
     }
 
     static func createFiles(from urls: [URL], parentFolder: FolderInfo, loadInMemory: Bool = false) -> [FileInfo] {
-        let files = urls.map { FileInfo(withURL: $0, named: $0.lastPathComponent, folder: parentFolder, loadInMemory: loadInMemory) }
-        
+        let files = urls.map { (url) -> FileInfo in
+            var fileName = url.lastPathComponent
+            if url.lastPathComponent.contains("FullSizeRender") {
+                let fileExtention = url.lastPathComponent.components(separatedBy: ".").last ?? ""
+                fileName = url.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent
+                if fileExtention.isNotEmpty { fileName.append(".\(fileExtention)") }
+            }
+            return FileInfo(withURL: url, named: fileName, folder: parentFolder, loadInMemory: loadInMemory)
+        }
         return files
     }
 

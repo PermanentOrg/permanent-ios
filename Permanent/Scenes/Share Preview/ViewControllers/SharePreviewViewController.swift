@@ -243,6 +243,12 @@ extension SharePreviewViewController: SharePreviewViewModelViewDelegate {
             return
         }
         
+        sharesVC.sharedRecordId = viewModel.shareDetails?.recordId ?? -1
+        sharesVC.fileType = viewModel.shareDetails?.fileType
+        sharesVC.sharedFolderLinkId = viewModel.shareDetails?.folderLinkId ?? -1
+        sharesVC.sharedFolderName = viewModel.shareDetails?.sharedFileName ?? ""
+        sharesVC.sharedFolderArchiveNo = viewModel.currentArchive?.archiveNbr ?? ""
+        sharesVC.shareThumbnailURL = viewModel.shareDetails?.thumbURL2000
         sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
         sharesVC.selectedFileId = viewModel.shareDetails?.folderLinkId
         AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: sharesVC)
