@@ -56,10 +56,6 @@ class AccountOnboardingViewModel: ViewModelInterface {
         var nextButtonHidden: Bool {
             return self == .acceptedInvitation
         }
-        
-        var leftButtonEnabled: Bool {
-            return self != .getStarted
-        }
     }
     
     static let archiveTypeChanged = NSNotification.Name("AccountOnboardingViewModel.archiveTypeChanged")
@@ -98,6 +94,9 @@ class AccountOnboardingViewModel: ViewModelInterface {
         case .nameArchive: return archiveName != nil
         default: return true
         }
+    }
+    var nextButtonHidden: Bool {
+        return currentPage.nextButtonHidden
     }
     
     func finishOnboard(_ completionBlock: @escaping ServerResponse) {

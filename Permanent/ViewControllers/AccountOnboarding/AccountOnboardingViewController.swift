@@ -91,7 +91,7 @@ class AccountOnboardingViewController: BaseViewController<AccountOnboardingViewM
     func updateNavButtons() {
         nextButton.configureActionButtonUI(title: viewModel?.nextButtonTitle ?? "")
         nextButton.isEnabled = viewModel?.nextButtonEnabled ?? false
-        nextButton.isHidden = viewModel?.currentPage.nextButtonHidden ?? false
+        nextButton.isHidden = viewModel?.nextButtonHidden ?? false
         
         backButton.isHidden = !(viewModel?.hasBackButton ?? false)
         
