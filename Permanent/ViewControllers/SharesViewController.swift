@@ -23,6 +23,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     var selectedFileId: Int?
     
+    var isSharedFolder: Bool = false
+    var sharedFolderArchiveNo: String = ""
+    var sharedFolderLinkId: Int = -1
+    var sharedFolderName: String = ""
+    
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
     
@@ -39,6 +44,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         if !hasSavedFolder && !hasSavedFile {
             getShares()
+            if isSharedFolder {
+                isSharedFolder = false
+                let navigateParams: NavigateMinParams = (sharedFolderArchiveNo, sharedFolderLinkId, nil)
+                navigateToFolder(withParams: navigateParams, backNavigation: false, shouldDisplaySpinner: true, then: {
+                    self.backButton.isHidden = false
+                    self.directoryLabel.text = self.sharedFolderName
+                })
+            }
         }
     }
     

@@ -16,6 +16,7 @@ struct ShareDetailsVM: ShareDetails {
     var archiveThumbURL: URL?
     var status: ShareStatus
     var folderLinkId: Int
+    var isFolder: Bool = false
     
     init(model: SharebyURLVOData) {
         if let archive = model.archiveVO?.fullName {
@@ -34,6 +35,9 @@ struct ShareDetailsVM: ShareDetails {
         showPreview = model.previewToggle == 1
         status = ShareStatus.status(forValue: model.shareVO?.status)
         folderLinkId = (model.folderLinkID?.value as? Int) ?? -1
+        
+        if let folderData = model.folderData {
+            isFolder = true
+        }
     }
-
 }

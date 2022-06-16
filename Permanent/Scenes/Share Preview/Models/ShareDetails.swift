@@ -25,4 +25,5 @@ protocol ShareDetails {
     
     var status: ShareStatus { get set }
     
+    var isFolder: Bool { get }    
 }
