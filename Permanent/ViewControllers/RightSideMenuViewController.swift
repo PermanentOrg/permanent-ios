@@ -170,7 +170,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         let menuOption = sectionData[indexPath.row]
         
         let previousMenuOption = selectedMenuOption
-        if menuOption != .addStorage && menuOption != .contactSupport {
+        if menuOption != .contactSupport {
             selectedMenuOption = menuOption
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
