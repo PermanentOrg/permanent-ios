@@ -24,7 +24,7 @@ class FileDetailsTopCollectionViewCell: FileDetailsBaseCollectionViewCell {
         activityIndicator.startAnimating()
         
         imageView.image = nil
-        let urlString = viewModel.file.thumbnailURL2000 ?? ""
+        let urlString = viewModel.file.thumbnailURL2000 ?? viewModel.fileThumbnailURL() ?? ""
         guard let url = URL(string: urlString) else { return }
         
         imageView.sd_setImage(with: url) { image, error, cacheType, url in

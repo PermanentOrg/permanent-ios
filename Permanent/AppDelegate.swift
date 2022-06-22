@@ -254,14 +254,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             let archiveNbr: String = userInfo["fromArchiveId"] as? String,
             let toArchiveNbr: String = userInfo["toArchiveNumber"] as? String,
             let toArchiveName: String = userInfo["toArchiveName"] as? String,
-            let toArchiveId: Int = Int(userInfo["toArchiveId"] as? String ?? "") else {
+            let toArchiveId: Int = Int(userInfo["toArchiveId"] as? String ?? ""),
+            let accessRole: String = userInfo["accessRole"] as? String else {
             return
         }
         
         if let name: String = userInfo["recordName"] as? String,
         let recordId: Int = Int(userInfo["recordId"] as? String ?? "") {
             DispatchQueue.main.async {
-                let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+                let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
                 
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
@@ -286,7 +287,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         } else if let sharedFolderName: String = userInfo["folderName"] as? String {
             DispatchQueue.main.async {
-                let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName)
+                let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
                 try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
                 
                 if let drawerVC = self.rootViewController.current as? DrawerViewController {
