@@ -29,6 +29,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     var sharedFolderName: String = ""
     var sharedRecordId: Int = -1
     var shareThumbnailURL: String?
+    var shareAccessRole: String?
     
     private var isGridView = false
     private var sortActionSheet: SortActionSheet?
@@ -55,7 +56,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                         self.directoryLabel.text = self.sharedFolderName
                     })
                 } else {
-                    let sharedFile = ShareNotificationPayload(name: sharedFolderName, recordId: sharedRecordId, folderLinkId: sharedFolderLinkId, archiveNbr: sharedFolderArchiveNo, type: FileType.image.rawValue, toArchiveId: viewModel?.currentArchive?.archiveID ?? -1, toArchiveNbr: viewModel?.currentArchive?.archiveNbr ?? "", toArchiveName: viewModel?.currentArchive?.fullName ?? "")
+                    let sharedFile = ShareNotificationPayload(name: sharedFolderName, recordId: sharedRecordId, folderLinkId: sharedFolderLinkId, archiveNbr: sharedFolderArchiveNo, type: FileType.image.rawValue, toArchiveId: viewModel?.currentArchive?.archiveID ?? -1, toArchiveNbr: viewModel?.currentArchive?.archiveNbr ?? "", toArchiveName: viewModel?.currentArchive?.fullName ?? "", accessRole: shareAccessRole ?? "viewer")
                     self.presentFileDetails(sharedFile: sharedFile, sharedFileThumbnailURL: shareThumbnailURL)
                 }
             }
@@ -245,8 +246,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func presentFileDetails(sharedFile: ShareNotificationPayload, sharedFileThumbnailURL: String? = nil) {
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
-        var permissions = currentArchive?.permissions() ?? [.read]
-        if sharedFileThumbnailURL != nil { permissions = [.read] }
+        var permissions = ArchiveVOData.permissions(forAccessRole: sharedFile.accessRole)
         let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions, thumbnailURL2000: sharedFileThumbnailURL)
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = fileVM

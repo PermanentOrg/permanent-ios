@@ -168,8 +168,10 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let contentType = fileVO.contentType {
             switch fileType {
             case FileType.image:
-                break
-                
+                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
+                    self.loadImage(withURL: url)
+                }
+        
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
                 
@@ -184,7 +186,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             let downloadURL = URL(string: downloadURLString) {
             switch fileType {
             case FileType.image:
-                break
+                if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
+                    self.loadImage(withURL: url)
+                }
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
