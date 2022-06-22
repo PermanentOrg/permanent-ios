@@ -169,7 +169,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             switch fileType {
             case FileType.image:
                 if let url = URL(string: self.viewModel?.fileThumbnailURL()) {
-                    
                     self.loadImage(withURL: url)
                 }
         
