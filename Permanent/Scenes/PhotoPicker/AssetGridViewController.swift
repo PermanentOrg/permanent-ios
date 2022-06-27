@@ -41,7 +41,7 @@ class AssetGridViewController: UICollectionViewController {
     fileprivate var stopGestureCoordinates: CGPoint = .zero
     fileprivate var previousSelectedElements = 0
     
-    fileprivate var pendingFirstScrool = true
+    fileprivate var pendingFirstScroll = true
     
     // MARK: UIViewController / Life Cycle
     
@@ -355,8 +355,8 @@ class AssetGridViewController: UICollectionViewController {
     }
     
     fileprivate func navigateToLastCell() {
-        if pendingFirstScrool {
-            pendingFirstScrool = false
+        if pendingFirstScroll {
+            pendingFirstScroll = false
             let item = self.collectionView(self.collectionView, numberOfItemsInSection: 0) - 1
             let lastItemIndex = IndexPath(item: item, section: 0)
             self.collectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
