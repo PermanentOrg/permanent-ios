@@ -78,6 +78,7 @@ class AssetGridViewController: UICollectionViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         navigateToLastCell()
     }
     
@@ -357,9 +358,9 @@ class AssetGridViewController: UICollectionViewController {
     fileprivate func navigateToLastCell() {
         if pendingFirstScroll {
             pendingFirstScroll = false
-            let item = self.collectionView(self.collectionView, numberOfItemsInSection: 0) - 1
+            let item = collectionView(collectionView, numberOfItemsInSection: 0) - 1
             let lastItemIndex = IndexPath(item: item, section: 0)
-            self.collectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
+            collectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
         }
     }
 }
