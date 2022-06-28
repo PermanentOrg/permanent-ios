@@ -41,6 +41,8 @@ class AssetGridViewController: UICollectionViewController {
     fileprivate var stopGestureCoordinates: CGPoint = .zero
     fileprivate var previousSelectedElements = 0
     
+    fileprivate var pendingFirstScroll = true
+    
     // MARK: UIViewController / Life Cycle
     
     override func viewDidLoad() {
@@ -54,7 +56,7 @@ class AssetGridViewController: UICollectionViewController {
         // the default "All Photos" view.
         if fetchResult == nil {
             let allPhotosOptions = PHFetchOptions()
-            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
             fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
         }
         
@@ -73,6 +75,11 @@ class AssetGridViewController: UICollectionViewController {
         if delegate == nil {
             delegate = tabBarController as? PhotoTabBarViewController
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        navigateToLastCell()
     }
     
     deinit {
@@ -345,6 +352,15 @@ class AssetGridViewController: UICollectionViewController {
             return (added, removed)
         } else {
             return ([new], [old])
+        }
+    }
+    
+    fileprivate func navigateToLastCell() {
+        if pendingFirstScroll {
+            pendingFirstScroll = false
+            let item = collectionView(collectionView, numberOfItemsInSection: 0) - 1
+            let lastItemIndex = IndexPath(item: item, section: 0)
+            collectionView.scrollToItem(at: lastItemIndex, at: .bottom, animated: false)
         }
     }
 }
