@@ -121,6 +121,9 @@
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
+		5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */; };
+		5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED06F42286B2BD5006C126B /* MainInterface.storyboard */; };
+		5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */; };
 		5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */; };
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
@@ -438,6 +441,13 @@
 			remoteGlobalIDString = 5E2C5D1624D98EE100E2B95F;
 			remoteInfo = Permanent;
 		};
+		5ED06F46286B2BD5006C126B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E2C5D0F24D98EE100E2B95F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5ED06F3D286B2BD5006C126B;
+			remoteInfo = ShareExtension;
+		};
 		F57E4D3F2653EBC700F0A968 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E2C5D0F24D98EE100E2B95F /* Project object */;
@@ -454,6 +464,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */,
 				F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -584,6 +595,10 @@
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5ED06F3E286B2BD5006C126B /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
+		5ED06F43286B2BD5006C126B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		5ED06F45286B2BD5006C126B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		5ED0855D24E3E5C300CDB4D3 /* OpenSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -926,6 +941,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5ED06F3B286B2BD5006C126B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5A2A07326161AE6003AAF36 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1127,6 +1149,7 @@
 				5E2C5D1924D98EE100E2B95F /* Permanent */,
 				F5A2A07726161AE6003AAF36 /* PushExtension */,
 				5E68F2CD26A74FCD00CC936E /* PermanentTests */,
+				5ED06F3F286B2BD5006C126B /* ShareExtension */,
 				5E2C5D1824D98EE100E2B95F /* Products */,
 				D01BC0154B74CFCC3532CF7E /* Pods */,
 				5E60451B25120685002E47CB /* Recovered References */,
@@ -1142,6 +1165,7 @@
 				5E2C5D1724D98EE100E2B95F /* Permanent.app */,
 				F5A2A07626161AE6003AAF36 /* PushExtension.appex */,
 				5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */,
+				5ED06F3E286B2BD5006C126B /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1304,6 +1328,16 @@
 				5E5DFA6F2746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib */,
 			);
 			path = ProfilePageCollectionViewCells;
+			sourceTree = "<group>";
+		};
+		5ED06F3F286B2BD5006C126B /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
+				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
+				5ED06F45286B2BD5006C126B /* Info.plist */,
+			);
+			path = ShareExtension;
 			sourceTree = "<group>";
 		};
 		5ED0856524E3E5CA00CDB4D3 /* Fonts */ = {
@@ -2065,6 +2099,7 @@
 			);
 			dependencies = (
 				F57E4D402653EBC700F0A968 /* PBXTargetDependency */,
+				5ED06F47286B2BD5006C126B /* PBXTargetDependency */,
 			);
 			name = Permanent;
 			productName = Permanent;
@@ -2091,6 +2126,23 @@
 			productReference = 5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		5ED06F3D286B2BD5006C126B /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5ED06F4D286B2BD5006C126B /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				5ED06F3A286B2BD5006C126B /* Sources */,
+				5ED06F3B286B2BD5006C126B /* Frameworks */,
+				5ED06F3C286B2BD5006C126B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F5A2A07526161AE6003AAF36 /* PushExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5A2A08326161AE6003AAF36 /* Build configuration list for PBXNativeTarget "PushExtension" */;
@@ -2114,7 +2166,7 @@
 		5E2C5D0F24D98EE100E2B95F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1250;
+				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1160;
 				ORGANIZATIONNAME = "Victory Square Partners";
 				TargetAttributes = {
@@ -2124,6 +2176,9 @@
 					5E68F2CB26A74FCD00CC936E = {
 						CreatedOnToolsVersion = 12.5.1;
 						TestTargetID = 5E2C5D1624D98EE100E2B95F;
+					};
+					5ED06F3D286B2BD5006C126B = {
+						CreatedOnToolsVersion = 13.4.1;
 					};
 					F5A2A07526161AE6003AAF36 = {
 						CreatedOnToolsVersion = 12.4;
@@ -2146,6 +2201,7 @@
 				5E2C5D1624D98EE100E2B95F /* Permanent */,
 				F5A2A07526161AE6003AAF36 /* PushExtension */,
 				5E68F2CB26A74FCD00CC936E /* PermanentTests */,
+				5ED06F3D286B2BD5006C126B /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -2226,6 +2282,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5ED06F3C286B2BD5006C126B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2739,6 +2803,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5ED06F3A286B2BD5006C126B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5A2A07226161AE6003AAF36 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2755,6 +2827,11 @@
 			target = 5E2C5D1624D98EE100E2B95F /* Permanent */;
 			targetProxy = 5E68F2D126A74FCD00CC936E /* PBXContainerItemProxy */;
 		};
+		5ED06F47286B2BD5006C126B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5ED06F3D286B2BD5006C126B /* ShareExtension */;
+			targetProxy = 5ED06F46286B2BD5006C126B /* PBXContainerItemProxy */;
+		};
 		F57E4D402653EBC700F0A968 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F5A2A07526161AE6003AAF36 /* PushExtension */;
@@ -2769,6 +2846,14 @@
 				5E2C5D2624D98EE300E2B95F /* Base */,
 			);
 			name = Launch.storyboard;
+			sourceTree = "<group>";
+		};
+		5ED06F42286B2BD5006C126B /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5ED06F43286B2BD5006C126B /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		BC4526DC251BE53900E24A51 /* Localizable.strings */ = {
@@ -2901,6 +2986,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 781F73F2639E8EFF09AB94F7 /* Pods-Permanent.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -2928,6 +3014,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4B10D881B6E86B89067BB583 /* Pods-Permanent.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Permanent/PermanentRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -3042,6 +3129,122 @@
 			};
 			name = "DEV-Release";
 		};
+		5ED06F49286B2BD5006C126B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5ED06F4A286B2BD5006C126B /* DEV-Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "DEV-Debug";
+		};
+		5ED06F4B286B2BD5006C126B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5ED06F4C286B2BD5006C126B /* DEV-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C8YKZNBVWT;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "DEV-Release";
+		};
 		BC0108832511E8D7002F9FD6 /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3106,6 +3309,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 183E5EAF0F53B6A9F80FC410 /* Pods-Permanent.dev-debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/PermanentDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -3187,6 +3391,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 865C3500F96147251F908844 /* Pods-Permanent.dev-release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -3339,6 +3544,17 @@
 				5E68F2D426A74FCD00CC936E /* DEV-Debug */,
 				5E68F2D526A74FCD00CC936E /* Release */,
 				5E68F2D626A74FCD00CC936E /* DEV-Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5ED06F4D286B2BD5006C126B /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5ED06F49286B2BD5006C126B /* Debug */,
+				5ED06F4A286B2BD5006C126B /* DEV-Debug */,
+				5ED06F4B286B2BD5006C126B /* Release */,
+				5ED06F4C286B2BD5006C126B /* DEV-Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
