@@ -82,7 +82,9 @@ class UploadManager {
         } else {
             do {
                 file.url = try fileHelper.copyFile(withURL: file.url)
-            } catch { }
+            } catch {
+                print(error)
+            }
         }
         
         // Save file metadata
@@ -104,10 +106,14 @@ class UploadManager {
     
     @objc
     func refreshQueue() {
-        let extensionUploads = ExtensionUploadManager.shared.savedFiles()
-        if extensionUploads.isEmpty == false {
-            upload(files: extensionUploads)
-            ExtensionUploadManager.shared.clearSavedFiles()
+        do {
+            let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
+            if extensionUploads.isEmpty == false {
+                upload(files: extensionUploads)
+                ExtensionUploadManager.shared.clearSavedFiles()
+            }
+        } catch {
+            print(error)
         }
         
         DispatchQueue.main.async { [self] in
