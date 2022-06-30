@@ -104,6 +104,12 @@ class UploadManager {
     
     @objc
     func refreshQueue() {
+        let extensionUploads = ExtensionUploadManager.shared.savedFiles()
+        if extensionUploads.isEmpty == false {
+            upload(files: extensionUploads)
+            ExtensionUploadManager.shared.clearSavedFiles()
+        }
+        
         DispatchQueue.main.async { [self] in
             var didRefresh = false
             
