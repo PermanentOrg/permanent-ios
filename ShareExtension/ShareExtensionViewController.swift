@@ -35,6 +35,7 @@ class ShareExtensionViewController: UIViewController {
     
     fileprivate func setupTableView() {
         tableView.separatorStyle = .none
+        tableView.register(UINib(nibName: String(describing: FileDetailsTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FileDetailsTableViewCell.self))
     }
     
     private func handleSharedFile() {
@@ -72,15 +73,22 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let tableViewCell = tableView.dequeueReusableCell(withIdentifier: "fileDetailsCell", for: indexPath)
-        if let fileData = NSData(contentsOf: selectedFiles[indexPath.row].url) {
-            let byteCountFormatter = ByteCountFormatter()
-            byteCountFormatter.countStyle = .file
+        var tableViewCell = UITableViewCell()
+        
+        if let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileDetailsTableViewCell.self)) as? FileDetailsTableViewCell {
             
-            tableViewCell.textLabel?.text = selectedFiles[indexPath.row].name
-            tableViewCell.detailTextLabel?.text = byteCountFormatter.string(for: Int64(fileData.count))
-            tableViewCell.imageView?.image = UIImage(data: fileData as Data)
+            if let fileData = NSData(contentsOf: selectedFiles[indexPath.row].url) {
+                let byteCountFormatter = ByteCountFormatter()
+                byteCountFormatter.countStyle = .file
+                
+                cell.configure(fileImage: UIImage(data: fileData as Data), fileName: selectedFiles[indexPath.row].name, fileSize: byteCountFormatter.string(for: Int64(fileData.count)))
+            }
+            tableViewCell = cell
         }
         return tableViewCell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return CGFloat(60)
     }
 }

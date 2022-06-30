@@ -23,38 +23,6 @@
                                         <rect key="frame" x="0.0" y="10" width="414" height="798"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="fileDetailsCell" textLabel="ixW-J0-FSh" detailTextLabel="iq3-mG-1uU" imageView="p3S-Ju-bfw" rowHeight="80" style="IBUITableViewCellStyleSubtitle" id="lKg-Ib-5kL">
-                                                <rect key="frame" x="0.0" y="44.5" width="414" height="80"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lKg-Ib-5kL" id="rdO-nr-kTF">
-                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="80"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ixW-J0-FSh">
-                                                            <rect key="frame" x="69" y="20" width="31.5" height="19.5"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iq3-mG-1uU">
-                                                            <rect key="frame" x="69" y="42.5" width="35" height="16"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" insetsLayoutMarginsFromSafeArea="NO" image="placeholder" id="p3S-Ju-bfw">
-                                                            <rect key="frame" x="20" y="23" width="34" height="34"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
-                                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
-                                                        </imageView>
-                                                    </subviews>
-                                                </tableViewCellContentView>
-                                            </tableViewCell>
-                                        </prototypes>
                                         <connections>
                                             <outlet property="dataSource" destination="j1y-V4-xli" id="Se4-JW-K4Q"/>
                                             <outlet property="delegate" destination="j1y-V4-xli" id="kvN-XQ-lAB"/>
@@ -112,7 +80,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="placeholder" width="34" height="34"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
