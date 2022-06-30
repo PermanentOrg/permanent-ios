@@ -12,6 +12,8 @@ import UniformTypeIdentifiers
 @objc(ShareExtensionViewController)
 class ShareExtensionViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var statusLabel: UILabel!
     
     var selectedFiles: [FileInfo] = []
     var filesURL: [URL] = []
@@ -47,23 +49,41 @@ class ShareExtensionViewController: UIViewController {
             provider.loadItem(forTypeIdentifier: contentType, options: nil) { [unowned self] (data, error) in
                 guard error == nil else { return }
                 
-                if let nsUrl = data as? NSURL, let stringUrl = nsUrl.absoluteURL {
-                    filesURL.append(stringUrl)
+                if let nsUrl = data as? NSURL, let path = nsUrl.path {
+                    do {
+                        let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: path))
+                        filesURL.append(tempLocation)
+                    } catch {
+                        print(error)
+                    }
                 }
                 dispatchGroup.leave()
             }
         }
         dispatchGroup.notify(queue: DispatchQueue.main) {
-            self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: 0, folderLinkId: 0))
+            self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: 44677, folderLinkId: 114553))
+            
+            self.activityIndicator.stopAnimating()
+            self.statusLabel.isHidden = true
             self.tableView.reloadData()
         }
     }
     
     @objc func didTapUpload() {
+        do {
+            try ExtensionUploadManager.shared.save(files: selectedFiles)
+        } catch {
+            let alert = UIAlertController(title: "Error".localized(), message: "ErrorMessage".localized(), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: nil))
+
+            self.present(alert, animated: true)
+        }
+        
+        extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
     }
     
     @objc func didTapCancel() {
-        self.extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
+        extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }
 extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSource {

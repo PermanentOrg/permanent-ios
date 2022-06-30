@@ -10,7 +10,15 @@ import Foundation
 class PreferencesManager {
     static var shared = PreferencesManager()
 
-    fileprivate var userDefaults = UserDefaults.standard
+    fileprivate let userDefaults: UserDefaults
+    
+    init() {
+        userDefaults = UserDefaults.standard
+    }
+    
+    init(withGroupName groupName: String) {
+        userDefaults = UserDefaults(suiteName: groupName)!
+    }
 
     func getValue<T>(forKey key: String) -> T? {
         return userDefaults.value(forKey: key) as? T
@@ -61,5 +69,4 @@ class PreferencesManager {
         let decodedData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(object) as? T
         return decodedData
     }
-    
 }

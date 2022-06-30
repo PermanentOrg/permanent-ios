@@ -60,12 +60,25 @@
                                             <outlet property="delegate" destination="j1y-V4-xli" id="kvN-XQ-lAB"/>
                                         </connections>
                                     </tableView>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="xOH-T5-TZQ">
+                                        <rect key="frame" x="188.5" y="385.5" width="37" height="37"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Preparing Files..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sW7-La-54q">
+                                        <rect key="frame" x="144" y="430.5" width="126.5" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
+                                    <constraint firstItem="sW7-La-54q" firstAttribute="top" secondItem="xOH-T5-TZQ" secondAttribute="bottom" constant="8" id="3nG-C5-eUl"/>
                                     <constraint firstAttribute="bottom" secondItem="UuF-iB-Fb9" secondAttribute="bottom" id="4pM-SS-486"/>
                                     <constraint firstItem="UuF-iB-Fb9" firstAttribute="top" secondItem="rKJ-k5-eek" secondAttribute="top" constant="10" id="5ir-8J-7e7"/>
                                     <constraint firstItem="UuF-iB-Fb9" firstAttribute="leading" secondItem="rKJ-k5-eek" secondAttribute="leading" id="BrH-RJ-SRT"/>
+                                    <constraint firstItem="xOH-T5-TZQ" firstAttribute="centerX" secondItem="rKJ-k5-eek" secondAttribute="centerX" id="SmQ-1c-XeL"/>
+                                    <constraint firstItem="sW7-La-54q" firstAttribute="centerX" secondItem="xOH-T5-TZQ" secondAttribute="centerX" id="XTh-dN-YSE"/>
+                                    <constraint firstItem="xOH-T5-TZQ" firstAttribute="centerY" secondItem="rKJ-k5-eek" secondAttribute="centerY" id="bjW-x9-PNV"/>
                                     <constraint firstAttribute="trailing" secondItem="UuF-iB-Fb9" secondAttribute="trailing" id="ubo-eP-eXc"/>
                                 </constraints>
                             </view>
@@ -81,6 +94,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="1Gh-ye-3aC"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="xOH-T5-TZQ" id="EN5-Fg-ePx"/>
+                        <outlet property="statusLabel" destination="sW7-La-54q" id="n68-fL-cSo"/>
                         <outlet property="tableView" destination="UuF-iB-Fb9" id="pNs-Yb-zm6"/>
                     </connections>
                 </viewController>

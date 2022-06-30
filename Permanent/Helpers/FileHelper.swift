@@ -29,7 +29,7 @@ class FileHelper {
         do {
             var fileURL: URL
             if isDownload {
-               fileURL = self.defaultDirectoryURL!
+                fileURL = self.defaultDirectoryURL!
             } else {
                 fileURL = self.uploadDirectoryURL!
             }
@@ -46,7 +46,11 @@ class FileHelper {
     func copyFile(withURL from: URL) throws -> URL {
         let to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
         
+        // If we already have an item stored at this path, we remove it first.
+        try? FileManager.default.removeItem(at: to)
+        
         try FileManager.default.copyItem(at: from, to: to)
+        
         return to
     }
     
@@ -60,7 +64,6 @@ class FileHelper {
             
             try FileManager.default.copyItem(at: url, to: fileURL)
             return fileURL
-            
         } catch {
             print("Error. Could not save file.", error)
             return nil
