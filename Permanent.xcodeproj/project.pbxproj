@@ -409,6 +409,10 @@
 		F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */; };
 		F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57CE595282BE9D000B06D95 /* DonateViewModel.swift */; };
 		F57E4D3E2653EBC700F0A968 /* PushExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5A2A07626161AE6003AAF36 /* PushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */; };
+		F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
+		F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
+		F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
 		F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */; };
 		F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853D1F26E9FA5A0050E377 /* Permission.swift */; };
 		F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58B8B9B2757F67A00D43606 /* PublicArchiveViewController.swift */; };
@@ -430,6 +434,7 @@
 		F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D248273205B000707301 /* SearchEndpoint.swift */; };
 		F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209B9285B3DB3006DCF9F /* AccountOnboardingTests.swift */; };
 		F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */; };
+		F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AC256BD72200D29041 /* Colors.swift */; };
 		F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA412670D16F0027D97A /* BaseOperation.swift */; };
 		F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA432670D1940027D97A /* UploadOperation.swift */; };
 		F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
@@ -2307,8 +2312,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
+				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
+				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
+				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2828,6 +2837,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
+				F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */,
 				5E83CC49286C601C00A5775B /* StringExtension.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,

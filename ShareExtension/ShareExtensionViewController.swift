@@ -27,12 +27,36 @@ class ShareExtensionViewController: UIViewController {
     }
     
     fileprivate func initUI() {
+        styleNavBar()
+        
+        title = "Permanent"
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
-        navigationController?.navigationBar.standardAppearance.configureWithOpaqueBackground()
-        navigationController?.navigationBar.standardAppearance.backgroundColor = .white
-        navigationController?.navigationBar.standardAppearance.shadowColor = .clear
-        navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+    }
+    
+    func styleNavBar() {
+        navigationController?.navigationBar.tintColor = .white
+        
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .darkBlue
+            appearance.titleTextAttributes = [
+                .foregroundColor: UIColor.white,
+                .font: UIFont(name: "OpenSans-Bold", size: 20)!
+            ]
+            
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        } else {
+            navigationController?.navigationBar.barTintColor = .darkBlue
+            navigationController?.navigationBar.isTranslucent = false
+            navigationController?.navigationBar.titleTextAttributes = [
+                .foregroundColor: UIColor.white,
+                .font: UIFont(name: "OpenSans-Bold", size: 20)!
+            ]
+        }
     }
     
     fileprivate func setupTableView() {
