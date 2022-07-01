@@ -84,15 +84,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 loadImage(withURL: url)
             }
             
-            viewModel?.getRecord(file: file, then: { record in
+            viewModel?.getRecord(file: file, then: { [weak self] record in
                 if record != nil {
-                    self.loadRecord()
+                    self?.loadRecord()
                 } else {
-                    self.activityIndicator.stopAnimating()
-                    self.thumbnailImageView.isHidden = true
+                    self?.activityIndicator.stopAnimating()
+                    self?.thumbnailImageView.isHidden = true
                     
-                    self.errorLabel.isHidden = false
-                    self.retryButton.isHidden = false
+                    self?.errorLabel.isHidden = false
+                    self?.retryButton.isHidden = false
                 }
             })
         } else if file.type == .image, let url = URL(string: file.thumbnailURL2000) {
