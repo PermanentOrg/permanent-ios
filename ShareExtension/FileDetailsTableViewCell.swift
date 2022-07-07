@@ -29,14 +29,15 @@ class FileDetailsTableViewCell: UITableViewCell {
     func configure(fileImage: UIImage?, fileName: String?, fileSize: String?) {
         fileNameLabel.font = .systemFont(ofSize: 16)
         fileSizeLabel.font = .systemFont(ofSize: 12)
+        fileSizeLabel.textColor = .dustyGray
         
         if let image = fileImage, let name = fileName, let size = fileSize {
             thumbnailImageView.image = image
-             fileNameLabel.text = name
-             fileSizeLabel.text = size
+            fileNameLabel.text = name
+            fileSizeLabel.text = size
         }
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }

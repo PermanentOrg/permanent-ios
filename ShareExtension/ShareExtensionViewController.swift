@@ -14,6 +14,11 @@ class ShareExtensionViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var userNameLabel: UILabel!
+    @IBOutlet weak var saveFolderLabel: UILabel!
+    @IBOutlet weak var separatorOneView: UIView!
+    @IBOutlet weak var userNameImageView: UIImageView!
+    @IBOutlet weak var saveFolderImageView: UIImageView!
     
     var selectedFiles: [FileInfo] = []
     var filesURL: [URL] = []
@@ -33,6 +38,17 @@ class ShareExtensionViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
+        
+        saveFolderLabel.text = "Root folder"
+        userNameImageView.image = UIImage(named: "placeholder")
+        saveFolderImageView.image = UIImage(named: "shareFolder")
+        
+        userNameLabel.font = Text.style4.font
+        saveFolderLabel.font = Text.style4.font
+
+        userNameLabel.textColor = .black
+        saveFolderLabel.textColor = .black
+        separatorOneView.backgroundColor = .lightGray
     }
     
     func styleNavBar() {
@@ -65,8 +81,15 @@ class ShareExtensionViewController: UIViewController {
     }
     
     private func handleSharedFile() {
+        guard let archive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) else { return }
+        
         let dispatchGroup = DispatchGroup()
         
+        if let name = archive.fullName, let archiveThumnailUrl = archive.thumbURL1000 {
+            userNameLabel.text = "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "\(name)")
+            userNameImageView.load(urlString: archiveThumnailUrl)
+        }
+
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         let contentType = UTType.jpeg.identifier as String
         for provider in attachments {
@@ -86,7 +109,11 @@ class ShareExtensionViewController: UIViewController {
             }
         }
         dispatchGroup.notify(queue: DispatchQueue.main) {
-            self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: 44677, folderLinkId: 114553))
+            if let folderId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveFolderId),
+                let folderLinkId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveFolderLinkId),
+            let rootFolderId = folderId, let rootFolderLinkId = folderLinkId {
+                self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: rootFolderId, folderLinkId: rootFolderLinkId))
+            }
             
             self.activityIndicator.stopAnimating()
             self.statusLabel.isHidden = true
@@ -120,7 +147,6 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
         var tableViewCell = UITableViewCell()
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileDetailsTableViewCell.self)) as? FileDetailsTableViewCell {
-            
             if let fileData = NSData(contentsOf: selectedFiles[indexPath.row].url) {
                 let byteCountFormatter = ByteCountFormatter()
                 byteCountFormatter.countStyle = .file

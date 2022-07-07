@@ -13,7 +13,7 @@ class PreferencesManager {
     fileprivate let userDefaults: UserDefaults
     
     init() {
-        userDefaults = UserDefaults.standard
+        userDefaults = UserDefaults(suiteName: ExtensionUploadManager.appSuiteGroup)!
     }
     
     init(withGroupName groupName: String) {
