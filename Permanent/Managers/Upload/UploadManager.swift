@@ -11,6 +11,7 @@ class UploadManager {
     static let didRefreshQueueNotification = Notification.Name("UploadManager.didRefreshQueueNotification")
     static let didUploadFileNotification = Notification.Name("UploadManager.didUploadFileNotification")
     static let quotaExceededNotification = Notification.Name("UploadManager.quotaExceededNotification")
+    static let didCreateMobileUploadsFolderNotification = Notification.Name("UploadManager.didCreateMobileUploadsFolderNotification")
     
     static let shared: UploadManager = UploadManager()
     
@@ -128,6 +129,8 @@ class UploadManager {
                             let params: NewFolderParams = ("Mobile Uploads", root.folderLinkID ?? 0)
                             createNewFolder(params: params) { [self] folderVO in
                                 guard let folderId = folderVO?.folderID, let folderLinkId = folderVO?.folderLinkID else { return }
+                                
+                                NotificationCenter.default.post(name: Self.didCreateMobileUploadsFolderNotification, object: nil, userInfo: ["folder": folderVO])
                                 
                                 extensionUploads.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
                                 
