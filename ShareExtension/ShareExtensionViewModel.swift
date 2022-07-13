@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ShareExtensionViewModel: ViewModelInterface {
+class ShareExtensionViewModel {
     
     func uploadFiles() {
         

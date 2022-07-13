@@ -10,7 +10,7 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 @objc(ShareExtensionViewController)
-class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> {
+class ShareExtensionViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
@@ -33,7 +33,6 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = ShareExtensionViewModel()
         
         initUI()
         setupTableView()
