@@ -20,7 +20,7 @@ class ExtensionUploadManager {
         let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
         let nsFiles = NSArray(array: files)
         
-        try prefsManager.setNonPlistObject(nsFiles, forKey: Self.savedFilesKey)
+        try PreferencesManager().setNonPlistObject(nsFiles, forKey: Self.savedFilesKey)
     }
     
     func savedFiles() throws -> [FileInfo] {
@@ -30,7 +30,7 @@ class ExtensionUploadManager {
         var files: [FileInfo] = []
         
         let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
-        if let nsFiles: NSArray = try prefsManager.getNonPlistObject(forKey: Self.savedFilesKey) {
+        if let nsFiles: NSArray = try PreferencesManager().getNonPlistObject(forKey: Self.savedFilesKey) {
             files = (nsFiles as? [FileInfo]) ?? []
         }
         
@@ -39,6 +39,6 @@ class ExtensionUploadManager {
     
     func clearSavedFiles() {
         let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
-        prefsManager.removeValue(forKey: Self.savedFilesKey)
+        PreferencesManager().removeValue(forKey: Self.savedFilesKey)
     }
 }

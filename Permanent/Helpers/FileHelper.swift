@@ -12,6 +12,10 @@ class FileHelper {
     var uploadDirectoryURL: URL?
     
     init() {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        print(documentsDirectory)
+        
         do {
             self.defaultDirectoryURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             
@@ -43,9 +47,12 @@ class FileHelper {
         }
     }
     
-    func copyFile(withURL from: URL) throws -> URL {
-        let to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
+    func copyFile(withURL from: URL, usingAppSuiteGroup suiteGroupName: String? = nil) throws -> URL {
+        var to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
         
+        if let suiteGroup = suiteGroupName {
+            to = FileManager().containerURL(forSecurityApplicationGroupIdentifier: suiteGroup)!.appendingPathComponent(from.lastPathComponent)
+        }
         // If we already have an item stored at this path, we remove it first.
         try? FileManager.default.removeItem(at: to)
         

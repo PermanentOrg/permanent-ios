@@ -10,7 +10,7 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 @objc(ShareExtensionViewController)
-class ShareExtensionViewController: UIViewController {
+class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
@@ -23,8 +23,17 @@ class ShareExtensionViewController: UIViewController {
     var selectedFiles: [FileInfo] = []
     var filesURL: [URL] = []
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return [.portrait]
+        } else {
+            return [.all]
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = ShareExtensionViewModel()
         
         initUI()
         setupTableView()
@@ -73,6 +82,7 @@ class ShareExtensionViewController: UIViewController {
                 .font: UIFont(name: "OpenSans-Bold", size: 20)!
             ]
         }
+        tableView.backgroundColor = .white
     }
     
     fileprivate func setupTableView() {
@@ -91,15 +101,18 @@ class ShareExtensionViewController: UIViewController {
         }
 
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
-        let contentType = UTType.jpeg.identifier as String
+        let contentType = UTType.item.identifier
         for provider in attachments {
             dispatchGroup.enter()
             provider.loadItem(forTypeIdentifier: contentType, options: nil) { [unowned self] (data, error) in
-                guard error == nil else { return }
-                
+                guard error == nil else {
+                    didTapCancel()
+                    return
+                }
+        
                 if let nsUrl = data as? NSURL, let path = nsUrl.path {
                     do {
-                        let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: path))
+                        let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
                         filesURL.append(tempLocation)
                     } catch {
                         print(error)

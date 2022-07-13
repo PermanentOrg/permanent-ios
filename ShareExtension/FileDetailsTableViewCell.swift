@@ -29,10 +29,14 @@ class FileDetailsTableViewCell: UITableViewCell {
     func configure(fileImage: UIImage?, fileName: String?, fileSize: String?) {
         fileNameLabel.font = .systemFont(ofSize: 16)
         fileSizeLabel.font = .systemFont(ofSize: 12)
+        fileNameLabel.textColor = .black
         fileSizeLabel.textColor = .dustyGray
         
-        if let image = fileImage, let name = fileName, let size = fileSize {
+        if let image = fileImage {
             thumbnailImageView.image = image
+
+        }
+        if let name = fileName, let size = fileSize {
             fileNameLabel.text = name
             fileSizeLabel.text = size
         }
