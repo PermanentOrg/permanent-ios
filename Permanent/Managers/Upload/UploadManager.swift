@@ -128,7 +128,8 @@ class UploadManager {
                             // Mobile Uploads Folder has to be created
                             let params: NewFolderParams = ("Mobile Uploads", root.folderLinkID ?? 0)
                             createNewFolder(params: params) { [self] folderVO in
-                                guard let folderId = folderVO?.folderID, let folderLinkId = folderVO?.folderLinkID else { return }
+                                guard let folderVO = folderVO,
+                                      let folderId = folderVO.folderID, let folderLinkId = folderVO.folderLinkID else { return }
                                 
                                 NotificationCenter.default.post(name: Self.didCreateMobileUploadsFolderNotification, object: nil, userInfo: ["folder": folderVO])
                                 

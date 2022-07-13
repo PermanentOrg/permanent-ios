@@ -10,7 +10,7 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 @objc(ShareExtensionViewController)
-class ShareExtensionViewController: UIViewController {
+class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
@@ -34,9 +34,14 @@ class ShareExtensionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        viewModel = ShareExtensionViewModel()
         initUI()
         setupTableView()
         handleSharedFile()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
     }
     
     fileprivate func initUI() {
@@ -47,40 +52,17 @@ class ShareExtensionViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
-        saveFolderLabel.text = "Root folder"
+        saveFolderLabel.text = "Mobile Uploads folder"
         userNameImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
         userNameLabel.font = Text.style4.font
         saveFolderLabel.font = Text.style4.font
-
+        
         userNameLabel.textColor = .black
         saveFolderLabel.textColor = .black
         separatorOneView.backgroundColor = .lightGray
-    }
-    
-    func styleNavBar() {
-        navigationController?.navigationBar.tintColor = .white
         
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = .darkBlue
-            appearance.titleTextAttributes = [
-                .foregroundColor: UIColor.white,
-                .font: UIFont(name: "OpenSans-Bold", size: 20)!
-            ]
-            
-            navigationController?.navigationBar.standardAppearance = appearance
-            navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
-        } else {
-            navigationController?.navigationBar.barTintColor = .darkBlue
-            navigationController?.navigationBar.isTranslucent = false
-            navigationController?.navigationBar.titleTextAttributes = [
-                .foregroundColor: UIColor.white,
-                .font: UIFont(name: "OpenSans-Bold", size: 20)!
-            ]
-        }
         tableView.backgroundColor = .white
     }
     
@@ -92,13 +74,24 @@ class ShareExtensionViewController: UIViewController {
     private func handleSharedFile() {
         guard let archive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) else { return }
         
-        let dispatchGroup = DispatchGroup()
-        
         if let name = archive.fullName, let archiveThumnailUrl = archive.thumbURL1000 {
             userNameLabel.text = "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "\(name)")
             userNameImageView.load(urlString: archiveThumnailUrl)
         }
-
+        
+        if !archive.permissions().contains(.upload) {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and cannot upload files.".localized(), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: .ok, style: .default, handler: {_ in
+                    self.didTapCancel()
+                }))
+                
+                self.present(alert, animated: true)
+            }
+        }
+        
+        let dispatchGroup = DispatchGroup()
+        
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         let contentType = UTType.item.identifier
         for provider in attachments {
@@ -108,7 +101,7 @@ class ShareExtensionViewController: UIViewController {
                     didTapCancel()
                     return
                 }
-        
+                
                 if let nsUrl = data as? NSURL, let path = nsUrl.path {
                     do {
                         let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
@@ -121,11 +114,7 @@ class ShareExtensionViewController: UIViewController {
             }
         }
         dispatchGroup.notify(queue: DispatchQueue.main) {
-            if let folderId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveFolderId),
-                let folderLinkId: Int? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.archiveFolderLinkId),
-            let rootFolderId = folderId, let rootFolderLinkId = folderLinkId {
-                self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: rootFolderId, folderLinkId: rootFolderLinkId))
-            }
+            self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: -1, folderLinkId: -1))
             
             self.activityIndicator.stopAnimating()
             self.statusLabel.isHidden = true
@@ -139,7 +128,7 @@ class ShareExtensionViewController: UIViewController {
         } catch {
             let alert = UIAlertController(title: "Error".localized(), message: "ErrorMessage".localized(), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: nil))
-
+            
             self.present(alert, animated: true)
         }
         

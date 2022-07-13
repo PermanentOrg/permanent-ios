@@ -24,6 +24,21 @@
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */; };
 		5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
+		5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7F24EA6F47003CD359 /* BaseViewController.swift */; };
+		5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7D24EA6E47003CD359 /* ViewModelInterface.swift */; };
+		5E1CCC1D287F04EE00913EEA /* ActionDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E32E254A1BA000B71866 /* ActionDialogView.swift */; };
+		5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8424EA7156003CD359 /* RoundedButton.swift */; };
+		5E1CCC1F287F04FF00913EEA /* HighlightColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120CB2562C64300ECAD7B /* HighlightColor.swift */; };
+		5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8624EA772D003CD359 /* CustomButton.swift */; };
+		5E1CCC21287F050E00913EEA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
+		5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D35AF2553FC2C00786E8C /* ActionDialogStyle.swift */; };
+		5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */; };
+		5E1CCC24287F053A00913EEA /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA724EC20CB003D0EB0 /* TextField.swift */; };
+		5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5596F025A345ED00BF55DA /* DropdownView.swift */; };
+		5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06819AA524EC208F003D0EB0 /* CustomTextField.swift */; };
+		5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
+		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
+		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
@@ -1381,9 +1396,9 @@
 			isa = PBXGroup;
 			children = (
 				5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */,
+				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */,
 				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
-				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5ED06F45286B2BD5006C126B /* Info.plist */,
 				5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */,
@@ -2348,6 +2363,7 @@
 				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
 				5ED4B9C3287597E400CF044B /* Assets.xcassets in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
+				5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */,
 				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2868,12 +2884,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				5ED4B9C82876DFC200CF044B /* ItemVO.swift in Sources */,
+				5E1CCC21287F050E00913EEA /* UIColor.swift in Sources */,
+				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
 				5ED4B9D02876E03B00CF044B /* FolderVO.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
+				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
+				5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */,
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
+				5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */,
 				5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */,
 				5ED4B9CD2876E02200CF044B /* TimezoneVO.swift in Sources */,
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
@@ -2884,15 +2905,23 @@
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
+				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
 				F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */,
 				5ED4B9D82876E0EF00CF044B /* FolderSizeVO.swift in Sources */,
 				5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */,
+				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
+				5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */,
 				5ED4B9D52876E05B00CF044B /* FileVO.swift in Sources */,
 				5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */,
 				5ED4B9D22876E04300CF044B /* AccountVO.swift in Sources */,
+				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
+				5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */,
+				5E1CCC24287F053A00913EEA /* TextField.swift in Sources */,
+				5E1CCC1D287F04EE00913EEA /* ActionDialogView.swift in Sources */,
+				5E1CCC1F287F04FF00913EEA /* HighlightColor.swift in Sources */,
 				5E5DCAF9286DDC4300894D47 /* FileDetailsTableViewCell.swift in Sources */,
 				5ED4B9D32876E05400CF044B /* ParentFolderVO.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
@@ -2902,6 +2931,7 @@
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,
 				5ED4B9D12876E03F00CF044B /* RecordVO.swift in Sources */,
 				5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */,
+				5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
