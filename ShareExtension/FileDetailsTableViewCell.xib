@@ -16,8 +16,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="458" height="70"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="O57-NC-adN">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="doc.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="O57-NC-adN">
                         <rect key="frame" x="20" y="15" width="40" height="40"/>
+                        <color key="tintColor" white="0.80032597610722611" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="O57-NC-adN" secondAttribute="height" multiplier="1:1" id="Zxp-ls-It3"/>
                             <constraint firstAttribute="height" constant="40" id="kXL-1j-NMf"/>
@@ -60,6 +61,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="placeholder" width="34" height="34"/>
+        <image name="doc.fill" catalog="system" width="115" height="128"/>
     </resources>
 </document>

@@ -81,7 +81,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         
         if !archive.permissions().contains(.upload) {
             DispatchQueue.main.async {
-                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and cannot upload files.".localized(), preferredStyle: .alert)
+                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: .ok, style: .default, handler: {_ in
                     self.didTapCancel()
                 }))
