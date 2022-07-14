@@ -52,7 +52,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
-        saveFolderLabel.text = "Mobile Uploads folder"
+        saveFolderLabel.text = "Mobile Uploads"
         userNameImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
@@ -62,20 +62,20 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         userNameLabel.textColor = .black
         saveFolderLabel.textColor = .black
         separatorOneView.backgroundColor = .lightGray
-        
-        tableView.backgroundColor = .white
     }
     
     fileprivate func setupTableView() {
         tableView.separatorStyle = .none
         tableView.register(UINib(nibName: String(describing: FileDetailsTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: FileDetailsTableViewCell.self))
+        
+        tableView.backgroundColor = .white
     }
     
     private func handleSharedFile() {
         guard let archive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) else { return }
         
         if let name = archive.fullName, let archiveThumnailUrl = archive.thumbURL1000 {
-            userNameLabel.text = "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "\(name)")
+            userNameLabel.text = "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "The \(name)")
             userNameImageView.load(urlString: archiveThumnailUrl)
         }
         
@@ -139,6 +139,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
     }
 }
+
 extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return selectedFiles.count
@@ -148,12 +149,18 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
         var tableViewCell = UITableViewCell()
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileDetailsTableViewCell.self)) as? FileDetailsTableViewCell {
-            if let fileData = NSData(contentsOf: selectedFiles[indexPath.row].url) {
-                let byteCountFormatter = ByteCountFormatter()
-                byteCountFormatter.countStyle = .file
-                
-                cell.configure(fileImage: UIImage(data: fileData as Data), fileName: selectedFiles[indexPath.row].name, fileSize: byteCountFormatter.string(for: Int64(fileData.count)))
+            var formatedFileSize: String?
+            let byteCountFormatter = ByteCountFormatter()
+            byteCountFormatter.countStyle = .file
+            
+            let fileSizeAny = try! selectedFiles[indexPath.row].url.resourceValues(forKeys: [.fileSizeKey])
+            if let fileSizeInt = fileSizeAny.fileSize {
+                formatedFileSize = byteCountFormatter.string(for: fileSizeInt)
             }
+            
+            let fileThumbnail = resizeForUpload(selectedFiles[indexPath.row].url)
+            
+            cell.configure(fileImage: fileThumbnail, fileName: selectedFiles[indexPath.row].name, fileSize: formatedFileSize)
             tableViewCell = cell
         }
         return tableViewCell
@@ -161,5 +168,22 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(60)
+    }
+    
+    private func resizeForUpload(_ imageURL: URL) -> UIImage? {
+        let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        let maxDimensionInPixels: CGFloat = 300
+        let downsampleOptions = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
+        ] as CFDictionary
+
+        guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions), let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
+            return nil
+        }
+
+        return UIImage(cgImage: downsampledImage)
     }
 }
