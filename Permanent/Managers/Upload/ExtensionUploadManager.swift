@@ -17,7 +17,6 @@ class ExtensionUploadManager {
         NSKeyedArchiver.setClassName("Permanent.FileInfo", for: FileInfo.self)
         NSKeyedArchiver.setClassName("Permanent.FolderInfo", for: FolderInfo.self)
         
-        let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
         let nsFiles = NSArray(array: files)
         
         try PreferencesManager().setNonPlistObject(nsFiles, forKey: Self.savedFilesKey)
@@ -29,7 +28,6 @@ class ExtensionUploadManager {
         
         var files: [FileInfo] = []
         
-        let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
         if let nsFiles: NSArray = try PreferencesManager().getNonPlistObject(forKey: Self.savedFilesKey) {
             files = (nsFiles as? [FileInfo]) ?? []
         }
@@ -38,7 +36,6 @@ class ExtensionUploadManager {
     }
     
     func clearSavedFiles() {
-        let prefsManager = PreferencesManager(withGroupName: Self.appSuiteGroup)
         PreferencesManager().removeValue(forKey: Self.savedFilesKey)
     }
 }
