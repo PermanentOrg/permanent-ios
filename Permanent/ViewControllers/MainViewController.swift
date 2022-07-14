@@ -62,8 +62,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             guard let folder = notif.userInfo?["folder"] as? MinFolderVO else { return }
             
             if self?.viewModel?.currentFolder?.folderId == folder.parentFolderID {
-                self?.viewModel?.viewModels.insert(FileViewModel(model: folder, archiveThumbnailURL: "", permissions: []), at: 0)
-                self?.refreshCollectionView()
+                self?.refreshCurrentFolder()
             }
         }
         
