@@ -13,5 +13,9 @@
 	<array>
 		<string>merchant.org.permanent.permanentarchive</string>
 	</array>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.permanent.org.share</string>
+	</array>
 </dict>
 </plist>
