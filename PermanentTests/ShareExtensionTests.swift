@@ -79,4 +79,13 @@ class ShareExtensionTests: XCTestCase {
         
         XCTAssertEqual(sut.hasUploadPermission(), parameterForTest)
     }
+    
+    func testCellConfigurationParametersNegative() throws {
+        guard let url = URL(string: "http://www.test.com") else { return }
+        let file = FileInfo.init(withURL: url, named: "", folder: FolderInfo(folderId: -1, folderLinkId: -1))
+        let parameterForTest: ShareExtensionCellConfiguration = (nil, "", nil)
+        negativeTestInit()
+        
+        XCTAssert(sut.cellConfigurationParameters(file: file) == parameterForTest)
+    }
 }
