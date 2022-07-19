@@ -68,6 +68,42 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 }
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
+            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
+                self?.refreshCollectionView()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let operation = notif.object as? UploadOperation else { return }
+            // if the upload is in this screen's list, refresh the list of models
+            if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
+                if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
+                    self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
+                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
+                    self?.refreshCollectionView()
+                    
+                    if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
+                        queueUploadCount == 0 {
+                        self?.viewModel?.timer = Timer.scheduledTimer(timeInterval: 9, target: self as Any, selector: #selector(self?.timerActions), userInfo: nil, repeats: true)
+                    }
+                } else {
+                    self?.viewModel?.refreshUploadQueue()
+                    self?.refreshCollectionView()
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadOperation.uploadProgressNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let operation = notif.object as? UploadOperation else { return }
+            if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
+                if self?.viewModel?.timer != nil {
+                    self?.viewModel?.timer?.invalidate()
+                    self?.viewModel?.timerRunCount = 0
+                }
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -318,6 +354,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         } else {
             getShares()
         }
+    }
+    
+    @objc private func timerActions() {
+        pullToRefreshAction()
+        viewModel?.updateTimerCount()
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
