@@ -6,6 +6,8 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
+			<key>IntentsSupported</key>
+			<array/>
 			<key>NSExtensionActivationRule</key>
 			<string>SUBQUERY (
     extensionItems,

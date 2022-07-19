@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import UniformTypeIdentifiers
+import MobileCoreServices
 
 typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
@@ -41,7 +41,7 @@ class ShareExtensionViewModel: ViewModelInterface {
     
     func processSelectedFiles(attachments: [NSItemProvider], then handler: @escaping (Bool) -> Void) {
         let dispatchGroup = DispatchGroup()
-        let contentType = UTType.item.identifier
+        let contentType = kUTTypeItem as String
         
         var filesURL: [URL] = []
         for provider in attachments {
