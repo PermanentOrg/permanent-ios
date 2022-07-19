@@ -58,6 +58,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.present(alertVC, animated: true, completion: nil)
         }
         
+        NotificationCenter.default.addObserver(forName: UploadManager.didCreateMobileUploadsFolderNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let folder = notif.userInfo?["folder"] as? MinFolderVO else { return }
+            
+            if self?.viewModel?.currentFolder?.folderId == folder.parentFolderID {
+                self?.refreshCurrentFolder()
+            }
+        }
+        
         NotificationCenter.default.addObserver(forName: UploadOperation.uploadFinishedNotification, object: nil, queue: nil) { [weak self] notif in
             guard let operation = notif.object as? UploadOperation else { return }
             // if the upload is in this screen's list, refresh the list of models
