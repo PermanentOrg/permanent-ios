@@ -26,7 +26,7 @@ class FileDetailsTableViewCell: UITableViewCell {
         super.prepareForReuse()
     }
     
-    func configure(with configuration: ConfigurationForShareExtensionCell) {
+    func configure(with configuration: ShareExtensionCellConfiguration) {
         fileNameLabel.font = .systemFont(ofSize: 16)
         fileSizeLabel.font = .systemFont(ofSize: 12)
         fileNameLabel.textColor = .black

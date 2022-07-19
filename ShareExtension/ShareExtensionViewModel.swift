@@ -9,14 +9,11 @@ import Foundation
 import UIKit
 import UniformTypeIdentifiers
 
-typealias ConfigurationForShareExtensionCell = (fileImage: UIImage?, fileName: String?, fileSize: String?)
+typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
 class ShareExtensionViewModel: ViewModelInterface {
     var currentArchive: ArchiveVOData?
     var selectedFiles: [FileInfo] = []
-    var filesURL: [URL] = []
-    
-    static let cancelButtonPressed = NSNotification.Name("ShareExtensionViewModel.cancelButtonPressed")
     
     init() {
         currentArchive = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
@@ -38,63 +35,60 @@ class ShareExtensionViewModel: ViewModelInterface {
         }
     }
     
-    func noUploadPermission() -> Bool {
-        return !(currentArchive?.permissions().contains(.upload) ?? false)
+    func hasUploadPermission() -> Bool {
+        return currentArchive?.permissions().contains(.upload) ?? false
     }
     
     func processSelectedFiles(attachments: [NSItemProvider], then handler: @escaping (Bool) -> Void) {
         let dispatchGroup = DispatchGroup()
         let contentType = UTType.item.identifier
         
+        var filesURL: [URL] = []
         for provider in attachments {
             dispatchGroup.enter()
-            provider.loadItem(forTypeIdentifier: contentType, options: nil) { [unowned self] (data, error) in
+            provider.loadItem(forTypeIdentifier: contentType, options: nil) { (data, error) in
                 guard error == nil else {
-                    NotificationCenter.default.post(name: Self.cancelButtonPressed, object: self)
                     return
                 }
                 
-                if let nsUrl = data as? NSURL, let path = nsUrl.path {
-                    do {
-                        let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
-                        filesURL.append(tempLocation)
-                    } catch {
-                        print(error)
-                    }
+                if let url = data as? URL {
+                    filesURL.append(url)
                 }
+                
                 dispatchGroup.leave()
             }
         }
+        
         dispatchGroup.notify(queue: DispatchQueue.main) {
-            self.selectedFiles = FileInfo.createFiles(from: self.filesURL, parentFolder: FolderInfo(folderId: -1, folderLinkId: -1))
+            self.selectedFiles = FileInfo.createFiles(from: filesURL, parentFolder: FolderInfo(folderId: -1, folderLinkId: -1))
             handler(!self.selectedFiles.isEmpty)
         }
     }
     
-    func getCellConfigurationParameters(file: FileInfo) -> ConfigurationForShareExtensionCell {
-        var cellParameters: ConfigurationForShareExtensionCell = (nil, nil, nil)
+    func cellConfigurationParameters(file: FileInfo) -> ShareExtensionCellConfiguration {
+        var cellParameters: ShareExtensionCellConfiguration = (nil, nil, nil)
         
-        cellParameters.fileSize = getFileSize(file.url)
-        cellParameters.fileImage = resizeImageForUpload(file.url)
+        cellParameters.fileSize = fileSize(file.url)
+        cellParameters.fileImage = fileThumbnail(file.url)
         cellParameters.fileName = file.name
         
         return cellParameters
     }
     
-    func getFileSize(_ fileURL: URL) -> String? {
+    func fileSize(_ fileURL: URL) -> String? {
         var formatedFileSize: String?
         let byteCountFormatter = ByteCountFormatter()
         byteCountFormatter.countStyle = .file
         
-        let fileSizeAny = try! fileURL.resourceValues(forKeys: [.fileSizeKey])
-        if let fileSizeInt = fileSizeAny.fileSize {
+        let fileSizeAny = try? fileURL.resourceValues(forKeys: [.fileSizeKey])
+        if let fileSizeInt = fileSizeAny?.fileSize {
             formatedFileSize = byteCountFormatter.string(for: fileSizeInt)
         }
         
         return formatedFileSize
     }
     
-    func resizeImageForUpload(_ imageURL: URL) -> UIImage? {
+    func fileThumbnail(_ imageURL: URL) -> UIImage? {
         let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
         let maxDimensionInPixels: CGFloat = 300
         let downsampleOptions = [
@@ -109,5 +103,22 @@ class ShareExtensionViewModel: ViewModelInterface {
         }
 
         return UIImage(cgImage: downsampledImage)
+    }
+    
+    func uploadSelectedFiles(completion: @escaping ((Error?) -> Void)) {
+        DispatchQueue.global().async { [self] in
+            do {
+                try selectedFiles.forEach { file in
+                    let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
+                    file.url = tempLocation
+                }
+                
+                try ExtensionUploadManager.shared.save(files: selectedFiles)
+                
+                completion(nil)
+            } catch {
+                completion(error)
+            }
+        }
     }
 }

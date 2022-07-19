@@ -35,7 +35,6 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         initUI()
         setupTableView()
         handleSharedFile()
-        notificationsConfig()
     }
     
     override func viewDidLayoutSubviews() {
@@ -69,12 +68,6 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         tableView.backgroundColor = .white
     }
     
-    fileprivate func notificationsConfig() {
-        NotificationCenter.default.addObserver(forName: ShareExtensionViewModel.cancelButtonPressed, object: viewModel, queue: nil) { [weak self] notification in
-            self?.didTapCancel()
-        }
-    }
-    
     private func handleSharedFile() {
         userNameLabel.text = viewModel?.archiveName()
         
@@ -82,15 +75,13 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             userNameImageView.load(urlString: archiveThumnailUrl)
         }
         
-        if let noUploadPermission = viewModel?.noUploadPermission(), noUploadPermission {
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: .ok, style: .default, handler: {_ in
-                    self.didTapCancel()
-                }))
-                
-                self.present(alert, animated: true)
-            }
+        if let hasUploadPermission = viewModel?.hasUploadPermission(), !hasUploadPermission {
+            let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+                self.didTapCancel()
+            }))
+            
+            self.present(alert, animated: true)
         }
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         
@@ -109,17 +100,22 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         let alert = UIAlertController(title: "Error".localized(), message: "ErrorMessage".localized(), preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: nil))
         
-        self.present(alert, animated: true)
+        present(alert, animated: true)
     }
     
     @objc func didTapUpload() {
-        guard let selectedFiles = viewModel?.selectedFiles else { return }
-        do {
-            try ExtensionUploadManager.shared.save(files: selectedFiles)
-        } catch {
-            showUploadErrorAlert()
+        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+        present(alert, animated: true)
+        
+        viewModel?.uploadSelectedFiles() { [self] error in
+            dismiss(animated: false) { [self] in
+                if error != nil {
+                    showUploadErrorAlert()
+                }
+                
+                extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
+            }
         }
-        extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
     }
     
     @objc func didTapCancel() {
@@ -137,7 +133,7 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FileDetailsTableViewCell.self)) as? FileDetailsTableViewCell {
             guard let selectedFile = viewModel?.selectedFiles[indexPath.row],
-                let cellConfiguration = viewModel?.getCellConfigurationParameters(file: selectedFile) else { return UITableViewCell() }
+                let cellConfiguration = viewModel?.cellConfigurationParameters(file: selectedFile) else { return UITableViewCell() }
             
             cell.configure(with: cellConfiguration)
             tableViewCell = cell
