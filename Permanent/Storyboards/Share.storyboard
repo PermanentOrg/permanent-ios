@@ -566,6 +566,14 @@
                                     <outlet property="delegate" destination="b58-5x-32K" id="oCc-IV-Azb"/>
                                 </connections>
                             </collectionView>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="346" y="794" width="48" height="48"/>
+                                <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="48" id="8yF-SS-9Dh"/>
+                                    <constraint firstAttribute="height" constant="48" id="jj4-Ph-fiH"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="wyV-hy-Lxu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -576,7 +584,9 @@
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="BxP-iB-J9S"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Qju-dd-gQn" secondAttribute="trailing" constant="20" id="D6E-sP-pOS"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
+                            <constraint firstItem="GQx-lf-zDn" firstAttribute="bottom" secondItem="JPq-vy-INN" secondAttribute="bottom" constant="-20" id="HZH-xY-dfp"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
+                            <constraint firstItem="GQx-lf-zDn" firstAttribute="trailing" secondItem="JPq-vy-INN" secondAttribute="trailing" constant="-20" id="dUW-Dl-tWB"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>
                             <constraint firstItem="JPq-vy-INN" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="bottom" constant="10" id="pkF-cp-nex"/>
@@ -590,6 +600,7 @@
                         <outlet property="backButton" destination="1dv-wK-LXr" id="0v8-JD-0Yp"/>
                         <outlet property="collectionView" destination="JPq-vy-INN" id="fkm-hs-ZhW"/>
                         <outlet property="directoryLabel" destination="9Rh-mn-0jT" id="lZu-1c-m9z"/>
+                        <outlet property="fabView" destination="GQx-lf-zDn" id="EXi-XN-Fhp"/>
                         <outlet property="segmentedControl" destination="Qju-dd-gQn" id="Dld-0E-k5g"/>
                         <outlet property="switchViewButton" destination="BuB-Gr-iVF" id="51d-0t-yqR"/>
                     </connections>

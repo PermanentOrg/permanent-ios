@@ -179,9 +179,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             timerRunCount = 0
         }
     }
-}
 
-extension FilesViewModel {
     func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
         let parameters: RelocateParams = ((file, destination), fileAction)
 
@@ -423,7 +421,7 @@ extension FilesViewModel {
         }
     }
     
-    private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
+    func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS
@@ -442,7 +440,7 @@ extension FilesViewModel {
         handler(.success)
     }
 
-    private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping ServerResponse) {
+    func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping ServerResponse) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,

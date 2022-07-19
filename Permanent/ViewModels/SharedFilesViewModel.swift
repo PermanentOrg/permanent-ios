@@ -86,4 +86,52 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
+    override func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping ServerResponse) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO,
+            let childItems = folderVO.childItemVOS,
+            let archiveNo = folderVO.archiveNbr,
+            let folderLinkId = folderVO.folderLinkID
+        else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
+        
+        if !backNavigation {
+            let archivePermissionsSet = Set(self.archivePermissions)
+            let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: folderVO.accessRole ?? ""))
+            let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
+            
+            let file = FileViewModel(model: folderVO, permissions: permissionsIntersection)
+            navigationStack.append(file)
+        }
+        
+        let params: GetLeanItemsParams = (archiveNo, activeSortOption, folderLinkIds, folderLinkId)
+        getLeanItems(params: params, then: handler)
+    }
+    
+    override func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping ServerResponse) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO,
+            let childItems = folderVO.childItemVOS
+        else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        viewModels.removeAll()
+        
+        let archivePermissionsSet = Set(self.archivePermissions)
+        childItems.forEach {
+            let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
+            let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
+            
+            let file = FileViewModel(model: $0, permissions: permissionsIntersection)
+            self.viewModels.append(file)
+        }
+        
+        handler(.success)
+    }
 }
