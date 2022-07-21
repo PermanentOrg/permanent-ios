@@ -253,7 +253,7 @@
                                             <action selector="backButtonAction:" destination="b58-5x-32K" eventType="touchUpInside" id="5Sg-eu-8So"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Rh-mn-0jT" userLabel="Directory Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Rh-mn-0jT" userLabel="Directory Label">
                                         <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -575,7 +575,7 @@
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="top" id="7uV-ud-NlB"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="BxP-iB-J9S"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Qju-dd-gQn" secondAttribute="trailing" constant="20" id="D6E-sP-pOS"/>
-                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
+                            <constraint firstItem="BuB-Gr-iVF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>

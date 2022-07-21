@@ -36,7 +36,7 @@
                                             <action selector="backButtonAction:" destination="3PZ-n9-y83" eventType="touchUpInside" id="OTE-8s-QBN"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lqW-eP-52i" userLabel="Directory Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lqW-eP-52i" userLabel="Directory Label">
                                         <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -375,7 +375,7 @@
                             <constraint firstItem="GgD-GW-QOd" firstAttribute="leading" secondItem="olD-lK-dv0" secondAttribute="leading" constant="20" id="94Y-4W-xs9"/>
                             <constraint firstItem="Gmj-3H-vgN" firstAttribute="bottom" secondItem="olD-lK-dv0" secondAttribute="bottom" id="9gf-dj-76B"/>
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="top" secondItem="GgD-GW-QOd" secondAttribute="top" id="Bab-S8-qqH"/>
-                            <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
+                            <constraint firstItem="rQx-Kj-4rK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="Gmj-3H-vgN" secondAttribute="trailing" id="UKm-jQ-BTV"/>
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="height" secondItem="GgD-GW-QOd" secondAttribute="height" id="dgN-el-Xff"/>
                             <constraint firstItem="IoJ-oA-nYL" firstAttribute="bottom" secondItem="vvX-vX-KAP" secondAttribute="bottom" constant="20" id="ehn-yw-NKA"/>
@@ -861,7 +861,7 @@
                                             <action selector="backButtonAction:" destination="X28-hk-wWT" eventType="touchUpInside" id="CEM-el-Ie8"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lh1-18-3Qp" userLabel="Directory Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lh1-18-3Qp" userLabel="Directory Label">
                                         <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -1229,7 +1229,7 @@
                             <constraint firstItem="YW1-Zb-OeF" firstAttribute="leading" secondItem="6zj-Xm-nOR" secondAttribute="leading" constant="20" id="Vlu-Zg-hI4"/>
                             <constraint firstItem="6zj-Xm-nOR" firstAttribute="trailing" secondItem="x2V-Wv-33Y" secondAttribute="trailing" constant="10" id="f4c-Dn-VwV"/>
                             <constraint firstItem="x2V-Wv-33Y" firstAttribute="top" secondItem="6zj-Xm-nOR" secondAttribute="top" constant="5" id="hV9-I0-w9Q"/>
-                            <constraint firstItem="6zj-Xm-nOR" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="YW1-Zb-OeF" secondAttribute="trailing" constant="20" id="lEH-pg-E4k"/>
+                            <constraint firstItem="LCd-SQ-8c3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YW1-Zb-OeF" secondAttribute="trailing" constant="20" id="lEH-pg-E4k"/>
                             <constraint firstItem="ADq-on-5NE" firstAttribute="top" secondItem="x2V-Wv-33Y" secondAttribute="bottom" constant="50" id="vNk-In-EHM"/>
                         </constraints>
                     </view>
