@@ -118,6 +118,8 @@ class UploadOperation: BaseOperation {
         }
         
         didSentFinishNotification = true
+        
+        finish()
     }
     
     private func getPresignedUrl(success: @escaping (() -> Void)) {
