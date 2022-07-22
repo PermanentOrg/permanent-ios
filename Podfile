@@ -19,5 +19,9 @@ target 'Permanent' do
   target 'PermanentTests' do
         inherit! :search_paths
         pod 'Firebase'
-    end
+  end
+
+  target 'ShareExtension' do
+        inherit! :search_paths
+  end
 end

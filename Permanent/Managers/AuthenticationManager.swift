@@ -11,9 +11,9 @@ import AppAuth
 import FirebaseMessaging
 
 class AuthenticationManager {
-    static let keychainAuthDataKey = "org.permanent.authData"
-    
     static let shared = AuthenticationManager()
+    
+    var keychainHandler = SessionKeychainHandler()
     
     var authState: OIDAuthState? {
         return session?.authState
@@ -33,9 +33,7 @@ class AuthenticationManager {
     }
     
     func reloadSession(_ completion: @escaping ((Bool) -> Void)) {
-        let authData = KeychainSwift().getData(Self.keychainAuthDataKey)
-        if let authData = authData,
-            let session = try? JSONDecoder().decode(PermSession.self, from: authData),
+        if let session = try? keychainHandler.savedSession(),
             let selectedArchive = session.selectedArchive {
             self.session = session
             
@@ -94,8 +92,7 @@ class AuthenticationManager {
         }
 
         do {
-            let authData = try JSONEncoder().encode(session)
-            KeychainSwift().set(authData, forKey: Self.keychainAuthDataKey)
+            try keychainHandler.saveSession(session)
         } catch {
             print("Failed to save auth data")
         }
@@ -103,7 +100,7 @@ class AuthenticationManager {
     
     func logout() {
         session = nil
-        KeychainSwift().delete(Self.keychainAuthDataKey)
+        keychainHandler.clearSession()
         
         Messaging.messaging().deleteFCMToken(forSenderID: googleServiceInfo.gcmSenderId) { _ in }
     }

@@ -12,11 +12,14 @@ import MobileCoreServices
 typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
 class ShareExtensionViewModel: ViewModelInterface {
-    var currentArchive: ArchiveVOData?
+    var currentArchive: ArchiveVOData? {
+        session?.selectedArchive
+    }
+    var session: PermSession?
     var selectedFiles: [FileInfo] = []
     
     init() {
-//        currentArchive = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        session = try? SessionKeychainHandler().savedSession()
     }
     
     func archiveName() -> String {

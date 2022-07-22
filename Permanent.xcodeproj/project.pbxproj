@@ -20,6 +20,7 @@
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
 		06B0EB2E24E68298003D90C6 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */; };
+		4A18CAD377969D8EEC9B6F31 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD4175338DB160560AAC754C /* Pods_ShareExtension.framework */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
@@ -426,6 +427,8 @@
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
 		F518DDA027CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */; };
 		F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */; };
+		F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
+		F51B331F288AF57B00EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
@@ -438,6 +441,7 @@
 		F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */; };
 		F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */; };
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
+		F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209BD285B483E006DCF9F /* PermSession.swift */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
 		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
@@ -547,8 +551,10 @@
 		06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		183E5EAF0F53B6A9F80FC410 /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		349FEF90A9654D4DAF4713BA /* Pods-PermanentTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.release.xcconfig"; sourceTree = "<group>"; };
+		451017B5F9487532EF5E1379 /* Pods-ShareExtension.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.dev-release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.dev-release.xcconfig"; sourceTree = "<group>"; };
 		4B10D881B6E86B89067BB583 /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		4B4116624E9E4DA693083A8B /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
+		5B1C1F4E9CCA74D05FFF2CB3 /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
@@ -705,6 +711,7 @@
 		5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewModel.swift; sourceTree = "<group>"; };
 		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		781F73F2639E8EFF09AB94F7 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
+		833791C47BDF608883AE6B85 /* Pods-ShareExtension.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.dev-debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		865C3500F96147251F908844 /* Pods-Permanent.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-release.xcconfig"; sourceTree = "<group>"; };
 		8E08F574AC578437F0281F3E /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B689666A467BEDED5F29CAAF /* Pods_PermanentTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PermanentTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -914,6 +921,7 @@
 		BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPresignedUrlResponse.swift; sourceTree = "<group>"; };
 		BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRecordResponse.swift; sourceTree = "<group>"; };
 		BFC659A9CF2B5D2CC590C2C2 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD4175338DB160560AAC754C /* Pods_ShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDA1BE405037899F55561C06 /* Pods-PermanentTests.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-release.xcconfig"; sourceTree = "<group>"; };
 		F502C48326D6132F00657D37 /* AssetGridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetGridViewController.swift; sourceTree = "<group>"; };
 		F502C48426D6132F00657D37 /* AlbumCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -926,6 +934,7 @@
 		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
 		F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageVisibilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageVisibilityCollectionViewCell.xib; sourceTree = "<group>"; };
+		F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionKeychainHandler.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
 		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
@@ -987,6 +996,7 @@
 		F5EEB4CE281C033800D584AD /* AccountOnboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AccountOnboarding.storyboard; sourceTree = "<group>"; };
 		F5EEB4D32821537500D584AD /* AccountOnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountOnboardingViewController.swift; sourceTree = "<group>"; };
 		F5EEB4D52821556C00D584AD /* AccountOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingViewModel.swift; sourceTree = "<group>"; };
+		F9F3E9F95083565EA82E1920 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1011,6 +1021,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A18CAD377969D8EEC9B6F31 /* Pods_ShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2010,6 +2021,7 @@
 				BCE8DA7025652C2A00842ABD /* FileActionManager.swift */,
 				BCE8DA7425652F4400842ABD /* FileAction.swift */,
 				F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */,
+				F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -2079,6 +2091,7 @@
 				BCB0725D2523565A003E2F66 /* WebKit.framework */,
 				BFC659A9CF2B5D2CC590C2C2 /* Pods_Permanent.framework */,
 				B689666A467BEDED5F29CAAF /* Pods_PermanentTests.framework */,
+				DD4175338DB160560AAC754C /* Pods_ShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2094,6 +2107,10 @@
 				4B4116624E9E4DA693083A8B /* Pods-PermanentTests.dev-debug.xcconfig */,
 				349FEF90A9654D4DAF4713BA /* Pods-PermanentTests.release.xcconfig */,
 				EDA1BE405037899F55561C06 /* Pods-PermanentTests.dev-release.xcconfig */,
+				5B1C1F4E9CCA74D05FFF2CB3 /* Pods-ShareExtension.debug.xcconfig */,
+				833791C47BDF608883AE6B85 /* Pods-ShareExtension.dev-debug.xcconfig */,
+				F9F3E9F95083565EA82E1920 /* Pods-ShareExtension.release.xcconfig */,
+				451017B5F9487532EF5E1379 /* Pods-ShareExtension.dev-release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -2204,6 +2221,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5ED06F4D286B2BD5006C126B /* Build configuration list for PBXNativeTarget "ShareExtension" */;
 			buildPhases = (
+				92B47726A9D594F86187C542 /* [CP] Check Pods Manifest.lock */,
 				5ED06F3A286B2BD5006C126B /* Sources */,
 				5ED06F3B286B2BD5006C126B /* Frameworks */,
 				5ED06F3C286B2BD5006C126B /* Resources */,
@@ -2399,6 +2417,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PermanentTests/Pods-PermanentTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		92B47726A9D594F86187C542 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ShareExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A4A014F4BF09F410AFD4BD28 /* [CP] Copy Pods Resources */ = {
@@ -2613,6 +2653,7 @@
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
+				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
@@ -2898,6 +2939,7 @@
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
+				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */,
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
@@ -2923,6 +2965,7 @@
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
 				5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */,
 				5ED4B9D52876E05B00CF044B /* FileVO.swift in Sources */,
+				F51B331F288AF57B00EA15DA /* SessionKeychainHandler.swift in Sources */,
 				5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */,
 				5ED4B9D22876E04300CF044B /* AccountVO.swift in Sources */,
 				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
@@ -3263,6 +3306,7 @@
 		};
 		5ED06F49286B2BD5006C126B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B1C1F4E9CCA74D05FFF2CB3 /* Pods-ShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -3294,6 +3338,7 @@
 		};
 		5ED06F4A286B2BD5006C126B /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 833791C47BDF608883AE6B85 /* Pods-ShareExtension.dev-debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -3325,6 +3370,7 @@
 		};
 		5ED06F4B286B2BD5006C126B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9F3E9F95083565EA82E1920 /* Pods-ShareExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -3356,6 +3402,7 @@
 		};
 		5ED06F4C286B2BD5006C126B /* DEV-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 451017B5F9487532EF5E1379 /* Pods-ShareExtension.dev-release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
