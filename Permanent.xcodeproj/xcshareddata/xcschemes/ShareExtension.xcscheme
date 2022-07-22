@@ -43,6 +43,36 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5E68F2CB26A74FCD00CC936E"
+               BuildableName = "PermanentTests.xctest"
+               BlueprintName = "PermanentTests"
+               ReferencedContainer = "container:Permanent.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AccountInfoTests">
+               </Test>
+               <Test
+                  Identifier = "AccountOnboardingTests">
+               </Test>
+               <Test
+                  Identifier = "DonateTests">
+               </Test>
+               <Test
+                  Identifier = "ExtensionUploadManagerTests">
+               </Test>
+               <Test
+                  Identifier = "PublicGalleryCodeTests">
+               </Test>
+               <Test
+                  Identifier = "SignUpTests">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -60,7 +90,7 @@
       <RemoteRunnable
          runnableDebuggingMode = "1"
          BundleIdentifier = "com.apple.mobileslideshow"
-         RemotePath = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/Applications/MobileSlideShow.app">
+         RemotePath = "/Applications/MobileSlideShow.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
