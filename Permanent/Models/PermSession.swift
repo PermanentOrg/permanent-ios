@@ -20,6 +20,9 @@ class PermSession: Codable {
     
     var selectedArchive: ArchiveVOData?
     
+    var selectedFile: FileViewModel?
+    var fileAction: FileAction?
+    
     init(authState: OIDAuthState) {
         self.authState = authState
     }

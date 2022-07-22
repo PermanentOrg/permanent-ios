@@ -19,21 +19,21 @@ class MyFilesViewModel: FilesViewModel {
     
     override var selectedFile: FileViewModel? {
         get {
-            return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileKey)
+            return AuthenticationManager.shared.session?.selectedFile
         }
         
         set {
-            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileKey)
+            AuthenticationManager.shared.session?.selectedFile = newValue
         }
     }
     
     override var fileAction: FileAction {
         get {
-            return (try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileActionKey)) ?? .none
+            return AuthenticationManager.shared.session?.fileAction ?? .none
         }
         
         set {
-            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileActionKey)
+            AuthenticationManager.shared.session?.fileAction = newValue
         }
     }
     

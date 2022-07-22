@@ -429,6 +429,14 @@
 		F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */; };
 		F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
 		F51B331F288AF57B00EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
+		F51B3320288B0A7D00EA15DA /* FileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BB25371FCB00EEC48C /* FileViewModel.swift */; };
+		F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7425652F4400842ABD /* FileAction.swift */; };
+		F51B3322288B0B8D00EA15DA /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D95A425382215005FE8EF /* FileType.swift */; };
+		F51B3323288B0B9300EA15DA /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE8DA7725655E8F00842ABD /* FileState.swift */; };
+		F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEAB27E2580F6D700567E8C /* MinArchiveVO.swift */; };
+		F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C7B38254861E7008E9A0D /* DateUtils.swift */; };
+		F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BE2537414300EEC48C /* MinFolderVO.swift */; };
+		F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
@@ -2938,30 +2946,37 @@
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
+				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
 				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */,
+				F51B3323288B0B9300EA15DA /* FileState.swift in Sources */,
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
 				5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */,
 				5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */,
 				5ED4B9CD2876E02200CF044B /* TimezoneVO.swift in Sources */,
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
+				F51B3322288B0B8D00EA15DA /* FileType.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				5ED4B9CF2876E02A00CF044B /* ShareVO.swift in Sources */,
 				F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */,
 				5E2EE3B32881CB150072D635 /* ViewModelDelegateInterface.swift in Sources */,
 				5E83CC49286C601C00A5775B /* StringExtension.swift in Sources */,
+				F51B3320288B0A7D00EA15DA /* FileViewModel.swift in Sources */,
+				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
+				F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
 				F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */,
 				5ED4B9D82876E0EF00CF044B /* FolderSizeVO.swift in Sources */,
 				5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
+				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
 				5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */,
 				5ED4B9D52876E05B00CF044B /* FileVO.swift in Sources */,
@@ -2977,6 +2992,7 @@
 				5ED4B9D32876E05400CF044B /* ParentFolderVO.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
+				F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */,
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
 				5ED4B9D72876E0C800CF044B /* RecordExifVO.swift in Sources */,
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,
