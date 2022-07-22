@@ -11,8 +11,14 @@ import KeychainSwift
 class SessionKeychainHandler {
     static let keychainAuthDataKey = "org.permanent.authData"
     
+    let keychain = KeychainSwift()
+    
+    init() {
+        keychain.accessGroup = "org.permanent.permanent.staging"
+    }
+    
     func savedSession() throws -> PermSession? {
-        let authData = KeychainSwift().getData(Self.keychainAuthDataKey)
+        let authData = keychain.getData(Self.keychainAuthDataKey)
         if let authData = authData {
             let session = try JSONDecoder().decode(PermSession.self, from: authData)
             return session
@@ -23,10 +29,10 @@ class SessionKeychainHandler {
     
     func saveSession(_ session: PermSession) throws {
         let authData = try JSONEncoder().encode(session)
-        KeychainSwift().set(authData, forKey: Self.keychainAuthDataKey)
+        keychain.set(authData, forKey: Self.keychainAuthDataKey)
     }
     
     func clearSession() {
-        KeychainSwift().delete(Self.keychainAuthDataKey)
+        keychain.delete(Self.keychainAuthDataKey)
     }
 }
