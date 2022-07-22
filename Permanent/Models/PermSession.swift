@@ -13,6 +13,9 @@ class PermSession: Codable {
         case authState
         case account
         case selectedArchive
+        case selectedFile
+        case fileAction
+        case isGridView
     }
     
     var authState: OIDAuthState
@@ -22,6 +25,8 @@ class PermSession: Codable {
     
     var selectedFile: FileViewModel?
     var fileAction: FileAction?
+    
+    var isGridView: Bool = false
     
     init(authState: OIDAuthState) {
         self.authState = authState
@@ -40,6 +45,11 @@ class PermSession: Codable {
         
         account = try container.decode(AccountVOData.self, forKey: .account)
         selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
+        
+        selectedFile = try container.decodeIfPresent(FileViewModel.self, forKey: .selectedFile)
+        fileAction = try container.decodeIfPresent(FileAction.self, forKey: .fileAction)
+        
+        isGridView = try container.decode(Bool.self, forKey: .isGridView)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -50,5 +60,10 @@ class PermSession: Codable {
         
         try container.encode(account, forKey: .account)
         try container.encode(selectedArchive, forKey: .selectedArchive)
+        
+        try container.encode(selectedFile, forKey: .selectedFile)
+        try container.encode(fileAction, forKey: .fileAction)
+        
+        try container.encode(isGridView, forKey: .isGridView)
     }
 }

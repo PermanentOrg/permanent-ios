@@ -40,7 +40,7 @@ class UploadManager {
             return
         }
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):

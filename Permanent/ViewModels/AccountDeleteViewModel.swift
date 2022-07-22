@@ -17,7 +17,7 @@ class AccountDeleteViewModel: ViewModelInterface {
             return
         }
         
-        let deleteOperation = APIOperation(AccountEndpoint.delete(accountId: String(accountId)))
+        let deleteOperation = APIOperation(AccountEndpoint.delete(accountId: accountId))
 
         deleteOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

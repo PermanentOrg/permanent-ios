@@ -85,7 +85,7 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
         showSpinner(colored: .white)
         closeKeyboard()
         
-        self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, then: { status in
+        self.viewModel?.changePassword(with: accountID, data: updatePasswordParameters, then: { status in
             switch status {
             case .success(let message):
                 DispatchQueue.main.async {

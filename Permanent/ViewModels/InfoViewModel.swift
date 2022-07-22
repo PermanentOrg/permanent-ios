@@ -38,9 +38,8 @@ class InfoViewModel: ViewModelInterface {
             handler(.error(message: .errorMessage))
             return
         }
-        let accountIdString = String("\(accountId)")
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountIdString))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         
         let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
@@ -87,7 +86,6 @@ class InfoViewModel: ViewModelInterface {
             handler(.error(message: .errorMessage))
             return
         }
-        let accountIdString = String("\(accountId)")
         
         let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
@@ -113,7 +111,7 @@ class InfoViewModel: ViewModelInterface {
             return
         }
 
-        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountIdString, updateData: userData))
+        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData))
 
         updateUserDataOperation.execute(in: apiDispatch) { result in
             switch result {

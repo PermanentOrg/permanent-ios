@@ -149,7 +149,6 @@ extension Constants.Keys.StorageKeys {
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let signUpInvitationsAccepted = "signUpInvitationsAccepted"
     static let modelVersion = "modelVersion"
-    static let isGridView = "isGridView"
     static let minAppVersion = "minAppVersion"
 }
 

@@ -62,6 +62,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var timer: Timer?
     var timerRunCount: Int = 0
     
+    var isGridView: Bool {
+        get {
+            AuthenticationManager.shared.session?.isGridView ?? false
+        }
+        
+        set {
+            AuthenticationManager.shared.session?.isGridView = newValue
+        }
+    }
+    
     // MARK: - Table View Logic
     
     var currentFolderIsRoot: Bool { true }
