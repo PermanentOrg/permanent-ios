@@ -24,20 +24,15 @@ class ShareExtensionTests: XCTestCase {
     
     override func tearDownWithError() throws {
         sut = nil
-        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.archive)
         
         try super.tearDownWithError()
     }
     
     func positiveTestInit() {
-        try? PreferencesManager.shared.setCodableObject(archivePositiveTests, forKey: Constants.Keys.StorageKeys.archive)
-        
         sut = ShareExtensionViewModel()
     }
     
     func negativeTestInit() {
-        try? PreferencesManager.shared.setCodableObject(archiveNegativeTests, forKey: Constants.Keys.StorageKeys.archive)
-        
         sut = ShareExtensionViewModel()
     }
     
@@ -48,7 +43,7 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func testArchiveNameNegative() throws {
-        let parameterForTest = "Archive name was not found"
+        let parameterForTest = "Archive Name"
         negativeTestInit()
         
         XCTAssertEqual(sut.archiveName(), parameterForTest)

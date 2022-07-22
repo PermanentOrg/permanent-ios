@@ -153,8 +153,6 @@ extension Constants.Keys.StorageKeys {
     static let minAppVersion = "minAppVersion"
     static let selectedFileKey = "selectedFileKey"
     static let selectedFileActionKey = "selectedFileActionKey"
-    static let archiveFolderLinkId = "archiveFolderLinkId"
-    static let archiveFolderId = "archiveFolderId"
 }
 
 extension Constants.API.Locations {

@@ -12,11 +12,7 @@ class SessionKeychainHandler {
     static let keychainAuthDataKey = "org.permanent.authData"
     
     let keychain = KeychainSwift()
-    
-    init() {
-        keychain.accessGroup = "org.permanent.permanent.staging"
-    }
-    
+
     func savedSession() throws -> PermSession? {
         let authData = keychain.getData(Self.keychainAuthDataKey)
         if let authData = authData {

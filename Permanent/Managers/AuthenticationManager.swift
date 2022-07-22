@@ -42,6 +42,7 @@ class AuthenticationManager {
             }
         } else {
             logout()
+            completion(false)
         }
     }
     

@@ -19,14 +19,18 @@ class ShareExtensionViewModel: ViewModelInterface {
     var selectedFiles: [FileInfo] = []
     
     init() {
-        session = try? SessionKeychainHandler().savedSession()
+        do {
+            session = try SessionKeychainHandler().savedSession()
+        } catch {
+            print(error)
+        }
     }
     
     func archiveName() -> String {
         if let name = currentArchive?.fullName {
             return "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "The \(name)")
         } else {
-            return "Archive name was not found".localized()
+            return "Archive Name".localized()
         }
     }
     
@@ -40,6 +44,11 @@ class ShareExtensionViewModel: ViewModelInterface {
     
     func hasUploadPermission() -> Bool {
         return currentArchive?.permissions().contains(.upload) ?? false
+    }
+    
+    func hasActiveSession() -> Bool {
+        guard let expirationDate = session?.authState.lastTokenResponse?.accessTokenExpirationDate else { return false }
+        return expirationDate.timeIntervalSince1970 > Date().timeIntervalSince1970
     }
     
     func processSelectedFiles(attachments: [NSItemProvider], then handler: @escaping (Bool) -> Void) {

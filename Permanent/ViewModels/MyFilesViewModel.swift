@@ -78,15 +78,6 @@ class MyFilesViewModel: FilesViewModel {
             return
         }
         
-        let prefsManager = PreferencesManager(withGroupName: ExtensionUploadManager.appSuiteGroup)
-        if let myFilesArchive = model.results?.first?.data?.first?.folderVO?.childItemVOS?.filter({ $0.displayName == "My Files"}),
-            let folderID = myFilesArchive.first?.folderID,
-            let folderLinkId = myFilesArchive.first?.folderLinkID,
-            let archiveThumbnail = model.results?.first?.data?.first?.folderVO?.thumbURL500 {
-            prefsManager.set(folderID, forKey: Constants.Keys.StorageKeys.archiveFolderId)
-            prefsManager.set(folderLinkId, forKey: Constants.Keys.StorageKeys.archiveFolderLinkId)
-        }
-        
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
