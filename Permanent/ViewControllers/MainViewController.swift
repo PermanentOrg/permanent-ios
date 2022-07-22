@@ -793,6 +793,8 @@ extension MainViewController {
     }
 }
 
+// MARK: - FABViewDelegate
+
 extension MainViewController: FABViewDelegate {
     func didTap() {
         guard let actionSheet = UIViewController.create(
@@ -808,6 +810,7 @@ extension MainViewController: FABViewDelegate {
     }
 }
 
+// MARK: - FABActionSheetDelegate
 extension MainViewController: FABActionSheetDelegate {
     func didTapUpload() {
         if viewModel is PublicFilesViewModel {

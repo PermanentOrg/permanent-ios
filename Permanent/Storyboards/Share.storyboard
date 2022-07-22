@@ -253,7 +253,7 @@
                                             <action selector="backButtonAction:" destination="b58-5x-32K" eventType="touchUpInside" id="5Sg-eu-8So"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Rh-mn-0jT" userLabel="Directory Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Rh-mn-0jT" userLabel="Directory Label">
                                         <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -566,16 +566,26 @@
                                     <outlet property="delegate" destination="b58-5x-32K" id="oCc-IV-Azb"/>
                                 </connections>
                             </collectionView>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
+                                <rect key="frame" x="346" y="794" width="48" height="48"/>
+                                <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="48" id="8yF-SS-9Dh"/>
+                                    <constraint firstAttribute="height" constant="48" id="jj4-Ph-fiH"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="wyV-hy-Lxu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="GQx-lf-zDn" secondAttribute="trailing" constant="20" id="0GV-2A-gpc"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="BuB-Gr-iVF" secondAttribute="trailing" constant="20" id="3l5-0A-4OH"/>
                             <constraint firstItem="JPq-vy-INN" firstAttribute="trailing" secondItem="wyV-hy-Lxu" secondAttribute="trailing" id="5Z9-e1-FI0"/>
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="top" id="7uV-ud-NlB"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="BxP-iB-J9S"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Qju-dd-gQn" secondAttribute="trailing" constant="20" id="D6E-sP-pOS"/>
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" constant="20" id="Tp4-cy-EdO"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>
@@ -590,6 +600,7 @@
                         <outlet property="backButton" destination="1dv-wK-LXr" id="0v8-JD-0Yp"/>
                         <outlet property="collectionView" destination="JPq-vy-INN" id="fkm-hs-ZhW"/>
                         <outlet property="directoryLabel" destination="9Rh-mn-0jT" id="lZu-1c-m9z"/>
+                        <outlet property="fabView" destination="GQx-lf-zDn" id="GPc-B0-0Xt"/>
                         <outlet property="segmentedControl" destination="Qju-dd-gQn" id="Dld-0E-k5g"/>
                         <outlet property="switchViewButton" destination="BuB-Gr-iVF" id="51d-0t-yqR"/>
                     </connections>

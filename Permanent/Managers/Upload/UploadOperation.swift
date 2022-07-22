@@ -14,7 +14,6 @@ enum UploadError: Error {
 }
 
 class UploadOperation: BaseOperation {
-    
     static let uploadProgressNotification = Notification.Name("UploadOperation.uploadProgressNotification")
     static let uploadFinishedNotification = Notification.Name("UploadOperation.uploadFinishedNotification")
     
@@ -53,6 +52,9 @@ class UploadOperation: BaseOperation {
     var isEOF = false
     
     var uploadedFile: RecordVOData?
+    
+    var getPresignedURLOperation: APIOperation?
+    var registerRecordOperation: APIOperation?
     
     init(file:FileInfo, handler: @escaping ((Error?) -> Void)) {
         self.file = file
@@ -97,6 +99,10 @@ class UploadOperation: BaseOperation {
     override func cancel() {
         super.cancel()
         
+        getPresignedURLOperation?.cancel()
+        registerRecordOperation?.cancel()
+        uploadTask?.cancel()
+        
         DispatchQueue.main.async {
             let userInfo: [String: Any]?
             if let error = self.error {
@@ -107,9 +113,13 @@ class UploadOperation: BaseOperation {
             }
             
             NotificationCenter.default.post(name: Self.uploadFinishedNotification, object: self, userInfo: userInfo)
+            
+            self.handler(nil)
         }
         
         didSentFinishNotification = true
+        
+        finish()
     }
     
     private func getPresignedUrl(success: @escaping (() -> Void)) {
@@ -126,6 +136,8 @@ class UploadOperation: BaseOperation {
         
         let apiOperation = APIOperation(FilesEndpoint.getPresignedUrl(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
+            guard isCancelled == false else { return }
+            
             switch result {
             case .json(let response, _):
                 guard let model: GetPresignedUrlResponse = JSONHelper.convertToModel(from: response) else {
@@ -189,6 +201,8 @@ class UploadOperation: BaseOperation {
         uploadRequest.httpMethod = "POST"
 
         uploadTask = urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
+            guard isCancelled == false else { return }
+            
             if let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 {
                 success()
             } else {
@@ -205,6 +219,8 @@ class UploadOperation: BaseOperation {
         
         let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
+            guard isCancelled == false else { return }
+            
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
