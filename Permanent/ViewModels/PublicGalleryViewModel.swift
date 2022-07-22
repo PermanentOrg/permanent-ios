@@ -29,7 +29,7 @@ class PublicGalleryViewModel: ViewModelInterface {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     
     func currentArchive() -> ArchiveVOData? {
-        return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        return AuthenticationManager.shared.session?.selectedArchive
     }
     
     func getArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
@@ -58,7 +58,7 @@ class PublicGalleryViewModel: ViewModelInterface {
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }

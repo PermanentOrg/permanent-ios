@@ -128,24 +128,6 @@ struct Payloads {
         ]
     }
     
-    static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AuthVO": [
-                            "type": credentials.type.value,
-                            "token": credentials.code
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-    
     static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
         return [
             "RequestVO": [

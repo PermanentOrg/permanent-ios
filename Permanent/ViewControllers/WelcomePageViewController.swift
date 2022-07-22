@@ -41,7 +41,7 @@ class WelcomePageViewController: UIViewController  {
         
         acceptButton.configureActionButtonUI(title: "Get Started".localized(), bgColor: .secondary, buttonHeight: 45)
 
-        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) else { return }
+        guard let currentArchive: ArchiveVOData = AuthenticationManager.shared.session?.selectedArchive else { return }
         let accessRole = AccessRole.roleForValue(currentArchive.accessRole ?? "")
         
         if accessRole == .owner {

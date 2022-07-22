@@ -9,15 +9,15 @@ import Foundation
 
 class DonateViewModel: ViewModelInterface {
     var accountId: Int? {
-        return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        return AuthenticationManager.shared.session?.account.accountID
     }
     
     var accountName: String? {
-        return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.nameStorageKey)
+        return AuthenticationManager.shared.session?.account.fullName
     }
     
     var email: String? {
-        return PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey)
+        return AuthenticationManager.shared.session?.account.primaryEmail
     }
     
     var isAnonymous: Bool = false

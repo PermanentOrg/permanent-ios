@@ -16,7 +16,7 @@ class ShareExtensionViewModel: ViewModelInterface {
     var selectedFiles: [FileInfo] = []
     
     init() {
-        currentArchive = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+//        currentArchive = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
     }
     
     func archiveName() -> String {

@@ -349,13 +349,10 @@
 		BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */; };
 		BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
 		BC97A4692518E73300E43205 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
-		BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */; };
-		BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */; };
 		BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9DB37325516B27004F453B /* FolderInfo.swift */; };
 		BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120C5256279C100ECAD7B /* SortOption.swift */; };
 		BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */; };
 		BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA120CB2562C64300ECAD7B /* HighlightColor.swift */; };
-		BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */; };
 		BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAEED8325C175AF00A13C0F /* InviteOperation.swift */; };
 		BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAEED8625C1B96200A13C0F /* InviteStatus.swift */; };
 		BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
@@ -478,6 +475,7 @@
 		F5C8D247273204CA00707301 /* SearchVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D246273204CA00707301 /* SearchVO.swift */; };
 		F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D248273205B000707301 /* SearchEndpoint.swift */; };
 		F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209B9285B3DB3006DCF9F /* AccountOnboardingTests.swift */; };
+		F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209BD285B483E006DCF9F /* PermSession.swift */; };
 		F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */; };
 		F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0D99AC256BD72200D29041 /* Colors.swift */; };
 		F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4BA412670D16F0027D97A /* BaseOperation.swift */; };
@@ -848,13 +846,10 @@
 		BC8E794E257A8559008ED0F5 /* ArchiveTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveTableViewCell.swift; sourceTree = "<group>"; };
 		BC915F4F254718FA00C86012 /* PHAssetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetExtension.swift; sourceTree = "<group>"; };
 		BC97A4682518E73300E43205 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
-		BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationController.swift; sourceTree = "<group>"; };
-		BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewModel.swift; sourceTree = "<group>"; };
 		BC9DB37325516B27004F453B /* FolderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderInfo.swift; sourceTree = "<group>"; };
 		BCA120C5256279C100ECAD7B /* SortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOption.swift; sourceTree = "<group>"; };
 		BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
 		BCA120CB2562C64300ECAD7B /* HighlightColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightColor.swift; sourceTree = "<group>"; };
-		BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewController.swift; sourceTree = "<group>"; };
 		BCAEED8325C175AF00A13C0F /* InviteOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteOperation.swift; sourceTree = "<group>"; };
 		BCAEED8625C1B96200A13C0F /* InviteStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteStatus.swift; sourceTree = "<group>"; };
 		BCB0725825221494003E2F66 /* PreferencesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesManager.swift; sourceTree = "<group>"; };
@@ -981,6 +976,7 @@
 		F5C8D246273204CA00707301 /* SearchVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVO.swift; sourceTree = "<group>"; };
 		F5C8D248273205B000707301 /* SearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEndpoint.swift; sourceTree = "<group>"; };
 		F5D209B9285B3DB3006DCF9F /* AccountOnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingTests.swift; sourceTree = "<group>"; };
+		F5D209BD285B483E006DCF9F /* PermSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermSession.swift; sourceTree = "<group>"; };
 		F5D6693B27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSearchTagsCollectionViewCell.swift; sourceTree = "<group>"; };
 		F5E4BA412670D16F0027D97A /* BaseOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOperation.swift; sourceTree = "<group>"; };
 		F5E4BA432670D1940027D97A /* UploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOperation.swift; sourceTree = "<group>"; };
@@ -1150,6 +1146,7 @@
 				BC11C80A25595B93008BDEFA /* Payloads */,
 				BC4526E3251CACAB00E24A51 /* Data */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
+				F5D209BD285B483E006DCF9F /* PermSession.swift */,
 				BC648783251BA24C009D7DE1 /* Payloads.swift */,
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
@@ -1182,7 +1179,6 @@
 				5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */,
 				06B0EB2D24E68298003D90C6 /* AccountViewModel.swift */,
 				BC6D3B422513664C00390927 /* AuthViewModel.swift */,
-				BC97A46C2519EC3400E43205 /* VerificationCodeViewModel.swift */,
 				BC6358A32536D8EA00EEC48C /* FilesViewModel.swift */,
 				F58EBC8325DFFB9600D2D383 /* MyFilesViewModel.swift */,
 				F58EBC2D25DE963800D2D383 /* SharedFilesViewModel.swift */,
@@ -1899,8 +1895,6 @@
 			isa = PBXGroup;
 			children = (
 				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
-				BC97A46A2519EC1000E43205 /* CodeVerificationController.swift */,
-				BCA9A5B82523811100A71592 /* TwoStepVerificationViewController.swift */,
 				BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */,
 			);
 			path = Authentication;
@@ -2697,7 +2691,6 @@
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
-				BC97A46D2519EC3400E43205 /* VerificationCodeViewModel.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
 				5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */,
@@ -2729,7 +2722,6 @@
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
-				BC97A46B2519EC1000E43205 /* CodeVerificationController.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
@@ -2810,6 +2802,7 @@
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
+				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
 				5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */,
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
@@ -2824,7 +2817,6 @@
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
-				BCA9A5B92523811100A71592 /* TwoStepVerificationViewController.swift in Sources */,
 				5E8B706B283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
 				F5EAD0652822BBDC00EC2584 /* AccountOnboardingPageTwo.swift in Sources */,

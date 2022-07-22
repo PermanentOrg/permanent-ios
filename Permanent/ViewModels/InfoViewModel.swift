@@ -23,7 +23,7 @@ enum UpdateUserDataStatus: Equatable {
 class InfoViewModel: ViewModelInterface {
     var userData: UpdateUserData
     var accountId: Int? {
-        PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+        AuthenticationManager.shared.session?.account.accountID
     }
     var dataIsNotModified: Bool
     init() {
@@ -119,9 +119,9 @@ class InfoViewModel: ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<AccountVO>.decoder
                     )
                 else {
                     handler(.error(message: .errorMessage))
@@ -136,7 +136,10 @@ class InfoViewModel: ViewModelInterface {
                     handler(.error(message: userDetailsFaieldMessage?.description))
                     return
                 }
-                PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
+                
+                if let accountVO = model.results.first?.data?.first?.accountVO {
+                    AuthenticationManager.shared.session?.account = accountVO
+                }
 
                 handler(.success(message: .userDetailsChangedSuccessfully))
 

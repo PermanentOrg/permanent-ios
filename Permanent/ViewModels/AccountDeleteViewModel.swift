@@ -12,7 +12,7 @@ class AccountDeleteViewModel: ViewModelInterface {
     static let accountDeleteSuccessNotification = Notification.Name("AccountDeleteViewModel.accountDeleteSuccessNotification")
     
     func deleteAccount(completion: @escaping ((Bool) -> Void)) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completion(false)
             return
         }

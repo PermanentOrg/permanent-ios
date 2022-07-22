@@ -54,7 +54,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
 
-    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    var currentArchive: ArchiveVOData? { return AuthenticationManager.shared.session?.selectedArchive }
     var archivePermissions: [Permission] {
         return currentArchive?.permissions() ?? [.read]
     }
@@ -475,10 +475,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     return
                 }
                 
-                let archive = model.results[0].data?[0].archiveVO
-                try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
-                
-                completion(true)
+                if let archive = model.results[0].data?[0].archiveVO {
+                    AuthenticationManager.shared.session?.selectedArchive = archive
+                    
+                    completion(true)
+                } else {
+                    completion(false)
+                }
                 return
                 
             case .error:

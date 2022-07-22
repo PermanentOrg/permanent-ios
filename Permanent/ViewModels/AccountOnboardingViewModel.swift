@@ -129,7 +129,7 @@ class AccountOnboardingViewModel: ViewModelInterface {
     }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
@@ -161,7 +161,7 @@ class AccountOnboardingViewModel: ViewModelInterface {
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+        AuthenticationManager.shared.session?.selectedArchive = archive
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
@@ -248,10 +248,14 @@ class AccountOnboardingViewModel: ViewModelInterface {
                     return
                 }
                 
-                PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+                if let account = model.results[0].data?[0].accountVO {
+                    AuthenticationManager.shared.session?.account = account
+                    self.account = account
+                    completionBlock(self.account, nil)
+                } else {
+                    completionBlock(nil, APIError.invalidResponse)
+                }
                 
-                self.account = model.results[0].data?[0].accountVO
-                completionBlock(self.account, nil)
                 return
                 
             case .error:
@@ -266,7 +270,7 @@ class AccountOnboardingViewModel: ViewModelInterface {
     }
     
     func getAccountArchives(_ completionBlock: @escaping ((Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(APIError.unknown)
             return
         }

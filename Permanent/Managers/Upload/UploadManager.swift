@@ -36,7 +36,7 @@ class UploadManager {
         }
         
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             return
         }
         
