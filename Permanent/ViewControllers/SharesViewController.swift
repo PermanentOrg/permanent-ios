@@ -386,6 +386,30 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         showSortActionSheetDialog()
     }
     
+    @objc private func cancelAllUploadsAction(_ sender: UIButton) {
+        let title = "Cancel all uploads".localized()
+        let description = "Are you sure you want to cancel all uploads?".localized()
+        
+        self.showActionDialog(
+            styled: .simpleWithDescription,
+            withTitle: title,
+            description: description,
+            positiveButtonTitle: .cancelAll,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.viewModel?.cancelUploadsInFolder()
+                
+                if self.viewModel?.refreshUploadQueue() == true {
+                    self.refreshCollectionView()
+                }
+            },
+            cancelButtonTitle: "No".localized(),
+            positiveButtonColor: .brightRed,
+            cancelButtonColor: .primary,
+            overlayView: self.overlayView
+        )
+    }
+    
     func showSortActionSheetDialog() {
         guard
             sortActionSheet == nil,
@@ -677,8 +701,13 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
                 headerView.leftButtonAction = nil
             }
             
-            headerView.rightButtonTitle = nil
-            headerView.rightButtonAction = nil
+            if viewModel?.hasCancelButton(forSection: section) == true {
+                headerView.rightButtonTitle = "Cancel All".localized()
+                headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
+            } else {
+                headerView.rightButtonTitle = nil
+                headerView.rightButtonAction = nil
+            }
             
             return headerView
         }
