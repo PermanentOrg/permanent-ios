@@ -360,7 +360,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     return
                 }
                 
-                urls.append(imageURL)
+                do {
+                    let localURL = try FileHelper().copyFile(withURL: imageURL)
+                    urls.append(localURL)
+                } catch {
+                    print(error)
+                }
+                
                 dispatchGroup.leave()
             }
         }
