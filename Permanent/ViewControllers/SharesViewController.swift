@@ -319,6 +319,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self.refreshControl.endRefreshing()
             }
         )
+        viewModel?.invalidateTimer()
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
@@ -411,6 +412,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func showSortActionSheetDialog() {
+        // Safety measure, in case the user taps to show sheet, but the previously shown one
+        // has not finished dimissing and being deallocated.
+        guard fileActionSheet == nil else { return }
+        
         guard
             sortActionSheet == nil,
             let viewModel = viewModel else { return }
@@ -435,33 +440,85 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
+//    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+//        // Safety measure, in case the user taps to show sheet, but the previously shown one
+//        // has not finished dimissing and being deallocated.
+//        guard fileActionSheet == nil else { return }
+//
+//        fileActionSheet = SharedFileActionSheet(
+//            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
+//            title: file.name,
+//            file: file,
+//            indexPath: indexPath,
+//            hasDownloadButton: viewModel?.downloadInProgress == false,
+//            onDismiss: {
+//                self.collectionView.deselectItem(at: indexPath, animated: true)
+//                self.view.dismissPopup(
+//                    self.fileActionSheet,
+//                    overlayView: self.overlayView,
+//                    completion: { _ in
+//                        self.fileActionSheet?.removeFromSuperview()
+//                        self.fileActionSheet = nil
+//                    }
+//                )
+//            }
+//        )
+//
+//        fileActionSheet?.delegate = self
+//        view.addSubview(fileActionSheet!)
+//        view.presentPopup(fileActionSheet, overlayView: overlayView)
+//    }
+    
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        // Safety measure, in case the user taps to show sheet, but the previously shown one
-        // has not finished dimissing and being deallocated.
-        guard fileActionSheet == nil else { return }
+        var actions: [PRMNTAction] = []
         
-        fileActionSheet = SharedFileActionSheet(
-            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-            title: file.name,
-            file: file,
-            indexPath: indexPath,
-            hasDownloadButton: viewModel?.downloadInProgress == false,
-            onDismiss: {
-                self.collectionView.deselectItem(at: indexPath, animated: true)
-                self.view.dismissPopup(
-                    self.fileActionSheet,
-                    overlayView: self.overlayView,
-                    completion: { _ in
-                        self.fileActionSheet?.removeFromSuperview()
-                        self.fileActionSheet = nil
-                    }
-                )
-            }
+        if file.permissions.contains(.delete) {
+            actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
+                deleteAction(file: file, atIndexPath: indexPath) })
+            )}
+        
+        if file.permissions.contains(.edit) {
+            actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
+                renameAction(file: file, atIndexPath: indexPath) })
+            )}
+        
+        if file.permissions.contains(.read) && file.type.isFolder == false {
+            actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
+                downloadAction(file: file) })
+            )}
+        
+        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        let title = String(format: "\(String.rename) \"%@\"", file.name)
+        
+        self.showActionDialog(
+            styled: .singleField,
+            withTitle: title,
+            placeholders: ["Name".localized()],
+            prefilledValues: ["\(file.name)"],
+            positiveButtonTitle: .rename,
+            positiveAction: {
+                guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
+                if inputName.isEmpty {
+                    self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
+                } else {
+                    self.actionDialog?.dismiss()
+                    self.actionDialog = nil
+                    self.rename(file, inputName, atIndexPath: indexPath)
+                    self.view.endEditing(true)
+                }
+            },
+            positiveButtonColor: .primary,
+            cancelButtonColor: .brightRed,
+            overlayView: self.overlayView
         )
-        
-        fileActionSheet?.delegate = self
-        view.addSubview(fileActionSheet!)
-        view.presentPopup(fileActionSheet, overlayView: overlayView)
+    }
+    
+    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        didTapDelete(forFile: file, atIndexPath: indexPath)
     }
 
     fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
@@ -525,6 +582,60 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "'\(name)' " + "download completed".localized(), animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
     }
     
+    func rename(_ file: FileViewModel, _ name: String, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.rename(file: file, name: name, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                self.pullToRefreshAction()
+                if file.type.isFolder {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "Folder rename was successful".localized())
+                } else {
+                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File rename was successful".localized())
+                }
+                
+            case .error( _):
+                self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
+            }
+        })
+    }
+    
+    private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        let title = String(format: "\(String.delete) \"%@\"?", file.name)
+        
+        self.showActionDialog(
+            styled: .simple,
+            withTitle: title,
+            positiveButtonTitle: .delete,
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.deleteFile(file, atIndexPath: indexPath)
+            }, positiveButtonColor: .brightRed,
+            cancelButtonColor: .primary,
+            overlayView: self.overlayView
+        )
+    }
+    
+    func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.delete(file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.viewModel?.removeSyncedFile(file)
+                    self.refreshCollectionView()
+                }
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        })
+    }
+    
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
@@ -558,15 +669,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     public func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
-        // Clear the data before navigation so we avoid concurrent errors.
-        viewModel?.viewModels.removeAll()
-        
-        self.collectionView.reloadData()
-        
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
             handler?()
         })
+        viewModel?.timer?.invalidate()
     }
     
     private func onFilesFetchCompletion(_ status: RequestStatus) {
