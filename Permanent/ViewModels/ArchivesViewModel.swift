@@ -24,12 +24,12 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -75,10 +75,14 @@ class ArchivesViewModel: ViewModelInterface {
                     return
                 }
                 
-                PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+                if let account = model.results[0].data?[0].accountVO {
+                    AuthenticationManager.shared.session?.account = account
+                    self.account = account
+                    completionBlock(self.account, nil)
+                } else {
+                    completionBlock(nil, APIError.invalidResponse)
+                }
                 
-                self.account = model.results[0].data?[0].accountVO
-                completionBlock(self.account, nil)
                 return
                 
             case .error:
@@ -93,7 +97,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
@@ -133,11 +137,11 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func currentArchive() -> ArchiveVOData? {
-        return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        return AuthenticationManager.shared.session?.selectedArchive
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+        AuthenticationManager.shared.session?.selectedArchive = archive
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {

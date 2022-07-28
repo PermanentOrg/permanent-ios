@@ -14,7 +14,7 @@ class SuccessfulAccountInfoTestURLs: TestURLs {
         return [
             URL(string: "https://www.permanent.org/api/auth/loggedIn"): "{\"Results\":[{\"data\":[{\"SimpleVO\":{\"key\":\"bool\",\"value\":true,\"createdDT\":null,\"updatedDT\":null}}],\"message\":[\"Status retrieved\"],\"status\":true,\"resultDT\":\"2021-08-03T17:59:25\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
             URL(string: "https://www.permanent.org/api/account/get"): "{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":4642,\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":null,\"address2\":null,\"country\":null,\"city\":null,\"state\":null,\"zip\":null,\"primaryPhone\":null,\"defaultArchiveId\":6053,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":\"type.account.standard\",\"emailStatus\":\"status.auth.verified\",\"phoneStatus\":\"status.auth.none\",\"notificationPreferences\":\"{\\\"textPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"emailPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}, \\\"inAppPreference\\\": {\\\"apps\\\": {\\\"confirmations\\\": 1}, \\\"share\\\": {\\\"requests\\\": 1, \\\"activities\\\": 1, \\\"confirmations\\\": 1}, \\\"account\\\": {\\\"confirmations\\\": 1, \\\"recommendations\\\": 1}, \\\"archive\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}, \\\"relationships\\\": {\\\"requests\\\": 1, \\\"confirmations\\\": 1}}}\",\"agreed\":null,\"optIn\":null,\"emailArray\":null,\"inviteCode\":null,\"rememberMe\":null,\"keepLoggedIn\":null,\"accessRole\":null,\"spaceTotal\":2147483648,\"spaceLeft\":1948732003,\"fileTotal\":null,\"fileLeft\":199969,\"changePrimaryEmail\":null,\"changePrimaryPhone\":null,\"createdDT\":\"2021-03-18T08:28:15\",\"updatedDT\":\"2021-07-27T23:15:14\"}}],\"message\":[\"Account has been retrieved.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:01:55\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!,
-            URL(string: "https://www.permanent.org/api/account/update"): "{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":\"4642\",\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
+            URL(string: "https://www.permanent.org/api/account/update"): "{\"Results\":[{\"data\":[{\"AccountVO\":{\"accountId\":1234,\"primaryEmail\":\"testaccount+prmnttst0001@server.com\",\"fullName\":\"testAccount\",\"address\":\"temporary address\",\"address2\":null,\"country\":\"ro\",\"city\":\"city\",\"state\":\"state\",\"zip\":\"333111\",\"primaryPhone\":\"+12345678901\",\"defaultArchiveId\":null,\"level\":null,\"apiToken\":null,\"betaParticipant\":null,\"facebookAccountId\":null,\"googleAccountId\":null,\"status\":\"status.auth.ok\",\"type\":null,\"emailStatus\":null,\"phoneStatus\":\"status.auth.unverified\",\"notificationPreferences\":null,\"createdDT\":null,\"updatedDT\":\"2021-08-03T18:05:35\"}}],\"message\":[\"Account was updated successfully.\"],\"status\":true,\"resultDT\":\"2021-08-03T18:05:35\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"sessionId\":null,\"createdDT\":null,\"updatedDT\":null}".data(using: .utf8)!
         ]
     }
 }
@@ -32,7 +32,7 @@ class AccountInfoTests: XCTestCase {
     var sut: InfoViewModel!
     override func setUpWithError() throws {
         try super.setUpWithError()
-        sut = InfoViewModel()
+        sut = InfoViewModel(accountId: 1234)
     }
     
     override func tearDownWithError() throws {
@@ -45,13 +45,10 @@ class AccountInfoTests: XCTestCase {
         config.protocolClasses = [ResponseURLProtocol<SuccessfulAccountInfoTestURLs>.self]
 
         sut.sessionProtocol = APINetworkSession(configuration: config)
-        
-        let accountId: Int = 1234
-        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
 
         let userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", nil, nil, nil, nil, nil, nil, nil)
         let promise = expectation(description: "Test get of valid data from user.")
-        
+
         sut.getUserData(then: { [self] status in
             XCTAssertEqual(status, .success(message: "User details were received"), "Failed!User data Not received.")
             XCTAssertEqual(sut.userData.fullName, userData.fullName, "Failed! User [fullName] not received correctly.")
@@ -71,35 +68,32 @@ class AccountInfoTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<SuccessfulAccountInfoTestURLs>.self]
         sut.sessionProtocol = APINetworkSession(configuration: config)
-        
-        let accountId:Int = 1234
-        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
 
         var userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", nil, nil, nil, nil, nil, nil, nil)
 
         let validTestResult = expectation(description: "Test get of valid data from user.")
         let invalidUserNameResult = expectation(description: "Test invalid user name.")
         let dataWasNotModified = expectation(description: "Test update data was not modified.")
-        
+
         sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .success(message: "Updates were saved"), "Failed!User data Not received.")
             validTestResult.fulfill()
         })
-        
+
         userData.fullName = nil
         sut.dataIsNotModified = false
         sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .error(message: "Account name can\'t be empty."), "Failed!Tested invalid user name.")
             invalidUserNameResult.fulfill()
         })
-        
+
         userData.fullName = "testAccount"
         sut.dataIsNotModified = true
         sut.updateUserData(userData, then: { status in
             XCTAssertEqual(status, .error(message: "No modifications were done"), "Failed!Tested data was not modified.")
             dataWasNotModified.fulfill()
         })
-        
+
         wait(for: [validTestResult, invalidUserNameResult, dataWasNotModified], timeout: 6)
     }
     
@@ -107,12 +101,9 @@ class AccountInfoTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ResponseURLProtocol<FailedAccountInfoTestURLs>.self]
         sut.sessionProtocol = APINetworkSession(configuration: config)
-        
-        let accountId:Int = 1234
-        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
 
         let promise = expectation(description: "Test error case, from get user data api.")
-        
+
         sut.getUserData(then: { status in
             XCTAssertEqual(status, .error(message: "Something went wrong. Please try again later."), "Failed!User data was received.")
             promise.fulfill()
@@ -129,7 +120,7 @@ class AccountInfoTests: XCTestCase {
         let invalidTestResult = expectation(description: "Test invalid api response.")
         
         sut.updateUserData(userData, then: { status in
-            XCTAssertEqual(status, .error(message: nil), "Failed!User data Not received.")
+            XCTAssertEqual(status, .error(message: "Something went wrong. Please try again later."), "Failed!User data Not received.")
             invalidTestResult.fulfill()
         })
         wait(for: [invalidTestResult], timeout: 6)
@@ -149,7 +140,6 @@ class AccountInfoTests: XCTestCase {
     }
     
     func testValuesFromTestField() throws {
-        
         let userData: UpdateUserData = ("testAccount", "testaccount+prmnttst0001@server.com", "+123456", "Test location", "Test location2", "Test city", "N/A", nil, "RO")
         sut.userData = userData
         

@@ -50,7 +50,7 @@ class SharedFilesViewModel: FilesViewModel {
                         return handler(.error(message: .errorMessage))
                     }
                     
-                    let currentArchive: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+                    let currentArchive: ArchiveVOData? = AuthenticationManager.shared.session?.selectedArchive
                     let currentArchiveId: Int? = currentArchive?.archiveID
                     
                     model.results.first?.data?.forEach { archive in

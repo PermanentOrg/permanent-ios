@@ -42,7 +42,7 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
         userTextField.textContentType = .emailAddress
         
         guard
-            let accountEmail: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.emailStorageKey)
+            let accountEmail: String = AuthenticationManager.shared.session?.account.primaryEmail
         else {
             return
         }
@@ -75,7 +75,7 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
         }
         
         guard
-            let accountID: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
+            let accountID: Int = AuthenticationManager.shared.session?.account.accountID
         else {
             return
         }
@@ -85,7 +85,7 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
         showSpinner(colored: .white)
         closeKeyboard()
         
-        self.viewModel?.changePassword(with: String(accountID), data: updatePasswordParameters, then: { status in
+        self.viewModel?.changePassword(with: accountID, data: updatePasswordParameters, then: { status in
             switch status {
             case .success(let message):
                 DispatchQueue.main.async {

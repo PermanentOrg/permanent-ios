@@ -13,17 +13,19 @@ typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: Stri
 
 class ShareExtensionViewModel: ViewModelInterface {
     var currentArchive: ArchiveVOData?
+    var session: PermSession?
     var selectedFiles: [FileInfo] = []
     
-    init() {
-        currentArchive = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+    init(session: PermSession? = try? SessionKeychainHandler().savedSession(), currentArchive: ArchiveVOData? = nil) {
+        self.session = session
+        self.currentArchive = currentArchive ?? session?.selectedArchive
     }
     
     func archiveName() -> String {
         if let name = currentArchive?.fullName {
             return "<NAME> Archive".localized().replacingOccurrences(of: "<NAME>", with: "The \(name)")
         } else {
-            return "Archive name was not found".localized()
+            return "Archive Name".localized()
         }
     }
     
@@ -37,6 +39,11 @@ class ShareExtensionViewModel: ViewModelInterface {
     
     func hasUploadPermission() -> Bool {
         return currentArchive?.permissions().contains(.upload) ?? false
+    }
+    
+    func hasActiveSession() -> Bool {
+        guard let expirationDate = session?.authState.lastTokenResponse?.accessTokenExpirationDate else { return false }
+        return expirationDate.timeIntervalSince1970 > Date().timeIntervalSince1970
     }
     
     func processSelectedFiles(attachments: [NSItemProvider], then handler: @escaping (Bool) -> Void) {

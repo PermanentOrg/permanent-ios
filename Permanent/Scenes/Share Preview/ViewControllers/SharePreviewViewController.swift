@@ -88,7 +88,7 @@ class SharePreviewViewController: UIViewController {
             currentArchiveImageView.image = nil
             currentArchiveImageView.load(urlString: archiveThumbURL)
             
-            currentArchiveDefaultButton.isHidden = viewModel.currentArchive?.archiveID != PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
+            currentArchiveDefaultButton.isHidden = viewModel.currentArchive?.archiveID != AuthenticationManager.shared.session?.account.defaultArchiveID
             
             currentArchiveName.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
         }

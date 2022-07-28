@@ -19,21 +19,21 @@ class MyFilesViewModel: FilesViewModel {
     
     override var selectedFile: FileViewModel? {
         get {
-            return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileKey)
+            return AuthenticationManager.shared.session?.selectedFile
         }
         
         set {
-            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileKey)
+            AuthenticationManager.shared.session?.selectedFile = newValue
         }
     }
     
     override var fileAction: FileAction {
         get {
-            return (try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.selectedFileActionKey)) ?? .none
+            return AuthenticationManager.shared.session?.fileAction ?? .none
         }
         
         set {
-            try? PreferencesManager.shared.setCodableObject(newValue, forKey: Constants.Keys.StorageKeys.selectedFileActionKey)
+            AuthenticationManager.shared.session?.fileAction = newValue
         }
     }
     
@@ -76,15 +76,6 @@ class MyFilesViewModel: FilesViewModel {
         else {
             handler(.error(message: .errorMessage))
             return
-        }
-        
-        let prefsManager = PreferencesManager(withGroupName: ExtensionUploadManager.appSuiteGroup)
-        if let myFilesArchive = model.results?.first?.data?.first?.folderVO?.childItemVOS?.filter({ $0.displayName == "My Files"}),
-            let folderID = myFilesArchive.first?.folderID,
-            let folderLinkId = myFilesArchive.first?.folderLinkID,
-            let archiveThumbnail = model.results?.first?.data?.first?.folderVO?.thumbURL500 {
-            prefsManager.set(folderID, forKey: Constants.Keys.StorageKeys.archiveFolderId)
-            prefsManager.set(folderLinkId, forKey: Constants.Keys.StorageKeys.archiveFolderLinkId)
         }
         
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)

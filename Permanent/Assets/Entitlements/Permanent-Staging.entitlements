@@ -12,5 +12,9 @@
 	<array>
 		<string>merchant.org.permanent.permanentarchive</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)org.permanent.permanent.staging</string>
+	</array>
 </dict>
 </plist>
