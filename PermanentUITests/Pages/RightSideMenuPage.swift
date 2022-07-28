@@ -11,9 +11,9 @@ import XCTest
 class RightSideMenuPage {
     let app: XCUIApplication
     let accountEmail: String
-    var emailStaticText: XCUIElement {
-        app.staticTexts[accountEmail]
-    }
+    
+    var emailStaticText: XCUIElement { app.staticTexts[accountEmail] }
+    var logoutButton: XCUIElement { app.tables.staticTexts["Log Out"] }
     
     init(app: XCUIApplication, testCase: XCTestCase, accountEmail: String) {
         self.app = app
@@ -25,7 +25,6 @@ class RightSideMenuPage {
     }
     
     func logOut() {
-        let logoutButton = app.tables.staticTexts["Log Out"]
         XCTAssertTrue(logoutButton.waitForExistence(timeout: 5))
         logoutButton.tap()
     }
