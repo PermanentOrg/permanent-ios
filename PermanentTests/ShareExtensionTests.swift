@@ -29,11 +29,11 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func positiveTestInit() {
-        sut = ShareExtensionViewModel()
+        sut = ShareExtensionViewModel(currentArchive: archivePositiveTests)
     }
     
     func negativeTestInit() {
-        sut = ShareExtensionViewModel()
+        sut = ShareExtensionViewModel(currentArchive: archiveNegativeTests)
     }
     
     func testArchiveName() throws {

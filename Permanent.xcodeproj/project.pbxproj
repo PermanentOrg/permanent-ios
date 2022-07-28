@@ -449,6 +449,7 @@
 		F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */; };
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
 		F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209BD285B483E006DCF9F /* PermSession.swift */; };
+		F54861FA28912F4300500F6F /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54861F928912F4300500F6F /* SessionTests.swift */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
 		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
@@ -953,6 +954,7 @@
 		F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLinkAccessNotificationPayload.swift; sourceTree = "<group>"; };
 		F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewNavigationController.swift; sourceTree = "<group>"; };
+		F54861F928912F4300500F6F /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareNotificationPayload.swift; sourceTree = "<group>"; };
@@ -1384,6 +1386,7 @@
 				F5D209B9285B3DB3006DCF9F /* AccountOnboardingTests.swift */,
 				F53DADDC28804FA80094B738 /* ExtensionUploadManagerTests.swift */,
 				5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */,
+				F54861F928912F4300500F6F /* SessionTests.swift */,
 				5E68F2D026A74FCD00CC936E /* Info.plist */,
 				5E68F2D826A9A2CD00CC936E /* TestURLs.swift */,
 				5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */,
@@ -2923,6 +2926,7 @@
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
+				F54861FA28912F4300500F6F /* SessionTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,

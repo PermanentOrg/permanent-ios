@@ -22,13 +22,13 @@ enum UpdateUserDataStatus: Equatable {
 
 class InfoViewModel: ViewModelInterface {
     var userData: UpdateUserData
-    var accountId: Int? {
-        AuthenticationManager.shared.session?.account.accountID
-    }
+    var accountId: Int?
     var dataIsNotModified: Bool
-    init() {
+    
+    init(accountId: Int? = AuthenticationManager.shared.session?.account.accountID) {
         self.userData = (nil, nil, nil, nil, nil, nil, nil, nil, nil)
         self.dataIsNotModified = false
+        self.accountId = accountId
     }
     
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
