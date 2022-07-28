@@ -36,11 +36,11 @@ class UploadManager {
         }
         
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             return
         }
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -275,15 +275,6 @@ extension UploadManager {
         else {
             handler(.error(message: .errorMessage))
             return
-        }
-        
-        let prefsManager = PreferencesManager(withGroupName: ExtensionUploadManager.appSuiteGroup)
-        if let myFilesArchive = model.results?.first?.data?.first?.folderVO?.childItemVOS?.filter({ $0.displayName == "My Files"}),
-            let folderID = myFilesArchive.first?.folderID,
-            let folderLinkId = myFilesArchive.first?.folderLinkID,
-            let archiveThumbnail = model.results?.first?.data?.first?.folderVO?.thumbURL500 {
-            prefsManager.set(folderID, forKey: Constants.Keys.StorageKeys.archiveFolderId)
-            prefsManager.set(folderLinkId, forKey: Constants.Keys.StorageKeys.archiveFolderLinkId)
         }
         
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)

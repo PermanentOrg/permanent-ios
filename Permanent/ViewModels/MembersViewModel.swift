@@ -14,7 +14,7 @@ class MembersViewModel: ViewModelInterface {
     fileprivate var sortedMembers: [Account] = []
     fileprivate var memberSections: [AccessRole: [Account]] = [:]
     
-    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    var currentArchive: ArchiveVOData? { return AuthenticationManager.shared.session?.selectedArchive }
     var archivePermissions: [Permission] {
         guard let accessRaw = currentArchive?.accessRole else {
             return [.read]
@@ -32,7 +32,7 @@ class MembersViewModel: ViewModelInterface {
     }
     
     func getMembers(then handler: @escaping ServerResponse) {
-        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+        guard let currentArchive: ArchiveVOData = AuthenticationManager.shared.session?.selectedArchive,
             let archiveNbr: String = currentArchive.archiveNbr else {
             return
         }
@@ -64,7 +64,7 @@ class MembersViewModel: ViewModelInterface {
     }
     
     func modifyMember(_ operation: MemberOperation, params: AddMemberParams, then handler: @escaping ServerResponse) {
-        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+        guard let currentArchive: ArchiveVOData = AuthenticationManager.shared.session?.selectedArchive,
             let archiveNbr: String = currentArchive.archiveNbr else {
             return
         }
@@ -139,10 +139,13 @@ class MembersViewModel: ViewModelInterface {
                     return
                 }
                 
-                let archive = model.results[0].data?[0].archiveVO
-                try? PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
+                if let archive = model.results[0].data?[0].archiveVO {
+                    AuthenticationManager.shared.session?.selectedArchive = archive
+                    completion(true)
+                } else {
+                    completion(false)
+                }
                 
-                completion(true)
                 return
                 
             case .error:
@@ -157,7 +160,7 @@ class MembersViewModel: ViewModelInterface {
     }
     
     func transferOwnership(email: String, then handler: @escaping ServerResponse) {
-        guard let currentArchive: ArchiveVOData = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive),
+        guard let currentArchive: ArchiveVOData = AuthenticationManager.shared.session?.selectedArchive,
             let archiveNbr: String = currentArchive.archiveNbr else {
             return
         }

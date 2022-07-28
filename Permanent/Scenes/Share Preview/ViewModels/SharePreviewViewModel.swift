@@ -27,7 +27,7 @@ class SharePreviewViewModel {
         }
     }
     
-    var currentArchive: ArchiveVOData? { return try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive) }
+    var currentArchive: ArchiveVOData? { return AuthenticationManager.shared.session?.selectedArchive }
     
     var accountArchives: [ArchiveVOData]? = []
 
@@ -38,7 +38,6 @@ class SharePreviewViewModel {
     }
     
     func performAction() {
-        
         switch self.shareDetails?.status {
         case .accepted:
             viewDelegate?.viewInArchive()
@@ -49,7 +48,6 @@ class SharePreviewViewModel {
         default:
             break
         }
-        
     }
     
     // MARK: - Network
@@ -157,7 +155,7 @@ class SharePreviewViewModel {
     
     func updateAccountArchives(completion: @escaping () -> ()) {
         isBusy = true
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             self.isBusy = false
             return
         }

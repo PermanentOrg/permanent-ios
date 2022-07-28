@@ -9,15 +9,12 @@ import Foundation
 
 // TODO: See if this type is appropiate.
 typealias LoginCredentials = (email: String, password: String)
-typealias VerifyCodeCredentials = (email: String, code: String, type: CodeVerificationType)
 
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
     case verifyAuth
     /// Performs a login with an email & password credentials.
     case login(credentials: LoginCredentials)
-    /// Verifies the code received on mail or sms.
-    case verify(credentials: VerifyCodeCredentials)
     /// Sends an email in order to change the password.
     case forgotPassword(email: String)
     /// Logs out the user.
@@ -29,9 +26,6 @@ extension AuthenticationEndpoint: RequestProtocol {
         switch self {
         case .login(let credentials):
             return Payloads.loginPayload(for: credentials)
-            
-        case .verify(let credentials):
-            return Payloads.verifyPayload(for: credentials)
             
         case .forgotPassword(let email):
             return Payloads.forgotPasswordPayload(for: email)
@@ -56,12 +50,13 @@ extension AuthenticationEndpoint: RequestProtocol {
         switch self {
         case .verifyAuth:
             return "/auth/loggedin"
+            
         case .login:
             return "/auth/login"
-        case .verify:
-            return "/auth/verify"
+            
         case .forgotPassword:
             return "/auth/sendEmailForgotPassword"
+            
         case .logout:
             return "/auth/logout"
         }

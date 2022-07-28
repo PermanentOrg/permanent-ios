@@ -22,13 +22,13 @@ enum UpdateUserDataStatus: Equatable {
 
 class InfoViewModel: ViewModelInterface {
     var userData: UpdateUserData
-    var accountId: Int? {
-        PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-    }
+    var accountId: Int?
     var dataIsNotModified: Bool
-    init() {
+    
+    init(accountId: Int? = AuthenticationManager.shared.session?.account.accountID) {
         self.userData = (nil, nil, nil, nil, nil, nil, nil, nil, nil)
         self.dataIsNotModified = false
+        self.accountId = accountId
     }
     
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
@@ -38,9 +38,8 @@ class InfoViewModel: ViewModelInterface {
             handler(.error(message: .errorMessage))
             return
         }
-        let accountIdString = String("\(accountId)")
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountIdString))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         
         let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
@@ -87,7 +86,6 @@ class InfoViewModel: ViewModelInterface {
             handler(.error(message: .errorMessage))
             return
         }
-        let accountIdString = String("\(accountId)")
         
         let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
         apiDispatch.ignoresMFAWarning = true
@@ -113,15 +111,15 @@ class InfoViewModel: ViewModelInterface {
             return
         }
 
-        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountIdString, updateData: userData))
+        let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData))
 
         updateUserDataOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<AccountVO>.decoder
                     )
                 else {
                     handler(.error(message: .errorMessage))
@@ -136,7 +134,10 @@ class InfoViewModel: ViewModelInterface {
                     handler(.error(message: userDetailsFaieldMessage?.description))
                     return
                 }
-                PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
+                
+                if let accountVO = model.results.first?.data?.first?.accountVO {
+                    AuthenticationManager.shared.session?.account = accountVO
+                }
 
                 handler(.success(message: .userDetailsChangedSuccessfully))
 

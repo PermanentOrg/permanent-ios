@@ -14,12 +14,12 @@ class AuthViewModel: ViewModelInterface {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
         
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: String(accountId)))
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -34,40 +34,6 @@ class AuthViewModel: ViewModelInterface {
                 let accountData = model.results[0].data?[0].accountVO
                 completionBlock(accountData, nil)
                
-                return
-                
-            case .error:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            }
-        }
-    }
-    
-    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.accountIdStorageKey) else {
-            completionBlock(nil, APIError.unknown)
-            return
-        }
-        
-        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
-        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(nil, APIError.invalidResponse)
-                    return
-                }
-                
-                let accountArchives = model.results.first?.data
-                
-                completionBlock(accountArchives, nil)
                 return
                 
             case .error:
@@ -141,111 +107,6 @@ class AuthViewModel: ViewModelInterface {
             }
         }
     }
-    
-    func syncSession(then handler: @escaping ServerResponse) {
-        PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
-        
-        isLoggedIn { [self] status in
-            if status == .success {
-                getSessionAccount { [self] status in
-                    if status == .success {
-                        if let archiveId: Int = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) {
-                            print(archiveId)
-                            refreshCurrentArchive { success, archive in
-                                if success {
-                                    AuthenticationManager.shared.saveSession()
-                                    handler(.success)
-                                } else {
-                                    handler(.error(message: .errorMessage))
-                                }
-                            }
-                        } else {
-                            AuthenticationManager.shared.saveSession()
-                            handler(.success)
-                        }
-                    } else {
-                        AuthenticationManager.shared.saveSession()
-                        handler(.success)
-                    }
-                }
-            } else {
-                handler(.error(message: .errorMessage))
-            }
-        }
-    }
-    
-    func getSessionAccount(then handler: @escaping ServerResponse) {
-        let op = APIOperation(AccountEndpoint.getSessionAccount)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
-        op.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<AccountVO> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-
-                if model.isSuccessful == true {
-                    PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
-                    
-                    if let email = model.results.first?.data?.first?.accountVO?.primaryEmail {
-                        PreferencesManager.shared.set(email, forKey: Constants.Keys.StorageKeys.emailStorageKey)
-                    }
-
-                    if let accountId = model.results.first?.data?.first?.accountVO?.accountID {
-                        PreferencesManager.shared.set(accountId, forKey: Constants.Keys.StorageKeys.accountIdStorageKey)
-                    }
-                    
-                    if let archiveId = model.results.first?.data?.first?.accountVO?.defaultArchiveID {
-                        PreferencesManager.shared.set(archiveId, forKey: Constants.Keys.StorageKeys.defaultArchiveId)
-                    }
-                    
-                    if let fullName = model.results.first?.data?.first?.accountVO?.fullName {
-                        PreferencesManager.shared.set(fullName, forKey: Constants.Keys.StorageKeys.nameStorageKey)
-                    }
-                    
-                    handler(.success)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-
-            case .error:
-                handler(.error(message: .errorMessage))
-
-            default:
-                break
-            }
-        }
-    }
-    
-    func isLoggedIn(then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(AuthenticationEndpoint.verifyAuth)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
-        apiDispatch.ignoresMFAWarning = true
-        loginOperation.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<NoDataModel> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-
-                if model.isSuccessful == true {
-                    handler(.success)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-
-            case .error:
-                handler(.error(message: .errorMessage))
-
-            default:
-                break
-            }
-        }
-    }
 
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
@@ -282,49 +143,13 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        do {
-            try PreferencesManager.shared.setCodableObject(archive, forKey: Constants.Keys.StorageKeys.archive)
-        } catch {
-            print(error)
-        }
+        AuthenticationManager.shared.session?.selectedArchive = archive
     }
     
     func getCurrentArchive() -> ArchiveVOData? {
-        let archiveVO: ArchiveVOData? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.archive)
+        let archiveVO: ArchiveVOData? = AuthenticationManager.shared.session?.selectedArchive
         
         return archiveVO
-    }
-    
-    func refreshCurrentArchive(_ updateHandler: @escaping ((Bool, ArchiveVOData?) -> Void)) {
-        getAccountArchives { [self] archives, error in
-            if error != nil {
-                updateHandler(false, nil)
-                return
-            }
-            
-            if getCurrentArchive() == nil {
-                let hasDefault = archives?.contains(where: { archive in
-                    archive.archiveVO?.status == ArchiveVOData.Status.ok
-                }) ?? false
-                
-                if hasDefault, let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId) && $0.archiveVO?.status != .pending })?.archiveVO {
-                    setCurrentArchive(defaultArchive)
-                    
-                    updateHandler(true, defaultArchive)
-                } else {
-                    PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.defaultArchiveId)
-                    updateHandler(true, nil)
-                }
-            } else {
-                if let currentArchive = archives?.first(where: { $0.archiveVO?.archiveID == getCurrentArchive()?.archiveID })?.archiveVO {
-                    setCurrentArchive(currentArchive)
-                    
-                    updateHandler(true, currentArchive)
-                } else {
-                    updateHandler(true, nil)
-                }
-            }
-        }
     }
     
     func areFieldsValid(nameField: String?, emailField: String?, passwordField: String?) -> Bool {

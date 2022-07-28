@@ -245,7 +245,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
     
     func getAccountName() -> String? {
-        let accountName: String? = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.nameStorageKey)
+        let accountName: String? = AuthenticationManager.shared.session?.account.fullName
         return accountName
     }
 }

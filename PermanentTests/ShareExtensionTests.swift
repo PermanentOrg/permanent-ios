@@ -29,11 +29,11 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func positiveTestInit() {
-        sut = ShareExtensionViewModel()
+        sut = ShareExtensionViewModel(currentArchive: archivePositiveTests)
     }
     
     func negativeTestInit() {
-        sut = ShareExtensionViewModel()
+        sut = ShareExtensionViewModel(currentArchive: archiveNegativeTests)
     }
     
     func testArchiveName() throws {
@@ -43,7 +43,7 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func testArchiveNameNegative() throws {
-        let parameterForTest = "Archive name was not found"
+        let parameterForTest = "Archive Name"
         negativeTestInit()
         
         XCTAssertEqual(sut.archiveName(), parameterForTest)

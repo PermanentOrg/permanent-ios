@@ -143,7 +143,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupCollectionView() {
-        isGridView = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isGridView) ?? false
+        isGridView = viewModel?.isGridView ?? false
         if #available(iOS 13.0, *) {
             switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         } else {
@@ -364,7 +364,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
         isGridView.toggle()
-        PreferencesManager.shared.set(isGridView, forKey: Constants.Keys.StorageKeys.isGridView)
+        viewModel?.isGridView = isGridView
         
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         

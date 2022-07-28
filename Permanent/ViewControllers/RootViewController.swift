@@ -69,26 +69,29 @@ class RootViewController: UIViewController {
                 return
             }
             
-            if AuthenticationManager.shared.reloadSession() {
-                let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
-                let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
-                
-                if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
-                    self?.setDrawerRoot()
+            AuthenticationManager.shared.reloadSession { success in
+                if success {
+                    let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
+                    let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
+                    
+                    if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode || !biometricsAuthEnabled {
+                        self?.setDrawerRoot()
+                    } else {
+                        self?.setRoot(named: .biometrics, from: .authentication)
+                    }
                 } else {
-                    self?.setRoot(named: .biometrics, from: .authentication)
+                    let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
+                    let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
+                    
+                    let navController = NavigationController()
+                    let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
+                    navController.viewControllers = [viewController]
+                    
+                    self?.current = navController
+                    self?.setupChild(self?.current)
                 }
-            } else {
-                let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
-                let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
-                
-                let navController = NavigationController()
-                let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
-                navController.viewControllers = [viewController]
-                
-                self?.current = navController
-                self?.setupChild(self?.current)
             }
+            
             self?.sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
                 guard self?.current is SignUpViewController == false else { return }
                 

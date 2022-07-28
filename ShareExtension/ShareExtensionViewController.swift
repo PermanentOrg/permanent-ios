@@ -75,7 +75,14 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             userNameImageView.load(urlString: archiveThumnailUrl)
         }
         
-        if let hasUploadPermission = viewModel?.hasUploadPermission(), !hasUploadPermission {
+        if let hasActiveSession = viewModel?.hasActiveSession(), !hasActiveSession {
+            let alert = UIAlertController(title: "Uh oh", message: "You do not have an active session. Please log in to Permanent.".localized(), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+                self.didTapCancel()
+            }))
+            
+            self.present(alert, animated: true)
+        } else if let hasUploadPermission = viewModel?.hasUploadPermission(), !hasUploadPermission {
             let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
                 self.didTapCancel()

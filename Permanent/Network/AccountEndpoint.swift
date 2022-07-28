@@ -8,24 +8,25 @@
 import Foundation
 
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
+typealias UpdateData = (email: String, phone: String)
 
 enum AccountEndpoint {
     /// Creates an new user account.
     case signUp(credentials: SignUpCredentials)
     /// Deletes user account
-    case delete(accountId: String)
+    case delete(accountId: Int)
     /// Updates user account.
-    case updateEmailAndPhone(accountId: String, data: UpdateData)
+    case updateEmailAndPhone(accountId: Int, data: UpdateData)
     /// Updates user account.
     case update(accountVO: AccountVOData)
     /// Sends an SMS with a verification code for verifying the phone number.
-    case sendVerificationCodeSMS(accountId: String, email: String)
+    case sendVerificationCodeSMS(accountId: Int, email: String)
     /// Change user password
-    case changePassword(accountId: String, passwordDetails: ChangePasswordCredentials)
+    case changePassword(accountId: Int, passwordDetails: ChangePasswordCredentials)
     /// Get user data
-    case getUserData(accountId: String)
+    case getUserData(accountId: Int)
     /// Updates user data
-    case updateUserData(accountId: String, updateData: UpdateUserData)
+    case updateUserData(accountId: Int, updateData: UpdateUserData)
     /// Update Share request
     case updateShareRequest(shareVO: ShareVOData)
     /// Revoke Share request

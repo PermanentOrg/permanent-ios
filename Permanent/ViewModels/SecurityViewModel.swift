@@ -16,7 +16,7 @@ class SecurityViewModel: ViewModelInterface {
 }
 
 protocol SecurityViewModelDelegate: ViewModelDelegateInterface {
-    func changePassword(with accountId: String, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void)
+    func changePassword(with accountId: Int, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void)
     func getUserBiomericsStatus() -> Bool
     func getAuthToggleStatus() -> Bool
     func getAuthTypeText() -> String
@@ -27,7 +27,7 @@ protocol SecurityViewModelViewDelegate: ViewModelDelegateInterface {
 }
 
 extension SecurityViewModel: SecurityViewModelDelegate {
-    func changePassword(with accountId: String, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void) {
+    func changePassword(with accountId: Int, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void) {
         let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data))
 
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in

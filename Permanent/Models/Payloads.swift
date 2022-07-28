@@ -64,7 +64,7 @@ struct Payloads {
         ]
     }
     
-    static func deleteAccountPayload(accountId: String) -> RequestParameters {
+    static func deleteAccountPayload(accountId: Int) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
@@ -78,7 +78,7 @@ struct Payloads {
         ]
     }
     
-    static func updateEmailAndPhone(accountId: String, updateData: UpdateData) -> RequestParameters {
+    static func updateEmailAndPhone(accountId: Int, updateData: UpdateData) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
@@ -113,7 +113,7 @@ struct Payloads {
         ]
     }
     
-    static func smsVerificationCodePayload(accountId: String, email: String) -> RequestParameters {
+    static func smsVerificationCodePayload(accountId: Int, email: String) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
@@ -121,24 +121,6 @@ struct Payloads {
                         "AccountVO": [
                             "accountId": accountId,
                             "primaryEmail": email
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-    
-    static func verifyPayload(for credentials: VerifyCodeCredentials) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AuthVO": [
-                            "type": credentials.type.value,
-                            "token": credentials.code
                         ]
                     ]
                 ]
@@ -267,7 +249,7 @@ struct Payloads {
         ]
     }
     
-    static func updatePassword(accountId: String, updateData: ChangePasswordCredentials) -> RequestParameters {
+    static func updatePassword(accountId: Int, updateData: ChangePasswordCredentials) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
@@ -286,7 +268,7 @@ struct Payloads {
         ]
     }
     
-    static func getUserData(accountId: String) -> RequestParameters {
+    static func getUserData(accountId: Int) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
@@ -299,22 +281,22 @@ struct Payloads {
             ]
         ]
     }
-    static func updateUserData(accountId: String, updateUserData: UpdateUserData) -> RequestParameters {
+    static func updateUserData(accountId: Int, updateUserData: UpdateUserData) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
                     [
                         "AccountVO": [
                             "accountId": accountId,
-                            "fullName": updateUserData.fullName,
-                            "primaryEmail": updateUserData.primaryEmail,
-                            "primaryPhone": updateUserData.primaryPhone,
-                            "address": updateUserData.address,
-                            "address2": updateUserData.address2,
-                            "city": updateUserData.city,
-                            "state": updateUserData.state,
-                            "zip": updateUserData.zip,
-                            "country": updateUserData.country
+                            "fullName": updateUserData.fullName as Any,
+                            "primaryEmail": updateUserData.primaryEmail as Any,
+                            "primaryPhone": updateUserData.primaryPhone as Any,
+                            "address": updateUserData.address as Any,
+                            "address2": updateUserData.address2 as Any,
+                            "city": updateUserData.city as Any,
+                            "state": updateUserData.state as Any,
+                            "zip": updateUserData.zip as Any,
+                            "country": updateUserData.country as Any
                         ]
                     ]
                 ]
