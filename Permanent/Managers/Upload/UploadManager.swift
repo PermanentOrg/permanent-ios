@@ -80,12 +80,6 @@ class UploadManager {
         if let fileContents = file.fileContents {
             file.url = fileHelper.saveFile(fileContents, named: file.id, withExtension: "jpeg", isDownload: false) ?? URL(fileURLWithPath: "")
             file.fileContents = nil
-        } else {
-            do {
-                file.url = try fileHelper.copyFile(withURL: file.url)
-            } catch {
-                print(error)
-            }
         }
         
         // Save file metadata

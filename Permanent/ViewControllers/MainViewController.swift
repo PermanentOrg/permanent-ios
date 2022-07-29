@@ -1157,12 +1157,16 @@ extension MainViewController: FilePreviewNavigationControllerDelegate {
 // MARK: - PhotoPickerViewControllerDelegate
 extension MainViewController: PhotoPickerViewControllerDelegate {
     func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
+        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+        present(alert, animated: true)
         viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            guard let currentFolder = viewModel?.currentFolder else {
-                return showErrorAlert(message: .cannotUpload)
+            dismiss(animated: true) { [self] in
+                guard let currentFolder = viewModel?.currentFolder else {
+                    return showErrorAlert(message: .cannotUpload)
+                }
+                
+                processUpload(toFolder: currentFolder, forURLS: urls)
             }
-            
-            processUpload(toFolder: currentFolder, forURLS: urls)
         })
     }
 }
