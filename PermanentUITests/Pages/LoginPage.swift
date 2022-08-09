@@ -13,7 +13,7 @@ class LoginPage {
     
     var emailField: XCUIElement { app.webViews.textFields["Email"] }
     var passwordField: XCUIElement { app.webViews.secureTextFields["Password (min. 8 chars)"] }
-    var rememberSignInSwitch: XCUIElement { app.webViews.switches["0"] }
+    var rememberSignInSwitch: XCUIElement { app.webViews.switches.firstMatch }
     var submitButton: XCUIElement { app.webViews.buttons["Submit"] }
     var cancelButton: XCUIElement { app.buttons["Cancel"] }
     
@@ -31,7 +31,7 @@ class LoginPage {
         passwordField.typeText(password)
 
         XCTAssertTrue(rememberSignInSwitch.waitForExistence(timeout: 5))
-        if !rememberSignInSwitch.isEnabled {
+        if let checkboxValue = rememberSignInSwitch.value as? String, Int(checkboxValue) == 1 {
             rememberSignInSwitch.tap()
         }
         
