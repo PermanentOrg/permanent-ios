@@ -46,6 +46,16 @@
                </Test>
             </SkippedTests>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5E68830428902DBF0006F434"
+               BuildableName = "PermanentUITests.xctest"
+               BlueprintName = "PermanentUITests"
+               ReferencedContainer = "container:Permanent.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
