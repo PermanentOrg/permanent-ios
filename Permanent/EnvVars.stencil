@@ -27,8 +27,15 @@ public struct StripeServiceInfo {
     let publishableKey: String
 }
 
+public struct UITestCredentials {
+    let username: String
+    let password: String
+}
+
 public let googleServiceInfo = GoogleServiceInfo(clientId: "{{ argument.clientId }}", reversedClientId: "{{ argument.reversedClientId }}", apiKey: "{{ argument.apiKey }}", gcmSenderId: "{{ argument.gcmSenderId }}", projectId: "{{ argument.projectId }}", storageBucket: "{{ argument.storageBucket }}", googleAppId: "{{ argument.googleAppId }}")
 
 public let authServiceInfo = AuthServiceInfo(clientId: "{{ argument.authClientId }}", clientSecret: "{{ argument.authClientSecret }}", authTenantId: "{{ argument.authTenantId }}")
 
 public let stripeServiceInfo = StripeServiceInfo(publishableKey: "{{ argument.stripePublishableKey }}")
+
+public let uiTestCredentials = UITestCredentials(username: "{{ argument.uiTestUsername }}", password: "{{ argument.uiTestPassword }}")

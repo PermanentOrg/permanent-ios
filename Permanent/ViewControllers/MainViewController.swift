@@ -592,8 +592,8 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
         
-        cell.moreButton.isHidden = viewModel.isPickingImage
-        cell.rightButtonImageView.isHidden = viewModel.isPickingImage
+        cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
+        cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
