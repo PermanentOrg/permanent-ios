@@ -47,11 +47,12 @@ class FileHelper {
         }
     }
     
-    func copyFile(withURL from: URL, usingAppSuiteGroup suiteGroupName: String? = nil) throws -> URL {
-        var to = self.uploadDirectoryURL!.appendingPathComponent(from.lastPathComponent)
+    func copyFile(withURL from: URL, name: String? = nil, usingAppSuiteGroup suiteGroupName: String? = nil) throws -> URL {
+        let toLastPathComponent = name ?? from.lastPathComponent
+        var to = self.uploadDirectoryURL!.appendingPathComponent(toLastPathComponent)
         
         if let suiteGroup = suiteGroupName {
-            to = FileManager().containerURL(forSecurityApplicationGroupIdentifier: suiteGroup)!.appendingPathComponent(from.lastPathComponent)
+            to = FileManager().containerURL(forSecurityApplicationGroupIdentifier: suiteGroup)!.appendingPathComponent(toLastPathComponent)
         }
         // If we already have an item stored at this path, we remove it first.
         try? FileManager.default.removeItem(at: to)
@@ -86,7 +87,7 @@ class FileHelper {
     func hasFile(named name: String, isDownload: Bool = true) -> Bool {
         var fileURL: URL
         if isDownload {
-           fileURL = self.defaultDirectoryURL!
+            fileURL = self.defaultDirectoryURL!
         } else {
             fileURL = self.uploadDirectoryURL!
         }
@@ -100,7 +101,7 @@ class FileHelper {
         if hasFile(named: name, isDownload: isDownload) {
             var fileURL: URL
             if isDownload {
-               fileURL = self.defaultDirectoryURL!
+                fileURL = self.defaultDirectoryURL!
             } else {
                 fileURL = self.uploadDirectoryURL!
             }

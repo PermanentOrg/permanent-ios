@@ -7,8 +7,13 @@
 
 import Photos
 
+struct AssetDescriptor {
+    let url: URL
+    let name: String
+}
+
 extension PHAsset {
-    func getURL(completionHandler: @escaping ((_ responseURL: URL?) -> Void)) {
+    func getURL(completionHandler: @escaping ((_ descriptor: AssetDescriptor?) -> Void)) {
         if self.mediaType == .image {
             let options = PHContentEditingInputRequestOptions()
             options.isNetworkAccessAllowed = true
@@ -16,7 +21,20 @@ extension PHAsset {
                 false
             }
             self.requestContentEditingInput(with: options, completionHandler: { (contentEditingInput: PHContentEditingInput?, _: [AnyHashable: Any]) -> Void in
-                completionHandler(contentEditingInput?.fullSizeImageURL as URL?)
+                guard let url = contentEditingInput?.fullSizeImageURL as URL? else {
+                    completionHandler(nil)
+                    return
+                }
+                
+                var fileName = url.lastPathComponent
+                if url.lastPathComponent.contains("FullSizeRender") {
+                    let fileExtention = url.lastPathComponent.components(separatedBy: ".").last ?? ""
+                    fileName = url.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent
+                    if fileExtention.isNotEmpty { fileName.append(".\(fileExtention)") }
+                }
+                
+                let descriptor = AssetDescriptor(url: url, name: fileName)
+                completionHandler(descriptor)
             })
         } else if self.mediaType == .video {
             let options = PHVideoRequestOptions()
@@ -24,8 +42,11 @@ extension PHAsset {
             options.isNetworkAccessAllowed = true
             PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: { (asset: AVAsset?, _: AVAudioMix?, _: [AnyHashable: Any]?) -> Void in
                 if let urlAsset = asset as? AVURLAsset {
-                    let localVideoUrl: URL = urlAsset.url as URL
-                    completionHandler(localVideoUrl)
+                    let url: URL = urlAsset.url as URL
+                    let fileName = url.lastPathComponent
+                    
+                    let descriptor = AssetDescriptor(url: url, name: fileName)
+                    completionHandler(descriptor)
                 } else {
                     completionHandler(nil)
                 }

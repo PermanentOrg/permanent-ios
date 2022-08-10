@@ -354,14 +354,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         assets.forEach { photo in
             dispatchGroup.enter()
             
-            photo.getURL { url in
-                guard let imageURL = url else {
+            photo.getURL { descriptor in
+                guard let fileDescriptor = descriptor else {
                     dispatchGroup.leave()
                     return
                 }
                 
                 do {
-                    let localURL = try FileHelper().copyFile(withURL: imageURL)
+                    let localURL = try FileHelper().copyFile(withURL: fileDescriptor.url, name: fileDescriptor.name)
                     urls.append(localURL)
                 } catch {
                     print(error)
