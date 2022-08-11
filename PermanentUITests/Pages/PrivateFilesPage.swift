@@ -42,8 +42,8 @@ class PrivateFilesPage {
         app.buttons["Cancel"]
     }
     
-    var uploadsFolderButton: XCUIElement {
-        app.collectionViews.staticTexts["uploads"].firstMatch
+    var currentTestFolderButton: XCUIElement {
+        app.collectionViews.staticTexts["current test"].firstMatch
     }
     
     var photoLibraryButton: XCUIElement {
@@ -67,7 +67,7 @@ class PrivateFilesPage {
     }
     
     var firstElementMoreButton: XCUIElement {
-        firstElementFromFolder.children(matching: .button).element
+        app.collectionViews.children(matching: .cell).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .button).element
     }
     
     var deleteButtonFromMoreList: XCUIElement {
@@ -113,11 +113,12 @@ class PrivateFilesPage {
         
         sleep(3)
         
-        XCTAssertTrue(uploadsFolderButton.waitForExistence(timeout: 5))
-        uploadsFolderButton.tap()
+        XCTAssertTrue(currentTestFolderButton.waitForExistence(timeout: 5))
+        currentTestFolderButton.tap()
     }
     
     func enterPhotoLibrary() {
+        sleep(2)
         addButton.tap()
         sleep(2)
         
