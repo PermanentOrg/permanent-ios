@@ -10,6 +10,7 @@ import XCTest
 
 class PrivateFilesPage {
     let app: XCUIApplication
+    
     var navigationBar: XCUIElement {
         app.navigationBars["Private Files"]
     }
@@ -25,47 +26,36 @@ class PrivateFilesPage {
     var uploadButton: XCUIElement {
         app.buttons["Upload"]
     }
-    
     var createNewFolderStaticText: XCUIElement {
         app.staticTexts["Create New Folder"]
     }
-    
     var folderNameTextField: XCUIElement {
         app.textFields["Folder Name"]
     }
-    
     var createNewFolderButton: XCUIElement {
         app.buttons["Create"]
     }
-    
     var cancelCreateNewFolderButton: XCUIElement {
         app.buttons["Cancel"]
     }
-    
     var currentTestFolderButton: XCUIElement {
         app.collectionViews.staticTexts["current test"].firstMatch
     }
-    
     var photoLibraryButton: XCUIElement {
         app.sheets.scrollViews.otherElements.buttons["Photo Library"]
     }
-    
     var photoLibraryElementLoading: XCUIElement {
         app.collectionViews.activityIndicators["In progress"]
     }
-    
     var uploadInProgress: XCUIElement {
         app.collectionViews.buttons["Uploads"]
     }
-    
     var uploadFinishedButton: XCUIElement {
         app.collectionViews.buttons["Name (A-Z)"]
     }
-    
     var firstElementFromFolder: XCUIElement {
         app.collectionViews.cells.children(matching: .other).element.children(matching: .other).element
     }
-    
     var firstElementMoreButton: XCUIElement {
         app.collectionViews.children(matching: .cell).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .button).element
     }
@@ -73,15 +63,12 @@ class PrivateFilesPage {
     var deleteButtonFromMoreList: XCUIElement {
         app.buttons["Delete"]
     }
-    
     var deleteButtonFromConfirmation: XCUIElement {
         app.scrollViews.otherElements.staticTexts["Delete"]
     }
-    
     var backButton: XCUIElement {
         app.buttons["chevron"]
     }
-    
     var emptyFolder: XCUIElement {
         app.collectionViews.staticTexts["This folder is empty"]
     }

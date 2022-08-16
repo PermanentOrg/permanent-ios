@@ -53,11 +53,6 @@
                BlueprintName = "PermanentUITests"
                ReferencedContainer = "container:Permanent.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "SharedFilesUITests">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

@@ -13,13 +13,21 @@ import XCTest
 class LeftSideMenuPage {
     let app: XCUIApplication
     
-    var menuButton: XCUIElement { app.buttons["hamburger"] }
-    var privateFilesButton: XCUIElement { app.tables.staticTexts["Private Files"] }
-    var sharedFilesButton: XCUIElement { app.tables.staticTexts["Shared Files"] }
+    var menuButton: XCUIElement {
+        app.buttons["hamburger"]
+    }
+    var privateFilesButton: XCUIElement {
+        app.tables.staticTexts["Private Files"]
+    }
+    var sharedFilesButton: XCUIElement {
+        app.tables.staticTexts["Shared Files"]
+    }
     var privateFilesTitle: XCUIElement {
-        app.navigationBars.staticTexts["Private Files"] }
+        app.navigationBars.staticTexts["Private Files"]
+    }
     var sharedFilesTitle: XCUIElement {
-        app.navigationBars.staticTexts["Shares"] }
+        app.navigationBars.staticTexts["Shares"]
+    }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
         self.app = app
