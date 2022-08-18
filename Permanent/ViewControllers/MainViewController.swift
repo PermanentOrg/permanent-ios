@@ -149,6 +149,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             // Fallback on earlier versions
         }
         
+        collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
