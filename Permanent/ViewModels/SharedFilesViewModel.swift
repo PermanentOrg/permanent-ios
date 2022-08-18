@@ -18,6 +18,26 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
+    override var selectedFile: FileViewModel? {
+        get {
+            return AuthenticationManager.shared.session?.selectedFile
+        }
+        
+        set {
+            AuthenticationManager.shared.session?.selectedFile = newValue
+        }
+    }
+    
+    override var fileAction: FileAction {
+        get {
+            return AuthenticationManager.shared.session?.fileAction ?? .none
+        }
+        
+        set {
+            AuthenticationManager.shared.session?.fileAction = newValue
+        }
+    }
+    
     var sharedByMeViewModels: [FileViewModel] = []
     var sharedWithMeViewModels: [FileViewModel] = []
     

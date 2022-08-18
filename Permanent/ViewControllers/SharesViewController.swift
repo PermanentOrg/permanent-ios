@@ -17,6 +17,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet weak var switchViewButton: UIButton!
     private let refreshControl = UIRefreshControl()
     
+    @IBOutlet weak var fileActionBottomView: BottomActionSheet!
     @IBOutlet var fabView: FABView!
     private lazy var mediaRecorder = MediaRecorder(presentationController: self, delegate: self)
     
@@ -49,6 +50,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         configureUI()
         setupCollectionView()
+        setupBottomActionSheet()
         
         fabView.delegate = self
         
@@ -135,6 +137,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         backButton.tintColor = .primary
         backButton.isHidden = true
         
+        fileActionBottomView.isHidden = true
+        
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
@@ -178,11 +182,71 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         completion?()
     }
     
+    fileprivate func setupBottomActionSheet() {
+        setupUIForAction(viewModel?.fileAction ?? .none)
+        
+        fileActionBottomView.closeAction = {
+            self.setupUIForAction(.none)
+        }
+        
+        fileActionBottomView.fileAction = {
+            guard
+                let source = self.viewModel?.selectedFile,
+                let destination = self.viewModel?.currentFolder
+            else {
+                self.showErrorAlert(message: .errorMessage)
+                return
+            }
+
+            self.didTapRelocate(source: source, destination: destination)
+        }
+    }
+    
+    fileprivate func setupUIForAction(_ action: FileAction) {
+        viewModel?.fileAction = action
+        
+        switch action {
+        case .none:
+            fileActionBottomView.isHidden = true
+            
+        case .move, .copy:
+            fileActionBottomView.isHidden = false
+            if let rootFolder = viewModel?.currentFolderIsRoot, rootFolder {
+                fileActionBottomView.isHidden = true
+            }
+            
+            fileActionBottomView.setActionTitle(action.title)
+            toggleFileAction(action)
+        }
+        updateFAB()
+        
+        DispatchQueue.main.async {
+            self.refreshCollectionView()
+        }
+    }
+    
+    fileprivate func toggleFileAction(_ action: FileAction?) {
+        // If we try to move file in the same folder, disable the button
+        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
+        
+        if let currentFolderPermissions = viewModel?.currentFolder?.permissions,
+            currentFolderPermissions.contains(.upload) == true {
+            fileActionBottomView.toggleActionButton(enabled: true)
+        } else {
+            fileActionBottomView.toggleActionButton(enabled: false)
+        }
+    }
+    
     fileprivate func updateFAB() {
         let currentFolderPermissions = viewModel?.currentFolder?.permissions
+
         if currentFolderPermissions?.contains(.create) == true && currentFolderPermissions?.contains(.upload) == true {
             fabView.isHidden = false
         } else {
+            fabView.isHidden = true
+        }
+        if !fileActionBottomView.isHidden {
             fabView.isHidden = true
         }
     }
@@ -273,8 +337,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             } else {
                 getShares { [self] in
                     navigateToFolder(withParams: navigationParams, backNavigation: false) {
-                        backButton.isHidden = false
-                        directoryLabel.text = navigationParams.folderName
+                        self.backButton.isHidden = false
+                        self.directoryLabel.text = navigationParams.folderName
                     }
                 }
             }
@@ -298,7 +362,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func presentFileDetails(sharedFile: ShareNotificationPayload, sharedFileThumbnailURL: String? = nil) {
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
-        var permissions = ArchiveVOData.permissions(forAccessRole: sharedFile.accessRole)
+        let permissions = ArchiveVOData.permissions(forAccessRole: sharedFile.accessRole)
         let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions, thumbnailURL2000: sharedFileThumbnailURL)
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = fileVM
@@ -329,6 +393,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         self.directoryLabel.text = "Shares".localized()
         self.backButton.isHidden = true
+        self.fabView.isHidden = true
+        self.fileActionBottomView.isHidden = true
         
         viewModel?.shareListType = listType
         refreshCollectionView()
@@ -440,35 +506,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
-//    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-//        // Safety measure, in case the user taps to show sheet, but the previously shown one
-//        // has not finished dimissing and being deallocated.
-//        guard fileActionSheet == nil else { return }
-//
-//        fileActionSheet = SharedFileActionSheet(
-//            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-//            title: file.name,
-//            file: file,
-//            indexPath: indexPath,
-//            hasDownloadButton: viewModel?.downloadInProgress == false,
-//            onDismiss: {
-//                self.collectionView.deselectItem(at: indexPath, animated: true)
-//                self.view.dismissPopup(
-//                    self.fileActionSheet,
-//                    overlayView: self.overlayView,
-//                    completion: { _ in
-//                        self.fileActionSheet?.removeFromSuperview()
-//                        self.fileActionSheet = nil
-//                    }
-//                )
-//            }
-//        )
-//
-//        fileActionSheet?.delegate = self
-//        view.addSubview(fileActionSheet!)
-//        view.presentPopup(fileActionSheet, overlayView: overlayView)
-//    }
-    
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         
@@ -485,6 +522,16 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         if file.permissions.contains(.read) && file.type.isFolder == false {
             actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
                 downloadAction(file: file) })
+            )}
+        
+        if file.permissions.contains(.move) {
+            actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
+                relocateAction(file: file, action: .move) })
+            )}
+        
+        if file.permissions.contains(.create) {
+            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
+                relocateAction(file: file, action: .copy) })
             )}
         
         let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
@@ -537,6 +584,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     
                     self.directoryLabel.text = "Shares".localized()
                     self.backButton.isHidden = true
+                    if let rootFolder = self.viewModel?.currentFolderIsRoot, rootFolder {
+                        self.fileActionBottomView.isHidden = true
+                    }
                 }
                 
             case .error(let message):
@@ -547,6 +597,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 completion()
             }
         })
+    }
+    
+    private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
+        self.relocate(file: source, to: destination)
     }
     
     private func download(_ file: FileViewModel) {
@@ -598,6 +652,24 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 
             case .error( _):
                 self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .deepRed, textColor: .white)
+            }
+        })
+    }
+    
+    func relocate(file: FileViewModel, to destination: FileViewModel) {
+        showSpinner()
+        viewModel?.relocate(file: file, to: destination, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                self.viewModel?.viewModels.prepend(file)
+
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
+                self.setupUIForAction(.none)
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
             }
         })
     }
@@ -687,6 +759,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self.refreshCollectionView()
                 
                 self.updateFAB()
+                self.setupBottomActionSheet()
             }
             
         case .error(let message):
@@ -847,6 +920,12 @@ extension SharesViewController {
 extension SharesViewController: SharedFileActionSheetDelegate {
     func downloadAction(file: FileViewModel) {
         download(file)
+    }
+    
+    func relocateAction(file: FileViewModel, action: FileAction) {
+        viewModel?.selectedFile = file
+        
+        setupUIForAction(action)
     }
 }
 
