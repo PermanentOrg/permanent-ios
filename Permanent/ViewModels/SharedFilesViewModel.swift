@@ -62,7 +62,8 @@ class SharedFilesViewModel: FilesViewModel {
                             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
                             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
                             
-                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, permissions: permissionsIntersection)
+                            let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
+                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection)
                             
                             if $0.archiveID == currentArchiveId {
                                 self.sharedByMeViewModels.append(sharedFileVM)

@@ -36,6 +36,8 @@ struct FileViewModel: Equatable, Codable {
     
     var permissions: [Permission]
     
+    var sharedByArchive: MinArchiveVO?
+    
     init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = model.name
         self.date = DateUtils.currentDate
@@ -84,7 +86,7 @@ struct FileViewModel: Equatable, Codable {
         self.permissions = permissions
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission]) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -110,6 +112,13 @@ struct FileViewModel: Equatable, Codable {
         self.folderLinkId = model.folderLinkID ?? -1
         
         self.permissions = permissions
+        
+        if let fullName = sharedByArchive?.fullName,
+           let thumbnailURL = sharedByArchive?.thumbURL200,
+           let archiveIdURL = sharedByArchive?.archiveID {
+            let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: "", shareId: 0, archiveID: archiveIdURL)
+            self.sharedByArchive = minArchive
+        }
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,

@@ -759,10 +759,18 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 70)
+        let file = viewModel?.fileForRowAt(indexPath: indexPath)
+        let listItemHeight: CGFloat
+        let gridItemHeight: CGFloat = UIScreen.main.bounds.width / 2 + 50
+        if viewModel?.shareListType == .sharedByMe {
+            listItemHeight = (file?.minArchiveVOS.count ?? 0) > 0 ? 90 : 70
+        } else {
+            listItemHeight = file?.sharedByArchive != nil ? 90 : 70
+        }
+        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: listItemHeight)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
-        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
+        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: gridItemHeight)
         
         if indexPath.section == FileListType.synced.rawValue {
             return isGridView ? gridItemSize : listItemSize
