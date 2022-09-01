@@ -23,5 +23,6 @@ target 'Permanent' do
 
   target 'ShareExtension' do
         inherit! :search_paths
+	pod 'KeychainSwift', '20.0'
   end
 end

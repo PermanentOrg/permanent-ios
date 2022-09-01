@@ -81,7 +81,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
+                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer), at: 0)
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -443,55 +443,30 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
-//    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-//        // Safety measure, in case the user taps to show sheet, but the previously shown one
-//        // has not finished dimissing and being deallocated.
-//        guard fileActionSheet == nil else { return }
-//
-//        fileActionSheet = SharedFileActionSheet(
-//            frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size),
-//            title: file.name,
-//            file: file,
-//            indexPath: indexPath,
-//            hasDownloadButton: viewModel?.downloadInProgress == false,
-//            onDismiss: {
-//                self.collectionView.deselectItem(at: indexPath, animated: true)
-//                self.view.dismissPopup(
-//                    self.fileActionSheet,
-//                    overlayView: self.overlayView,
-//                    completion: { _ in
-//                        self.fileActionSheet?.removeFromSuperview()
-//                        self.fileActionSheet = nil
-//                    }
-//                )
-//            }
-//        )
-//
-//        fileActionSheet?.delegate = self
-//        view.addSubview(fileActionSheet!)
-//        view.presentPopup(fileActionSheet, overlayView: overlayView)
-//    }
-    
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        var actions: [PRMNTAction] = []
-        
+        var menuItems: [FileMenuViewController.MenuItem] = []
         if file.permissions.contains(.delete) {
-            actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
-                deleteAction(file: file, atIndexPath: indexPath) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
         if file.permissions.contains(.edit) {
-            actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
-                renameAction(file: file, atIndexPath: indexPath) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .rename, action: { [self] in
+                renameAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
         if file.permissions.contains(.read) && file.type.isFolder == false {
-            actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
-                downloadAction(file: file) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .download, action: { [self] in
+                downloadAction(file: file)
+            }))
+        }
         
-        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
-        present(actionSheet, animated: true, completion: nil)
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        present(vc, animated: true)
     }
     
     func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -749,7 +724,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, showsSharingInfo: true)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AccessRole: Int, CaseIterable {
+enum AccessRole: Int, CaseIterable, Codable {
  
     case owner = 0
     

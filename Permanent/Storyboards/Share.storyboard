@@ -157,13 +157,19 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="V1x-M9-TMR">
-                                <rect key="frame" x="20" y="792" width="374" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="V1x-M9-TMR">
+                                <rect key="frame" x="20" y="754" width="374" height="68"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k9G-sI-qMW" userLabel="Save Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
                                         <connections>
                                             <action selector="saveAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="Ifa-ny-bNk"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IIb-Jk-SGv" userLabel="Revoke Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="38" width="374" height="30"/>
+                                        <connections>
+                                            <action selector="revokeAction:" destination="1NC-nN-lX7" eventType="touchUpInside" id="rLg-xZ-aqa"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -209,7 +215,8 @@
                         <outlet property="expDateTooltipLabel" destination="DVS-Ag-zFY" id="69y-ua-cqw"/>
                         <outlet property="maxUsesInputView" destination="MOf-Xs-CNt" id="utC-fm-vkZ"/>
                         <outlet property="maxUsesTooltipLabel" destination="jUE-0H-850" id="VyD-su-fPo"/>
-                        <outlet property="saveButton" destination="k9G-sI-qMW" id="Q52-DL-OjU"/>
+                        <outlet property="revokeButton" destination="IIb-Jk-SGv" id="rwf-Nu-4UP"/>
+                        <outlet property="saveButton" destination="k9G-sI-qMW" id="AFC-GF-tzn"/>
                         <outlet property="sharePreviewSwitchView" destination="x4q-es-S21" id="4bS-mb-9sq"/>
                     </connections>
                 </viewController>
@@ -536,6 +543,9 @@
         </scene>
     </scenes>
     <designables>
+        <designable name="IIb-Jk-SGv">
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
         <designable name="Qpj-CF-mcr">
             <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>

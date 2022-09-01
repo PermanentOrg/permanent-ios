@@ -81,7 +81,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, showsSharingInfo: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
         
@@ -101,7 +101,9 @@ class FileCollectionViewCell: UICollectionViewCell {
             updateProgress(withValue: Float(progress))
         }
         
-        updateSharingInfo(withModel: model)
+        if showsSharingInfo {
+            updateSharingInfo(withModel: model)
+        }
     }
     
     fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
