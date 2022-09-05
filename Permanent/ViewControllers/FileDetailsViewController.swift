@@ -120,26 +120,24 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     @objc func showShareMenu(_ sender: Any) {
-        var actions: [PRMNTAction] = []
+        var menuItems: [FileMenuViewController.MenuItem] = []
         
-        actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+        menuItems.append(FileMenuViewController.MenuItem(type: .shareToAnotherApp, action: { [self] in
             shareWithOtherApps()
         }))
         
         if let publicURL = viewModel?.publicURL {
-            actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+            menuItems.append(FileMenuViewController.MenuItem(type: .getLink, action: { [self] in
                 share(url: publicURL)
             }))
-        } else if file.permissions.contains(.ownership) {
-            actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
-                if let file = self.viewModel?.file {
-                    shareInApp(file: file)
-                }
-            }))
+        } else if self.file.permissions.contains(.ownership) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
         }
     
-        let actionSheet = PRMNTActionSheetViewController(title: "", actions: actions)
-        present(actionSheet, animated: true, completion: nil)
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        present(vc, animated: true)
     }
     
     @objc func closeButtonAction(_ sender: Any) {
@@ -249,22 +247,6 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
                 }
             }
         }
-    }
-    
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
     }
 }
 

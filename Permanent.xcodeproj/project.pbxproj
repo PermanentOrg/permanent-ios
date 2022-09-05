@@ -368,7 +368,6 @@
 		BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCB0725F25235C59003E2F66 /* NavigationBarView.xib */; };
 		BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0726125235DB9003E2F66 /* NavigationBarView.swift */; };
 		BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BCC1CCE82578F8DA0069E337 /* Share.storyboard */; };
-		BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1CCEB2578FB030069E337 /* ShareViewController.swift */; };
 		BCC1CCF025792E8A0069E337 /* LinkOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1CCEF25792E8A0069E337 /* LinkOptionsView.swift */; };
 		BCC1CCF425792E950069E337 /* LinkOptionsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1CCF325792E950069E337 /* LinkOptionsView.xib */; };
 		BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
@@ -896,7 +895,6 @@
 		BCB0725F25235C59003E2F66 /* NavigationBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NavigationBarView.xib; sourceTree = "<group>"; };
 		BCB0726125235DB9003E2F66 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
 		BCC1CCE82578F8DA0069E337 /* Share.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Share.storyboard; sourceTree = "<group>"; };
-		BCC1CCEB2578FB030069E337 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		BCC1CCEF25792E8A0069E337 /* LinkOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkOptionsView.swift; sourceTree = "<group>"; };
 		BCC1CCF325792E950069E337 /* LinkOptionsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LinkOptionsView.xib; sourceTree = "<group>"; };
 		BCC1E31E2549861C00B71866 /* FileStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileStatus.swift; sourceTree = "<group>"; };
@@ -1134,7 +1132,6 @@
 				5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */,
 				BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */,
 				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
-				BCC1CCEB2578FB030069E337 /* ShareViewController.swift */,
 				BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */,
 				BCF90654258770B700DF1B64 /* SharesViewController.swift */,
 				BCF906632587B0C200DF1B64 /* MembersViewController.swift */,
@@ -2769,7 +2766,6 @@
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
-				BCC1CCEC2578FB030069E337 /* ShareViewController.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				F5C8D247273204CA00707301 /* SearchVO.swift in Sources */,

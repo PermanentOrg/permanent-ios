@@ -360,22 +360,6 @@ extension PublicArchiveFileViewController {
         let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
         present(actionSheet, animated: true, completion: nil)
     }
-
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
-    }
     
     func shareWithOtherApps(file: FileViewModel) {
         if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {

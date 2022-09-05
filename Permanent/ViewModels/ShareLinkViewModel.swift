@@ -155,9 +155,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
-    }
-    
     func approveButtonAction(minArchiveVO: MinArchiveVO, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
         var newShareVO = minArchiveVO
         newShareVO.accessRole = AccessRole.apiRoleForValue(accessRole.groupName)
@@ -202,10 +199,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
-        
-    }
-    
     func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void) {
         guard let folderLinkId = minArchiveVO.folderLinkID else { return }
         

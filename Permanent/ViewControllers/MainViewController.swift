@@ -427,8 +427,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func checkForRequestShareAccess() {
         guard
-            let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess),
-            let shareVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
+            let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
         else {
             return
         }
@@ -436,10 +435,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         func _presentShare() {
             let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
-            shareVC.sharedFile = file
             
-            let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-            present(shareNavController, animated: true)
+            showFileActionSheet(file: file, atIndexPath: [0, 0])
         }
         
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
@@ -1065,22 +1062,6 @@ extension MainViewController: MediaRecorderDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension MainViewController {
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
-    }
-    
     func shareWithOtherApps(file: FileViewModel) {
         if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
             share(url: localURL)

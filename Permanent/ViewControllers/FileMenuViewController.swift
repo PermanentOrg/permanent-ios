@@ -7,18 +7,6 @@
 
 import UIKit
 
-enum FileActionMenuItem {
-    case download((() -> Void)?)
-    case copy((() -> Void)?)
-    case move((() -> Void)?)
-    case delete((() -> Void)?)
-    case rename((() -> Void)?)
-    case publish((() -> Void)?)
-    case shareToPermanent((() -> Void)?)
-    case shareToAnotherApp((() -> Void)?)
-    case getLink((() -> Void)?)
-}
-
 class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     struct MenuItem {
         enum ItemType {
@@ -422,7 +410,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let button = UIButton(type: .custom)
         button.tag = tag
-        button.translatesAutoresizingMaskIntoConstraints = false
+        button.translatesAutoresizingMaskIntoConstraints    = false
         button.addTarget(self, action: #selector(menuButtonPressed(_:)), for: .touchUpInside)
         containerView.addSubview(button)
         
@@ -499,7 +487,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
                     }
                     
                     self?.loadSubviews()
-                    //                    self?.getShareLink(option: .retrieve)
                 })
             },
             cancelButtonTitle: "Cancel".localized(),
@@ -540,7 +527,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
                         }
                         
                         self?.fileViewModel.minArchiveVOS[sender.tag - 1].accessRole = AccessRole.apiRoleForValue(accessRole.groupName)
-//                        self?.getShareLink(option: .retrieve)
                     })
                 }
                 
