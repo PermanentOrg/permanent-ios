@@ -1,0 +1,18 @@
+name: iOS starter workflow
+
+on:
+  push:
+    branches: [ "Development" ]
+  pull_request:
+    branches: [ "Development" ]
+
+jobs:
+  build:
+    name: Build and Test default scheme using any available iPhone simulator
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: fastlane tests
+        run: fastlane tests
