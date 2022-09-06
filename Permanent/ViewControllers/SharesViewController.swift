@@ -183,7 +183,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        setupUIForAction(viewModel?.localFileAction ?? .none)
+        setupUIForAction(viewModel?.fileAction ?? .none)
         
         fileActionBottomView.closeAction = {
             self.setupUIForAction(.none)
@@ -191,7 +191,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         fileActionBottomView.fileAction = {
             guard
-                let source = self.viewModel?.localSelectedFile,
+                let source = self.viewModel?.selectedFile,
                 let destination = self.viewModel?.currentFolder
             else {
                 self.showErrorAlert(message: .errorMessage)
@@ -203,7 +203,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupUIForAction(_ action: FileAction) {
-        viewModel?.localFileAction = action
+        viewModel?.fileAction = action
         
         switch action {
         case .none:
@@ -227,7 +227,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.localSelectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
 
         if let currentFolderPermissions = viewModel?.currentFolder?.permissions,
             currentFolderPermissions.contains(.upload) == true {
@@ -400,13 +400,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         viewModel?.shareListType = listType
         refreshCollectionView()
         
-        viewModel?.localFileAction = .none
-        viewModel?.localSelectedFile = nil
+        viewModel?.fileAction = .none
+        viewModel?.selectedFile = nil
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
         if let navigationStackCount = viewModel?.navigationStack.count,
-            navigationStackCount <= 1 && viewModel?.localFileAction != FileAction.none {
+            navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
                 styled: .simpleWithDescription,
                 withTitle: "Navigate Back",
@@ -414,8 +414,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 positiveButtonTitle: "Navigate".localized(),
                 positiveAction: {
                     self.actionDialog?.dismiss()
-                    self.viewModel?.localFileAction = .none
-                    self.viewModel?.localSelectedFile = nil
+                    self.viewModel?.fileAction = .none
+                    self.viewModel?.selectedFile = nil
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
                 },
@@ -557,6 +557,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 relocateAction(file: file, action: .move) })
             )}
         
+//        Enable copy functionality 
 //        if file.permissions.contains(.create) {
 //            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
 //                relocateAction(file: file, action: .copy) })
@@ -690,14 +691,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func relocate(file: FileViewModel, to destination: FileViewModel) {
         showSpinner()
-        viewModel?.relocateShare(file: file, to: destination, then: { status in
+        viewModel?.relocate(file: file, to: destination, then: { status in
             self.hideSpinner()
             
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
 
-                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.localFileAction.action ?? .success)
+                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
                 self.setupUIForAction(.none)
                 
             case .error(let message):
@@ -778,11 +779,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         switch file.fileStatus {
         case .synced:
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-//            if file.permissions.count == 1 && file.permissions.contains(.read) && file.type.isFolder {
-//                showAlert(title: "text", message: "text")
-//            } else {
             showFileActionSheet(file: file, atIndexPath: indexPath)
-//            }
+
         case .downloading:
             viewModel?.cancelDownload()
             
@@ -853,9 +851,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
 
             switch status {
             case .success:
-                DispatchQueue.main.async {
-                    self.refreshCollectionView()
-                }
+                self.refreshCurrentFolder()
 
             case .error(let message):
                 self.showErrorAlert(message: message)
@@ -888,7 +884,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.localFileAction, isGridCell: isGridView, isSearchCell: false, sharedFile: true)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, sharedFile: true)
         
         cell.rightButtonTapAction = { _ in
             self.handleCellRightButtonAction(for: file, atIndexPath: indexPath)
@@ -992,7 +988,7 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.localSelectedFile = file
+        viewModel?.selectedFile = file
         
         setupUIForAction(action)
     }

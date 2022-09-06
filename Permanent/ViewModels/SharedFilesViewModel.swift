@@ -17,9 +17,6 @@ class SharedFilesViewModel: FilesViewModel {
             navigationStack.removeAll()
         }
     }
-
-    var localSelectedFile: FileViewModel?
-    var localFileAction: FileAction = .none
     
     var sharedByMeViewModels: [FileViewModel] = []
     var sharedWithMeViewModels: [FileViewModel] = []
@@ -136,34 +133,6 @@ class SharedFilesViewModel: FilesViewModel {
         }
         
         handler(.success)
-    }
-    
-    func relocateShare(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
-        let parameters: RelocateParams = ((file, destination), localFileAction)
-
-        let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let httpResponse, _):
-                guard
-                    let response = httpResponse,
-                    let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                    let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
-                        handler(.error(message: .errorMessage))
-                        return
-                }
-                
-                handler(.success)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
-            }
-        }
     }
     
     func unshare(_ file: FileViewModel, then handler: @escaping ServerResponse) {
