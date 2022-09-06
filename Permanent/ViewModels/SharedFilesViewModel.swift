@@ -17,26 +17,7 @@ class SharedFilesViewModel: FilesViewModel {
             navigationStack.removeAll()
         }
     }
-    
-//    override var selectedFile: FileViewModel? {
-//        get {
-//            return AuthenticationManager.shared.session?.selectedFile
-//        }
-//
-//        set {
-//            AuthenticationManager.shared.session?.selectedFile = newValue
-//        }
-//    }
-    
-//    override var fileAction: FileAction {
-//        get {
-//            return AuthenticationManager.shared.session?.fileAction ?? .none
-//        }
-//
-//        set {
-//            AuthenticationManager.shared.session?.fileAction = newValue
-//        }
-//    }
+
     var localSelectedFile: FileViewModel?
     var localFileAction: FileAction = .none
     
@@ -155,5 +136,67 @@ class SharedFilesViewModel: FilesViewModel {
         }
         
         handler(.success)
+    }
+    
+    func relocateShare(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
+        let parameters: RelocateParams = ((file, destination), localFileAction)
+
+        let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let httpResponse, _):
+                guard
+                    let response = httpResponse,
+                    let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                    let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
+                        handler(.error(message: .errorMessage))
+                        return
+                }
+                
+                handler(.success)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func unshare(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        guard let archiveId = self.currentArchive?.archiveID else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let apiOperation = APIOperation(FilesEndpoint.unshareRecord(archiveId: archiveId, folderLinkId: file.folderLinkId))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
+        }
     }
 }

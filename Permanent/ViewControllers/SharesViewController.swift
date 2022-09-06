@@ -228,14 +228,15 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
         let shouldDisableButton = viewModel?.localSelectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
-        fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
-        
+
         if let currentFolderPermissions = viewModel?.currentFolder?.permissions,
             currentFolderPermissions.contains(.upload) == true {
             fileActionBottomView.toggleActionButton(enabled: true)
         } else {
             fileActionBottomView.toggleActionButton(enabled: false)
         }
+        
+        fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
     fileprivate func updateFAB() {
@@ -530,11 +531,16 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         
-        if file.permissions.contains(.delete) {
-            actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
-                deleteAction(file: file, atIndexPath: indexPath) })
-            )}
-        
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot, self.segmentedControl.selectedSegmentIndex == 1 {
+            actions.append(PRMNTAction(title: "Unshare".localized(), color: .brightRed, handler: { [self] action in
+                unshareAction(file: file, atIndexPath: indexPath) })
+            )} else {
+                if file.permissions.contains(.delete)  {
+                    actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
+                        deleteAction(file: file, atIndexPath: indexPath) })
+                    )}
+            }
+
         if file.permissions.contains(.edit) {
             actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
                 renameAction(file: file, atIndexPath: indexPath) })
@@ -550,7 +556,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
                 relocateAction(file: file, action: .move) })
             )}
-//
+        
 //        if file.permissions.contains(.create) {
 //            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
 //                relocateAction(file: file, action: .copy) })
@@ -588,6 +594,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
+    }
+    
+    func unshareAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        didTapUnshare(forFile: file, atIndexPath: indexPath)
     }
 
     fileprivate func getShares(shouldShowSpinner: Bool = true, completion: (() -> Void)? = nil) {
@@ -680,7 +690,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func relocate(file: FileViewModel, to destination: FileViewModel) {
         showSpinner()
-        viewModel?.relocate(file: file, to: destination, then: { status in
+        viewModel?.relocateShare(file: file, to: destination, then: { status in
             self.hideSpinner()
             
             switch status {
@@ -712,9 +722,43 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
     }
     
+    private func didTapUnshare(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        let title = String(format: "\(String("Unshare").localized()) \"%@\"?", file.name)
+        
+        self.showActionDialog(
+            styled: .simple,
+            withTitle: title,
+            positiveButtonTitle: "Unshare".localized(),
+            positiveAction: {
+                self.actionDialog?.dismiss()
+                self.unshareFile(file, atIndexPath: indexPath)
+            }, positiveButtonColor: .brightRed,
+            cancelButtonColor: .primary,
+            overlayView: self.overlayView
+        )
+    }
+    
     func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.delete(file, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                DispatchQueue.main.async {
+                    self.viewModel?.removeSyncedFile(file)
+                    self.refreshCollectionView()
+                }
+                
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        })
+    }
+    
+    func unshareFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+        showSpinner()
+        viewModel?.unshare(file, then: { status in
             self.hideSpinner()
             
             switch status {
@@ -734,12 +778,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         switch file.fileStatus {
         case .synced:
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-            if file.permissions.count == 1 && file.permissions.contains(.read) && file.type.isFolder {
-                showAlert(title: "text", message: "text")
-            } else {
-                showFileActionSheet(file: file, atIndexPath: indexPath)
-            }
-            
+//            if file.permissions.count == 1 && file.permissions.contains(.read) && file.type.isFolder {
+//                showAlert(title: "text", message: "text")
+//            } else {
+            showFileActionSheet(file: file, atIndexPath: indexPath)
+//            }
         case .downloading:
             viewModel?.cancelDownload()
             

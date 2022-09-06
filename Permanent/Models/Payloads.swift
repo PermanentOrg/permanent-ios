@@ -588,6 +588,22 @@ struct Payloads {
         ]
     }
     
+    static func unshareRecord(archiveId: Int, folderLinkId: Int) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ShareVO": [
+                                "folder_linkId": folderLinkId,
+                                "archiveId": archiveId
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
     static func acceptArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
         var modifiedArchive: Any = []
         let archive = archiveVO
