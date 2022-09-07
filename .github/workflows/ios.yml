@@ -1,8 +1,6 @@
-name: iOS starter workflow
+name: PR Automated tests
 
 on:
-  push:
-    branches: [ "Development" ]
   pull_request:
     branches: [ "Development" ]
 
