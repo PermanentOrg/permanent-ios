@@ -59,7 +59,7 @@ class WelcomePageViewController: UIViewController  {
             attributedText.addAttribute(.font, value: Text.style17.font, range: archiveNameRange)
             secondaryLabelField.attributedText = attributedText
         } else if invitationsAccepted == 1 {
-            let text = "Your archive is <ARCHIVE_NAME>.\n\nYou are <ROLE> of this archive. This means you can <PERMISSIONS> items within this archive. Read more about roles for collaboration and sharing.\n\nYou can manage any outstanding archive invitations through the menu in the upper left-hand corner.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: "The \(currentArchive.fullName ?? "") Archive").replacingOccurrences(of: "<ROLE>", with: role(accessRole)).replacingOccurrences(of: "<PERMISSIONS>", with: permissions(currentArchive))
+            let text = "Your archive is <ARCHIVE_NAME>.\n\nYou are <ROLE> of this archive. This means you can <PERMISSIONS> items within this archive. Read more about roles for collaboration and sharing.\n\nYou can manage any outstanding archive invitations through the menu in the upper right-hand corner.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: "The \(currentArchive.fullName ?? "") Archive").replacingOccurrences(of: "<ROLE>", with: role(accessRole)).replacingOccurrences(of: "<PERMISSIONS>", with: permissions(currentArchive))
             
             let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.white, .font: Text.style2.font])
             let archiveNameRange = (text as NSString).range(of: "The \(currentArchive.fullName ?? "") Archive")
@@ -72,7 +72,7 @@ class WelcomePageViewController: UIViewController  {
             
             secondaryLabelField.attributedText = attributedText
         } else {
-            let text = "Your default archive is <ARCHIVE_NAME>. You can change your archive settings at any time through the menu in the upper left-hand corner.\n\nYou are <ROLE> of this archive. This means you can <PERMISSIONS> items within this archive. Read more about roles for collaboration and sharing.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: "The \(currentArchive.fullName ?? "") Archive").replacingOccurrences(of: "<ROLE>", with: role(accessRole)).replacingOccurrences(of: "<PERMISSIONS>", with: permissions(currentArchive))
+            let text = "Your default archive is <ARCHIVE_NAME>. You can change your archive settings at any time through the menu in the upper right-hand corner.\n\nYou are <ROLE> of this archive. This means you can <PERMISSIONS> items within this archive. Read more about roles for collaboration and sharing.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: "The \(currentArchive.fullName ?? "") Archive").replacingOccurrences(of: "<ROLE>", with: role(accessRole)).replacingOccurrences(of: "<PERMISSIONS>", with: permissions(currentArchive))
             
             let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.white, .font: Text.style2.font])
             let archiveNameRange = (text as NSString).range(of: "The \(currentArchive.fullName ?? "") Archive")
@@ -129,7 +129,7 @@ class WelcomePageViewController: UIViewController  {
             if idx != permissionStrings.count - 1 {
                 enumeratedPermissions += "\(permission), "
             } else {
-                enumeratedPermissions += "and ".localized() + permission
+                enumeratedPermissions += "\(permission)"
             }
         }
         
