@@ -129,7 +129,11 @@ class WelcomePageViewController: UIViewController  {
             if idx != permissionStrings.count - 1 {
                 enumeratedPermissions += "\(permission), "
             } else {
-                enumeratedPermissions += "\(permission)"
+                if permissionStrings.count == 1 {
+                    enumeratedPermissions += "and ".localized() + permission
+                } else {
+                    enumeratedPermissions += "\(permission)"
+                }
             }
         }
         

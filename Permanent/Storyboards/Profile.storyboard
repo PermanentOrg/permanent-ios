@@ -260,16 +260,13 @@
                                             <action selector="backButtonAction:" destination="bIh-XP-X3m" eventType="touchUpInside" id="IRi-Zc-xj9"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nt8-jy-32H" userLabel="Directory Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Files" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nt8-jy-32H" userLabel="Directory Label">
                                         <rect key="frame" x="30" y="5" width="62.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="Nm2-6i-jhf"/>
-                                </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="G1v-wX-h0I" userLabel="Table Stack View">
                                 <rect key="frame" x="0.0" y="94" width="414" height="802"/>
@@ -589,8 +586,9 @@
                             <constraint firstItem="bYw-GF-N4c" firstAttribute="trailing" secondItem="jMt-0E-zTt" secondAttribute="trailing" constant="20" id="Nig-IF-v4x"/>
                             <constraint firstItem="Sey-wp-vaX" firstAttribute="leading" secondItem="bYw-GF-N4c" secondAttribute="leading" constant="20" id="ZGd-GV-gl6"/>
                             <constraint firstItem="G1v-wX-h0I" firstAttribute="trailing" secondItem="bYw-GF-N4c" secondAttribute="trailing" id="hMP-mg-74J"/>
-                            <constraint firstItem="jMt-0E-zTt" firstAttribute="centerY" secondItem="Sey-wp-vaX" secondAttribute="centerY" id="n8G-8h-uRn"/>
                             <constraint firstAttribute="bottom" secondItem="G1v-wX-h0I" secondAttribute="bottom" id="sqy-sv-G1m"/>
+                            <constraint firstItem="jMt-0E-zTt" firstAttribute="top" secondItem="bYw-GF-N4c" secondAttribute="top" constant="5" id="tfG-rK-jzh"/>
+                            <constraint firstItem="jMt-0E-zTt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Sey-wp-vaX" secondAttribute="trailing" constant="20" id="xLt-x7-2fo"/>
                         </constraints>
                     </view>
                     <connections>
@@ -1058,20 +1056,20 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="linkCell" id="SpH-eY-TUF" customClass="OnlinePresenceTableViewCell" customModule="Permanent" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="44.5" width="414" height="63.5"/>
+                                        <rect key="frame" x="0.0" y="44.5" width="414" height="63"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SpH-eY-TUF" id="hpS-Kn-PpP">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="63.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="63"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="blr-Sd-wYX">
-                                                    <rect key="frame" x="20" y="21" width="42" height="21.5"/>
+                                                    <rect key="frame" x="20" y="21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0WU-RV-3m7">
-                                                    <rect key="frame" x="376" y="0.0" width="28" height="63.5"/>
+                                                    <rect key="frame" x="376" y="0.0" width="28" height="63"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" image="more"/>
                                                     <connections>
