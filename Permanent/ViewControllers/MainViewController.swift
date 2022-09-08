@@ -72,7 +72,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
+                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.archiveAccessRole ?? .viewer), at: 0)
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -94,6 +94,17 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.viewModel?.timerRunCount = 0
                 }
             }
+        }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let shareLinkVM = notif.object as? ShareLinkViewModel,
+                  let index = self?.viewModel?.viewModels.firstIndex(where: { $0.recordId == shareLinkVM.fileViewModel.recordId })
+            else {
+                return
+            }
+            
+            self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
+            self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
         }
     }
     
@@ -148,6 +159,9 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         } else {
             // Fallback on earlier versions
         }
+        
+        collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -413,8 +427,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func checkForRequestShareAccess() {
         guard
-            let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess),
-            let shareVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
+            let sharedFilePayload: RequestLinkAccessNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
         else {
             return
         }
@@ -422,10 +435,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         func _presentShare() {
             let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
-            shareVC.sharedFile = file
             
-            let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-            present(shareNavController, animated: true)
+            showFileActionSheet(file: file, atIndexPath: [0, 0])
         }
         
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
@@ -878,56 +889,65 @@ extension MainViewController: FABActionSheetDelegate {
     }
 
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        var actions: [PRMNTAction] = []
+        var menuItems: [FileMenuViewController.MenuItem] = []
         if file.permissions.contains(.share) {
             if file.type.isFolder == false {
-                actions.append(PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
-                    shareWithOtherApps(file: file) })
-                )}
+                menuItems.append(FileMenuViewController.MenuItem(type: .shareToAnotherApp, action: { [self] in
+                    shareWithOtherApps(file: file)
+                }))
+            }
             
             if file.permissions.contains(.ownership) && viewModel is PublicFilesViewModel == false {
-                actions.append(PRMNTAction(title: "Share via Permanent".localized(), color: .primary, handler: { [self] action in
-                    shareInApp(file: file) })
-                )}
+                menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
+            }
         }
         
         if let viewModel = viewModel as? PublicFilesViewModel, let url = viewModel.publicURL(forFile: file) {
-            actions.append(PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
-                share(url: url) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .getLink, action: { [self] in
+                share(url: url)
+            }))
+        }
         
         if file.permissions.contains(.delete) && viewModel is PublicFilesViewModel == false {
-            actions.append(PRMNTAction(title: "Publish".localized(), color: .primary, handler: { [self] action in
-                publishAction(file: file) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .publish, action: { [self] in
+                publishAction(file: file)
+            }))
+        }
         
         if file.permissions.contains(.edit) {
-            actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
-                renameAction(file: file, atIndexPath: indexPath) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .rename, action: { [self] in
+                renameAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
         if file.permissions.contains(.delete) {
-            actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
-                deleteAction(file: file, atIndexPath: indexPath) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
         if file.permissions.contains(.move) {
-            actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
-                relocateAction(file: file, action: .move) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
+                relocateAction(file: file, action: .move)
+            }))
+        }
         
         if file.permissions.contains(.create) {
-            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
-                relocateAction(file: file, action: .copy) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [self] in
+                relocateAction(file: file, action: .copy)
+            }))
+        }
         
         if file.permissions.contains(.read) && file.type.isFolder == false {
-            actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
-                downloadAction(file: file) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .download, action: { [self] in
+                downloadAction(file: file)
+            }))
+        }
         
-        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
-        present(actionSheet, animated: true, completion: nil)
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        present(vc, animated: true)
     }
     
     func showActionSheet() {
@@ -1042,22 +1062,6 @@ extension MainViewController: MediaRecorderDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension MainViewController {
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
-    }
-    
     func shareWithOtherApps(file: FileViewModel) {
         if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
             share(url: localURL)

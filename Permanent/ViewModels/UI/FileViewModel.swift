@@ -35,6 +35,9 @@ struct FileViewModel: Equatable, Codable {
     var fileInfoId: String?
     
     var permissions: [Permission]
+    var accessRole: AccessRole = .viewer
+    
+    var sharedByArchive: MinArchiveVO?
     
     init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = model.name
@@ -84,7 +87,7 @@ struct FileViewModel: Equatable, Codable {
         self.permissions = permissions
     }
     
-    init(model: ItemVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
+    init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -110,20 +113,28 @@ struct FileViewModel: Equatable, Codable {
         self.folderLinkId = model.folderLinkID ?? -1
         
         self.permissions = permissions
+        self.accessRole = accessRole
+        
+        if let fullName = sharedByArchive?.fullName,
+           let thumbnailURL = sharedByArchive?.thumbURL200,
+           let archiveIdURL = sharedByArchive?.archiveID {
+            let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: "", shareId: 0, archiveID: archiveIdURL, folderLinkID: nil, accessRole: sharedByArchive?.accessRole)
+            self.sharedByArchive = minArchive
+        }
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
-                let thumbnailURL = $0.archiveVO?.thumbURL200,
-                let shareStatusURL = $0.status,
-                let shareIdURL = $0.shareID,
-                let archiveIdURL = $0.archiveVO?.archiveID {
-                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
+               let thumbnailURL = $0.archiveVO?.thumbURL200,
+               let shareStatusURL = $0.status,
+               let shareIdURL = $0.shareID,
+               let archiveIdURL = $0.archiveVO?.archiveID {
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL, folderLinkID: $0.folderLinkID, accessRole: $0.accessRole)
                 self.minArchiveVOS.append(minArchive)
             }
         }
     }
     
-    init(model: RecordVOData, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
+    init(model: RecordVOData, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -149,6 +160,7 @@ struct FileViewModel: Equatable, Codable {
         self.folderLinkId = model.folderLinkID ?? -1
         
         self.permissions = permissions
+        self.accessRole = accessRole
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
@@ -156,13 +168,13 @@ struct FileViewModel: Equatable, Codable {
                let shareStatusURL = $0.status,
                let shareIdURL = $0.shareID,
                let archiveIdURL = $0.archiveVO?.archiveID {
-                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL, folderLinkID: $0.folderLinkID, accessRole: $0.accessRole)
                 self.minArchiveVOS.append(minArchive)
             }
         }
     }
     
-    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission]) {
+    init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
             
@@ -174,7 +186,7 @@ struct FileViewModel: Equatable, Codable {
         self.description = model.childFolderVOS?.description ?? ""
         self.size = -1
         self.uploadFileName = ""
-        
+         
         self.archiveThumbnailURL = archiveThumbnailURL
         self.archiveId = model.archiveID ?? -1
         self.archiveNo = model.archiveNbr ?? ""
@@ -187,14 +199,15 @@ struct FileViewModel: Equatable, Codable {
         self.folderLinkId = model.folderLinkID ?? -1
         
         self.permissions = permissions
+        self.accessRole = accessRole
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
-                let thumbnailURL = $0.archiveVO?.thumbURL200,
-                let shareStatusURL = $0.status,
-                let shareIdURL = $0.shareID,
-                let archiveIdURL = $0.archiveVO?.archiveID {
-                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL)
+               let thumbnailURL = $0.archiveVO?.thumbURL200,
+               let shareStatusURL = $0.status,
+               let shareIdURL = $0.shareID,
+               let archiveIdURL = $0.archiveVO?.archiveID {
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL, folderLinkID: $0.folderLinkID, accessRole: $0.accessRole)
                 self.minArchiveVOS.append(minArchive)
             }
         }

@@ -1,9 +1,0 @@
-diff a/Podfile.lock b/Podfile.lock	(rejected hunks)
-@@ -192,6 +192,6 @@ SPEC CHECKSUMS:
-   StripeApplePay: e09964f3e2c6b318e53a05c12f3cb7efc592484d
-   StripeCore: 689b9605ccb78e507f59ddc5e677615e0af16583
- 
--PODFILE CHECKSUM: 5e16a7b142b96fb6eed720b756c09bd01c72373c
-+PODFILE CHECKSUM: 6b9c16c3acaeb4588d2d13250ef5f9c209503028
- 
- COCOAPODS: 1.11.3

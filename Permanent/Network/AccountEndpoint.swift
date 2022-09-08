@@ -29,6 +29,7 @@ enum AccountEndpoint {
     case updateUserData(accountId: Int, updateData: UpdateUserData)
     /// Update Share request
     case updateShareRequest(shareVO: ShareVOData)
+    case updateShareArchiveRequest(archiveVO: MinArchiveVO)
     /// Revoke Share request
     case deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int)
     case getSessionAccount
@@ -51,7 +52,7 @@ extension AccountEndpoint: RequestProtocol {
             return "/account/get"
         case .updateUserData:
             return "/account/update"
-        case .updateShareRequest:
+        case .updateShareRequest, .updateShareArchiveRequest:
             return "/share/upsert"
         case .deleteShareRequest:
             return "/share/delete"
@@ -88,6 +89,9 @@ extension AccountEndpoint: RequestProtocol {
             
         case .updateShareRequest(let shareVO):
             return Payloads.updateShareRequest(shareVO: shareVO)
+            
+        case .updateShareArchiveRequest(let archiveVO):
+            return Payloads.updateShareRequest(minArchiveVO: archiveVO)
             
         case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
             return Payloads.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)

@@ -83,7 +83,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: []), at: 0)
+                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer), at: 0)
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -153,6 +153,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         } else {
             // Fallback on earlier versions
         }
+        
+        collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -529,42 +532,40 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
-        var actions: [PRMNTAction] = []
+        var menuItems: [FileMenuViewController.MenuItem] = []
         
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot, self.segmentedControl.selectedSegmentIndex == 1 {
-            actions.append(PRMNTAction(title: "Unshare".localized(), color: .brightRed, handler: { [self] action in
-                unshareAction(file: file, atIndexPath: indexPath) })
-            )} else {
-                if file.permissions.contains(.delete)  {
-                    actions.append(PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { [self] action in
-                        deleteAction(file: file, atIndexPath: indexPath) })
-                    )}
-            }
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
+            menuItems.append(FileMenuViewController.MenuItem(type: .unshare, action: { [self] in
+                unshareAction(file: file, atIndexPath: indexPath)
+            }))
+        } else if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [self] in
+                deleteAction(file: file, atIndexPath: indexPath)
+            }))
+        }
 
         if file.permissions.contains(.edit) {
-            actions.append(PRMNTAction(title: "Rename".localized(), color: .primary, handler: { [self] action in
-                renameAction(file: file, atIndexPath: indexPath) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .rename, action: { [self] in
+                renameAction(file: file, atIndexPath: indexPath)
+            }))
+        }
         
         if file.permissions.contains(.read) && file.type.isFolder == false {
-            actions.append(PRMNTAction(title: "Download".localized(), color: .primary, handler: { [self] action in
-                downloadAction(file: file) })
-            )}
+            menuItems.append(FileMenuViewController.MenuItem(type: .download, action: { [self] in
+                downloadAction(file: file)
+            }))
+        }
         
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot,
-            file.permissions.contains(.move) && !currentFolderIsRoot {
-            actions.append(PRMNTAction(title: "Move".localized(), color: .primary, handler: { [self] action in
-                relocateAction(file: file, action: .move) })
-            )}
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.move) && !currentFolderIsRoot {
+            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
+                relocateAction(file: file, action: .move)
+            }))
+        }
         
-//        Enable copy functionality 
-//        if file.permissions.contains(.create) {
-//            actions.append(PRMNTAction(title: "Copy".localized(), color: .primary, handler: { [self] action in
-//                relocateAction(file: file, action: .copy) })
-//            )}
-        
-        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
-        present(actionSheet, animated: true, completion: nil)
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        present(vc, animated: true)
     }
     
     func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
@@ -884,6 +885,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
+
         cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, sharedFile: true)
         
         cell.rightButtonTapAction = { _ in
@@ -894,10 +896,18 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: 70)
+        let file = viewModel?.fileForRowAt(indexPath: indexPath)
+        let listItemHeight: CGFloat
+        let gridItemHeight: CGFloat = UIScreen.main.bounds.width / 2 + 50
+        if viewModel?.shareListType == .sharedByMe {
+            listItemHeight = (file?.minArchiveVOS.count ?? 0) > 0 ? 90 : 70
+        } else {
+            listItemHeight = file?.sharedByArchive != nil ? 90 : 70
+        }
+        let listItemSize = CGSize(width: UIScreen.main.bounds.width, height: listItemHeight)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
-        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
+        let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: gridItemHeight)
         
         if indexPath.section == FileListType.synced.rawValue {
             return isGridView ? gridItemSize : listItemSize

@@ -19,6 +19,9 @@ platform :ios do
   desc "Description of what the lane does"
   lane :tests do
     # add actions here: https://docs.fastlane.tools/actions
+    cocoapods(use_bundle_exec: true,
+              podfile: "./Podfile")
+    #sh(command: 'pod install --repo-update')
     run_tests(workspace: "Permanent.xcworkspace",
               devices: ["iPhone 13"],
               scheme: "Permanent",
