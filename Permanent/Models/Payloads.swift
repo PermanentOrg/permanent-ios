@@ -129,20 +129,34 @@ struct Payloads {
     }
     
     static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "FolderVO": [
-                            "archiveNbr": params.archiveNo,
-                            "folder_linkId": "\(params.folderLinkId)"
+        if params.folderLinkId != -1 {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo,
+                                "folder_linkId": "\(params.folderLinkId)"
+                            ]
                         ]
                     ]
                 ]
             ]
-        ]
+        } else {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
     }
-    
+        
     static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
         let childItemsDict = params.folderLinkIds.map {
             [
@@ -601,6 +615,22 @@ struct Payloads {
                             "ArchiveVO": [
                                 "archiveId": archiveId,
                                 "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func unshareRecord(archiveId: Int, folderLinkId: Int) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ShareVO": [
+                                "folder_linkId": folderLinkId,
+                                "archiveId": archiveId
                             ]
                         ]
                     ]

@@ -33,7 +33,7 @@ class UploadFilesUITests: XCTestCase {
         let privateFilesPage = PrivateFilesPage(app: app, testCase: self)
         privateFilesPage.waitForExistence()
         
-        privateFilesPage.createNewFolder(name: "uploads")
+        privateFilesPage.createNewFolder(name: "current test")
         
         privateFilesPage.enterPhotoLibrary()
         
@@ -52,12 +52,13 @@ class UploadFilesUITests: XCTestCase {
         
         privateFilesPage.deleteFirstElementFromFolder()
         
-        privateFilesPage.emptyFolderTest()
-        
         privateFilesPage.toggleRightSideMenu()
         
         let rightSideMenu = RightSideMenuPage(app: app, testCase: self, accountEmail: accountEmail)
         rightSideMenu.waitForExistence()
         rightSideMenu.logOut()
+        sleep(2)
+        
+        XCTAssertTrue(signUpPage.signUpStaticText.waitForExistence(timeout: 10))
     }
 }

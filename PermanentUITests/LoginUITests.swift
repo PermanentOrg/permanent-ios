@@ -54,6 +54,6 @@ class LoginUITests: XCTestCase {
         
         loginPage.pressCancelButton()
         
-        signUpPage.signUpStaticText
+        signUpPage.waitForExistence()
     }
 }

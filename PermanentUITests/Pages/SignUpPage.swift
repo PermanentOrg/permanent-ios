@@ -10,6 +10,7 @@ import XCTest
 
 class SignUpPage {
     let app: XCUIApplication
+    
     var enterLoginScreenButton: XCUIElement {
         app.staticTexts["Already have an account?"]
     }

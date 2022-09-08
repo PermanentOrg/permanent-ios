@@ -11,11 +11,21 @@ import XCTest
 class LoginPage {
     let app: XCUIApplication
     
-    var emailField: XCUIElement { app.webViews.textFields["Email"] }
-    var passwordField: XCUIElement { app.webViews.secureTextFields["Password (min. 8 chars)"] }
-    var rememberSignInSwitch: XCUIElement { app.webViews.switches.firstMatch }
-    var submitButton: XCUIElement { app.webViews.buttons["Submit"] }
-    var cancelButton: XCUIElement { app.buttons["Cancel"] }
+    var emailField: XCUIElement {
+        app.webViews.textFields["Email"]
+    }
+    var passwordField: XCUIElement {
+        app.webViews.secureTextFields["Password (min. 8 chars)"]
+    }
+    var rememberSignInSwitch: XCUIElement {
+        app.webViews.switches.firstMatch
+    }
+    var submitButton: XCUIElement {
+        app.webViews.buttons["Submit"]
+    }
+    var cancelButton: XCUIElement {
+        app.buttons["Cancel"]
+    }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
         self.app = app

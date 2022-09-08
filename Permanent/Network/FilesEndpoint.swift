@@ -36,6 +36,9 @@ enum FilesEndpoint {
     // RENAME
     case renameFolder(params: UpdateRecordParams)
     
+    //UNSHARE
+    case unshareRecord(archiveId: Int, folderLinkId: Int)
+    
     case updateRootColumns(params: UpdateRootColumnsParams)
 }
 
@@ -80,6 +83,8 @@ extension FilesEndpoint: RequestProtocol {
             return "/folder/update"
         case .updateRootColumns:
             return "/folder/updateRootColumns"
+        case .unshareRecord:
+            return "/share/delete"
         default:
             return ""
         }
@@ -120,6 +125,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .renameFolder(let params):
             return Payloads.renameFolderRequest(params: params)
+            
+        case .unshareRecord(let archiveID, let folderLinkId):
+            return Payloads.unshareRecord(archiveId: archiveID, folderLinkId: folderLinkId)
             
         case .updateRootColumns(let params):
             return Payloads.updateRootColumns(params)
