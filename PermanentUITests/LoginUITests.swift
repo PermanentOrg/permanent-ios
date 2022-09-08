@@ -7,14 +7,9 @@
 
 import XCTest
 
-class LoginUITests: XCTestCase {
-    let app = XCUIApplication()
-    
+class LoginUITests: BaseUITestCase {
     override func setUpWithError() throws {
-        continueAfterFailure = false
-        
-        app.launch()
-        sleep(5)
+        try super.setUpWithError()
     }
 
     override func tearDownWithError() throws {

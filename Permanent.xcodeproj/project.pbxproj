@@ -467,6 +467,7 @@
 		F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F557A64827A1C81600C061D4 /* OnlinePresenceTableViewCell.swift */; };
 		F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F558C24828B605F9008BC77B /* FileMenuViewController.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
+		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
 		F56AF715283676FF0069725A /* UITapGestureRecognizerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */; };
 		F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */; };
@@ -989,6 +990,9 @@
 		F557A64827A1C81600C061D4 /* OnlinePresenceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnlinePresenceTableViewCell.swift; sourceTree = "<group>"; };
 		F558C24828B605F9008BC77B /* FileMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuViewController.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
+		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
+		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
+		F569061628CA05D100E610B6 /* TestPullRequest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPullRequest.xctestplan; sourceTree = "<group>"; };
 		F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceEndpoint.swift; sourceTree = "<group>"; };
 		F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapGestureRecognizerExtension.swift; sourceTree = "<group>"; };
 		F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePicturesViewModel.swift; sourceTree = "<group>"; };
@@ -1329,6 +1333,8 @@
 				06B0EB2124E6786F003D90C6 /* ViewControllers */,
 				06B0EB2C24E68289003D90C6 /* ViewModels */,
 				06644A8124EA70D5003CD359 /* Views */,
+				F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */,
+				F569061628CA05D100E610B6 /* TestPullRequest.xctestplan */,
 			);
 			path = Permanent;
 			sourceTree = "<group>";
@@ -1432,6 +1438,7 @@
 			isa = PBXGroup;
 			children = (
 				5E07D44A28915C78008C0A6B /* Pages */,
+				F569061128C9FD7500E610B6 /* BaseUITestCase.swift */,
 				5E68830728902DBF0006F434 /* LoginUITests.swift */,
 				5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */,
 				5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */,
@@ -1483,7 +1490,6 @@
 		5ED06F3F286B2BD5006C126B /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
-				F569060E28C6437100E610B6 /* ShareExtensionDEV-Release.entitlements */,
 				F59082E92885697C00027FE9 /* ShareExtensionRelease.entitlements */,
 				F59082E82885697200027FE9 /* ShareExtensionDebug.entitlements */,
 				5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */,
@@ -3026,6 +3032,7 @@
 				5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */,
 				5E969F7A28A452A3007431BC /* SharedFilesPage.swift in Sources */,
 				5E68830828902DBF0006F434 /* LoginUITests.swift in Sources */,
+				F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */,
 				5E07D45528917D83008C0A6B /* UploadFilesUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

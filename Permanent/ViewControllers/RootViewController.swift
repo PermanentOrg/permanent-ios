@@ -81,7 +81,8 @@ class RootViewController: UIViewController {
                     }
                 } else {
                     let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
-                    let route: (ViewControllerId, StoryboardName) = isNewUser ? (.onboarding, .onboarding) : (.signUp, .authentication)
+                    let skipOnboarding: Bool = CommandLine.arguments.contains("--SkipOnboarding")
+                    let route: (ViewControllerId, StoryboardName) = (isNewUser && !skipOnboarding) ? (.onboarding, .onboarding) : (.signUp, .authentication)
                     
                     let navController = NavigationController()
                     let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)

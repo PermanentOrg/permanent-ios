@@ -20,15 +20,6 @@ class SignUpPage {
     
     init(app: XCUIApplication, testCase: XCTestCase) {
         self.app = app
-        
-        testCase.addUIInterruptionMonitor(withDescription: "login screen") { (alert) -> Bool in
-            if alert.staticTexts["“Permanent” Wants to Use “permanent.org” to Sign In"].exists {
-                alert.buttons["Continue"].tap()
-                return true
-            } else {
-                return false
-            }
-        }
     }
     
     func waitForExistence() {

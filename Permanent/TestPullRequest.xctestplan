@@ -1,0 +1,39 @@
+{
+  "configurations" : [
+    {
+      "id" : "EF9E3FB2-7FC7-4A87-9771-505240A6A554",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "commandLineArgumentEntries" : [
+
+    ]
+  },
+  "testTargets" : [
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:Permanent.xcodeproj",
+        "identifier" : "5E68F2CB26A74FCD00CC936E",
+        "name" : "PermanentTests"
+      }
+    },
+    {
+      "skippedTests" : [
+        "BaseUITestCase",
+        "SharedFilesUITests",
+        "UploadFilesUITests"
+      ],
+      "target" : {
+        "containerPath" : "container:Permanent.xcodeproj",
+        "identifier" : "5E68830428902DBF0006F434",
+        "name" : "PermanentUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
