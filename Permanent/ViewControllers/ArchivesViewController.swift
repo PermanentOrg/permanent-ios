@@ -120,7 +120,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     @IBAction func currentArchiveRightButtonPressed(_ sender: Any) {
         let actionSheet = PRMNTActionSheetViewController(actions: [
-            PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { [self] action in
+            PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { [self] action in
                 guard let archiveId = viewModel?.currentArchive()?.archiveID else { return }
                 showSpinner()
                 viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
@@ -232,7 +232,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
             var actions = [
-                PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
+                PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { action in
                     guard let archiveId = archiveVO.archiveID else { return }
                     self?.showSpinner()
                     self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
@@ -248,7 +248,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             ]
             
             if archiveVO.accessRole == "access.role.owner" {
-                actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
+                actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
                     let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
                     
                     self?.showActionDialog(

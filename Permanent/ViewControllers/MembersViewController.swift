@@ -316,12 +316,12 @@ class MembersViewController: BaseViewController<MembersViewModel> {
     func showFileActionSheet(forAccount account: Account, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         
-        actions.append(PRMNTAction(title: "Remove".localized(), color: .brightRed, handler: { [self] action in
+        actions.append(PRMNTAction(title: "Remove".localized(), iconName: "Delete-1", color: .brightRed, handler: { [self] action in
             modifyMember(account, withOperation: .remove)
         })
         )
         
-        actions.append(PRMNTAction(title: "Edit".localized(), color: .primary, handler: { [self] action in
+        actions.append(PRMNTAction(title: "Edit".localized(), iconName: "Rename", color: .primary, handler: { [self] action in
             didTapEdit(forAccount: account)
         })
         )
