@@ -343,14 +343,14 @@ extension PublicArchiveFileViewController {
         
         if file.type.isFolder == false {
             actions.append(
-                PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+                PRMNTAction(title: "Share to Another App".localized(), iconName: "Share Other", color: .primary, handler: { [self] action in
                     shareWithOtherApps(file: file)
                 })
             )
         }
         
         actions.append(
-            PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+            PRMNTAction(title: "Get Link".localized(), iconName: "Get Link", color: .primary, handler: { [self] action in
                 guard let url = viewModel?.publicURL(forFile: file) else { return }
                 
                 share(url: url)
