@@ -533,14 +533,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var menuItems: [FileMenuViewController.MenuItem] = []
-        if file.permissions.contains(.delete) {
-            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [self] in
-                deleteAction(file: file, atIndexPath: indexPath)
-            }))
-        }
         
-        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot, self.segmentedControl.selectedSegmentIndex == 1 {
-            menuItems.append(FileMenuViewController.MenuItem(type: .download, action: { [self] in
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
+            menuItems.append(FileMenuViewController.MenuItem(type: .unshare, action: { [self] in
                 unshareAction(file: file, atIndexPath: indexPath)
             }))
         } else if file.permissions.contains(.delete) {
