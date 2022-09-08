@@ -92,7 +92,7 @@ extension PublicProfileOnlinePresenceViewController: UITableViewDataSource, UITa
         
         cell.moreButtonAction = { [weak self] cell in
             let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
-                PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { action in
+                PRMNTAction(title: "Delete".localized(), iconName: "Delete-1", color: .brightRed, handler: { action in
                     self?.showSpinner()
                     
                     if indexPath.section == 0 {
@@ -105,7 +105,7 @@ extension PublicProfileOnlinePresenceViewController: UITableViewDataSource, UITa
                         })
                     }
                 }),
-                PRMNTAction(title: "Edit".localized(), handler: { action in
+                PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
                     let vc = UIViewController.create(withIdentifier: .addOnlinePresence, from: .profile) as! PublicProfileAddOnlinePresenceViewController
                     vc.viewModel = self?.viewModel
                     vc.fieldType = indexPath.section == 0 ? .email : .socialMedia

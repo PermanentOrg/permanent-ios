@@ -125,6 +125,8 @@ class PRMNTActionSheetViewController: UIViewController {
     func menuItem(withName name: String, iconName: String?) -> UIView {
         let imageView = UIImageView(image: iconName != nil ? UIImage(named: iconName!) : .placeholder)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .black
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 30)
         ])
