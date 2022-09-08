@@ -278,54 +278,66 @@
                                     <action selector="switchViewButtonPressed:" destination="b58-5x-32K" eventType="touchUpInside" id="LeY-Tc-fHk"/>
                                 </connections>
                             </button>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="JPq-vy-INN">
-                                <rect key="frame" x="0.0" y="150" width="414" height="712"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="hqq-tZ-7Q3">
-                                    <size key="itemSize" width="413" height="128"/>
-                                    <size key="estimatedItemSize" width="413" height="128"/>
-                                    <size key="headerReferenceSize" width="50" height="50"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells/>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HeaderView" id="umb-fh-wFr" customClass="FileCollectionViewHeader" customModule="Permanent" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZTn-US-mf7">
-                                            <rect key="frame" x="14" y="10" width="46" height="30"/>
-                                            <state key="normal" title="Button"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="KdU-71-7p0">
+                                <rect key="frame" x="0.0" y="140" width="414" height="722"/>
+                                <subviews>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="JPq-vy-INN">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="662"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="hqq-tZ-7Q3">
+                                            <size key="itemSize" width="413" height="128"/>
+                                            <size key="estimatedItemSize" width="413" height="128"/>
+                                            <size key="headerReferenceSize" width="50" height="50"/>
+                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        </collectionViewFlowLayout>
+                                        <cells/>
+                                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HeaderView" id="umb-fh-wFr" customClass="FileCollectionViewHeader" customModule="Permanent" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZTn-US-mf7">
+                                                    <rect key="frame" x="14" y="10" width="46" height="30"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <connections>
+                                                        <action selector="leftButtonPressed:" destination="umb-fh-wFr" eventType="touchUpInside" id="mnH-7U-6XL"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FrI-gv-yQS">
+                                                    <rect key="frame" x="356" y="10" width="46" height="30"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <connections>
+                                                        <action selector="rightButtonPressed:" destination="umb-fh-wFr" eventType="touchUpInside" id="Yy1-yZ-R8l"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="FrI-gv-yQS" firstAttribute="centerY" secondItem="umb-fh-wFr" secondAttribute="centerY" id="5dt-mR-loe"/>
+                                                <constraint firstItem="ZTn-US-mf7" firstAttribute="leading" secondItem="umb-fh-wFr" secondAttribute="leadingMargin" constant="6" id="IpG-Wj-suk"/>
+                                                <constraint firstItem="ZTn-US-mf7" firstAttribute="centerY" secondItem="umb-fh-wFr" secondAttribute="centerY" id="Jr4-cO-YgO"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="FrI-gv-yQS" secondAttribute="trailing" constant="4" id="Ydg-MF-NcZ"/>
+                                            </constraints>
                                             <connections>
-                                                <action selector="leftButtonPressed:" destination="umb-fh-wFr" eventType="touchUpInside" id="mnH-7U-6XL"/>
+                                                <outlet property="leftButton" destination="ZTn-US-mf7" id="xSa-B1-qko"/>
+                                                <outlet property="rightButton" destination="FrI-gv-yQS" id="ICi-rk-C0x"/>
                                             </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FrI-gv-yQS">
-                                            <rect key="frame" x="356" y="10" width="46" height="30"/>
-                                            <state key="normal" title="Button"/>
-                                            <connections>
-                                                <action selector="rightButtonPressed:" destination="umb-fh-wFr" eventType="touchUpInside" id="Yy1-yZ-R8l"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="FrI-gv-yQS" firstAttribute="centerY" secondItem="umb-fh-wFr" secondAttribute="centerY" id="5dt-mR-loe"/>
-                                        <constraint firstItem="ZTn-US-mf7" firstAttribute="leading" secondItem="umb-fh-wFr" secondAttribute="leadingMargin" constant="6" id="IpG-Wj-suk"/>
-                                        <constraint firstItem="ZTn-US-mf7" firstAttribute="centerY" secondItem="umb-fh-wFr" secondAttribute="centerY" id="Jr4-cO-YgO"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="FrI-gv-yQS" secondAttribute="trailing" constant="4" id="Ydg-MF-NcZ"/>
-                                    </constraints>
-                                    <connections>
-                                        <outlet property="leftButton" destination="ZTn-US-mf7" id="xSa-B1-qko"/>
-                                        <outlet property="rightButton" destination="FrI-gv-yQS" id="ICi-rk-C0x"/>
-                                    </connections>
-                                </collectionReusableView>
-                                <connections>
-                                    <outlet property="dataSource" destination="b58-5x-32K" id="zz4-yt-0B2"/>
-                                    <outlet property="delegate" destination="b58-5x-32K" id="oCc-IV-Azb"/>
-                                </connections>
-                            </collectionView>
+                                        </collectionReusableView>
+                                        <connections>
+                                            <outlet property="dataSource" destination="b58-5x-32K" id="zz4-yt-0B2"/>
+                                            <outlet property="delegate" destination="b58-5x-32K" id="oCc-IV-Azb"/>
+                                        </connections>
+                                    </collectionView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kLh-QU-SLT" customClass="BottomActionSheet" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="662" width="414" height="60"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="asR-nF-5e6"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                            </stackView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="346" y="794" width="48" height="48"/>
+                                <rect key="frame" x="346" y="734" width="48" height="48"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="8yF-SS-9Dh"/>
@@ -336,20 +348,20 @@
                         <viewLayoutGuide key="safeArea" id="wyV-hy-Lxu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="GQx-lf-zDn" secondAttribute="trailing" constant="20" id="0GV-2A-gpc"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="BuB-Gr-iVF" secondAttribute="trailing" constant="20" id="3l5-0A-4OH"/>
-                            <constraint firstItem="JPq-vy-INN" firstAttribute="trailing" secondItem="wyV-hy-Lxu" secondAttribute="trailing" id="5Z9-e1-FI0"/>
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="top" id="7uV-ud-NlB"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="BxP-iB-J9S"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="Qju-dd-gQn" secondAttribute="trailing" constant="20" id="D6E-sP-pOS"/>
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
-                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" constant="20" id="Tp4-cy-EdO"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
+                            <constraint firstItem="KdU-71-7p0" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" id="UVt-H4-XLT"/>
+                            <constraint firstItem="KdU-71-7p0" firstAttribute="bottom" secondItem="wyV-hy-Lxu" secondAttribute="bottom" id="avG-lf-JYk"/>
+                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="KdU-71-7p0" secondAttribute="trailing" id="cHh-x6-bLd"/>
+                            <constraint firstItem="KdU-71-7p0" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="bottom" id="e2z-ca-Mfy"/>
+                            <constraint firstItem="JPq-vy-INN" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" constant="20" id="g29-iD-sGE"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>
-                            <constraint firstItem="JPq-vy-INN" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="bottom" constant="10" id="pkF-cp-nex"/>
-                            <constraint firstItem="JPq-vy-INN" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" id="suz-PI-S18"/>
-                            <constraint firstItem="wyV-hy-Lxu" firstAttribute="bottom" secondItem="JPq-vy-INN" secondAttribute="bottom" id="uey-Hl-LdF"/>
+                            <constraint firstItem="JPq-vy-INN" firstAttribute="trailing" secondItem="GQx-lf-zDn" secondAttribute="trailing" constant="20" id="rCv-Ls-yfj"/>
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="height" secondItem="eVQ-eX-BfZ" secondAttribute="height" id="uwu-z4-csq"/>
                         </constraints>
                     </view>
@@ -359,6 +371,7 @@
                         <outlet property="collectionView" destination="JPq-vy-INN" id="fkm-hs-ZhW"/>
                         <outlet property="directoryLabel" destination="9Rh-mn-0jT" id="lZu-1c-m9z"/>
                         <outlet property="fabView" destination="GQx-lf-zDn" id="GPc-B0-0Xt"/>
+                        <outlet property="fileActionBottomView" destination="kLh-QU-SLT" id="Sko-KA-rto"/>
                         <outlet property="segmentedControl" destination="Qju-dd-gQn" id="Dld-0E-k5g"/>
                         <outlet property="switchViewButton" destination="BuB-Gr-iVF" id="51d-0t-yqR"/>
                     </connections>

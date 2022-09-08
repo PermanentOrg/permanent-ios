@@ -138,4 +138,38 @@ class SharedFilesViewModel: FilesViewModel {
         
         handler(.success)
     }
+    
+    func unshare(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        guard let archiveId = self.currentArchive?.archiveID else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let apiOperation = APIOperation(FilesEndpoint.unshareRecord(archiveId: archiveId, folderLinkId: file.folderLinkId))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
+        }
+    }
 }

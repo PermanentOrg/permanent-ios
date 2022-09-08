@@ -14,6 +14,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             case copy
             case move
             case delete
+            case unshare
             case rename
             case publish
             case shareToPermanent
@@ -363,6 +364,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
         if file.permissions.contains(.delete), let menuIndex = menuItems.firstIndex(where: { $0.type == .delete }) {
             stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1))
+        }
+        if file.permissions.contains(.read), let menuIndex = menuItems.firstIndex(where: { $0.type == .unshare }) {
+            stackView.addArrangedSubview(menuItem(withName: "Unshare".localized(), iconName: "Delete-1", tag: menuIndex + 1))
         }
         if file.permissions.contains(.edit), let menuIndex = menuItems.firstIndex(where: { $0.type == .rename }) {
             stackView.addArrangedSubview(menuItem(withName: "Rename".localized(), iconName: "Rename", tag: menuIndex + 1))

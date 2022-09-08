@@ -12,8 +12,12 @@ class RightSideMenuPage {
     let app: XCUIApplication
     let accountEmail: String
     
-    var emailStaticText: XCUIElement { app.staticTexts[accountEmail] }
-    var logoutButton: XCUIElement { app.tables.staticTexts["Log Out"] }
+    var emailStaticText: XCUIElement {
+        app.staticTexts[accountEmail]
+    }
+    var logoutButton: XCUIElement {
+        app.tables.staticTexts["Log Out"]
+    }
     
     init(app: XCUIApplication, testCase: XCTestCase, accountEmail: String) {
         self.app = app

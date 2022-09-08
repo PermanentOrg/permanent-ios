@@ -23,6 +23,8 @@ class FileCollectionViewCell: UICollectionViewCell {
     
     var isGridCell: Bool = false
     var isSearchCell: Bool = false
+    var fileAction: FileAction = .none
+    var sharedFile: Bool = false
     
     var fileInfoId: String?
     
@@ -81,15 +83,19 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, showsSharingInfo: Bool = false) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
+        self.fileAction = fileAction
+        self.sharedFile = sharedFile
         
         rightButtonImageView.isHidden = false
         
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
+        
         sharesImageView.isHidden = model.minArchiveVOS.isEmpty
+        sharesImageView.isHidden = sharedFile
         
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
@@ -101,7 +107,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             updateProgress(withValue: Float(progress))
         }
         
-        if showsSharingInfo {
+        if sharedFile {
             updateSharingInfo(withModel: model)
         }
     }
@@ -116,8 +122,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         if model.type.isFolder {
             overlayView.isHidden = true
             isUserInteractionEnabled = true
-            moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
+            if !sharedFile {
+                moreButton.isEnabled = action == .none
+                rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
+            }
             
             let hasRightButtonPermission = model.permissions.contains(.create) ||
                 model.permissions.contains(.delete) ||
@@ -128,12 +136,17 @@ class FileCollectionViewCell: UICollectionViewCell {
         } else {
             overlayView.isHidden = action == .none
             isUserInteractionEnabled = action == .none
-            moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = .primary
+
+            if !sharedFile {
+                moreButton.isEnabled = action == .none
+                rightButtonImageView.tintColor = .primary
+            }
         }
         
-        moreButton.isHidden = !hasRightButton
-        rightButtonImageView.isHidden = !hasRightButton
+        if !sharedFile {
+            moreButton.isHidden = !hasRightButton
+            rightButtonImageView.isHidden = !hasRightButton
+        }
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {

@@ -10,15 +10,14 @@ import XCTest
 
 class PhotoLibraryPage {
     let app: XCUIApplication
+    
     var navigationBar: XCUIElement {
         app.navigationBars["Recents"]
     }
-    
     var firstPhotoFromCollectionView: XCUIElement {
         app.collectionViews.children(matching: .cell).element(boundBy: 5).children(matching: .other).element
     }
-    
-    var uploadOneElement:XCUIElement {
+    var uploadOneElement: XCUIElement {
         app.toolbars["Toolbar"].buttons["Upload 1 items"]
     }
     
