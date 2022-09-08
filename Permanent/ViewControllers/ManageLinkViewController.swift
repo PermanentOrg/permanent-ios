@@ -8,14 +8,15 @@
 import UIKit
 
 class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
-    @IBOutlet var sharePreviewSwitchView: SwitchSettingsView!
-    @IBOutlet var autoApproveSwitchView: SwitchSettingsView!
-    @IBOutlet var maxUsesInputView: InputSettingsView!
-    @IBOutlet var expDateInputView: InputSettingsView!
-    @IBOutlet var saveButton: RoundedButton!
-    @IBOutlet var autoApproveTooltipLabel: UILabel!
-    @IBOutlet var maxUsesTooltipLabel: UILabel!
-    @IBOutlet var expDateTooltipLabel: UILabel!
+    @IBOutlet weak var sharePreviewSwitchView: SwitchSettingsView!
+    @IBOutlet weak var autoApproveSwitchView: SwitchSettingsView!
+    @IBOutlet weak var maxUsesInputView: InputSettingsView!
+    @IBOutlet weak var expDateInputView: InputSettingsView!
+    @IBOutlet weak var saveButton: RoundedButton!
+    @IBOutlet weak var autoApproveTooltipLabel: UILabel!
+    @IBOutlet weak var maxUsesTooltipLabel: UILabel!
+    @IBOutlet weak var expDateTooltipLabel: UILabel!
+    @IBOutlet weak var revokeButton: RoundedButton!
     
     var shareViewModel: ShareLinkViewModel?
 
@@ -40,6 +41,7 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
         expDateInputView.configureDatePickerUI()
         
         saveButton.configureActionButtonUI(title: .save)
+        revokeButton.configureActionButtonUI(title: .revokeLink, bgColor: .deepRed)
         
         autoApproveTooltipLabel.style(withFont: Text.style4.font, text: .autoApproveTooltip)
         maxUsesTooltipLabel.style(withFont: Text.style4.font, text: .maxUsesTooltip)
@@ -87,7 +89,19 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
                         self.showErrorAlert(message: error)
                     }
                 }
-                
-            })
+            }
+        )
+    }
+    
+    @IBAction func revokeAction(_ sender: Any) {
+        showSpinner()
+        viewModel?.revokeLink(then: { status in
+            self.hideSpinner()
+            if status == .success {
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                self.showErrorAlert(message: .error)
+            }
+        })
     }
 }

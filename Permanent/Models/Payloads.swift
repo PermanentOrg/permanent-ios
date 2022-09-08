@@ -335,6 +335,26 @@ struct Payloads {
         return updateDict
     }
     
+    static func updateShareRequest(minArchiveVO: MinArchiveVO) -> RequestParameters {
+        let shareVO = ShareVOData(shareID: minArchiveVO.shareId, folderLinkID: minArchiveVO.folderLinkID, archiveID: minArchiveVO.archiveID, accessRole: minArchiveVO.accessRole, type: nil, status: minArchiveVO.shareStatus, requestToken: nil, previewToggle: nil, folderVO: nil, recordVO: nil, archiveVO: nil, accountVO: nil, createdDT: nil, updatedDT: nil)
+        
+        guard let shareVOJson = try? JSONEncoder().encode(shareVO),
+            let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
+            return []
+        }
+        
+        let updateDict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "ShareVO": shareVODict
+                    ]
+                ]
+            ]
+        ]
+        return updateDict
+    }
+    
     static func deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int) -> RequestParameters {
         return [
             "RequestVO": [

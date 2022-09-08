@@ -58,6 +58,9 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     fileprivate func setupCollectionView() {
+        collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
@@ -356,22 +359,6 @@ extension PublicArchiveFileViewController {
         
         let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
         present(actionSheet, animated: true, completion: nil)
-    }
-
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
     }
     
     func shareWithOtherApps(file: FileViewModel) {

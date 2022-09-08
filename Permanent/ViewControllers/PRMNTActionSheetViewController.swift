@@ -9,18 +9,19 @@ import UIKit
 
 class PRMNTAction {
     let title: String
+    let iconName: String?
     let color: UIColor
     let handler: ((PRMNTAction) -> Void)?
     
-    init(title: String, color: UIColor = .primary, handler: ((PRMNTAction) -> Void)? = nil) {
+    init(title: String, iconName: String? = nil, color: UIColor = .primary, handler: ((PRMNTAction) -> Void)? = nil) {
         self.title = title
+        self.iconName = iconName
         self.color = color
         self.handler = handler
     }
 }
 
 class PRMNTActionSheetViewController: UIViewController {
-    
     let actions: [PRMNTAction]
     
     let overlayView = UIView(frame: .zero)
@@ -82,7 +83,7 @@ class PRMNTActionSheetViewController: UIViewController {
             
             NSLayoutConstraint.activate([
                 button.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-                button.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+                button.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
             ])
             
             if let lastButton = buttons.last {
@@ -137,11 +138,9 @@ class PRMNTActionSheetViewController: UIViewController {
     @objc func overlayTapped(_ sender: UIGestureRecognizer) {
         dismiss(animated: true)
     }
-    
 }
 
 extension PRMNTActionSheetViewController: UIViewControllerTransitioningDelegate {
-    
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self
     }
@@ -149,11 +148,9 @@ extension PRMNTActionSheetViewController: UIViewControllerTransitioningDelegate 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self
     }
-    
 }
 
 extension PRMNTActionSheetViewController: UIViewControllerAnimatedTransitioning {
-    
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.2
     }
@@ -172,7 +169,6 @@ extension PRMNTActionSheetViewController: UIViewControllerAnimatedTransitioning 
             } completion: { finished in
                 transitionContext.completeTransition(true)
             }
-
         } else {
             contentViewBottomConstraint.constant = contentView.frame.height
             
@@ -183,8 +179,6 @@ extension PRMNTActionSheetViewController: UIViewControllerAnimatedTransitioning 
                 self.view.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
-
         }
     }
-    
 }

@@ -58,6 +58,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var archivePermissions: [Permission] {
         return currentArchive?.permissions() ?? [.read]
     }
+    var archiveAccessRole: AccessRole {
+        return AccessRole.roleForValue(currentArchive?.accessRole)
+    }
     
     var timer: Timer?
     var timerRunCount: Int = 0
@@ -334,7 +337,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO, permissions: self.archivePermissions)
+                let folder = FileViewModel(model: folderVO, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
 
@@ -449,7 +452,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         viewModels.removeAll()
         
         childItems.forEach {
-            let file = FileViewModel(model: $0, permissions: self.archivePermissions)
+            let file = FileViewModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
             self.viewModels.append(file)
         }
         
@@ -470,7 +473,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
-            let file = FileViewModel(model: folderVO, permissions: archivePermissions)
+            let file = FileViewModel(model: folderVO, permissions: archivePermissions, accessRole: archiveAccessRole)
             navigationStack.append(file)
         }
         

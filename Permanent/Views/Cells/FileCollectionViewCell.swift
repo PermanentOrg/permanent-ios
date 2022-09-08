@@ -19,6 +19,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var overlayView: UIView!
     @IBOutlet weak var sharesImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var sharingInfoStackView: UIStackView!
     
     var isGridCell: Bool = false
     var isSearchCell: Bool = false
@@ -54,6 +55,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.image = nil
         progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
+        
+        for subview in sharingInfoStackView.arrangedSubviews {
+            subview.removeFromSuperview()
+        }
     }
     
     private func initUI() {
@@ -100,6 +105,10 @@ class FileCollectionViewCell: UICollectionViewCell {
            let progress = UploadManager.shared.operation(forFileId: fileId)?.progress {
             fileInfoId = model.fileInfoId
             updateProgress(withValue: Float(progress))
+        }
+        
+        if sharedFile {
+            updateSharingInfo(withModel: model)
         }
     }
     
@@ -212,6 +221,44 @@ class FileCollectionViewCell: UICollectionViewCell {
     
     func updateProgress(withValue value: Float) {
         progressView.setProgress(value, animated: true)
+    }
+    
+    func updateSharingInfo(withModel model: FileViewModel) {
+        if model.sharedByArchive != nil {
+            guard let archive = model.sharedByArchive,
+                let thumbnailUrl = URL(string: archive.thumbnail) else { return }
+            
+            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+            imageView.constraintToSquare(20)
+            imageView.sd_setImage(with: thumbnailUrl)
+            sharingInfoStackView.addArrangedSubview(imageView)
+            
+            let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
+            extraLabel.font = Text.style8.font
+            extraLabel.textColor = .middleGray
+            extraLabel.contentMode = .center
+            extraLabel.text = "The \(archive.name) Archive"
+            sharingInfoStackView.addArrangedSubview(extraLabel)
+        } else {
+            let maxArchivesCount = 6
+            model.minArchiveVOS[0 ..< min(model.minArchiveVOS.count, maxArchivesCount)].forEach { archiveVO in
+                guard let thumbnailUrl = URL(string: archiveVO.thumbnail) else { return }
+                
+                let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+                imageView.constraintToSquare(20)
+                imageView.sd_setImage(with: thumbnailUrl)
+                sharingInfoStackView.addArrangedSubview(imageView)
+            }
+            
+            if model.minArchiveVOS.count > maxArchivesCount {
+                let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
+                extraLabel.font = Text.style8.font
+                extraLabel.textColor = .middleGray
+                extraLabel.contentMode = .center
+                extraLabel.text = " +\(model.minArchiveVOS.count - maxArchivesCount)"
+                sharingInfoStackView.addArrangedSubview(extraLabel)
+            }
+        }
     }
     
     @IBAction
