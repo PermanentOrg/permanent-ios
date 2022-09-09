@@ -38,6 +38,15 @@ class BaseUITestCase: XCTestCase {
                 return false
             }
         }
+        
+        addUIInterruptionMonitor(withDescription: "Photo Library Prompt") { (alert) -> Bool in
+            if alert.staticTexts["“Permanent” Would Like to Access Your Photos"].exists {
+                alert.buttons["Allow Access to All Photos"].tap()
+                return true
+            } else {
+                return false
+            }
+        }
     }
 
     override func tearDownWithError() throws {

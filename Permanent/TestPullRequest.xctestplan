@@ -15,7 +15,6 @@
   },
   "testTargets" : [
     {
-      "enabled" : false,
       "target" : {
         "containerPath" : "container:Permanent.xcodeproj",
         "identifier" : "5E68F2CB26A74FCD00CC936E",
@@ -24,9 +23,7 @@
     },
     {
       "skippedTests" : [
-        "BaseUITestCase",
-        "SharedFilesUITests",
-        "UploadFilesUITests"
+        "BaseUITestCase"
       ],
       "target" : {
         "containerPath" : "container:Permanent.xcodeproj",

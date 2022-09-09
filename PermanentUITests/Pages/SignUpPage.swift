@@ -23,11 +23,11 @@ class SignUpPage {
     }
     
     func waitForExistence() {
-        XCTAssertTrue(signUpStaticText.waitForExistence(timeout: 10))
+        XCTAssertTrue(signUpStaticText.waitForExistence(timeout: 30))
     }
     
     func navigateToLogin() {
-        XCTAssertTrue(enterLoginScreenButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(enterLoginScreenButton.waitForExistence(timeout: 30))
         enterLoginScreenButton.tap()
         sleep(5)
         app.tap()

@@ -24,7 +24,7 @@ class SharedFilesPage {
         navigationBar.buttons["settings"]
     }
     var addButton: XCUIElement {
-        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1)
+        app.otherElements["plusButton"]
     }
     var firstItemFromFolderButton: XCUIElement {
         app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 0)
@@ -38,15 +38,6 @@ class SharedFilesPage {
     var newFolderButton: XCUIElement {
         app.buttons["New Folder"]
     }
-    var downloadButton: XCUIElement {
-        app.buttons["Download"]
-    }
-    var renameButton: XCUIElement {
-        app.buttons["Rename"]
-    }
-    var deleteButton: XCUIElement {
-        app.buttons["Delete"]
-    }
     var backButton: XCUIElement {
         app.buttons["Back"]
     }
@@ -54,22 +45,7 @@ class SharedFilesPage {
         app.collectionViews.staticTexts["files with owner access"].firstMatch
     }
     var filesWithViewerFolderButton: XCUIElement {
-        app.collectionViews.staticTexts["files with viewer access "].firstMatch
-    }
-    var createNewFolderStaticText: XCUIElement {
-        app.staticTexts["Create New Folder"]
-    }
-    var folderNameTextField: XCUIElement {
-        app.textFields["Folder Name"]
-    }
-    var createNewFolderButton: XCUIElement {
-        app.buttons["Create"]
-    }
-    var cancelCreateNewFolderButton: XCUIElement {
-        app.buttons["Cancel"]
-    }
-    var currentTestFolderButton: XCUIElement {
-        app.collectionViews.staticTexts["a test folder"].firstMatch
+        app.collectionViews.staticTexts["files with viewer access"].firstMatch
     }
     var photoLibraryButton: XCUIElement {
         app.sheets.scrollViews.otherElements.buttons["Photo Library"]
@@ -89,26 +65,12 @@ class SharedFilesPage {
     var photoLibraryElementLoading: XCUIElement {
         app.collectionViews.activityIndicators["In progress"]
     }
-    var deleteButtonFromMoreList: XCUIElement {
-        app.buttons["Delete"]
-    }
-    var deleteButtonFromConfirmation: XCUIElement {
-        app.scrollViews.otherElements.staticTexts["Delete"]
-    }
-    var renameButtonFromMoreList: XCUIElement {
-        app.buttons["Rename"]
-    }
-    var renameButtonFromConfirmation: XCUIElement {
-        app.scrollViews.otherElements.staticTexts["Rename"]
-    }
-    var folderRenameTextField: XCUIElement {
-        app.textFields["a test"]
-    }
     var emptyFolder: XCUIElement {
         app.collectionViews.staticTexts["You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!"]
     }
     var notificationCompletedDownload: XCUIElement {
-        app.staticTexts["'uploaded file' download completed"]
+        let predicate = NSPredicate(format: "label CONTAINS[cd] \"download completed\"")
+        return app.staticTexts.matching(predicate).firstMatch
     }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
@@ -163,45 +125,42 @@ class SharedFilesPage {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertEqual(downloadButton.exists, false)
-        
-        XCTAssertEqual(renameButton.exists, true)
-        
-        XCTAssertEqual(deleteButton.exists, true)
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertEqual(fileMenu.downloadButton.exists, true)
+        XCTAssertEqual(fileMenu.renameButton.exists, true)
+        XCTAssertEqual(fileMenu.deleteButton.exists, true)
         
         sleep(1)
         
-        app.tap()
+        fileMenu.doneButton.tap()
     }
     
     func testMoreFileOptionsMenuOwnerAccess() {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertEqual(downloadButton.exists, true)
-        
-        XCTAssertEqual(renameButton.exists, true)
-        
-        XCTAssertEqual(deleteButton.exists, true)
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertEqual(fileMenu.downloadButton.exists, false)
+        XCTAssertEqual(fileMenu.renameButton.exists, true)
+        XCTAssertEqual(fileMenu.unshareButton.exists, true)
         
         sleep(1)
         
-        app.tap()
+        fileMenu.doneButton.tap()
     }
     
     func testMoreFileOptionsMenuViewerAccess() {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertEqual(downloadButton.exists, true)
-        
-        XCTAssertEqual(renameButton.exists, false)
-        
-        XCTAssertEqual(deleteButton.exists, false)
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertEqual(fileMenu.downloadButton.exists, true)
+        XCTAssertEqual(fileMenu.renameButton.exists, false)
+        XCTAssertEqual(fileMenu.deleteButton.exists, false)
         
         sleep(1)
         
-        app.tap()
+        fileMenu.doneButton.tap()
     }
     
     func createNewFolder(name: String) {
@@ -209,21 +168,20 @@ class SharedFilesPage {
         XCTAssertTrue(newFolderButton.waitForExistence(timeout: 5))
         newFolderButton.tap()
         
-        XCTAssertTrue(createNewFolderStaticText.waitForExistence(timeout: 5))
-        XCTAssertTrue(folderNameTextField.waitForExistence(timeout: 5))
-        folderNameTextField.typeText(name)
+        let createFolderAlert = CreateFolderAlertPage(app: app)
+        XCTAssertTrue(createFolderAlert.textField.waitForExistence(timeout: 5))
+        createFolderAlert.textField.typeText(name)
         
-        XCTAssertTrue(createNewFolderButton.waitForExistence(timeout: 5))
-        createNewFolderButton.tap()
+        XCTAssertTrue(createFolderAlert.createButton.waitForExistence(timeout: 5))
+        createFolderAlert.createButton.tap()
         
         sleep(3)
         
         XCTAssertTrue(app.collectionViews.staticTexts[name].firstMatch.waitForExistence(timeout: 5))
     }
     
-    func enterCreatedFolder() {
-        XCTAssertTrue(currentTestFolderButton.waitForExistence(timeout: 5))
-        currentTestFolderButton.tap()
+    func enterFolder(withName name: String) {
+        app.collectionViews.cells.containing(.staticText, identifier: name).firstMatch.tap()
         
         sleep(3)
     }
@@ -246,7 +204,11 @@ class SharedFilesPage {
         XCTAssertTrue(uploadFinishedButton.waitForExistence(timeout: 40))
         
         XCTAssertTrue(photoLibraryElementLoading.waitForExistence(timeout: 20))
-        
+        var numberOfSleeps = 0
+        while photoLibraryElementLoading.exists && numberOfSleeps < 60 {
+            sleep(1)
+            numberOfSleeps += 1
+        }
         XCTAssertTrue(firstElementFromFolder.waitForExistence(timeout: 20))
         
         XCTAssertFalse(firstElementFromFolder.staticTexts.element(boundBy: 0).label.isEmpty)
@@ -256,42 +218,44 @@ class SharedFilesPage {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertTrue(deleteButtonFromMoreList.waitForExistence(timeout: 10))
-        deleteButtonFromMoreList.tap()
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertEqual(fileMenu.renameButton.exists, true)
+        XCTAssertEqual(fileMenu.moveButton.exists, true)
+        XCTAssertEqual(fileMenu.deleteButton.exists, true)
         
-        XCTAssertTrue(deleteButtonFromConfirmation.waitForExistence(timeout: 10))
-        deleteButtonFromConfirmation.tap()
+        XCTAssertTrue(fileMenu.deleteButton.waitForExistence(timeout: 10))
+        fileMenu.deleteButton.tap()
+        
+        let deleteAlert = DeleteAlertPage(app: app)
+        
+        XCTAssertTrue(deleteAlert.deleteButton.waitForExistence(timeout: 10))
+        deleteAlert.deleteButton.tap()
         
         sleep(3)
     }
     
     func renameFirstElementFromFolder(name: String) {
-        let firstElementName: String = app.collectionViews.staticTexts.element(boundBy: 2).label
-        let renameTextFieldName: XCUIElement = app.textFields[firstElementName]
-        
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertTrue(renameButtonFromMoreList.waitForExistence(timeout: 10))
-        renameButtonFromMoreList.tap()
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertTrue(fileMenu.renameButton.waitForExistence(timeout: 10))
+        fileMenu.renameButton.tap()
         
-        XCTAssertTrue(renameTextFieldName.waitForExistence(timeout: 5))
-        renameTextFieldName.press(forDuration: 2)
-        app.menuItems["Select All"].tap()
-        renameTextFieldName.typeText(name)
+        let renameAlert = RenameAlertPage(app: app)
+        renameAlert.textField.selectAndDeleteText(inApp: app)
+        renameAlert.textField.typeText(name)
         
-        XCTAssertTrue(renameButtonFromConfirmation.waitForExistence(timeout: 10))
-        renameButtonFromConfirmation.tap()
-        
-        sleep(3)
+        renameAlert.renameButton.tap()
     }
     
     func downloadFirstElementFromFolder() {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertTrue(downloadButton.waitForExistence(timeout: 10))
-        downloadButton.tap()
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertTrue(fileMenu.downloadButton.waitForExistence(timeout: 10))
+        fileMenu.downloadButton.tap()
     }
     
     func processDownload() {

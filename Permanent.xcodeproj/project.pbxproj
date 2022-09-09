@@ -468,6 +468,11 @@
 		F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F558C24828B605F9008BC77B /* FileMenuViewController.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
+		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
+		F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061D28CB60E900E610B6 /* RenameAlertPage.swift */; };
+		F569062028CB618500E610B6 /* FileMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061F28CB618500E610B6 /* FileMenuPage.swift */; };
+		F569062228CB66CC00E610B6 /* DeleteAlertPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569062128CB66CC00E610B6 /* DeleteAlertPage.swift */; };
+		F569062428CB672900E610B6 /* CreateFolderAlertPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569062328CB672900E610B6 /* CreateFolderAlertPage.swift */; };
 		F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
 		F56AF715283676FF0069725A /* UITapGestureRecognizerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */; };
 		F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */; };
@@ -993,6 +998,11 @@
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
 		F569061628CA05D100E610B6 /* TestPullRequest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPullRequest.xctestplan; sourceTree = "<group>"; };
+		F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCUIElement+Extensions.swift"; sourceTree = "<group>"; };
+		F569061D28CB60E900E610B6 /* RenameAlertPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameAlertPage.swift; sourceTree = "<group>"; };
+		F569061F28CB618500E610B6 /* FileMenuPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuPage.swift; sourceTree = "<group>"; };
+		F569062128CB66CC00E610B6 /* DeleteAlertPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAlertPage.swift; sourceTree = "<group>"; };
+		F569062328CB672900E610B6 /* CreateFolderAlertPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFolderAlertPage.swift; sourceTree = "<group>"; };
 		F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceEndpoint.swift; sourceTree = "<group>"; };
 		F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapGestureRecognizerExtension.swift; sourceTree = "<group>"; };
 		F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePicturesViewModel.swift; sourceTree = "<group>"; };
@@ -1268,6 +1278,10 @@
 				5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */,
 				5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */,
 				5E969F7928A452A3007431BC /* SharedFilesPage.swift */,
+				F569061D28CB60E900E610B6 /* RenameAlertPage.swift */,
+				F569061F28CB618500E610B6 /* FileMenuPage.swift */,
+				F569062128CB66CC00E610B6 /* DeleteAlertPage.swift */,
+				F569062328CB672900E610B6 /* CreateFolderAlertPage.swift */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -1437,6 +1451,7 @@
 		5E68830628902DBF0006F434 /* PermanentUITests */ = {
 			isa = PBXGroup;
 			children = (
+				F569061A28CB58AE00E610B6 /* Extensions */,
 				5E07D44A28915C78008C0A6B /* Pages */,
 				F569061128C9FD7500E610B6 /* BaseUITestCase.swift */,
 				5E68830728902DBF0006F434 /* LoginUITests.swift */,
@@ -2212,6 +2227,14 @@
 				F557A64827A1C81600C061D4 /* OnlinePresenceTableViewCell.swift */,
 			);
 			path = OnlinePresenceTableCells;
+			sourceTree = "<group>";
+		};
+		F569061A28CB58AE00E610B6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		F5A2A07726161AE6003AAF36 /* PushExtension */ = {
@@ -3030,10 +3053,15 @@
 				5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */,
 				5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */,
 				5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */,
+				F569062228CB66CC00E610B6 /* DeleteAlertPage.swift in Sources */,
+				F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */,
+				F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */,
+				F569062028CB618500E610B6 /* FileMenuPage.swift in Sources */,
 				5E969F7A28A452A3007431BC /* SharedFilesPage.swift in Sources */,
 				5E68830828902DBF0006F434 /* LoginUITests.swift in Sources */,
 				F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */,
 				5E07D45528917D83008C0A6B /* UploadFilesUITests.swift in Sources */,
+				F569062428CB672900E610B6 /* CreateFolderAlertPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
