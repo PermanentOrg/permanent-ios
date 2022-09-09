@@ -102,7 +102,7 @@ class SharedFilesPage {
     }
     
     func goBack() {
-        XCTAssertTrue(backButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(backButton.waitForExistence(timeout: 60))
         backButton.tap()
     }
     
@@ -122,7 +122,7 @@ class SharedFilesPage {
     }
     
     func testMoreFileOptionsForSharedByMe() {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
@@ -136,7 +136,7 @@ class SharedFilesPage {
     }
     
     func testMoreFileOptionsMenuOwnerAccess() {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
@@ -150,7 +150,7 @@ class SharedFilesPage {
     }
     
     func testMoreFileOptionsMenuViewerAccess() {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
@@ -191,7 +191,7 @@ class SharedFilesPage {
         addButton.tap()
         sleep(2)
         
-        XCTAssertTrue(uploadButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(uploadButton.waitForExistence(timeout: 60))
         uploadButton.tap()
         
         XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 5))
@@ -215,7 +215,7 @@ class SharedFilesPage {
     }
     
     func deleteFirstElementFromFolder() {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
@@ -223,23 +223,23 @@ class SharedFilesPage {
         XCTAssertEqual(fileMenu.moveButton.exists, true)
         XCTAssertEqual(fileMenu.deleteButton.exists, true)
         
-        XCTAssertTrue(fileMenu.deleteButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(fileMenu.deleteButton.waitForExistence(timeout: 60))
         fileMenu.deleteButton.tap()
         
         let deleteAlert = DeleteAlertPage(app: app)
         
-        XCTAssertTrue(deleteAlert.deleteButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(deleteAlert.deleteButton.waitForExistence(timeout: 60))
         deleteAlert.deleteButton.tap()
         
         sleep(3)
     }
     
     func renameFirstElementFromFolder(name: String) {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
-        XCTAssertTrue(fileMenu.renameButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(fileMenu.renameButton.waitForExistence(timeout: 60))
         fileMenu.renameButton.tap()
         
         let renameAlert = RenameAlertPage(app: app)
@@ -250,11 +250,11 @@ class SharedFilesPage {
     }
     
     func downloadFirstElementFromFolder() {
-        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 60))
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
-        XCTAssertTrue(fileMenu.downloadButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(fileMenu.downloadButton.waitForExistence(timeout: 60))
         fileMenu.downloadButton.tap()
     }
     
@@ -265,6 +265,6 @@ class SharedFilesPage {
     }
     
     func emptyFolderTest() {
-        XCTAssertTrue(emptyFolder.waitForExistence(timeout: 10))
+        XCTAssertTrue(emptyFolder.waitForExistence(timeout: 60))
     }
 }

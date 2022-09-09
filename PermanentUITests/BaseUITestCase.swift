@@ -14,6 +14,7 @@ class BaseUITestCase: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
 
         app.launchArguments.append("--SkipOnboarding")
+        app.launchArguments.append("--DiscardSession")
         app.launch()
         sleep(5)
         // In UI tests it is usually best to stop immediately when a failure occurs.

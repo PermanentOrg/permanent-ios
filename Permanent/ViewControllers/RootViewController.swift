@@ -70,7 +70,8 @@ class RootViewController: UIViewController {
             }
             
             AuthenticationManager.shared.reloadSession { success in
-                if success {
+                let discardSession: Bool = CommandLine.arguments.contains("--DiscardSession")
+                if success && !discardSession {
                     let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
                     let biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
                     

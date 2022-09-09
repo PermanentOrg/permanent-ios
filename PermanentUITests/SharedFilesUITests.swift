@@ -68,13 +68,17 @@ class SharedFilesUITests: BaseUITestCase {
                         
         sharedFilesPage.processDownload()
         
-        sharedFilesPage.deleteFirstElementFromFolder()
+        while app.collectionViews.cells.count > 0 {
+            sharedFilesPage.deleteFirstElementFromFolder()
+        }
         
         sharedFilesPage.emptyFolderTest()
         
         sharedFilesPage.goBack()
         
-        sharedFilesPage.deleteFirstElementFromFolder()
+        while app.collectionViews.cells.count > 0 {
+            sharedFilesPage.deleteFirstElementFromFolder()
+        }
         
         sharedFilesPage.goBack()
         
