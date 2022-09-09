@@ -3,6 +3,7 @@ name: PR Automated tests
 on:
   pull_request:
     branches: [ "Development" ]
+  workflow_dispatch:
 
 jobs:
   build:
