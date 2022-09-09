@@ -24,8 +24,9 @@ platform :ios do
     run_tests(workspace: "Permanent.xcworkspace",
               devices: ["iPhone 13"],
               scheme: "Permanent-DEV",
-	            configuration: "DEV-Debug",
-              testplan: "TestPullRequest")
+	      configuration: "DEV-Debug",
+              testplan: "TestPullRequest",
+	      reset_simulator: true)
   end
 
   lane :beta do

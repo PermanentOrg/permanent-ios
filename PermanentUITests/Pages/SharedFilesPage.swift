@@ -199,7 +199,7 @@ class SharedFilesPage {
     }
     
     func processUpload() {
-        XCTAssertTrue(uploadInProgress.waitForExistence(timeout: 10))
+        XCTAssertTrue(uploadInProgress.waitForExistence(timeout: 30))
         
         XCTAssertTrue(uploadFinishedButton.waitForExistence(timeout: 40))
         
