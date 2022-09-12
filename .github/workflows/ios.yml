@@ -1,6 +1,7 @@
 name: PR Automated tests
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ "Development" ]
 
@@ -12,5 +13,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: fastlane tests
-        run: fastlane tests
+      - name: Update Bundler
+        uses: ruby/setup-ruby@v1
+        with: 
+          ruby-version: '2.6.8'
+          bundler-cache: true
+      - name: Run Fastlane Tests
+        env:
+          CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
+          REVERSED_CLIENT_ID: ${{ secrets.IOS_FIREBASE_REVERSED_CLIENT_ID }}
+          API_KEY: ${{ secrets.IOS_FIREBASE_API_KEY }}
+          GCM_SENDER_ID: ${{ secrets.IOS_FIREBASE_GCM_SENDER_ID }}
+          PROJECT_ID: ${{ secrets.IOS_FIREBASE_PROJECT_ID }}
+          STORAGE_BUCKET: ${{ secrets.IOS_FIREBASE_STORAGE_BUCKET }}
+          GOOGLE_APP_ID: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
+          AUTH_TENANT_ID: ${{ secrets.MOBILE_AUTH_TENANT_ID }}
+          AUTH_CLIENT_ID: ${{ secrets.MOBILE_AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_AUTH_CLIENT_SECRET }}
+          STRIPE_PUB_KEY: ${{ secrets.MOBILE_STRIPE_TEST_PUB_KEY }}
+          UI_TEST_USERNAME: ${{ secrets.IOS_UI_TEST_USERNAME }}
+          UI_TEST_PASSWORD: ${{ secrets.IOS_UI_TEST_PASSWORD }}
+          SKIPLINT: true
+        run: bundle exec fastlane tests

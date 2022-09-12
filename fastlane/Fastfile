@@ -21,11 +21,12 @@ platform :ios do
     # add actions here: https://docs.fastlane.tools/actions
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
-    #sh(command: 'pod install --repo-update')
     run_tests(workspace: "Permanent.xcworkspace",
               devices: ["iPhone 13"],
-              scheme: "Permanent",
-	       configuration: "Debug")
+              scheme: "Permanent-DEV",
+	      configuration: "DEV-Debug",
+              testplan: "TestPullRequest",
+	      reset_simulator: true)
   end
 
   lane :beta do

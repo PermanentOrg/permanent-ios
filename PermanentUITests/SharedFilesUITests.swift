@@ -7,14 +7,9 @@
 
 import XCTest
 
-class SharedFilesUITests: XCTestCase {
-    let app = XCUIApplication()
-    
+class SharedFilesUITests: BaseUITestCase {
     override func setUpWithError() throws {
-        continueAfterFailure = false
-        
-        app.launch()
-        sleep(5)
+        try super.setUpWithError()
     }
 
     override func tearDownWithError() throws {
@@ -39,6 +34,7 @@ class SharedFilesUITests: XCTestCase {
         
         sharedFilesPage.goToSharedWithMeTab()
         sharedFilesPage.enterFolderWithOwnerAccess()
+        sleep(1)
         sharedFilesPage.testAddButtonIsPresent()
         
         sharedFilesPage.createNewFolder(name: "a test")
@@ -54,7 +50,7 @@ class SharedFilesUITests: XCTestCase {
         sharedFilesPage.goToSharedWithMeTab()
         sharedFilesPage.enterFolderWithOwnerAccess()
         
-        sharedFilesPage.enterCreatedFolder()
+        sharedFilesPage.enterFolder(withName: "a test folder")
         sharedFilesPage.enterPhotoLibrary()
         
         let photoLibraryPage = PhotoLibraryPage(app: app, testCase: self)
@@ -66,17 +62,25 @@ class SharedFilesUITests: XCTestCase {
         
         sharedFilesPage.renameFirstElementFromFolder(name: "uploaded file")
         
+        sleep(1)
+        
         sharedFilesPage.downloadFirstElementFromFolder()
                         
         sharedFilesPage.processDownload()
         
-        sharedFilesPage.deleteFirstElementFromFolder()
+        while app.collectionViews.cells.count > 0 {
+            sharedFilesPage.deleteFirstElementFromFolder()
+        }
         
         sharedFilesPage.emptyFolderTest()
         
         sharedFilesPage.goBack()
         
-        sharedFilesPage.deleteFirstElementFromFolder()
+        while app.collectionViews.cells.count > 0 {
+            sharedFilesPage.deleteFirstElementFromFolder()
+        }
+        
+        sharedFilesPage.goBack()
         
         sharedFilesPage.testMoreFileOptionsMenuOwnerAccess()
         
