@@ -25,25 +25,33 @@ class AccountOnboardingTests: XCTestCase {
     }
     
     func testArchiveNameNotification() throws {
-        let expectation = XCTestExpectation()
-        
-        NotificationCenter.default.addObserver(forName: AccountOnboardingViewModel.archiveNameChanged, object: sut, queue: nil) { notification in
+        expectation(forNotification: AccountOnboardingViewModel.archiveNameChanged, object: sut) { notification in
             XCTAssertTrue(self.sut.archiveName == "Test")
-            expectation.fulfill()
+            return true
         }
         
         sut.archiveName = "Test"
+        
+        waitForExpectations(timeout: 10) { error in
+            if error != nil {
+                XCTFail(error.debugDescription)
+            }
+        }
     }
     
     func testArchiveTypeNotification() throws {
-        let expectation = XCTestExpectation()
-        
-        NotificationCenter.default.addObserver(forName: AccountOnboardingViewModel.archiveTypeChanged, object: sut, queue: nil) { notification in
+        expectation(forNotification: AccountOnboardingViewModel.archiveTypeChanged, object: sut) { notification in
             XCTAssertTrue(self.sut.archiveType == .family)
-            expectation.fulfill()
+            return true
         }
         
         sut.archiveType = .family
+        
+        waitForExpectations(timeout: 10) { error in
+            if error != nil {
+                XCTFail(error.debugDescription)
+            }
+        }
     }
     
     func testHasBackButton() throws {

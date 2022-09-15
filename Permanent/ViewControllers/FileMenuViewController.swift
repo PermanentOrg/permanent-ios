@@ -461,6 +461,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         itemStackView.translatesAutoresizingMaskIntoConstraints = false
         
         let containerView = UIView()
+        containerView.accessibilityIdentifier = name
         containerView.addSubview(itemStackView)
         
         let button = UIButton(type: .custom)

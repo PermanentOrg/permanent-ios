@@ -18,28 +18,13 @@ class PrivateFilesPage {
         navigationBar.buttons["settings"]
     }
     var addButton: XCUIElement {
-        app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 2)
+        app.otherElements["plusButton"]
     }
     var addNewFolder: XCUIElement {
         app.buttons["New Folder"]
     }
     var uploadButton: XCUIElement {
         app.buttons["Upload"]
-    }
-    var createNewFolderStaticText: XCUIElement {
-        app.staticTexts["Create New Folder"]
-    }
-    var folderNameTextField: XCUIElement {
-        app.textFields["Folder Name"]
-    }
-    var createNewFolderButton: XCUIElement {
-        app.buttons["Create"]
-    }
-    var cancelCreateNewFolderButton: XCUIElement {
-        app.buttons["Cancel"]
-    }
-    var currentTestFolderButton: XCUIElement {
-        app.collectionViews.staticTexts["current test"].firstMatch
     }
     var photoLibraryButton: XCUIElement {
         app.sheets.scrollViews.otherElements.buttons["Photo Library"]
@@ -58,13 +43,6 @@ class PrivateFilesPage {
     }
     var firstElementMoreButton: XCUIElement {
         app.collectionViews.children(matching: .cell).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .button).element
-    }
-    
-    var deleteButtonFromMoreList: XCUIElement {
-        app.buttons["Delete"]
-    }
-    var deleteButtonFromConfirmation: XCUIElement {
-        app.scrollViews.otherElements.staticTexts["Delete"]
     }
     var backButton: XCUIElement {
         app.buttons["chevron"]
@@ -91,17 +69,20 @@ class PrivateFilesPage {
         XCTAssertTrue(addNewFolder.waitForExistence(timeout: 5))
         addNewFolder.tap()
         
-        XCTAssertTrue(createNewFolderStaticText.waitForExistence(timeout: 5))
-        XCTAssertTrue(folderNameTextField.waitForExistence(timeout: 5))
-        folderNameTextField.typeText(name)
+        let createFolderAlert = CreateFolderAlertPage(app: app)
         
-        XCTAssertTrue(createNewFolderButton.waitForExistence(timeout: 5))
-        createNewFolderButton.tap()
+        XCTAssertTrue(createFolderAlert.textField.waitForExistence(timeout: 5))
+        createFolderAlert.textField.typeText(name)
+        
+        XCTAssertTrue(createFolderAlert.createButton.waitForExistence(timeout: 5))
+        createFolderAlert.createButton.tap()
         
         sleep(3)
-        
-        XCTAssertTrue(currentTestFolderButton.waitForExistence(timeout: 5))
-        currentTestFolderButton.tap()
+    }
+    
+    func enterFolder(named name: String) {
+        let folderCell = app.collectionViews.cells.containing(.staticText, identifier: name).firstMatch
+        folderCell.tap()
     }
     
     func enterPhotoLibrary() {
@@ -122,7 +103,11 @@ class PrivateFilesPage {
         XCTAssertTrue(uploadFinishedButton.waitForExistence(timeout: 40))
         
         XCTAssertTrue(photoLibraryElementLoading.waitForExistence(timeout: 20))
-        
+        var numberOfSleeps = 0
+        while photoLibraryElementLoading.exists && numberOfSleeps < 60 {
+            sleep(1)
+            numberOfSleeps += 1
+        }
         XCTAssertTrue(firstElementFromFolder.waitForExistence(timeout: 20))
         
         XCTAssertFalse(firstElementFromFolder.staticTexts.element(boundBy: 0).label.isEmpty)
@@ -132,11 +117,14 @@ class PrivateFilesPage {
         XCTAssertTrue(firstElementMoreButton.waitForExistence(timeout: 10))
         firstElementMoreButton.tap()
         
-        XCTAssertTrue(deleteButtonFromMoreList.waitForExistence(timeout: 10))
-        deleteButtonFromMoreList.tap()
+        let fileMenu = FileMenuPage(app: app)
+        XCTAssertTrue(fileMenu.deleteButton.waitForExistence(timeout: 10))
+        fileMenu.deleteButton.tap()
         
-        XCTAssertTrue(deleteButtonFromConfirmation.waitForExistence(timeout: 10))
-        deleteButtonFromConfirmation.tap()
+        let deleteAlert = DeleteAlertPage(app: app)
+        
+        XCTAssertTrue(deleteAlert.deleteButton.waitForExistence(timeout: 10))
+        deleteAlert.deleteButton.tap()
     }
     
     func goBack() {

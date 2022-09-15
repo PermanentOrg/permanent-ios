@@ -339,6 +339,7 @@
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
                                 <rect key="frame" x="346" y="734" width="48" height="48"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                                <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="8yF-SS-9Dh"/>
                                     <constraint firstAttribute="height" constant="48" id="jj4-Ph-fiH"/>

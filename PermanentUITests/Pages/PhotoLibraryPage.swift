@@ -26,7 +26,12 @@ class PhotoLibraryPage {
     }
     
     func waitForExistence() {
-        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5))
+        // Sleep and tap just in case the UIInterruptionMonitor needs to be triggered.
+        // The monitor needs at least one action to be interrupted after it was sent to the app
+        sleep(1)
+        app.tap()
+        
+        XCTAssertTrue(navigationBar.waitForExistence(timeout: 50))
     }
     
     func uploadFirstPhoto() {

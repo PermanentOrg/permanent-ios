@@ -7,14 +7,9 @@
 
 import XCTest
 
-class UploadFilesUITests: XCTestCase {
-    let app = XCUIApplication()
-    
+class UploadFilesUITests: BaseUITestCase {
     override func setUpWithError() throws {
-        continueAfterFailure = false
-        
-        app.launch()
-        sleep(5)
+        try super.setUpWithError()
     }
 
     override func tearDownWithError() throws {
@@ -34,6 +29,8 @@ class UploadFilesUITests: XCTestCase {
         privateFilesPage.waitForExistence()
         
         privateFilesPage.createNewFolder(name: "current test")
+        
+        privateFilesPage.enterFolder(named: "current test")
         
         privateFilesPage.enterPhotoLibrary()
         
