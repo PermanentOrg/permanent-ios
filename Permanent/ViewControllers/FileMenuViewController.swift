@@ -43,6 +43,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     let contentView = UIView(frame: .zero)
     
     var gestureRecognizerSwipeUp = UISwipeGestureRecognizer()
+    var gestureRecognizerSwipeDown = UISwipeGestureRecognizer()
     var scrollViewHeightAnchorConstraint: NSLayoutConstraint!
     
     init() {
@@ -111,8 +112,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         contentView.addSubview(containerView)
 
         gestureRecognizerSwipeUp = UISwipeGestureRecognizer(target: self, action: #selector(swipeUpGesture(_:)))
-        containerView.addGestureRecognizer(gestureRecognizerSwipeUp)
+        gestureRecognizerSwipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownGesture(_:)))
         gestureRecognizerSwipeUp.direction = .up
+        gestureRecognizerSwipeDown.direction = . down
+        gestureRecognizerSwipeDown.isEnabled = false
+        containerView.addGestureRecognizer(gestureRecognizerSwipeUp)
+        containerView.addGestureRecognizer(gestureRecognizerSwipeDown)
 
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
@@ -150,7 +155,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: 16)
         ])
-        scrollView.isScrollEnabled = false
         
         loadSubviews()
         view.layoutIfNeeded()
@@ -626,13 +630,18 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     @objc func swipeUpGesture(_ sender: UISwipeGestureRecognizer) {
-        scrollView.isScrollEnabled = true
         gestureRecognizerSwipeUp.isEnabled = false
+        gestureRecognizerSwipeDown.isEnabled = true
+        
         scrollViewHeightAnchorConstraint.constant = self.view.frame.height - 50 - self.view.safeAreaInsets.top
         UIView.animate(withDuration: 0.2) {
             self.view.layoutIfNeeded()
         }
         overlayView.alpha = 0
+    }
+    
+    @objc func swipeDownGesture(_ sender: UISwipeGestureRecognizer) {
+        dismiss(animated: true)
     }
 }
 
