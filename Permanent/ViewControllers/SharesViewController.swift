@@ -565,6 +565,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let vc = FileMenuViewController()
         vc.fileViewModel = file
         vc.menuItems = menuItems
+        vc.showsPermission = viewModel?.shareListType == .sharedWithMe
         present(vc, animated: true)
     }
     

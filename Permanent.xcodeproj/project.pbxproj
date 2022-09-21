@@ -492,6 +492,7 @@
 		F58F314B27F1A52600B89B99 /* Donate.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F58F314A27F1A52600B89B99 /* Donate.storyboard */; };
 		F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58F314E27F32E2D00B89B99 /* DonateViewController.swift */; };
 		F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58F315327F72A1500B89B99 /* BillingEndpoint.swift */; };
+		F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59B0C8D28DB21060038E474 /* ShareViewController.swift */; };
 		F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */; };
 		F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
@@ -1021,6 +1022,7 @@
 		F58F315327F72A1500B89B99 /* BillingEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingEndpoint.swift; sourceTree = "<group>"; };
 		F59082E82885697200027FE9 /* ShareExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtensionDebug.entitlements; sourceTree = "<group>"; };
 		F59082E92885697C00027FE9 /* ShareExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtensionRelease.entitlements; sourceTree = "<group>"; };
+		F59B0C8D28DB21060038E474 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PARequestNotificationPayload.swift; sourceTree = "<group>"; };
 		F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNotificationPayload.swift; sourceTree = "<group>"; };
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1153,6 +1155,7 @@
 				BC0D99B3256D0FA600D29041 /* DrawerViewController.swift */,
 				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
 				BCFB0C2825811757001D89E1 /* ManageLinkViewController.swift */,
+				F59B0C8D28DB21060038E474 /* ShareViewController.swift */,
 				BCF90654258770B700DF1B64 /* SharesViewController.swift */,
 				BCF906632587B0C200DF1B64 /* MembersViewController.swift */,
 				5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */,
@@ -2706,6 +2709,7 @@
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
+				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
 				5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */,
 				5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
