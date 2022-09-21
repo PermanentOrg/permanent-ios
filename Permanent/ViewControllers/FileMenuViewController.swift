@@ -46,7 +46,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     var panGestureRecognizer = UIPanGestureRecognizer()
     var scrollViewHeightAnchorConstraint: NSLayoutConstraint!
 
-    var navigationBarHeight: CGFloat?
+    let navigationBarHeight: CGFloat = 150
     var previousYTranslation: CGFloat = 0
     
     private var initialCenter: CGPoint = .zero
@@ -202,8 +202,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             self?.viewModel?.shareVO = nil
             self?.loadSubviews()
             
-            if let scrollViewContentHeight = self?.scrollView.contentSize.height {
-                self?.scrollViewHeightAnchorConstraint.constant = scrollViewContentHeight - 10
+            if let scrollViewContentHeight = self?.scrollView.contentSize.height,
+               let maxScreenHeight = self?.maxScreenHeight(scrollViewContentHeight - 10) {
+                self?.scrollViewHeightAnchorConstraint.constant = maxScreenHeight
             }
         }
     }
@@ -429,7 +430,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         stackView.addArrangedSubview(containerView)
         
-        scrollViewHeightAnchorConstraint.constant += containerView.frame.height + 60
+        scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollViewHeightAnchorConstraint.constant + containerView.frame.height + 65)
     }
     
     func setupMenuView() {
@@ -542,13 +543,27 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             self.shareURL = shareURL
             
             self.loadSubviews()
+            
+            
         })
+    }
+    
+    func maxScreenHeight(_ compareWith: CGFloat) -> CGFloat{
+        min(compareWith,view.frame.height - navigationBarHeight)
     }
     
     @objc func showAllArchivesButtonPressed(_ sender: Any) {
         showAllArchives = true
         
         loadSubviews()
+        view.layoutIfNeeded()
+        scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 50)
+        
+        if scrollViewHeightAnchorConstraint.constant == view.frame.height - navigationBarHeight {
+            scrollView.isScrollEnabled = true
+            gestureRecognizerSwipeDown.isEnabled = true
+            panGestureRecognizer.isEnabled = false
+        }
     }
     
     @objc func menuButtonPressed(_ sender: UIButton) {
@@ -677,11 +692,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             previousYTranslation = translation.y
             
             if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= scrollView.contentSize.height + 50 {
-                if scrollView.contentSize.height + 50 <= view.frame.height - (navigationBarHeight ?? 0) - 65 {
-                    scrollViewHeightAnchorConstraint.constant = scrollView.contentSize.height + 50
-                } else {
-                    scrollViewHeightAnchorConstraint.constant = view.frame.height - (navigationBarHeight ?? 0) - 65
-                }
+                scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 50)
             } else if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 50 {
                 scrollViewHeightAnchorConstraint.constant = scrollViewInitialHeight + 50
             } else {
