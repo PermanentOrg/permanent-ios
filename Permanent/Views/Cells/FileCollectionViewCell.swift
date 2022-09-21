@@ -94,8 +94,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         
-        sharesImageView.isHidden = model.minArchiveVOS.isEmpty
-        sharesImageView.isHidden = sharedFile
+        sharesImageView.isHidden = model.minArchiveVOS.isEmpty || sharedFile
         
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)

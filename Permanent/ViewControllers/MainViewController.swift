@@ -947,6 +947,7 @@ extension MainViewController: FABActionSheetDelegate {
         let vc = FileMenuViewController()
         vc.fileViewModel = file
         vc.menuItems = menuItems
+        
         present(vc, animated: true)
     }
     
