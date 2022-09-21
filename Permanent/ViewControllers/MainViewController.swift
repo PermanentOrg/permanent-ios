@@ -947,6 +947,8 @@ extension MainViewController: FABActionSheetDelegate {
         let vc = FileMenuViewController()
         vc.fileViewModel = file
         vc.menuItems = menuItems
+        vc.navigationBarHeight = navigationController?.navigationBar.frame.height
+        
         present(vc, animated: true)
     }
     

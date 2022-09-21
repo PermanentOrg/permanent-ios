@@ -42,9 +42,15 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     var contentViewBottomConstraint: NSLayoutConstraint!
     let contentView = UIView(frame: .zero)
     
-    var gestureRecognizerSwipeUp = UISwipeGestureRecognizer()
     var gestureRecognizerSwipeDown = UISwipeGestureRecognizer()
+    var panGestureRecognizer = UIPanGestureRecognizer()
     var scrollViewHeightAnchorConstraint: NSLayoutConstraint!
+
+    var navigationBarHeight: CGFloat?
+    var previousYTranslation: CGFloat = 0
+    
+    private var initialCenter: CGPoint = .zero
+    private var scrollViewInitialHeight: CGFloat = .zero
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -78,12 +84,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         contentView.backgroundColor = .white
         contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.layer.cornerRadius = 10
+        contentView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         view.addSubview(contentView)
-        contentViewBottomConstraint = contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: view.frame.height / 3 + 50)
         NSLayoutConstraint.activate([
             contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contentViewBottomConstraint
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     
         let itemThumbImageView = UIImageView()
@@ -109,15 +116,20 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .primary
         containerView.addSubview(headerStackView)
+        containerView.layer.cornerRadius = 10
+        containerView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         contentView.addSubview(containerView)
-
-        gestureRecognizerSwipeUp = UISwipeGestureRecognizer(target: self, action: #selector(swipeUpGesture(_:)))
+        
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
         gestureRecognizerSwipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownGesture(_:)))
-        gestureRecognizerSwipeUp.direction = .up
-        gestureRecognizerSwipeDown.direction = . down
+        
+        gestureRecognizerSwipeDown.direction = .down
         gestureRecognizerSwipeDown.isEnabled = false
-        containerView.addGestureRecognizer(gestureRecognizerSwipeUp)
+        
+        contentView.addGestureRecognizer(panGestureRecognizer)
         containerView.addGestureRecognizer(gestureRecognizerSwipeDown)
+        
+        scrollView.isScrollEnabled = false
 
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
@@ -133,15 +145,14 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         ])
         
         contentView.addSubview(scrollView)
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 30, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: view.frame.height / 3)
+        
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             scrollView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 0),
-            scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
-            scrollViewHeightAnchorConstraint
+            scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
         ])
         
         scrollView.addSubview(stackView)
@@ -155,10 +166,24 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: 16)
         ])
-        
+
         loadSubviews()
         view.layoutIfNeeded()
         
+        contentViewBottomConstraint = contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: scrollView.contentSize.height)
+        scrollViewInitialHeight = scrollView.contentSize.height
+        if scrollView.contentSize.height < view.frame.height / 2 {
+            scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: scrollView.contentSize.height + 50)
+        } else {
+            scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: view.frame.height / 2 + 50)
+        }
+        
+        NSLayoutConstraint.activate([
+            contentViewBottomConstraint,
+            scrollViewHeightAnchorConstraint
+        ])
+        
+        view.layoutIfNeeded()
         viewModel?.getShareLink(option: .retrieve, then: { shareVO, error in
             guard let shareVO = shareVO,
                 shareVO.sharebyURLID != nil,
@@ -176,6 +201,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             self?.shareURL = nil
             self?.viewModel?.shareVO = nil
             self?.loadSubviews()
+            
+            if let scrollViewContentHeight = self?.scrollView.contentSize.height {
+                self?.scrollViewHeightAnchorConstraint.constant = scrollViewContentHeight - 10
+            }
         }
     }
     
@@ -399,6 +428,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         ])
         
         stackView.addArrangedSubview(containerView)
+        
+        scrollViewHeightAnchorConstraint.constant += containerView.frame.height + 60
     }
     
     func setupMenuView() {
@@ -630,19 +661,41 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         dismiss(animated: true)
     }
     
-    @objc func swipeUpGesture(_ sender: UISwipeGestureRecognizer) {
-        gestureRecognizerSwipeUp.isEnabled = false
-        gestureRecognizerSwipeDown.isEnabled = true
-        
-        scrollViewHeightAnchorConstraint.constant = self.view.frame.height - 50 - self.view.safeAreaInsets.top
-        UIView.animate(withDuration: 0.2) {
-            self.view.layoutIfNeeded()
-        }
-        overlayView.alpha = 0
-    }
-    
     @objc func swipeDownGesture(_ sender: UISwipeGestureRecognizer) {
         dismiss(animated: true)
+    }
+    
+    @objc private func didPan(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            initialCenter = contentView.center
+            previousYTranslation = 0
+            
+        case .changed, .cancelled, .ended:
+            let translation = sender.translation(in: view)
+            let deltaTranslation = translation.y - previousYTranslation
+            previousYTranslation = translation.y
+            
+            if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= scrollView.contentSize.height + 50 {
+                if scrollView.contentSize.height + 50 <= view.frame.height - (navigationBarHeight ?? 0) - 65 {
+                    scrollViewHeightAnchorConstraint.constant = scrollView.contentSize.height + 50
+                } else {
+                    scrollViewHeightAnchorConstraint.constant = view.frame.height - (navigationBarHeight ?? 0) - 65
+                }
+            } else if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 50 {
+                scrollViewHeightAnchorConstraint.constant = scrollViewInitialHeight + 50
+            } else {
+                scrollViewHeightAnchorConstraint.constant -= deltaTranslation
+            }
+            if sender.state == .ended {
+                scrollView.isScrollEnabled = true
+                gestureRecognizerSwipeDown.isEnabled = true
+                panGestureRecognizer.isEnabled = false
+            }
+            
+        default:
+            break
+        }
     }
 }
 
