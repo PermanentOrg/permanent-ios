@@ -37,6 +37,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     var shareURL: String?
     
     var menuItems: [MenuItem] = []
+    
+    var showsPermission: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,6 +128,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             self?.viewModel?.shareVO = nil
             self?.loadSubviews()
         }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didCreateShareLinkNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            self?.loadSubviews()
+        }
     }
     
     func loadSubviews() {
@@ -133,7 +139,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             view.removeFromSuperview()
         }
         
-        setupPermissionView()
+        if showsPermission {
+            setupPermissionView()
+        }
         
         if fileViewModel.sharedByArchive != nil {
             setupInitiatedByView()
@@ -357,7 +365,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             stackView.addArrangedSubview(menuItem(withName: "Download to device".localized(), iconName: "Download-1", tag: menuIndex + 1))
         }
         if file.permissions.contains(.create), let menuIndex = menuItems.firstIndex(where: { $0.type == .copy }) {
-            stackView.addArrangedSubview(menuItem(withName: "Copy".localized(), iconName: "Copy", tag: menuIndex + 1))
+            stackView.addArrangedSubview(menuItem(withName: "Copy to another location".localized(), iconName: "Copy", tag: menuIndex + 1))
         }
         if file.permissions.contains(.move), let menuIndex = menuItems.firstIndex(where: { $0.type == .move }) {
             stackView.addArrangedSubview(menuItem(withName: "Move to another location".localized(), iconName: "Move", tag: menuIndex + 1))
@@ -379,12 +387,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
         if file.permissions.contains(.share) {
             if file.permissions.contains(.ownership) && menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
-                // This is dynamic, figure this out
-                if shareURL != nil {
-                    stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "Link Settings", tag: -101))
-                } else {
-                    stackView.addArrangedSubview(menuItem(withName: "Share link via Permanent".localized(), iconName: "Share Alt", tag: -100))
-                }
+                stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "Link Settings", tag: -101))
             }
             
             if file.type.isFolder == false, let menuIndex = menuItems.firstIndex(where: { $0.type == .shareToAnotherApp }) {
@@ -548,12 +551,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     
     func manageLinkAction() {
         guard
-            let manageLinkVC = UIViewController.create(withIdentifier: .manageLink, from: .share) as? ManageLinkViewController
+            let manageLinkVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
         else {
             return
         }
         
-        manageLinkVC.shareViewModel = viewModel
+        manageLinkVC.viewModel = viewModel
         present(manageLinkVC, animated: true)
     }
     

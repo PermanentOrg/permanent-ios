@@ -225,13 +225,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     
     func updateSharingInfo(withModel model: FileViewModel) {
         if model.sharedByArchive != nil {
-            guard let archive = model.sharedByArchive,
-                let thumbnailUrl = URL(string: archive.thumbnail) else { return }
-            
-            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-            imageView.constraintToSquare(20)
-            imageView.sd_setImage(with: thumbnailUrl)
-            sharingInfoStackView.addArrangedSubview(imageView)
+            guard let archive = model.sharedByArchive else { return }
             
             let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
             extraLabel.font = Text.style8.font
@@ -240,7 +234,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             extraLabel.text = "The \(archive.name) Archive"
             sharingInfoStackView.addArrangedSubview(extraLabel)
         } else {
-            let maxArchivesCount = 6
+            let maxArchivesCount = 3
             model.minArchiveVOS[0 ..< min(model.minArchiveVOS.count, maxArchivesCount)].forEach { archiveVO in
                 guard let thumbnailUrl = URL(string: archiveVO.thumbnail) else { return }
                 

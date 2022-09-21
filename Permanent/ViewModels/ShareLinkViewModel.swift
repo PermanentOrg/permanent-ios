@@ -12,6 +12,7 @@ typealias ShareLinkResponse = (SharebyURLVOData?, String?) -> Void
 class ShareLinkViewModel: NSObject, ViewModelInterface {
     static let didRevokeShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didRevokeShareLinkNotif")
     static let didUpdateSharesNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateSharesNotifName")
+    static let didCreateShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didCreateShareLinkNotifName")
     
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
@@ -78,6 +79,10 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             
                 self.shareVO = model.results.first?.data?.first?.shareByURLVO
                 handler(self.shareVO, nil)
+                
+                if option == .create {
+                    NotificationCenter.default.post(name: Self.didCreateShareLinkNotifName, object: self, userInfo: nil)
+                }
                 
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
@@ -158,8 +163,8 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     func approveButtonAction(minArchiveVO: MinArchiveVO, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
         var newShareVO = minArchiveVO
         newShareVO.accessRole = AccessRole.apiRoleForValue(accessRole.groupName)
-        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareArchiveRequest(archiveVO: newShareVO))
         
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareArchiveRequest(archiveVO: newShareVO))
         acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
@@ -198,12 +203,90 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             }
         }
     }
+        
+    func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
+        var newShareVO = shareVO
+        newShareVO.accessRole = AccessRole.apiRoleForValue(accessRole.groupName)
+        let acceptShareRequestOperation = APIOperation(AccountEndpoint.updateShareRequest(shareVO: newShareVO))
+        
+        acceptShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    )
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                if model.isSuccessful {
+                    handler(.success)
+                    if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == newShareVO.archiveID }) {
+                        self.fileViewModel.minArchiveVOS[idx].accessRole = newShareVO.accessRole
+                    }
+                    NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
+                } else {
+                    if model.results[0].message[0] == "warning.share.no_share_self" {
+                        handler(.error(message: "You cannot share an item with yourself".localized()))
+                    } else {
+                        handler(.error(message: .errorMessage))
+                    }
+                }
+                
+                return
+                
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+                
+            default:
+                break
+            }
+        }
+    }
 
     func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void) {
         guard let folderLinkId = minArchiveVO.folderLinkID else { return }
         
         let archiveId = minArchiveVO.archiveID
         let shareId = minArchiveVO.shareId
+        
+        let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
+        
+        denyShareRequestOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                handler(.success)
+                NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
+                return
+                
+            case .error:
+                handler(.error(message: .errorMessage))
+                return
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
+        guard let folderLinkId = shareVO.folderLinkID,
+              let archiveId = shareVO.archiveID,
+              let shareId = shareVO.shareID else { return }
         
         let denyShareRequestOperation = APIOperation(AccountEndpoint.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId))
         
