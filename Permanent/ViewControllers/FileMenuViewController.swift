@@ -356,9 +356,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         })
         
         let sharedWithLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        sharedWithLabel.text = "Shared with (\(fileViewModel.minArchiveVOS.count))"
+        let attributedString = NSMutableAttributedString(string: "Shared with (\(fileViewModel.minArchiveVOS.count))", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.dustyGray], range: NSRange(location: 0, length: 11))
+        sharedWithLabel.attributedText = attributedString
         sharedWithLabel.font = Text.style7.font
-        sharedWithLabel.textColor = .dustyGray
         NSLayoutConstraint.activate([
             sharedWithLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
