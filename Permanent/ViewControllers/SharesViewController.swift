@@ -412,9 +412,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
                 styled: .simpleWithDescription,
-                withTitle: "Navigate Back",
-                description: "By navigating out of the current folder, you will lose your file selection.",
-                positiveButtonTitle: "Navigate".localized(),
+                withTitle: "Discard selection",
+                description: "Are you sure you want to discard selection and navigate back?".localized(),
+                positiveButtonTitle: "Yes, discard selected file".localized(),
                 positiveAction: {
                     self.actionDialog?.dismiss()
                     self.viewModel?.fileAction = .none
@@ -422,6 +422,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
                 },
+                cancelButtonColor: .gray,
                 overlayView: overlayView
             )
         } else {

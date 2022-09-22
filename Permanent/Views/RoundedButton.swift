@@ -35,8 +35,8 @@ class RoundedButton: CustomButton {
     
     override func setup() {
         backgroundColor = UIColor.tangerine
-        titleLabel?.font = Text.style.font
-        titleLabel?.textAlignment = Text.style.alignment
+        titleLabel?.font = Text.style4.font
+        titleLabel?.textAlignment = Text.style4.alignment
         setTitleColor(UIColor.white, for: .normal)
         layer.cornerRadius = Constants.Design.customButtonCornerRadius
         heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.Design.customButtonHeight).isActive = true
