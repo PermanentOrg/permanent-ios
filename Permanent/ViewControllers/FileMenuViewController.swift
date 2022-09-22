@@ -363,7 +363,41 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         NSLayoutConstraint.activate([
             sharedWithLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
-        subviews.append(sharedWithLabel)
+
+        let manageSharingLabel = UILabel(frame: .zero)
+        manageSharingLabel.text = "Manage sharing".localized()
+        manageSharingLabel.font = Text.style17.font
+        manageSharingLabel.textColor = .primary
+        
+        let manageSharingImageView = UIImageView(image: UIImage(named: "Link Settings")?.templated)
+        manageSharingImageView.tintColor = .primary
+        manageSharingImageView.contentMode = .scaleAspectFit
+        
+        let arrangedSubviews: [UIView]
+        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
+            arrangedSubviews = [sharedWithLabel, manageSharingLabel, manageSharingImageView]
+        } else {
+            arrangedSubviews = [sharedWithLabel]
+        }
+        
+        let headerStackView = UIStackView(arrangedSubviews: arrangedSubviews)
+        headerStackView.axis = .horizontal
+        headerStackView.spacing = 8
+        
+        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
+            let manageSharingButton = UIButton(type: .custom)
+            manageSharingButton.translatesAutoresizingMaskIntoConstraints = false
+            manageSharingButton.addTarget(self, action: #selector(manageLinkAction), for: .touchUpInside)
+            headerStackView.addSubview(manageSharingButton)
+            NSLayoutConstraint.activate([
+                manageSharingButton.leadingAnchor.constraint(equalTo: manageSharingLabel.leadingAnchor, constant: 0),
+                manageSharingButton.trailingAnchor.constraint(equalTo: manageSharingImageView.trailingAnchor, constant: 0),
+                manageSharingButton.topAnchor.constraint(equalTo: manageSharingLabel.topAnchor, constant: 0),
+                manageSharingButton.bottomAnchor.constraint(equalTo: manageSharingLabel.bottomAnchor, constant: 0)
+            ])
+        }
+        
+        subviews.append(headerStackView)
         
         let maxArchivesShown = showAllArchives ? fileViewModel.minArchiveVOS.count : min(fileViewModel.minArchiveVOS.count, 2)
         for (idx, archive) in fileViewModel.minArchiveVOS[0 ..< maxArchivesShown].enumerated() {
@@ -515,7 +549,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             stackView.addArrangedSubview(menuItem(withName: "Get Link".localized(), iconName: "Get Link", tag: menuIndex + 1))
         }
         if file.permissions.contains(.share) {
-            if file.permissions.contains(.ownership) && menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
+            if file.permissions.contains(.ownership) && menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil && fileViewModel.minArchiveVOS.isEmpty {
                 stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "Link Settings", tag: -101))
             }
             
@@ -577,7 +611,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         return containerView
     }
     
-    func manageLinkAction() {
+    @objc func manageLinkAction() {
         guard
             let manageLinkVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
         else {
