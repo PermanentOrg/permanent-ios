@@ -359,6 +359,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         sharedWithLabel.text = "Shared with (\(fileViewModel.minArchiveVOS.count))"
         sharedWithLabel.font = Text.style7.font
         sharedWithLabel.textColor = .dustyGray
+        NSLayoutConstraint.activate([
+            sharedWithLabel.heightAnchor.constraint(equalToConstant: 40)
+        ])
         subviews.append(sharedWithLabel)
         
         let maxArchivesShown = showAllArchives ? fileViewModel.minArchiveVOS.count : min(fileViewModel.minArchiveVOS.count, 2)
@@ -498,9 +501,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         if file.permissions.contains(.move), let menuIndex = menuItems.firstIndex(where: { $0.type == .move }) {
             stackView.addArrangedSubview(menuItem(withName: "Move to another location".localized(), iconName: "Move", tag: menuIndex + 1))
         }
-        if file.permissions.contains(.delete), let menuIndex = menuItems.firstIndex(where: { $0.type == .delete }) {
-            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1))
-        }
         if let menuIndex = menuItems.firstIndex(where: { $0.type == .unshare }) {
             stackView.addArrangedSubview(menuItem(withName: "Unshare".localized(), iconName: "Delete-1", tag: menuIndex + 1))
         }
@@ -522,10 +522,18 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
                 stackView.addArrangedSubview(menuItem(withName: "Share to Another App".localized(), iconName: "Share Other", tag: menuIndex + 1))
             }
         }
+        if file.permissions.contains(.delete), let menuIndex = menuItems.firstIndex(where: { $0.type == .delete }) {
+            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1, color: .deepRed))
+        }
     }
     
-    func menuItem(withName name: String, iconName: String, tag: Int) -> UIView {
-        let imageView = UIImageView(image: UIImage(named: iconName) ?? .placeholder)
+    func menuItem(withName name: String, iconName: String, tag: Int, color: UIColor? = nil) -> UIView {
+        let imageView = UIImageView(image: UIImage(named: iconName)?.templated ?? .placeholder)
+        if let color = color {
+            imageView.tintColor = color
+        } else {
+            imageView.tintColor = .primary
+        }
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 30)
@@ -534,6 +542,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         nameLabel.text = name
         nameLabel.font = Text.style7.font
+        if let color = color {
+            nameLabel.textColor = color
+        }
         
         let itemStackView = UIStackView(arrangedSubviews: [imageView, nameLabel])
         itemStackView.axis = .horizontal
