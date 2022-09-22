@@ -429,23 +429,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             accessRoleLabel.topAnchor.constraint(equalTo: roleBGView.topAnchor, constant: 0),
             accessRoleLabel.bottomAnchor.constraint(equalTo: roleBGView.bottomAnchor, constant: 0)
         ])
-
-        let archiveButton = UIButton(type: .custom)
-        archiveButton.tag = tag
-        archiveButton.translatesAutoresizingMaskIntoConstraints = false
-        archiveButton.addTarget(self, action: #selector(editArchive(_:)), for: .touchUpInside)
         
         let archiveStackView = UIStackView(arrangedSubviews: [imageView, archiveNameLabel, roleContainer])
         archiveStackView.axis = .horizontal
         archiveStackView.spacing = 8
         archiveStackView.translatesAutoresizingMaskIntoConstraints = false
-        archiveStackView.addSubview(archiveButton)
         NSLayoutConstraint.activate([
-            archiveStackView.heightAnchor.constraint(equalToConstant: 30),
-            archiveButton.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 0),
-            archiveButton.trailingAnchor.constraint(equalTo: archiveNameLabel.trailingAnchor, constant: 0),
-            archiveButton.topAnchor.constraint(equalTo: archiveStackView.topAnchor, constant: 0),
-            archiveButton.bottomAnchor.constraint(equalTo: archiveStackView.bottomAnchor, constant: 0)
+            archiveStackView.heightAnchor.constraint(equalToConstant: 30)
         ])
         
         return archiveStackView
