@@ -242,6 +242,22 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         setupMenuView()
     }
     
+    func addSeparatorView() {
+        let separatorContainer = UIView()
+        let bottomSeparator = UIView()
+        bottomSeparator.translatesAutoresizingMaskIntoConstraints = false
+        bottomSeparator.backgroundColor = .lightGray
+        separatorContainer.addSubview(bottomSeparator)
+        
+        NSLayoutConstraint.activate([
+            bottomSeparator.leadingAnchor.constraint(equalTo: separatorContainer.leadingAnchor, constant: -16),
+            bottomSeparator.trailingAnchor.constraint(equalTo: separatorContainer.trailingAnchor, constant: 16),
+            bottomSeparator.bottomAnchor.constraint(equalTo: separatorContainer.bottomAnchor, constant: 0),
+            bottomSeparator.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale)
+        ])
+        stackView.addArrangedSubview(separatorContainer)
+    }
+    
     func setupPermissionView() {
         let permissionLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionLabel.text = "Permission:"
@@ -330,6 +346,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(showAllArchivesButtonPressed(_:)), for: .touchUpInside)
             containerView.addSubview(button)
+            
             NSLayoutConstraint.activate([
                 button.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
                 button.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
@@ -342,11 +359,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
                 imageView.widthAnchor.constraint(equalToConstant: 30),
                 label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
                 label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
-                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0)
             ])
             
             stackView.addArrangedSubview(containerView)
         }
+        
+        addSeparatorView()
     }
     
     func reloadArchivesStackView() {
@@ -449,15 +468,11 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .clear
-        //containerView.layer.cornerRadius = 8
-        //containerView.layer.borderWidth = 1
-        //containerView.layer.borderColor = UIColor.primary.cgColor
         
         let imageView = UIImageView(image: UIImage(named: "Get Link")?.templated ?? .placeholder.templated)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .lightGray
         imageView.contentMode = .scaleAspectFit
-        //imageView.alpha = 0.5
         containerView.addSubview(imageView)
         
         let linkLabel = UILabel()
@@ -491,11 +506,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         shareButton.addTarget(self, action: #selector(shareLinkButtonPressed(_:)), for: .touchUpInside)
         containerView.addSubview(shareButton)
         
-        let bottomSeparator = UIView()
-        bottomSeparator.translatesAutoresizingMaskIntoConstraints = false
-        bottomSeparator.backgroundColor = .lightGray
-        containerView.addSubview(bottomSeparator)
-        
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
             imageView.widthAnchor.constraint(equalToConstant: 30),
@@ -514,14 +524,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             shareButton.trailingAnchor.constraint(equalTo: shareImageView.trailingAnchor, constant: 0),
             shareButton.topAnchor.constraint(equalTo: shareImageView.topAnchor, constant: 0),
             shareButton.bottomAnchor.constraint(equalTo: shareImageView.bottomAnchor, constant: 0),
-            bottomSeparator.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: -16),
-            bottomSeparator.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 16),
-            bottomSeparator.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
-            bottomSeparator.heightAnchor.constraint(equalToConstant: 1),
-            containerView.heightAnchor.constraint(equalToConstant: 60)
+            containerView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         stackView.addArrangedSubview(containerView)
+        
+        addSeparatorView()
         
         scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollViewHeightAnchorConstraint.constant + containerView.frame.height + 65)
     }
