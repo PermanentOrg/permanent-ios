@@ -482,22 +482,25 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     func setupShareLink() {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.backgroundColor = UIColor(white: 0.9, alpha: 1)
-        containerView.layer.cornerRadius = 8
-        containerView.layer.borderWidth = 1
-        containerView.layer.borderColor = UIColor.primary.cgColor
+        containerView.backgroundColor = .clear
+        //containerView.layer.cornerRadius = 8
+        //containerView.layer.borderWidth = 1
+        //containerView.layer.borderColor = UIColor.primary.cgColor
         
         let imageView = UIImageView(image: UIImage(named: "Get Link")?.templated ?? .placeholder.templated)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .primary
+        imageView.tintColor = .lightGray
         imageView.contentMode = .scaleAspectFit
+        //imageView.alpha = 0.5
         containerView.addSubview(imageView)
         
         let linkLabel = UILabel()
         linkLabel.translatesAutoresizingMaskIntoConstraints = false
         linkLabel.text = shareURL
         linkLabel.font = Text.style13.font
-        linkLabel.textColor = .primary
+        linkLabel.textColor = .mainPurple
+        linkLabel.textAlignment = .left
+        linkLabel.minimumScaleFactor = 0.7
         containerView.addSubview(linkLabel)
         
         let button = UIButton(type: .custom)
@@ -505,18 +508,51 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         button.addTarget(self, action: #selector(shareLinkButtonPressed(_:)), for: .touchUpInside)
         containerView.addSubview(button)
         
+        var shareImageView: UIImageView = UIImageView()
+        if #available(iOS 13.0, *) {
+            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light, scale: .small)
+            shareImageView = UIImageView(image: UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig)?.templated)
+        } else {
+            shareImageView = UIImageView(image: UIImage(named: "share")?.templated ?? .placeholder.templated)
+        }
+        shareImageView.translatesAutoresizingMaskIntoConstraints = false
+        shareImageView.tintColor = .primary
+        shareImageView.contentMode = .scaleAspectFit
+        containerView.addSubview(shareImageView)
+        
+        let shareButton = UIButton(type: .custom)
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
+        shareButton.addTarget(self, action: #selector(shareLinkButtonPressed(_:)), for: .touchUpInside)
+        containerView.addSubview(shareButton)
+        
+        let bottomSeparator = UIView()
+        bottomSeparator.translatesAutoresizingMaskIntoConstraints = false
+        bottomSeparator.backgroundColor = .lightGray
+        containerView.addSubview(bottomSeparator)
+        
         NSLayoutConstraint.activate([
-            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
             imageView.widthAnchor.constraint(equalToConstant: 30),
             imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 0),
             imageView.trailingAnchor.constraint(equalTo: linkLabel.leadingAnchor, constant: -8),
-            linkLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             linkLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 0),
-            button.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
-            button.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
-            button.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
-            button.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
-            containerView.heightAnchor.constraint(equalToConstant: 50)
+            button.leadingAnchor.constraint(equalTo: linkLabel.leadingAnchor, constant: 0),
+            button.trailingAnchor.constraint(equalTo: linkLabel.trailingAnchor, constant: 0),
+            button.topAnchor.constraint(equalTo: linkLabel.topAnchor, constant: 0),
+            button.bottomAnchor.constraint(equalTo: linkLabel.bottomAnchor, constant: 0),
+            shareImageView.leadingAnchor.constraint(equalTo: linkLabel.trailingAnchor, constant: 16),
+            shareImageView.widthAnchor.constraint(equalToConstant: 20),
+            shareImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 0),
+            shareImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
+            shareButton.leadingAnchor.constraint(equalTo: shareImageView.leadingAnchor, constant: 0),
+            shareButton.trailingAnchor.constraint(equalTo: shareImageView.trailingAnchor, constant: 0),
+            shareButton.topAnchor.constraint(equalTo: shareImageView.topAnchor, constant: 0),
+            shareButton.bottomAnchor.constraint(equalTo: shareImageView.bottomAnchor, constant: 0),
+            bottomSeparator.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: -16),
+            bottomSeparator.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 16),
+            bottomSeparator.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+            bottomSeparator.heightAnchor.constraint(equalToConstant: 1),
+            containerView.heightAnchor.constraint(equalToConstant: 60)
         ])
         
         stackView.addArrangedSubview(containerView)
