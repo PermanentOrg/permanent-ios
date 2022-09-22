@@ -272,11 +272,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     func setupPermissionView() {
         let permissionLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionLabel.text = "Permission:"
-        permissionLabel.font = Text.style17.font
+        permissionLabel.font = Text.style7.font
+        permissionLabel.textColor = UIColor.dustyGray
         
         let permissionValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionValueLabel.text = fileViewModel.accessRole.groupName
         permissionValueLabel.font = Text.style8.font
+        permissionValueLabel.textColor = .dustyGray
         
         let subStackView = UIStackView(arrangedSubviews: [permissionLabel, permissionValueLabel])
         subStackView.axis = .vertical
@@ -286,16 +288,21 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             subStackView.widthAnchor.constraint(equalToConstant: stackView.frame.width)
         ])
         stackView.addArrangedSubview(subStackView)
+        
+        addSeparatorView()
     }
     
     func setupInitiatedByView() {
         let initiatedLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         initiatedLabel.text = "Initiated by:"
-        initiatedLabel.font = Text.style17.font
+        initiatedLabel.font = Text.style7.font
+        initiatedLabel.textColor = UIColor.dustyGray
         stackView.addArrangedSubview(initiatedLabel)
         
         let imageView = UIImageView(image: UIImage.profile)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 30)
         ])
@@ -306,6 +313,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let initiatedValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         initiatedValueLabel.text = "The \(fileViewModel.sharedByArchive?.name ?? "") Archive"
         initiatedValueLabel.font = Text.style8.font
+        initiatedValueLabel.textColor = .dustyGray
         
         let itemStackView = UIStackView(arrangedSubviews: [imageView, initiatedValueLabel])
         itemStackView.axis = .horizontal
@@ -323,6 +331,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             subStackView.widthAnchor.constraint(equalToConstant: stackView.frame.width)
         ])
         stackView.addArrangedSubview(subStackView)
+        
+        addSeparatorView()
     }
     
     func setupSharedWithView() {
@@ -456,6 +466,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     func archiveStackView(withArchiveName name: String, role: String, imagePath: String, tag: Int) -> UIView {
         let imageView = UIImageView(image: UIImage.profile)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 30)
         ])
