@@ -110,6 +110,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         doneButton.setTitleColor(.white, for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonPressed(_:)), for: .touchUpInside)
         
+        let handleBar = UIView()
+        handleBar.translatesAutoresizingMaskIntoConstraints = false
+        handleBar.alpha = 0.5
+        handleBar.backgroundColor = .white
+        handleBar.layer.cornerRadius = 2
+        
         let headerStackView = UIStackView(arrangedSubviews: [itemThumbImageView, itemNameLabel, doneButton])
         headerStackView.translatesAutoresizingMaskIntoConstraints = false
         headerStackView.spacing = 8
@@ -118,6 +124,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.backgroundColor = .primary
         containerView.addSubview(headerStackView)
+        containerView.addSubview(handleBar)
         containerView.layer.cornerRadius = 10
         containerView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         contentView.addSubview(containerView)
@@ -137,9 +144,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            handleBar.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            handleBar.bottomAnchor.constraint(equalTo: headerStackView.topAnchor, constant: -8),
+            handleBar.centerXAnchor.constraint(equalTo: containerView.centerXAnchor, constant: 0),
+            handleBar.heightAnchor.constraint(equalToConstant: 4),
+            handleBar.widthAnchor.constraint(equalToConstant: 32),
             headerStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             headerStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            headerStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
             headerStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
             headerStackView.heightAnchor.constraint(equalToConstant: 50),
             itemThumbImageView.widthAnchor.constraint(equalToConstant: 30),
@@ -388,7 +399,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         manageSharingLabel.font = Text.style17.font
         manageSharingLabel.textColor = .primary
         
-        let manageSharingImageView = UIImageView(image: UIImage(named: "Link Settings")?.templated)
+        let manageSharingImageView = UIImageView(image: UIImage(named: "manageSharing")?.templated)
         manageSharingImageView.tintColor = .primary
         manageSharingImageView.contentMode = .scaleAspectFit
         
@@ -594,7 +605,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
         if file.permissions.contains(.share) {
             if file.permissions.contains(.ownership) && menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil && fileViewModel.minArchiveVOS.isEmpty {
-                stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "Link Settings", tag: -101))
+                stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "manageSharing", tag: -101))
             }
             
             if file.type.isFolder == false, let menuIndex = menuItems.firstIndex(where: { $0.type == .shareToAnotherApp }) {
@@ -613,6 +624,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         } else {
             imageView.tintColor = .primary
         }
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 30)
