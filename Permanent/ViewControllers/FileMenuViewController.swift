@@ -305,18 +305,47 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
         
         if fileViewModel.minArchiveVOS.count > 2 && showAllArchives == false {
+            let containerView = UIView()
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            
+            var image: UIImage? = nil
+            if #available(iOS 13.0, *) {
+                image = UIImage(systemName: "chevron.down")?.templated
+            }
+            
+            let imageView = UIImageView(image: image)
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            imageView.tintColor = .primary
+            imageView.contentMode = .scaleAspectFit
+            containerView.addSubview(imageView)
+            
+            let label = UILabel(frame: CGRect.zero)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = "View all".localized()
+            label.textColor = .primary
+            label.font = Text.style17.font
+            containerView.addSubview(label)
+            
             let button = UIButton(type: .custom)
-            button.setTitle("Shared with \(fileViewModel.minArchiveVOS.count - 2) more archives", for: .normal)
-            button.setTitleColor(.primary, for: .normal)
-            button.setFont(Text.style13.font)
-            button.layer.cornerRadius = 8
-            button.layer.borderWidth = 1
-            button.layer.borderColor = UIColor.primary.cgColor
+            button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(showAllArchivesButtonPressed(_:)), for: .touchUpInside)
+            containerView.addSubview(button)
             NSLayoutConstraint.activate([
-                button.heightAnchor.constraint(equalToConstant: 50)
+                button.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+                button.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
+                button.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+                button.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+                button.heightAnchor.constraint(equalToConstant: 50),
+                imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+                imageView.trailingAnchor.constraint(equalTo: label.leadingAnchor, constant: -8),
+                imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 0),
+                imageView.widthAnchor.constraint(equalToConstant: 30),
+                label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
+                label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
+                label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
             ])
-            stackView.addArrangedSubview(button)
+            
+            stackView.addArrangedSubview(containerView)
         }
     }
     
@@ -327,13 +356,16 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         })
         
         let sharedWithLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        sharedWithLabel.text = "Shared with:"
-        sharedWithLabel.font = Text.style17.font
+        sharedWithLabel.text = "Shared with (\(fileViewModel.minArchiveVOS.count))"
+        sharedWithLabel.font = Text.style7.font
+        sharedWithLabel.textColor = .dustyGray
         subviews.append(sharedWithLabel)
         
         let maxArchivesShown = showAllArchives ? fileViewModel.minArchiveVOS.count : min(fileViewModel.minArchiveVOS.count, 2)
         for (idx, archive) in fileViewModel.minArchiveVOS[0 ..< maxArchivesShown].enumerated() {
-            let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", imagePath: archive.thumbnail, tag: idx + 1)
+            let accessRole = AccessRole.roleForValue(archive.accessRole).groupName
+            
+            let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", role: accessRole, imagePath: archive.thumbnail, tag: idx + 1)
             subviews.append(archiveStackView)
         }
         
@@ -353,7 +385,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
     }
     
-    func archiveStackView(withArchiveName name: String, imagePath: String, tag: Int) -> UIView {
+    func archiveStackView(withArchiveName name: String, role: String, imagePath: String, tag: Int) -> UIView {
         let imageView = UIImageView(image: UIImage.profile)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -366,24 +398,44 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let archiveNameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         archiveNameLabel.text = name
         archiveNameLabel.font = Text.style7.font
+        archiveNameLabel.textColor = .dustyGray
         
-        let removeButton = UIButton(type: .custom)
-        removeButton.translatesAutoresizingMaskIntoConstraints = false
-        removeButton.setImage(UIImage.close.templated, for: .normal)
-        removeButton.imageView?.tintColor = .doveGray
-        removeButton.imageView?.contentMode = .scaleAspectFit
-        removeButton.tag = tag
-        removeButton.addTarget(self, action: #selector(removeArchive(_:)), for: .touchUpInside)
+        let roleContainer = UIView(frame: .zero)
+        roleContainer.translatesAutoresizingMaskIntoConstraints = false
+        
+        let roleBGView = UIView(frame: .zero)
+        roleBGView.translatesAutoresizingMaskIntoConstraints = false
+        roleBGView.backgroundColor = .paleYellow
+        roleBGView.layer.cornerRadius = 3
+        roleBGView.layer.masksToBounds = true
+        roleContainer.addSubview(roleBGView)
+        
+        let accessRoleLabel = UILabel(frame: .zero)
+        accessRoleLabel.translatesAutoresizingMaskIntoConstraints = false
+        accessRoleLabel.text = role.uppercased()
+        accessRoleLabel.textColor = .primary
+        accessRoleLabel.font = Text.style30.font
+        accessRoleLabel.textAlignment = .center
+        accessRoleLabel.setContentCompressionResistancePriority(UILayoutPriority(255), for: .horizontal)
+        accessRoleLabel.setContentHuggingPriority(UILayoutPriority(255), for: .horizontal)
+        roleContainer.addSubview(accessRoleLabel)
         NSLayoutConstraint.activate([
-            removeButton.widthAnchor.constraint(equalToConstant: 20)
+            accessRoleLabel.leadingAnchor.constraint(equalTo: roleContainer.leadingAnchor, constant: 0),
+            accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: -8),
+            accessRoleLabel.centerYAnchor.constraint(equalTo: roleContainer.centerYAnchor, constant: 0),
+            accessRoleLabel.heightAnchor.constraint(equalToConstant: 18),
+            accessRoleLabel.leadingAnchor.constraint(equalTo: roleBGView.leadingAnchor, constant: 8),
+            accessRoleLabel.trailingAnchor.constraint(equalTo: roleBGView.trailingAnchor, constant: -8),
+            accessRoleLabel.topAnchor.constraint(equalTo: roleBGView.topAnchor, constant: 0),
+            accessRoleLabel.bottomAnchor.constraint(equalTo: roleBGView.bottomAnchor, constant: 0)
         ])
-        
+
         let archiveButton = UIButton(type: .custom)
         archiveButton.tag = tag
         archiveButton.translatesAutoresizingMaskIntoConstraints = false
         archiveButton.addTarget(self, action: #selector(editArchive(_:)), for: .touchUpInside)
         
-        let archiveStackView = UIStackView(arrangedSubviews: [imageView, archiveNameLabel, removeButton])
+        let archiveStackView = UIStackView(arrangedSubviews: [imageView, archiveNameLabel, roleContainer])
         archiveStackView.axis = .horizontal
         archiveStackView.spacing = 8
         archiveStackView.translatesAutoresizingMaskIntoConstraints = false
