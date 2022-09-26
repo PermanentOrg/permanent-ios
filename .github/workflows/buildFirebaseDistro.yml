@@ -1,13 +1,13 @@
-name: PR Automated tests
+name: Deploy Firebase Beta
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     branches: [ "Development" ]
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    name: Build and deploy a beta build to Firebase Distribution
     runs-on: macos-latest
 
     steps:
@@ -18,7 +18,7 @@ jobs:
         with: 
           ruby-version: '2.6.8'
           bundler-cache: true
-      - name: Run Fastlane Tests
+      - name: Run Fastlane Beta
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
           REVERSED_CLIENT_ID: ${{ secrets.IOS_FIREBASE_REVERSED_CLIENT_ID }}
@@ -40,4 +40,4 @@ jobs:
           FIREBASEAPPDISTRO_APP: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
           FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
           FIREBASEAPPDISTRO_CLI_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
-        run: bundle exec fastlane tests
+        run: bundle exec fastlane beta
