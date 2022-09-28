@@ -49,7 +49,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     var scrollViewHeightAnchorConstraint: NSLayoutConstraint!
 
     let navigationBarHeight: CGFloat = 150
-    var previousYTranslation: CGFloat = 0
+    private var previousYTranslation: CGFloat = 0
+    private var previousYChange: CGFloat = 0
+    private var windowSizeChange: Bool = false
     
     private var initialCenter: CGPoint = .zero
     private var scrollViewInitialHeight: CGFloat = .zero
@@ -847,6 +849,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let translation = sender.translation(in: view)
         let deltaTranslation = translation.y - previousYTranslation
         previousYTranslation = translation.y
+        if deltaTranslation != previousYChange && deltaTranslation != .zero {
+            previousYChange = deltaTranslation
+        }
         
         switch sender.state {
         case .began:
@@ -854,21 +859,24 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             previousYTranslation = 0
             
         case .changed, .cancelled:
-            
-            
             if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= scrollView.contentSize.height + 70 {
+                windowSizeChange = scrollViewHeightAnchorConstraint.constant != maxScreenHeight(scrollView.contentSize.height + 70)
                 scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 70)
             } else if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 70 {
+                windowSizeChange = scrollViewHeightAnchorConstraint.constant != scrollViewInitialHeight + 70
                 scrollViewHeightAnchorConstraint.constant = scrollViewInitialHeight + 70
             } else {
                 scrollViewHeightAnchorConstraint.constant -= deltaTranslation
+                windowSizeChange = true
             }
             
         case .ended:
             if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 70 {
-                if scrollViewHeightAnchorConstraint.constant == scrollViewInitialHeight + 70 {
+                if scrollViewHeightAnchorConstraint.constant == scrollViewInitialHeight + 70  && previousYChange > 5 && !windowSizeChange {
                     dismiss(animated: true)
                 }
+                previousYChange = 0
+                windowSizeChange = false
             }
             
         default:
