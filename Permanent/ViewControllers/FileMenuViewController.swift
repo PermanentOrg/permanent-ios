@@ -43,8 +43,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     let overlayView = UIView(frame: .zero)
     var contentViewBottomConstraint: NSLayoutConstraint!
     let contentView = UIView(frame: .zero)
-    
-    var gestureRecognizerSwipeDown = UISwipeGestureRecognizer()
+
     var panGestureRecognizer = UIPanGestureRecognizer()
     var scrollViewHeightAnchorConstraint: NSLayoutConstraint!
 
@@ -132,14 +131,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         contentView.addSubview(containerView)
         
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-        gestureRecognizerSwipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownGesture(_:)))
-        
-        gestureRecognizerSwipeDown.direction = .down
         panGestureRecognizer.isEnabled = true
-        gestureRecognizerSwipeDown.isEnabled = false
-        
         contentView.addGestureRecognizer(panGestureRecognizer)
-        containerView.addGestureRecognizer(gestureRecognizerSwipeDown)
         
         scrollView.isScrollEnabled = false
 
@@ -726,7 +719,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         if scrollViewHeightAnchorConstraint.constant == view.frame.height - navigationBarHeight {
             scrollView.isScrollEnabled = true
-            gestureRecognizerSwipeDown.isEnabled = true
             panGestureRecognizer.isEnabled = false
         }
     }
@@ -841,22 +833,19 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         dismiss(animated: true)
     }
     
-    @objc func swipeDownGesture(_ sender: UISwipeGestureRecognizer) {
-        dismiss(animated: true)
-    }
-    
     @objc private func didPan(_ sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
         let deltaTranslation = translation.y - previousYTranslation
         previousYTranslation = translation.y
         if deltaTranslation != previousYChange && deltaTranslation != .zero {
-            previousYChange = deltaTranslation
+            previousYChange += deltaTranslation
         }
         
         switch sender.state {
         case .began:
             initialCenter = contentView.center
             previousYTranslation = 0
+            previousYChange = 0
             
         case .changed, .cancelled:
             if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= scrollView.contentSize.height + 70 {
@@ -872,7 +861,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             
         case .ended:
             if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 70 {
-                if scrollViewHeightAnchorConstraint.constant == scrollViewInitialHeight + 70  && previousYChange > 5 && !windowSizeChange {
+                if scrollViewHeightAnchorConstraint.constant == scrollViewInitialHeight + 70  && previousYChange > 20 && !windowSizeChange {
                     dismiss(animated: true)
                 }
                 previousYChange = 0
