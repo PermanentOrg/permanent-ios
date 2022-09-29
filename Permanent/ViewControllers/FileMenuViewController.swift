@@ -49,8 +49,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
 
     let navigationBarHeight: CGFloat = 150
     private var previousYTranslation: CGFloat = 0
-    private var previousYChange: CGFloat = 0
-    private var windowSizeChange: Bool = false
+    private var isExpanded: Bool = false
     
     private var initialCenter: CGPoint = .zero
     private var scrollViewInitialHeight: CGFloat = .zero
@@ -132,9 +131,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
         panGestureRecognizer.isEnabled = true
+        panGestureRecognizer.delegate = self
         contentView.addGestureRecognizer(panGestureRecognizer)
-        
-        scrollView.isScrollEnabled = false
 
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
@@ -180,12 +178,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         view.layoutIfNeeded()
         
         contentViewBottomConstraint = contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: scrollView.contentSize.height)
-        scrollViewInitialHeight = scrollView.contentSize.height
-        if scrollView.contentSize.height < view.frame.height / 2 {
+        if scrollView.contentSize.height < view.frame.height / 3 {
             scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: scrollView.contentSize.height + 70)
         } else {
-            scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: view.frame.height / 2 + 70)
+            scrollViewHeightAnchorConstraint = scrollView.heightAnchor.constraint(equalToConstant: view.frame.height / 3 + 70)
         }
+        scrollViewInitialHeight = scrollViewHeightAnchorConstraint.constant
         
         NSLayoutConstraint.activate([
             contentViewBottomConstraint,
@@ -707,7 +705,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     func maxScreenHeight(_ compareWith: CGFloat) -> CGFloat{
-        min(compareWith,view.frame.height - navigationBarHeight)
+        min(compareWith, view.frame.height - navigationBarHeight)
     }
     
     @objc func showAllArchivesButtonPressed(_ sender: Any) {
@@ -715,12 +713,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         loadSubviews()
         view.layoutIfNeeded()
-        scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 70)
-        
-        if scrollViewHeightAnchorConstraint.constant == view.frame.height - navigationBarHeight {
-            scrollView.isScrollEnabled = true
-            panGestureRecognizer.isEnabled = false
-        }
     }
     
     @objc func menuButtonPressed(_ sender: UIButton) {
@@ -834,39 +826,49 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     @objc private func didPan(_ sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: view)
-        let deltaTranslation = translation.y - previousYTranslation
-        previousYTranslation = translation.y
-        if deltaTranslation != previousYChange && deltaTranslation != .zero {
-            previousYChange += deltaTranslation
-        }
-        
         switch sender.state {
         case .began:
             initialCenter = contentView.center
             previousYTranslation = 0
-            previousYChange = 0
             
-        case .changed, .cancelled:
-            if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= scrollView.contentSize.height + 70 {
-                windowSizeChange = scrollViewHeightAnchorConstraint.constant != maxScreenHeight(scrollView.contentSize.height + 70)
+        case .changed:
+            let translation = sender.translation(in: view)
+            let deltaTranslation = translation.y - previousYTranslation
+            previousYTranslation = translation.y
+            
+            if scrollViewHeightAnchorConstraint.constant - deltaTranslation >= maxScreenHeight(scrollView.contentSize.height + 70) {
                 scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 70)
-            } else if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 70 {
-                windowSizeChange = scrollViewHeightAnchorConstraint.constant != scrollViewInitialHeight + 70
-                scrollViewHeightAnchorConstraint.constant = scrollViewInitialHeight + 70
+            } else if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight {
+                scrollViewHeightAnchorConstraint.constant -= deltaTranslation / 2
             } else {
                 scrollViewHeightAnchorConstraint.constant -= deltaTranslation
-                windowSizeChange = true
             }
             
-        case .ended:
-            if scrollViewHeightAnchorConstraint.constant - deltaTranslation <= scrollViewInitialHeight + 70 {
-                if scrollViewHeightAnchorConstraint.constant == scrollViewInitialHeight + 70  && previousYChange > 20 && !windowSizeChange {
-                    dismiss(animated: true)
+        case .ended, .cancelled:
+            if scrollViewHeightAnchorConstraint.constant < scrollViewInitialHeight - 70 {
+                dismiss(animated: true)
+            } else if scrollViewHeightAnchorConstraint.constant - scrollViewInitialHeight > (maxScreenHeight(scrollView.contentSize.height + 70) - scrollViewInitialHeight) / 2 {
+                scrollViewHeightAnchorConstraint.constant = maxScreenHeight(scrollView.contentSize.height + 70)
+                isExpanded = true
+                
+                UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseOut]) {
+                    self.view.layoutIfNeeded()
+                } completion: { finished in
+                    
                 }
-                previousYChange = 0
-                windowSizeChange = false
+
+            } else {
+                scrollViewHeightAnchorConstraint.constant = scrollViewInitialHeight
+                isExpanded = false
+                
+                UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseOut]) {
+                    self.view.layoutIfNeeded()
+                } completion: { finished in
+                    
+                }
             }
+            
+            scrollView.isScrollEnabled = true
             
         default:
             break
@@ -914,5 +916,32 @@ extension FileMenuViewController: UIViewControllerAnimatedTransitioning {
                 transitionContext.completeTransition(true)
             }
         }
+    }
+}
+
+extension FileMenuViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return isExpanded == false
+    }
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let location = gestureRecognizer.location(in: contentView)
+        let isLocationInScrollView = scrollView.frame.contains(location)
+        
+        let translation = (gestureRecognizer as! UIPanGestureRecognizer).translation(in: contentView)
+        let shouldIgnoreScrollView = (scrollView.contentOffset.y == 0 && translation.y > 0) ||
+                                     (translation.y < 0 && isExpanded == false)
+        
+        let shouldBegin = isLocationInScrollView == false || shouldIgnoreScrollView
+        
+        if shouldBegin {
+            scrollView.isScrollEnabled = false
+        }
+        
+        return shouldBegin
     }
 }
