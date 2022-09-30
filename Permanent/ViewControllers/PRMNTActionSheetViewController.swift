@@ -29,15 +29,17 @@ class PRMNTActionSheetViewController: UIViewController {
     let contentView = UIView(frame: .zero)
     var titleLabel: UILabel?
     var buttons: [UIButton] = []
+    var titleThumbnail: String?
     
     var contentViewBottomConstraint: NSLayoutConstraint!
 
-    init(title: String? = nil, actions: [PRMNTAction]) {
+    init(title: String? = nil, thumbnail: String? = nil, actions: [PRMNTAction]) {
         self.actions = actions
         
         super.init(nibName: nil, bundle: nil)
         
         self.title = title
+        titleThumbnail = thumbnail
         
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -71,11 +73,11 @@ class PRMNTActionSheetViewController: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             contentViewBottomConstraint
         ])
-
+        
         actions.forEach { action in
             let button = menuItem(withName: action.title, iconName: action.iconName)
             button.translatesAutoresizingMaskIntoConstraints = false
-
+            
             contentView.addSubview(button)
             
             NSLayoutConstraint.activate([
@@ -92,30 +94,56 @@ class PRMNTActionSheetViewController: UIViewController {
         }
         
         if let lastButton = buttons.last {
-            if (title?.count ?? 0) > 0 {
-                titleLabel = UILabel(frame: .zero)
-                titleLabel!.translatesAutoresizingMaskIntoConstraints = false
-                titleLabel!.text = title
-                titleLabel!.font = Text.style11.font
-                titleLabel!.textColor = .textPrimary
-                contentView.addSubview(titleLabel!)
-                
-                NSLayoutConstraint.activate([
-                    titleLabel!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-                    titleLabel!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-                    titleLabel!.bottomAnchor.constraint(equalTo: lastButton.topAnchor, constant: -8),
-                    titleLabel!.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-                    titleLabel!.heightAnchor.constraint(equalToConstant: 20)
-                ])
-            } else {
-                lastButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+            let thumbImageView = UIImageView()
+            thumbImageView.translatesAutoresizingMaskIntoConstraints = false
+            thumbImageView.contentMode = .scaleAspectFit
+            thumbImageView.clipsToBounds = true
+            
+            let titleLabel = UILabel()
+            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+            titleLabel.text = title
+            titleLabel.textColor = .white
+            titleLabel.font = Text.style3.font
+            
+            let headerView = UIView()
+            
+            headerView.addSubview(thumbImageView)
+            headerView.addSubview(titleLabel)
+            
+            headerView.translatesAutoresizingMaskIntoConstraints = false
+            headerView.backgroundColor = .primary
+            
+            contentView.addSubview(headerView)
+            
+            let labelLeadingConstraint = titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
+            
+            thumbImageView.sd_setImage(with: URL(string: titleThumbnail)) {image,_,_,_ in
+                if image != nil {
+                    NSLayoutConstraint.activate([
+                        thumbImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+                    ])
+                    
+                    labelLeadingConstraint.constant = 54
+                }
             }
-        } else {
-            contentView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            
+            NSLayoutConstraint.activate([
+                thumbImageView.widthAnchor.constraint(equalToConstant: 30),
+                headerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+                headerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+                headerView.bottomAnchor.constraint(equalTo: lastButton.topAnchor, constant: -8),
+                headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+                headerView.heightAnchor.constraint(equalToConstant: 50),
+                labelLeadingConstraint,
+                titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 16),
+                titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
+                thumbImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+                thumbImageView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0)
+            ])
+            
+            view.layoutIfNeeded()
+            contentViewBottomConstraint.constant = contentView.frame.height
         }
-        
-        view.layoutIfNeeded()
-        contentViewBottomConstraint.constant = contentView.frame.height
     }
     
     override func viewWillAppear(_ animated: Bool) {

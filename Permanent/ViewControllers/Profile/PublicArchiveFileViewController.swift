@@ -357,7 +357,7 @@ extension PublicArchiveFileViewController {
             })
         )
         
-        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
+        let actionSheet = PRMNTActionSheetViewController(title: file.name, thumbnail: file.thumbnailURL, actions: actions)
         present(actionSheet, animated: true, completion: nil)
     }
     

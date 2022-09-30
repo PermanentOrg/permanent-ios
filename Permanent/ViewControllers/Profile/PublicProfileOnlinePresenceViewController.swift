@@ -91,7 +91,7 @@ extension PublicProfileOnlinePresenceViewController: UITableViewDataSource, UITa
         }
         
         cell.moreButtonAction = { [weak self] cell in
-            let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
+            let actionSheet = PRMNTActionSheetViewController(title: cell.linkLabel.text, actions: [
                 PRMNTAction(title: "Delete".localized(), iconName: "Delete-1", color: .brightRed, handler: { action in
                     self?.showSpinner()
                     
