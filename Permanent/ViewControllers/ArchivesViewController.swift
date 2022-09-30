@@ -119,7 +119,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     @IBAction func currentArchiveRightButtonPressed(_ sender: Any) {
-        let actionSheet = PRMNTActionSheetViewController(actions: [
+        let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: [
             PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { [self] action in
                 guard let archiveId = viewModel?.currentArchive()?.archiveID else { return }
                 showSpinner()
@@ -228,7 +228,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         })
     }
     
-    private func rightButtonAction() -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
+    private func rightButtonAction(archiveName: String, archiveThumbnail: String) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
             var actions = [
@@ -268,7 +268,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 }), at: 0)
             }
             
-            let actionSheet = PRMNTActionSheetViewController(actions: actions)
+            let actionSheet = PRMNTActionSheetViewController(title: archiveName, thumbnail: archiveThumbnail, actions: actions)
             self?.present(actionSheet, animated: true)
         }
     }
@@ -325,8 +325,8 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let tableViewData = viewModel?.selectableArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
-                
-                tableViewCell.rightButtonAction = rightButtonAction()
+
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "")
                 
                 cell = tableViewCell
             }

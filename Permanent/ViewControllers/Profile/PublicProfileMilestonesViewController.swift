@@ -70,7 +70,7 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         cell.configure(milestone: item)
         
         cell.moreButtonAction = { [weak self] cell in
-            let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
+            let actionSheet = PRMNTActionSheetViewController(title: item?.title?.description ?? "", actions: [
                 PRMNTAction(title: "Delete".localized(), iconName: "Delete-1", color: .brightRed, handler: { action in
                     self?.showSpinner()
                     
