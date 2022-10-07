@@ -24,8 +24,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel = ShareLinkViewModel()
-        viewModel?.fileViewModel = sharedFile
+        sharedFile = viewModel?.fileViewModel
         
         linkOptionsStackView.isHidden = true
         linkOptionsView.delegate = self
@@ -229,6 +228,7 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let model = viewModel?.shareVOS?[indexPath.row] else { return cell }
         cell.updateCell(model: model)
+        let archiveName = cell.archiveNameLabel.text
         
         cell.approveAction = { [weak self] in
             self?.viewModel?.approveButtonAction(shareVO: model, then: { status in
@@ -300,7 +300,7 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
                 )
             }), at: 0)
             
-            let actionSheet = PRMNTActionSheetViewController(actions: actions)
+            let actionSheet = PRMNTActionSheetViewController(title: archiveName, actions: actions)
             self?.present(actionSheet, animated: true)
         }
         
@@ -335,7 +335,7 @@ extension ShareViewController: LinkOptionsViewDelegate {
         }
         
         manageLinkVC.shareViewModel = viewModel
-        navigationController?.display(viewController: manageLinkVC, modally: true)
+        present(manageLinkVC, animated: true)
     }
     
     func revokeLinkAction() {

@@ -1,0 +1,40 @@
+name: Deploy TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "Release-**" ]
+
+jobs:
+  build:
+    name: Build and deploy a release build to TestFlight
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Update Bundler
+        uses: ruby/setup-ruby@v1
+        with: 
+          ruby-version: '2.6.8'
+          bundler-cache: true
+      - name: Run Fastlane AppStore
+        env:
+          CLIENT_ID: ${{ secrets.IOS_FIREBASE_PROD_CLIENT_ID }}
+          REVERSED_CLIENT_ID: ${{ secrets.IOS_FIREBASE_PROD_REVERSED_CLIENT_ID }}
+          API_KEY: ${{ secrets.IOS_FIREBASE_PROD_API_KEY }}
+          GCM_SENDER_ID: ${{ secrets.IOS_FIREBASE_PROD_GCM_SENDER_ID }}
+          PROJECT_ID: ${{ secrets.IOS_FIREBASE_PROD_PROJECT_ID }}
+          STORAGE_BUCKET: ${{ secrets.IOS_FIREBASE_PROD_STORAGE_BUCKET }}
+          GOOGLE_APP_ID: ${{ secrets.IOS_FIREBASE_PROD_GOOGLE_APP_ID }}
+          AUTH_TENANT_ID: ${{ secrets.MOBILE_PROD_AUTH_TENANT_ID }}
+          AUTH_CLIENT_ID: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_SECRET }}
+          STRIPE_PUB_KEY: ${{ secrets.MOBILE_PROD_STRIPE_PUB_KEY }}
+          UI_TEST_USERNAME: ${{ secrets.IOS_UI_TEST_USERNAME }}
+          UI_TEST_PASSWORD: ${{ secrets.IOS_UI_TEST_PASSWORD }}
+          SKIPLINT: true
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+        run: bundle exec fastlane app_store

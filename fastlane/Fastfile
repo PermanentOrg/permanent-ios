@@ -1,0 +1,68 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Description of what the lane does"
+  
+  lane :tests do
+    # add actions here: https://docs.fastlane.tools/actions
+    cocoapods(use_bundle_exec: true,
+              podfile: "./Podfile")
+    run_tests(workspace: "Permanent.xcworkspace",
+              devices: ["iPhone 13"],
+              scheme: "Permanent-DEV",
+	            configuration: "DEV-Debug",
+              testplan: "TestPullRequest",
+	            reset_simulator: true)
+  end
+
+  lane :beta do
+    app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
+                              in_house: false,
+                              is_key_content_base64: true
+                              )
+    get_certificates
+    get_provisioning_profile(app_identifier: "org.permanent.permanent.staging")
+    latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'])
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+    build_app(workspace: "Permanent.xcworkspace",
+              scheme: "Permanent-DEV",
+	            configuration: "DEV-Release",
+              include_bitcode: true,
+	            xcargs: "-allowProvisioningUpdates",
+              export_options: "fastlane/firebase_gym_config.plist")
+	  firebase_app_distribution(release_notes: "Lots of amazing new features to test out!",
+                              firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN'])
+  end
+  
+  lane :app_store do 
+    app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
+                              in_house: false,
+                              is_key_content_base64: true
+                              )
+    get_certificates
+    get_provisioning_profile(app_identifier: "org.permanent.PermanentArchive")
+    increment_build_number(build_number: latest_testflight_build_number + 1)
+    build_app(workspace: "Permanent.xcworkspace",
+              scheme: "Permanent",
+	            configuration: "Release",
+              include_bitcode: true,
+	            xcargs: "-allowProvisioningUpdates",
+              export_options: "fastlane/testflight_gym_config.plist")
+    upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
+  end
+end

@@ -70,8 +70,8 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
         cell.configure(milestone: item)
         
         cell.moreButtonAction = { [weak self] cell in
-            let actionSheet = PRMNTActionSheetViewController(title: nil, actions: [
-                PRMNTAction(title: "Delete".localized(), color: .brightRed, handler: { action in
+            let actionSheet = PRMNTActionSheetViewController(title: item?.title?.description ?? "", actions: [
+                PRMNTAction(title: "Delete".localized(), iconName: "Delete-1", color: .brightRed, handler: { action in
                     self?.showSpinner()
                     
                     self?.viewModel?.deleteMilestoneProfileItem(milestone: item, { status in
@@ -83,7 +83,7 @@ extension PublicProfileMilestonesViewController: UITableViewDataSource, UITableV
                         }
                     })
                 }),
-                PRMNTAction(title: "Edit".localized(), handler: { action in
+                PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
                     let vc = UIViewController.create(withIdentifier: .addMilestones, from: .profile) as! PublicProfileAddMilestonesViewController
                     vc.viewModel = self?.viewModel
                     vc.milestone = item

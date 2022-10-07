@@ -119,8 +119,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     @IBAction func currentArchiveRightButtonPressed(_ sender: Any) {
-        let actionSheet = PRMNTActionSheetViewController(actions: [
-            PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { [self] action in
+        let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: [
+            PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { [self] action in
                 guard let archiveId = viewModel?.currentArchive()?.archiveID else { return }
                 showSpinner()
                 viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
@@ -228,11 +228,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         })
     }
     
-    private func rightButtonAction() -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
+    private func rightButtonAction(archiveName: String, archiveThumbnail: String) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
             var actions = [
-                PRMNTAction(title: "Make Default".localized(), color: .primary, handler: { action in
+                PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { action in
                     guard let archiveId = archiveVO.archiveID else { return }
                     self?.showSpinner()
                     self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
@@ -248,7 +248,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             ]
             
             if archiveVO.accessRole == "access.role.owner" {
-                actions.insert(PRMNTAction(title: "Delete Archive".localized(), color: .destructive, handler: { [self] action in
+                actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
                     let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
                     
                     self?.showActionDialog(
@@ -268,7 +268,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 }), at: 0)
             }
             
-            let actionSheet = PRMNTActionSheetViewController(actions: actions)
+            let actionSheet = PRMNTActionSheetViewController(title: archiveName, thumbnail: archiveThumbnail, actions: actions)
             self?.present(actionSheet, animated: true)
         }
     }
@@ -325,8 +325,8 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let tableViewData = viewModel?.selectableArchives {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
-                
-                tableViewCell.rightButtonAction = rightButtonAction()
+
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "")
                 
                 cell = tableViewCell
             }

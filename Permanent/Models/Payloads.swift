@@ -129,20 +129,34 @@ struct Payloads {
     }
     
     static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "FolderVO": [
-                            "archiveNbr": params.archiveNo,
-                            "folder_linkId": "\(params.folderLinkId)"
+        if params.folderLinkId != -1 {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo,
+                                "folder_linkId": "\(params.folderLinkId)"
+                            ]
                         ]
                     ]
                 ]
             ]
-        ]
+        } else {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
     }
-    
+        
     static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
         let childItemsDict = params.folderLinkIds.map {
             [
@@ -304,6 +318,26 @@ struct Payloads {
         ]
     }
     static func updateShareRequest(shareVO: ShareVOData) -> RequestParameters {
+        guard let shareVOJson = try? JSONEncoder().encode(shareVO),
+            let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
+            return []
+        }
+        
+        let updateDict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "ShareVO": shareVODict
+                    ]
+                ]
+            ]
+        ]
+        return updateDict
+    }
+    
+    static func updateShareRequest(minArchiveVO: MinArchiveVO) -> RequestParameters {
+        let shareVO = ShareVOData(shareID: minArchiveVO.shareId, folderLinkID: minArchiveVO.folderLinkID, archiveID: minArchiveVO.archiveID, accessRole: minArchiveVO.accessRole, type: nil, status: minArchiveVO.shareStatus, requestToken: nil, previewToggle: nil, folderVO: nil, recordVO: nil, archiveVO: nil, accountVO: nil, createdDT: nil, updatedDT: nil)
+        
         guard let shareVOJson = try? JSONEncoder().encode(shareVO),
             let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
             return []
@@ -581,6 +615,22 @@ struct Payloads {
                             "ArchiveVO": [
                                 "archiveId": archiveId,
                                 "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func unshareRecord(archiveId: Int, folderLinkId: Int) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ShareVO": [
+                                "folder_linkId": folderLinkId,
+                                "archiveId": archiveId
                             ]
                         ]
                     ]

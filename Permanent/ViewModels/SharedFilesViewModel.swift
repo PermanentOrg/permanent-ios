@@ -59,10 +59,12 @@ class SharedFilesViewModel: FilesViewModel {
                         let archivePermissionsSet = Set(self.archivePermissions)
                         
                         itemVOS?.forEach {
+                            let accessRole = AccessRole.roleForValue($0.accessRole)
                             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
                             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
                             
-                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, permissions: permissionsIntersection)
+                            let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
+                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
                             
                             if $0.archiveID == currentArchiveId {
                                 self.sharedByMeViewModels.append(sharedFileVM)
@@ -100,11 +102,12 @@ class SharedFilesViewModel: FilesViewModel {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
+            let accessRole = AccessRole.roleForValue(folderVO.accessRole)
             let archivePermissionsSet = Set(self.archivePermissions)
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: folderVO.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileViewModel(model: folderVO, permissions: permissionsIntersection)
+            let file = FileViewModel(model: folderVO, permissions: permissionsIntersection, accessRole: accessRole)
             navigationStack.append(file)
         }
         
@@ -125,13 +128,48 @@ class SharedFilesViewModel: FilesViewModel {
         
         let archivePermissionsSet = Set(self.archivePermissions)
         childItems.forEach {
+            let accessRole = AccessRole.roleForValue($0.accessRole)
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileViewModel(model: $0, permissions: permissionsIntersection)
+            let file = FileViewModel(model: $0, permissions: permissionsIntersection, accessRole: accessRole)
             self.viewModels.append(file)
         }
         
         handler(.success)
+    }
+    
+    func unshare(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+        guard let archiveId = self.currentArchive?.archiveID else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let apiOperation = APIOperation(FilesEndpoint.unshareRecord(archiveId: archiveId, folderLinkId: file.folderLinkId))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    ),
+                    model.isSuccessful
+
+                else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                handler(.success)
+
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+
+            default:
+                break
+            }
+        }
     }
 }

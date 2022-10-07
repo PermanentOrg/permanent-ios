@@ -19,9 +19,12 @@ class FileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var overlayView: UIView!
     @IBOutlet weak var sharesImageView: UIImageView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var sharingInfoStackView: UIStackView!
     
     var isGridCell: Bool = false
     var isSearchCell: Bool = false
+    var fileAction: FileAction = .none
+    var sharedFile: Bool = false
     
     var fileInfoId: String?
     
@@ -52,6 +55,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         fileImageView.image = nil
         progressView.setProgress(.zero, animated: false)
         activityIndicator.stopAnimating()
+        
+        for subview in sharingInfoStackView.arrangedSubviews {
+            subview.removeFromSuperview()
+        }
     }
     
     private func initUI() {
@@ -76,15 +83,18 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
+        self.fileAction = fileAction
+        self.sharedFile = sharedFile
         
         rightButtonImageView.isHidden = false
         
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
-        sharesImageView.isHidden = model.minArchiveVOS.isEmpty
+        
+        sharesImageView.isHidden = model.minArchiveVOS.isEmpty || sharedFile
         
         setFileImage(forModel: model)
         handleUI(forStatus: model.fileStatus)
@@ -94,6 +104,10 @@ class FileCollectionViewCell: UICollectionViewCell {
            let progress = UploadManager.shared.operation(forFileId: fileId)?.progress {
             fileInfoId = model.fileInfoId
             updateProgress(withValue: Float(progress))
+        }
+        
+        if sharedFile {
+            updateSharingInfo(withModel: model)
         }
     }
     
@@ -107,8 +121,10 @@ class FileCollectionViewCell: UICollectionViewCell {
         if model.type.isFolder {
             overlayView.isHidden = true
             isUserInteractionEnabled = true
-            moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
+            if !sharedFile {
+                moreButton.isEnabled = action == .none
+                rightButtonImageView.tintColor = action == .none ? .primary : UIColor.primary.withAlphaComponent(0.5)
+            }
             
             let hasRightButtonPermission = model.permissions.contains(.create) ||
                 model.permissions.contains(.delete) ||
@@ -119,12 +135,17 @@ class FileCollectionViewCell: UICollectionViewCell {
         } else {
             overlayView.isHidden = action == .none
             isUserInteractionEnabled = action == .none
-            moreButton.isEnabled = action == .none
-            rightButtonImageView.tintColor = .primary
+
+            if !sharedFile {
+                moreButton.isEnabled = action == .none
+                rightButtonImageView.tintColor = .primary
+            }
         }
         
-        moreButton.isHidden = !hasRightButton
-        rightButtonImageView.isHidden = !hasRightButton
+        if !sharedFile {
+            moreButton.isHidden = !hasRightButton
+            rightButtonImageView.isHidden = !hasRightButton
+        }
     }
     
     fileprivate func setFileImage(forModel model: FileViewModel) {
@@ -199,6 +220,38 @@ class FileCollectionViewCell: UICollectionViewCell {
     
     func updateProgress(withValue value: Float) {
         progressView.setProgress(value, animated: true)
+    }
+    
+    func updateSharingInfo(withModel model: FileViewModel) {
+        if model.sharedByArchive != nil {
+            guard let archive = model.sharedByArchive else { return }
+            
+            let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
+            extraLabel.font = Text.style8.font
+            extraLabel.textColor = .middleGray
+            extraLabel.contentMode = .center
+            extraLabel.text = "The \(archive.name) Archive"
+            sharingInfoStackView.addArrangedSubview(extraLabel)
+        } else {
+            let maxArchivesCount = 3
+            model.minArchiveVOS[0 ..< min(model.minArchiveVOS.count, maxArchivesCount)].forEach { archiveVO in
+                guard let thumbnailUrl = URL(string: archiveVO.thumbnail) else { return }
+                
+                let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+                imageView.constraintToSquare(20)
+                imageView.sd_setImage(with: thumbnailUrl)
+                sharingInfoStackView.addArrangedSubview(imageView)
+            }
+            
+            if model.minArchiveVOS.count > maxArchivesCount {
+                let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
+                extraLabel.font = Text.style8.font
+                extraLabel.textColor = .middleGray
+                extraLabel.contentMode = .center
+                extraLabel.text = " +\(model.minArchiveVOS.count - maxArchivesCount)"
+                sharingInfoStackView.addArrangedSubview(extraLabel)
+            }
+        }
     }
     
     @IBAction

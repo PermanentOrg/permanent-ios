@@ -120,6 +120,8 @@ class ShareExtensionViewModel: ViewModelInterface {
                     file.url = tempLocation
                 }
                 
+                let savedFiles = try ExtensionUploadManager.shared.savedFiles()
+                selectedFiles.append(contentsOf: savedFiles)
                 try ExtensionUploadManager.shared.save(files: selectedFiles)
                 
                 completion(nil)

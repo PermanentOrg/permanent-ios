@@ -13,4 +13,7 @@ struct MinArchiveVO: Equatable, Codable {
     let shareStatus: String
     let shareId: Int
     let archiveID: Int
+    let folderLinkID: Int?
+    
+    var accessRole: String?
 }

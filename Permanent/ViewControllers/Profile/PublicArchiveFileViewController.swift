@@ -58,6 +58,9 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     fileprivate func setupCollectionView() {
+        collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
+        collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
@@ -340,38 +343,22 @@ extension PublicArchiveFileViewController {
         
         if file.type.isFolder == false {
             actions.append(
-                PRMNTAction(title: "Share to Another App".localized(), color: .primary, handler: { [self] action in
+                PRMNTAction(title: "Share to Another App".localized(), iconName: "Share Other", color: .primary, handler: { [self] action in
                     shareWithOtherApps(file: file)
                 })
             )
         }
         
         actions.append(
-            PRMNTAction(title: "Get Link".localized(), color: .primary, handler: { [self] action in
+            PRMNTAction(title: "Get Link".localized(), iconName: "Get Link", color: .primary, handler: { [self] action in
                 guard let url = viewModel?.publicURL(forFile: file) else { return }
                 
                 share(url: url)
             })
         )
         
-        let actionSheet = PRMNTActionSheetViewController(title: file.name, actions: actions)
+        let actionSheet = PRMNTActionSheetViewController(title: file.name, thumbnail: file.thumbnailURL, actions: actions)
         present(actionSheet, animated: true, completion: nil)
-    }
-
-    func shareInApp(file: FileViewModel) {
-        guard
-            let shareVC = UIViewController.create(
-                withIdentifier: .share,
-                from: .share
-            ) as? ShareViewController
-        else {
-            return
-        }
-
-        shareVC.sharedFile = file
-        
-        let shareNavController = FilePreviewNavigationController(rootViewController: shareVC)
-        present(shareNavController, animated: true)
     }
     
     func shareWithOtherApps(file: FileViewModel) {

@@ -14,7 +14,7 @@ target 'Permanent' do
   pod 'GooglePlaces', '6.1.1.0'
   pod 'AppAuth', '1.4.0'
   pod 'KeychainSwift', '20.0'
-  pod 'StripeApplePay', '22.0.0'
+  pod 'StripeApplePay', '22.8.1'
 
   target 'PermanentTests' do
         inherit! :search_paths
@@ -23,5 +23,12 @@ target 'Permanent' do
 
   target 'ShareExtension' do
         inherit! :search_paths
+	pod 'KeychainSwift', '20.0'
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
   end
 end

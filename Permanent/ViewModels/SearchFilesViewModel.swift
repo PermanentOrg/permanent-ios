@@ -144,7 +144,7 @@ class SearchFilesViewModel: FilesViewModel {
                 self.navigationStack.removeAll()
                 self.viewModels.removeAll()
                 let searchedItems = model.results[0].data?[0].searchVO.childItemVOs ?? []
-                let searchedFileVMs = searchedItems.map({ FileViewModel(model: $0, permissions: self.archivePermissions) })
+                let searchedFileVMs = searchedItems.map({ FileViewModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole) })
                 self.viewModels.append(contentsOf: searchedFileVMs)
                 
                 handler(.success)
