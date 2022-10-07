@@ -106,17 +106,21 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         
         let addedTags: [String] = sortedArray.filter({ $0.forAdding }).map({ $0.tagVO.tagVO.name ?? "" })
         
-        dispatchGroup.enter()
-        viewModel?.addTag(tagNames: addedTags, completion: { (result) in
-            dispatchGroup.leave()
-        })
+        if !addedTags.isEmpty {
+            dispatchGroup.enter()
+            viewModel?.addTag(tagNames: addedTags, completion: { (result) in
+                dispatchGroup.leave()
+            })
+        }
         
         let removedTags: [TagVO] = sortedArray.filter({ $0.forRemoval }).map({ $0.tagVO })
         
-        dispatchGroup.enter()
-        viewModel?.deleteTag(tagVO: removedTags, completion: { (result) in
-            dispatchGroup.leave()
-        })
+        if !removedTags.isEmpty {
+            dispatchGroup.enter()
+            viewModel?.unassignTag(tagVO: removedTags, completion: { (result) in
+                dispatchGroup.leave()
+            })
+        }
         
         dispatchGroup.notify(queue: .main) {
             self.hideSpinner()

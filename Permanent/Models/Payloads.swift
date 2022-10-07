@@ -502,7 +502,24 @@ struct Payloads {
         ]
     }
     
-    static func deletePost(params: DeleteTagParams) -> RequestParameters {
+    static func deleteTagPost(tags: [TagVO]) -> RequestParameters {
+        let data = tags.map {
+            [
+                "TagVO": [
+                    "id": ($0.tagVO.tagId ?? Int() ) as Int
+                ]
+            ]
+        }
+        
+        return [
+            "RequestVO":
+                [
+                    "data": data
+                ]
+        ]
+    }
+    
+    static func deleteTagLinkPost(params: DeleteTagParams) -> RequestParameters {
         let tagLinkVO: [String: Any] = [
             "refId": params.refID,
             "refTable": "record"
