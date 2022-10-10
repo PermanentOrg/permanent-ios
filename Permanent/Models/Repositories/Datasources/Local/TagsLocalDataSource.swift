@@ -9,14 +9,16 @@ import Foundation
 
 class TagsLocalDataSource: ViewModelInterface {
     static let shared = TagsLocalDataSource()
-    var tags: [TagVO] = []
+    var allTags: Dictionary<Int, [TagVO]> = [:]
     
     func getTagsByArchive() -> [TagVO] {
-        return tags
+        let archiveId: Int = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        return allTags[archiveId] ?? []
     }
     
     func addTags(tags: [TagVO], completion: @escaping (([TagVO]?, Error?) -> Void)) {
-        self.tags = tags
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        self.allTags[archiveId] = tags
         completion(tags, nil)
     }
     
@@ -24,11 +26,17 @@ class TagsLocalDataSource: ViewModelInterface {
         completion(tags, nil)
     }
     
-    func unassignTags(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?, String?) -> Void)) {
+    func unassignTags(tagVOs: [TagVO], recordId: Int, completion: @escaping ((Error?, String?) -> Void)) {
         completion(nil, nil)
     }
     
-    func deleteTags(tagVO: [TagVO], completion: @escaping ((Error?, String?) -> Void)) {
+    func deleteTags(tagVOs: [TagVO], completion: @escaping ((Error?, String?) -> Void)) {
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        var tags = allTags[archiveId]
+        tags?.removeAll(where: { tag in
+            tagVOs.contains(tag)
+        })
+        allTags[archiveId] = tags
         completion(nil, nil)
     }
 }

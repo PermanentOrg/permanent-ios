@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TagVO: Model {
+struct TagVO: Model, Equatable {
     var tagVO: TagVOData
     
     enum CodingKeys: String, CodingKey {
@@ -15,7 +15,7 @@ struct TagVO: Model {
     }
 }
 
-struct TagVOData: Model {
+struct TagVOData: Model, Equatable {
     var name: String?
     let status: String?
     let tagId: Int?
