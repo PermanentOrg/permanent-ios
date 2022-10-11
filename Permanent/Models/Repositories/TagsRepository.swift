@@ -18,7 +18,7 @@ class TagsRepository {
     
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?, Error?) -> Void)) -> [TagVO]? {
         remoteDataSource.getTagsByArchive(archiveId: archiveId) { tags, error in
-            if let tags {
+            if let tags = tags {
                 self.localDataSource.addTags(tags: tags, completion: completion)
             } else {
                 completion(nil, error)
@@ -29,7 +29,7 @@ class TagsRepository {
     
     func assignTag(tagNames: [String], recordId: Int, completion: @escaping (([TagLinkVO]?, Error?) -> Void)) {
         remoteDataSource.addTag(tagNames: tagNames, recordId: recordId) { tags, error in
-            if let tags {
+            if let tags = tags {
                 self.localDataSource.assignTags(tags: tags, completion: completion)
             } else {
                 completion(nil, error)

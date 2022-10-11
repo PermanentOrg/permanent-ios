@@ -171,7 +171,7 @@ class FilePreviewViewModel: ViewModelInterface {
     
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
         let tags = tagsRepository.getTagsByArchive(archiveId: archiveId) { tags, error in
-            if let tags {
+            if let tags = tags {
                 completion(tags)
             } else {
                 completion(nil)
@@ -182,7 +182,7 @@ class FilePreviewViewModel: ViewModelInterface {
     
     func addTag(tagNames: [String], completion: @escaping (([TagLinkVO]?) -> Void)) {
         tagsRepository.assignTag(tagNames: tagNames, recordId: recordVO?.recordVO?.recordID ?? 0) { tags, error in
-            if let tags {
+            if let tags = tags {
                 self.getRecord(file: self.file) { (record) in
                     completion(tags)
                 }
