@@ -11,7 +11,11 @@ class ManageTagsViewModel: ViewModelInterface {
     static let didUpdateTagsNotification = Notification.Name("ManageTagsViewModel.didUpdateTagsNotification")
     
     let tagsRepository: TagsRepository
-    var tags: [TagVO] = []
+    var tags: [TagVO] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Self.didUpdateTagsNotification, object: self, userInfo: nil)
+        }
+    }
     
     init(tagsRepository: TagsRepository) {
         self.tagsRepository = tagsRepository
@@ -25,8 +29,6 @@ class ManageTagsViewModel: ViewModelInterface {
         guard let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return }
         tags = tagsRepository.getTagsByArchive(archiveId: archiveId) { tags, error in
             self.tags = tags ?? []
-            NotificationCenter.default.post(name: Self.didUpdateTagsNotification, object: self, userInfo: nil)
         } ?? []
-        NotificationCenter.default.post(name: Self.didUpdateTagsNotification, object: self, userInfo: nil)
     }
 }
