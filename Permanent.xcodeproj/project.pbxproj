@@ -30,6 +30,10 @@
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
+		5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */; };
+		5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */; };
+		5E1C3C5028ED7828007C1A63 /* TagsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */; };
+		5E1C3C5228F0772A007C1A63 /* ManageTagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */; };
 		5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */; };
 		5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7F24EA6F47003CD359 /* BaseViewController.swift */; };
@@ -597,6 +601,10 @@
 		5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFilesUITests.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
+		5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsLocalDataSource.swift; sourceTree = "<group>"; };
+		5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRemoteDataSourceInterface.swift; sourceTree = "<group>"; };
+		5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRepository.swift; sourceTree = "<group>"; };
+		5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsViewModel.swift; sourceTree = "<group>"; };
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
@@ -1213,6 +1221,7 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5E1C3C4728ECA6F8007C1A63 /* Repositories */,
 				BC6AF9AE259342D800483BBA /* Account */,
 				BCD414E62580BFCB0019548F /* Enums */,
 				BC11C80A25595B93008BDEFA /* Payloads */,
@@ -1267,6 +1276,7 @@
 				F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */,
 				5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */,
 				F57CE595282BE9D000B06D95 /* DonateViewModel.swift */,
+				5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1287,6 +1297,40 @@
 				F569062328CB672900E610B6 /* CreateFolderAlertPage.swift */,
 			);
 			path = Pages;
+			sourceTree = "<group>";
+		};
+		5E1C3C4728ECA6F8007C1A63 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				5E1C3C4828ECA709007C1A63 /* Datasources */,
+				5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		5E1C3C4828ECA709007C1A63 /* Datasources */ = {
+			isa = PBXGroup;
+			children = (
+				5E1C3C4928ECA732007C1A63 /* Local */,
+				5E1C3C4A28ECA747007C1A63 /* Remote */,
+			);
+			path = Datasources;
+			sourceTree = "<group>";
+		};
+		5E1C3C4928ECA732007C1A63 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */,
+			);
+			path = Local;
+			sourceTree = "<group>";
+		};
+		5E1C3C4A28ECA747007C1A63 /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
+			);
+			path = Remote;
 			sourceTree = "<group>";
 		};
 		5E218BF225A869B100B56625 /* SecurityView */ = {
@@ -2738,6 +2782,7 @@
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */,
 				5E744F9327E38DB900A47D27 /* LoadingScreenViewController.swift in Sources */,
+				5E1C3C5228F0772A007C1A63 /* ManageTagsViewModel.swift in Sources */,
 				06644A8924EA78F5003CD359 /* ViewModelDelegateInterface.swift in Sources */,
 				BC6E70EF252C6F5200113D5F /* ILocalAuthentication.swift in Sources */,
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
@@ -2879,6 +2924,7 @@
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
 				5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */,
 				F518DDA027CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift in Sources */,
+				5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */,
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */,
 				F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */,
@@ -2902,6 +2948,7 @@
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
+				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */,
@@ -2941,6 +2988,7 @@
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
 				5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
+				5E1C3C5028ED7828007C1A63 /* TagsRepository.swift in Sources */,
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				5E62F7BE27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift in Sources */,
 				5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */,

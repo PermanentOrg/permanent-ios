@@ -12,52 +12,52 @@ typealias DeleteTagParams = (tagVO: [TagVO], refID: Int)
 typealias GetTagsByArchiveParams = (Int)
 
 enum TagEndpoint {
-    case tagPost(params: TagParams)
-    case tagDelete(params: DeleteTagParams)
-    case getTagsByArchive(params: GetTagsByArchiveParams)
+    case getByArchive(params: GetTagsByArchiveParams)
+    case post(params: TagParams)
+    case delete(params: [TagVO])
+    case unlink(params: DeleteTagParams)
 }
 
 extension TagEndpoint: RequestProtocol {
     var path: String {
         switch self {
-        case .tagPost:
+        case .post:
             return "/tag/post"
-        case .tagDelete:
+        case .delete:
             return "/tag/delete"
-        case .getTagsByArchive:
+        case .getByArchive:
             return "/tag/getTagsByArchive"
+        case .unlink:
+            return "/tag/DeleteTagLink"
         }
     }
     
     var method: RequestMethod {
-        switch self {
-        case .tagPost,.tagDelete,.getTagsByArchive:
-            return .post
-        }
+        return .post
     }
     
     var requestType: RequestType {
-        switch self {
-        case .tagPost,.tagDelete,.getTagsByArchive:
-            return .data
-        }
+        return .data
     }
     
     var responseType: ResponseType {
-        switch self {
-        case .tagPost,.tagDelete,.getTagsByArchive:
-            return .json
-        }
+
+        return .json
     }
     
     var parameters: RequestParameters? {
         switch self {
-        case .tagPost(let params):
+        case .post(let params):
             return Payloads.tagPost(params: params)
-        case .tagDelete(let params):
-            return Payloads.deletePost(params: params)
-        case .getTagsByArchive(let params):
+            
+        case .delete(let params):
+            return Payloads.deleteTagPost(tags: params)
+            
+        case .getByArchive(let params):
             return Payloads.getTagsByArchive(params: params)
+            
+        case .unlink(let params):
+            return Payloads.deleteTagLinkPost(params: params)
         }
     }
     
