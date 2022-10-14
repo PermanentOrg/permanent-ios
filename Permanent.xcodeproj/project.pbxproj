@@ -35,6 +35,7 @@
 		5E1C3C5028ED7828007C1A63 /* TagsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */; };
 		5E1C3C5228F0772A007C1A63 /* ManageTagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */; };
 		5E1C3C5428F59703007C1A63 /* TagManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5328F59703007C1A63 /* TagManagementViewController.swift */; };
+		5E1C3C5628F82FEA007C1A63 /* ArchiveSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E1C3C5528F82FEA007C1A63 /* ArchiveSettings.storyboard */; };
 		5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */; };
 		5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A7F24EA6F47003CD359 /* BaseViewController.swift */; };
@@ -607,6 +608,7 @@
 		5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRepository.swift; sourceTree = "<group>"; };
 		5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsViewModel.swift; sourceTree = "<group>"; };
 		5E1C3C5328F59703007C1A63 /* TagManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagManagementViewController.swift; sourceTree = "<group>"; };
+		5E1C3C5528F82FEA007C1A63 /* ArchiveSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ArchiveSettings.storyboard; sourceTree = "<group>"; };
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
@@ -1682,6 +1684,7 @@
 				5E2E3D0E26D058940090EF02 /* Archives.storyboard */,
 				5E5EF852273B1E56004F7EBC /* Profile.storyboard */,
 				F58F314A27F1A52600B89B99 /* Donate.storyboard */,
+				5E1C3C5528F82FEA007C1A63 /* ArchiveSettings.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -2513,6 +2516,7 @@
 				5E8B706C283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.xib in Resources */,
 				BC42EDC425BEE9310031B965 /* InvitationTableViewCell.xib in Resources */,
 				5E2C5D2724D98EE300E2B95F /* Launch.storyboard in Resources */,
+				5E1C3C5628F82FEA007C1A63 /* ArchiveSettings.storyboard in Resources */,
 				5ED581C125EF802000A5A79E /* FileDetailsTopCollectionViewCell.xib in Resources */,
 				BC4526DA251BE53900E24A51 /* Localizable.strings in Resources */,
 				5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */,
