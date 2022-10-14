@@ -468,6 +468,14 @@
 		F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F557A64327A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift */; };
 		F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F557A64827A1C81600C061D4 /* OnlinePresenceTableViewCell.swift */; };
 		F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F558C24828B605F9008BC77B /* FileMenuViewController.swift */; };
+		F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87428F990F20015A522 /* FolderContentViewModel.swift */; };
+		F559F87728F99D120015A522 /* FolderSortViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87628F99D120015A522 /* FolderSortViewModel.swift */; };
+		F559F87928F99E3E0015A522 /* FolderNavigationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87828F99E3E0015A522 /* FolderNavigationViewModel.swift */; };
+		F559F87B28F9A0750015A522 /* FolderViewSelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87A28F9A0750015A522 /* FolderViewSelectionViewModel.swift */; };
+		F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87C28F9AB070015A522 /* FolderContentViewModelTests.swift */; };
+		F559F87F28F9C0640015A522 /* FolderSortViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87E28F9C0640015A522 /* FolderSortViewModelTests.swift */; };
+		F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */; };
+		F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
@@ -999,6 +1007,14 @@
 		F557A64327A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileOnlinePresenceViewController.swift; sourceTree = "<group>"; };
 		F557A64827A1C81600C061D4 /* OnlinePresenceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnlinePresenceTableViewCell.swift; sourceTree = "<group>"; };
 		F558C24828B605F9008BC77B /* FileMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMenuViewController.swift; sourceTree = "<group>"; };
+		F559F87428F990F20015A522 /* FolderContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentViewModel.swift; sourceTree = "<group>"; };
+		F559F87628F99D120015A522 /* FolderSortViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderSortViewModel.swift; sourceTree = "<group>"; };
+		F559F87828F99E3E0015A522 /* FolderNavigationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationViewModel.swift; sourceTree = "<group>"; };
+		F559F87A28F9A0750015A522 /* FolderViewSelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewSelectionViewModel.swift; sourceTree = "<group>"; };
+		F559F87C28F9AB070015A522 /* FolderContentViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentViewModelTests.swift; sourceTree = "<group>"; };
+		F559F87E28F9C0640015A522 /* FolderSortViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderSortViewModelTests.swift; sourceTree = "<group>"; };
+		F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewSelectionViewModelTests.swift; sourceTree = "<group>"; };
+		F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationViewModelTests.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
@@ -1250,6 +1266,7 @@
 		06B0EB2C24E68289003D90C6 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				F559F87328F990DA0015A522 /* File Browsing */,
 				BC6358BA25371FB400EEC48C /* UI */,
 				5E60451C251206F9002E47CB /* OnboardingViewModel.swift */,
 				F5EEB4D52821556C00D584AD /* AccountOnboardingViewModel.swift */,
@@ -1483,6 +1500,10 @@
 				5E68F2D026A74FCD00CC936E /* Info.plist */,
 				5E68F2D826A9A2CD00CC936E /* TestURLs.swift */,
 				5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */,
+				F559F87C28F9AB070015A522 /* FolderContentViewModelTests.swift */,
+				F559F87E28F9C0640015A522 /* FolderSortViewModelTests.swift */,
+				F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */,
+				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -2254,6 +2275,17 @@
 			path = OnlinePresenceTableCells;
 			sourceTree = "<group>";
 		};
+		F559F87328F990DA0015A522 /* File Browsing */ = {
+			isa = PBXGroup;
+			children = (
+				F559F87428F990F20015A522 /* FolderContentViewModel.swift */,
+				F559F87628F99D120015A522 /* FolderSortViewModel.swift */,
+				F559F87828F99E3E0015A522 /* FolderNavigationViewModel.swift */,
+				F559F87A28F9A0750015A522 /* FolderViewSelectionViewModel.swift */,
+			);
+			path = "File Browsing";
+			sourceTree = "<group>";
+		};
 		F569061A28CB58AE00E610B6 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -2845,8 +2877,10 @@
 				BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */,
 				F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */,
 				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
+				F559F87928F99E3E0015A522 /* FolderNavigationViewModel.swift in Sources */,
 				5E5DFA702746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift in Sources */,
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
+				F559F87728F99D120015A522 /* FolderSortViewModel.swift in Sources */,
 				F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */,
 				5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */,
 				5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */,
@@ -2935,12 +2969,14 @@
 				BC59BAB725C2B7D6005A45D3 /* File.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
 				5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */,
+				F559F87B28F9A0750015A522 /* FolderViewSelectionViewModel.swift in Sources */,
 				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
+				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,
 				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
@@ -3097,15 +3133,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F559F87F28F9C0640015A522 /* FolderSortViewModelTests.swift in Sources */,
 				5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */,
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
+				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
+				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,
 				F54861FA28912F4300500F6F /* SessionTests.swift in Sources */,
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
+				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
 				5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

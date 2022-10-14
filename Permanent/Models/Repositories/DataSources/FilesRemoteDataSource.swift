@@ -7,11 +7,13 @@
 
 import Foundation
 
-class FilesRemoteDataSource {
-    func folderContent(folderVO: FolderVOData, completion: @escaping (([FileViewModel], Error?) -> Void)) {
-        guard let archiveNo = folderVO.archiveNbr, let folderLinkId = folderVO.folderLinkID else {
-            return
-        }
+protocol FilesRemoteDataSourceInterface {
+    func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void))
+    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void))
+}
+
+class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
+    func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
         let params: NavigateMinParams = NavigateMinParams(archiveNo, folderLinkId, nil)
         
         navigateMin(params: params, then: completion)
@@ -125,5 +127,18 @@ class FilesRemoteDataSource {
         }
         
         handler(viewModels, nil)
+    }
+}
+
+class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
+    var folderContentMockFiles: [FileViewModel] = []
+    var newFolderMock: FileViewModel?
+    
+    func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+        completion(folderContentMockFiles, nil)
+    }
+    
+    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        completion(newFolderMock, nil)
     }
 }

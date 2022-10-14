@@ -8,14 +8,14 @@
 import Foundation
 
 class FilesRepository {
-    let remoteDataSource: FilesRemoteDataSource
+    let remoteDataSource: FilesRemoteDataSourceInterface
     
-    init(remoteDataSource: FilesRemoteDataSource = FilesRemoteDataSource()) {
+    init(remoteDataSource: FilesRemoteDataSourceInterface = FilesRemoteDataSource()) {
         self.remoteDataSource = remoteDataSource
     }
     
-    func folderContent(folderVO: FolderVOData, completion: @escaping (([FileViewModel], Error?) -> Void)) {
-        remoteDataSource.folderContent(folderVO: folderVO, completion: completion)
+    func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+        remoteDataSource.folderContent(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion)
     }
     
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
