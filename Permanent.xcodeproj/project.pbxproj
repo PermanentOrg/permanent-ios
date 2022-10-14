@@ -432,6 +432,8 @@
 		F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
 		F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FB2742E265007E4594 /* SearchViewController.swift */; };
 		F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */; };
+		F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135428F43359003DF4CC /* FilesRepository.swift */; };
+		F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		F518DDA027CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */; };
 		F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */; };
 		F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */; };
@@ -972,6 +974,8 @@
 		F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesViewModel.swift; sourceTree = "<group>"; };
 		F509D6FB2742E265007E4594 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilesViewModel.swift; sourceTree = "<group>"; };
+		F50E135428F43359003DF4CC /* FilesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRepository.swift; sourceTree = "<group>"; };
+		F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRemoteDataSource.swift; sourceTree = "<group>"; };
 		F518DD9E27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageVisibilityCollectionViewCell.swift; sourceTree = "<group>"; };
 		F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageVisibilityCollectionViewCell.xib; sourceTree = "<group>"; };
 		F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionKeychainHandler.swift; sourceTree = "<group>"; };
@@ -1213,6 +1217,7 @@
 		06B0EB2B24E67FBC003D90C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F50E135228F4333C003DF4CC /* Repositories */,
 				BC6AF9AE259342D800483BBA /* Account */,
 				BCD414E62580BFCB0019548F /* Enums */,
 				BC11C80A25595B93008BDEFA /* Payloads */,
@@ -2224,6 +2229,23 @@
 			path = PhotoPicker;
 			sourceTree = "<group>";
 		};
+		F50E135228F4333C003DF4CC /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				F50E135328F43348003DF4CC /* DataSources */,
+				F50E135428F43359003DF4CC /* FilesRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		F50E135328F43348003DF4CC /* DataSources */ = {
+			isa = PBXGroup;
+			children = (
+				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
+			);
+			path = DataSources;
+			sourceTree = "<group>";
+		};
 		F557A64727A1C81600C061D4 /* OnlinePresenceTableCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -2930,6 +2952,7 @@
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
+				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
@@ -2978,6 +3001,7 @@
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
+				F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */,
 				5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */,
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
