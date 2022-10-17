@@ -484,7 +484,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         accessRoleLabel.translatesAutoresizingMaskIntoConstraints = false
         accessRoleLabel.text = role.uppercased()
         accessRoleLabel.textColor = .primary
-        accessRoleLabel.font = Text.style30.font
+        accessRoleLabel.font = Text.style36.font
+        accessRoleLabel.setTextSpacingBy(value: 0.8)
+        
         accessRoleLabel.textAlignment = .center
         accessRoleLabel.setContentCompressionResistancePriority(UILayoutPriority(255), for: .horizontal)
         accessRoleLabel.setContentHuggingPriority(UILayoutPriority(255), for: .horizontal)
@@ -591,9 +593,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         if file.permissions.contains(.move), let menuIndex = menuItems.firstIndex(where: { $0.type == .move }) {
             stackView.addArrangedSubview(menuItem(withName: "Move to another location".localized(), iconName: "Move", tag: menuIndex + 1))
         }
-        if let menuIndex = menuItems.firstIndex(where: { $0.type == .unshare }) {
-            stackView.addArrangedSubview(menuItem(withName: "Unshare".localized(), iconName: "Delete-1", tag: menuIndex + 1))
-        }
         if file.permissions.contains(.edit), let menuIndex = menuItems.firstIndex(where: { $0.type == .rename }) {
             stackView.addArrangedSubview(menuItem(withName: "Rename".localized(), iconName: "Rename", tag: menuIndex + 1))
         }
@@ -607,13 +606,15 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             if file.permissions.contains(.ownership) && menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil && fileViewModel.minArchiveVOS.isEmpty {
                 stackView.addArrangedSubview(menuItem(withName: "Share management".localized(), iconName: "manageSharing", tag: -101))
             }
-            
             if file.type.isFolder == false, let menuIndex = menuItems.firstIndex(where: { $0.type == .shareToAnotherApp }) {
                 stackView.addArrangedSubview(menuItem(withName: "Share to Another App".localized(), iconName: "Share Other", tag: menuIndex + 1))
             }
         }
+        if let menuIndex = menuItems.firstIndex(where: { $0.type == .unshare }) {
+            stackView.addArrangedSubview(menuItem(withName: "Leave share".localized(), iconName: "leaveShare", tag: menuIndex + 1, color: .temporaryRed))
+        }
         if file.permissions.contains(.delete), let menuIndex = menuItems.firstIndex(where: { $0.type == .delete }) {
-            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1, color: .deepRed))
+            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1, color: .temporaryRed))
         }
     }
     
