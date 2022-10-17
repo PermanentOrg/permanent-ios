@@ -143,8 +143,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             handleBar.centerXAnchor.constraint(equalTo: containerView.centerXAnchor, constant: 0),
             handleBar.heightAnchor.constraint(equalToConstant: 4),
             handleBar.widthAnchor.constraint(equalToConstant: 32),
-            headerStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            headerStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            headerStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
+            headerStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
             headerStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
             headerStackView.heightAnchor.constraint(equalToConstant: 50),
             itemThumbImageView.widthAnchor.constraint(equalToConstant: 30),
@@ -157,7 +157,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 80),
             scrollView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 0),
             scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
         ])
@@ -167,9 +167,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         stackView.axis = .vertical
         stackView.spacing = 16
         NSLayoutConstraint.activate([
-            stackView.widthAnchor.constraint(equalToConstant: view.frame.width - 32),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: 16),
+            stackView.widthAnchor.constraint(equalToConstant: view.frame.width - 48),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 24),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -24),
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: 16)
         ])
@@ -231,15 +231,15 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         if showsPermission {
             setupPermissionView()
         }
-        
+
         if fileViewModel.sharedByArchive != nil {
             setupInitiatedByView()
         }
-        
+
         if !fileViewModel.minArchiveVOS.isEmpty {
             setupSharedWithView()
         }
-        
+
         if shareURL != nil {
             setupShareLink()
         }
@@ -255,8 +255,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         separatorContainer.addSubview(bottomSeparator)
         
         NSLayoutConstraint.activate([
-            bottomSeparator.leadingAnchor.constraint(equalTo: separatorContainer.leadingAnchor, constant: -16),
-            bottomSeparator.trailingAnchor.constraint(equalTo: separatorContainer.trailingAnchor, constant: 16),
+            bottomSeparator.leadingAnchor.constraint(equalTo: separatorContainer.leadingAnchor, constant: -24),
+            bottomSeparator.trailingAnchor.constraint(equalTo: separatorContainer.trailingAnchor, constant: 24),
             bottomSeparator.bottomAnchor.constraint(equalTo: separatorContainer.bottomAnchor, constant: 0),
             bottomSeparator.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale)
         ])
@@ -265,22 +265,21 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     
     func setupPermissionView() {
         let permissionLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        permissionLabel.text = "Permission:"
-        permissionLabel.font = Text.style7.font
-        permissionLabel.textColor = UIColor.dustyGray
+        permissionLabel.text = "Permission".localizedUppercase
+        permissionLabel.font = Text.style30.font
+        permissionLabel.textColor = UIColor.middleGray
+        permissionLabel.setTextSpacingBy(value: 0.8)
         
         let permissionValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionValueLabel.text = fileViewModel.accessRole.groupName
-        permissionValueLabel.font = Text.style8.font
+        permissionValueLabel.font = Text.style34.font
         permissionValueLabel.textColor = .dustyGray
         
         let subStackView = UIStackView(arrangedSubviews: [permissionLabel, permissionValueLabel])
         subStackView.axis = .vertical
         subStackView.spacing = 8
         subStackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            subStackView.widthAnchor.constraint(equalToConstant: stackView.frame.width)
-        ])
+
         stackView.addArrangedSubview(subStackView)
         
         addSeparatorView()
@@ -288,9 +287,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     
     func setupInitiatedByView() {
         let initiatedLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        initiatedLabel.text = "Initiated by:"
-        initiatedLabel.font = Text.style7.font
-        initiatedLabel.textColor = UIColor.dustyGray
+        initiatedLabel.text = "Initiated by".localizedUppercase
+        initiatedLabel.font = Text.style30.font
+        initiatedLabel.textColor = UIColor.middleGray
+        initiatedLabel.setTextSpacingBy(value: 0.8)
         stackView.addArrangedSubview(initiatedLabel)
         
         let imageView = UIImageView(image: UIImage.profile)
@@ -306,7 +306,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let initiatedValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         initiatedValueLabel.text = "The \(fileViewModel.sharedByArchive?.name ?? "") Archive"
-        initiatedValueLabel.font = Text.style8.font
+        initiatedValueLabel.font = Text.style34.font
         initiatedValueLabel.textColor = .dustyGray
         
         let itemStackView = UIStackView(arrangedSubviews: [imageView, initiatedValueLabel])
@@ -321,9 +321,6 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         subStackView.axis = .vertical
         subStackView.spacing = 8
         subStackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            subStackView.widthAnchor.constraint(equalToConstant: stackView.frame.width)
-        ])
         stackView.addArrangedSubview(subStackView)
         
         addSeparatorView()
@@ -354,7 +351,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             label.translatesAutoresizingMaskIntoConstraints = false
             label.text = "View all".localized()
             label.textColor = .primary
-            label.font = Text.style17.font
+            label.font = Text.style34.font
             containerView.addSubview(label)
             
             let button = UIButton(type: .custom)
@@ -390,17 +387,18 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         })
         
         let sharedWithLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
-        let attributedString = NSMutableAttributedString(string: "Shared with (\(fileViewModel.minArchiveVOS.count))", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.dustyGray], range: NSRange(location: 0, length: 11))
+        let attributedString = NSMutableAttributedString(string: "Shared with (\(fileViewModel.minArchiveVOS.count))".localizedUppercase, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.middleGray], range: NSRange(location: 0, length: 11))
         sharedWithLabel.attributedText = attributedString
-        sharedWithLabel.font = Text.style7.font
+        sharedWithLabel.font = Text.style30.font
+        sharedWithLabel.setTextSpacingBy(value: 0.8)
         NSLayoutConstraint.activate([
             sharedWithLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
 
         let manageSharingLabel = UILabel(frame: .zero)
         manageSharingLabel.text = "Manage sharing".localized()
-        manageSharingLabel.font = Text.style17.font
+        manageSharingLabel.font = Text.style35.font
         manageSharingLabel.textColor = .primary
         
         let manageSharingImageView = UIImageView(image: UIImage(named: "manageSharing")?.templated)
@@ -446,9 +444,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             subStackView.axis = .vertical
             subStackView.spacing = 8
             subStackView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                subStackView.widthAnchor.constraint(equalToConstant: stackView.frame.width)
-            ])
+
             archivesStackView = subStackView
         } else {
             subviews.forEach { view in
@@ -471,7 +467,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let archiveNameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         archiveNameLabel.text = name
-        archiveNameLabel.font = Text.style7.font
+        archiveNameLabel.font = Text.style34.font
         archiveNameLabel.textColor = .dustyGray
         
         let roleContainer = UIView(frame: .zero)
@@ -495,7 +491,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         roleContainer.addSubview(accessRoleLabel)
         NSLayoutConstraint.activate([
             accessRoleLabel.leadingAnchor.constraint(equalTo: roleContainer.leadingAnchor, constant: 0),
-            accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: -8),
+            accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: 0),
             accessRoleLabel.centerYAnchor.constraint(equalTo: roleContainer.centerYAnchor, constant: 0),
             accessRoleLabel.heightAnchor.constraint(equalToConstant: 18),
             accessRoleLabel.leadingAnchor.constraint(equalTo: roleBGView.leadingAnchor, constant: 8),
