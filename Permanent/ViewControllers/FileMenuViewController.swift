@@ -97,7 +97,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     
         let itemThumbImageView = UIImageView()
         itemThumbImageView.sd_setImage(with: URL(string: fileViewModel.thumbnailURL))
-        itemThumbImageView.contentMode = .scaleAspectFit
+        itemThumbImageView.translatesAutoresizingMaskIntoConstraints = false
+        itemThumbImageView.contentMode = .scaleAspectFill
+        itemThumbImageView.clipsToBounds = true
+        NSLayoutConstraint.activate([
+            itemThumbImageView.widthAnchor.constraint(equalToConstant: 30)
+        ])
         
         let itemNameLabel = UILabel()
         itemNameLabel.text = fileViewModel.name
@@ -145,9 +150,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             handleBar.widthAnchor.constraint(equalToConstant: 32),
             headerStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
             headerStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
-            headerStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
-            headerStackView.heightAnchor.constraint(equalToConstant: 50),
-            itemThumbImageView.widthAnchor.constraint(equalToConstant: 30),
+            headerStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
+            headerStackView.heightAnchor.constraint(equalToConstant: 30),
             doneButton.widthAnchor.constraint(equalToConstant: 50)
         ])
         
@@ -491,10 +495,15 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         accessRoleLabel.setContentCompressionResistancePriority(UILayoutPriority(255), for: .horizontal)
         accessRoleLabel.setContentHuggingPriority(UILayoutPriority(255), for: .horizontal)
         roleContainer.addSubview(accessRoleLabel)
+        
+        let attributedAccessRole = NSAttributedString(string: role.uppercased(), attributes: [NSAttributedString.Key.font: Text.style36.font as Any])
+        let acceessRoleWidth = attributedAccessRole.boundingRect(with: CGSize(width: self.view.frame.width, height: 18), options: [], context: nil).size.width + 16
+        
         NSLayoutConstraint.activate([
             accessRoleLabel.leadingAnchor.constraint(equalTo: roleContainer.leadingAnchor, constant: 0),
             accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: 0),
             accessRoleLabel.centerYAnchor.constraint(equalTo: roleContainer.centerYAnchor, constant: 0),
+            accessRoleLabel.widthAnchor.constraint(equalToConstant: acceessRoleWidth),
             accessRoleLabel.heightAnchor.constraint(equalToConstant: 18),
             accessRoleLabel.leadingAnchor.constraint(equalTo: roleBGView.leadingAnchor, constant: 8),
             accessRoleLabel.trailingAnchor.constraint(equalTo: roleBGView.trailingAnchor, constant: -8),
@@ -628,7 +637,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 30)
+            imageView.widthAnchor.constraint(equalToConstant: 24)
         ])
         
         let nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))

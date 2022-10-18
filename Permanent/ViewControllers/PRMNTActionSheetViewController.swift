@@ -135,7 +135,7 @@ class PRMNTActionSheetViewController: UIViewController {
                 headerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
                 headerView.heightAnchor.constraint(equalToConstant: 50),
                 labelLeadingConstraint,
-                titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: 16),
+                titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
                 titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0),
                 thumbImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
                 thumbImageView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0)
