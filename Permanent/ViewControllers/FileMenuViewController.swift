@@ -161,7 +161,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 80),
+            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             scrollView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 0),
             scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
         ])
@@ -477,6 +477,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let roleContainer = UIView(frame: .zero)
         roleContainer.translatesAutoresizingMaskIntoConstraints = false
         
+        // RoleBGView is needed because roleContainer is too tall otherwise.
         let roleBGView = UIView(frame: .zero)
         roleBGView.translatesAutoresizingMaskIntoConstraints = false
         roleBGView.backgroundColor = .paleYellow
@@ -492,18 +493,14 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         accessRoleLabel.setTextSpacingBy(value: 0.8)
         
         accessRoleLabel.textAlignment = .center
-        accessRoleLabel.setContentCompressionResistancePriority(UILayoutPriority(255), for: .horizontal)
-        accessRoleLabel.setContentHuggingPriority(UILayoutPriority(255), for: .horizontal)
+        archiveNameLabel.setContentCompressionResistancePriority(UILayoutPriority(249), for: .horizontal)
+        archiveNameLabel.setContentHuggingPriority(UILayoutPriority(249), for: .horizontal)
         roleContainer.addSubview(accessRoleLabel)
         
-        let attributedAccessRole = NSAttributedString(string: role.uppercased(), attributes: [NSAttributedString.Key.font: Text.style36.font as Any])
-        let acceessRoleWidth = attributedAccessRole.boundingRect(with: CGSize(width: self.view.frame.width, height: 18), options: [], context: nil).size.width + 16
-        
         NSLayoutConstraint.activate([
-            accessRoleLabel.leadingAnchor.constraint(equalTo: roleContainer.leadingAnchor, constant: 0),
-            accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: 0),
+            accessRoleLabel.leadingAnchor.constraint(equalTo: roleContainer.leadingAnchor, constant: 8),
+            accessRoleLabel.trailingAnchor.constraint(equalTo: roleContainer.trailingAnchor, constant: -8),
             accessRoleLabel.centerYAnchor.constraint(equalTo: roleContainer.centerYAnchor, constant: 0),
-            accessRoleLabel.widthAnchor.constraint(equalToConstant: acceessRoleWidth),
             accessRoleLabel.heightAnchor.constraint(equalToConstant: 18),
             accessRoleLabel.leadingAnchor.constraint(equalTo: roleBGView.leadingAnchor, constant: 8),
             accessRoleLabel.trailingAnchor.constraint(equalTo: roleBGView.trailingAnchor, constant: -8),

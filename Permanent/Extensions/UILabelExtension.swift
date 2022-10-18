@@ -20,10 +20,14 @@ extension UILabel {
     }
     
     func setTextSpacingBy(value: Double) {
-      if let textString = self.text {
-        let attributedString = NSMutableAttributedString(string: textString)
-          attributedString.addAttribute(NSAttributedString.Key.kern, value: value, range: NSRange(location: 0, length: attributedString.length - 1))
-        attributedText = attributedString
-      }
+        if let attributedText = attributedText {
+            let text = NSMutableAttributedString(attributedString: attributedText)
+            text.addAttribute(NSAttributedString.Key.kern, value: value, range: NSRange(location: 0, length: attributedText.length - 1))
+            self.attributedText = text
+        } else if let text {
+            let attributedString = NSMutableAttributedString(string: text)
+            attributedString.addAttribute(NSAttributedString.Key.kern, value: value, range: NSRange(location: 0, length: attributedString.length - 1))
+            attributedText = attributedString
+        }
     }
 }
