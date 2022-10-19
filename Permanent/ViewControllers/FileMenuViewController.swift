@@ -225,6 +225,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             
             self?.loadSubviews()
         }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            guard let fileViewModel = self?.viewModel?.fileViewModel else { return }
+            self?.fileViewModel = fileViewModel
+            
+            self?.loadSubviews()
+        }
     }
     
     func loadSubviews() {

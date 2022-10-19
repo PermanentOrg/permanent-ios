@@ -105,6 +105,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            
+            self?.collectionView.reloadData()
         }
     }
     
