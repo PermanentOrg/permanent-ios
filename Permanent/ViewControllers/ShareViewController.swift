@@ -264,13 +264,12 @@ extension ShareViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.rightButtonTapAction = { [weak self] cell in
             var actions = [
-                PRMNTAction(title: "Edit".localized(), color: .primary, handler: { action in
+                PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
                     self?.editArchive(shareVO: model)
                 })
             ]
             
-            actions.insert(PRMNTAction(title: "Remove".localized(), color: .destructive, handler: { [weak self] action in
-                print("remove")
+            actions.insert(PRMNTAction(title: "Remove".localized(), iconName: "Delete-1", color: .brightRed, handler: { [weak self] action in
                 let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: model.archiveVO?.fullName ?? "")
                 
                 self?.showActionDialog(
