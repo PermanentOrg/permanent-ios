@@ -579,13 +579,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             placeholders: ["Name".localized()],
             prefilledValues: ["\(file.name)"],
             positiveButtonTitle: .rename,
-            positiveAction: {
+            positiveAction: { [weak self] in
+                guard let self = self else { return }
                 guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
                 if inputName.isEmpty {
                     self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
                 } else {
                     self.actionDialog?.dismiss()
-                    self.actionDialog = nil
                     self.rename(file, inputName, atIndexPath: indexPath)
                     self.view.endEditing(true)
                 }

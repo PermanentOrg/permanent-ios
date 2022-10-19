@@ -33,24 +33,18 @@ class SharedFilesUITests: BaseUITestCase {
         sharedFilesPage.testMoreFileOptionsForSharedByMe()
         
         sharedFilesPage.goToSharedWithMeTab()
+        
         sharedFilesPage.enterFolderWithOwnerAccess()
         sleep(1)
         sharedFilesPage.testAddButtonIsPresent()
         
         sharedFilesPage.createNewFolder(name: "a test")
-        ///TO DO -redesign test case, after this bug is resolved : when you are creating a new folder in shared with me section, reload the shared files menu is needed.
-        leftMenu.goToSharedFiles()
-        
-        sharedFilesPage.goToSharedWithMeTab()
-        sharedFilesPage.enterFolderWithOwnerAccess()
         
         sharedFilesPage.renameFirstElementFromFolder(name: "a test folder")
-        leftMenu.goToSharedFiles()
-        
-        sharedFilesPage.goToSharedWithMeTab()
-        sharedFilesPage.enterFolderWithOwnerAccess()
+        sleep(1)
         
         sharedFilesPage.enterFolder(withName: "a test folder")
+        
         sharedFilesPage.enterPhotoLibrary()
         
         let photoLibraryPage = PhotoLibraryPage(app: app, testCase: self)
@@ -61,7 +55,6 @@ class SharedFilesUITests: BaseUITestCase {
         sharedFilesPage.processUpload()
         
         sharedFilesPage.renameFirstElementFromFolder(name: "uploaded file")
-        
         sleep(1)
         
         sharedFilesPage.downloadFirstElementFromFolder()
@@ -83,10 +76,6 @@ class SharedFilesUITests: BaseUITestCase {
         sharedFilesPage.goBack()
         
         sharedFilesPage.testMoreFileOptionsMenuOwnerAccess()
-        
-        leftMenu.goToSharedFiles()
-        
-        sharedFilesPage.goToSharedWithMeTab()
         
         sharedFilesPage.enterFolderWithViewerAccess()
         
