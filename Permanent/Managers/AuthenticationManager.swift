@@ -20,7 +20,11 @@ class AuthenticationManager {
     }
     
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
-    var session: PermSession?
+    var session: PermSession? {
+        didSet {
+            PermSession.currentSession = session
+        }
+    }
     
     init() {
         NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [self] notification in

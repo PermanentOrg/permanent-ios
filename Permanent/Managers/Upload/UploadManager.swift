@@ -36,42 +36,42 @@ class UploadManager {
         }
         
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
-            return
-        }
-        
-        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
-        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    return
-                }
-
-                if model.results[0].data?[0].accountVO?.spaceLeft ?? 0 > filesSize {
-                    DispatchQueue.main.async {
+//        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+//            return
+//        }
+//
+//        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
+//        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+//            switch result {
+//            case .json(let response, _):
+//                guard
+//                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+//                    model.isSuccessful
+//                else {
+//                    return
+//                }
+//
+//                if model.results[0].data?[0].accountVO?.spaceLeft ?? 0 > filesSize {
+//                    DispatchQueue.main.async {
                         for file in files {
                             self.upload(file: file)
                         }
                         
                         self.refreshQueue()
-                    }
-                } else {
-                    NotificationCenter.default.post(name: Self.quotaExceededNotification, object: self, userInfo: nil)
-                }
-               
-                return
-                
-            case .error:
-                return
-                
-            default:
-                break
-            }
-        }
+//                    }
+//                } else {
+//                    NotificationCenter.default.post(name: Self.quotaExceededNotification, object: self, userInfo: nil)
+//                }
+//
+//                return
+//
+//            case .error:
+//                return
+//
+//            default:
+//                break
+//            }
+//        }
     }
     
     func upload(file: FileInfo, shouldRefreshQueue: Bool = false) {

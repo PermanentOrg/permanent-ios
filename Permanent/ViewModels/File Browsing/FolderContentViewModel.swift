@@ -10,6 +10,7 @@ import Foundation
 class FolderContentViewModel: ViewModelInterface {
     static let didUpdateFilesNotification = Notification.Name("FolderContentViewModel.didUpdateFilesNotification")
     
+    let session: PermSession!
     let folder: FileViewModel
     let filesRepository: FilesRepository
     
@@ -19,9 +20,16 @@ class FolderContentViewModel: ViewModelInterface {
         }
     }
     
-    init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository()) {
+    var isGridView: Bool {
+        get {
+            session.isGridView
+        }
+    }
+    
+    init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession?) {
         self.folder = folder
         self.filesRepository = filesRepository
+        self.session = session
         
         refreshFolder()
     }
@@ -30,5 +38,21 @@ class FolderContentViewModel: ViewModelInterface {
         filesRepository.folderContent(archiveNo: folder.archiveNo, folderLinkId: folder.folderLinkId) { files, error in
             self.files = files
         }
+    }
+    
+    func insertFile(_ file: FileViewModel) {
+        files.insert(file, at: 0)
+    }
+    
+    func numberOfSections() -> Int {
+        return 1
+    }
+    
+    func numberOfItems(inSection section: Int) -> Int {
+        return files.count
+    }
+    
+    func fileForRow(atIndexPath indexPath: IndexPath) -> FileViewModel {
+        return files[indexPath.row]
     }
 }

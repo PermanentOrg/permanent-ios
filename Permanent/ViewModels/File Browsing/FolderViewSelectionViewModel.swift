@@ -24,7 +24,7 @@ class FolderViewSelectionViewModel: ViewModelInterface {
         }
     }
     
-    init(session: PermSession? = AuthenticationManager.shared.session) {
+    init(session: PermSession? = PermSession.currentSession) {
         self.session = session
     }
 }

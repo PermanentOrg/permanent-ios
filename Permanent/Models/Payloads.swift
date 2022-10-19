@@ -128,59 +128,6 @@ struct Payloads {
         ]
     }
     
-    static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
-        if params.folderLinkId != -1 {
-            return [
-                "RequestVO": [
-                    "data": [
-                        [
-                            "FolderVO": [
-                                "archiveNbr": params.archiveNo,
-                                "folder_linkId": "\(params.folderLinkId)"
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        } else {
-            return [
-                "RequestVO": [
-                    "data": [
-                        [
-                            "FolderVO": [
-                                "archiveNbr": params.archiveNo
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        }
-    }
-        
-    static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
-        let childItemsDict = params.folderLinkIds.map {
-            [
-                "folder_linkId": $0
-            ]
-        }
-        let dict = [
-            "RequestVO": [
-                "data": [
-                    [
-                        "FolderVO": [
-                            "archiveNbr": params.archiveNo,
-                            "sort": params.sortOption.apiValue,
-                            "ChildItemVOs": childItemsDict,
-                            "folder_linkId": params.folderLinkId
-                        ]
-                    ]
-                ]
-            ]
-        ]
-        
-        return dict
-    }
-    
     static func uploadFileMetaPayload(for params: FileMetaParams) -> RequestParameters {
         return [
             "RequestVO": [
@@ -191,71 +138,6 @@ struct Payloads {
                             "parentFolder_linkId": params.folderLinkId,
                             "displayName": params.filename,
                             "uploadFileName": params.filename
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-
-    static func getPresignedUrlPayload(for params: GetPresignedUrlParams) -> RequestParameters {
-        let dict = [
-            "RequestVO": [
-                "data": [
-                    [
-                        "RecordVO": [
-                            "parentFolderId": params.folderId,
-                            "parentFolder_linkId": params.folderLinkId,
-                            "displayName": params.filename,
-                            "uploadFileName": params.filename,
-                            "size": params.fileSize,
-                            "derivedCreatedDT": params.derivedCreatedDT as Any
-                        ],
-                        "SimpleVO": [
-                            "key": "type",
-                            "value": params.fileMimeType ?? "application/octet-stream"
-                        ]
-                    ]
-                ]
-            ]
-        ]
-        return dict
-    }
-
-    static func registerRecord(for params: RegisterRecordParams) -> RequestParameters {
-        var recordVO: [String: Any] = [
-            "parentFolderId": params.folderId,
-            "parentFolder_linkId": params.folderLinkId,
-            "displayName": params.filename,
-            "uploadFileName": params.filename
-        ]
-        if let createdDT = params.derivedCreatedDT {
-            recordVO["derivedCreatedDT"] = createdDT
-        }
-        
-        let dict = [
-            "RequestVO": [
-                "data": [
-                    "RecordVO": recordVO,
-                    "SimpleVO": [
-                        "key": params.s3Url,
-                        "value": params.destinationUrl
-                    ]
-                ]
-            ]
-        ]
-
-        return dict
-    }
-
-    static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "FolderVO": [
-                            "displayName": params.filename,
-                            "parentFolder_linkId": params.folderLinkId
                         ]
                     ]
                 ]
@@ -388,43 +270,6 @@ struct Payloads {
                     [:]
                 ]
             ]
-        ]
-    }
-    
-    static func updateRecordRequest(params: UpdateRecordParams) -> RequestParameters {
-        var recordVO: [String: Any] = [
-            "recordId": params.recordId,
-            "archiveNbr": params.archiveNbr,
-            "folder_linkId": params.folderLinkId
-        ]
-        
-        if let name = params.name {
-            recordVO["displayName"] = name
-        }
-        if let description = params.description {
-            recordVO["description"] = description
-        }
-        if let date = params.date {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            
-            recordVO["displayDT"] = dateFormatter.string(from: date)
-        }
-        if let location = params.location,
-            let locationJson = try? JSONEncoder().encode(location),
-            let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
-            recordVO["locnVO"] = locationDict
-        }
-        
-        return [
-            "RequestVO":
-                [
-                    "data": [
-                        [
-                            "RecordVO": recordVO
-                        ]
-                    ]
-                ]
         ]
     }
     
@@ -622,22 +467,6 @@ struct Payloads {
         ]
     }
     
-    static func unshareRecord(archiveId: Int, folderLinkId: Int) -> RequestParameters {
-        return [
-            "RequestVO":
-                [
-                    "data": [
-                        [
-                            "ShareVO": [
-                                "folder_linkId": folderLinkId,
-                                "archiveId": archiveId
-                            ]
-                        ]
-                    ]
-                ]
-        ]
-    }
-    
     static func acceptArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
         var modifiedArchive: Any = []
         let archive = archiveVO
@@ -689,28 +518,6 @@ struct Payloads {
                                 "primaryEmail": primaryEmail,
                                 "accessRole": AccessRole.apiRoleForValue(.owner)
                             ]
-                        ]
-                    ]
-                ]
-        ]
-    }
-    
-    static func renameFolderRequest(params: UpdateRecordParams) -> RequestParameters {
-        var folderVO: [String: Any] = [
-            "folderId": params.recordId,
-            "archiveNbr": params.archiveNbr,
-            "folder_linkId": params.folderLinkId
-        ]
-        
-        if let name = params.name {
-            folderVO["displayName"] = name
-        }
-        return [
-            "RequestVO":
-                [
-                    "data": [
-                        [
-                            "FolderVO": folderVO
                         ]
                     ]
                 ]
@@ -822,26 +629,6 @@ struct Payloads {
                             ]
                         ]
                     ]
-                ]
-        ]
-    }
-    
-    static func updateRootColumns(_ params: UpdateRootColumnsParams) -> RequestParameters {
-        return [
-            "RequestVO":
-                [
-                    "data":
-                        [
-                            [
-                                "FolderVO":
-                                    [
-                                        "archiveNbr": params.folderArchiveNbr,
-                                        "folderId": params.folderId,
-                                        "folder_linkId": params.folderLinkId,
-                                        "thumbArchiveNbr": params.thumbArchiveNbr
-                                    ]
-                            ]
-                        ]
                 ]
         ]
     }

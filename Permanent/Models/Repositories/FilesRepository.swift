@@ -21,4 +21,8 @@ class FilesRepository {
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
         remoteDataSource.createNewFolder(name: name, folderLinkId: folderLinkId, completion: completion)
     }
+    
+    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        remoteDataSource.getPrivateRoot(completion: completion)
+    }
 }

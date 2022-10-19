@@ -10,6 +10,7 @@ import Foundation
 protocol FilesRemoteDataSourceInterface {
     func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void))
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void))
+    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
 }
 
 class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
@@ -46,7 +47,34 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func navigateMin(params: NavigateMinParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        let apiOperation = APIOperation(FilesEndpoint.getRoot)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    completion(nil, APIError.parseError)
+                    return
+                }
+                
+                if model.isSuccessful == true {
+                    self.onGetRootSuccess(model, completion)
+                } else {
+                    completion(nil, APIError.parseError)
+                }
+                
+            case .error(let error, _):
+                completion(nil, error)
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    // MARK: - Private
+    private func navigateMin(params: NavigateMinParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -68,7 +96,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func onNavigateMinSuccess(_ model: NavigateMinResponse, sortOption: SortOption = .nameAscending, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func onNavigateMinSuccess(_ model: NavigateMinResponse, sortOption: SortOption = .nameAscending, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
@@ -85,7 +113,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         getLeanItems(params: params, then: handler)
     }
     
-    func getLeanItems(params: GetLeanItemsParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func getLeanItems(params: GetLeanItemsParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.getLeanItems(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -111,7 +139,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS
@@ -128,11 +156,25 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         
         handler(viewModels, nil)
     }
+    
+    private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO,
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder })
+        else {
+            handler(nil, APIError.clientError)
+            return
+        }
+        
+        let folder = FileViewModel(model: myFilesFolder)
+        handler(folder, nil)
+    }
 }
 
 class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
     var folderContentMockFiles: [FileViewModel] = []
     var newFolderMock: FileViewModel?
+    var privateRootMock: FileViewModel?
     
     func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
         completion(folderContentMockFiles, nil)
@@ -141,4 +183,9 @@ class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
         completion(newFolderMock, nil)
     }
+    
+    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        completion(privateRootMock, nil)
+    }
 }
+

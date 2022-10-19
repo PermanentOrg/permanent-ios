@@ -158,7 +158,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             case .synced:
                 fileImageView.contentMode = .scaleAspectFill
                 if let fileURL = URL(string: model.thumbnailURL) {
-                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
+//                    fileImageView.sd_setImage(with: fileURL, placeholderImage: .placeholder)
                 } else {
                     activityIndicator.startAnimating()
                 }
@@ -239,7 +239,7 @@ class FileCollectionViewCell: UICollectionViewCell {
                 
                 let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
                 imageView.constraintToSquare(20)
-                imageView.sd_setImage(with: thumbnailUrl)
+//                imageView.sd_setImage(with: thumbnailUrl)
                 sharingInfoStackView.addArrangedSubview(imageView)
             }
             
