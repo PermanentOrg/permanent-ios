@@ -106,6 +106,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 }
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let shareLinkVM = notif.object as? ShareLinkViewModel,
+                  let index = self?.viewModel?.viewModels.firstIndex(where: { $0.recordId == shareLinkVM.fileViewModel.recordId })
+            else {
+                return
+            }
+            self?.viewModel?.viewModels[index].fileStatus = shareLinkVM.fileViewModel.fileStatus
+            self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
+            self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            
+            self?.collectionView.reloadData()
+        }
     }
     
     override func viewDidLayoutSubviews() {
