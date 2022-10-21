@@ -444,7 +444,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let maxArchivesShown = showAllArchives ? fileViewModel.minArchiveVOS.count : min(fileViewModel.minArchiveVOS.count, 2)
         for (idx, archive) in fileViewModel.minArchiveVOS[0 ..< maxArchivesShown].enumerated() {
-            let accessRole = ShareStatus.status(forValue: archive.shareStatus) == .pending  ? "Pending".localized() : AccessRole.roleForValue(archive.accessRole).groupName
+            let accessRole = ShareStatus.status(forValue: archive.shareStatus) == .pending  ? "Pending...".localized() : AccessRole.roleForValue(archive.accessRole).groupName
             
             let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", role: accessRole, imagePath: archive.thumbnail, tag: idx + 1)
             subviews.append(archiveStackView)
@@ -487,7 +487,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         // RoleBGView is needed because roleContainer is too tall otherwise.
         let roleBGView = UIView(frame: .zero)
         roleBGView.translatesAutoresizingMaskIntoConstraints = false
-        roleBGView.backgroundColor = .paleYellow
+        if !role.lowercased().contains("pending") { roleBGView.backgroundColor = .paleYellow }
         roleBGView.layer.cornerRadius = 3
         roleBGView.layer.masksToBounds = true
         roleContainer.addSubview(roleBGView)
