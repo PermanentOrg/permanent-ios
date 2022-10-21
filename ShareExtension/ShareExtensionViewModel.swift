@@ -19,6 +19,8 @@ class ShareExtensionViewModel: ViewModelInterface {
     init(session: PermSession? = try? SessionKeychainHandler().savedSession(), currentArchive: ArchiveVOData? = nil) {
         self.session = session
         self.currentArchive = currentArchive ?? session?.selectedArchive
+        
+        PermSession.currentSession = session
     }
     
     func archiveName() -> String {

@@ -19,7 +19,8 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     @IBOutlet weak var separatorOneView: UIView!
     @IBOutlet weak var userNameImageView: UIImageView!
     @IBOutlet weak var saveFolderImageView: UIImageView!
-
+    @IBOutlet weak var selectFolderButton: UIButton!
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return [.portrait]
@@ -127,6 +128,13 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     
     @objc func didTapCancel() {
         extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
+    }
+    
+    @IBAction func selectFolderButtonPressed(_ sender: Any) {
+        let selectFolderVC = ShareFileBrowserViewController()
+//        let navController = UINavigationController(rootViewController: selectFolderVC)
+        
+        present(selectFolderVC, animated: true)
     }
 }
 

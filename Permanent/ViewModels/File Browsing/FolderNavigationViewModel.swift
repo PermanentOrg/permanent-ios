@@ -9,6 +9,7 @@ import Foundation
 
 class FolderNavigationViewModel: ViewModelInterface {
     static let didUpdateFolderStackNotification = Notification.Name("FolderNavigationViewModel.didUpdateFolderStackNotification")
+    static let didPopFolderNotification = Notification.Name("FolderNavigationViewModel.didPopFolderNotification")
     
     var workspaceName: String
     var folderStack: [FileViewModel] = [] {
@@ -41,6 +42,8 @@ class FolderNavigationViewModel: ViewModelInterface {
         guard folderStack.isEmpty == false else { return }
         
         _ = folderStack.popLast()
+        
+        NotificationCenter.default.post(name: Self.didPopFolderNotification, object: self, userInfo: nil)
     }
     
     func popToFolder(_ folder: FileViewModel) {

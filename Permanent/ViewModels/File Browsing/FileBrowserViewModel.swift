@@ -8,6 +8,8 @@
 import Foundation
 
 class FileBrowserViewModel: ViewModelInterface {
+    static let didUpdateContentViewModels = Notification.Name("FileBrowserViewModel.didUpdateContentViewModels")
+    
     let session: PermSession!
     let filesRepository: FilesRepository
     
@@ -15,13 +17,29 @@ class FileBrowserViewModel: ViewModelInterface {
     let sortViewModel: FolderSortViewModel = FolderSortViewModel()
     let viewSelectionViewModel: FolderViewSelectionViewModel = FolderViewSelectionViewModel()
     
-    var contentViewModels: [FolderContentViewModel] = []
+    var contentViewModels: [FolderContentViewModel] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Self.didUpdateContentViewModels, object: self)
+        }
+    }
     
     init(filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
         self.filesRepository = filesRepository
         self.session = session
         
         loadRootFolder()
+        
+        NotificationCenter.default.addObserver(forName: FolderContentViewModel.didSelectFileNotification, object: nil, queue: nil) { [weak self] notif in
+            guard let file = notif.userInfo?["file"] as? FileViewModel else { return }
+            
+            if file.type.isFolder {
+                self?.navigateToFolder(file)
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: FolderNavigationViewModel.didPopFolderNotification, object: nil, queue: nil) { [weak self] notif in
+            self?.navigateBack()
+        }
     }
     
     func loadRootFolder() {
@@ -34,7 +52,7 @@ class FileBrowserViewModel: ViewModelInterface {
     }
     
     func navigateBack() {
-        navigationViewModel.popFolder()
+//        navigationViewModel.popFolder()
         _ = contentViewModels.popLast()
     }
     

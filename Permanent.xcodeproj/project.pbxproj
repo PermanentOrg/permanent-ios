@@ -517,6 +517,11 @@
 		F559F8B028FF032A0015A522 /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
 		F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */; };
 		F559F8B228FF03720015A522 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
+		F559F8B5290164000015A522 /* ShareFileBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */; };
+		F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4728AD62060062D9EB /* FileCollectionViewCell.xib */; };
+		F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */; };
+		F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
+		F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
@@ -1059,6 +1064,8 @@
 		F559F88428F9D91D0015A522 /* FileBrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowserViewModel.swift; sourceTree = "<group>"; };
 		F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveDestinationBrowserViewModel.swift; sourceTree = "<group>"; };
 		F559F88928FEBCC10015A522 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
+		F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFileBrowserViewController.swift; sourceTree = "<group>"; };
+		F559F8B929017CE80015A522 /* FolderNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationView.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
@@ -1584,6 +1591,7 @@
 				5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */,
 				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */,
+				F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */,
 				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
 				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5ED06F45286B2BD5006C126B /* Info.plist */,
@@ -2337,6 +2345,7 @@
 			isa = PBXGroup;
 			children = (
 				F559F88928FEBCC10015A522 /* FolderContentView.swift */,
+				F559F8B929017CE80015A522 /* FolderNavigationView.swift */,
 			);
 			path = "File Browsing";
 			sourceTree = "<group>";
@@ -2625,6 +2634,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */,
 				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
 				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
@@ -2632,6 +2642,7 @@
 				5ED4B9C3287597E400CF044B /* Assets.xcassets in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
 				5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */,
+				F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */,
 				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2897,6 +2908,7 @@
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
+				F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */,
 				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
@@ -3248,9 +3260,11 @@
 				F51B3322288B0B8D00EA15DA /* FileType.swift in Sources */,
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
+				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
 				5ED4B9CF2876E02A00CF044B /* ShareVO.swift in Sources */,
 				F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */,
 				5E2EE3B32881CB150072D635 /* ViewModelDelegateInterface.swift in Sources */,
+				F559F8B5290164000015A522 /* ShareFileBrowserViewController.swift in Sources */,
 				5E83CC49286C601C00A5775B /* StringExtension.swift in Sources */,
 				F559F89528FEE99E0015A522 /* APIError.swift in Sources */,
 				F559F8AC28FF02AE0015A522 /* UploadOperation.swift in Sources */,
