@@ -7,20 +7,22 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 
 class FolderContentView: UIView {
     var viewModel: FolderContentViewModel? {
         didSet {
             collectionView.reloadData()
             
-            activityIndicator.isHidden = !(viewModel?.isLoading ?? false)
-            activityIndicator.startAnimating()
-            collectionView.isHidden = viewModel?.isLoading ?? false
+            if let viewModel = viewModel, viewModel.isLoading {
+                showAnimatedGradientSkeleton()
+            } else {
+                hideSkeleton()
+            }
         }
     }
     let collectionViewLayout: UICollectionViewFlowLayout
     let collectionView: UICollectionView
-    let activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     
     init(viewModel: FolderContentViewModel? = nil) {
         self.viewModel = viewModel
@@ -39,9 +41,7 @@ class FolderContentView: UIView {
                 return
             }
             
-            self.activityIndicator.isHidden = true
-            self.activityIndicator.stopAnimating()
-            self.collectionView.isHidden = false
+            self.hideSkeleton()
             self.collectionView.reloadData()
         }
     }
@@ -52,11 +52,8 @@ class FolderContentView: UIView {
     
     func initUI() {
         backgroundColor = .backgroundPrimary
-        
-        activityIndicator.tintColor = .gray
-        activityIndicator.startAnimating()
-        activityIndicator.isHidden = !(viewModel?.isLoading ?? false)
-        addSubview(activityIndicator)
+        isSkeletonable = true
+        collectionView.isSkeletonable = true
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
@@ -68,8 +65,6 @@ class FolderContentView: UIView {
         addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0),
-            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             collectionView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
@@ -83,6 +78,8 @@ class FolderContentView: UIView {
         flowLayout.estimatedItemSize = .zero
         collectionView.collectionViewLayout = flowLayout
         collectionView.collectionViewLayout.invalidateLayout()
+        
+        showAnimatedGradientSkeleton()
     }
     
     func invalidateLayout() {
@@ -92,7 +89,19 @@ class FolderContentView: UIView {
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
-extension FolderContentView: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollectionViewDataSource {
+    func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        let isGridView = (viewModel?.isGridView ?? false) == true
+        return isGridView ? "FileGridCell" : "FileCell"
+    }
+    
+    func collectionSkeletonView(_ skeletonView: UICollectionView, prepareCellForSkeleton cell: UICollectionViewCell, at indexPath: IndexPath) {
+        guard let cell = cell as? FileCollectionViewCell else { return }
+        
+        cell.fileNameLabel.text = "Long file name text file, test test test"
+        cell.fileDateLabel.text = "2022-10-10"
+    }
+
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         viewModel?.numberOfSections() ?? 0
     }
@@ -124,7 +133,7 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let listItemSize = CGSize(width: collectionView.bounds.width, height: 70)
+        let listItemSize = CGSize(width: collectionView.bounds.width - 12, height: 70)
         // Horizontal layout: |-6-cell-6-cell-6-|. 6*3/2 = 9
         // Vertical size: 30 is the height of the title label
         let gridItemSize = CGSize(width: UIScreen.main.bounds.width / 2 - 9, height: UIScreen.main.bounds.width / 2 + 30)
