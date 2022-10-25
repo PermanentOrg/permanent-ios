@@ -54,7 +54,7 @@ class ArchiveTableViewCell: UITableViewCell {
         }
         
         bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
-        moreButton.isHidden = ShareStatus.status(forValue: model.status ?? "") == .pending
+        moreButton.isHidden = ShareStatus.status(forValue: model.status ?? "") == .pending || AccessRole.roleForValue(model.accessRole).groupName == .owner
     }
     
     func hideBottomButtons(status: Bool ) {
