@@ -421,20 +421,21 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
+        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFile?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
         if let navigationStackCount = viewModel?.navigationStack.count,
             navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
                 styled: .simpleWithDescription,
-                withTitle: "Discard selection",
-                description: "Are you sure you want to discard selection and navigate back?".localized(),
-                positiveButtonTitle: "Yes, discard selected file".localized(),
+                withTitle: "Cancel Move?".localized(),
+                description: "Moving files or folders outside of the shared folder in which they are currently located is not permitted at this time. You can cancel this move action or continue to choose a destination for the selected \(fileTypeString).".localized(),
+                positiveButtonTitle: "Continue".localized(),
                 positiveAction: {
                     self.actionDialog?.dismiss()
                     self.viewModel?.fileAction = .none
                     self.viewModel?.selectedFile = nil
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
-                },
+                },cancelButtonTitle: "Cancel Move".localized(),
                 cancelButtonColor: .gray,
                 overlayView: overlayView
             )

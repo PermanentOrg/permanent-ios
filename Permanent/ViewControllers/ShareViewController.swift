@@ -101,19 +101,19 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                 if let fieldsInput = self?.actionDialog?.fieldsInput,
                    let roleValue = fieldsInput.first {
                     let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
-                    
+                    let fileTypeString: String = FileType(rawValue: shareVO.type ?? "")?.isFolder ?? false ? "folder" : "file"
                     if accessRole == .owner {
                         self?.actionDialog?.dismissPopup(
                             self?.actionDialog,
                             overlayView: self?.overlayView,
-                            completion: { _ in
+                            completion: { [weak self] _ in
                                 self?.actionDialog?.removeFromSuperview()
                                 self?.actionDialog = nil
                                 guard var archiveName = archiveVO.fullName else { return }
                                 archiveName = "The \(archiveName) Archive"
                                 self?.showActionDialog(styled: .simpleWithDescription,
-                                                       withTitle: "Are you sure?",
-                                                       description: "You want to share this item with \(archiveName) as an owner",
+                                                       withTitle: "Add owner",
+                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
                                                        positiveButtonTitle: "Add owner",
                                                        positiveAction: { [weak self] in
                                     self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
