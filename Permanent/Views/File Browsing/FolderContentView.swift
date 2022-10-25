@@ -18,16 +18,18 @@ class FolderContentView: UIView {
                 showAnimatedGradientSkeleton()
             } else {
                 hideSkeleton()
+                showEmptyFolderIfNeeded()
             }
         }
     }
     let collectionViewLayout: UICollectionViewFlowLayout
     let collectionView: UICollectionView
+    let emptyView = EmptyFolderView(title: .emptyFolderMessage, image: .emptyFolder)
     
     init(viewModel: FolderContentViewModel? = nil) {
         self.viewModel = viewModel
-        self.collectionViewLayout = UICollectionViewFlowLayout()
-        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionViewLayout = UICollectionViewFlowLayout()
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         
         super.init(frame: .zero)
         
@@ -42,6 +44,7 @@ class FolderContentView: UIView {
             }
             
             self.hideSkeleton()
+            self.showEmptyFolderIfNeeded()
             self.collectionView.reloadData()
         }
     }
@@ -61,23 +64,30 @@ class FolderContentView: UIView {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.isHidden = viewModel?.isLoading ?? false
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         addSubview(collectionView)
         
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
-            collectionView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-            collectionView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
-            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
-        ])
-        
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
         flowLayout.estimatedItemSize = .zero
         collectionView.collectionViewLayout = flowLayout
         collectionView.collectionViewLayout.invalidateLayout()
+        
+        emptyView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(emptyView)
+        showEmptyFolderIfNeeded()
+        
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            collectionView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            collectionView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
+            emptyView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor, constant: 0),
+            emptyView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor, constant: 0),
+            emptyView.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: 0),
+            emptyView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 0),
+        ])
         
         showAnimatedGradientSkeleton()
     }
@@ -86,6 +96,14 @@ class FolderContentView: UIView {
         collectionView.collectionViewLayout.invalidateLayout()
         collectionView.reloadData()
     }
+    
+    func showEmptyFolderIfNeeded() {
+        if viewModel?.isLoading == false && viewModel?.files.isEmpty == true {
+            emptyView.isHidden = false
+        } else {
+            emptyView.isHidden = true
+        }
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout, UICollectionViewDataSource
@@ -93,6 +111,10 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
     func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> ReusableCellIdentifier {
         let isGridView = (viewModel?.isGridView ?? false) == true
         return isGridView ? "FileGridCell" : "FileCell"
+    }
+    
+    func collectionSkeletonView(_ skeletonView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 4
     }
     
     func collectionSkeletonView(_ skeletonView: UICollectionView, prepareCellForSkeleton cell: UICollectionViewCell, at indexPath: IndexPath) {

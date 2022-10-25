@@ -461,6 +461,9 @@
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
 		F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209BD285B483E006DCF9F /* PermSession.swift */; };
 		F54861FA28912F4300500F6F /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54861F928912F4300500F6F /* SessionTests.swift */; };
+		F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
+		F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
+		F55252A22907F6250005E011 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
 		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
@@ -2635,11 +2638,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */,
+				F55252A22907F6250005E011 /* Localizable.strings in Resources */,
 				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
 				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
 				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
 				5ED4B9C3287597E400CF044B /* Assets.xcassets in Resources */,
+				F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
 				5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */,
 				F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */,
@@ -3310,6 +3315,7 @@
 				5E5DCAF9286DDC4300894D47 /* FileDetailsTableViewCell.swift in Sources */,
 				F559F89228FEE9740015A522 /* FilesRemoteDataSource.swift in Sources */,
 				5ED4B9D32876E05400CF044B /* ParentFolderVO.swift in Sources */,
+				F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
