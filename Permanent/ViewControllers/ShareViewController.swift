@@ -88,7 +88,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         guard let archiveVO = shareVO.archiveVO else { return }
         
         let accessRoles = AccessRole.allCases
-            .filter { $0 != .owner && $0 != .manager }
+            .filter { $0 != .manager }
             .map { $0.groupName }
         
         self.showActionDialog(
@@ -99,27 +99,31 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
             positiveButtonTitle: "Update".localized(),
             positiveAction: { [weak self] in
                 if let fieldsInput = self?.actionDialog?.fieldsInput,
-                let roleValue = fieldsInput.first {
-                    self?.showSpinner()
-                    
+                   let roleValue = fieldsInput.first {
                     let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
-                    self?.viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
-                        self?.hideSpinner()
-                        
-                        switch status {
-                        case .success:
-                            self?.view.showNotificationBanner(title: "Access role was successfully changed".localized())
-                            
-                        case .error(let errorMessage):
-                            self?.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
-                        }
-                        
-                        self?.getShareLink(option: .retrieve)
-                    })
+                    let fileTypeString: String = FileType(rawValue: shareVO.type ?? "")?.isFolder ?? false ? "folder" : "file"
+                    if accessRole == .owner {
+                        self?.actionDialog?.dismissPopup(
+                            self?.actionDialog,
+                            overlayView: self?.overlayView,
+                            completion: { [weak self] _ in
+                                self?.actionDialog?.removeFromSuperview()
+                                self?.actionDialog = nil
+                                guard var archiveName = archiveVO.fullName else { return }
+                                archiveName = "The \(archiveName) Archive"
+                                self?.showActionDialog(styled: .simpleWithDescription,
+                                                       withTitle: "Add owner".localized(),
+                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
+                                                       positiveButtonTitle: "Add owner".localized(),
+                                                       positiveAction: { [weak self] in
+                                    self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
+                                }, overlayView: self?.overlayView)
+                            }
+                        )
+                    } else {
+                        self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
+                    }
                 }
-                
-                self?.actionDialog?.dismiss()
-                self?.actionDialog = nil
             },
             overlayView: self.overlayView
         )
@@ -131,6 +135,26 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     
     @objc func closeButtonPressed(_ sender: UIBarButtonItem) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    fileprivate func changeFilePermission(shareVO: ShareVOData, accessRole: AccessRole) {
+        showSpinner()
+        
+        viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
+            self.hideSpinner()
+            
+            switch status {
+            case .success:
+                self.view.showNotificationBanner(title: "Access role was successfully changed".localized())
+                
+            case .error(let errorMessage):
+                self.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
+            }
+            
+            self.getShareLink(option: .retrieve)
+        })
+        actionDialog?.dismiss()
+        actionDialog = nil
     }
     
     // MARK: - Network Requests
