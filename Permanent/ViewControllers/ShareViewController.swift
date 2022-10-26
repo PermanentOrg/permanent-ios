@@ -112,9 +112,9 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
                                 guard var archiveName = archiveVO.fullName else { return }
                                 archiveName = "The \(archiveName) Archive"
                                 self?.showActionDialog(styled: .simpleWithDescription,
-                                                       withTitle: "Add owner",
-                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
-                                                       positiveButtonTitle: "Add owner",
+                                                       withTitle: "Add owner".localized(),
+                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
+                                                       positiveButtonTitle: "Add owner".localized(),
                                                        positiveAction: { [weak self] in
                                     self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
                                 }, overlayView: self?.overlayView)
