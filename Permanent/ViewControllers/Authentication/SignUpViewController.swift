@@ -73,20 +73,22 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     
     @IBAction
     func alreadyMemberAction(_ sender: UIButton) {
-        showSpinner()
-        AuthenticationManager.shared.performLoginFlow(fromPresentingVC: self) { [self] status in
-            hideSpinner()
-            
-            if status == .success {
-                if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
-                    AppDelegate.shared.rootViewController.setDrawerRoot()
-                } else {
-                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
-                }
-            } else {
-                showErrorAlert(message: .errorMessage)
-            }
-        }
+        let vc = UIViewController.create(withIdentifier: .login, from: .authentication)
+        navigationController?.pushViewController(vc, animated: true)
+//        showSpinner()
+//        AuthenticationManager.shared.performLoginFlow(fromPresentingVC: self) { [self] status in
+//            hideSpinner()
+//
+//            if status == .success {
+//                if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
+//                    AppDelegate.shared.rootViewController.setDrawerRoot()
+//                } else {
+//                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+//                }
+//            } else {
+//                showErrorAlert(message: .errorMessage)
+//            }
+//        }
     }
     
     func signUp() {

@@ -159,6 +159,10 @@
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
 		5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
+		5EC9C693290B323000AD2E37 /* CodeVerificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC9C690290B322F00AD2E37 /* CodeVerificationController.swift */; };
+		5EC9C694290B323000AD2E37 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC9C691290B323000AD2E37 /* LoginViewController.swift */; };
+		5EC9C695290B323000AD2E37 /* TwoStepVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC9C692290B323000AD2E37 /* TwoStepVerificationViewController.swift */; };
+		5EC9C69B290BD36A00AD2E37 /* RecoverPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC9C69A290BD36A00AD2E37 /* RecoverPasswordViewController.swift */; };
 		5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */; };
 		5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED06F42286B2BD5006C126B /* MainInterface.storyboard */; };
 		5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -709,6 +713,10 @@
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenChooseArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		5EC9C690290B322F00AD2E37 /* CodeVerificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeVerificationController.swift; sourceTree = "<group>"; };
+		5EC9C691290B323000AD2E37 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		5EC9C692290B323000AD2E37 /* TwoStepVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewController.swift; sourceTree = "<group>"; };
+		5EC9C69A290BD36A00AD2E37 /* RecoverPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverPasswordViewController.swift; sourceTree = "<group>"; };
 		5ED06F3E286B2BD5006C126B /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
 		5ED06F43286B2BD5006C126B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -2002,6 +2010,10 @@
 			isa = PBXGroup;
 			children = (
 				06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */,
+				5EC9C691290B323000AD2E37 /* LoginViewController.swift */,
+				5EC9C69A290BD36A00AD2E37 /* RecoverPasswordViewController.swift */,
+				5EC9C692290B323000AD2E37 /* TwoStepVerificationViewController.swift */,
+				5EC9C690290B322F00AD2E37 /* CodeVerificationController.swift */,
 				BC3DF864252DDCCC003D3829 /* BiometricsViewController.swift */,
 			);
 			path = Authentication;
@@ -2787,6 +2799,7 @@
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
+				5EC9C695290B323000AD2E37 /* TwoStepVerificationViewController.swift in Sources */,
 				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
@@ -2797,6 +2810,7 @@
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
 				06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */,
+				5EC9C694290B323000AD2E37 /* LoginViewController.swift in Sources */,
 				5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
@@ -3021,6 +3035,7 @@
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
+				5EC9C693290B323000AD2E37 /* CodeVerificationController.swift in Sources */,
 				F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */,
 				F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,
@@ -3033,6 +3048,7 @@
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				5EC9C69B290BD36A00AD2E37 /* RecoverPasswordViewController.swift in Sources */,
 				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
 				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,
 				F5EEB4D62821556C00D584AD /* AccountOnboardingViewModel.swift in Sources */,
