@@ -14,12 +14,13 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var userNameLabel: UILabel!
+    @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var saveFolderLabel: UILabel!
     @IBOutlet weak var separatorOneView: UIView!
-    @IBOutlet weak var userNameImageView: UIImageView!
+    @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var saveFolderImageView: UIImageView!
     @IBOutlet weak var selectFolderButton: UIButton!
+    @IBOutlet weak var selectArchiveButton: UIButton!
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
@@ -51,13 +52,13 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
         saveFolderLabel.text = "Mobile Uploads"
-        userNameImageView.image = UIImage(named: "placeholder")
+        archiveImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
-        userNameLabel.font = Text.style4.font
+        archiveNameLabel.font = Text.style4.font
         saveFolderLabel.font = Text.style4.font
         
-        userNameLabel.textColor = .black
+        archiveNameLabel.textColor = .black
         saveFolderLabel.textColor = .black
         separatorOneView.backgroundColor = .lightGray
     }
@@ -70,11 +71,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     private func handleSharedFile() {
-        userNameLabel.text = viewModel?.archiveName()
-        
-        if let archiveThumnailUrl = viewModel?.archiveThumbnailUrl() {
-            userNameImageView.load(urlString: archiveThumnailUrl)
-        }
+        updateArchiveView()
         
         if let hasActiveSession = viewModel?.hasActiveSession(), !hasActiveSession {
             let alert = UIAlertController(title: "Uh oh", message: "You do not have an active session. Please log in to Permanent.".localized(), preferredStyle: .alert)
@@ -96,6 +93,14 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         viewModel?.processSelectedFiles(attachments: attachments, then: { status in
             self.stopLoadingAnimation()
         })
+    }
+    
+    func updateArchiveView() {
+        archiveNameLabel.text = viewModel?.archiveName()
+        
+        if let archiveThumnailUrl = viewModel?.archiveThumbnailUrl() {
+            archiveImageView.load(urlString: archiveThumnailUrl)
+        }
     }
     
     func stopLoadingAnimation() {
@@ -136,6 +141,16 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         
         present(navController, animated: true)
     }
+    
+    @IBAction func selectArchiveButtonPressed(_ sender: Any) {
+        let archivesVC = UIViewController.create(withIdentifier: .archives, from: .archives) as! ArchivesViewController
+        archivesVC.delegate = self
+        archivesVC.isManaging = false
+        archivesVC.accountArchives = nil
+        
+        let navController = UINavigationController(rootViewController: archivesVC)
+        present(navController, animated: true, completion: nil)
+    }
 }
 
 extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -158,5 +173,11 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(60)
+    }
+}
+
+extension ShareExtensionViewController: ArchivesViewControllerDelegate {
+    func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController) {
+        updateArchiveView()
     }
 }

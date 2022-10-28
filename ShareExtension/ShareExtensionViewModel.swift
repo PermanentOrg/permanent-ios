@@ -12,14 +12,16 @@ import MobileCoreServices
 typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
 class ShareExtensionViewModel: ViewModelInterface {
-    var currentArchive: ArchiveVOData?
-    var session: PermSession?
+    var currentArchive: ArchiveVOData? {
+        return PermSession.currentSession?.selectedArchive
+    }
+    var session: PermSession? {
+        return PermSession.currentSession
+    }
+    
     var selectedFiles: [FileInfo] = []
     
-    init(session: PermSession? = try? SessionKeychainHandler().savedSession(), currentArchive: ArchiveVOData? = nil) {
-        self.session = session
-        self.currentArchive = currentArchive ?? session?.selectedArchive
-        
+    init(session: PermSession? = try? SessionKeychainHandler().savedSession()) {
         PermSession.currentSession = session
     }
     

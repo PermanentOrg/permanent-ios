@@ -448,6 +448,7 @@
 		F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
+		F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D0E26D058940090EF02 /* Archives.storyboard */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
 		F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */; };
@@ -2667,6 +2668,7 @@
 				F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */,
 				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
 				F5ADBF40290BBFAC0007A516 /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
+				F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
