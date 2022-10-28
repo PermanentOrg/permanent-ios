@@ -556,6 +556,21 @@
 		F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
 		F5AA5E0D27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA5E0C27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift */; };
+		F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1026D0F6840090EF02 /* ArchivesViewController.swift */; };
+		F5ADBF37290ADB800007A516 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
+		F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945122524BE1100FA8D7A /* AccountEndpoint.swift */; };
+		F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC11C80425594B41008BDEFA /* APIResults.swift */; };
+		F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
+		F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
+		F5ADBF3C290BBF970007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC8C4BA26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib */; };
+		F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */; };
+		F5ADBF3E290BBFA00007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */; };
+		F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */; };
+		F5ADBF40290BBFAC0007A516 /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */; };
+		F5ADBF41290BC0640007A516 /* ArchiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */; };
+		F5ADBF42290BC0770007A516 /* PRMNTActionSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5853CF826DEBB9D0050E377 /* PRMNTActionSheetViewController.swift */; };
+		F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */; };
+		F5ADBF44290BC4100007A516 /* StoryboardName.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648781251B9FC7009D7DE1 /* StoryboardName.swift */; };
 		F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
 		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
 		F5BC105C278D991400595F94 /* PublicFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BC105B278D991400595F94 /* PublicFilesViewModel.swift */; };
@@ -2641,14 +2656,17 @@
 				F55252A22907F6250005E011 /* Localizable.strings in Resources */,
 				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
 				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
+				F5ADBF3C290BBF970007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
 				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
 				5ED4B9C3287597E400CF044B /* Assets.xcassets in Resources */,
+				F5ADBF3E290BBFA00007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
 				5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */,
 				F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */,
 				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
+				F5ADBF40290BBFAC0007A516 /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3235,15 +3253,20 @@
 				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
 				5ED4B9D02876E03B00CF044B /* FolderVO.swift in Sources */,
 				F559F8A928FF02650015A522 /* APINetworkSession.swift in Sources */,
+				F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
 				F559F89628FEE9A50015A522 /* NavigateMinResponse.swift in Sources */,
+				F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
+				F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
 				F559F89F28FEEAD50015A522 /* RelocateFolderPayload.swift in Sources */,
+				F5ADBF42290BC0770007A516 /* PRMNTActionSheetViewController.swift in Sources */,
 				F559F8AB28FF02A10015A522 /* FileListType.swift in Sources */,
 				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
 				F559F8B028FF032A0015A522 /* SerialInputStream.swift in Sources */,
+				F5ADBF44290BC4100007A516 /* StoryboardName.swift in Sources */,
 				F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */,
 				F559F89328FEE9740015A522 /* FilesRepository.swift in Sources */,
 				F559F89128FEE9690015A522 /* SaveDestinationBrowserViewModel.swift in Sources */,
@@ -3258,6 +3281,7 @@
 				F559F89B28FEEA9F0015A522 /* ArchiveVOPayload.swift in Sources */,
 				5ED4B9CD2876E02200CF044B /* TimezoneVO.swift in Sources */,
 				F559F8A128FEEAED0015A522 /* RelocateRecordPayload.swift in Sources */,
+				F5ADBF37290ADB800007A516 /* ArchivesViewModel.swift in Sources */,
 				F559F8AF28FF030B0015A522 /* GetPresignedUrlResponse.swift in Sources */,
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
 				F559F88B28FEE9610015A522 /* FolderContentView.swift in Sources */,
@@ -3277,6 +3301,7 @@
 				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
 				F559F8A528FEEC1E0015A522 /* NetworkLogger.swift in Sources */,
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
+				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
@@ -3291,6 +3316,7 @@
 				5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */,
 				F559F89828FEEA020015A522 /* SortOption.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
+				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
 				5ED4B9CC2876E01E00CF044B /* FolderLinkVO.swift in Sources */,
 				5E1CCC1E287F04F100913EEA /* RoundedButton.swift in Sources */,
@@ -3310,17 +3336,21 @@
 				5E1CCC24287F053A00913EEA /* TextField.swift in Sources */,
 				F559F89728FEE9D50015A522 /* FilesEndpoint.swift in Sources */,
 				F559F8A028FEEADC0015A522 /* FolderDestVOPayload.swift in Sources */,
+				F5ADBF41290BC0640007A516 /* ArchiveType.swift in Sources */,
 				5E1CCC1D287F04EE00913EEA /* ActionDialogView.swift in Sources */,
 				5E1CCC1F287F04FF00913EEA /* HighlightColor.swift in Sources */,
 				5E5DCAF9286DDC4300894D47 /* FileDetailsTableViewCell.swift in Sources */,
 				F559F89228FEE9740015A522 /* FilesRemoteDataSource.swift in Sources */,
 				5ED4B9D32876E05400CF044B /* ParentFolderVO.swift in Sources */,
+				F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */,
+				F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */,
 				F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
 				F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */,
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
+				F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				F559F88E28FEE9690015A522 /* FolderContentViewModel.swift in Sources */,
 				F559F8AE28FF02F20015A522 /* BaseOperation.swift in Sources */,
 				5ED4B9D72876E0C800CF044B /* RecordExifVO.swift in Sources */,

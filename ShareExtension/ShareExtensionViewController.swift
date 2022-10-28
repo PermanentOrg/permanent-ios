@@ -132,9 +132,9 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     
     @IBAction func selectFolderButtonPressed(_ sender: Any) {
         let selectFolderVC = ShareFileBrowserViewController()
-//        let navController = UINavigationController(rootViewController: selectFolderVC)
+        let navController = UINavigationController(rootViewController: selectFolderVC)
         
-        present(selectFolderVC, animated: true)
+        present(navController, animated: true)
     }
 }
 

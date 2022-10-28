@@ -24,7 +24,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void)) {
-        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
@@ -76,7 +76,7 @@ class ArchivesViewModel: ViewModelInterface {
                 }
                 
                 if let account = model.results[0].data?[0].accountVO {
-                    AuthenticationManager.shared.session?.account = account
+                    PermSession.currentSession?.account = account
                     self.account = account
                     completionBlock(self.account, nil)
                 } else {
@@ -97,7 +97,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
-        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
             completionBlock(nil, APIError.unknown)
             return
         }
@@ -137,11 +137,11 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func currentArchive() -> ArchiveVOData? {
-        return AuthenticationManager.shared.session?.selectedArchive
+        return PermSession.currentSession?.selectedArchive
     }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
-        AuthenticationManager.shared.session?.selectedArchive = archive
+        PermSession.currentSession?.selectedArchive = archive
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {

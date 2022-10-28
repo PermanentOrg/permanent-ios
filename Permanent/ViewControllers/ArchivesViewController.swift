@@ -89,11 +89,13 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     // MARK: - Actions
     @IBAction func createNewArchiveAction(_ sender: Any) {
+        let archiveTypes = ArchiveType.allCases.map { $0.archiveName }
+        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: "Create new archive".localized(),
             placeholders: ["Archive name".localized(), "Archive Type".localized()],
-            dropdownValues: StaticData.archiveTypes,
+            dropdownValues: archiveTypes,
             positiveButtonTitle: .create,
             positiveAction: {
                 if let fieldsInput = self.actionDialog?.fieldsInput,

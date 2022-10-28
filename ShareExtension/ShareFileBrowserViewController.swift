@@ -17,6 +17,11 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         
         title = "Choose Destination"
         
+        edgesForExtendedLayout = []
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(doneButtonPressed(_:)))
+        
         viewModel = SaveDestinationBrowserViewModel()
         viewModel?.loadRootFolder()
         
@@ -41,6 +46,10 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         
         folderNavigationView.translatesAutoresizingMaskIntoConstraints = false
         folderNavigationView.viewModel = viewModel?.navigationViewModel
+        folderNavigationView.layer.shadowColor = UIColor.black.cgColor
+        folderNavigationView.layer.shadowOpacity = 1
+        folderNavigationView.layer.shadowOffset = .zero
+        folderNavigationView.layer.shadowRadius = 3
         view.addSubview(folderNavigationView)
         
         NSLayoutConstraint.activate([
@@ -53,5 +62,13 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
             folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
         ])
+    }
+    
+    @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true)
+    }
+    
+    @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true)
     }
 }
