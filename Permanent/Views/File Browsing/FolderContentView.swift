@@ -144,7 +144,7 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         if let file = viewModel?.fileForRow(atIndexPath: indexPath) {
-            cell.updateCell(model: file, fileAction: .none, isGridCell: isGridView, isSearchCell: false)
+            cell.updateCell(model: file, fileAction: .copy, isGridCell: isGridView, isSearchCell: false)
         }
         
         cell.moreButton.isHidden = true
