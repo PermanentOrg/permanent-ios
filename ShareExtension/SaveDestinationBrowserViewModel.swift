@@ -21,4 +21,13 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             }
         }
     }
+    
+    func selectedFolder() -> FileViewModel? {
+        return contentViewModels.last?.folder
+    }
+    
+    func selectedFolderInfo() -> FolderInfo? {
+        guard let selectedFolder = selectedFolder() else { return nil }
+        return FolderInfo(folderId: selectedFolder.folderId, folderLinkId: selectedFolder.folderLinkId)
+    }
 }

@@ -51,7 +51,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
-        saveFolderLabel.text = "Mobile Uploads"
+        saveFolderLabel.text = viewModel?.folderDisplayName
         archiveImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
@@ -137,7 +137,8 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     
     @IBAction func selectFolderButtonPressed(_ sender: Any) {
         let selectFolderVC = ShareFileBrowserViewController()
-        let navController = UINavigationController(rootViewController: selectFolderVC)
+        selectFolderVC.delegate = self
+        let navController = ShareExtensionNavigationController(rootViewController: selectFolderVC)
         
         present(navController, animated: true)
     }
@@ -183,5 +184,13 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
 extension ShareExtensionViewController: ArchivesViewControllerDelegate {
     func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController) {
         updateArchiveView()
+        viewModel?.archiveUpdated()
+    }
+}
+
+extension ShareExtensionViewController: ShareFileBrowserViewControllerDelegate {
+    func shareFileBrowserViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo) {
+        viewModel?.updateSelectedFolder(withName: name, folderInfo: folderInfo)
+        saveFolderLabel.text = viewModel?.folderDisplayName
     }
 }

@@ -8,9 +8,15 @@
 import Foundation
 import UIKit
 
+protocol ShareFileBrowserViewControllerDelegate {
+    func shareFileBrowserViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo)
+}
+
 class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserViewModel> {
     let folderContentView: FolderContentView = FolderContentView()
     let folderNavigationView: FolderNavigationView = FolderNavigationView()
+    
+    var delegate: ShareFileBrowserViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,6 +75,10 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
     }
     
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
+        if let folderName = viewModel?.selectedFolder()?.name,
+           let folderInfo = viewModel?.selectedFolderInfo() {
+            delegate?.shareFileBrowserViewControllerDidPickFolder(named: folderName, folderInfo: folderInfo)
+        }
         dismiss(animated: true)
     }
 }

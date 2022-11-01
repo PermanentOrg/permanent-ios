@@ -481,7 +481,6 @@
 		F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */; };
 		F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */; };
 		F559F88528F9D91D0015A522 /* FileBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88428F9D91D0015A522 /* FileBrowserViewModel.swift */; };
-		F559F88728FE96A30015A522 /* SaveDestinationBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */; };
 		F559F88A28FEBCC10015A522 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88928FEBCC10015A522 /* FolderContentView.swift */; };
 		F559F88B28FEE9610015A522 /* FolderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88928FEBCC10015A522 /* FolderContentView.swift */; };
 		F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87628F99D120015A522 /* FolderSortViewModel.swift */; };
@@ -1611,6 +1610,7 @@
 				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */,
 				F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */,
+				F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */,
 				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
 				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5ED06F45286B2BD5006C126B /* Info.plist */,
@@ -2355,7 +2355,6 @@
 				F559F87828F99E3E0015A522 /* FolderNavigationViewModel.swift */,
 				F559F87A28F9A0750015A522 /* FolderViewSelectionViewModel.swift */,
 				F559F88428F9D91D0015A522 /* FileBrowserViewModel.swift */,
-				F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */,
 			);
 			path = "File Browsing";
 			sourceTree = "<group>";
@@ -2947,7 +2946,6 @@
 				5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
-				F559F88728FE96A30015A522 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
 				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
