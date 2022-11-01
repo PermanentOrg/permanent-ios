@@ -127,8 +127,8 @@ extension String {
     static var autoApprove: String { return "AutoApprove".localized() }
     static var noSharesMessage: String { return "NoSharesMessage".localized() }
     static var archiveName: String { return "ArchiveName".localized() }
-    static var sharedByMe: String { return "SharedByMe".localized() }
-    static var sharedWithMe: String { return "SharedWithMe".localized() }
+    static var fromThisArchive: String { return "FromThisArchive".localized() }
+    static var withThisArchive: String { return "WithThisArchive".localized() }
     static var shareActionMessage: String { return "ShareActionMessage".localized() }
     static var addMember: String { return "\(add) \(member)" }
     static var add: String { return "Add".localized() }

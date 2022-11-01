@@ -107,8 +107,8 @@
 "AutoApprove" = "Auto approve";
 "NoSharesMessage" = "This item is not shared with any archives";
 "ArchiveName" = "The %@ Archive";
-"SharedByMe" = "Shared By Me";
-"SharedWithMe" = "Shared With Me";
+"FromThisArchive" = "From this archive";
+"WithThisArchive" = "With this archive";
 "ShareActionMessage" = "You haven’t shared any content with anyone. Choose an item from My Files and share it with someone!";
 "Add" = "Add";
 "LogOut" = "Log Out";

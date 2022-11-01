@@ -146,7 +146,7 @@ class RootViewController: UIViewController {
             let sharesVC: SharesViewController
 
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+            sharesVC.selectedIndex = ShareListType.withThisArchive.rawValue
 
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
 
@@ -155,7 +155,7 @@ class RootViewController: UIViewController {
             let sharesVC: SharesViewController
 
             sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-            sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+            sharesVC.selectedIndex = ShareListType.withThisArchive.rawValue
 
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
             mainViewController = sharesVC

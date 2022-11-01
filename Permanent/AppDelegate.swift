@@ -275,7 +275,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 _ = sharesVC.checkSavedFile()
                             } else {
                                 let sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
-                                sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                                sharesVC.selectedIndex = ShareListType.withThisArchive.rawValue
                                 
                                 drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
                                 

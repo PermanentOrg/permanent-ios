@@ -131,10 +131,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         navigationItem.title = .shares
         view.backgroundColor = .backgroundPrimary
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
-        segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
-        segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style31.font, .kern: 1], for: .selected)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.lightGray ,.font: Text.style30.font, .kern: 1], for: .normal)
+        segmentedControl.setTitle(.fromThisArchive.uppercased(), forSegmentAt: 0)
+        segmentedControl.setTitle(.withThisArchive.uppercased(), forSegmentAt: 1)
         
         if let listType = ShareListType(rawValue: selectedIndex) {
             segmentedControl.selectedSegmentIndex = selectedIndex
@@ -142,7 +142,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         
         if #available(iOS 13.0, *) {
-            segmentedControl.selectedSegmentTintColor = .primary
+            let bg = UIImage(color: .clear, size: CGSize(width: 1, height: 32))
+            let devider = UIImage(color: .tangerine, size: CGSize(width: 1, height: 32))
+            
+            segmentedControl.setBackgroundImage(bg, for: .normal, barMetrics: .default)
+            segmentedControl.setBackgroundImage(devider, for: .selected, barMetrics: .default)
+            segmentedControl.setDividerImage(devider, forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
+
+            segmentedControl.selectedSegmentTintColor = .tangerine
+            segmentedControl.backgroundColor = .white
+            segmentedControl.layer.borderWidth = 4
+            segmentedControl.layer.borderColor = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
         }
         
         directoryLabel.font = Text.style3.font
@@ -160,6 +170,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupCollectionView() {
+        collectionView.backgroundColor = .clear
         isGridView = viewModel?.isGridView ?? false
         if #available(iOS 13.0, *) {
             switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
@@ -274,7 +285,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             hasSavedFile = true
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFileKey)
             
-            selectedIndex = ShareListType.sharedWithMe.rawValue
+            selectedIndex = ShareListType.withThisArchive.rawValue
             
             let currentArchive: ArchiveVOData? = viewModel?.currentArchive
             if currentArchive?.archiveNbr != sharedFile.toArchiveNbr {
@@ -317,7 +328,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             hasSavedFolder = true
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedFolderKey)
             
-            selectedIndex = ShareListType.sharedWithMe.rawValue
+            selectedIndex = ShareListType.withThisArchive.rawValue
             
             let navigationParams = (archiveNo: sharedFolder.archiveNbr, folderLinkId: sharedFolder.folderLinkId, folderName: sharedFolder.name)
             
@@ -580,7 +591,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let vc = FileMenuViewController()
         vc.fileViewModel = file
         vc.menuItems = menuItems
-        vc.showsPermission = viewModel?.shareListType == .sharedWithMe
+        vc.showsPermission = viewModel?.shareListType == .withThisArchive
         present(vc, animated: true)
     }
     
@@ -915,7 +926,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         let file = viewModel?.fileForRowAt(indexPath: indexPath)
         let listItemHeight: CGFloat
         let gridItemHeight: CGFloat = UIScreen.main.bounds.width / 2 + 50
-        if viewModel?.shareListType == .sharedByMe {
+        if viewModel?.shareListType == .fromThisArchive {
             listItemHeight = (file?.minArchiveVOS.count ?? 0) > 0 ? 90 : 70
         } else {
             listItemHeight = file?.sharedByArchive != nil ? 90 : 70

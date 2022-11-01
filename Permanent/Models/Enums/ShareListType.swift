@@ -8,6 +8,6 @@
 import Foundation
 
 enum ShareListType: Int {
-    case sharedByMe = 0
-    case sharedWithMe
+    case fromThisArchive = 0
+    case withThisArchive
 }

@@ -31,12 +31,13 @@ extension UIColor {
     static var mainPurple = UIColor(red: 141 / 255, green: 0 / 255, blue: 133 / 255, alpha: 1)
     static var paleYellow = UIColor(red: 254 / 255, green: 235 / 255, blue: 214 / 255, alpha: 1)
     static var temporaryRed = UIColor(red: 255 / 255, green: 61 / 255, blue: 61 / 255, alpha: 1)
+    static var whiteGray = UIColor(red: 244 / 255, green: 246 / 255, blue: 253 / 255, alpha: 1)
 }
 
 extension UIColor {
     static var primary = UIColor.darkBlue
     static var secondary = UIColor.tangerine
-    static var backgroundPrimary = UIColor.white
+    static var backgroundPrimary = UIColor.whiteGray
     static var overlay = UIColor.black.withAlphaComponent(0.25)
     static var destructive = UIColor.brightRed
     static var textPrimary = UIColor.middleGray

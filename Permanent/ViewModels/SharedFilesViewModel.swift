@@ -10,9 +10,9 @@ import Foundation
 class SharedFilesViewModel: FilesViewModel {
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
     
-    var shareListType: ShareListType = .sharedByMe {
+    var shareListType: ShareListType = .fromThisArchive {
         didSet {
-            viewModels = shareListType == .sharedByMe ? sharedByMeViewModels : sharedWithMeViewModels
+            viewModels = shareListType == .fromThisArchive ? sharedByMeViewModels : sharedWithMeViewModels
             navigationStack.removeAll()
         }
     }
@@ -72,7 +72,7 @@ class SharedFilesViewModel: FilesViewModel {
                             }
                         }
                         
-                        self.viewModels = self.shareListType == .sharedByMe ? self.sharedByMeViewModels : self.sharedWithMeViewModels
+                        self.viewModels = self.shareListType == .fromThisArchive ? self.sharedByMeViewModels : self.sharedWithMeViewModels
                     }
                     
                     handler(.success)

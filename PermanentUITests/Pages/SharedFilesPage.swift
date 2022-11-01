@@ -15,10 +15,10 @@ class SharedFilesPage {
         app.navigationBars["Shares"]
     }
     var sharedByMeButton: XCUIElement {
-        app.buttons["Shared By Me"]
+        app.buttons["From this archive"]
     }
     var sharedWithMeButton: XCUIElement {
-        app.buttons["Shared With Me"]
+        app.buttons["With this archive"]
     }
     var settingsButton: XCUIElement {
         navigationBar.buttons["settings"]
