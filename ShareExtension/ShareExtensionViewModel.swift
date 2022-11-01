@@ -116,6 +116,10 @@ class ShareExtensionViewModel: ViewModelInterface {
         return UIImage(cgImage: downsampledImage)
     }
     
+    func removeSelectedFile(_ file: FileInfo) {
+        selectedFiles.removeAll(where: { $0 == file })
+    }
+    
     func uploadSelectedFiles(completion: @escaping ((Error?) -> Void)) {
         DispatchQueue.global().async { [self] in
             do {

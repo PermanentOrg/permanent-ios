@@ -166,6 +166,10 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
                 let cellConfiguration = viewModel?.cellConfigurationParameters(file: selectedFile) else { return UITableViewCell() }
             
             cell.configure(with: cellConfiguration)
+            cell.rightButtonAction = { [weak self] cell in
+                self?.viewModel?.removeSelectedFile(selectedFile)
+                self?.tableView.reloadData()
+            }
             tableViewCell = cell
         }
         return tableViewCell
