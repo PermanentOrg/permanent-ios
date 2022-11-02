@@ -80,14 +80,8 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             }))
             
             self.present(alert, animated: true)
-        } else if let hasUploadPermission = viewModel?.hasUploadPermission(), !hasUploadPermission {
-            let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
-                self.didTapCancel()
-            }))
-            
-            self.present(alert, animated: true)
         }
+        
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         
         viewModel?.processSelectedFiles(attachments: attachments, then: { status in
@@ -182,6 +176,21 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
 }
 
 extension ShareExtensionViewController: ArchivesViewControllerDelegate {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool {
+        let hasUploadPermission = toArchive.permissions().contains(.upload)
+        if hasUploadPermission == false {
+            dismiss(animated: true) {
+                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+                }))
+                
+                self.present(alert, animated: true)
+            }
+        }
+        
+        return hasUploadPermission
+    }
+    
     func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController) {
         updateArchiveView()
         viewModel?.archiveUpdated()

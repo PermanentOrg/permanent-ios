@@ -57,6 +57,7 @@ class FolderContentView: UIView {
         backgroundColor = .backgroundPrimary
         isSkeletonable = true
         collectionView.isSkeletonable = true
+        collectionView.backgroundColor = .backgroundPrimary
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")

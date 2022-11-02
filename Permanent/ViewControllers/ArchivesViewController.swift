@@ -8,9 +8,16 @@
 import UIKit
 
 protocol ArchivesViewControllerDelegate: AnyObject {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool
     func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController)
 }
 
+extension ArchivesViewControllerDelegate {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool {
+        return true
+    }
+}
+ 
 class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     @IBOutlet weak var currentArchiveContainer: UIView!
     @IBOutlet weak var currentArhiveImage: UIImageView!
@@ -351,7 +358,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableViewSections[indexPath.section] == .ok {
             let tableViewData = viewModel?.selectableArchives
-            if let archive = tableViewData?[indexPath.row] {
+            if let archive = tableViewData?[indexPath.row], delegate?.archivesViewController(self, shouldChangeToArchive: archive) ?? true {
                 switchToArchive(archive)
                 
                 tableView.deselectRow(at: indexPath, animated: true)
