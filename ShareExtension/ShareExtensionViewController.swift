@@ -82,6 +82,18 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             self.present(alert, animated: true)
         }
         
+        if viewModel?.hasUploadPermission() == false {
+            let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .cancel, style: .default, handler: { _ in
+                self.didTapCancel()
+            }))
+            alert.addAction(UIAlertAction(title: "Change Archive".localized(), style: .default, handler: { action in
+                self.selectArchiveButtonPressed(action)
+            }))
+            
+            self.present(alert, animated: true)
+        }
+        
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         
         viewModel?.processSelectedFiles(attachments: attachments, then: { status in
