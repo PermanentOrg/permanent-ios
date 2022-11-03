@@ -102,10 +102,13 @@ class UploadManager {
     @objc
     func refreshQueue() {
         do {
+            let selectedArchive = PermSession.currentSession?.selectedArchive
             let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
-            if extensionUploads.isEmpty == false {
-                upload(files: extensionUploads)
-                ExtensionUploadManager.shared.clearSavedFiles()
+            let selectedArchiveUploads = extensionUploads.filter({ $0.archiveId == selectedArchive?.archiveID })
+            
+            if selectedArchiveUploads.isEmpty == false {
+                upload(files: selectedArchiveUploads)
+                try ExtensionUploadManager.shared.clearSavedFiles(selectedArchiveUploads)
             }
         } catch {
             print(error)

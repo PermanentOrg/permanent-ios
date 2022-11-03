@@ -142,6 +142,8 @@ class ArchivesViewModel: ViewModelInterface {
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
         PermSession.currentSession?.selectedArchive = archive
+        
+        UploadManager.shared.timer?.fire()
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {

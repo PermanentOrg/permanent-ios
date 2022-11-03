@@ -38,4 +38,16 @@ class ExtensionUploadManager {
     func clearSavedFiles() {
         PreferencesManager().removeValue(forKey: Self.savedFilesKey)
     }
+    
+    func clearSavedFiles(_ files: [FileInfo]) throws {
+        var savedFiles: [FileInfo] = []
+        
+        if let nsFiles: NSArray = try PreferencesManager().getNonPlistObject(forKey: Self.savedFilesKey) {
+            savedFiles = (nsFiles as? [FileInfo]) ?? []
+        }
+        
+        savedFiles.removeAll(where: { files.contains($0) })
+        
+        try save(files: savedFiles)
+    }
 }

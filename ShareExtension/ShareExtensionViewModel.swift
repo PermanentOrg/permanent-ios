@@ -135,6 +135,7 @@ class ShareExtensionViewModel: ViewModelInterface {
                         try selectedFiles.forEach { file in
                             let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
                             file.url = tempLocation
+                            file.archiveId = currentArchive?.archiveID ?? -1
                         }
                         
                         let savedFiles = try ExtensionUploadManager.shared.savedFiles()
