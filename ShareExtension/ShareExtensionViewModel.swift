@@ -133,7 +133,7 @@ class ShareExtensionViewModel: ViewModelInterface {
                 } else {
                     do {
                         try selectedFiles.forEach { file in
-                            let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
+                            let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
                             file.url = tempLocation
                         }
                         
