@@ -12,13 +12,22 @@ import MobileCoreServices
 typealias ShareExtensionCellConfiguration = (fileImage: UIImage?, fileName: String?, fileSize: String?)
 
 class ShareExtensionViewModel: ViewModelInterface {
-    var currentArchive: ArchiveVOData?
-    var session: PermSession?
-    var selectedFiles: [FileInfo] = []
+    var currentArchive: ArchiveVOData? {
+        return PermSession.currentSession?.selectedArchive
+    }
+    var session: PermSession? {
+        return PermSession.currentSession
+    }
     
-    init(session: PermSession? = try? SessionKeychainHandler().savedSession(), currentArchive: ArchiveVOData? = nil) {
-        self.session = session
-        self.currentArchive = currentArchive ?? session?.selectedArchive
+    var selectedFiles: [FileInfo] = []
+    var parentFolder: FolderInfo?
+    var parentFolderName: String?
+    var folderDisplayName: String {
+        return parentFolderName ?? "Mobile Uploads"
+    }
+    
+    init(session: PermSession? = try? SessionKeychainHandler().savedSession()) {
+        PermSession.currentSession = session
     }
     
     func archiveName() -> String {
@@ -112,21 +121,190 @@ class ShareExtensionViewModel: ViewModelInterface {
         return UIImage(cgImage: downsampledImage)
     }
     
+    func removeSelectedFile(_ file: FileInfo) {
+        selectedFiles.removeAll(where: { $0 == file })
+    }
+    
     func uploadSelectedFiles(completion: @escaping ((Error?) -> Void)) {
         DispatchQueue.global().async { [self] in
-            do {
-                try selectedFiles.forEach { file in
-                    let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
-                    file.url = tempLocation
+            createDefaultFolderIfNeeded() { [self] error in
+                if error != nil {
+                    completion(error)
+                } else {
+                    do {
+                        try selectedFiles.forEach { file in
+                            let tempLocation = try FileHelper().copyFile(withURL: URL(fileURLWithPath: file.url.path), name: file.id, usingAppSuiteGroup: ExtensionUploadManager.appSuiteGroup)
+                            file.url = tempLocation
+                        }
+                        
+                        let savedFiles = try ExtensionUploadManager.shared.savedFiles()
+                        selectedFiles.append(contentsOf: savedFiles)
+                        try ExtensionUploadManager.shared.save(files: selectedFiles)
+                        
+                        completion(nil)
+                    } catch {
+                        completion(error)
+                    }
+                }
+            }
+        }
+    }
+    
+    func archiveUpdated() {
+        parentFolder = nil
+    }
+    
+    func updateSelectedFolder(withName name: String, folderInfo: FolderInfo) {
+        parentFolder = folderInfo
+        parentFolderName = name
+        
+        selectedFiles.forEach { fileInfo in
+            fileInfo.folder = folderInfo
+        }
+    }
+    
+    func createDefaultFolderIfNeeded(completion: @escaping ((Error?) -> Void)) {
+        guard parentFolder == nil else {
+            completion(nil)
+            return
+        }
+        
+        getRoot { [self] status in
+            switch status {
+            case .success(let root):
+                if let items = root.childItemVOS,
+                   let uploadsFolder = items.filter({ $0.displayName == "Mobile Uploads" }).first,
+                   let folderId = uploadsFolder.folderID,
+                   let folderLinkId = uploadsFolder.folderLinkID {
+                    // Mobile Uploads Folder Exists
+                    selectedFiles.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
+                    completion(nil)
+                } else {
+                    // Mobile Uploads Folder has to be created
+                    let params: NewFolderParams = ("Mobile Uploads", root.folderLinkID ?? 0)
+                    createNewFolder(params: params) { [self] folderVO in
+                        guard let folderVO = folderVO,
+                              let folderId = folderVO.folderID, let folderLinkId = folderVO.folderLinkID else {
+                            completion(APIError.clientError)
+                            return
+                        }
+                                            
+                        selectedFiles.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
+                        completion(nil)
+                    }
                 }
                 
-                let savedFiles = try ExtensionUploadManager.shared.savedFiles()
-                selectedFiles.append(contentsOf: savedFiles)
-                try ExtensionUploadManager.shared.save(files: selectedFiles)
+            case .error(let message):
+                completion(APIError.clientError)
+                break
+            }
+        }
+    }
+}
+
+extension ShareExtensionViewModel {
+    typealias RootResponse = (RootStatus) -> Void
+    
+    enum RootStatus {
+        case success(root: MinFolderVO)
+        case error(message: String?)
+    }
+    
+    func getRoot(then handler: @escaping RootResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.getRoot)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
                 
-                completion(nil)
-            } catch {
-                completion(error)
+                if model.isSuccessful == true {
+                    self.onGetRootSuccess(model, handler)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping RootResponse) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO,
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder }),
+            let archiveNo = myFilesFolder.archiveNbr,
+            let folderLinkId = myFilesFolder.folderLinkID
+        else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
+        navigateMin(params: params, backNavigation: false, then: handler)
+    }
+    
+    func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping RootResponse) {
+        let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                
+                self.onNavigateMinSuccess(model, backNavigation, handler)
+                
+            case .error(let error, _):
+                handler(.error(message: error?.localizedDescription))
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping RootResponse) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO
+        else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        handler(.success(root: folderVO))
+    }
+    
+    func createNewFolder(params: NewFolderParams, then handler: @escaping ((MinFolderVO?) -> Void)) {
+        let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
+                    let folderVO = model.results?.first?.data?.first?.folderVO
+                else {
+                    handler(nil)
+                    return
+                }
+
+                handler(folderVO)
+
+            case .error(_, _):
+                handler(nil)
+
+            default:
+                break
             }
         }
     }

@@ -18,6 +18,8 @@ class PermSession: Codable {
         case isGridView
     }
     
+    static var currentSession: PermSession?
+    
     var authState: OIDAuthState
     var account: AccountVOData!
     

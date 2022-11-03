@@ -36,10 +36,10 @@ class UploadManager {
         }
         
         // Call AccountAPI and figure if there's enough space left
-        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+        guard let accountId: Int = PermSession.currentSession?.account.accountID else {
             return
         }
-        
+
         let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
         getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -62,12 +62,12 @@ class UploadManager {
                 } else {
                     NotificationCenter.default.post(name: Self.quotaExceededNotification, object: self, userInfo: nil)
                 }
-               
+
                 return
-                
+
             case .error:
                 return
-                
+
             default:
                 break
             }
@@ -104,40 +104,8 @@ class UploadManager {
         do {
             let extensionUploads = try ExtensionUploadManager.shared.savedFiles()
             if extensionUploads.isEmpty == false {
-                // Please delete the extension at the bottom of the file when removing this code.
-                // It should really be part of the ShareExtension.
-                getRoot { [self] status in
-                    switch status {
-                    case .success(let root):
-                        if let items = root.childItemVOS,
-                           let uploadsFolder = items.filter({ $0.displayName == "Mobile Uploads" }).first,
-                           let folderId = uploadsFolder.folderID,
-                           let folderLinkId = uploadsFolder.folderLinkID {
-                            // Mobile Uploads Folder Exists
-                            extensionUploads.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
-                            
-                            upload(files: extensionUploads)
-                            ExtensionUploadManager.shared.clearSavedFiles()
-                        } else {
-                            // Mobile Uploads Folder has to be created
-                            let params: NewFolderParams = ("Mobile Uploads", root.folderLinkID ?? 0)
-                            createNewFolder(params: params) { [self] folderVO in
-                                guard let folderVO = folderVO,
-                                      let folderId = folderVO.folderID, let folderLinkId = folderVO.folderLinkID else { return }
-                                
-                                NotificationCenter.default.post(name: Self.didCreateMobileUploadsFolderNotification, object: nil, userInfo: ["folder": folderVO])
-                                
-                                extensionUploads.forEach({ $0.folder = FolderInfo(folderId: folderId, folderLinkId: folderLinkId) })
-                                
-                                upload(files: extensionUploads)
-                                ExtensionUploadManager.shared.clearSavedFiles()
-                            }
-                        }
-                        
-                    case .error(let message):
-                        break
-                    }
-                }
+                upload(files: extensionUploads)
+                ExtensionUploadManager.shared.clearSavedFiles()
             }
         } catch {
             print(error)
@@ -223,113 +191,5 @@ class UploadManager {
     
     func operation(forFileId id: String) -> UploadOperation? {
         return uploadQueue.operations.first(where: { $0.name == id }) as? UploadOperation
-    }
-}
-
-extension UploadManager {
-    typealias RootResponse = (RootStatus) -> Void
-    
-    enum RootStatus {
-        case success(root: MinFolderVO)
-        case error(message: String?)
-    }
-    
-    func getRoot(then handler: @escaping RootResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.getRoot)
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                if model.isSuccessful == true {
-                    self.onGetRootSuccess(model, handler)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
-        }
-    }
-    
-    private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping RootResponse) {
-        guard
-            let folderVO = model.results?.first?.data?.first?.folderVO,
-            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder }),
-            let archiveNo = myFilesFolder.archiveNbr,
-            let folderLinkId = myFilesFolder.folderLinkID
-        else {
-            handler(.error(message: .errorMessage))
-            return
-        }
-        
-        let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
-        navigateMin(params: params, backNavigation: false, then: handler)
-    }
-    
-    func navigateMin(params: NavigateMinParams, backNavigation: Bool, then handler: @escaping RootResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: NavigateMinResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-                
-                self.onNavigateMinSuccess(model, backNavigation, handler)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-                
-            default:
-                break
-            }
-        }
-    }
-    
-    private func onNavigateMinSuccess(_ model: NavigateMinResponse, _ backNavigation: Bool, _ handler: @escaping RootResponse) {
-        guard
-            let folderVO = model.results?.first?.data?.first?.folderVO
-        else {
-            handler(.error(message: .errorMessage))
-            return
-        }
-        
-        handler(.success(root: folderVO))
-    }
-    
-    func createNewFolder(params: NewFolderParams, then handler: @escaping ((MinFolderVO?) -> Void)) {
-        let apiOperation = APIOperation(FilesEndpoint.newFolder(params: params))
-
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: NavigateMinResponse = JSONHelper.convertToModel(from: response),
-                    let folderVO = model.results?.first?.data?.first?.folderVO
-                else {
-                    handler(nil)
-                    return
-                }
-
-                handler(folderVO)
-
-            case .error(_, _):
-                handler(nil)
-
-            default:
-                break
-            }
-        }
     }
 }

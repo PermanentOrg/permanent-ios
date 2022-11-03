@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 
-typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
-
 enum GetUserDataStatus: Equatable {
     case success(message: String?)
     case error(message: String?)

@@ -7,9 +7,6 @@
 
 import Foundation
 
-// TODO: See if this type is appropiate.
-typealias LoginCredentials = (email: String, password: String)
-
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
     case verifyAuth

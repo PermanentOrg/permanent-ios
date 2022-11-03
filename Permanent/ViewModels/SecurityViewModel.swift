@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 
-typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
-
 class SecurityViewModel: ViewModelInterface {
     weak var delegate: SecurityViewModelDelegate?
     weak var viewDelegate: SecurityViewModelViewDelegate?
