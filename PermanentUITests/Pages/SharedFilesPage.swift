@@ -48,7 +48,7 @@ class SharedFilesPage {
         app.collectionViews.staticTexts["files with viewer access"].firstMatch
     }
     var photoLibraryButton: XCUIElement {
-        app.sheets.scrollViews.otherElements.buttons["Photo Library"]
+        app.buttons["Photo Library"]
     }
     var uploadInProgress: XCUIElement {
         app.collectionViews.buttons["Uploads"]
@@ -192,8 +192,9 @@ class SharedFilesPage {
         
         XCTAssertTrue(uploadButton.waitForExistence(timeout: 60))
         uploadButton.tap()
+        sleep(2)
         
-        XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 10))
         photoLibraryButton.tap()
     }
     

@@ -8,7 +8,6 @@
 import Foundation
 
 class SharedFilesViewModel: FilesViewModel {
-    
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
     
     var shareListType: ShareListType = .sharedByMe {
