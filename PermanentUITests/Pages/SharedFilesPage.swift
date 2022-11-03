@@ -126,7 +126,7 @@ class SharedFilesPage {
         firstElementMoreButton.tap()
         
         let fileMenu = FileMenuPage(app: app)
-        XCTAssertEqual(fileMenu.downloadButton.exists, true)
+        XCTAssertEqual(fileMenu.downloadButton.exists, false)
         XCTAssertEqual(fileMenu.renameButton.exists, true)
         XCTAssertEqual(fileMenu.deleteButton.exists, true)
         
