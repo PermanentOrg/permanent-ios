@@ -9,21 +9,11 @@ import Foundation
 import Photos.PHAsset
 import CoreImage
 
-typealias NewFolderParams = (filename: String, folderLinkId: Int)
-typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String)
-typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?)
-typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, s3Url: String, destinationUrl: String)
-typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, folderName: String?)
-typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], folderLinkId: Int)
 typealias FileMetaUploadResponse = (_ recordId: Int?, _ errorMessage: String?) -> Void
 typealias FileUploadResponse = (_ file: FileInfo?, _ errorMessage: String?) -> Void
 
 typealias VoidAction = () -> Void
-typealias ItemInfoParams = (FileViewModel)
-typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int)
 
-typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
-typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias DownloadResponse = (_ downloadURL: URL?, _ errorMessage: Error?) -> Void
 
 enum PublicRootRequestStatus: Equatable {

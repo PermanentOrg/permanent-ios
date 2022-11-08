@@ -17,7 +17,7 @@ class FileMenuPage {
     var copyButton: XCUIElement { app.otherElements["Copy"] }
     var moveButton: XCUIElement { app.otherElements["Move to another location"] }
     var deleteButton: XCUIElement { app.otherElements["Delete"] }
-    var unshareButton: XCUIElement { app.otherElements["Unshare"] }
+    var unshareButton: XCUIElement { app.otherElements["Leave share"] }
     var renameButton: XCUIElement { app.otherElements["Rename"] }
     var publishButton: XCUIElement { app.otherElements["Publish"] }
     var getLinkButton: XCUIElement { app.otherElements["Get Link"] }

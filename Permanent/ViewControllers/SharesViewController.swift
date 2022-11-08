@@ -106,6 +106,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 }
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let shareLinkVM = notif.object as? ShareLinkViewModel,
+                  let index = self?.viewModel?.viewModels.firstIndex(where: { $0.recordId == shareLinkVM.fileViewModel.recordId })
+            else {
+                return
+            }
+            self?.viewModel?.viewModels[index].fileStatus = shareLinkVM.fileViewModel.fileStatus
+            self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
+            self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            
+            self?.collectionView.reloadData()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -408,20 +421,21 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
+        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFile?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
         if let navigationStackCount = viewModel?.navigationStack.count,
             navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
                 styled: .simpleWithDescription,
-                withTitle: "Discard selection",
-                description: "Are you sure you want to discard selection and navigate back?".localized(),
-                positiveButtonTitle: "Yes, discard selected file".localized(),
+                withTitle: "Cancel Move?".localized(),
+                description: "Moving files or folders outside of the shared folder in which they are currently located is not permitted at this time. You can cancel this move action or continue to choose a destination for the selected \(fileTypeString).".localized(),
+                positiveButtonTitle: "Continue".localized(),
                 positiveAction: {
                     self.actionDialog?.dismiss()
                     self.viewModel?.fileAction = .none
                     self.viewModel?.selectedFile = nil
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
-                },
+                },cancelButtonTitle: "Cancel Move".localized(),
                 cancelButtonColor: .gray,
                 overlayView: overlayView
             )
@@ -579,13 +593,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             placeholders: ["Name".localized()],
             prefilledValues: ["\(file.name)"],
             positiveButtonTitle: .rename,
-            positiveAction: {
+            positiveAction: { [weak self] in
+                guard let self = self else { return }
                 guard let inputName = self.actionDialog?.fieldsInput.first?.description else { return }
                 if inputName.isEmpty {
                     self.view.showNotificationBanner(title: "Please enter a name".localized(), backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
                 } else {
                     self.actionDialog?.dismiss()
-                    self.actionDialog = nil
                     self.rename(file, inputName, atIndexPath: indexPath)
                     self.view.endEditing(true)
                 }

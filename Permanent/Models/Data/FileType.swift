@@ -12,6 +12,7 @@ enum FileType: String, Codable {
     case privateFolder = "type.folder.private"
     case publicRootFolder = "type.folder.root.public"
     case privateRootFolder = "type.folder.root.private"
+    case sharedFolder = "type.share.folder"
     case image = "type.record.image"
     case video = "type.record.video"
     case pdf = "type.record.pdf"

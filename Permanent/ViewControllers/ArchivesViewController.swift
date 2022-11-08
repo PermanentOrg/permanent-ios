@@ -8,9 +8,16 @@
 import UIKit
 
 protocol ArchivesViewControllerDelegate: AnyObject {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool
     func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController)
 }
 
+extension ArchivesViewControllerDelegate {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool {
+        return true
+    }
+}
+ 
 class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     @IBOutlet weak var currentArchiveContainer: UIView!
     @IBOutlet weak var currentArhiveImage: UIImageView!
@@ -89,11 +96,13 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     // MARK: - Actions
     @IBAction func createNewArchiveAction(_ sender: Any) {
+        let archiveTypes = ArchiveType.allCases.map { $0.archiveName }
+        
         self.showActionDialog(
             styled: .inputWithDropdown,
             withTitle: "Create new archive".localized(),
             placeholders: ["Archive name".localized(), "Archive Type".localized()],
-            dropdownValues: StaticData.archiveTypes,
+            dropdownValues: archiveTypes,
             positiveButtonTitle: .create,
             positiveAction: {
                 if let fieldsInput = self.actionDialog?.fieldsInput,
@@ -349,7 +358,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableViewSections[indexPath.section] == .ok {
             let tableViewData = viewModel?.selectableArchives
-            if let archive = tableViewData?[indexPath.row] {
+            if let archive = tableViewData?[indexPath.row], delegate?.archivesViewController(self, shouldChangeToArchive: archive) ?? true {
                 switchToArchive(archive)
                 
                 tableView.deselectRow(at: indexPath, animated: true)

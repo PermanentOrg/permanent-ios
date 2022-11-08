@@ -169,9 +169,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                    let model: APIResults<ShareVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<ShareVO>.decoder
                     )
                 else {
                     handler(.error(message: .errorMessage))
@@ -181,7 +181,8 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                 if model.isSuccessful {
                     handler(.success)
                     if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == minArchiveVO.archiveID }) {
-                        self.fileViewModel.minArchiveVOS[idx].accessRole = newShareVO.accessRole
+                        self.fileViewModel.minArchiveVOS[idx].accessRole = model.results.first?.data?.first?.shareVO.accessRole
+                        self.fileViewModel.minArchiveVOS[idx].shareStatus = model.results.first?.data?.first?.shareVO.status ?? ""
                     }
                     NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
                 } else {
@@ -213,9 +214,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                    let model: APIResults<ShareVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<ShareVO>.decoder
                     )
                 else {
                     handler(.error(message: .errorMessage))
@@ -225,7 +226,8 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                 if model.isSuccessful {
                     handler(.success)
                     if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == newShareVO.archiveID }) {
-                        self.fileViewModel.minArchiveVOS[idx].accessRole = newShareVO.accessRole
+                        self.fileViewModel.minArchiveVOS[idx].accessRole = model.results.first?.data?.first?.shareVO.accessRole
+                        self.fileViewModel.minArchiveVOS[idx].shareStatus = model.results.first?.data?.first?.shareVO.status ?? ""
                     }
                     NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
                 } else {
@@ -260,9 +262,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                    let model: APIResults<ShareVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<ShareVO>.decoder
                     ),
                     model.isSuccessful
                 else {
@@ -270,6 +272,10 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                     return
                 }
                 handler(.success)
+                if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == archiveId }) {
+                    self.fileViewModel.minArchiveVOS.remove(at: idx)
+                }
+                
                 NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
                 return
                 
@@ -294,9 +300,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             switch result {
             case .json(let response, _):
                 guard
-                    let model: APIResults<AccountVO> = JSONHelper.decoding(
+                    let model: APIResults<ShareVO> = JSONHelper.decoding(
                         from: response,
-                        with: APIResults<NoDataModel>.decoder
+                        with: APIResults<ShareVO>.decoder
                     ),
                     model.isSuccessful
                 else {
@@ -304,6 +310,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
                     return
                 }
                 handler(.success)
+                if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == archiveId }) {
+                    self.fileViewModel.minArchiveVOS.remove(at: idx)
+                }
                 NotificationCenter.default.post(name: Self.didUpdateSharesNotifName, object: self, userInfo: nil)
                 return
                 

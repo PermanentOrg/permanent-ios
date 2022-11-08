@@ -96,7 +96,8 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
             prefilledValues: prefilledValues,
             dropdownValues: dropdownValues,
             textFieldKeyboardType: textFieldKeyboardType,
-            onDismiss: {
+            onDismiss: { [weak self] in
+                guard let self = self else { return }
                 self.view.dismissPopup(
                     self.actionDialog,
                     overlayView: overlayView,

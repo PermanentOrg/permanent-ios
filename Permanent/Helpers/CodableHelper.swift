@@ -30,6 +30,7 @@ class JSONHelper {
             let decodedModel = try JSONDecoder().decode(T.self, from: data)
             return (decodedModel)
         } catch {
+            print(error)
             return nil
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class FileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var fileNameLabel: UILabel!
