@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ShareManagementLinkAndShowSettingsCollectionViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="381" height="24"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="381" height="24"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KRA-S9-Lvc">
+                        <rect key="frame" x="0.0" y="0.0" width="381" height="24"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QDB-at-gfQ">
+                                <rect key="frame" x="0.0" y="0.0" width="24" height="24"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dnQ-eh-Jxy">
+                                        <rect key="frame" x="6" y="6" width="12" height="12"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="dnQ-eh-Jxy" secondAttribute="height" multiplier="1:1" id="gvr-H5-ceb"/>
+                                            <constraint firstAttribute="width" constant="12" id="vn7-xq-oqh"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="leftButtonTapAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="QDT-H4-CtI"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="dnQ-eh-Jxy" firstAttribute="centerX" secondItem="QDB-at-gfQ" secondAttribute="centerX" id="FyI-jT-Rhe"/>
+                                    <constraint firstItem="dnQ-eh-Jxy" firstAttribute="centerY" secondItem="QDB-at-gfQ" secondAttribute="centerY" id="X5I-Lm-dSr"/>
+                                    <constraint firstAttribute="width" constant="24" id="f40-h4-MUR"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xZT-xM-6br">
+                                <rect key="frame" x="40" y="0.0" width="307" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tb1-lw-id7">
+                                <rect key="frame" x="357" y="0.0" width="24" height="24"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hpS-Ao-pkC">
+                                        <rect key="frame" x="6" y="6" width="12" height="12"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="hpS-Ao-pkC" secondAttribute="height" multiplier="1:1" id="13u-L0-Cst"/>
+                                            <constraint firstAttribute="width" constant="12" id="zDo-w0-5M3"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="rightButtonTapAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="yr7-1h-WBW"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="hpS-Ao-pkC" firstAttribute="centerY" secondItem="Tb1-lw-id7" secondAttribute="centerY" id="0CU-d4-C7s"/>
+                                    <constraint firstItem="hpS-Ao-pkC" firstAttribute="centerX" secondItem="Tb1-lw-id7" secondAttribute="centerX" id="Ok8-Hm-hoW"/>
+                                    <constraint firstItem="hpS-Ao-pkC" firstAttribute="centerY" secondItem="Tb1-lw-id7" secondAttribute="centerY" id="XSa-sa-HBX"/>
+                                    <constraint firstItem="hpS-Ao-pkC" firstAttribute="centerX" secondItem="Tb1-lw-id7" secondAttribute="centerX" id="cU2-IA-ucp"/>
+                                    <constraint firstAttribute="width" constant="24" id="eaX-Mc-Ene"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="24" id="1EU-P0-r9m"/>
+                            <constraint firstAttribute="bottom" secondItem="Tb1-lw-id7" secondAttribute="bottom" id="BgP-7k-Tuj"/>
+                            <constraint firstItem="QDB-at-gfQ" firstAttribute="leading" secondItem="KRA-S9-Lvc" secondAttribute="leading" id="HSo-NR-Qle"/>
+                            <constraint firstItem="xZT-xM-6br" firstAttribute="leading" secondItem="KRA-S9-Lvc" secondAttribute="leading" constant="40" id="Jfe-Pb-H3t"/>
+                            <constraint firstAttribute="bottom" secondItem="QDB-at-gfQ" secondAttribute="bottom" id="Xhm-2x-enz"/>
+                            <constraint firstAttribute="trailing" secondItem="Tb1-lw-id7" secondAttribute="trailing" id="dJc-Bk-wil"/>
+                            <constraint firstItem="Tb1-lw-id7" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="fu4-Oj-AwD"/>
+                            <constraint firstItem="xZT-xM-6br" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="gUy-86-S6y"/>
+                            <constraint firstItem="Tb1-lw-id7" firstAttribute="leading" secondItem="xZT-xM-6br" secondAttribute="trailing" constant="10" id="lbX-2R-ebO"/>
+                            <constraint firstItem="QDB-at-gfQ" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="xfE-sn-7Yz"/>
+                            <constraint firstAttribute="bottom" secondItem="xZT-xM-6br" secondAttribute="bottom" id="ytH-J1-ENh"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="KRA-S9-Lvc" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="EgR-sg-0h1"/>
+                <constraint firstAttribute="trailing" secondItem="KRA-S9-Lvc" secondAttribute="trailing" id="hnf-h2-Nmr"/>
+                <constraint firstAttribute="bottom" secondItem="KRA-S9-Lvc" secondAttribute="bottom" id="jJG-4j-qHp"/>
+                <constraint firstItem="KRA-S9-Lvc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="v9E-K3-d26"/>
+            </constraints>
+            <size key="customSize" width="381" height="24"/>
+            <connections>
+                <outlet property="elementNameLabel" destination="xZT-xM-6br" id="CFE-T7-1CY"/>
+                <outlet property="leftElementButton" destination="dnQ-eh-Jxy" id="rjB-SH-xdv"/>
+                <outlet property="rightElementButton" destination="hpS-Ao-pkC" id="KCM-da-h6e"/>
+            </connections>
+            <point key="canvasLocation" x="167.17557251908397" y="29.577464788732396"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
