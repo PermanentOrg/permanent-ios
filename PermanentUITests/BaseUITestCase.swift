@@ -15,6 +15,7 @@ class BaseUITestCase: XCTestCase {
 
         app.launchArguments.append("--SkipOnboarding")
         app.launchArguments.append("--DiscardSession")
+        app.launchArguments.append("--AddTextClearButton")
         app.launch()
         sleep(5)
         // In UI tests it is usually best to stop immediately when a failure occurs.

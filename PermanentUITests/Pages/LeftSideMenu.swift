@@ -22,11 +22,20 @@ class LeftSideMenuPage {
     var sharedFilesButton: XCUIElement {
         app.tables.staticTexts["Shared Files"]
     }
+    var publicFilesButton: XCUIElement {
+        app.tables.staticTexts["Public Files"]
+    }
+    var publicProfileButton: XCUIElement {
+        app.tables.staticTexts["View Profile"]
+    }
     var privateFilesTitle: XCUIElement {
         app.navigationBars.staticTexts["Private Files"]
     }
     var sharedFilesTitle: XCUIElement {
         app.navigationBars.staticTexts["Shares"]
+    }
+    var publicFilesTitle: XCUIElement {
+        app.navigationBars.staticTexts["Public Files"]
     }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
@@ -53,5 +62,21 @@ class LeftSideMenuPage {
         privateFilesButton.tap()
 
         XCTAssertTrue(privateFilesTitle.waitForExistence(timeout: 5))
+    }
+    
+    func goToPublicFiles() {
+        menuButton.tap()
+        
+        XCTAssertTrue(publicFilesButton.waitForExistence(timeout: 5))
+        publicFilesButton.tap()
+        
+        XCTAssertTrue(publicFilesTitle.waitForExistence(timeout: 5))
+    }
+    
+    func goToPublicProfile() {
+        menuButton.tap()
+        
+        XCTAssertTrue(publicProfileButton.waitForExistence(timeout: 5))
+        publicProfileButton.tap()
     }
 }

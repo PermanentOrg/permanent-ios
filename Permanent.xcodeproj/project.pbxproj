@@ -447,6 +447,8 @@
 		F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358BE2537414300EEC48C /* MinFolderVO.swift */; };
 		F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
+		F5216AE429228E7E0042914D /* PublicProfileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AE329228E7E0042914D /* PublicProfileUITests.swift */; };
+		F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
 		F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D0E26D058940090EF02 /* Archives.storyboard */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
@@ -574,6 +576,9 @@
 		F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */; };
 		F5B3F13326668CAF0040E5C4 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3F13226668CAF0040E5C4 /* UploadManager.swift */; };
 		F5BC105C278D991400595F94 /* PublicFilesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BC105B278D991400595F94 /* PublicFilesViewModel.swift */; };
+		F5BEF69029241A1F00668A29 /* PublicProfilePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BEF68F29241A1F00668A29 /* PublicProfilePage.swift */; };
+		F5BEF69229241B8E00668A29 /* PublicProfileAboutPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BEF69129241B8E00668A29 /* PublicProfileAboutPage.swift */; };
+		F5BEF69429241D7400668A29 /* PublicProfilePersonInfoPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BEF69329241D7400668A29 /* PublicProfilePersonInfoPage.swift */; };
 		F5C37D4828AD62060062D9EB /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */; };
 		F5C37D4928AD62060062D9EB /* FileCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4728AD62060062D9EB /* FileCollectionViewCell.xib */; };
 		F5C8D247273204CA00707301 /* SearchVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D246273204CA00707301 /* SearchVO.swift */; };
@@ -1052,6 +1057,8 @@
 		F518DD9F27CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageVisibilityCollectionViewCell.xib; sourceTree = "<group>"; };
 		F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionKeychainHandler.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
+		F5216AE329228E7E0042914D /* PublicProfileUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicProfileUITests.swift; sourceTree = "<group>"; };
+		F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1121,6 +1128,9 @@
 		F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialInputStream.swift; sourceTree = "<group>"; };
 		F5B3F13226668CAF0040E5C4 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		F5BC105B278D991400595F94 /* PublicFilesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicFilesViewModel.swift; sourceTree = "<group>"; };
+		F5BEF68F29241A1F00668A29 /* PublicProfilePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePage.swift; sourceTree = "<group>"; };
+		F5BEF69129241B8E00668A29 /* PublicProfileAboutPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAboutPage.swift; sourceTree = "<group>"; };
+		F5BEF69329241D7400668A29 /* PublicProfilePersonInfoPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePersonInfoPage.swift; sourceTree = "<group>"; };
 		F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCollectionViewCell.swift; sourceTree = "<group>"; };
 		F5C37D4728AD62060062D9EB /* FileCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewCell.xib; sourceTree = "<group>"; };
 		F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewGridCell.xib; sourceTree = "<group>"; };
@@ -1377,6 +1387,9 @@
 				F569061F28CB618500E610B6 /* FileMenuPage.swift */,
 				F569062128CB66CC00E610B6 /* DeleteAlertPage.swift */,
 				F569062328CB672900E610B6 /* CreateFolderAlertPage.swift */,
+				F5BEF68F29241A1F00668A29 /* PublicProfilePage.swift */,
+				F5BEF69129241B8E00668A29 /* PublicProfileAboutPage.swift */,
+				F5BEF69329241D7400668A29 /* PublicProfilePersonInfoPage.swift */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -1552,6 +1565,7 @@
 				5E68830728902DBF0006F434 /* LoginUITests.swift */,
 				5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */,
 				5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */,
+				F5216AE329228E7E0042914D /* PublicProfileUITests.swift */,
 			);
 			path = PermanentUITests;
 			sourceTree = "<group>";
@@ -2372,6 +2386,7 @@
 			isa = PBXGroup;
 			children = (
 				F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */,
+				F5216AEC2923E03B0042914D /* XCUIApplication+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3205,14 +3220,19 @@
 				5E07D453289167E5008C0A6B /* EnvVars.generated.swift in Sources */,
 				5E07D4522891600A008C0A6B /* PrivateFilesPage.swift in Sources */,
 				5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */,
+				F5BEF69029241A1F00668A29 /* PublicProfilePage.swift in Sources */,
 				5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */,
+				F5BEF69229241B8E00668A29 /* PublicProfileAboutPage.swift in Sources */,
+				F5BEF69429241D7400668A29 /* PublicProfilePersonInfoPage.swift in Sources */,
 				5E63B3E728A43EC400067FAF /* LeftSideMenu.swift in Sources */,
 				5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */,
+				F5216AE429228E7E0042914D /* PublicProfileUITests.swift in Sources */,
 				5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */,
 				5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */,
 				F569062228CB66CC00E610B6 /* DeleteAlertPage.swift in Sources */,
 				F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */,
 				F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */,
+				F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */,
 				F569062028CB618500E610B6 /* FileMenuPage.swift in Sources */,
 				5E969F7A28A452A3007431BC /* SharedFilesPage.swift in Sources */,
 				5E68830828902DBF0006F434 /* LoginUITests.swift in Sources */,

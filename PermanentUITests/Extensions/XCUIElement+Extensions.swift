@@ -17,15 +17,21 @@ extension XCUIElement {
 
 extension XCUIElement {
     func selectAndDeleteText(inApp app: XCUIApplication) {
+        if buttons["Clear text"].exists {
+            buttons["Clear text"].tap()
+        }
+    }
+    
+    func clearTextView() {
         guard let stringValue = value as? String else {
             XCTFail("Tried to clear and enter text into a non string value")
             return
         }
         
-        tap()
+        let lowerRightCorner = coordinate(withNormalizedOffset: CGVectorMake(0.9, 0.9))
+        lowerRightCorner.tap()
         
         let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: stringValue.count)
-        
         typeText(deleteString)
     }
 }
