@@ -25,7 +25,9 @@ class ShareManagementNumberOfUsesCollectionViewCell: UICollectionViewCell {
     }
     
     func configure() {
-        maxUsesLabel.text = "Max number of uses (optional)".localized()
+        let placeholder = NSMutableAttributedString(string: "Max number of uses (optional)".localized(), attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkBlue])
+        placeholder.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.lightGray], range: (placeholder.string as NSString).range(of: "(optional)".localized()))
+        maxUsesLabel.attributedPlaceholder = placeholder
         additionalInformationLabel.text = "The link will disappear after this number of uses has been reached.".localized()
     }
     
