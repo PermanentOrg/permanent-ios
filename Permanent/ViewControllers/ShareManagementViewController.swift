@@ -123,9 +123,9 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
             shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [ShareManagementCellType.sharePreview, ShareManagementCellType.emptyCell,  ShareManagementCellType.autoApprove, ShareManagementCellType.emptyCell, ShareManagementCellType.defaultAccessRole]
             shareManagementViewData[ShareManagementSectionType.optionalSettings] = [ShareManagementCellType.maxNumberOfUses, ShareManagementCellType.emptyCell, ShareManagementCellType.expirationDate]
         } else {
-            shareManagementViewData.removeValue(forKey: ShareManagementSectionType.optionalSettings)
             shareManagementViewData.removeValue(forKey: ShareManagementSectionType.linkToggleSection)
             shareManagementViewData.removeValue(forKey: ShareManagementSectionType.shareLinkUserSpecificSettings)
+            shareManagementViewData[ShareManagementSectionType.optionalSettings] = []
         }
         collectionView.reloadData()
     }
@@ -286,19 +286,22 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .sharePreview, .autoApprove:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementToggleCollectionViewCell.identifier), for: indexPath) as! ShareManagementToggleCollectionViewCell
-            
+            cell.configure(cellType: currentCellType)
             returnedCell = cell
             
         case .defaultAccessRole:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementDefaultAccessRoleCollectionViewCell.identifier), for: indexPath) as! ShareManagementDefaultAccessRoleCollectionViewCell
+            cell.configure()
             returnedCell = cell
             
         case .maxNumberOfUses:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementNumberOfUsesCollectionViewCell.identifier), for: indexPath) as! ShareManagementNumberOfUsesCollectionViewCell
+            cell.configure()
             returnedCell = cell
             
         case .expirationDate:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementExpirationDateCollectionViewCell.identifier), for: indexPath) as! ShareManagementExpirationDateCollectionViewCell
+            cell.configure()
             returnedCell = cell
             
         case .sendEmailInvitationOption, .shareLinkOption, .revokeLinkOption:
@@ -348,7 +351,7 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
             cellSize.height = 24
             
         case .sharePreview , .autoApprove, .defaultAccessRole:
-            cellSize.height = 38
+            cellSize.height = 40
             
         case .maxNumberOfUses, .expirationDate:
             cellSize.height = 70
@@ -386,6 +389,8 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         switch currentSection {
         case .title:
             cellSize.height = 24
+        case .optionalSettings:
+                cellSize.height = 12
         default: return cellSize
         }
         

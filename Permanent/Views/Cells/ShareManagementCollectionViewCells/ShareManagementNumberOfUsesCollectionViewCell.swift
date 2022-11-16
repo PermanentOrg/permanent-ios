@@ -15,6 +15,18 @@ class ShareManagementNumberOfUsesCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        maxUsesLabel.font = Text.style39.font
+        maxUsesLabel.textColor = .darkBlue
+        maxUsesLabel.backgroundColor = .whiteGray
+        
+        additionalInformationLabel.font = Text.style38.font
+        additionalInformationLabel.textColor = .middleGray
+    }
+    
+    func configure() {
+        maxUsesLabel.text = "Max number of uses (optional)".localized()
+        additionalInformationLabel.text = "The link will disappear after this number of uses has been reached.".localized()
     }
     
     static func nib() -> UINib {

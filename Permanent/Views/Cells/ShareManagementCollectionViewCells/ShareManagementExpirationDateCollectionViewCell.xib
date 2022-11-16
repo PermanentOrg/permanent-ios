@@ -25,12 +25,15 @@
                                 <rect key="frame" x="0.0" y="0.0" width="407" height="70"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tGA-ag-Par">
-                                        <rect key="frame" x="0.0" y="0.0" width="407" height="49.666666666666664"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="407" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="fIQ-WM-KNq"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ml9-uA-z1M">
-                                        <rect key="frame" x="0.0" y="49.666666666666664" width="407" height="20.333333333333336"/>
+                                        <rect key="frame" x="0.0" y="48" width="407" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>

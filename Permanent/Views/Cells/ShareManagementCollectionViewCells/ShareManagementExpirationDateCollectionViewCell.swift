@@ -15,6 +15,18 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        expirationDateField.font = Text.style39.font
+        expirationDateField.textColor = .darkBlue
+        expirationDateField.backgroundColor = .whiteGray
+        
+        detailsLabel.font = Text.style38.font
+        detailsLabel.textColor = .middleGray
+    }
+    
+    func configure() {
+        expirationDateField.text = "Max number of uses (optional)".localized()
+        detailsLabel.text = "The link will disappear after this number of uses has been reached.".localized()
     }
     
     static func nib() -> UINib {
