@@ -12,7 +12,6 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
     
     @IBOutlet weak var elementNameLabel: UILabel!
     @IBOutlet weak var leftElementButton: UIButton!
-    
     @IBOutlet weak var rightElementButton: UIButton!
     
     var leftButtonAction: (() -> Void)?
@@ -20,6 +19,7 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
     
     var linkAddress: String?
     var isMenuExpanded: Bool = false
+    var cellType: ShareManagementCellType?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,7 +27,9 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
         rightElementButton.setTitle("", for: .normal)
     }
     
-    func configure(linkLocation: String? = nil, linkWasGeneratedNow: Bool = false ) {
+    func configure(linkLocation: String? = nil, linkWasGeneratedNow: Bool = false, cellType: ShareManagementCellType) {
+        self.cellType = cellType
+        
         if let linkLocation = linkLocation {
             linkAddress = linkLocation
             leftElementButton.setImage(UIImage(named: "Get Link")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -48,8 +50,12 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
         }
     }
     
+    override func prepareForReuse() {
+        rightElementButton.isHidden = false
+    }
+    
     @IBAction func leftButtonTapAction(_ sender: Any) {
-        if ((linkAddress?.isEmpty) == nil) {
+        if cellType == .linkSettings {
             isMenuExpanded.toggle()
             elementNameLabel.text = isMenuExpanded ? "Hide link settings".localized() : "Show link settings".localized()
             leftButtonAction?()

@@ -30,6 +30,7 @@ enum ShareManagementCellType {
     case sendEmailInvitationOption
     case shareLinkOption
     case revokeLinkOption
+    case emptyCell
 }
 
 class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
@@ -37,7 +38,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
     
     var sharedFile: FileViewModel!
     var shareLink: String?
-    var shareMangementViewData: [ShareManagementSectionType: [ShareManagementCellType]] = [:]
+    var shareManagementViewData: [ShareManagementSectionType: [ShareManagementCellType]] = [:]
     
     var showLinkSettings: Bool?
     
@@ -60,6 +61,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
     
     func initCollectionView() {
         let layout = UICollectionViewFlowLayout()
+        layout.estimatedItemSize = .zero
 
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .backgroundPrimary
@@ -71,13 +73,16 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         collectionView.register(ShareManagementToggleCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementToggleCollectionViewCell.identifier)
         collectionView.register(ShareManagementDefaultAccessRoleCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementDefaultAccessRoleCollectionViewCell.identifier)
         collectionView.register(ShareManagementExpirationDateCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementExpirationDateCollectionViewCell.identifier)
+        collectionView.register(ShareManagementNumberOfUsesCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementNumberOfUsesCollectionViewCell.identifier)
         collectionView.register(ShareMangementAdditionalOptionCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareMangementAdditionalOptionCollectionViewCell.identifier)
-        
+        collectionView.register(ShareManagementEmptySpaceCollectionViewCell.nib(), forCellWithReuseIdentifier:         ShareManagementEmptySpaceCollectionViewCell.identifier)
+    
+        collectionView.register(ShareManagementEmptyHeaderCollectionReusableView.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ShareManagementEmptyHeaderCollectionReusableView.identifier)
         collectionView.register(ShareManagementSeparatorFooterCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ShareManagementSeparatorFooterCollectionViewCell.identifier)
     }
     
-    func updateCollectionView() {
-        shareMangementViewData = [
+    func initCollectionViewData() {
+        shareManagementViewData = [
             ShareManagementSectionType.title: [
             ],
             ShareManagementSectionType.linkNotGenerated: [
@@ -95,24 +100,38 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         
         if let _ = shareLink {
             if let showLinkSettings = showLinkSettings, showLinkSettings {
-                shareMangementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareMangementViewData[ShareManagementSectionType.linkSettingsSection] = [ShareManagementCellType.shareLink, ShareManagementCellType.linkSettings]
-                //shareMangementViewData[ShareManagementSectionType.linkToggleSection] = [ ShareManagementCellType.sharePreview, ShareManagementCellType.autoApprove, ShareManagementCellType.defaultAccessRole]
-                shareMangementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = []
+                shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
+                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [ShareManagementCellType.shareLink, ShareManagementCellType.emptyCell, ShareManagementCellType.linkSettings]
+                shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [ShareManagementCellType.sharePreview, ShareManagementCellType.emptyCell,  ShareManagementCellType.autoApprove, ShareManagementCellType.emptyCell, ShareManagementCellType.defaultAccessRole]
+                shareManagementViewData[ShareManagementSectionType.optionalSettings] = [ShareManagementCellType.maxNumberOfUses, ShareManagementCellType.emptyCell, ShareManagementCellType.expirationDate]
             } else {
-                shareMangementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareMangementViewData[ShareManagementSectionType.linkSettingsSection] = [ShareManagementCellType.shareLink, ShareManagementCellType.linkSettings]
+                shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
+                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [ShareManagementCellType.shareLink, ShareManagementCellType.emptyCell, ShareManagementCellType.linkSettings]
             }
         } else {
-            shareMangementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-            shareMangementViewData[ShareManagementSectionType.linkNotGenerated] = [ShareManagementCellType.linkNotGenerated]
+            shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
+            shareManagementViewData[ShareManagementSectionType.linkNotGenerated] = [ShareManagementCellType.linkNotGenerated]
         }
-        
+
+        collectionView.reloadData()
+    }
+    
+    func updateCollectionViewData() {
+        if let showLinkSettings = showLinkSettings, showLinkSettings {
+            shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
+            shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [ShareManagementCellType.shareLink, ShareManagementCellType.emptyCell, ShareManagementCellType.linkSettings]
+            shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [ShareManagementCellType.sharePreview, ShareManagementCellType.emptyCell,  ShareManagementCellType.autoApprove, ShareManagementCellType.emptyCell, ShareManagementCellType.defaultAccessRole]
+            shareManagementViewData[ShareManagementSectionType.optionalSettings] = [ShareManagementCellType.maxNumberOfUses, ShareManagementCellType.emptyCell, ShareManagementCellType.expirationDate]
+        } else {
+            shareManagementViewData.removeValue(forKey: ShareManagementSectionType.optionalSettings)
+            shareManagementViewData.removeValue(forKey: ShareManagementSectionType.linkToggleSection)
+            shareManagementViewData.removeValue(forKey: ShareManagementSectionType.shareLinkUserSpecificSettings)
+        }
         collectionView.reloadData()
     }
     
     func updateShowLinkSettings() {
-        if showLinkSettings == nil { showLinkSettings = shareLink == nil ? false : true }
+        if showLinkSettings == nil { showLinkSettings = shareLink == nil ? true : false }
     }
     
     fileprivate func changeFilePermission(shareVO: ShareVOData, accessRole: AccessRole) {
@@ -191,7 +210,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         group.notify(queue: DispatchQueue.main) {
             self.hideSpinner()
             self.updateShowLinkSettings()
-            self.updateCollectionView()
+            self.initCollectionViewData()
 
         }
     }
@@ -222,20 +241,20 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
 
 extension ShareManagementViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sections = Array(shareMangementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
         let currentSection = sections[section]
         
-        return shareMangementViewData[currentSection]?.count ?? 0
+        return shareManagementViewData[currentSection]?.count ?? 0
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return shareMangementViewData.keys.count
+        return shareManagementViewData.keys.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var returnedCell: UICollectionViewCell
-        let sections = Array(shareMangementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = shareMangementViewData[sections[indexPath.section]]![indexPath.row]
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentCellType = shareManagementViewData[sections[indexPath.section]]![indexPath.row]
         
         switch currentCellType {
         case .title:
@@ -250,42 +269,44 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             }
             returnedCell = cell
             
-        case .shareLink, .linkSettings:
+        case .shareLink:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
-            if currentCellType == .shareLink {
-                cell.configure(linkLocation: shareLink)
-            } else {
-                cell.configure(linkWasGeneratedNow: showLinkSettings ?? false)
-            }
-            
+            cell.configure(linkLocation: shareLink, cellType: currentCellType)
             returnedCell = cell
-        
-        case .sharePreview, .autoApprove:
+            
+        case .linkSettings:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
-            if currentCellType == .shareLink {
-                cell.configure(linkLocation: shareLink)
-            } else {
-                cell.configure(linkWasGeneratedNow: showLinkSettings ?? false)
+            cell.configure(linkWasGeneratedNow: showLinkSettings ?? false, cellType: currentCellType)
+            
+            cell.leftButtonAction = { [self] in
+                showLinkSettings?.toggle()
+                updateCollectionViewData()
             }
+            returnedCell = cell
+            
+        case .sharePreview, .autoApprove:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementToggleCollectionViewCell.identifier), for: indexPath) as! ShareManagementToggleCollectionViewCell
             
             returnedCell = cell
             
         case .defaultAccessRole:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementDefaultAccessRoleCollectionViewCell.identifier), for: indexPath) as! ShareManagementDefaultAccessRoleCollectionViewCell
-            
             returnedCell = cell
             
         case .maxNumberOfUses:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementNumberOfUsesCollectionViewCell.identifier), for: indexPath) as! ShareManagementNumberOfUsesCollectionViewCell
-            
             returnedCell = cell
             
         case .expirationDate:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementExpirationDateCollectionViewCell.identifier), for: indexPath) as! ShareManagementExpirationDateCollectionViewCell
-            
             returnedCell = cell
+            
         case .sendEmailInvitationOption, .shareLinkOption, .revokeLinkOption:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareMangementAdditionalOptionCollectionViewCell.identifier), for: indexPath) as! ShareMangementAdditionalOptionCollectionViewCell
+            returnedCell = cell
+            
+        case .emptyCell:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementEmptySpaceCollectionViewCell.identifier), for: indexPath) as! ShareManagementEmptySpaceCollectionViewCell
             
             returnedCell = cell
         }
@@ -299,6 +320,10 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let footerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementSeparatorFooterCollectionViewCell.identifier, for: indexPath) as! ShareManagementSeparatorFooterCollectionViewCell
             return footerCell
             
+        case UICollectionView.elementKindSectionHeader:
+            let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementEmptyHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementEmptyHeaderCollectionReusableView
+            return headerCell
+            
         default:
             return UICollectionReusableView()
         }
@@ -309,8 +334,8 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var cellSize = CGSize(width: collectionView.frame.width, height: 0)
         
-        let sections = Array(shareMangementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = shareMangementViewData[sections[indexPath.section]]![indexPath.row]
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentCellType = shareManagementViewData[sections[indexPath.section]]![indexPath.row]
         
         switch currentCellType {
         case .title:
@@ -319,14 +344,34 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         case .linkNotGenerated:
             cellSize.height = 240
             
-        case .shareLink:
+        case .shareLink, .linkSettings, .emptyCell:
             cellSize.height = 24
             
-        case .shareLinkOption:
-            cellSize.height = 24
+        case .sharePreview , .autoApprove, .defaultAccessRole:
+            cellSize.height = 38
             
-        case .linkSettings, .sharePreview, .autoApprove, .defaultAccessRole, .maxNumberOfUses, .expirationDate, .sendEmailInvitationOption, .revokeLinkOption:
+        case .maxNumberOfUses, .expirationDate:
+            cellSize.height = 70
+            
+        case .shareLinkOption, .sendEmailInvitationOption, .revokeLinkOption:
             cellSize.height = 0
+        }
+        
+        return cellSize
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        var cellSize = CGSize(width: collectionView.frame.width, height: 0)
+        
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentSection = sections[section]
+        
+        switch currentSection {
+        case .linkToggleSection:
+            cellSize.height = 24
+        case .optionalSettings:
+            cellSize.height = 24
+        default: return cellSize
         }
         
         return cellSize
@@ -335,11 +380,11 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         var cellSize = CGSize(width: collectionView.frame.width, height: 0)
         
-        let sections = Array(shareMangementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
         let currentSection = sections[section]
         
         switch currentSection {
-        case .title, .optionalSettings:
+        case .title:
             cellSize.height = 24
         default: return cellSize
         }
@@ -348,6 +393,10 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 12
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
 }

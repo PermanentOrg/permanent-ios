@@ -34,6 +34,8 @@
 		5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */; };
 		5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */; };
 		5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */; };
+		5E048FDF292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E048FDD292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.swift */; };
+		5E048FE0292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FDE292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.xib */; };
 		5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44B28915C8E008C0A6B /* LoginPage.swift */; };
 		5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44D28915CE0008C0A6B /* SignUpPage.swift */; };
 		5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */; };
@@ -174,6 +176,8 @@
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
 		5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */; };
 		5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */; };
+		5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */; };
+		5EC043A82924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */; };
 		5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */; };
 		5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */; };
 		5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */; };
@@ -696,6 +700,8 @@
 		5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareMangementAdditionalOptionCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementDefaultAccessRoleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementDefaultAccessRoleCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E048FDD292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementEmptySpaceCollectionViewCell.swift; sourceTree = "<group>"; };
+		5E048FDE292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementEmptySpaceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E07D44B28915C8E008C0A6B /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5E07D44D28915CE0008C0A6B /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
 		5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuPage.swift; sourceTree = "<group>"; };
@@ -817,6 +823,8 @@
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EBDBD4A26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenSectionTitleTableViewCell.swift; sourceTree = "<group>"; };
 		5EBDBD4B26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenSectionTitleTableViewCell.xib; sourceTree = "<group>"; };
+		5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementEmptyHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
+		5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementEmptyHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5EC5A27625E3DBEB005DBB55 /* FilePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewModel.swift; sourceTree = "<group>"; };
 		5EC8C4B726D65006002A7ECC /* ArchivesEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesEndpoint.swift; sourceTree = "<group>"; };
 		5EC8C4B926D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenChooseArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
@@ -1407,8 +1415,6 @@
 			children = (
 				5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */,
 				5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */,
-				5E7AE8A9291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift */,
-				5E7AE8AA291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.xib */,
 				5E7AE8AD291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.swift */,
 				5E7AE8AE291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib */,
 				5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */,
@@ -1423,6 +1429,12 @@
 				5E048FD22923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.xib */,
 				5E048FD5292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.swift */,
 				5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */,
+				5E048FDD292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.swift */,
+				5E048FDE292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.xib */,
+				5E7AE8A9291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift */,
+				5E7AE8AA291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.xib */,
+				5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */,
+				5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */,
 			);
 			path = ShareManagementCollectionViewCells;
 			sourceTree = "<group>";
@@ -2659,6 +2671,7 @@
 				BC59BABD25C2B7D6005A45D3 /* FileLargeCollectionViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
 				F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */,
+				5E048FE0292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.xib in Resources */,
 				5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
@@ -2697,6 +2710,7 @@
 				5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */,
 				5E7AE8AC291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.xib in Resources */,
 				5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */,
+				5EC043A82924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib in Resources */,
 				5E62F7BB27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
@@ -2920,6 +2934,7 @@
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
+				5E048FDF292413010023C929 /* ShareManagementEmptySpaceCollectionViewCell.swift in Sources */,
 				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -3187,6 +3202,7 @@
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
+				5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */,

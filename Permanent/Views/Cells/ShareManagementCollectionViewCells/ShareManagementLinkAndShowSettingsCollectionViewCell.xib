@@ -78,7 +78,6 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="24" id="1EU-P0-r9m"/>
                             <constraint firstAttribute="bottom" secondItem="Tb1-lw-id7" secondAttribute="bottom" id="BgP-7k-Tuj"/>
                             <constraint firstItem="QDB-at-gfQ" firstAttribute="leading" secondItem="KRA-S9-Lvc" secondAttribute="leading" id="HSo-NR-Qle"/>
                             <constraint firstItem="xZT-xM-6br" firstAttribute="leading" secondItem="KRA-S9-Lvc" secondAttribute="leading" constant="40" id="Jfe-Pb-H3t"/>
@@ -87,6 +86,7 @@
                             <constraint firstItem="Tb1-lw-id7" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="fu4-Oj-AwD"/>
                             <constraint firstItem="xZT-xM-6br" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="gUy-86-S6y"/>
                             <constraint firstItem="Tb1-lw-id7" firstAttribute="leading" secondItem="xZT-xM-6br" secondAttribute="trailing" constant="10" id="lbX-2R-ebO"/>
+                            <constraint firstAttribute="height" constant="24" id="vNf-Is-xzN"/>
                             <constraint firstItem="QDB-at-gfQ" firstAttribute="top" secondItem="KRA-S9-Lvc" secondAttribute="top" id="xfE-sn-7Yz"/>
                             <constraint firstAttribute="bottom" secondItem="xZT-xM-6br" secondAttribute="bottom" id="ytH-J1-ENh"/>
                         </constraints>
