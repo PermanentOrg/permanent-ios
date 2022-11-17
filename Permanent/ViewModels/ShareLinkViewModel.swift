@@ -349,11 +349,19 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
     
     func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, then handler: @escaping ShareLinkResponse) {
+        var expiresDate: String?
+        if expiresDT == "clear" {
+            expiresDate = nil
+        } else {
+            expiresDate = expiresDT != nil ? expiresDT : shareVO?.expiresDT
+        }
+        
         let manageLinkData = ManageLinkData(
             previewToggle: previewToggle != nil ? previewToggle : shareVO?.previewToggle,
             autoApproveToggle: autoApproveToggle != nil ? autoApproveToggle : shareVO?.autoApproveToggle,
-            expiresDT: expiresDT != nil ? expiresDT : shareVO?.expiresDT,
+            expiresDT: expiresDate,
             maxUses: maxUses != nil ? maxUses : shareVO?.maxUses)
+        
         
         updateLink(
             model: manageLinkData,

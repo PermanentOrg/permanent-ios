@@ -22,6 +22,7 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
         expirationDateField.font = Text.style39.font
         expirationDateField.textColor = .darkBlue
         expirationDateField.backgroundColor = .whiteGray
+        expirationDateField.clearButtonMode = .always
         
         detailsLabel.font = Text.style38.font
         detailsLabel.textColor = .middleGray
@@ -112,5 +113,15 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
 extension ShareManagementExpirationDateCollectionViewCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         datePickerDoneButtonPressed(textField)
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        viewModel?.updateLinkWithChangedField(expiresDT: "clear", then: { shareVO, _ in
+            if shareVO != nil {
+                self.expirationDateField.text = nil
+            }
+        })
+        
+        return false
     }
 }
