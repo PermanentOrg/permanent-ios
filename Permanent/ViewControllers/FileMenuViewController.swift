@@ -683,7 +683,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     
     @objc func manageLinkAction() {
         guard
-            let manageLinkVC = UIViewController.create(withIdentifier: .share, from: .share) as? ShareViewController
+            let manageLinkVC = UIViewController.create(withIdentifier: .shareManagement, from: .share) as? ShareManagementViewController
         else {
             return
         }
