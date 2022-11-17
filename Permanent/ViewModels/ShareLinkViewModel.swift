@@ -347,4 +347,27 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         let accountName: String? = AuthenticationManager.shared.session?.account.fullName
         return accountName
     }
+    
+    func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, then handler: @escaping ShareLinkResponse) {
+        var expiresDate: String?
+        if expiresDT == "clear" {
+            expiresDate = nil
+        } else {
+            expiresDate = expiresDT != nil ? expiresDT : shareVO?.expiresDT
+        }
+        
+        let manageLinkData = ManageLinkData(
+            previewToggle: previewToggle != nil ? previewToggle : shareVO?.previewToggle,
+            autoApproveToggle: autoApproveToggle != nil ? autoApproveToggle : shareVO?.autoApproveToggle,
+            expiresDT: expiresDate,
+            maxUses: maxUses != nil ? maxUses : shareVO?.maxUses)
+        
+        
+        updateLink(
+            model: manageLinkData,
+            then: { shareVO, error in
+                handler(shareVO, error)
+            }
+        )
+    }
 }
