@@ -336,13 +336,8 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             returnedCell = cell
             
         case .expirationDate:
-            var expiresValue: String?
-            if let expiresDT = viewModel?.shareVO?.expiresDT {
-                expiresValue = expiresDT.dateOnly
-            }
-            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementExpirationDateCollectionViewCell.identifier), for: indexPath) as! ShareManagementExpirationDateCollectionViewCell
-            cell.configure(expiredDateValue: expiresValue)
+            cell.configure(viewModel: viewModel!)
             returnedCell = cell
             
         case .sendEmailInvitationOption, .shareLinkOption, .revokeLinkOption:

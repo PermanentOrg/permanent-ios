@@ -13,10 +13,11 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var expirationDateField: UITextField!
     @IBOutlet weak var detailsLabel: UILabel!
     
-    var expiredDate: String?
-    
+    var viewModel: ShareLinkViewModel?
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        expirationDateField.delegate = self
         
         expirationDateField.font = Text.style39.font
         expirationDateField.textColor = .darkBlue
@@ -26,10 +27,10 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
         detailsLabel.textColor = .middleGray
     }
     
-    func configure(expiredDateValue: String?) {
-        if let expiredDate = expiredDateValue {
-            self.expiredDate = expiredDate
-            expirationDateField.text = expiredDate
+    func configure(viewModel: ShareLinkViewModel) {
+        self.viewModel = viewModel
+        if let expiredDate = viewModel.shareVO?.expiresDT {
+            expirationDateField.text = expiredDate.dateOnly
         }
         
         let placeholder = NSMutableAttributedString(string: "Expiration date (optional)".localized(), attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkBlue])
@@ -49,7 +50,7 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
         dateFormatter.timeZone = .init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        date = dateFormatter.date(from: expiredDate ?? "")
+        date = dateFormatter.date(from: viewModel?.shareVO?.expiresDT ?? "")
         
         let datePicker = UIDatePicker()
         datePicker.date = date ?? Date()
@@ -59,6 +60,7 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
             datePicker.preferredDatePickerStyle = .wheels
         }
         datePicker.sizeToFit()
+        datePicker.minimumDate = Date()
         
         let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 40))
         let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 90, height: doneContainerView.frame.height))
@@ -77,11 +79,22 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
     }
     
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
-        let date = Date()
-        
         let dateFormatter = DateFormatter()
+        var date = dateFormatter.date(from: "")
+        dateFormatter.timeZone = .init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        expirationDateField.text = dateFormatter.string(from: date)
+        
+        date = dateFormatter.date(from: expirationDateField.text ?? "")
+        if let date = date {
+            let dateString: String? = dateFormatter.string(from: date)
+            viewModel?.updateLinkWithChangedField(expiresDT: dateString, then: { [self] _, error in
+                if error != nil {
+                    expirationDateField.text = viewModel?.shareVO?.expiresDT
+                }
+            })
+        } else {
+            expirationDateField.text = viewModel?.shareVO?.expiresDT
+        }
         
         expirationDateField.resignFirstResponder()
     }
@@ -93,5 +106,11 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         expirationDateField.text = dateFormatter.string(from: date)
+    }
+}
+
+extension ShareManagementExpirationDateCollectionViewCell: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        datePickerDoneButtonPressed(textField)
     }
 }
