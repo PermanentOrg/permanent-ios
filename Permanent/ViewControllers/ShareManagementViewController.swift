@@ -49,6 +49,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         initUI()
         initCollectionView()
         getShareLink(option: .retrieve)
+        addDismissKeyboardGesture()
     }
     
     func initUI() {
@@ -97,8 +98,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
                 ]
                 shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
                     ShareManagementCellType.sharePreview,
-                    ShareManagementCellType.autoApprove,
-                    ShareManagementCellType.defaultAccessRole
+                    ShareManagementCellType.autoApprove
                 ]
                 shareManagementViewData[ShareManagementSectionType.optionalSettings] = [
                     ShareManagementCellType.maxNumberOfUses,
@@ -128,8 +128,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
             ]
             shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
                 ShareManagementCellType.sharePreview,
-                ShareManagementCellType.autoApprove,
-                ShareManagementCellType.defaultAccessRole
+                ShareManagementCellType.autoApprove
             ]
             shareManagementViewData[ShareManagementSectionType.optionalSettings] = [
                 ShareManagementCellType.maxNumberOfUses,
@@ -167,6 +166,24 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         })
         actionDialog?.dismiss()
         actionDialog = nil
+    }
+    
+    func copyLinkAction() {
+        var emailSubject = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you".localized()
+        var emailBody = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you.\n <LINK>".localized()
+        
+        guard let link = shareLink,
+              let name = viewModel?.getAccountName() else {
+            return
+        }
+        emailSubject = emailSubject.replacingOccurrences(of: "<ACCOUNTNAME>", with: "\(name)")
+        emailBody = emailBody.replacingOccurrences(of: "<ACCOUNTNAME>", with: "\(name)")
+        emailBody = emailBody.replacingOccurrences(of: "<LINK>", with: "\(link)")
+    
+        let activityViewController = UIActivityViewController(activityItems: [emailBody], applicationActivities: nil)
+        activityViewController.setValue(emailSubject, forKey: "Subject")
+        activityViewController.popoverPresentationController?.sourceView = view
+        present(activityViewController, animated: true, completion: nil)
     }
     
     // MARK: - Network Requests
@@ -297,11 +314,15 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                 showLinkSettings?.toggle()
                 updateCollectionViewData()
             }
+            
+            cell.rightButtonAction = { [self] in
+                copyLinkAction()
+            }
             returnedCell = cell
             
         case .sharePreview, .autoApprove:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementToggleCollectionViewCell.identifier), for: indexPath) as! ShareManagementToggleCollectionViewCell
-            cell.configure(cellType: currentCellType)
+            cell.configure(cellType: currentCellType, viewModel: viewModel!)
             returnedCell = cell
             
         case .defaultAccessRole:
@@ -311,12 +332,17 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .maxNumberOfUses:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementNumberOfUsesCollectionViewCell.identifier), for: indexPath) as! ShareManagementNumberOfUsesCollectionViewCell
-            cell.configure()
+            cell.configure(viewModel: viewModel!)
             returnedCell = cell
             
         case .expirationDate:
+            var expiresValue: String?
+            if let expiresDT = viewModel?.shareVO?.expiresDT {
+                expiresValue = expiresDT.dateOnly
+            }
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementExpirationDateCollectionViewCell.identifier), for: indexPath) as! ShareManagementExpirationDateCollectionViewCell
-            cell.configure()
+            cell.configure(expiredDateValue: expiresValue)
             returnedCell = cell
             
         case .sendEmailInvitationOption, .shareLinkOption, .revokeLinkOption:
