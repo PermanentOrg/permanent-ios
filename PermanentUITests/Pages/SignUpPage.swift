@@ -27,7 +27,6 @@ class SignUpPage {
     }
     
     func navigateToLogin() {
-        XCTAssertTrue(enterLoginScreenButton.waitForExistence(timeout: 60))
         enterLoginScreenButton.tap()
         sleep(5)
         app.tap()
