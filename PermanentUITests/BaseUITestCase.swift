@@ -49,6 +49,14 @@ class BaseUITestCase: XCTestCase {
                 return false
             }
         }
+        
+        let coordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.2))
+        coordinate.tap()
+        sleep(3)
+        coordinate.tap()
+        sleep(3)
+        coordinate.tap()
+        sleep(3)
     }
 
     override func tearDownWithError() throws {
