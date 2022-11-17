@@ -328,6 +328,10 @@ extension ShareManagementViewController: UICollectionViewDataSource {
         case .shareLink:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkLocation: shareLink, cellType: currentCellType)
+            
+            cell.rightButtonAction = { [self] in
+                copyLinkAction()
+            }
             returnedCell = cell
             
         case .linkSettings:
@@ -339,9 +343,6 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                 updateCollectionViewData()
             }
             
-            cell.rightButtonAction = { [self] in
-                copyLinkAction()
-            }
             returnedCell = cell
             
         case .sharePreview, .autoApprove:
