@@ -38,7 +38,7 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
             rightElementButton.tintColor = .darkBlue
             elementNameLabel.font = Text.style7.font
             elementNameLabel.textColor = .barneyPurple
-            elementNameLabel.text = linkLocation
+            elementNameLabel.text = linkLocation.replacingOccurrences(of: "https://www.", with: "")
         } else {
             leftElementButton.setImage(UIImage(named: "expand")?.withRenderingMode(.alwaysTemplate), for: .normal)
             leftElementButton.tintColor = .darkBlue
