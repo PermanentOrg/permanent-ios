@@ -70,7 +70,6 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     func addCustomNavigationBar() {
-        
         let imageView = UIView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -105,7 +104,6 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         itemNameLabel.text = sharedFile.name
         itemNameLabel.textColor = .white
         itemNameLabel.font = Text.style3.font
-        
         
         let headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
         headerStackView.translatesAutoresizingMaskIntoConstraints = false
