@@ -63,10 +63,53 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         view.backgroundColor = .backgroundPrimary
         styleNavBar()
         
-        navigationItem.title = sharedFile.name
+        addCustomNavigationBar()
         view.addSubview(overlayView)
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
+    }
+    
+    func addCustomNavigationBar() {
+        let imageView = UIView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let itemThumbImageView = UIImageView()
+        itemThumbImageView.translatesAutoresizingMaskIntoConstraints = false
+        itemThumbImageView.contentMode = .scaleAspectFill
+        itemThumbImageView.clipsToBounds = true
+        imageView.addSubview(itemThumbImageView)
+        
+        if let isFolder = viewModel?.fileViewModel.type.isFolder, isFolder {
+            itemThumbImageView.image = UIImage(named: "folderIcon")
+            NSLayoutConstraint.activate([
+                itemThumbImageView.heightAnchor.constraint(equalToConstant: 35),
+                itemThumbImageView.widthAnchor.constraint(equalToConstant: 35),
+                itemThumbImageView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 4)
+            ])
+        } else {
+            itemThumbImageView.sd_setImage(with: URL(string: viewModel?.fileViewModel.thumbnailURL))
+            NSLayoutConstraint.activate([
+                itemThumbImageView.heightAnchor.constraint(equalToConstant: 30),
+                itemThumbImageView.widthAnchor.constraint(equalToConstant: 30),
+                itemThumbImageView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 0)
+            ])
+        }
+        
+        NSLayoutConstraint.activate([
+            itemThumbImageView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            itemThumbImageView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor)
+        ])
+
+        let itemNameLabel = UILabel()
+        itemNameLabel.text = sharedFile.name
+        itemNameLabel.textColor = .white
+        itemNameLabel.font = Text.style3.font
+        
+        let headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
+        headerStackView.translatesAutoresizingMaskIntoConstraints = false
+        headerStackView.spacing = 16
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: headerStackView)
     }
     
     func initCollectionView() {

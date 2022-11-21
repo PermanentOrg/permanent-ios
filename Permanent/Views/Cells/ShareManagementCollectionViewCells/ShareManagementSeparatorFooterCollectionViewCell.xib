@@ -19,10 +19,10 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="so9-00-5UA">
-                        <rect key="frame" x="-24" y="0.0" width="405" height="24"/>
+                        <rect key="frame" x="0.0" y="0.0" width="357" height="24"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zSL-vz-dJs">
-                                <rect key="frame" x="-24" y="11.666666666666666" width="453" height="1"/>
+                                <rect key="frame" x="0.0" y="11.666666666666666" width="357" height="1"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="YZw-k0-PX2"/>
@@ -32,8 +32,8 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="24" id="1Oc-0s-ELe"/>
                             <constraint firstItem="zSL-vz-dJs" firstAttribute="centerY" secondItem="so9-00-5UA" secondAttribute="centerY" id="5VC-H5-ry4"/>
-                            <constraint firstAttribute="trailing" secondItem="zSL-vz-dJs" secondAttribute="trailing" constant="-24" id="Jvz-Tt-Lll"/>
-                            <constraint firstItem="zSL-vz-dJs" firstAttribute="leading" secondItem="so9-00-5UA" secondAttribute="leading" constant="-24" id="vCg-aU-n5i"/>
+                            <constraint firstAttribute="trailing" secondItem="zSL-vz-dJs" secondAttribute="trailing" id="Jvz-Tt-Lll"/>
+                            <constraint firstItem="zSL-vz-dJs" firstAttribute="leading" secondItem="so9-00-5UA" secondAttribute="leading" id="vCg-aU-n5i"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -41,8 +41,8 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="so9-00-5UA" secondAttribute="bottom" id="3e3-AN-Glz"/>
-                <constraint firstAttribute="trailing" secondItem="so9-00-5UA" secondAttribute="trailing" constant="-24" id="GiL-bb-GbQ"/>
-                <constraint firstItem="so9-00-5UA" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="-24" id="vay-hR-bUj"/>
+                <constraint firstAttribute="trailing" secondItem="so9-00-5UA" secondAttribute="trailing" id="GiL-bb-GbQ"/>
+                <constraint firstItem="so9-00-5UA" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="vay-hR-bUj"/>
             </constraints>
             <size key="customSize" width="357" height="24"/>
             <connections>
