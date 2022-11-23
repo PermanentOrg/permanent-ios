@@ -241,6 +241,9 @@
 		5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */; };
 		5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */; };
 		5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */; };
+		5EFC404A292D71F700FD244B /* ShareManagementRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */; };
+		5EFC404C292D722600FD244B /* ShareManagementRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC404B292D722600FD244B /* ShareManagementRepository.swift */; };
+		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
 		7B54B51CAB61C15F69F524B2 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC5C8BD7F66C354C5F14C20 /* Pods_ShareExtension.framework */; };
 		9C6D53D6624D31E389CF597F /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 267802D49EA67C747781687E /* Pods_PermanentTests.framework */; };
@@ -510,7 +513,6 @@
 		F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88428F9D91D0015A522 /* FileBrowserViewModel.swift */; };
 		F559F89028FEE9690015A522 /* FolderNavigationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F87828F99E3E0015A522 /* FolderNavigationViewModel.swift */; };
 		F559F89128FEE9690015A522 /* SaveDestinationBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */; };
-		F559F89228FEE9740015A522 /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		F559F89328FEE9740015A522 /* FilesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135428F43359003DF4CC /* FilesRepository.swift */; };
 		F559F89428FEE9950015A522 /* GetRootResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC63589D2536D75300EEC48C /* GetRootResponse.swift */; };
 		F559F89528FEE99E0015A522 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B542514F26F00390927 /* APIError.swift */; };
@@ -870,6 +872,8 @@
 		5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewController.swift; sourceTree = "<group>"; };
 		5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewModel.swift; sourceTree = "<group>"; };
+		5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShareManagementRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/ShareManagementRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
+		5EFC404B292D722600FD244B /* ShareManagementRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShareManagementRepository.swift; path = Permanent/Models/Repositories/ShareManagementRepository.swift; sourceTree = SOURCE_ROOT; };
 		5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
 		84B2F006D33C2863BCC9FB07 /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		960A818BF1532B48194946E8 /* Pods-PermanentTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -1735,6 +1739,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		5EFC4048292D71CC00FD244B /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
+				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
+			);
+			path = Remote;
+			sourceTree = "<group>";
+		};
 		BC0D35AE2553FC0A00786E8C /* ActionDialogView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2398,6 +2411,7 @@
 			children = (
 				F50E135328F43348003DF4CC /* DataSources */,
 				F50E135428F43359003DF4CC /* FilesRepository.swift */,
+				5EFC404B292D722600FD244B /* ShareManagementRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -2405,7 +2419,7 @@
 		F50E135328F43348003DF4CC /* DataSources */ = {
 			isa = PBXGroup;
 			children = (
-				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
+				5EFC4048292D71CC00FD244B /* Remote */,
 			);
 			path = DataSources;
 			sourceTree = "<group>";
@@ -2922,6 +2936,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EFC404C292D722600FD244B /* ShareManagementRepository.swift in Sources */,
 				5E62F7C927F79FF40046F6C8 /* PopularArchive.swift in Sources */,
 				5E2E3D1826D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift in Sources */,
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
@@ -3169,6 +3184,7 @@
 				5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */,
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
+				5EFC404A292D71F700FD244B /* ShareManagementRemoteDataSource.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
@@ -3395,6 +3411,7 @@
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
+				5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
@@ -3432,7 +3449,6 @@
 				5E1CCC1D287F04EE00913EEA /* ActionDialogView.swift in Sources */,
 				5E1CCC1F287F04FF00913EEA /* HighlightColor.swift in Sources */,
 				5E5DCAF9286DDC4300894D47 /* FileDetailsTableViewCell.swift in Sources */,
-				F559F89228FEE9740015A522 /* FilesRemoteDataSource.swift in Sources */,
 				5ED4B9D32876E05400CF044B /* ParentFolderVO.swift in Sources */,
 				F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */,
 				F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */,
