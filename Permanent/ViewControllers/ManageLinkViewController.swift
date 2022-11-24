@@ -72,7 +72,8 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
             previewToggle: sharePreviewSwitchView.isToggled ? 1 : 0,
             autoApproveToggle: autoApproveSwitchView.isToggled ? 1 : 0,
             expiresDT: expDateInputView.inputValue.isNotEmpty ? expDateInputView.inputValue : nil,
-            maxUses: Int(maxUsesInputView.inputValue) ?? 0
+            maxUses: Int(maxUsesInputView.inputValue) ?? 0,
+            defaultAccessRole: .viewer
         )
         
         viewModel?.updateLink(

@@ -261,6 +261,9 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
         payloadVO?.previewToggle = data.previewToggle
         payloadVO?.autoApproveToggle = data.autoApproveToggle
         payloadVO?.expiresDT = data.expiresDT
+        if let defaultAccessRole = data.defaultAccessRole {
+            payloadVO?.defaultAccessRole = defaultAccessRole.apiValue
+        }
         
         return payloadVO
     }
