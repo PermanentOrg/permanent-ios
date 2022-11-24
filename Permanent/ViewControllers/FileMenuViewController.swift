@@ -68,8 +68,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel = ShareLinkViewModel()
-        viewModel?.fileViewModel = fileViewModel
+        viewModel = ShareLinkViewModel(fileViewModel: fileViewModel)
+        //viewModel?.fileViewModel = fileViewModel
         
         view.backgroundColor = .clear
         
