@@ -7,14 +7,14 @@
 
 import UIKit
 
-
 enum ShareManagementSectionType: Int {
     case title = 0
     case linkNotGenerated = 1
-    case linkSettingsSection = 2
-    case linkToggleSection = 3
-    case optionalSettings = 4
-    case shareLinkUserSpecificSettings = 5
+    case linkSection = 2
+    case linkSettingsSection = 3
+    case pendingRequests = 4
+    case sharedWith = 5
+    case buttons = 6
 }
 
 enum ShareManagementCellType {
@@ -30,6 +30,8 @@ enum ShareManagementCellType {
     case sendEmailInvitationOption
     case shareLinkOption
     case revokeLinkOption
+    case sharedArchive
+    case pendingArchive
 }
 
 class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
@@ -119,7 +121,6 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
 
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .backgroundPrimary
-        collectionView.alwaysBounceVertical = true
         
         collectionView.register(ShareManagementTitleCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementTitleCollectionViewCell.identifier)
         collectionView.register(ShareManagementLinkNotGeneratedCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementLinkNotGeneratedCollectionViewCell.identifier)
@@ -129,46 +130,40 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         collectionView.register(ShareManagementExpirationDateCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementExpirationDateCollectionViewCell.identifier)
         collectionView.register(ShareManagementNumberOfUsesCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementNumberOfUsesCollectionViewCell.identifier)
         collectionView.register(ShareMangementAdditionalOptionCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareMangementAdditionalOptionCollectionViewCell.identifier)
+        collectionView.register(ShareManagementSharedWithCollectionViewCell.nib(), forCellWithReuseIdentifier: ShareManagementSharedWithCollectionViewCell.identifier)
     
         collectionView.register(ShareManagementEmptyHeaderCollectionReusableView.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ShareManagementEmptyHeaderCollectionReusableView.identifier)
+        collectionView.register(ShareManagementHeaderCollectionReusableView.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier)
         collectionView.register(ShareManagementSeparatorFooterCollectionViewCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ShareManagementSeparatorFooterCollectionViewCell.identifier)
     }
     
     func initCollectionViewData() {
-        shareManagementViewData = [
-            ShareManagementSectionType.title: [],
-            ShareManagementSectionType.linkNotGenerated: [],
-            ShareManagementSectionType.linkSettingsSection: [],
-            ShareManagementSectionType.optionalSettings: [],
-            ShareManagementSectionType.shareLinkUserSpecificSettings: []
-        ]
+        shareManagementViewData = [:]
         
         if let _ = shareLink {
             if let showLinkSettings = showLinkSettings, showLinkSettings {
                 shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSection] = [
                     ShareManagementCellType.shareLink,
                     ShareManagementCellType.linkSettings
                 ]
-                shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
                     ShareManagementCellType.sharePreview,
-                    ShareManagementCellType.autoApprove
-                ]
-                shareManagementViewData[ShareManagementSectionType.optionalSettings] = [
+                    ShareManagementCellType.autoApprove,
                     ShareManagementCellType.maxNumberOfUses,
                     ShareManagementCellType.expirationDate
                 ]
-                shareManagementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = [
+                shareManagementViewData[ShareManagementSectionType.buttons] = [
                     ShareManagementCellType.shareLinkOption,
                     ShareManagementCellType.revokeLinkOption
                 ]
             } else {
                 shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSection] = [
                     ShareManagementCellType.shareLink,
                     ShareManagementCellType.linkSettings
                 ]
-                shareManagementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = [
+                shareManagementViewData[ShareManagementSectionType.buttons] = [
                     ShareManagementCellType.shareLinkOption,
                     ShareManagementCellType.revokeLinkOption
                 ]
@@ -177,35 +172,43 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
             shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
             shareManagementViewData[ShareManagementSectionType.linkNotGenerated] = [ShareManagementCellType.linkNotGenerated]
         }
+        
+        if let shareVOs = viewModel?.acceptedShareVOs, shareVOs.isEmpty == false {
+            shareManagementViewData[ShareManagementSectionType.sharedWith] = shareVOs.map({ _ in
+                ShareManagementCellType.sharedArchive
+            })
+        }
+        
+        if let shareVOs = viewModel?.pendingShareVOs, shareVOs.isEmpty == false {
+            shareManagementViewData[ShareManagementSectionType.pendingRequests] = shareVOs.map({ _ in
+                ShareManagementCellType.pendingArchive
+            })
+        }
 
         collectionView.reloadData()
     }
     
-    func updateCollectionViewData() {
-        if let showLinkSettings = showLinkSettings, showLinkSettings {
-            shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-            shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
-                ShareManagementCellType.shareLink,
-                ShareManagementCellType.linkSettings
-            ]
-            shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
-                ShareManagementCellType.sharePreview,
-                ShareManagementCellType.autoApprove
-            ]
-            shareManagementViewData[ShareManagementSectionType.optionalSettings] = [
-                ShareManagementCellType.maxNumberOfUses,
-                ShareManagementCellType.expirationDate
-            ]
-            shareManagementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = [
-                ShareManagementCellType.shareLinkOption,
-                ShareManagementCellType.revokeLinkOption
-            ]
-        } else {
-            shareManagementViewData.removeValue(forKey: ShareManagementSectionType.linkToggleSection)
-            //shareManagementViewData.removeValue(forKey: ShareManagementSectionType.shareLinkUserSpecificSettings)
-            shareManagementViewData[ShareManagementSectionType.optionalSettings] = []
+    func insertLinkSettingsCells() {
+        shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
+            ShareManagementCellType.sharePreview,
+            ShareManagementCellType.autoApprove,
+            ShareManagementCellType.maxNumberOfUses,
+            ShareManagementCellType.expirationDate
+        ]
+        
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        if let sectionIndex = sections.firstIndex(of: .linkSettingsSection) {
+            collectionView.insertSections([Int(sectionIndex)])
         }
-        collectionView.reloadData()
+    }
+    
+    func removeLinkSettingsCells() {
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        if let sectionIndex = sections.firstIndex(of: .linkSettingsSection) {
+            shareManagementViewData.removeValue(forKey: .linkSettingsSection)
+            
+            collectionView.deleteSections([Int(sectionIndex)])
+        }
     }
     
     func updateShowLinkSettings() {
@@ -250,6 +253,51 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         activityViewController.setValue(emailSubject, forKey: "Subject")
         activityViewController.popoverPresentationController?.sourceView = view
         present(activityViewController, animated: true, completion: nil)
+    }
+    
+    func editArchive(shareVO: ShareVOData) {
+        guard let archiveVO = shareVO.archiveVO else { return }
+        
+        let accessRoles = AccessRole.allCases
+            .filter { $0 != .manager }
+            .map { $0.groupName }
+        
+        self.showActionDialog(
+            styled: .dropdownWithDescription,
+            withTitle: "The \(archiveVO.fullName ?? "") Archive",
+            placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
+            dropdownValues: accessRoles,
+            positiveButtonTitle: "Update".localized(),
+            positiveAction: { [weak self] in
+                if let fieldsInput = self?.actionDialog?.fieldsInput,
+                   let roleValue = fieldsInput.first {
+                    let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
+                    let fileTypeString: String = FileType(rawValue: shareVO.type ?? "")?.isFolder ?? false ? "folder" : "file"
+                    if accessRole == .owner {
+                        self?.actionDialog?.dismissPopup(
+                            self?.actionDialog,
+                            overlayView: self?.overlayView,
+                            completion: { [weak self] _ in
+                                self?.actionDialog?.removeFromSuperview()
+                                self?.actionDialog = nil
+                                guard var archiveName = archiveVO.fullName else { return }
+                                archiveName = "The \(archiveName) Archive"
+                                self?.showActionDialog(styled: .simpleWithDescription,
+                                                       withTitle: "Add owner".localized(),
+                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
+                                                       positiveButtonTitle: "Add owner".localized(),
+                                                       positiveAction: { [weak self] in
+                                    self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
+                                }, overlayView: self?.overlayView)
+                            }
+                        )
+                    } else {
+                        self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
+                    }
+                }
+            },
+            overlayView: self.overlayView
+        )
     }
     
     // MARK: - Network Requests
@@ -366,14 +414,15 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             cell.buttonAction = {
                 self.getShareLink(option: .create)
             }
+            cell.imageView.isHidden = viewModel?.shareVOS?.isEmpty == false
             returnedCell = cell
             
         case .shareLink:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkLocation: shareLink, cellType: currentCellType)
             
-            cell.rightButtonAction = { [self] in
-                copyLinkAction()
+            cell.rightButtonAction = { [weak self] in
+                self?.copyLinkAction()
             }
             returnedCell = cell
             
@@ -381,9 +430,20 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkWasGeneratedNow: showLinkSettings ?? false, cellType: currentCellType)
             
-            cell.leftButtonAction = { [self] in
-                showLinkSettings?.toggle()
-                updateCollectionViewData()
+            cell.leftButtonAction = { [weak self] in
+                self?.showLinkSettings?.toggle()
+                UIView.animate(withDuration: 0.2, animations: {
+                    if self?.showLinkSettings == true {
+                        cell.leftElementButton.transform = .identity.rotated(by: CGFloat.pi)
+                    } else {
+                        cell.leftElementButton.transform = .identity
+                    }
+                })
+                if self?.showLinkSettings == true {
+                    self?.insertLinkSettingsCells()
+                } else {
+                    self?.removeLinkSettingsCells()
+                }
             }
             
             returnedCell = cell
@@ -412,6 +472,93 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareMangementAdditionalOptionCollectionViewCell.identifier), for: indexPath) as! ShareMangementAdditionalOptionCollectionViewCell
             cell.configure(cellType: currentCellType)
             returnedCell = cell
+            
+        case .sharedArchive:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
+            if let shareVO = viewModel?.acceptedShareVOs?[indexPath.row] {
+                cell.configure(withShareVO: shareVO)
+                
+                cell.rightButtonAction = { [weak self] cell in
+                    var actions = [
+                        PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
+                            self?.editArchive(shareVO: shareVO)
+                        })
+                    ]
+                    
+                    actions.insert(PRMNTAction(title: "Remove".localized(), iconName: "Delete-1", color: .brightRed, handler: { [weak self] action in
+                        let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: shareVO.archiveVO?.fullName ?? "")
+                        
+                        self?.showActionDialog(
+                            styled: .simpleWithDescription,
+                            withTitle: description,
+                            description: "",
+                            positiveButtonTitle: "Remove".localized(),
+                            positiveAction: { [weak self] in
+                                self?.actionDialog?.dismiss()
+                                self?.actionDialog = nil
+                                
+                                self?.showSpinner()
+                                self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
+                                    self?.hideSpinner()
+                                    if status == .success {
+                                        self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
+                                    } else {
+                                        self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                                    }
+                                    self?.getShareLink(option: .retrieve)
+                                })
+                            },
+                            cancelButtonTitle: "Cancel".localized(),
+                            positiveButtonColor: .brightRed,
+                            cancelButtonColor: .primary,
+                            overlayView: self?.overlayView
+                        )
+                    }), at: 0)
+                    
+                    let actionSheet = PRMNTActionSheetViewController(title: shareVO.archiveVO?.fullName, actions: actions)
+                    self?.present(actionSheet, animated: true)
+                }
+            }
+            
+            returnedCell = cell
+            
+        case .pendingArchive:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
+            if let shareVO = viewModel?.pendingShareVOs?[indexPath.row] {
+                cell.configure(withShareVO: shareVO)
+                
+                cell.rightButtonAction = { [weak self] _ in
+                    self?.viewModel?.approveButtonAction(shareVO: shareVO, then: { status in
+                        switch status {
+                        case .success:
+                            self?.view.showNotificationBanner(title: .approveShareRequest)
+                            
+                            self?.getShareLink(option: .retrieve)
+                            self?.collectionView.reloadData()
+                            
+                        case .error(message: let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                }
+                 
+                cell.leftButtonAction = { [weak self] _ in
+                    self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
+                        switch status {
+                        case .success:
+                            self?.view.showNotificationBanner(title: .denyShareRequest)
+                            
+                            self?.getShareLink(option: .retrieve)
+                            self?.collectionView.reloadData()
+                            
+                        case .error(message: let message):
+                            self?.showErrorAlert(message: message)
+                        }
+                    })
+                }
+            }
+            
+            returnedCell = cell
         }
         
         return returnedCell
@@ -437,8 +584,26 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             return footerCell
             
         case UICollectionView.elementKindSectionHeader:
-            let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementEmptyHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementEmptyHeaderCollectionReusableView
-            return headerCell
+            let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+            let currentSection = sections[indexPath.section]
+            
+            switch currentSection {
+            case .sharedWith:
+                let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
+                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs?.count ?? 0, isRedBadge: false)
+                
+                return headerCell
+                
+            case .pendingRequests:
+                let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
+                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs?.count ?? 0, isRedBadge: true)
+                
+                return headerCell
+                
+            default:
+                let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementEmptyHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementEmptyHeaderCollectionReusableView
+                return headerCell
+            }
             
         default:
             return UICollectionReusableView()
@@ -448,7 +613,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
 
 extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var cellSize = CGSize(width: collectionView.frame.width, height: 0)
+        var cellSize = CGSize(width: collectionView.frame.width - 48, height: 0)
         
         let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
         let currentCellType = shareManagementViewData[sections[indexPath.section]]![indexPath.row]
@@ -458,7 +623,7 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
             cellSize.height = 30
             
         case .linkNotGenerated:
-            cellSize.height = 240
+            cellSize.height = viewModel?.shareVOS?.isEmpty == false ? 40 : 240
             
         case .shareLink, .linkSettings:
             cellSize.height = 24
@@ -471,6 +636,9 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
             
         case .shareLinkOption, .sendEmailInvitationOption, .revokeLinkOption:
             cellSize.height = 20
+            
+        case .sharedArchive, .pendingArchive:
+            cellSize.height = 40
         }
         
         return cellSize
@@ -483,12 +651,12 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         let currentSection = sections[section]
         
         switch currentSection {
-        case .linkToggleSection:
-            cellSize.height = 24
-        case .optionalSettings:
-            cellSize.height = 24
-        case .shareLinkUserSpecificSettings:
-            cellSize.height = 12
+        case .sharedWith:
+            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) == 0 ? 48 : 24
+            
+        case .pendingRequests:
+            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) > 0 ? 48 : 24
+            
         default: return cellSize
         }
         
@@ -503,10 +671,19 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         
         switch currentSection {
         case .title:
-            cellSize.height = 24
+            cellSize.height = 1
             
-        case .optionalSettings:
-            cellSize.height = 12
+        case .linkNotGenerated:
+            cellSize.height = viewModel?.shareVOS?.isEmpty == false ? 1 : 0
+            
+        case .linkSection:
+            cellSize.height = (showLinkSettings ?? false) ? 0 : 1
+            
+        case .linkSettingsSection:
+            cellSize.height = 1
+            
+        case .sharedWith:
+            cellSize.height = 1
             
         default: return cellSize
         }
@@ -520,5 +697,18 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 24
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        let currentSection = sections[section]
+        
+        switch currentSection {
+        case .linkSettingsSection:
+            return UIEdgeInsets(top: 0, left: 24, bottom: 24, right: 24)
+        
+        default:
+            return UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
+        }
     }
 }

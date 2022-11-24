@@ -24,9 +24,9 @@ class ShareMangementAdditionalOptionCollectionViewCell: UICollectionViewCell {
         switch cellType {
         case .revokeLinkOption:
             optionThumbnailImage.image = UIImage(named: "leaveShare")?.withRenderingMode(.alwaysTemplate)
-            optionThumbnailImage.tintColor = .temporaryRed
+            optionThumbnailImage.tintColor = .paleRed
             optionTitleLabel.text = "Revoke link".localized()
-            optionTitleLabel.textColor = .temporaryRed
+            optionTitleLabel.textColor = .paleRed
         case .shareLinkOption:
             optionThumbnailImage.image = UIImage(named: "Share Other")?.withRenderingMode(.alwaysTemplate)
             optionThumbnailImage.tintColor = .darkBlue

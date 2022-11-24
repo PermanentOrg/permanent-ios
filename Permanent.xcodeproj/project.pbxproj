@@ -472,6 +472,10 @@
 		F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E31E2549861C00B71866 /* FileStatus.swift */; };
 		F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F51E70D226B166FD007304C7 /* CDNSession.swift */; };
 		F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */; };
+		F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52D2B82292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift */; };
+		F52D2B85292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F52D2B83292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib */; };
+		F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52D2B86292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift */; };
+		F52D2B89292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F52D2B87292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib */; };
 		F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D0E26D058940090EF02 /* Archives.storyboard */; };
 		F5379DB9262EF53300E8F06A /* FilePreviewListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */; };
 		F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */; };
@@ -1099,6 +1103,10 @@
 		F51B331D288AF57900EA15DA /* SessionKeychainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionKeychainHandler.swift; sourceTree = "<group>"; };
 		F51E70D226B166FD007304C7 /* CDNSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDNSession.swift; sourceTree = "<group>"; };
 		F529C3A127B3F77B003DB312 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		F52D2B82292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementSharedWithCollectionViewCell.swift; sourceTree = "<group>"; };
+		F52D2B83292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementSharedWithCollectionViewCell.xib; sourceTree = "<group>"; };
+		F52D2B86292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
+		F52D2B87292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		F5379DB8262EF53300E8F06A /* FilePreviewListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewListViewController.swift; sourceTree = "<group>"; };
 		F53D0A1A25FB71960080579F /* FileDetailsDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		F53D0A1B25FB71960080579F /* FileDetailsDateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsDateCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -1433,6 +1441,10 @@
 				5E7AE8AA291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.xib */,
 				5EC043A52924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift */,
 				5EC043A62924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.xib */,
+				F52D2B86292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift */,
+				F52D2B87292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib */,
+				F52D2B82292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift */,
+				F52D2B83292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib */,
 			);
 			path = ShareManagementCollectionViewCells;
 			sourceTree = "<group>";
@@ -2682,6 +2694,7 @@
 				5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
+				F52D2B89292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
 				F502C48B26D6132F00657D37 /* PhotoPicker.storyboard in Resources */,
 				BC451D4B25B06AA600DC02DB /* SharedFileActionSheet.xib in Resources */,
@@ -2705,6 +2718,7 @@
 				5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */,
+				F52D2B85292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib in Resources */,
 				5E048FD42923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.xib in Resources */,
 				5E048FCC2923057F0023C929 /* ShareManagementToggleCollectionViewCell.xib in Resources */,
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
@@ -3113,6 +3127,7 @@
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
+				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
@@ -3170,6 +3185,7 @@
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
+				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,

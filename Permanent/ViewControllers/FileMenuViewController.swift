@@ -624,10 +624,10 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             }
         }
         if let menuIndex = menuItems.firstIndex(where: { $0.type == .unshare }) {
-            stackView.addArrangedSubview(menuItem(withName: "Leave share".localized(), iconName: "leaveShare", tag: menuIndex + 1, color: .temporaryRed))
+            stackView.addArrangedSubview(menuItem(withName: "Leave share".localized(), iconName: "leaveShare", tag: menuIndex + 1, color: .paleRed))
         }
         if file.permissions.contains(.delete), let menuIndex = menuItems.firstIndex(where: { $0.type == .delete }) {
-            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1, color: .temporaryRed))
+            stackView.addArrangedSubview(menuItem(withName: "Delete".localized(), iconName: "Delete-1", tag: menuIndex + 1, color: .paleRed))
         }
     }
     

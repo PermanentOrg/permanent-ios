@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,32 +20,38 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tx1-zQ-Vy8">
                         <rect key="frame" x="0.0" y="0.0" width="409" height="240"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Bbk-mV-UmR">
-                                <rect key="frame" x="124.66666666666669" y="0.0" width="160" height="144"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="48" translatesAutoresizingMaskIntoConstraints="NO" id="yxa-WV-JGo">
+                                <rect key="frame" x="0.0" y="0.0" width="409" height="240"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Bbk-mV-UmR">
+                                        <rect key="frame" x="124.66666666666669" y="0.0" width="160" height="144"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="144" id="Lak-bX-qqI"/>
+                                            <constraint firstAttribute="width" constant="160" id="yiL-Uu-xw3"/>
+                                        </constraints>
+                                    </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="giM-Fq-qy2" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="192" width="409" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="Sul-yU-pFM"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <connections>
+                                            <action selector="buttonAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="LMN-zc-9ek"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="144" id="Lak-bX-qqI"/>
-                                    <constraint firstAttribute="width" constant="160" id="yiL-Uu-xw3"/>
+                                    <constraint firstItem="giM-Fq-qy2" firstAttribute="width" secondItem="yxa-WV-JGo" secondAttribute="width" id="OmI-TK-sWu"/>
                                 </constraints>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="giM-Fq-qy2" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="192" width="409" height="48"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="Sul-yU-pFM"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="buttonAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="LMN-zc-9ek"/>
-                                </connections>
-                            </button>
+                            </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="giM-Fq-qy2" firstAttribute="leading" secondItem="tx1-zQ-Vy8" secondAttribute="leading" id="0gt-MQ-pYm"/>
-                            <constraint firstItem="giM-Fq-qy2" firstAttribute="top" secondItem="Bbk-mV-UmR" secondAttribute="bottom" constant="48" id="DRj-cg-ybd"/>
-                            <constraint firstItem="Bbk-mV-UmR" firstAttribute="top" secondItem="tx1-zQ-Vy8" secondAttribute="top" id="b36-WQ-zTz"/>
-                            <constraint firstAttribute="trailing" secondItem="giM-Fq-qy2" secondAttribute="trailing" id="bZB-Dt-Cwb"/>
-                            <constraint firstItem="Bbk-mV-UmR" firstAttribute="centerX" secondItem="tx1-zQ-Vy8" secondAttribute="centerX" id="eGh-7z-Ds0"/>
-                            <constraint firstAttribute="bottom" secondItem="giM-Fq-qy2" secondAttribute="bottom" id="nis-6J-Qfk"/>
+                            <constraint firstAttribute="trailing" secondItem="yxa-WV-JGo" secondAttribute="trailing" id="CZM-HX-nWb"/>
+                            <constraint firstItem="yxa-WV-JGo" firstAttribute="leading" secondItem="tx1-zQ-Vy8" secondAttribute="leading" id="Ccu-JH-gWW"/>
+                            <constraint firstAttribute="bottom" secondItem="yxa-WV-JGo" secondAttribute="bottom" id="CqZ-XE-1pd"/>
+                            <constraint firstItem="yxa-WV-JGo" firstAttribute="top" secondItem="tx1-zQ-Vy8" secondAttribute="top" id="Hgr-TS-hOl"/>
                         </constraints>
                     </view>
                 </subviews>
