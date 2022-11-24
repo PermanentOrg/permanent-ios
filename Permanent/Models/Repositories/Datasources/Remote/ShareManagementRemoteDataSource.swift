@@ -35,6 +35,7 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
                     handler(nil, .errorMessage)
                     return
                 }
+                handler(model.results.first?.data?.first?.shareByURLVO, nil)
                 
             case .error(let error, _):
                 handler(nil, error?.localizedDescription)
