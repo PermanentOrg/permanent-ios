@@ -113,7 +113,7 @@ PODS:
   - nanopb/encode (1.30906.0)
   - ObjectMapper (4.2.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.21.5)
+  - Protobuf (3.21.9)
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
@@ -189,7 +189,7 @@ SPEC CHECKSUMS:
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: 7504b04fffcf6662ad629694db8231f5e744327f
+  Protobuf: 02524ec14183fe08fb259741659e79683788158b
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   SkeletonView: 5a050f6411e697abd4cda0a8d767013399dccd69
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476

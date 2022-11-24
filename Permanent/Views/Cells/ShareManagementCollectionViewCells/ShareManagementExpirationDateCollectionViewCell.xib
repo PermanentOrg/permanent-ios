@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ShareManagementExpirationDateCollectionViewCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="407" height="70"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="407" height="70"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gz0-AF-pQm">
+                        <rect key="frame" x="0.0" y="0.0" width="407" height="70"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="vVc-Zf-UEh">
+                                <rect key="frame" x="0.0" y="0.0" width="407" height="70"/>
+                                <subviews>
+                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tGA-ag-Par">
+                                        <rect key="frame" x="0.0" y="0.0" width="407" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="fIQ-WM-KNq"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ml9-uA-z1M">
+                                        <rect key="frame" x="0.0" y="48" width="407" height="22"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="vVc-Zf-UEh" secondAttribute="trailing" id="1dh-hZ-BgA"/>
+                            <constraint firstItem="vVc-Zf-UEh" firstAttribute="top" secondItem="gz0-AF-pQm" secondAttribute="top" id="A1Q-sC-mt7"/>
+                            <constraint firstAttribute="bottom" secondItem="vVc-Zf-UEh" secondAttribute="bottom" id="gVX-gM-CDN"/>
+                            <constraint firstAttribute="height" constant="70" id="q2c-Au-Ank"/>
+                            <constraint firstItem="vVc-Zf-UEh" firstAttribute="leading" secondItem="gz0-AF-pQm" secondAttribute="leading" id="xtk-rF-HgU"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="gz0-AF-pQm" secondAttribute="trailing" id="OqL-qF-gdC"/>
+                <constraint firstItem="gz0-AF-pQm" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="W60-d4-bSf"/>
+                <constraint firstAttribute="bottom" secondItem="gz0-AF-pQm" secondAttribute="bottom" id="liJ-Jy-IVu"/>
+                <constraint firstItem="gz0-AF-pQm" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="uLO-p2-YE3"/>
+            </constraints>
+            <size key="customSize" width="407" height="70"/>
+            <connections>
+                <outlet property="detailsLabel" destination="Ml9-uA-z1M" id="Wat-hL-X8L"/>
+                <outlet property="expirationDateField" destination="tGA-ag-Par" id="aR5-zW-aGL"/>
+            </connections>
+            <point key="canvasLocation" x="86.25954198473282" y="90.140845070422543"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
