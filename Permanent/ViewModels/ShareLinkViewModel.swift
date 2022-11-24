@@ -26,6 +26,18 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             return folderVO?.shareVOS
         }
     }
+    var pendingShareVOs: [ShareVOData]? {
+        shareVOS?.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+            return status == .pending
+        })
+    }
+    var acceptedShareVOs: [ShareVOData]? {
+        shareVOS?.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+            return status != .pending
+        })
+    }
     
     var downloader: DownloadManagerGCD?
     

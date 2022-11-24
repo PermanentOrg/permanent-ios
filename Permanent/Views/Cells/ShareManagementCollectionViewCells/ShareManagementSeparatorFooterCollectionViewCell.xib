@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,10 +19,10 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="so9-00-5UA">
-                        <rect key="frame" x="0.0" y="0.0" width="357" height="24"/>
+                        <rect key="frame" x="0.0" y="23" width="357" height="1"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zSL-vz-dJs">
-                                <rect key="frame" x="0.0" y="11.666666666666666" width="357" height="1"/>
+                                <rect key="frame" x="0.0" y="0.0" width="357" height="1"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="YZw-k0-PX2"/>
@@ -30,8 +30,8 @@
                             </view>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="height" constant="24" id="1Oc-0s-ELe"/>
-                            <constraint firstItem="zSL-vz-dJs" firstAttribute="centerY" secondItem="so9-00-5UA" secondAttribute="centerY" id="5VC-H5-ry4"/>
+                            <constraint firstAttribute="height" constant="1" id="1Oc-0s-ELe"/>
+                            <constraint firstItem="zSL-vz-dJs" firstAttribute="top" secondItem="so9-00-5UA" secondAttribute="top" id="Dfa-Bi-XGN"/>
                             <constraint firstAttribute="trailing" secondItem="zSL-vz-dJs" secondAttribute="trailing" id="Jvz-Tt-Lll"/>
                             <constraint firstItem="zSL-vz-dJs" firstAttribute="leading" secondItem="so9-00-5UA" secondAttribute="leading" id="vCg-aU-n5i"/>
                         </constraints>
