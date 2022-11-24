@@ -20,25 +20,38 @@ class ShareManagementHeaderCollectionReusableView: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        titleLabel.textColor = .middleGray
-        titleLabel.font = Text.style37.font
-        
         badgeLabel.backgroundColor = .paleRed
         badgeLabel.textColor = .white
         badgeLabel.font = Text.style40.font
         badgeLabel.layer.cornerRadius = 9
         badgeLabel.clipsToBounds = true
+        badgeLabel.isHidden = true
     }
     
-    func configure(withTitle title: String, badgeValue badge: Int?) {
-        titleLabel.text = title
+    override func prepareForReuse() {
+        super.prepareForReuse()
         
-        if let badge = badge {
+        badgeLabel.text = nil
+        badgeLabel.isHidden = true
+    }
+    
+    func configure(withTitle title: String, badgeValue badge: Int, isRedBadge: Bool = false) {
+        let baseAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.middleGray,
+            NSAttributedString.Key.font: Text.style37.font
+        ]
+        
+        if isRedBadge {
             badgeLabel.text = "\(badge)"
             badgeLabel.isHidden = false
+            
+            titleLabel.attributedText = NSAttributedString(string: title, attributes: baseAttributes)
         } else {
-            badgeLabel.text = nil
-            badgeLabel.isHidden = true
+            let badgeString = " (\(badge))"
+            let attributedText = NSMutableAttributedString(string: title + badgeString, attributes: baseAttributes)
+            attributedText.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.lightGray], range: (attributedText.string as NSString).range(of: badgeString))
+            
+            titleLabel.attributedText = attributedText
         }
     }
 }

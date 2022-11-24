@@ -10,11 +10,11 @@ import UIKit
 enum ShareManagementSectionType: Int {
     case title = 0
     case linkNotGenerated = 1
-    case linkSettingsSection = 2
-    case linkToggleSection = 3
+    case linkSection = 2
+    case linkSettingsSection = 3
     case pendingRequests = 4
     case sharedWith = 5
-    case shareLinkUserSpecificSettings = 6
+    case buttons = 6
 }
 
 enum ShareManagementCellType {
@@ -143,27 +143,27 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         if let _ = shareLink {
             if let showLinkSettings = showLinkSettings, showLinkSettings {
                 shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSection] = [
                     ShareManagementCellType.shareLink,
                     ShareManagementCellType.linkSettings
                 ]
-                shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
                     ShareManagementCellType.sharePreview,
                     ShareManagementCellType.autoApprove,
                     ShareManagementCellType.maxNumberOfUses,
                     ShareManagementCellType.expirationDate
                 ]
-                shareManagementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = [
+                shareManagementViewData[ShareManagementSectionType.buttons] = [
                     ShareManagementCellType.shareLinkOption,
                     ShareManagementCellType.revokeLinkOption
                 ]
             } else {
                 shareManagementViewData[ShareManagementSectionType.title] = [ShareManagementCellType.title]
-                shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
+                shareManagementViewData[ShareManagementSectionType.linkSection] = [
                     ShareManagementCellType.shareLink,
                     ShareManagementCellType.linkSettings
                 ]
-                shareManagementViewData[ShareManagementSectionType.shareLinkUserSpecificSettings] = [
+                shareManagementViewData[ShareManagementSectionType.buttons] = [
                     ShareManagementCellType.shareLinkOption,
                     ShareManagementCellType.revokeLinkOption
                 ]
@@ -189,7 +189,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     func insertLinkSettingsCells() {
-        shareManagementViewData[ShareManagementSectionType.linkToggleSection] = [
+        shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
             ShareManagementCellType.sharePreview,
             ShareManagementCellType.autoApprove,
             ShareManagementCellType.maxNumberOfUses,
@@ -197,15 +197,15 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         ]
         
         let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        if let sectionIndex = sections.firstIndex(of: .linkToggleSection) {
+        if let sectionIndex = sections.firstIndex(of: .linkSettingsSection) {
             collectionView.insertSections([Int(sectionIndex)])
         }
     }
     
     func removeLinkSettingsCells() {
         let sections = Array(shareManagementViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        if let sectionIndex = sections.firstIndex(of: .linkToggleSection) {
-            shareManagementViewData.removeValue(forKey: .linkToggleSection)
+        if let sectionIndex = sections.firstIndex(of: .linkSettingsSection) {
+            shareManagementViewData.removeValue(forKey: .linkSettingsSection)
             
             collectionView.deleteSections([Int(sectionIndex)])
         }
@@ -421,8 +421,8 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkLocation: shareLink, cellType: currentCellType)
             
-            cell.rightButtonAction = { [self] in
-                copyLinkAction()
+            cell.rightButtonAction = { [weak self] in
+                self?.copyLinkAction()
             }
             returnedCell = cell
             
@@ -430,19 +430,19 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkWasGeneratedNow: showLinkSettings ?? false, cellType: currentCellType)
             
-            cell.leftButtonAction = { [self] in
-                showLinkSettings?.toggle()
+            cell.leftButtonAction = { [weak self] in
+                self?.showLinkSettings?.toggle()
                 UIView.animate(withDuration: 0.2, animations: {
-                    if showLinkSettings == true {
+                    if self?.showLinkSettings == true {
                         cell.leftElementButton.transform = .identity.rotated(by: CGFloat.pi)
                     } else {
                         cell.leftElementButton.transform = .identity
                     }
                 })
-                if showLinkSettings == true {
-                    insertLinkSettingsCells()
+                if self?.showLinkSettings == true {
+                    self?.insertLinkSettingsCells()
                 } else {
-                    removeLinkSettingsCells()
+                    self?.removeLinkSettingsCells()
                 }
             }
             
@@ -590,13 +590,13 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             switch currentSection {
             case .sharedWith:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "Shared With (\(viewModel?.acceptedShareVOs?.count ?? 0))".localized().uppercased(), badgeValue: nil)
+                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs?.count ?? 0, isRedBadge: false)
                 
                 return headerCell
                 
             case .pendingRequests:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs?.count ?? 0)
+                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs?.count ?? 0, isRedBadge: true)
                 
                 return headerCell
                 
@@ -676,10 +676,10 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         case .linkNotGenerated:
             cellSize.height = viewModel?.shareVOS?.isEmpty == false ? 1 : 0
             
-        case .linkSettingsSection:
+        case .linkSection:
             cellSize.height = (showLinkSettings ?? false) ? 0 : 1
             
-        case .linkToggleSection:
+        case .linkSettingsSection:
             cellSize.height = 1
             
         case .sharedWith:
@@ -704,7 +704,7 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         let currentSection = sections[section]
         
         switch currentSection {
-        case .linkToggleSection:
+        case .linkSettingsSection:
             return UIEdgeInsets(top: 0, left: 24, bottom: 24, right: 24)
         
         default:
