@@ -50,6 +50,8 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
     }
     
     func setSelected(_ isSelected: Bool) {
+        let backgroundColor: UIColor
+        
         if isSelected {
             let permissions = ShareManagementAccessRoleCellType.roleToPermissionString(cellType)
             let permissionsLocalized = permissions.flatMap({ item in
@@ -57,18 +59,21 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
             })
             
             descriptionLabel.text = permissionsLocalized
-            view.backgroundColor = .whiteGray
+            backgroundColor = .whiteGray
             selectedImageView.image = UIImage(named: "accessRoleSelected")?.withRenderingMode(.alwaysTemplate)
             selectedImageView.tintColor = .darkBlue
             titleLabel.textColor = .darkBlue
             titleLabel.font = Text.style35.font
             descriptionLabel.isHidden = false
         } else {
-            view.backgroundColor = .backgroundPrimary
+            backgroundColor = .backgroundPrimary
             selectedImageView.image = UIImage(named: "accessRoleNotSelected")?.withRenderingMode(.alwaysTemplate)
             selectedImageView.tintColor = .middleGray
             titleLabel.font = Text.style34.font
             descriptionLabel.isHidden = true
+        }
+        UIView.animate(withDuration: 0.2) { [self] in
+            view.backgroundColor = backgroundColor
         }
     }
     

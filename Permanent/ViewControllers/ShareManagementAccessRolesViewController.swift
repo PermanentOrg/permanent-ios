@@ -95,6 +95,12 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         initCollectionViewData()
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     func initUI() {
         view.backgroundColor = .backgroundPrimary
         styleNavBar()
@@ -104,7 +110,6 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         overlayView.alpha = 0
         
         currentRole = ShareManagementAccessRoleCellType.cellTypeFromAccessRole(AccessRole.roleForValue(shareVO.accessRole))
-        
     }
     
     func addCustomNavigationBar() {
