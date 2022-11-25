@@ -479,44 +479,12 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                 cell.configure(withShareVO: shareVO)
                 
                 cell.rightButtonAction = { [weak self] cell in
-                    var actions = [
-                        PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
-                            self?.editArchive(shareVO: shareVO)
-                        })
-                    ]
-                    
-                    actions.insert(PRMNTAction(title: "Remove".localized(), iconName: "Delete-1", color: .brightRed, handler: { [weak self] action in
-                        let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: shareVO.archiveVO?.fullName ?? "")
-                        
-                        self?.showActionDialog(
-                            styled: .simpleWithDescription,
-                            withTitle: description,
-                            description: "",
-                            positiveButtonTitle: "Remove".localized(),
-                            positiveAction: { [weak self] in
-                                self?.actionDialog?.dismiss()
-                                self?.actionDialog = nil
-                                
-                                self?.showSpinner()
-                                self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
-                                    self?.hideSpinner()
-                                    if status == .success {
-                                        self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
-                                    } else {
-                                        self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
-                                    }
-                                    self?.getShareLink(option: .retrieve)
-                                })
-                            },
-                            cancelButtonTitle: "Cancel".localized(),
-                            positiveButtonColor: .brightRed,
-                            cancelButtonColor: .primary,
-                            overlayView: self?.overlayView
-                        )
-                    }), at: 0)
-                    
-                    let actionSheet = PRMNTActionSheetViewController(title: shareVO.archiveVO?.fullName, actions: actions)
-                    self?.present(actionSheet, animated: true)
+                    let accessRoleVC = UIViewController.create(withIdentifier: .shareManagementAccessRoles, from: .share) as! ShareManagementAccessRolesViewController
+                    accessRoleVC.shareManagementCellType = currentCellType
+                    accessRoleVC.viewModel = self?.viewModel
+                    accessRoleVC.shareVO = shareVO
+                    let navController = NavigationController(rootViewController: accessRoleVC)
+                    self?.present(navController, animated: true, completion: nil)
                 }
             }
             
