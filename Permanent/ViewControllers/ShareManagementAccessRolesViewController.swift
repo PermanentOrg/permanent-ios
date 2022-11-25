@@ -76,7 +76,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     var sharedFile: FileViewModel!
     var shareVO: ShareVOData!
     var accessRolesViewData: [ShareManagementAccessRoleCellType] = []
-    let isSharedArchive: Bool = true
+    var isSharedArchive: Bool!
     var currentRole: ShareManagementAccessRoleCellType?
     
     override func viewDidLayoutSubviews() {
@@ -113,7 +113,44 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     }
     
     func addCustomNavigationBar() {
-        title = shareVO.archiveVO?.fullName
+        let imageView = UIView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let itemThumbImageView = UIImageView()
+        itemThumbImageView.translatesAutoresizingMaskIntoConstraints = false
+        itemThumbImageView.contentMode = .scaleAspectFill
+        itemThumbImageView.clipsToBounds = true
+        imageView.addSubview(itemThumbImageView)
+        
+        itemThumbImageView.image = UIImage(named: "archiveFolder")
+        NSLayoutConstraint.activate([
+            itemThumbImageView.heightAnchor.constraint(equalToConstant: 40),
+            itemThumbImageView.widthAnchor.constraint(equalToConstant: 40),
+            itemThumbImageView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 4)
+        ])
+        
+        NSLayoutConstraint.activate([
+            itemThumbImageView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            itemThumbImageView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor)
+        ])
+
+        let itemNameLabel = UILabel()
+        itemNameLabel.textColor = .white
+        itemNameLabel.font = Text.style41.font
+        
+        let headerStackView: UIStackView
+        if isSharedArchive {
+            itemNameLabel.text = "The " + (shareVO.archiveVO?.fullName ?? "") + " Archive"
+            headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
+        } else {
+            itemNameLabel.text = "Link Settings".localized()
+            headerStackView = UIStackView(arrangedSubviews: [itemNameLabel])
+        }
+
+        headerStackView.translatesAutoresizingMaskIntoConstraints = false
+        headerStackView.spacing = 6
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: headerStackView)
     }
     
     func initButtonsUI() {
@@ -142,7 +179,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     
     func initCollectionViewData() {
         accessRolesViewData = [.viewer, .contributor, .editor, .curator, .manager, .owner]
-        if !isSharedArchive {
+        if isSharedArchive {
             accessRolesViewData.append(.removeShare)
         }
     }
@@ -175,12 +212,27 @@ extension ShareManagementAccessRolesViewController: UICollectionViewDataSource {
         currentRole = currentCellType
         collectionView.reloadData()
     }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementAccessRolesHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementAccessRolesHeaderCollectionReusableView
+            headerCell.configure(hideContent: !isSharedArchive)
+            headerCell.rightButtonTapped = { _ in
+                guard let url = URL(string: APIEnvironment.defaultEnv.rolesMatrix) else { return }
+                UIApplication.shared.open(url)
+            }
+            
+            return headerCell
+        default:
+            return UICollectionReusableView()
+        }
+    }
 }
 
 extension ShareManagementAccessRolesViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let currentCellType = accessRolesViewData[indexPath.row]
-        var cellSize = CGSize(width: collectionView.frame.width - 24, height: 64)
+        let cellSize = CGSize(width: collectionView.frame.width - 24, height: 64)
         
         return cellSize
     }
@@ -194,6 +246,10 @@ extension ShareManagementAccessRolesViewController: UICollectionViewDelegateFlow
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 21, left: 12, bottom: 0, right: 12)
+        return UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width - 24, height: 72)
     }
 }

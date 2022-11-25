@@ -483,6 +483,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                     accessRoleVC.shareManagementCellType = currentCellType
                     accessRoleVC.viewModel = self?.viewModel
                     accessRoleVC.shareVO = shareVO
+                    accessRoleVC.isSharedArchive = true
                     let navController = NavigationController(rootViewController: accessRoleVC)
                     self?.present(navController, animated: true, completion: nil)
                 }
