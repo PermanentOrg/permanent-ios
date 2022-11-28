@@ -44,14 +44,14 @@ class ShareManagementSharedWithCollectionViewCell: UICollectionViewCell {
         rightButtonAction = nil
     }
     
-    func configure(withShareVO shareVO: ShareVOData) {
-        nameLabel.text = "The " + (shareVO.archiveVO?.fullName ?? "") + " Archive"
+    func configure(withShareVO shareVO: MinArchiveVO) {
+        nameLabel.text = "The " + (shareVO.name) + " Archive"
         roleLabel.text = AccessRole.roleForValue(shareVO.accessRole).groupName.uppercased()
         
-        let url = URL(string: shareVO.archiveVO?.thumbURL200)
+        let url = URL(string: shareVO.thumbnail)
         archiveImageView.sd_setImage(with: url)
         
-        if ArchiveVOData.Status(rawValue: shareVO.status ?? "") == .pending {
+        if ArchiveVOData.Status(rawValue: shareVO.shareStatus) == .pending {
             leftButton.setImage(UIImage(named: "denyAccessIcon"), for: .normal)
             leftButton.isHidden = false
             

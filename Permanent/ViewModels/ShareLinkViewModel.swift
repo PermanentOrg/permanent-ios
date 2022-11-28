@@ -26,15 +26,15 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             return folderVO?.shareVOS
         }
     }
-    var pendingShareVOs: [ShareVOData]? {
-        shareVOS?.filter({
-            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+    var pendingShareVOs: [MinArchiveVO] {
+        fileViewModel.minArchiveVOS.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.shareStatus)
             return status == .pending
         })
     }
-    var acceptedShareVOs: [ShareVOData]? {
-        shareVOS?.filter({
-            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+    var acceptedShareVOs: [MinArchiveVO] {
+        fileViewModel.minArchiveVOS.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.shareStatus)
             return status != .pending
         })
     }
@@ -125,7 +125,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
         
     func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
-        shareManagementRepository.approveButtonAction(shareVO: shareVO) { requestStatus, shareVO in
+        shareManagementRepository.approveButtonAction(shareVO: shareVO, accessRole: accessRole) { requestStatus, shareVO in
             if requestStatus == .success {
                 if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == shareVO?.archiveID }) {
                     self.fileViewModel.minArchiveVOS[idx].accessRole = shareVO?.accessRole
@@ -185,7 +185,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         return accountName
     }
     
-    func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, defaultAccessRole: String? = nil, then handler: @escaping ShareLinkResponse) {
+    func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, defaultAccessRole: AccessRole? = nil, then handler: @escaping ShareLinkResponse) {
         var expiresDate: String?
         if expiresDT == "clear" {
             expiresDate = nil
@@ -198,7 +198,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             autoApproveToggle: autoApproveToggle != nil ? autoApproveToggle : shareVO?.autoApproveToggle,
             expiresDT: expiresDate,
             maxUses: maxUses != nil ? maxUses : shareVO?.maxUses,
-            defaultAccessRole: AccessRole.curator
+            defaultAccessRole: defaultAccessRole
         )
         
         updateLink(

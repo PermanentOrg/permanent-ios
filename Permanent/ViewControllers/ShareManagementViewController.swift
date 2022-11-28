@@ -59,6 +59,10 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         initCollectionView()
         getShareLink(option: .retrieve)
         addDismissKeyboardGesture()
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            self?.collectionView.reloadData()
+        }
     }
     
     func initUI() {
@@ -475,7 +479,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .sharedArchive:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
-            if let shareVO = viewModel?.acceptedShareVOs?[indexPath.row] {
+            if let shareVO = viewModel?.acceptedShareVOs[indexPath.row] {
                 cell.configure(withShareVO: shareVO)
                 
                 cell.rightButtonAction = { [weak self] cell in
@@ -493,11 +497,11 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .pendingArchive:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
-            if let shareVO = viewModel?.pendingShareVOs?[indexPath.row] {
+            if let shareVO = viewModel?.pendingShareVOs[indexPath.row] {
                 cell.configure(withShareVO: shareVO)
                 
                 cell.rightButtonAction = { [weak self] _ in
-                    self?.viewModel?.approveButtonAction(shareVO: shareVO, then: { status in
+                    self?.viewModel?.approveButtonAction(minArchiveVO: shareVO, then: { status in
                         switch status {
                         case .success:
                             self?.view.showNotificationBanner(title: .approveShareRequest)
@@ -512,7 +516,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                 }
                  
                 cell.leftButtonAction = { [weak self] _ in
-                    self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
+                    self?.viewModel?.denyButtonAction(minArchiveVO: shareVO, then: { status in
                         switch status {
                         case .success:
                             self?.view.showNotificationBanner(title: .denyShareRequest)
@@ -559,13 +563,13 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             switch currentSection {
             case .sharedWith:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs?.count ?? 0, isRedBadge: false)
+                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs.count ?? 0, isRedBadge: false)
                 
                 return headerCell
                 
             case .pendingRequests:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs?.count ?? 0, isRedBadge: true)
+                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs.count ?? 0, isRedBadge: true)
                 
                 return headerCell
                 
@@ -621,10 +625,10 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         
         switch currentSection {
         case .sharedWith:
-            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) == 0 ? 48 : 24
+            cellSize.height = (viewModel?.pendingShareVOs.count ?? 0) == 0 ? 48 : 24
             
         case .pendingRequests:
-            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) > 0 ? 48 : 24
+            cellSize.height = (viewModel?.pendingShareVOs.count ?? 0) > 0 ? 48 : 24
             
         default: return cellSize
         }

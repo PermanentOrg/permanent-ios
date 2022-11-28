@@ -64,6 +64,18 @@ enum ShareManagementAccessRoleCellType: Int {
         case .viewer: return .viewer
         }
     }
+    
+    func accessRole() -> AccessRole? {
+        switch self {
+        case .owner: return .owner
+        case .manager: return .manager
+        case .curator: return .curator
+        case .editor: return .editor
+        case .contributor: return .contributor
+        case .viewer: return .viewer
+        default: return nil
+        }
+    }
 }
 
 class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkViewModel> {
@@ -74,7 +86,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     private let overlayView = UIView()
     var shareManagementCellType: ShareManagementCellType!
     var sharedFile: FileViewModel!
-    var shareVO: ShareVOData!
+    var shareVO: MinArchiveVO!
     var accessRolesViewData: [ShareManagementAccessRoleCellType] = []
     var isSharedArchive: Bool!
     var currentRole: ShareManagementAccessRoleCellType?
@@ -140,7 +152,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         
         let headerStackView: UIStackView
         if isSharedArchive {
-            itemNameLabel.text = "The " + (shareVO.archiveVO?.fullName ?? "") + " Archive"
+            itemNameLabel.text = "The " + (shareVO.name) + " Archive"
             headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
         } else {
             itemNameLabel.text = "Link Settings".localized()
@@ -188,6 +200,29 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     }
     
     @IBAction func rightButtonAction(_ sender: Any) {
+        showSpinner()
+        if currentRole == .removeShare {
+            viewModel?.denyButtonAction(minArchiveVO: shareVO, then: { status in
+                self.hideSpinner()
+                if status == .success {
+                    self.view.showNotificationBanner(title: "Archive successfully removed".localized())
+                } else {
+                    self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                }
+            })
+        } else if let accessRole = currentRole?.accessRole() {
+            viewModel?.approveButtonAction(minArchiveVO: shareVO, accessRole: accessRole, then: { status in
+                self.hideSpinner()
+                self.dismiss(animated: true)
+            })
+            
+//            viewModel?.updateLinkWithChangedField(previewToggle: nil, autoApproveToggle: nil, expiresDT: nil, maxUses: nil, defaultAccessRole: accessRole, then: { _,_ in
+//
+//            })
+        } else {
+            self.hideSpinner()
+            self.dismiss(animated: true)
+        }
     }
 }
 
