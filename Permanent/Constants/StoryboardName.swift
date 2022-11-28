@@ -80,6 +80,7 @@ enum ViewControllerId: String {
     case accountOnboardingPg2Pending
     case publicGallery
     case shareManagement
+    case shareManagementAccessRoles
 
     var value: String {
         switch self {
@@ -199,6 +200,9 @@ enum ViewControllerId: String {
             
         case .shareManagement:
             return "ShareManagement"
+            
+        case .shareManagementAccessRoles:
+            return "ShareManagementAccessRoles"
             
         default:
             return self.rawValue.capitalized
