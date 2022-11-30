@@ -59,8 +59,15 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         initCollectionView()
         getShareLink(option: .retrieve)
         addDismissKeyboardGesture()
-        
+        setupNotifications()
+    }
+    
+    func setupNotifications() {
         NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            self?.collectionView.reloadData()
+        }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateShareLinkRoleNotifName, object: viewModel, queue: nil) { [weak self] notif in
             self?.collectionView.reloadData()
         }
     }
@@ -154,6 +161,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
                 shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
                     ShareManagementCellType.sharePreview,
                     ShareManagementCellType.autoApprove,
+                    ShareManagementCellType.defaultAccessRole,
                     ShareManagementCellType.maxNumberOfUses,
                     ShareManagementCellType.expirationDate
                 ]
@@ -196,6 +204,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
             ShareManagementCellType.sharePreview,
             ShareManagementCellType.autoApprove,
+            ShareManagementCellType.defaultAccessRole,
             ShareManagementCellType.maxNumberOfUses,
             ShareManagementCellType.expirationDate
         ]
@@ -459,7 +468,20 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .defaultAccessRole:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementDefaultAccessRoleCollectionViewCell.identifier), for: indexPath) as! ShareManagementDefaultAccessRoleCollectionViewCell
-            cell.configure()
+            if let accessRoleApiValue = viewModel?.shareVO?.defaultAccessRole {
+                let accessRole = AccessRole.roleForValue(accessRoleApiValue)
+                cell.configure(defaultRole: accessRole)
+                
+                cell.editButtonAction = { [weak self] cell in
+                    let accessRoleVC = UIViewController.create(withIdentifier: .shareManagementAccessRoles, from: .share) as! ShareManagementAccessRolesViewController
+                    accessRoleVC.shareManagementCellType = currentCellType
+                    accessRoleVC.viewModel = self?.viewModel
+                    accessRoleVC.isSharedArchive = false
+                    let navController = NavigationController(rootViewController: accessRoleVC)
+                    self?.present(navController, animated: true, completion: nil)
+                }
+            }
+            
             returnedCell = cell
             
         case .maxNumberOfUses:

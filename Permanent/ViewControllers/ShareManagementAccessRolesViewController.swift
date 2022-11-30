@@ -121,7 +121,11 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-        currentRole = ShareManagementAccessRoleCellType.cellTypeFromAccessRole(AccessRole.roleForValue(shareVO.accessRole))
+        if shareVO != nil {
+            currentRole = ShareManagementAccessRoleCellType.cellTypeFromAccessRole(AccessRole.roleForValue(shareVO.accessRole))
+        } else {
+            currentRole = ShareManagementAccessRoleCellType.cellTypeFromAccessRole(AccessRole.roleForValue(viewModel!.shareVO!.defaultAccessRole!))
+        }
     }
     
     func addCustomNavigationBar() {
@@ -201,27 +205,29 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     
     @IBAction func rightButtonAction(_ sender: Any) {
         showSpinner()
-        if currentRole == .removeShare {
-            viewModel?.denyButtonAction(minArchiveVO: shareVO, then: { status in
-                self.hideSpinner()
-                if status == .success {
-                    self.view.showNotificationBanner(title: "Archive successfully removed".localized())
-                } else {
-                    self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
-                }
-            })
-        } else if let accessRole = currentRole?.accessRole() {
-            viewModel?.approveButtonAction(minArchiveVO: shareVO, accessRole: accessRole, then: { status in
-                self.hideSpinner()
-                self.dismiss(animated: true)
-            })
-            
-//            viewModel?.updateLinkWithChangedField(previewToggle: nil, autoApproveToggle: nil, expiresDT: nil, maxUses: nil, defaultAccessRole: accessRole, then: { _,_ in
-//
-//            })
+        if isSharedArchive {
+            if currentRole == .removeShare {
+                viewModel?.denyButtonAction(minArchiveVO: shareVO, then: { status in
+                    self.hideSpinner()
+                    if status == .success {
+                        self.view.showNotificationBanner(title: "Archive successfully removed".localized())
+                    } else {
+                        self.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
+                    }
+                })
+            } else if let accessRole = currentRole?.accessRole() {
+                viewModel?.approveButtonAction(minArchiveVO: shareVO, accessRole: accessRole, then: { status in
+                    self.hideSpinner()
+                    self.dismiss(animated: true)
+                })
+            }
         } else {
-            self.hideSpinner()
-            self.dismiss(animated: true)
+            if let accessRole = currentRole?.accessRole() {
+                viewModel?.updateLinkWithChangedField(previewToggle: nil, autoApproveToggle: nil, expiresDT: nil, maxUses: nil, defaultAccessRole: accessRole, then: { _,_ in
+                    self.hideSpinner()
+                    self.dismiss(animated: true)
+                })
+            }
         }
     }
 }

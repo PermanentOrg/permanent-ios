@@ -13,6 +13,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     static let didRevokeShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didRevokeShareLinkNotif")
     static let didUpdateSharesNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateSharesNotifName")
     static let didCreateShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didCreateShareLinkNotifName")
+    static let didUpdateShareLinkRoleNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateShareLinkRoleNotifName")
     
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
@@ -178,6 +179,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         shareVO?.previewToggle = model?.previewToggle
         shareVO?.autoApproveToggle = model?.autoApproveToggle
         shareVO?.expiresDT = model?.expiresDT
+        shareVO?.defaultAccessRole = model?.defaultAccessRole
     }
     
     func getAccountName() -> String? {
@@ -201,11 +203,9 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             defaultAccessRole: defaultAccessRole
         )
         
-        updateLink(
-            model: manageLinkData,
-            then: { shareVO, error in
-                handler(shareVO, error)
-            }
-        )
+        updateLink(model: manageLinkData, then: { shareVO, error in
+            NotificationCenter.default.post(name: Self.didUpdateShareLinkRoleNotifName, object: self, userInfo: nil)
+            handler(shareVO, error)
+        })
     }
 }
