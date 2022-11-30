@@ -34,13 +34,6 @@ class ShareManagementAccessRolesHeaderCollectionReusableView: UICollectionReusab
         rightButton.tintColor = .middleGray
     }
     
-    func configure(hideContent: Bool) {
-        bottomSeparatorView.isHidden = hideContent
-        leftImageView.isHidden = hideContent
-        headerTitle.isHidden = hideContent
-        rightButton.isHidden = hideContent
-    }
-    
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }

@@ -138,10 +138,9 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         itemThumbImageView.clipsToBounds = true
         imageView.addSubview(itemThumbImageView)
         
-        itemThumbImageView.image = UIImage(named: "archiveFolder")
         NSLayoutConstraint.activate([
-            itemThumbImageView.heightAnchor.constraint(equalToConstant: 40),
-            itemThumbImageView.widthAnchor.constraint(equalToConstant: 40),
+            itemThumbImageView.heightAnchor.constraint(equalToConstant: 30),
+            itemThumbImageView.widthAnchor.constraint(equalToConstant: 30),
             itemThumbImageView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor, constant: 4)
         ])
         
@@ -157,12 +156,14 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
         let headerStackView: UIStackView
         if isSharedArchive {
             itemNameLabel.text = "The " + (shareVO.name) + " Archive"
-            headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
+            itemThumbImageView.sd_setImage(with: URL(string: shareVO.thumbnail))
         } else {
             itemNameLabel.text = "Link Settings".localized()
-            headerStackView = UIStackView(arrangedSubviews: [itemNameLabel])
+            itemThumbImageView.image = UIImage(named: "Get Link")?.templated
+            itemThumbImageView.tintColor = .white
         }
 
+        headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
         headerStackView.translatesAutoresizingMaskIntoConstraints = false
         headerStackView.spacing = 6
         
@@ -258,7 +259,6 @@ extension ShareManagementAccessRolesViewController: UICollectionViewDataSource {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementAccessRolesHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementAccessRolesHeaderCollectionReusableView
-            headerCell.configure(hideContent: !isSharedArchive)
             headerCell.rightButtonTapped = { _ in
                 guard let url = URL(string: APIEnvironment.defaultEnv.rolesMatrix) else { return }
                 UIApplication.shared.open(url)
