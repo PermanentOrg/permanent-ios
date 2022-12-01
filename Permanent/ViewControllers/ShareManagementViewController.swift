@@ -434,7 +434,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkLocation: shareLink, cellType: currentCellType)
             
-            cell.rightButtonAction = { [weak self] in
+            cell.buttonAction = { [weak self] in
                 self?.copyLinkAction()
             }
             returnedCell = cell
@@ -443,7 +443,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkWasGeneratedNow: showLinkSettings ?? false, cellType: currentCellType)
             
-            cell.leftButtonAction = { [weak self] in
+            cell.buttonAction = { [weak self] in
                 self?.showLinkSettings?.toggle()
                 UIView.animate(withDuration: 0.2, animations: {
                     if self?.showLinkSettings == true {

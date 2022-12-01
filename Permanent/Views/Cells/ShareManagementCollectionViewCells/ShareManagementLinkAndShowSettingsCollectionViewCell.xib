@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,9 +32,6 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain"/>
-                                        <connections>
-                                            <action selector="leftButtonTapAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="QDT-H4-CtI"/>
-                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -61,9 +58,6 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain"/>
-                                        <connections>
-                                            <action selector="rightButtonTapAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="yr7-1h-WBW"/>
-                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -91,17 +85,29 @@
                             <constraint firstAttribute="bottom" secondItem="xZT-xM-6br" secondAttribute="bottom" id="ytH-J1-ENh"/>
                         </constraints>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="25v-Cx-3Uo">
+                        <rect key="frame" x="0.0" y="0.0" width="381" height="24"/>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <connections>
+                            <action selector="buttonPressed:" destination="gTV-IL-0wX" eventType="touchUpInside" id="Hqu-lE-jAy"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
+                <constraint firstItem="25v-Cx-3Uo" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="0oI-If-OZA"/>
                 <constraint firstItem="KRA-S9-Lvc" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="EgR-sg-0h1"/>
                 <constraint firstAttribute="trailing" secondItem="KRA-S9-Lvc" secondAttribute="trailing" id="hnf-h2-Nmr"/>
                 <constraint firstAttribute="bottom" secondItem="KRA-S9-Lvc" secondAttribute="bottom" id="jJG-4j-qHp"/>
+                <constraint firstItem="25v-Cx-3Uo" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="nKC-PV-qoj"/>
+                <constraint firstAttribute="trailing" secondItem="25v-Cx-3Uo" secondAttribute="trailing" id="pfj-4n-shV"/>
                 <constraint firstItem="KRA-S9-Lvc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="v9E-K3-d26"/>
+                <constraint firstAttribute="bottom" secondItem="25v-Cx-3Uo" secondAttribute="bottom" id="zjy-E5-oM8"/>
             </constraints>
             <size key="customSize" width="381" height="24"/>
             <connections>
+                <outlet property="button" destination="25v-Cx-3Uo" id="CSu-az-NGA"/>
                 <outlet property="elementNameLabel" destination="xZT-xM-6br" id="CFE-T7-1CY"/>
                 <outlet property="leftElementButton" destination="dnQ-eh-Jxy" id="rjB-SH-xdv"/>
                 <outlet property="rightElementButton" destination="hpS-Ao-pkC" id="KCM-da-h6e"/>
