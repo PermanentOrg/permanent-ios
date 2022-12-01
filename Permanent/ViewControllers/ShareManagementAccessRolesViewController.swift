@@ -195,7 +195,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     }
     
     func initCollectionViewData() {
-        accessRolesViewData = [.viewer, .contributor, .editor, .curator, .manager, .owner]
+        accessRolesViewData = [.viewer, .contributor, .editor, .curator, .owner]
         if isSharedArchive {
             accessRolesViewData.append(.removeShare)
         }
