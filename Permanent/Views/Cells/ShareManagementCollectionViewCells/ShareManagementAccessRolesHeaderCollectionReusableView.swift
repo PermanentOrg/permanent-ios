@@ -28,10 +28,8 @@ class ShareManagementAccessRolesHeaderCollectionReusableView: UICollectionReusab
         headerTitle.font = Text.style41.font
         headerTitle.textColor = .darkBlue
         
-        rightButton.setTitle("What's this".localized(), for: .normal)
-        rightButton.titleLabel?.textColor = .middleGray
-        rightButton.titleLabel?.font = Text.style5.font
-        rightButton.tintColor = .middleGray
+        let attributedText = NSAttributedString(string: "What's this".localized(), attributes: [.foregroundColor: UIColor.middleGray, .font: Text.style5.font])
+        rightButton.setAttributedTitle(attributedText, for: .normal)
     }
     
     static func nib() -> UINib {
