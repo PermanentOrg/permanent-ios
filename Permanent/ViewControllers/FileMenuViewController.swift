@@ -417,7 +417,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         manageSharingImageView.contentMode = .scaleAspectFit
         
         let arrangedSubviews: [UIView]
-        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil || showsPermission {
+        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
             arrangedSubviews = [sharedWithLabel, manageSharingLabel, manageSharingImageView]
         } else {
             arrangedSubviews = [sharedWithLabel]
@@ -427,7 +427,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         headerStackView.axis = .horizontal
         headerStackView.spacing = 8
         
-        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil || showsPermission {
+        if menuItems.firstIndex(where: { $0.type == .shareToPermanent }) != nil {
             let manageSharingButton = UIButton(type: .custom)
             manageSharingButton.translatesAutoresizingMaskIntoConstraints = false
             manageSharingButton.addTarget(self, action: #selector(manageLinkAction), for: .touchUpInside)

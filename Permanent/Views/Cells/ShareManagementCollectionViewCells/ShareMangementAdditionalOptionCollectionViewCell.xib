@@ -22,10 +22,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="86" height="20"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AqJ-PC-VTt">
-                                <rect key="frame" x="4" y="2" width="16" height="16"/>
+                                <rect key="frame" x="4" y="0.0" width="20" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="16" id="89X-FZ-e4M"/>
-                                    <constraint firstAttribute="width" constant="16" id="uDO-2Z-k7C"/>
+                                    <constraint firstAttribute="width" secondItem="AqJ-PC-VTt" secondAttribute="height" multiplier="1:1" id="psj-KJ-Ob6"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D7D-NH-ccp">
@@ -38,10 +37,12 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="AqJ-PC-VTt" firstAttribute="leading" secondItem="Jc9-4x-bct" secondAttribute="leading" constant="4" id="9k0-7U-eZc"/>
+                            <constraint firstAttribute="bottom" secondItem="AqJ-PC-VTt" secondAttribute="bottom" id="IF7-Fc-6w9"/>
                             <constraint firstItem="AqJ-PC-VTt" firstAttribute="centerY" secondItem="Jc9-4x-bct" secondAttribute="centerY" id="SS0-T6-up3"/>
                             <constraint firstAttribute="trailing" secondItem="D7D-NH-ccp" secondAttribute="trailing" id="Uyt-33-NY4"/>
                             <constraint firstAttribute="height" constant="20" id="Yzg-3U-JKK"/>
                             <constraint firstItem="D7D-NH-ccp" firstAttribute="centerY" secondItem="Jc9-4x-bct" secondAttribute="centerY" id="md3-XY-ux8"/>
+                            <constraint firstItem="AqJ-PC-VTt" firstAttribute="top" secondItem="Jc9-4x-bct" secondAttribute="top" id="nly-qL-U6a"/>
                             <constraint firstItem="D7D-NH-ccp" firstAttribute="leading" secondItem="Jc9-4x-bct" secondAttribute="leading" constant="40" id="sue-9C-iMp"/>
                         </constraints>
                     </view>
