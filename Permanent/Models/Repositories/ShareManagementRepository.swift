@@ -10,7 +10,7 @@ import Foundation
 class ShareManagementRepository {
     let remoteDataSource: ShareManagementRemoteDataSourceInterface
     
-    init(remoteDataSource: ShareManagementRemoteDataSource = ShareManagementRemoteDataSource()) {
+    init(remoteDataSource: ShareManagementRemoteDataSourceInterface = ShareManagementRemoteDataSource()) {
         self.remoteDataSource = remoteDataSource
     }
     
