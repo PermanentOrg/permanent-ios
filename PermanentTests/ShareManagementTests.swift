@@ -15,6 +15,8 @@ class ShareManagementTests: XCTestCase {
 
         let downloadManagerMock = DownloadManagerMock()
         let shareManagementMockDataSource = ShareManagementMockRemoteDataSource()
+        shareManagementMockDataSource.sharebyURLVODataMock = sharebyURLVODataMock()
+        shareManagementMockDataSource.shareVODataMock = shareVODataMock()
         let shareManagementRepository = ShareManagementRepository(remoteDataSource: shareManagementMockDataSource)
         let info = FolderInfo(folderId: 1, folderLinkId: 1)
         let url = URL(string: "https://google.com")!
@@ -160,6 +162,16 @@ class ShareManagementTests: XCTestCase {
         let model: APIResults<ShareVO> = try! decoder.decode(APIResults<ShareVO>.self, from: data)
 
         return model.results.first!.data!.first!.shareVO
+    }
+
+    func sharebyURLVODataMock() -> SharebyURLVOData {
+        let json = "{\"Results\":[{\"data\":[{\"Shareby_urlVO\":{\"shareby_urlId\":919,\"folder_linkId\":111145,\"status\":\"status.generic.ok\",\"urlToken\":\"7e50e4fe99cc16892f3d0376df054b6ea56432e0ba9a563eebab08f70f34596b\",\"shareUrl\":\"https:\\/\\/staging.permanent.org\\/share\\/7e50e4fe99cc16892f3d0376df054b6ea56432e0ba9a563eebab08f70f34596b\",\"uses\":3,\"maxUses\":0,\"autoApproveToggle\":1,\"previewToggle\":1,\"defaultAccessRole\":\"access.role.curator\",\"expiresDT\":null,\"byAccountId\":1648,\"byArchiveId\":1858,\"createdDT\":\"2022-11-25T16:51:33\",\"updatedDT\":\"2022-11-30T12:40:19\",\"FolderVO\":null,\"RecordVO\":null,\"ArchiveVO\":null,\"AccountVO\":null,\"ShareVO\":null}}],\"message\":[\"Link exists\"],\"status\":true,\"resultDT\":\"2022-12-07T10:32:42\",\"createdDT\":null,\"updatedDT\":null}],\"isSuccessful\":true,\"actionFailKeys\":[],\"isSystemUp\":true,\"systemMessage\":\"Everything is A-OK\",\"csrf\":\"82c96e94642df8fdd3a2d6b5744c1286\",\"createdDT\":null,\"updatedDT\":null}"
+        let data = json.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        let model: APIResults<SharebyURLVO> = try! decoder.decode(APIResults<SharebyURLVO>.self, from: data)
+
+        return model.results.first!.data!.first!.shareByURLVO!
     }
 
     func createMockSession() {
