@@ -114,5 +114,23 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         actionDialog?.subtitleLabel.textAlignment = .center
         view.addSubview(actionDialog!)
         self.view.presentPopup(actionDialog, overlayView: overlayView)
-    } 
+    }
+
+    func showFloatingActionIsland(withLeftItems leftItems: [FloatingActionItem], rightItems: [FloatingActionItem]) {
+        let floatingActionIsland = FloatingActionIslandViewController()
+        floatingActionIsland.leftItems = leftItems
+        floatingActionIsland.rightItems = rightItems
+        floatingActionIsland.view.translatesAutoresizingMaskIntoConstraints = false
+
+        floatingActionIsland.willMove(toParent: self)
+        addChild(floatingActionIsland)
+        view.addSubview(floatingActionIsland.view)
+        floatingActionIsland.didMove(toParent: self)
+
+        NSLayoutConstraint.activate([
+            floatingActionIsland.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            floatingActionIsland.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32),
+            floatingActionIsland.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64)
+        ])
+    }
 }

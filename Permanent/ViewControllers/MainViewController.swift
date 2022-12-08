@@ -109,7 +109,28 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.collectionView.reloadData()
         }
     }
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+
+        let leftItems = [
+            FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil),
+            FloatingActionTextSubtitleItem(text: "COPYING".localized(), subtitle: "Summer 2022 Photo Album Long name teste teste teste".localized(), action: nil),
+        ]
+
+        let closeImage = UIImage(named: "close")!.withRenderingMode(.alwaysTemplate)
+        let rightItems = [
+            FloatingActionImageTextItem(text: "Paste Here", image: UIImage(named: "Copy")!) { [weak self] in
+                print("Paste here")
+            },
+            FloatingActionImageItem(image: closeImage) { [weak self] in
+                print("Close")
+            },
+        ]
+        showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
