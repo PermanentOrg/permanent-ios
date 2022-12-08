@@ -268,3 +268,40 @@ class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface 
         return payloadVO
     }
 }
+
+class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterface {
+    var sharebyURLVODataMock: SharebyURLVOData!
+    var shareVODataMock: ShareVOData!
+
+    private func prepareShareLinkUpdatePayload(forData data: ManageLinkData, shareVO: SharebyURLVOData?) -> SharebyURLVOData? {
+        return nil
+    }
+
+    func getShareLink(file: FileViewModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
+        handler(sharebyURLVODataMock, nil)
+    }
+
+    func revokeLink(shareVO: SharebyURLVOData?, then handler: @escaping ServerResponse) {
+        handler(.success)
+    }
+
+    func updateLink(model: ManageLinkData, shareVO: SharebyURLVOData?, then handler: @escaping ShareLinkResponse) {
+        handler(sharebyURLVODataMock, nil)
+    }
+
+    func approveButtonAction(minArchiveVO: MinArchiveVO, accessRole: AccessRole, then handler: @escaping (RequestStatus, ShareVOData?) -> ()) {
+        handler(.success, shareVODataMock)
+    }
+
+    func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole, then handler: @escaping (RequestStatus, ShareVOData?) -> ()) {
+        handler(.success, shareVODataMock)
+    }
+
+    func denyButtonAction(minArchiveVO: MinArchiveVO, then handler: @escaping (RequestStatus) -> Void) {
+        handler(.success)
+    }
+
+    func denyButtonAction(shareVO: ShareVOData, then handler: @escaping (RequestStatus) -> Void) {
+        handler(.success)
+    }
+}

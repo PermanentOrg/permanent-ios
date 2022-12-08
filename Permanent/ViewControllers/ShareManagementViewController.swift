@@ -229,27 +229,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
             showLinkSettings = shareLink == nil ? true : false
         }
     }
-    
-    fileprivate func changeFilePermission(shareVO: ShareVOData, accessRole: AccessRole) {
-        showSpinner()
-        
-        viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
-            self.hideSpinner()
-            
-            switch status {
-            case .success:
-                self.view.showNotificationBanner(title: "Access role was successfully changed".localized())
-                
-            case .error(let errorMessage):
-                self.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
-            }
 
-            self.getShareLink(option: .retrieve)
-        })
-        actionDialog?.dismiss()
-        actionDialog = nil
-    }
-    
     func copyLinkAction() {
         var emailSubject = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you".localized()
         var emailBody = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you.\n <LINK>".localized()
@@ -266,51 +246,6 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         activityViewController.setValue(emailSubject, forKey: "Subject")
         activityViewController.popoverPresentationController?.sourceView = view
         present(activityViewController, animated: true, completion: nil)
-    }
-    
-    func editArchive(shareVO: ShareVOData) {
-        guard let archiveVO = shareVO.archiveVO else { return }
-        
-        let accessRoles = AccessRole.allCases
-            .filter { $0 != .manager }
-            .map { $0.groupName }
-        
-        self.showActionDialog(
-            styled: .dropdownWithDescription,
-            withTitle: "The \(archiveVO.fullName ?? "") Archive",
-            placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
-            dropdownValues: accessRoles,
-            positiveButtonTitle: "Update".localized(),
-            positiveAction: { [weak self] in
-                if let fieldsInput = self?.actionDialog?.fieldsInput,
-                   let roleValue = fieldsInput.first {
-                    let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
-                    let fileTypeString: String = FileType(rawValue: shareVO.type ?? "")?.isFolder ?? false ? "folder" : "file"
-                    if accessRole == .owner {
-                        self?.actionDialog?.dismissPopup(
-                            self?.actionDialog,
-                            overlayView: self?.overlayView,
-                            completion: { [weak self] _ in
-                                self?.actionDialog?.removeFromSuperview()
-                                self?.actionDialog = nil
-                                guard var archiveName = archiveVO.fullName else { return }
-                                archiveName = "The \(archiveName) Archive"
-                                self?.showActionDialog(styled: .simpleWithDescription,
-                                                       withTitle: "Add owner".localized(),
-                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
-                                                       positiveButtonTitle: "Add owner".localized(),
-                                                       positiveAction: { [weak self] in
-                                    self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
-                                }, overlayView: self?.overlayView)
-                            }
-                        )
-                    } else {
-                        self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
-                    }
-                }
-            },
-            overlayView: self.overlayView
-        )
     }
     
     // MARK: - Network Requests

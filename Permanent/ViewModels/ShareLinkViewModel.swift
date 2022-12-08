@@ -40,13 +40,14 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         })
     }
     
-    var downloader: DownloadManagerGCD?
+    var downloader: Downloader?
     
     let shareManagementRepository: ShareManagementRepository
     
-    init(fileViewModel: FileViewModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository()) {
+    init(fileViewModel: FileViewModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository(), downloader: Downloader? = DownloadManagerGCD()) {
         self.fileViewModel = fileViewModel
         self.shareManagementRepository = shareManagementRepository
+        self.downloader = downloader
     }
     
     func getRecord(then handler: @escaping (RecordVO?) -> Void) {
@@ -56,7 +57,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { (record, error) in
             self.recordVO = record?.recordVO
             
@@ -71,7 +71,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD()
         downloader?.getFolder(downloadInfo) { (folder, error) in
             self.folderVO = folder?.folderVO
             
@@ -163,17 +162,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             handler(result)
         }
     }
-    
-    func prepareShareLinkUpdatePayload(forData data: ManageLinkData) -> SharebyURLVOData? {
-        var payloadVO = shareVO
-        payloadVO?.maxUses = data.maxUses
-        payloadVO?.previewToggle = data.previewToggle
-        payloadVO?.autoApproveToggle = data.autoApproveToggle
-        payloadVO?.expiresDT = data.expiresDT
-        
-        return payloadVO
-    }
-    
+
     fileprivate func processShareLinkUpdateModel(_ model: SharebyURLVOData?) {
         shareVO?.maxUses = model?.maxUses
         shareVO?.previewToggle = model?.previewToggle
