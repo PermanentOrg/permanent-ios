@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit.UIAlertController
+import UIKit
 
 typealias ServerResponse = (RequestStatus) -> Void
 
@@ -69,6 +69,45 @@ class AuthViewModel: ViewModelInterface {
                     handler(.success)
                 } else {
                     handler(.error(message: .errorMessage))
+                }
+
+            case .error:
+                handler(.error(message: .errorMessage))
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
+        let loginOperation = APIOperation(FusionAuthEndpoint.login(credentials: credentials))
+
+        loginOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    //self.saveStorageData(model)
+                    handler(.success)
+                } else {
+                    guard
+                        let message = model.results?.first?.message?.first,
+                        let loginError = LoginError(rawValue: message)
+                    else {
+                        handler(.error(message: .errorMessage))
+                        return
+                    }
+
+                    if loginError == .mfaToken {
+                        handler(.mfaToken)
+                    } else {
+                        handler(.error(message: loginError.description))
+                    }
                 }
 
             case .error:

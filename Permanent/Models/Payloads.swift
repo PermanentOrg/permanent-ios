@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Payloads {
     static func forgotPasswordPayload(for email: String) -> RequestParameters {
@@ -23,19 +24,19 @@ struct Payloads {
     }
     
     static func loginPayload(for credentials: LoginCredentials) -> RequestParameters {
+        let applicationId = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? ""
+        let ipAddress = UIDevice.current.ipAddress()
+        let deviceName = UIDevice.current.name
+        let deviceType = UIDevice.current.model
+        let deviceDescription = UIDevice.current.debugDescription
         return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AccountPasswordVO": [
-                            "password": credentials.password
-                        ]
-                    ]
-                ]
-            ]
+            "loginId": credentials.email,
+            "password": credentials.password,
+            "applicationId": authServiceInfo.clientId,
+            "ipAddress": ipAddress,
+            "metaData.device.description": "mobile app",
+            "metaData.device.name": deviceName,
+            "metaData.device.type": deviceType
         ]
     }
     

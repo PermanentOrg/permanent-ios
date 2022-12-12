@@ -56,15 +56,22 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     
     private func attemptLogin() {
         closeKeyboard()
-        guard viewModel?.areFieldsValid(nameField: "noName", emailField: emailField.text, passwordField: passwordField.text) ?? false else {
-            //showAlert(title: .error, message: .invalidFields)
-            let vc = UIViewController.create(withIdentifier: .verificationCode, from: .authentication)
-            navigationController?.pushViewController(vc, animated: true)
+        
+        guard let email = emailField.text,
+              let password = passwordField.text,
+              viewModel?.areFieldsValid(nameField: "noName", emailField: emailField.text, passwordField: passwordField.text) ?? false else {
+            showAlert(title: .error, message: .invalidFields)
             return
         }
+        
+        let credentials: LoginCredentials = (email: email, password: password)
+        
+        viewModel?.login(with: credentials, then: { status in
+            DispatchQueue.main.async {
+                self.handleLoginStatus(status, credentials: credentials)
+            }
+        })
     
-        let vc = UIViewController.create(withIdentifier: .twoStepVerification, from: .authentication)
-        navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction
@@ -81,6 +88,10 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     func forgotPasswordAction(_ sender: UIButton) {
         let vc = UIViewController.create(withIdentifier: .recoverPassword, from: .authentication)
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    fileprivate func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
+
     }
 }
 

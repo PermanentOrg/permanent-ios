@@ -13,8 +13,6 @@ typealias LoginCredentials = (email: String, password: String)
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
     case verifyAuth
-    /// Performs a login with an email & password credentials.
-    case login(credentials: LoginCredentials)
     /// Sends an email in order to change the password.
     case forgotPassword(email: String)
     /// Logs out the user.
@@ -24,9 +22,6 @@ enum AuthenticationEndpoint {
 extension AuthenticationEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
-        case .login(let credentials):
-            return Payloads.loginPayload(for: credentials)
-            
         case .forgotPassword(let email):
             return Payloads.forgotPasswordPayload(for: email)
             
@@ -50,9 +45,6 @@ extension AuthenticationEndpoint: RequestProtocol {
         switch self {
         case .verifyAuth:
             return "/auth/loggedin"
-            
-        case .login:
-            return "/auth/login"
             
         case .forgotPassword:
             return "/auth/sendEmailForgotPassword"
