@@ -107,6 +107,10 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    var rolesMatrix: String {
+        return "https://permanent.zohodesk.com/portal/en/kb/articles/roles-for-collaboration-and-sharing"
+    }
+    
     #if STAGING_ENVIRONMENT
     static let defaultEnv: APIEnvironment = .staging
     #else

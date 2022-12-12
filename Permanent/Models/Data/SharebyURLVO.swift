@@ -24,7 +24,7 @@ struct SharebyURLVOData: Model {
     var maxUses: Int?
     var autoApproveToggle: Int?
     var previewToggle: Int?
-    let defaultAccessRole: String?
+    var defaultAccessRole: String?
     var expiresDT: String?
     let byAccountID, byArchiveID: Int?
     let createdDT, updatedDT: String?

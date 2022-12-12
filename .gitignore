@@ -90,3 +90,5 @@ iOSInjectionProject/
 EnvVars.generated.swift
 env-vars-staging.sh
 env-vars.sh
+
+.idea/

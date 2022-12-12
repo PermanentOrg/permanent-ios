@@ -27,6 +27,7 @@ struct SharebyURLVOPayloadData: Model {
     let autoApproveToggle: Int?
     var expiresDT: String?
     let maxUses: Int?
+    let defaultAccessRole: String?
 
     enum CodingKeys: String, CodingKey {
         case linkId = "shareby_urlId"
@@ -35,6 +36,7 @@ struct SharebyURLVOPayloadData: Model {
         case autoApproveToggle
         case expiresDT
         case maxUses
+        case defaultAccessRole
     }
     
     init(sharebyURLVOData model: SharebyURLVOData) {
@@ -45,5 +47,6 @@ struct SharebyURLVOPayloadData: Model {
         self.autoApproveToggle = model.autoApproveToggle
         self.expiresDT = model.expiresDT
         self.maxUses = model.maxUses
+        self.defaultAccessRole = model.defaultAccessRole
     }
 }

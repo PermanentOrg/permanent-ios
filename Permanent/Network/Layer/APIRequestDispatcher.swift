@@ -55,7 +55,7 @@ class APIRequestDispatcher: RequestDispatcherProtocol {
             }
         }
         
-        if let token = AuthenticationManager.shared.authState?.lastTokenResponse?.accessToken {
+        if let token = PermSession.currentSession?.authState.lastTokenResponse?.accessToken {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         

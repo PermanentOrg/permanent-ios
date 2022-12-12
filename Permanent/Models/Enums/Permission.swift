@@ -18,4 +18,26 @@ enum Permission: Codable {
     case share
     case archiveShare
     case ownership
+    
+    func prettyPermission() -> String? {
+        switch self {
+        case .read: return "view".localized()
+        
+        case .create: return "create".localized()
+            
+        case .upload: return "upload".localized()
+            
+        case .edit: return "edit".localized()
+            
+        case .delete: return "delete".localized()
+            
+        case .move: return "move".localized()
+            
+        case .publish: return "publish".localized()
+            
+        case .share: return "share".localized()
+            
+        case .archiveShare, .ownership: return nil
+        }
+    }
 }

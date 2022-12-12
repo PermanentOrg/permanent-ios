@@ -27,6 +27,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var birthDateHintLabel: UILabel!
     @IBOutlet weak var birthLocationHintLabel: UILabel!
     
+    let datePicker = UIDatePicker()
+    
     @IBOutlet weak var genderItemsView: UIView!
     @IBOutlet weak var mapView: UIView!
     
@@ -269,7 +271,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
                 date = dateFormatter.date(from: viewModel?.establishedInfoProfileItem?.establishedDate ?? "")
             }
         }
-        let datePicker = UIDatePicker()
+        
         datePicker.date = date ?? Date()
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
         datePicker.datePickerMode = .date
@@ -296,8 +298,8 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     }
     
     @objc func datePickerDoneButtonPressed(_ sender: Any) {
-        let date = Date()
-        
+        let date = datePicker.date
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         birthDateTextField.text = dateFormatter.string(from: date)
