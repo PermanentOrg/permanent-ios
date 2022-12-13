@@ -59,6 +59,17 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         initCollectionView()
         getShareLink(option: .retrieve)
         addDismissKeyboardGesture()
+        setupNotifications()
+    }
+    
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateSharesNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            self?.collectionView.reloadData()
+        }
+        
+        NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didUpdateShareLinkRoleNotifName, object: viewModel, queue: nil) { [weak self] notif in
+            self?.collectionView.reloadData()
+        }
     }
     
     func initUI() {
@@ -150,6 +161,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
                 shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
                     ShareManagementCellType.sharePreview,
                     ShareManagementCellType.autoApprove,
+                    ShareManagementCellType.defaultAccessRole,
                     ShareManagementCellType.maxNumberOfUses,
                     ShareManagementCellType.expirationDate
                 ]
@@ -192,6 +204,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         shareManagementViewData[ShareManagementSectionType.linkSettingsSection] = [
             ShareManagementCellType.sharePreview,
             ShareManagementCellType.autoApprove,
+            ShareManagementCellType.defaultAccessRole,
             ShareManagementCellType.maxNumberOfUses,
             ShareManagementCellType.expirationDate
         ]
@@ -216,27 +229,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
             showLinkSettings = shareLink == nil ? true : false
         }
     }
-    
-    fileprivate func changeFilePermission(shareVO: ShareVOData, accessRole: AccessRole) {
-        showSpinner()
-        
-        viewModel?.approveButtonAction(shareVO: shareVO, accessRole: accessRole, then: { status in
-            self.hideSpinner()
-            
-            switch status {
-            case .success:
-                self.view.showNotificationBanner(title: "Access role was successfully changed".localized())
-                
-            case .error(let errorMessage):
-                self.view.showNotificationBanner(title: errorMessage ?? .errorMessage, backgroundColor: .brightRed, textColor: .white)
-            }
 
-            self.getShareLink(option: .retrieve)
-        })
-        actionDialog?.dismiss()
-        actionDialog = nil
-    }
-    
     func copyLinkAction() {
         var emailSubject = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you".localized()
         var emailBody = "<ACCOUNTNAME> wants to share an item from their Permanent Archive with you.\n <LINK>".localized()
@@ -253,51 +246,6 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         activityViewController.setValue(emailSubject, forKey: "Subject")
         activityViewController.popoverPresentationController?.sourceView = view
         present(activityViewController, animated: true, completion: nil)
-    }
-    
-    func editArchive(shareVO: ShareVOData) {
-        guard let archiveVO = shareVO.archiveVO else { return }
-        
-        let accessRoles = AccessRole.allCases
-            .filter { $0 != .manager }
-            .map { $0.groupName }
-        
-        self.showActionDialog(
-            styled: .dropdownWithDescription,
-            withTitle: "The \(archiveVO.fullName ?? "") Archive",
-            placeholders: [AccessRole.roleForValue(shareVO.accessRole ?? "").groupName],
-            dropdownValues: accessRoles,
-            positiveButtonTitle: "Update".localized(),
-            positiveAction: { [weak self] in
-                if let fieldsInput = self?.actionDialog?.fieldsInput,
-                   let roleValue = fieldsInput.first {
-                    let accessRole = AccessRole.roleForValue(AccessRole.apiRoleForValue(roleValue))
-                    let fileTypeString: String = FileType(rawValue: shareVO.type ?? "")?.isFolder ?? false ? "folder" : "file"
-                    if accessRole == .owner {
-                        self?.actionDialog?.dismissPopup(
-                            self?.actionDialog,
-                            overlayView: self?.overlayView,
-                            completion: { [weak self] _ in
-                                self?.actionDialog?.removeFromSuperview()
-                                self?.actionDialog = nil
-                                guard var archiveName = archiveVO.fullName else { return }
-                                archiveName = "The \(archiveName) Archive"
-                                self?.showActionDialog(styled: .simpleWithDescription,
-                                                       withTitle: "Add owner".localized(),
-                                                       description: "Are you sure you want to share this \(fileTypeString) with <ARCHIVE_NAME> as an owner? This cannot be undone.".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName),
-                                                       positiveButtonTitle: "Add owner".localized(),
-                                                       positiveAction: { [weak self] in
-                                    self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
-                                }, overlayView: self?.overlayView)
-                            }
-                        )
-                    } else {
-                        self?.changeFilePermission(shareVO: shareVO, accessRole: accessRole)
-                    }
-                }
-            },
-            overlayView: self.overlayView
-        )
     }
     
     // MARK: - Network Requests
@@ -421,7 +369,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkLocation: shareLink, cellType: currentCellType)
             
-            cell.rightButtonAction = { [weak self] in
+            cell.buttonAction = { [weak self] in
                 self?.copyLinkAction()
             }
             returnedCell = cell
@@ -430,7 +378,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementLinkAndShowSettingsCollectionViewCell.identifier), for: indexPath) as! ShareManagementLinkAndShowSettingsCollectionViewCell
             cell.configure(linkWasGeneratedNow: showLinkSettings ?? false, cellType: currentCellType)
             
-            cell.leftButtonAction = { [weak self] in
+            cell.buttonAction = { [weak self] in
                 self?.showLinkSettings?.toggle()
                 UIView.animate(withDuration: 0.2, animations: {
                     if self?.showLinkSettings == true {
@@ -455,7 +403,20 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .defaultAccessRole:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementDefaultAccessRoleCollectionViewCell.identifier), for: indexPath) as! ShareManagementDefaultAccessRoleCollectionViewCell
-            cell.configure()
+            if let accessRoleApiValue = viewModel?.shareVO?.defaultAccessRole {
+                let accessRole = AccessRole.roleForValue(accessRoleApiValue)
+                cell.configure(defaultRole: accessRole)
+                
+                cell.editButtonAction = { [weak self] cell in
+                    let accessRoleVC = UIViewController.create(withIdentifier: .shareManagementAccessRoles, from: .share) as! ShareManagementAccessRolesViewController
+                    accessRoleVC.shareManagementCellType = currentCellType
+                    accessRoleVC.viewModel = self?.viewModel
+                    accessRoleVC.isSharedArchive = false
+                    let navController = NavigationController(rootViewController: accessRoleVC)
+                    self?.present(navController, animated: true, completion: nil)
+                }
+            }
+            
             returnedCell = cell
             
         case .maxNumberOfUses:
@@ -475,48 +436,17 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .sharedArchive:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
-            if let shareVO = viewModel?.acceptedShareVOs?[indexPath.row] {
+            if let shareVO = viewModel?.acceptedShareVOs[indexPath.row] {
                 cell.configure(withShareVO: shareVO)
                 
                 cell.rightButtonAction = { [weak self] cell in
-                    var actions = [
-                        PRMNTAction(title: "Edit".localized(), iconName: "Rename", handler: { action in
-                            self?.editArchive(shareVO: shareVO)
-                        })
-                    ]
-                    
-                    actions.insert(PRMNTAction(title: "Remove".localized(), iconName: "Delete-1", color: .brightRed, handler: { [weak self] action in
-                        let description = "Are you sure you want to remove The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: shareVO.archiveVO?.fullName ?? "")
-                        
-                        self?.showActionDialog(
-                            styled: .simpleWithDescription,
-                            withTitle: description,
-                            description: "",
-                            positiveButtonTitle: "Remove".localized(),
-                            positiveAction: { [weak self] in
-                                self?.actionDialog?.dismiss()
-                                self?.actionDialog = nil
-                                
-                                self?.showSpinner()
-                                self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
-                                    self?.hideSpinner()
-                                    if status == .success {
-                                        self?.view.showNotificationBanner(title: "Archive successfully removed".localized())
-                                    } else {
-                                        self?.view.showNotificationBanner(title: .errorMessage, backgroundColor: .brightRed, textColor: .white)
-                                    }
-                                    self?.getShareLink(option: .retrieve)
-                                })
-                            },
-                            cancelButtonTitle: "Cancel".localized(),
-                            positiveButtonColor: .brightRed,
-                            cancelButtonColor: .primary,
-                            overlayView: self?.overlayView
-                        )
-                    }), at: 0)
-                    
-                    let actionSheet = PRMNTActionSheetViewController(title: shareVO.archiveVO?.fullName, actions: actions)
-                    self?.present(actionSheet, animated: true)
+                    let accessRoleVC = UIViewController.create(withIdentifier: .shareManagementAccessRoles, from: .share) as! ShareManagementAccessRolesViewController
+                    accessRoleVC.shareManagementCellType = currentCellType
+                    accessRoleVC.viewModel = self?.viewModel
+                    accessRoleVC.shareVO = shareVO
+                    accessRoleVC.isSharedArchive = true
+                    let navController = NavigationController(rootViewController: accessRoleVC)
+                    self?.present(navController, animated: true, completion: nil)
                 }
             }
             
@@ -524,11 +454,11 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             
         case .pendingArchive:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ShareManagementSharedWithCollectionViewCell.identifier), for: indexPath) as! ShareManagementSharedWithCollectionViewCell
-            if let shareVO = viewModel?.pendingShareVOs?[indexPath.row] {
+            if let shareVO = viewModel?.pendingShareVOs[indexPath.row] {
                 cell.configure(withShareVO: shareVO)
                 
                 cell.rightButtonAction = { [weak self] _ in
-                    self?.viewModel?.approveButtonAction(shareVO: shareVO, then: { status in
+                    self?.viewModel?.approveButtonAction(minArchiveVO: shareVO, then: { status in
                         switch status {
                         case .success:
                             self?.view.showNotificationBanner(title: .approveShareRequest)
@@ -543,7 +473,7 @@ extension ShareManagementViewController: UICollectionViewDataSource {
                 }
                  
                 cell.leftButtonAction = { [weak self] _ in
-                    self?.viewModel?.denyButtonAction(shareVO: shareVO, then: { status in
+                    self?.viewModel?.denyButtonAction(minArchiveVO: shareVO, then: { status in
                         switch status {
                         case .success:
                             self?.view.showNotificationBanner(title: .denyShareRequest)
@@ -590,13 +520,13 @@ extension ShareManagementViewController: UICollectionViewDataSource {
             switch currentSection {
             case .sharedWith:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs?.count ?? 0, isRedBadge: false)
+                headerCell.configure(withTitle: "Shared With".localized().uppercased(), badgeValue: viewModel?.acceptedShareVOs.count ?? 0, isRedBadge: false)
                 
                 return headerCell
                 
             case .pendingRequests:
                 let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ShareManagementHeaderCollectionReusableView.identifier, for: indexPath) as! ShareManagementHeaderCollectionReusableView
-                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs?.count ?? 0, isRedBadge: true)
+                headerCell.configure(withTitle: "PENDING REQUESTS".localized().uppercased(), badgeValue: viewModel?.pendingShareVOs.count ?? 0, isRedBadge: true)
                 
                 return headerCell
                 
@@ -652,10 +582,10 @@ extension ShareManagementViewController: UICollectionViewDelegateFlowLayout {
         
         switch currentSection {
         case .sharedWith:
-            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) == 0 ? 48 : 24
+            cellSize.height = (viewModel?.pendingShareVOs.count ?? 0) == 0 ? 48 : 24
             
         case .pendingRequests:
-            cellSize.height = (viewModel?.pendingShareVOs?.count ?? 0) > 0 ? 48 : 24
+            cellSize.height = (viewModel?.pendingShareVOs.count ?? 0) > 0 ? 48 : 24
             
         default: return cellSize
         }

@@ -22,5 +22,7 @@ protocol Downloader {
                   completion: VoidAction?)
     
     func cancelDownload()
-    
+
+    func getRecord(_ file: FileDownloadInfo, then handler: @escaping GetRecordResponse)
+    func getFolder(_ file: FileDownloadInfo, then handler: @escaping GetFolderResponse)
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -162,6 +162,85 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SfG-WF-XK5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="765" y="915"/>
+        </scene>
+        <!--Share Management Access Roles View Controller-->
+        <scene sceneID="sp4-Ih-Wlo">
+            <objects>
+                <viewController storyboardIdentifier="ShareManagementAccessRoles" id="dZE-YB-rXs" customClass="ShareManagementAccessRolesViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ugd-fM-SFF">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="zze-yV-D61">
+                                <rect key="frame" x="0.0" y="48" width="414" height="766"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="UuJ-2Q-6KA">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="W4P-OF-tRX">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="b06-aK-R4h">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </collectionViewCellContentView>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="dZE-YB-rXs" id="KIH-oP-Jas"/>
+                                    <outlet property="delegate" destination="dZE-YB-rXs" id="u2d-Ac-Tn1"/>
+                                </connections>
+                            </collectionView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="zgE-6L-4ru">
+                                <rect key="frame" x="24" y="814" width="366" height="48"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IZi-bu-5V6" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="171" height="48"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <connections>
+                                            <action selector="leftButtonAction:" destination="dZE-YB-rXs" eventType="touchUpInside" id="hIg-6f-s33"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zfX-6W-aLk" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
+                                        <rect key="frame" x="195" y="0.0" width="171" height="48"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <connections>
+                                            <action selector="rightButtonAction:" destination="dZE-YB-rXs" eventType="touchUpInside" id="JPb-v0-WzR"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="xN0-Eh-5TI"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="DSy-if-pkd"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="zgE-6L-4ru" firstAttribute="top" secondItem="zze-yV-D61" secondAttribute="bottom" id="31P-AL-Bfi"/>
+                            <constraint firstItem="zgE-6L-4ru" firstAttribute="leading" secondItem="DSy-if-pkd" secondAttribute="leading" constant="24" id="DkT-di-1Ke"/>
+                            <constraint firstItem="DSy-if-pkd" firstAttribute="bottom" secondItem="zgE-6L-4ru" secondAttribute="bottom" id="Hv1-uy-NBp"/>
+                            <constraint firstItem="zze-yV-D61" firstAttribute="leading" secondItem="DSy-if-pkd" secondAttribute="leading" id="M0c-xR-Xyk"/>
+                            <constraint firstItem="DSy-if-pkd" firstAttribute="trailing" secondItem="zze-yV-D61" secondAttribute="trailing" id="QAB-vg-ZSa"/>
+                            <constraint firstItem="DSy-if-pkd" firstAttribute="trailing" secondItem="zgE-6L-4ru" secondAttribute="trailing" constant="24" id="QyJ-gq-QZ6"/>
+                            <constraint firstItem="zze-yV-D61" firstAttribute="top" secondItem="DSy-if-pkd" secondAttribute="top" id="gjZ-eJ-m5j"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="collectionView" destination="zze-yV-D61" id="g7S-Qa-xZu"/>
+                        <outlet property="leftButton" destination="IZi-bu-5V6" id="wHc-EO-OVU"/>
+                        <outlet property="rightButton" destination="zfX-6W-aLk" id="KqQ-RZ-E2C"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4G9-7u-2UY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1761" y="915"/>
         </scene>
         <!--Manage Link View Controller-->
         <scene sceneID="8Nr-2V-YNb">

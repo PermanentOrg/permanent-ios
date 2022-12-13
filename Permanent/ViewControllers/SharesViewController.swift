@@ -549,6 +549,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
         var menuItems: [FileMenuViewController.MenuItem] = []
         
+        if file.permissions.contains(.share) {
+            if file.permissions.contains(.ownership) {
+                menuItems.append(FileMenuViewController.MenuItem(type: .shareToPermanent, action: nil))
+            }
+        }
+        
         if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, currentFolderIsRoot && self.segmentedControl.selectedSegmentIndex == 1 {
             menuItems.append(FileMenuViewController.MenuItem(type: .unshare, action: { [self] in
                 unshareAction(file: file, atIndexPath: indexPath)

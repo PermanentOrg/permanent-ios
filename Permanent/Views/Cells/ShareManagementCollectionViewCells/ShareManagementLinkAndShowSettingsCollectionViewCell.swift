@@ -13,9 +13,9 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
     @IBOutlet weak var elementNameLabel: UILabel!
     @IBOutlet weak var leftElementButton: UIButton!
     @IBOutlet weak var rightElementButton: UIButton!
+    @IBOutlet weak var button: UIButton!
     
-    var leftButtonAction: (() -> Void)?
-    var rightButtonAction: (() -> Void)?
+    var buttonAction: (() -> Void)?
     
     var linkAddress: String?
     var isMenuExpanded: Bool = false
@@ -54,18 +54,15 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
         rightElementButton.isHidden = false
     }
     
-    @IBAction func leftButtonTapAction(_ sender: Any) {
+    @IBAction func buttonPressed(_ sender: Any) {
         if cellType == .linkSettings {
             isMenuExpanded.toggle()
             elementNameLabel.text = isMenuExpanded ? "Hide link settings".localized() : "Show link settings".localized()
-            leftButtonAction?()
         }
+        
+        buttonAction?()
     }
-    
-    @IBAction func rightButtonTapAction(_ sender: Any) {
-        rightButtonAction?()
-    }
-    
+
     static func nib() -> UINib {
         return UINib(nibName: identifier, bundle: nil)
     }

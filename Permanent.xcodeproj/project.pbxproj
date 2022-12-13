@@ -20,6 +20,7 @@
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
 		1DC794553A5F562B11FC7A00 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 078F6009A35F7CB0B45A8085 /* Pods_Permanent.framework */; };
+		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */; };
 		5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */; };
@@ -78,6 +79,11 @@
 		5E2E3D1926D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */; };
 		5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */; };
 		5E2EE3B32881CB150072D635 /* ViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */; };
+		5E31B62C292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */; };
+		5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B62D292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift */; };
+		5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */; };
+		5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */; };
+		5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */; };
 		5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
@@ -694,6 +700,7 @@
 		2DC5C8BD7F66C354C5F14C20 /* Pods_ShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		31A707DB681B868604AD1AD3 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		3689520FA134A1DCBE0F6DF8 /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
+		374554B71E0322714462588A /* ShareManagementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareManagementTests.swift; sourceTree = "<group>"; };
 		4102357D8E87F8C60DCE210A /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewController.swift; sourceTree = "<group>"; };
@@ -737,6 +744,11 @@
 		5E2E3D1626D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftSideHeaderTableViewCell.swift; sourceTree = "<group>"; };
 		5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeftSideHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveType.swift; sourceTree = "<group>"; };
+		5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesViewController.swift; sourceTree = "<group>"; };
+		5E31B62D292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesCollectionViewCell.swift; sourceTree = "<group>"; };
+		5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
+		5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuViewController.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNameUI.swift; sourceTree = "<group>"; };
@@ -1332,6 +1344,7 @@
 				5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */,
 				F59B0C8D28DB21060038E474 /* ShareViewController.swift */,
 				5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */,
+				5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1455,6 +1468,10 @@
 				F52D2B87292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib */,
 				F52D2B82292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift */,
 				F52D2B83292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib */,
+				5E31B62D292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift */,
+				5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */,
+				5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */,
+				5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */,
 			);
 			path = ShareManagementCollectionViewCells;
 			sourceTree = "<group>";
@@ -1674,6 +1691,7 @@
 				F559F87E28F9C0640015A522 /* FolderSortViewModelTests.swift */,
 				F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */,
 				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
+				374554B71E0322714462588A /* ShareManagementTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -2693,8 +2711,10 @@
 				5E048FD0292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.xib in Resources */,
 				BC59BAD325C2B8BD005A45D3 /* NotificationTableViewCell.xib in Resources */,
 				5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */,
+				5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */,
 				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				5E5EF853273B1E57004F7EBC /* Profile.storyboard in Resources */,
@@ -2975,6 +2995,7 @@
 				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
+				5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */,
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
@@ -2985,6 +3006,7 @@
 				5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
+				5E31B62C292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift in Sources */,
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
@@ -2994,6 +3016,7 @@
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
+				5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */,
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				F5EEB4D42821537600D584AD /* AccountOnboardingViewController.swift in Sources */,
@@ -3385,6 +3408,7 @@
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
 				5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */,
+				37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3693,7 +3717,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -3703,7 +3727,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3722,7 +3746,7 @@
 				CODE_SIGN_ENTITLEMENTS = Permanent/PermanentRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -3732,7 +3756,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3930,7 +3954,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -3944,7 +3968,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3964,7 +3988,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -3978,7 +4002,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3998,7 +4022,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtensionRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -4012,7 +4036,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4032,7 +4056,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShareExtension/ShareExtensionDEV-Release.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -4046,7 +4070,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4127,7 +4151,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/PermanentDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -4137,7 +4161,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4210,7 +4234,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Permanent/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -4220,7 +4244,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4236,7 +4260,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -4246,7 +4270,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4261,7 +4285,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -4271,7 +4295,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4286,7 +4310,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -4296,7 +4320,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4311,7 +4335,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 87;
+				CURRENT_PROJECT_VERSION = 90;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
@@ -4321,7 +4345,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

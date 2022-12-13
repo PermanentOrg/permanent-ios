@@ -10,4 +10,5 @@ struct ManageLinkData {
     let autoApproveToggle: Int?
     let expiresDT: String?
     let maxUses: Int?
+    let defaultAccessRole: AccessRole?
 }

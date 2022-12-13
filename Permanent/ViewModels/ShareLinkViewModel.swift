@@ -13,6 +13,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     static let didRevokeShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didRevokeShareLinkNotif")
     static let didUpdateSharesNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateSharesNotifName")
     static let didCreateShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didCreateShareLinkNotifName")
+    static let didUpdateShareLinkRoleNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateShareLinkRoleNotifName")
     
     var fileViewModel: FileViewModel!
     var shareVO: SharebyURLVOData?
@@ -26,26 +27,27 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             return folderVO?.shareVOS
         }
     }
-    var pendingShareVOs: [ShareVOData]? {
-        shareVOS?.filter({
-            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+    var pendingShareVOs: [MinArchiveVO] {
+        fileViewModel.minArchiveVOS.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.shareStatus)
             return status == .pending
         })
     }
-    var acceptedShareVOs: [ShareVOData]? {
-        shareVOS?.filter({
-            let status = ArchiveVOData.Status(rawValue: $0.status ?? "")
+    var acceptedShareVOs: [MinArchiveVO] {
+        fileViewModel.minArchiveVOS.filter({
+            let status = ArchiveVOData.Status(rawValue: $0.shareStatus)
             return status != .pending
         })
     }
     
-    var downloader: DownloadManagerGCD?
+    var downloader: Downloader?
     
     let shareManagementRepository: ShareManagementRepository
     
-    init(fileViewModel: FileViewModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository()) {
+    init(fileViewModel: FileViewModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository(), downloader: Downloader? = DownloadManagerGCD()) {
         self.fileViewModel = fileViewModel
         self.shareManagementRepository = shareManagementRepository
+        self.downloader = downloader
     }
     
     func getRecord(then handler: @escaping (RecordVO?) -> Void) {
@@ -55,7 +57,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { (record, error) in
             self.recordVO = record?.recordVO
             
@@ -70,7 +71,6 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             parentFolderLinkId: fileViewModel.parentFolderLinkId
         )
         
-        downloader = DownloadManagerGCD()
         downloader?.getFolder(downloadInfo) { (folder, error) in
             self.folderVO = folder?.folderVO
             
@@ -125,7 +125,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     }
         
     func approveButtonAction(shareVO: ShareVOData, accessRole: AccessRole = .viewer, then handler: @escaping (RequestStatus) -> Void) {
-        shareManagementRepository.approveButtonAction(shareVO: shareVO) { requestStatus, shareVO in
+        shareManagementRepository.approveButtonAction(shareVO: shareVO, accessRole: accessRole) { requestStatus, shareVO in
             if requestStatus == .success {
                 if let idx = self.fileViewModel.minArchiveVOS.firstIndex(where: { $0.archiveID == shareVO?.archiveID }) {
                     self.fileViewModel.minArchiveVOS[idx].accessRole = shareVO?.accessRole
@@ -162,22 +162,13 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             handler(result)
         }
     }
-    
-    func prepareShareLinkUpdatePayload(forData data: ManageLinkData) -> SharebyURLVOData? {
-        var payloadVO = shareVO
-        payloadVO?.maxUses = data.maxUses
-        payloadVO?.previewToggle = data.previewToggle
-        payloadVO?.autoApproveToggle = data.autoApproveToggle
-        payloadVO?.expiresDT = data.expiresDT
-        
-        return payloadVO
-    }
-    
+
     fileprivate func processShareLinkUpdateModel(_ model: SharebyURLVOData?) {
         shareVO?.maxUses = model?.maxUses
         shareVO?.previewToggle = model?.previewToggle
         shareVO?.autoApproveToggle = model?.autoApproveToggle
         shareVO?.expiresDT = model?.expiresDT
+        shareVO?.defaultAccessRole = model?.defaultAccessRole
     }
     
     func getAccountName() -> String? {
@@ -185,7 +176,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
         return accountName
     }
     
-    func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, then handler: @escaping ShareLinkResponse) {
+    func updateLinkWithChangedField(previewToggle: Int? = nil, autoApproveToggle: Int? = nil, expiresDT: String? = nil, maxUses: Int? = nil, defaultAccessRole: AccessRole? = nil, then handler: @escaping ShareLinkResponse) {
         var expiresDate: String?
         if expiresDT == "clear" {
             expiresDate = nil
@@ -197,14 +188,13 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
             previewToggle: previewToggle != nil ? previewToggle : shareVO?.previewToggle,
             autoApproveToggle: autoApproveToggle != nil ? autoApproveToggle : shareVO?.autoApproveToggle,
             expiresDT: expiresDate,
-            maxUses: maxUses != nil ? maxUses : shareVO?.maxUses)
-        
-        
-        updateLink(
-            model: manageLinkData,
-            then: { shareVO, error in
-                handler(shareVO, error)
-            }
+            maxUses: maxUses != nil ? maxUses : shareVO?.maxUses,
+            defaultAccessRole: defaultAccessRole
         )
+        
+        updateLink(model: manageLinkData, then: { shareVO, error in
+            NotificationCenter.default.post(name: Self.didUpdateShareLinkRoleNotifName, object: self, userInfo: nil)
+            handler(shareVO, error)
+        })
     }
 }
