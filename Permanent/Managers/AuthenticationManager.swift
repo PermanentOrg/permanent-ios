@@ -15,8 +15,8 @@ class AuthenticationManager {
     
     var keychainHandler = SessionKeychainHandler()
     
-    var authState: OIDAuthState? {
-        return session?.authState
+    var token: String? {
+        return session?.token
     }
     
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
@@ -50,43 +50,29 @@ class AuthenticationManager {
         }
     }
     
-    func performLoginFlow(fromPresentingVC presentingVC: UIViewController, completion: @escaping ServerResponse) {
-        guard let authorizationEndpoint = URL(string: APIEnvironment.defaultEnv.authorizationURL),
-            let tokenEndpoint = URL(string: APIEnvironment.defaultEnv.tokenURL),
-            let bundleId = Bundle.main.bundleIdentifier,
-            let redirectURL = URL(string: bundleId + "://auth-redirect") else {
-            completion(.error(message: .errorMessage))
-            return
-        }
+    func login(withUsername username: String, password: String, then handler: @escaping ServerResponse) {
+        let fusionAuthRepo = FusionAuthRepository()
         
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: authorizationEndpoint, tokenEndpoint: tokenEndpoint)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: authServiceInfo.clientId,
-            clientSecret: authServiceInfo.clientSecret,
-            scopes: ["offline_access"],
-            redirectURL: redirectURL,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
-        
-        currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: presentingVC) { [self] authState, error in
-            if let authState = authState {
-                session = PermSession(authState: authState)
+        fusionAuthRepo.login(withUsername: username, password: password) { [self] result in
+            switch result {
+            case .success(let loginResponse):
+                guard let token = loginResponse.token else {
+                    handler(.error(message: "Authorization error".localized()))
+                    return
+                }
+                session = PermSession(token: token)
                 
                 syncSession { [self] status in
                     if status == .success {
                         saveSession()
                         
-                        completion(.success)
+                        handler(.success)
                     } else {
-                        completion(.error(message: "Authorization error".localized()))
+                        handler(.error(message: "Authorization error".localized()))
                     }
                 }
-            } else {
-                session = nil
-                
-                completion(.error(message: "Authorization error".localized()))
+            case .failure( _):
+                handler(.error(message: "Authorization error".localized()))
             }
         }
     }

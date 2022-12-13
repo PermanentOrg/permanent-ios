@@ -118,6 +118,9 @@
 		5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E60451C251206F9002E47CB /* OnboardingViewModel.swift */; };
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
+		5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */; };
+		5E624DC129476C10002D6ECB /* FusionAuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */; };
+		5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */; };
 		5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */; };
 		5E62F7BB27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */; };
 		5E62F7BE27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */; };
@@ -783,6 +786,9 @@
 		5E5EF857273B2416004F7EBC /* PublicProfilePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePageViewModel.swift; sourceTree = "<group>"; };
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
+		5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthRepository.swift; sourceTree = "<group>"; };
+		5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FusionAuthRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/FusionAuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
+		5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionLoginResponse.swift; sourceTree = "<group>"; };
 		5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublicGalleryHeaderCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryFooterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1410,6 +1416,7 @@
 				BD96908B25D17E1400E49AB3 /* GetPresignedUrlResponse.swift */,
 				BD96908E25D17E3700E49AB3 /* RegisterRecordResponse.swift */,
 				F5E4BA412670D16F0027D97A /* BaseOperation.swift */,
+				5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1787,6 +1794,7 @@
 			children = (
 				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
 				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
+				5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -2460,6 +2468,7 @@
 				F50E135328F43348003DF4CC /* DataSources */,
 				F50E135428F43359003DF4CC /* FilesRepository.swift */,
 				5EFC404B292D722600FD244B /* ShareManagementRepository.swift */,
+				5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -3040,6 +3049,7 @@
 				F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
+				5E624DC129476C10002D6ECB /* FusionAuthRemoteDataSource.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
@@ -3139,6 +3149,7 @@
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */,
+				5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
@@ -3303,6 +3314,7 @@
 				5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */,
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
+				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,

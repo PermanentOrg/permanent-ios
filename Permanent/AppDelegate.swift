@@ -158,7 +158,7 @@ extension AppDelegate: MessagingDelegate {
         print("Saving push token: " + fcmToken)
         PreferencesManager.shared.set(fcmToken, forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
         
-        if rootViewController.isDrawerRootActive && AuthenticationManager.shared.authState != nil {
+        if rootViewController.isDrawerRootActive && AuthenticationManager.shared.session != nil {
             rootViewController.sendPushNotificationToken()
         }
     }

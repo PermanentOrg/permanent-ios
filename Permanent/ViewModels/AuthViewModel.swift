@@ -80,34 +80,46 @@ class AuthViewModel: ViewModelInterface {
         }
     }
     
-    func login(with credentials: LoginCredentials, then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(FusionAuthEndpoint.login(credentials: credentials))
+    func login(withUsername username: String?, password: String?, then handler: @escaping (LoginStatus) -> Void) {
+        guard let email = username, let password = password, areFieldsValid(emailField: email, passwordField: password) else {
+            handler(.error(message: .invalidFields))
+            return
+        }
+        
+        AuthenticationManager.shared.login(withUsername: email, password: password) { status in
+            switch status {
+            case .success:
+                handler(.success)
+                
+            case .error(message: _):
+                handler(.error(message: .errorMessage))
+            }
+        }
+    }
+    
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
+        
+        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
+        apiDispatch.ignoresMFAWarning = true
 
-        loginOperation.execute(in: APIRequestDispatcher()) { result in
+        signUpOperation.execute(in: apiDispatch) { result in
             switch result {
             case .json(let response, _):
-                guard let model: LoginResponse = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
+                let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
 
-                if model.isSuccessful == true {
-                    //self.saveStorageData(model)
+                if model?.isSuccessful == true {
                     handler(.success)
                 } else {
                     guard
-                        let message = model.results?.first?.message?.first,
-                        let loginError = LoginError(rawValue: message)
+                        let message = model?.results?.first?.message?.first,
+                        let signUpError = SignUpError(rawValue: message)
                     else {
                         handler(.error(message: .errorMessage))
                         return
                     }
 
-                    if loginError == .mfaToken {
-                        handler(.mfaToken)
-                    } else {
-                        handler(.error(message: loginError.description))
-                    }
+                    handler(.error(message: signUpError.description))
                 }
 
             case .error:
@@ -146,40 +158,6 @@ class AuthViewModel: ViewModelInterface {
             }
         }
     }
-
-    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
-        apiDispatch.ignoresMFAWarning = true
-
-        signUpOperation.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
-
-                if model?.isSuccessful == true {
-                    handler(.success)
-                } else {
-                    guard
-                        let message = model?.results?.first?.message?.first,
-                        let signUpError = SignUpError(rawValue: message)
-                    else {
-                        handler(.error(message: .errorMessage))
-                        return
-                    }
-
-                    handler(.error(message: signUpError.description))
-                }
-
-            case .error:
-                handler(.error(message: .errorMessage))
-
-            default:
-                break
-            }
-        }
-    }
     
     func setCurrentArchive(_ archive: ArchiveVOData) {
         AuthenticationManager.shared.session?.selectedArchive = archive
@@ -193,6 +171,10 @@ class AuthViewModel: ViewModelInterface {
     
     func areFieldsValid(nameField: String?, emailField: String?, passwordField: String?) -> Bool {
         return (nameField?.isNotEmpty ?? false) && (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false) && (passwordField?.count ?? 0 >= 8)
+    }
+    
+    func areFieldsValid(emailField: String?, passwordField: String?) -> Bool {
+        return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false) && (passwordField?.count ?? 0 >= 8)
     }
     
     func bytesToReadableForm(sizeInBytes: Int, useDecimal: Bool = true) -> String {

@@ -17,6 +17,8 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
     
+    let fusionAuthRepository = FusionAuthRepository()
+    
     private let overlayView = UIView()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,25 +55,28 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     }
     
     // MARK: - Actions
-    
     private func attemptLogin() {
         closeKeyboard()
+        showSpinner()
         
-        guard let email = emailField.text,
-              let password = passwordField.text,
-              viewModel?.areFieldsValid(nameField: "noName", emailField: emailField.text, passwordField: passwordField.text) ?? false else {
-            showAlert(title: .error, message: .invalidFields)
-            return
-        }
-        
-        let credentials: LoginCredentials = (email: email, password: password)
-        
-        viewModel?.login(with: credentials, then: { status in
-            DispatchQueue.main.async {
-                self.handleLoginStatus(status, credentials: credentials)
+        viewModel?.login(withUsername: emailField.text, password: passwordField.text, then: { loginStatus in
+            self.hideSpinner()
+            
+            switch loginStatus {
+            case .success:
+                if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                } else {
+                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                }
+                
+            case .mfaToken:
+                break
+                
+            case .error(message: let message):
+                self.showAlert(title: .error, message: message)
             }
         })
-    
     }
     
     @IBAction
@@ -88,10 +93,6 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     func forgotPasswordAction(_ sender: UIButton) {
         let vc = UIViewController.create(withIdentifier: .recoverPassword, from: .authentication)
         navigationController?.pushViewController(vc, animated: true)
-    }
-
-    fileprivate func handleLoginStatus(_ status: LoginStatus, credentials: LoginCredentials) {
-
     }
 }
 
