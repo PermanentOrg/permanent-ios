@@ -20,7 +20,9 @@
 		06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2724E67E6A003D90C6 /* UIColor.swift */; };
 		06B0EB2A24E67EC4003D90C6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
 		1DC794553A5F562B11FC7A00 /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 078F6009A35F7CB0B45A8085 /* Pods_Permanent.framework */; };
+		3745548C512E2FD1EB1F3AFC /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
 		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
+		374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */; };
 		5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */; };
@@ -701,6 +703,7 @@
 		31A707DB681B868604AD1AD3 /* Pods-PermanentTests.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		3689520FA134A1DCBE0F6DF8 /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		374554B71E0322714462588A /* ShareManagementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareManagementTests.swift; sourceTree = "<group>"; };
+		37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandViewController.swift; sourceTree = "<group>"; };
 		4102357D8E87F8C60DCE210A /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewController.swift; sourceTree = "<group>"; };
@@ -1345,6 +1348,7 @@
 				F59B0C8D28DB21060038E474 /* ShareViewController.swift */,
 				5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */,
 				5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */,
+				37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -3358,6 +3362,7 @@
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,
 				F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */,
 				F502C48E26D6220300657D37 /* PhotoTabBarViewController.swift in Sources */,
+				374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3529,6 +3534,7 @@
 				5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */,
 				F559F8A828FF025C0015A522 /* APIEnvironment.swift in Sources */,
 				F559F8A328FEEC010015A522 /* OperationProtocol.swift in Sources */,
+				3745548C512E2FD1EB1F3AFC /* FloatingActionIslandViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
