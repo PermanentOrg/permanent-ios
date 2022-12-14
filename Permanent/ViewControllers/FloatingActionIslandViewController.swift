@@ -97,6 +97,7 @@ class FloatingActionImageItem: FloatingActionItem {
         let imageView = UIImageView()
         imageView.frame = CGRect(x: 2, y: 4, width: 24, height: 24)
         imageView.contentMode = contentMode
+        imageView.clipsToBounds = true
         imageView.tintColor = .primary
         imageView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
         if let image = image {

@@ -200,12 +200,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func setupBottomActionSheet() {
         guard let source = viewModel?.selectedFile,
-              let action = viewModel?.fileAction,
-              floatingActionIsland == nil else { return }
+              let action = viewModel?.fileAction else { return }
+              
+        fabView.isHidden = true
+        
+        guard floatingActionIsland == nil else { return }
         
         let fileIconItem: FloatingActionImageItem
         if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
-            fileIconItem = FloatingActionImageItem(url: url, action: nil)
+            fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
         } else {
             fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
         }
@@ -553,7 +556,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
                 self.floatingActionIsland?.showDoneCheckmark() {
                     self.dismissFloatingActionIsland()
-                    self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
 
                     self.collectionView?.reloadData()
                 }
