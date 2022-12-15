@@ -11,6 +11,7 @@ import AppAuth
 
 class FolderViewSelectionViewModelTests: XCTestCase {
     var sut: FolderViewSelectionViewModel!
+    let token: String = "token"
     
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -32,8 +33,7 @@ class FolderViewSelectionViewModelTests: XCTestCase {
             responseType: OIDResponseTypeCode,
             additionalParameters: nil
         )
-        let authState = OIDAuthState(authorizationResponse: OIDAuthorizationResponse(request: request, parameters: [:]))
-        let session = PermSession(authState: authState)
+        let session = PermSession(token: token)
         session.isGridView = false
         
         sut = FolderViewSelectionViewModel(session: session)

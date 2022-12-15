@@ -35,7 +35,7 @@ class PermSession: Codable {
     
     var isGridView: Bool = false
     
-    init(token: String, twoFactorId: String = "", methodId: String = "") {
+    init(token: String) {
         self.token = token
     }
     

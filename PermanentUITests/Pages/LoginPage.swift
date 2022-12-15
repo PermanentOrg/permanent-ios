@@ -12,19 +12,27 @@ class LoginPage {
     let app: XCUIApplication
     
     var emailField: XCUIElement {
-        app.webViews.textFields["Email"]
+        app.textFields["Email"]
     }
     var passwordField: XCUIElement {
-        app.webViews.secureTextFields["Password (min. 8 chars)"]
+        app.secureTextFields["Password"]
     }
-    var rememberSignInSwitch: XCUIElement {
-        app.webViews.switches.firstMatch
+    var logInButton: XCUIElement {
+        app.buttons["Log In"]
     }
-    var submitButton: XCUIElement {
-        app.webViews.buttons["Submit"]
+    var signUpButton: XCUIElement {
+        app.buttons["Sign Up"]
     }
-    var cancelButton: XCUIElement {
-        app.buttons["Cancel"]
+    var forgotPasswordButton: XCUIElement {
+        app.buttons["Forgot Password?"]
+    }
+    
+    var errorStaticText: XCUIElement {
+        app.staticTexts["Something went wrong. Please try again later."]
+    }
+    
+    var okButton: XCUIElement {
+        app.buttons["Ok"]
     }
     
     init(app: XCUIApplication, testCase: XCTestCase) {
@@ -39,20 +47,20 @@ class LoginPage {
         XCTAssertTrue(passwordField.waitForExistence(timeout: 5))
         passwordField.tap()
         passwordField.typeText(password)
-
-        XCTAssertTrue(rememberSignInSwitch.waitForExistence(timeout: 5))
-        if let checkboxValue = rememberSignInSwitch.value as? String, Int(checkboxValue) == 1 {
-            rememberSignInSwitch.tap()
-        }
         
-        XCTAssertTrue(submitButton.waitForExistence(timeout: 5))
-        submitButton.tap()
+        XCTAssertTrue(logInButton.waitForExistence(timeout: 5))
+        logInButton.tap()
         
         sleep(5)
     }
     
     func pressCancelButton() {
-        XCTAssertTrue(cancelButton.waitForExistence(timeout: 5))
-        cancelButton.tap()
+        XCTAssertTrue(errorStaticText.waitForExistence(timeout: 5))
+        
+        XCTAssertTrue(okButton.waitForExistence(timeout: 5))
+        okButton.tap()
+        
+        XCTAssertTrue(signUpButton.waitForExistence(timeout: 5))
+        signUpButton.tap()
     }
 }

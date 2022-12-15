@@ -9,6 +9,7 @@ import KeychainSwift
 
 class ShareManagementTests: XCTestCase {
     var sut: ShareLinkViewModel!
+    let token: String = "token"
 
     override func setUp() {
         super.setUp()
@@ -188,7 +189,7 @@ class ShareManagementTests: XCTestCase {
                 additionalParameters: nil
         )
         let authState = OIDAuthState(authorizationResponse: OIDAuthorizationResponse(request: request, parameters: [:]))
-        let session = PermSession(authState: authState)
+        let session = PermSession(token: token)
         session.account = accountVO
 
         AuthenticationManager.shared.session = session
