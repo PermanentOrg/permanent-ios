@@ -16,6 +16,9 @@ class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var signUpButton: UIButton!
     @IBOutlet private var emailField: CustomTextField!
     @IBOutlet private var passwordField: CustomTextField!
+    @IBOutlet weak var newToPermanentLabel: UILabel!
+    @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var separatorViewHeight: NSLayoutConstraint!
     
     let fusionAuthRepository = FusionAuthRepository()
     
@@ -31,12 +34,17 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
         
-        loginLabel.text = .login
-        loginLabel.textColor = .white
+        loginLabel.text = "Sign in".localized()
+        loginLabel.textColor = .tangerine
         loginLabel.font = Text.style.font
         
         emailField.placeholder = .email
         passwordField.placeholder = .password
+        
+        loginButton.setTitle("Sign in", for: .normal)
+        loginButton.setFont(Text.style16.font)
+        loginButton.setTitleColor(.primary, for: [])
+        loginButton.layer.cornerRadius = 0
         
         signUpButton.setTitle(.signup, for: [])
         signUpButton.setFont(Text.style5.font)
@@ -47,8 +55,15 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         forgotPasswordButton.setTitleColor(.white, for: [])
         
         copyrightLabel.text = .copyrightText
-        copyrightLabel.textColor = .white
+        copyrightLabel.textColor = .white.withAlphaComponent(0.5)
         copyrightLabel.font = Text.style12.font
+        
+        newToPermanentLabel.textColor = .white.withAlphaComponent(0.5)
+        newToPermanentLabel.backgroundColor = .darkBlue
+        newToPermanentLabel.font = Text.style30.font
+        
+        separatorView.backgroundColor = .white.withAlphaComponent(0.5)
+        separatorViewHeight.constant = 1.0 / UIScreen.main.scale
         
         emailField.delegate = self
         passwordField.delegate = self
