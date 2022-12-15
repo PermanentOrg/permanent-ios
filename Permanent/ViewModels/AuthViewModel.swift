@@ -88,8 +88,8 @@ class AuthViewModel: ViewModelInterface {
         
         AuthenticationManager.shared.login(withUsername: email, password: password) { status in
             switch status {
-            case .success:
-                handler(.success)
+            case .success, .mfaToken:
+                handler(status)
                 
             case .error(message: _):
                 handler(.error(message: .errorMessage))

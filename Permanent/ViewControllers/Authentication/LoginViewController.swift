@@ -71,7 +71,8 @@ class LoginViewController: BaseViewController<AuthViewModel> {
                 }
                 
             case .mfaToken:
-                break
+                let verificationCodeVC = UIViewController.create(withIdentifier: .verificationCode, from: .authentication) as! CodeVerificationController
+                self.present(verificationCodeVC, animated: true)
                 
             case .error(message: let message):
                 self.showAlert(title: .error, message: message)

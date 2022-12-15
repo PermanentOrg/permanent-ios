@@ -15,11 +15,14 @@ class PermSession: Codable {
         case fileAction
         case isGridView
         case token
+        case methodId
+        case twoFactorId
     }
 
     static var currentSession: PermSession?
     
     let token: String
+    
     var expirationDate: Date {
         return Date.distantFuture
     }
@@ -32,7 +35,7 @@ class PermSession: Codable {
     
     var isGridView: Bool = false
     
-    init(token: String) {
+    init(token: String, twoFactorId: String = "", methodId: String = "") {
         self.token = token
     }
     

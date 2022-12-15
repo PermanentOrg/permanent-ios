@@ -21,4 +21,16 @@ class FusionAuthRepository {
             handler(result)
         }
     }
+    
+    func sendTwoFactor(withId twoFactorId: String, methodId: String, then handler: @escaping (RequestStatus) -> Void) {
+        remoteDataSource.sendTwoFactor(withTwoFactorId: twoFactorId, methodId: methodId) { result in
+            handler(result)
+        }
+    }
+    
+    func login(withTwoFactorId twoFactorId: String, code: String, then handler: @escaping (Result<FusionLoginResponse, Error>) -> Void) {
+        remoteDataSource.loginWithTwoFactor(withTwoFactorId: twoFactorId, code: code) { result in
+            handler(result)
+        }
+    }
 }

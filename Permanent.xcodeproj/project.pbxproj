@@ -121,6 +121,7 @@
 		5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */; };
 		5E624DC129476C10002D6ECB /* FusionAuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */; };
 		5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */; };
+		5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC4294B27F7002D6ECB /* MFASession.swift */; };
 		5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */; };
 		5E62F7BB27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */; };
 		5E62F7BE27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */; };
@@ -789,6 +790,7 @@
 		5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthRepository.swift; sourceTree = "<group>"; };
 		5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FusionAuthRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/FusionAuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionLoginResponse.swift; sourceTree = "<group>"; };
+		5E624DC4294B27F7002D6ECB /* MFASession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFASession.swift; sourceTree = "<group>"; };
 		5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublicGalleryHeaderCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryFooterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1397,6 +1399,7 @@
 				BC4526E3251CACAB00E24A51 /* Data */,
 				BC64877F251B6590009D7DE1 /* LoginResponse.swift */,
 				F5D209BD285B483E006DCF9F /* PermSession.swift */,
+				5E624DC4294B27F7002D6ECB /* MFASession.swift */,
 				BC648783251BA24C009D7DE1 /* Payloads.swift */,
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
@@ -3186,6 +3189,7 @@
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
+				5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */,
 				5EB45A4429432FBE00277800 /* FusionAuthEndpoint.swift in Sources */,

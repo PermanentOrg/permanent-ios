@@ -24,23 +24,33 @@ struct Payloads {
     }
     
     static func loginPayload(for credentials: LoginCredentials) -> RequestParameters {
-        let applicationId = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? ""
         let ipAddress = UIDevice.current.ipAddress()
         let deviceName = UIDevice.current.name
         let deviceType = UIDevice.current.model
-        let deviceDescription = UIDevice.current.debugDescription
         return [
             "loginId": credentials.email,
             "password": credentials.password,
             "applicationId": authServiceInfo.clientId,
             "ipAddress": ipAddress,
-            "metaData.device.description": "mobile app",
+            "metaData.device.description": "MOBILE",
             "metaData.device.name": deviceName,
             "metaData.device.type": deviceType
         ]
     }
     
+    static func sendTwoFactorCode(for twoFactorId: String, methodId: String) -> RequestParameters {
+        return [
+            "methodId": methodId
+        ]
+    }
     
+    static func loginWithTwoFactor(with twoFactorId: String, code: String) -> RequestParameters {
+        return [
+            "applicationId": authServiceInfo.clientId,
+            "code": code,
+            "twoFactorId": twoFactorId
+        ]
+    }
     
     static func uploadFileMetaPayload(for params: FileMetaParams) -> RequestParameters {
         return [

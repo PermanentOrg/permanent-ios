@@ -14,10 +14,14 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: CustomTextField!
     
+    var twoFactorId: String!
+    var fusionAuthRepo: FusionAuthRepository!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
+//        sendVerificationCode()
     }
     
     fileprivate func initUI() {
@@ -52,7 +56,25 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
     
     @IBAction func confirmAction(_ sender: UIButton) {
         closeKeyboard()
-        navigationController?.popViewController(animated: true)
+        guard let code = codeField.text, code.isNotEmpty else {
+            showErrorAlert(message: "Enter the received code.".localized())
+            return
+        }
+        
+        AuthenticationManager.shared.verify2FA(code: code) { result in
+            switch result {
+            case .success:
+                self.dismiss(animated: true)
+                
+                if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
+                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                } else {
+                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                }
+            case .error(let message):
+                self.showErrorAlert(message: message)
+            }
+        }
     }
     
     fileprivate func handleVerifyStatus(_ status: RequestStatus) {

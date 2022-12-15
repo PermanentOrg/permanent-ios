@@ -15,8 +15,21 @@ class FusionLoginResponse: Model, Equatable {
     let token: String?
     let tokenExpirationInstant: Int?
     let user: Dictionary<String, JSONAny>?
+    let methods: [MultiFactorParameters]?
+    let twoFactorId : String?
     
     enum CodingKeys: String, CodingKey {
-        case token, tokenExpirationInstant, user
+        case token, tokenExpirationInstant, user, methods, twoFactorId
+    }
+}
+
+struct MultiFactorParameters: Model {
+    let email: String?
+    let id : String?
+    let lastUsed : Bool?
+    let method : String?
+    
+    enum CodingKeys: String, CodingKey {
+        case email, id, lastUsed, method
     }
 }

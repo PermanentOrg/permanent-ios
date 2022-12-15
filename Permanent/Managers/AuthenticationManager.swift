@@ -14,6 +14,7 @@ class AuthenticationManager {
     static let shared = AuthenticationManager()
     
     var keychainHandler = SessionKeychainHandler()
+    let fusionAuthRepo = FusionAuthRepository()
     
     var token: String? {
         return session?.token
@@ -25,6 +26,8 @@ class AuthenticationManager {
             PermSession.currentSession = session
         }
     }
+    
+    var mfaSession: MFASession?
     
     init() {
         NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [self] notification in
@@ -50,16 +53,60 @@ class AuthenticationManager {
         }
     }
     
-    func login(withUsername username: String, password: String, then handler: @escaping ServerResponse) {
-        let fusionAuthRepo = FusionAuthRepository()
-        
+    func login(withUsername username: String, password: String, then handler: @escaping (LoginStatus) -> Void) {
         fusionAuthRepo.login(withUsername: username, password: password) { [self] result in
             switch result {
             case .success(let loginResponse):
-                guard let token = loginResponse.token else {
+                if let token = loginResponse.token {
+                    session = PermSession(token: token)
+                    
+                    syncSession { [self] status in
+                        if status == .success {
+                            saveSession()
+                            
+                            handler(.success)
+                        } else {
+                            handler(.error(message: "Authorization error".localized()))
+                        }
+                    }
+                } else if let methodId = loginResponse.methods?.first?.id,
+                          let twoFactorId = loginResponse.twoFactorId {
+                    fusionAuthRepo.sendTwoFactor(withId: twoFactorId, methodId: methodId) { result in
+                        switch result {
+                        case .success:
+                            self.mfaSession = MFASession(twoFactorId: twoFactorId, methodId: methodId)
+                            handler(.mfaToken)
+                            
+                        case .error(_):
+                            handler(.error(message: "Authorization error".localized()))
+                        }
+                    }
+                } else {
                     handler(.error(message: "Authorization error".localized()))
+                }
+                
+                
+            case .failure( _):
+                handler(.error(message: "Authorization error".localized()))
+            }
+        }
+    }
+    
+    func verify2FA(code: String, then handler: @escaping ServerResponse) {
+        guard let twoFactorId = mfaSession?.twoFactorId else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+        
+        fusionAuthRepo.login(withTwoFactorId: twoFactorId, code: code) { [self] result in
+            switch result {
+            case .success(let loginResponse):
+                guard let token = loginResponse.token else {
+                    handler(.error(message: .errorMessage))
                     return
                 }
+                mfaSession = nil
+                
                 session = PermSession(token: token)
                 
                 syncSession { [self] status in
@@ -71,7 +118,7 @@ class AuthenticationManager {
                         handler(.error(message: "Authorization error".localized()))
                     }
                 }
-            case .failure( _):
+            case .failure(_):
                 handler(.error(message: "Authorization error".localized()))
             }
         }
