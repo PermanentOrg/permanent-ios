@@ -27,7 +27,7 @@ class PrivateFilesPage {
         app.buttons["Upload"]
     }
     var photoLibraryButton: XCUIElement {
-        app.sheets.scrollViews.otherElements.buttons["Photo Library"]
+        app.buttons["Photo Library"]
     }
     var photoLibraryElementLoading: XCUIElement {
         app.collectionViews.activityIndicators["In progress"]
@@ -90,10 +90,11 @@ class PrivateFilesPage {
         addButton.tap()
         sleep(2)
         
-        XCTAssertTrue(uploadButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(uploadButton.waitForExistence(timeout: 60))
         uploadButton.tap()
+        sleep(2)
         
-        XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(photoLibraryButton.waitForExistence(timeout: 10))
         photoLibraryButton.tap()
     }
     

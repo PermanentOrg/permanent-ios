@@ -23,7 +23,8 @@
     },
     {
       "skippedTests" : [
-        "BaseUITestCase"
+        "BaseUITestCase",
+        "LoginUITests\/testNegativeLogin()"
       ],
       "target" : {
         "containerPath" : "container:Permanent.xcodeproj",

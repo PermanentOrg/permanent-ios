@@ -189,6 +189,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
+            self.selectedFile = nil
+            self.fileAction = .none
+
             switch result {
             case .json(let httpResponse, _):
                 guard

@@ -9,6 +9,8 @@ import UIKit
 class BaseViewController<T: ViewModelInterface>: UIViewController {
     var viewModel: T?
     var actionDialog: ActionDialogView?
+
+    var floatingActionIsland: FloatingActionIslandViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,6 +115,37 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         actionDialog?.titleLabel.textAlignment = .center
         actionDialog?.subtitleLabel.textAlignment = .center
         view.addSubview(actionDialog!)
-        self.view.presentPopup(actionDialog, overlayView: overlayView)
-    } 
+        view.presentPopup(actionDialog, overlayView: overlayView)
+    }
+
+    func showFloatingActionIsland(withLeftItems leftItems: [FloatingActionItem], rightItems: [FloatingActionItem]) {
+        floatingActionIsland = FloatingActionIslandViewController()
+        floatingActionIsland?.leftItems = leftItems
+        floatingActionIsland?.rightItems = rightItems
+        floatingActionIsland?.view.translatesAutoresizingMaskIntoConstraints = false
+
+        floatingActionIsland?.willMove(toParent: self)
+        addChild(floatingActionIsland!)
+        view.addSubview(floatingActionIsland!.view)
+
+        NSLayoutConstraint.activate([
+            floatingActionIsland!.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            floatingActionIsland!.view.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32),
+            floatingActionIsland!.view.widthAnchor.constraint(equalToConstant: view.frame.width - 64)
+        ])
+
+        floatingActionIsland?.didMove(toParent: self)
+    }
+
+    func dismissFloatingActionIsland(_ completion: (() -> Void)? = nil) {
+        floatingActionIsland?.animateDismiss { [self] in
+            floatingActionIsland?.willMove(toParent: nil)
+            floatingActionIsland?.view.removeFromSuperview()
+            floatingActionIsland?.removeFromParent()
+            floatingActionIsland?.didMove(toParent: nil)
+
+            floatingActionIsland = nil
+            completion?()
+        }
+    }
 }
