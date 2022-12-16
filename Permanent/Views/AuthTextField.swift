@@ -9,6 +9,7 @@ import UIKit
 
 @IBDesignable
 class AuthTextField: CustomTextField {
+    var placeholderEdgeInsets: UIEdgeInsets = .zero
     var contentEdgeInsets: UIEdgeInsets = .zero
     
     @IBInspectable
@@ -17,44 +18,88 @@ class AuthTextField: CustomTextField {
     @IBInspectable
     var placeholderFont: UIFont = Text.style30.font
     
+    let border = CALayer()
+    
+    private var _authPlaceholder: String? = nil
     override var placeholder: String? {
-        didSet {
-            attributedPlaceholder = NSAttributedString(string: placeholder ?? "",
-                                                       attributes: [
-                                                        NSAttributedString.Key.foregroundColor: placeholderColor,
-                                                        NSAttributedString.Key.font: placeholderFont
-                                                       ])
+        set {
+            let _prev = _authPlaceholder
+            _authPlaceholder = newValue
+            
+            if _prev == nil {
+                setupPlaceholder()
+            }
+        }
+        
+        get {
+            return nil
         }
     }
-
+    
     override func setup() {
-        contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
-
+        placeholderEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        contentEdgeInsets = UIEdgeInsets(top: 8, left: 92, bottom: 8, right: 10)
+        
         backgroundColor = .white.withAlphaComponent(0.04)
         textColor = .white
         font = Text.style4.font
         tintColor = .white
-
-        clipsToBounds = true
-        layer.cornerRadius = 0
-        layer.borderWidth = 0
-        layer.borderColor = UIColor.white.cgColor
     }
-
+    
+    func setupPlaceholder() {
+        let placeholderLabel = UILabel()
+        placeholderLabel.font = placeholderFont
+        placeholderLabel.text = _authPlaceholder
+        placeholderLabel.textColor = placeholderColor
+        placeholderLabel.sizeToFit()
+        
+        leftView = placeholderLabel
+        leftViewMode = .always
+    }
+    
     override func textRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: contentEdgeInsets)
     }
-
+    
     override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: contentEdgeInsets)
+        return bounds.inset(by: placeholderEdgeInsets)
     }
-
+    
+    override func leftViewRect(forBounds bounds: CGRect) -> CGRect {
+        return CGRect(x: 16, y: 12, width: 92, height: 24)
+    }
+    
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: contentEdgeInsets)
     }
-
-    func toggleBorder(active: Bool) {
-        layer.borderColor = active ? UIColor.tangerine.cgColor : UIColor.white.cgColor
+    
+    func addBottomBorder() {
+        border.backgroundColor = UIColor.white.withAlphaComponent(0.24).cgColor
+        border.frame = CGRect(x: 0, y: frame.size.height - 1.0 / UIScreen.main.scale, width: frame.size.width, height: 1.0 / UIScreen.main.scale)
+        layer.addSublayer(border)
+    }
+    
+    func removeBottomBorder() {
+        border.removeFromSuperlayer()
+    }
+    
+    override func becomeFirstResponder() -> Bool {
+        let ret = super.becomeFirstResponder()
+        
+        if ret {
+            addBottomBorder()
+        }
+        
+        return ret
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        let ret = super.resignFirstResponder()
+        
+        if ret {
+            removeBottomBorder()
+        }
+        
+        return ret
     }
 }
-
