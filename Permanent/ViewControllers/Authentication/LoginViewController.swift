@@ -45,7 +45,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         emailField.placeholder = .email.uppercased()
         passwordField.placeholder = .password.uppercased()
         
-        loginButton.setTitle("Sign in", for: .normal)
+        loginButton.setTitle("Sign in".localized(), for: .normal)
         loginButton.setFont(Text.style16.font)
         loginButton.setTitleColor(.primary, for: [])
         loginButton.layer.cornerRadius = 0
