@@ -7,7 +7,6 @@
 
 import UIKit
 import KeychainSwift
-import AppAuth
 import FirebaseMessaging
 
 class AuthenticationManager {
@@ -20,7 +19,6 @@ class AuthenticationManager {
         return session?.token
     }
     
-    var currentAuthorizationFlow: OIDExternalUserAgentSession?
     var session: PermSession? {
         didSet {
             PermSession.currentSession = session

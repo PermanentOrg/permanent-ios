@@ -7,7 +7,6 @@
 
 import XCTest
 @testable import Permanent
-import AppAuth
 
 class FolderViewSelectionViewModelTests: XCTestCase {
     var sut: FolderViewSelectionViewModel!
@@ -22,17 +21,6 @@ class FolderViewSelectionViewModelTests: XCTestCase {
     }
 
     func testSetSorting() {
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                                                    tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: "authServiceInfo.clientId",
-            clientSecret: "authServiceInfo.clientSecret",
-            scopes: ["offline_access"],
-            redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
         let session = PermSession(token: token)
         session.isGridView = false
         

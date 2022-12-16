@@ -8,7 +8,6 @@
 import Foundation
 @testable import Permanent
 import XCTest
-import AppAuth
 import KeychainSwift
 
 class SessionTests: XCTestCase {
@@ -33,17 +32,6 @@ class SessionTests: XCTestCase {
     }
     
     func testSaveSession() throws {
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                                                    tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: "authServiceInfo.clientId",
-            clientSecret: "authServiceInfo.clientSecret",
-            scopes: ["offline_access"],
-            redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
         let session = PermSession(token: token)
         session.account = accountVO
         session.selectedArchive = archiveVO
@@ -54,20 +42,11 @@ class SessionTests: XCTestCase {
         
         XCTAssert(session.account.accountID == savedSession?.account.accountID)
         XCTAssert(session.selectedArchive?.archiveID == savedSession?.selectedArchive?.archiveID)
+        
+        sut.clearSession()
     }
     
     func testClearSession() throws {
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                                                    tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: "authServiceInfo.clientId",
-            clientSecret: "authServiceInfo.clientSecret",
-            scopes: ["offline_access"],
-            redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
         let session = PermSession(token: token)
         
         try sut.saveSession(session)

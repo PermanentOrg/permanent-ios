@@ -3,7 +3,6 @@
 //
 
 import XCTest
-import AppAuth
 import KeychainSwift
 @testable import Permanent
 
@@ -177,18 +176,6 @@ class ShareManagementTests: XCTestCase {
 
     func createMockSession() {
         let accountVO = AccountVOData(accountID: 1000, primaryEmail: "email@email.com", fullName: "Test Account", address: "Street", address2: nil, country: nil, city: nil, state: nil, zip: nil, primaryPhone: nil, level: nil, apiToken: nil, betaParticipant: nil, facebookAccountID: nil, googleAccountID: nil, status: nil, type: nil, emailStatus: nil, phoneStatus: nil, notificationPreferences: nil, agreed: nil, optIn: nil, emailArray: nil, inviteCode: nil, rememberMe: nil, keepLoggedIn: nil, accessRole: nil, spaceTotal: nil, spaceLeft: nil, fileTotal: nil, fileLeft: nil, changePrimaryEmail: nil, changePrimaryPhone: nil, createdDT: "2021-01-27T19:48:08", updatedDT: nil)
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-                configuration: configuration,
-                clientId: "authServiceInfo.clientId",
-                clientSecret: "authServiceInfo.clientSecret",
-                scopes: ["offline_access"],
-                redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-                responseType: OIDResponseTypeCode,
-                additionalParameters: nil
-        )
-        let authState = OIDAuthState(authorizationResponse: OIDAuthorizationResponse(request: request, parameters: [:]))
         let session = PermSession(token: token)
         session.account = accountVO
 

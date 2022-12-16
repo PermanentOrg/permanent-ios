@@ -43,7 +43,9 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         loginLabel.font = Text.style.font
         
         emailField.placeholder = .email.uppercased()
+        emailField.accessibilityLabel = "Email"
         passwordField.placeholder = .password.uppercased()
+        passwordField.accessibilityLabel = "Password"
         
         loginButton.setTitle("Sign in".localized(), for: .normal)
         loginButton.setFont(Text.style16.font)

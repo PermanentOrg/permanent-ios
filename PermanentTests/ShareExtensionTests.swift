@@ -7,7 +7,6 @@
 
 import Foundation
 import XCTest
-import AppAuth
 import KeychainSwift
 
 @testable import Permanent
@@ -33,17 +32,6 @@ class ShareExtensionTests: XCTestCase {
     }
     
     func createSession() -> PermSession {
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                                                    tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: "authServiceInfo.clientId",
-            clientSecret: "authServiceInfo.clientSecret",
-            scopes: ["offline_access"],
-            redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
         let session = PermSession(token: token)
         
         return session

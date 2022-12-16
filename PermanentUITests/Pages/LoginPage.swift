@@ -18,7 +18,7 @@ class LoginPage {
         app.secureTextFields["Password"]
     }
     var logInButton: XCUIElement {
-        app.buttons["Log In"]
+        app.buttons["Sign in"]
     }
     var signUpButton: XCUIElement {
         app.buttons["Sign Up"]

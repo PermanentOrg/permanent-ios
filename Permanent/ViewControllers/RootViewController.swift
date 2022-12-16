@@ -85,6 +85,10 @@ class RootViewController: UIViewController {
                     let skipOnboarding: Bool = CommandLine.arguments.contains("--SkipOnboarding")
                     let route: (ViewControllerId, StoryboardName) = (isNewUser && !skipOnboarding) ? (.onboarding, .onboarding) : (.signUp, .authentication)
                     
+                    if skipOnboarding {
+                        AuthenticationManager.shared.logout()
+                    }
+                    
                     let navController = NavigationController()
                     let viewController = UIViewController.create(withIdentifier: route.0, from: route.1)
                     navController.viewControllers = [viewController]

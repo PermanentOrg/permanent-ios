@@ -10,7 +10,6 @@ import FirebaseMessaging
 import UIKit
 import GooglePlaces
 import GoogleMaps
-import AppAuth
 import StripeApplePay
 
 @UIApplicationMain
@@ -69,12 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         // Sends the URL to the current authorization flow (if any) which will
         // process it if it relates to an authorization response.
-        if let authorizationFlow = AuthenticationManager.shared.currentAuthorizationFlow,
-           authorizationFlow.resumeExternalUserAgentFlow(with: url) {
-            AuthenticationManager.shared.currentAuthorizationFlow = nil
-            
-            return true
-        }
         
         return false
     }
