@@ -172,8 +172,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
         
-            case FileType.video:
-                self.loadVideo(withURL: localURL, contentType: contentType)
+            case FileType.video, FileType.audio:
+                self.loadAV(withURL: localURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: localURL)
@@ -190,8 +190,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
                 
-            case FileType.video:
-                self.loadVideo(withURL: downloadURL, contentType: contentType)
+            case FileType.video, FileType.audio:
+                self.loadAV(withURL: downloadURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: downloadURL)
@@ -256,7 +256,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         }
     }
     
-    func loadVideo(withURL url: URL, contentType: String) {
+    func loadAV(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url)
         let playerItem = AVPlayerItem(asset: asset)
         
