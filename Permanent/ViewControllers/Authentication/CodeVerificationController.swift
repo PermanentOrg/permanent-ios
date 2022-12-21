@@ -9,14 +9,14 @@ import UIKit
 
 class CodeVerificationController: BaseViewController<AuthViewModel> {
     @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var confirmButton: RoundedButton!
     @IBOutlet private var copyrightLabel: UILabel!
-    @IBOutlet private var codeField: CustomTextField!
-        
+    @IBOutlet private var codeField: AuthTextField!
+    @IBOutlet weak var verificationCodeTitleLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         initUI()
     }
     
@@ -25,27 +25,32 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
         
-        titleLabel.text = .enterVerificationCode
-        titleLabel.textColor = .white
-        titleLabel.font = Text.style.font
+        verificationCodeTitleLabel.text = .enterVerificationCode
+        verificationCodeTitleLabel.textColor = .tangerine
+        verificationCodeTitleLabel.font = Text.style.font
+        
+        confirmButton.setTitle("Verify".localized(), for: .normal)
+        confirmButton.setFont(Text.style16.font)
+        confirmButton.setTitleColor(.primary, for: [])
+        confirmButton.layer.cornerRadius = 0
         
         copyrightLabel.text = .copyrightText
-        copyrightLabel.textColor = .white
+        copyrightLabel.textColor = .white.withAlphaComponent(0.5)
         copyrightLabel.font = Text.style12.font
         
-        codeField.placeholder = .enterCode
-        codeField.delegate = self
-        codeField.smartInsertDeleteType = .no
-        codeField.textContentType = .oneTimeCode
+        codeField.placeholder = "Code".uppercased()
+        codeField.accessibilityLabel = "Code"
         
         let toolBar = UIToolbar()
         toolBar.sizeToFit()
-        
+
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(confirmAction(_:)) )
         toolBar.setItems([flexibleSpace,doneButton], animated: false)
-        
+
         codeField.inputAccessoryView = toolBar
+        
+        addDismissKeyboardGesture()
     }
     
     // MARK: - Actions
@@ -82,24 +87,5 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
         case .error(let message):
             showAlert(title: .error, message: message)
         }
-    }
-}
-
-extension CodeVerificationController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: true)
-        
-        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
-        scrollView.setContentOffset(point, animated: true)
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: false)
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        view.endEditing(true)
-        scrollView.setContentOffset(.zero, animated: true)
-        return false
     }
 }
