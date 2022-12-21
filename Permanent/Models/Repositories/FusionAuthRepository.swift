@@ -7,23 +7,17 @@
 
 import Foundation
 
-class FusionAuthRepository {
-    let remoteDataSource: FusionAuthRemoteDataSourceInterface
+class AuthRepository {
+    let remoteDataSource: AuthRemoteDataSourceInterface
     
-    init(remoteDataSource: FusionAuthRemoteDataSourceInterface = FusionAuthRemoteDataSource()) {
+    init(remoteDataSource: AuthRemoteDataSourceInterface = AuthRemoteDataSource()) {
         self.remoteDataSource = remoteDataSource
     }
     
-    func login(withUsername username: String, password: String, then handler: @escaping (Result<FusionLoginResponse, Error>) -> Void) {
+    func login(withUsername username: String, password: String, then handler: @escaping (Result<LoginResponse, Error>) -> Void) {
         let loginCredential = LoginCredentials(username, password)
         
         remoteDataSource.login(with: loginCredential) { result in
-            handler(result)
-        }
-    }
-    
-    func sendTwoFactor(withId twoFactorId: String, methodId: String, then handler: @escaping (RequestStatus) -> Void) {
-        remoteDataSource.sendTwoFactor(withTwoFactorId: twoFactorId, methodId: methodId) { result in
             handler(result)
         }
     }

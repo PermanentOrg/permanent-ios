@@ -13,10 +13,7 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: AuthTextField!
     @IBOutlet weak var verificationCodeTitleLabel: UILabel!
-    
-    var twoFactorId: String!
-    var fusionAuthRepo: FusionAuthRepository!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
