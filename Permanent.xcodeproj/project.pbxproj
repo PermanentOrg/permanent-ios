@@ -121,7 +121,7 @@
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
 		5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */; };
-		5E624DC129476C10002D6ECB /* FusionAuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */; };
+		5E624DC129476C10002D6ECB /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */; };
 		5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */; };
 		5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC4294B27F7002D6ECB /* MFASession.swift */; };
 		5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */; };
@@ -177,7 +177,6 @@
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
 		5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */; };
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
-		5EB45A4429432FBE00277800 /* FusionAuthEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A4329432FBE00277800 /* FusionAuthEndpoint.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */; };
 		5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */; };
@@ -797,7 +796,7 @@
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthRepository.swift; sourceTree = "<group>"; };
-		5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FusionAuthRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/FusionAuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
+		5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionLoginResponse.swift; sourceTree = "<group>"; };
 		5E624DC4294B27F7002D6ECB /* MFASession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFASession.swift; sourceTree = "<group>"; };
 		5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -851,7 +850,6 @@
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagsNamesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
-		5EB45A4329432FBE00277800 /* FusionAuthEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthEndpoint.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurbProfileItem.swift; sourceTree = "<group>"; };
 		5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionProfileItem.swift; sourceTree = "<group>"; };
@@ -1818,7 +1816,7 @@
 			children = (
 				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
 				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
-				5E624DC029476C10002D6ECB /* FusionAuthRemoteDataSource.swift */,
+				5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -1913,7 +1911,6 @@
 				5E2CFA21274E843A0055941C /* PublicProfilePageEndpoint.swift */,
 				F5C8D248273205B000707301 /* SearchEndpoint.swift */,
 				F58F315327F72A1500B89B99 /* BillingEndpoint.swift */,
-				5EB45A4329432FBE00277800 /* FusionAuthEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -3076,7 +3073,7 @@
 				F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
-				5E624DC129476C10002D6ECB /* FusionAuthRemoteDataSource.swift in Sources */,
+				5E624DC129476C10002D6ECB /* AuthRemoteDataSource.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
@@ -3216,7 +3213,6 @@
 				5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */,
-				5EB45A4429432FBE00277800 /* FusionAuthEndpoint.swift in Sources */,
 				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
 				5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,

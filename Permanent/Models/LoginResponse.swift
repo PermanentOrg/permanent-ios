@@ -37,10 +37,12 @@ struct LoginResult: Codable {
 struct LoginData: Codable {
     let accountVO: AccountVOData?
     let archiveVO: ArchiveVOData?
+    let tokenVO: SimpleVOOf<String>?
 
     enum CodingKeys: String, CodingKey {
         case accountVO = "AccountVO"
         case archiveVO = "ArchiveVO"
+        case tokenVO = "SimpleVO"
     }
 }
 

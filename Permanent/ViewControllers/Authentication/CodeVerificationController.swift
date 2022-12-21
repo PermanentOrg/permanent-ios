@@ -13,15 +13,11 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
     @IBOutlet private var confirmButton: RoundedButton!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet private var codeField: CustomTextField!
-    
-    var twoFactorId: String!
-    var fusionAuthRepo: FusionAuthRepository!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
-//        sendVerificationCode()
     }
     
     fileprivate func initUI() {

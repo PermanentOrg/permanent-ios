@@ -49,3 +49,9 @@ struct SimpleVO: Codable {
     let value: Bool?
     let createdDT, updatedDT: String?
 }
+
+struct SimpleVOOf<T: Codable>: Codable {
+    let key: String?
+    let value: T?
+    let createdDT, updatedDT: String?
+}

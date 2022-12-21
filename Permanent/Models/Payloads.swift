@@ -9,49 +9,6 @@ import Foundation
 import UIKit
 
 struct Payloads {
-    static func forgotPasswordPayload(for email: String) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": email
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-    
-    static func loginPayload(for credentials: LoginCredentials) -> RequestParameters {
-        let ipAddress = UIDevice.current.ipAddress()
-        let deviceName = UIDevice.current.name
-        let deviceType = UIDevice.current.model
-        return [
-            "loginId": credentials.email,
-            "password": credentials.password,
-            "applicationId": authServiceInfo.clientId,
-            "ipAddress": ipAddress,
-            "metaData.device.description": "MOBILE",
-            "metaData.device.name": deviceName,
-            "metaData.device.type": deviceType
-        ]
-    }
-    
-    static func sendTwoFactorCode(for twoFactorId: String, methodId: String) -> RequestParameters {
-        return [
-            "methodId": methodId
-        ]
-    }
-    
-    static func loginWithTwoFactor(with twoFactorId: String, code: String) -> RequestParameters {
-        return [
-            "applicationId": authServiceInfo.clientId,
-            "code": code,
-            "twoFactorId": twoFactorId
-        ]
-    }
-    
     static func uploadFileMetaPayload(for params: FileMetaParams) -> RequestParameters {
         return [
             "RequestVO": [
@@ -64,16 +21,6 @@ struct Payloads {
                             "uploadFileName": params.filename
                         ]
                     ]
-                ]
-            ]
-        ]
-    }
-    
-    static func verifyAuth() -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [:]
                 ]
             ]
         ]

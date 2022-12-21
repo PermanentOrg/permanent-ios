@@ -13,7 +13,7 @@ class AuthenticationManager {
     static let shared = AuthenticationManager()
     
     var keychainHandler = SessionKeychainHandler()
-    let fusionAuthRepo = FusionAuthRepository()
+    let authRepo = AuthRepository()
     
     var token: String? {
         return session?.token
@@ -52,10 +52,11 @@ class AuthenticationManager {
     }
     
     func login(withUsername username: String, password: String, then handler: @escaping (LoginStatus) -> Void) {
-        fusionAuthRepo.login(withUsername: username, password: password) { [self] result in
+        authRepo.login(withUsername: username, password: password) { [self] result in
             switch result {
             case .success(let loginResponse):
-                if let token = loginResponse.token {
+                if loginResponse.isSuccessful == true,
+                   let token = loginResponse.results?.first?.data?.first?.tokenVO?.value {
                     session = PermSession(token: token)
                     
                     syncSession { [self] status in
@@ -67,23 +68,16 @@ class AuthenticationManager {
                             handler(.error(message: "Authorization error".localized()))
                         }
                     }
-                } else if let methodId = loginResponse.methods?.first?.id,
-                          let twoFactorId = loginResponse.twoFactorId {
-                    fusionAuthRepo.sendTwoFactor(withId: twoFactorId, methodId: methodId) { result in
-                        switch result {
-                        case .success:
-                            self.mfaSession = MFASession(twoFactorId: twoFactorId, methodId: methodId)
-                            handler(.mfaToken)
-                            
-                        case .error(_):
-                            handler(.error(message: "Authorization error".localized()))
-                        }
+                } else if let message = loginResponse.results?.first?.message?.first,
+                          let loginError = LoginError(rawValue: message) {
+                    if loginError == .mfaToken {
+                        handler(.mfaToken)
+                    } else {
+                        handler(.error(message: loginError.description))
                     }
                 } else {
-                    handler(.error(message: "Authorization error".localized()))
+                    handler(.error(message: .errorMessage))
                 }
-                
-                
             case .failure( _):
                 handler(.error(message: "Authorization error".localized()))
             }
@@ -96,7 +90,7 @@ class AuthenticationManager {
             return
         }
         
-        fusionAuthRepo.login(withTwoFactorId: twoFactorId, code: code) { [self] result in
+        authRepo.login(withTwoFactorId: twoFactorId, code: code) { [self] result in
             switch result {
             case .success(let loginResponse):
                 guard let token = loginResponse.token else {
