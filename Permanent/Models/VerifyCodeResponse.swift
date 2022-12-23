@@ -36,9 +36,11 @@ struct VerifyResult: Codable {
 // MARK: - Datum
 struct VerifyData: Codable {
     let accountVO: AccountVOData?
+    let tokenVO: SimpleVOOf<String>?
 
     enum CodingKeys: String, CodingKey {
         case accountVO = "AccountVO"
+        case tokenVO = "AuthSimpleVO"
     }
 }
 

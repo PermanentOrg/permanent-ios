@@ -8,11 +8,11 @@
 import Foundation
 
 class MFASession {
-    let twoFactorId: String
-    let methodId: String
+    let email: String
+    let methodType: CodeVerificationType
     
-    init(twoFactorId: String, methodId: String) {
-        self.twoFactorId = twoFactorId
-        self.methodId = methodId
+    init(email: String, methodType: CodeVerificationType) {
+        self.email = email
+        self.methodType = methodType
     }
 }

@@ -71,6 +71,7 @@ class AuthenticationManager {
                 } else if let message = loginResponse.results?.first?.message?.first,
                           let loginError = LoginError(rawValue: message) {
                     if loginError == .mfaToken {
+                        mfaSession = MFASession(email: username, methodType: CodeVerificationType.mfa)
                         handler(.mfaToken)
                     } else {
                         handler(.error(message: loginError.description))
@@ -85,26 +86,27 @@ class AuthenticationManager {
     }
     
     func verify2FA(code: String, then handler: @escaping ServerResponse) {
-        guard let twoFactorId = mfaSession?.twoFactorId else {
+        guard let email = mfaSession?.email,
+        let method = mfaSession?.methodType else {
             handler(.error(message: .errorMessage))
             return
         }
         
-        authRepo.login(withTwoFactorId: twoFactorId, code: code) { [self] result in
+        authRepo.login(withEmail: email, code: code, type: method) { [self] result in
             switch result {
-            case .success(let loginResponse):
-                guard let token = loginResponse.token else {
+            case .success(let response):
+                guard let token = response.results?.first?.data?.first?.tokenVO?.value else {
                     handler(.error(message: .errorMessage))
                     return
                 }
                 mfaSession = nil
-                
+
                 session = PermSession(token: token)
-                
+
                 syncSession { [self] status in
                     if status == .success {
                         saveSession()
-                        
+
                         handler(.success)
                     } else {
                         handler(.error(message: "Authorization error".localized()))

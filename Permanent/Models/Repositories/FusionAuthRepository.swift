@@ -22,8 +22,8 @@ class AuthRepository {
         }
     }
     
-    func login(withTwoFactorId twoFactorId: String, code: String, then handler: @escaping (Result<FusionLoginResponse, Error>) -> Void) {
-        remoteDataSource.loginWithTwoFactor(withTwoFactorId: twoFactorId, code: code) { result in
+    func login(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void) {
+        remoteDataSource.loginWithTwoFactor(withEmail: email, code: code, type: type) { result in
             handler(result)
         }
     }

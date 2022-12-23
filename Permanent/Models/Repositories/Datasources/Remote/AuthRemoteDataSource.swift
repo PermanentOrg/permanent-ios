@@ -9,7 +9,7 @@ import Foundation
 
 protocol AuthRemoteDataSourceInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (Result<LoginResponse, Error>) -> Void)
-    func loginWithTwoFactor(withTwoFactorId twoFactorId: String, code: String, then handler: @escaping (Result<FusionLoginResponse, Error>) -> Void)
+    func loginWithTwoFactor(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void)
 }
 
 class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
@@ -37,7 +37,25 @@ class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
         }
     }
     
-    func loginWithTwoFactor(withTwoFactorId twoFactorId: String, code: String, then handler: @escaping (Result<FusionLoginResponse, Error>) -> Void) {
-
+    func loginWithTwoFactor(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void) {
+        let credentials = VerifyCodeCredentials(email, code, type)
+        let verifyOperation = APIOperation(AuthenticationEndpoint.verify(credentials: credentials))
+        
+        verifyOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: VerifyResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.failure(APIError.parseError))
+                    return
+                }
+                handler(.success(model))
+                
+            case .error(let e, _):
+                handler(.failure(e ?? APIError.clientError))
+                
+            default:
+                handler(.failure(APIError.clientError))
+            }
+        }
     }
 }
