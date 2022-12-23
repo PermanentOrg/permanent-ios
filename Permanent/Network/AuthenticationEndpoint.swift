@@ -7,19 +7,9 @@
 
 import Foundation
 
-enum CodeVerificationType {
-    case phone
-    case mfa
-    
-    var value: String {
-        switch self {
-        case .mfa:
-            return Constants.API.typeAuthMFAValidation
-            
-        case .phone:
-            return Constants.API.typeAuthPhone
-        }
-    }
+enum CodeVerificationType: String {
+    case phone = "type.auth.phone"
+    case mfa = "type.auth.mfaValidation"
 }
 
 
@@ -132,7 +122,7 @@ extension AuthenticationEndpoint {
                         "primaryEmail": credentials.email
                     ],
                     "AuthVO": [
-                        "type": credentials.type.value,
+                        "type": credentials.type.rawValue,
                         "token": credentials.code
                     ]
                 ]]
