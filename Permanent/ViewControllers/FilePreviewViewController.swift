@@ -18,6 +18,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var retryButton: RoundedButton!
+    let overlayView = UIView(frame: .zero)
+    let playButton = UIButton(type: .custom)
     
     let fileHelper = FileHelper()
     
@@ -130,6 +132,8 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all
+        
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     override func styleNavBar() {
@@ -172,8 +176,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
         
-            case FileType.video, FileType.audio:
+            case FileType.video:
                 self.loadAV(withURL: localURL, contentType: contentType)
+                
+            case FileType.audio:
+                self.loadAudio(withURL: localURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: localURL)
@@ -190,8 +197,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
                 
-            case FileType.video, FileType.audio:
+            case FileType.video:
                 self.loadAV(withURL: downloadURL, contentType: contentType)
+                
+            case FileType.audio:
+                self.loadAudio(withURL: downloadURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: downloadURL)
@@ -276,6 +286,51 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         thumbnailImageView.isHidden = true
     }
     
+    func loadAudio(withURL url: URL, contentType: String) {
+        thumbnailImageView.isHidden = true
+        let asset = AVURLAsset(url: url)
+        let playerItem = AVPlayerItem(asset: asset)
+        
+        let player = AVPlayer(playerItem: playerItem)
+        videoPlayer = AVPlayerViewController()
+        videoPlayer!.player = player
+        
+        self.playerItem = playerItem
+        
+        addChild(videoPlayer!)
+        videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
+        videoPlayer!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(videoPlayer!.view, at: 0)
+        videoPlayer!.didMove(toParent: self)
+        
+        activityIndicator.stopAnimating()
+        
+        playButton.translatesAutoresizingMaskIntoConstraints = false
+        playButton.setImage(UIImage(named: "play.circle"), for: .normal)
+        playButton.tintColor = .white
+        playButton.addTarget(self, action: #selector(playAudioFile(_:)), for: .touchUpInside)
+        
+        overlayView.backgroundColor = .black
+        view.addSubview(overlayView)
+        overlayView.addSubview(playButton)
+        
+        NSLayoutConstraint.activate([
+            overlayView.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 0),
+            overlayView.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: 0),
+            overlayView.topAnchor.constraint(equalTo: thumbnailImageView.topAnchor, constant: 0),
+            overlayView.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: 0),
+            playButton.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor),
+            playButton.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor)
+        ])
+    }
+            
+    @objc func playAudioFile(_ sender: UIButton) {
+        overlayView.isHidden = true
+        
+       videoPlayer?.entersFullScreenWhenPlaybackBegins = true
+       videoPlayer?.player?.play()
+    }
+    
     func loadMisc(withURL url: URL) {
         let webView = setupWebView()
         
@@ -319,7 +374,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         fileDetailsVC.file = viewModel?.file
         fileDetailsVC.viewModel = viewModel
         fileDetailsVC.delegate = self
-        
+
         let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
         navControl.modalPresentationStyle = .fullScreen
         present(navControl, animated: false, completion: nil)
