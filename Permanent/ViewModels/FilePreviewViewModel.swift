@@ -73,7 +73,7 @@ class FilePreviewViewModel: ViewModelInterface {
     func fileVO() -> FileVO? {
         var fileVO: FileVO? = recordVO?.recordVO?.fileVOS?.first
 
-        if file.type == .video {
+        if file.type == .video || file.type == .audio {
             if let uwFileVO = recordVO?.recordVO?.fileVOS?.first,
                let url = URL(string: uwFileVO.downloadURL),
                AVAsset(url: url).isPlayable {
