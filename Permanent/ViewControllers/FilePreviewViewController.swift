@@ -19,7 +19,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var retryButton: RoundedButton!
     let overlayView = UIView(frame: .zero)
-    let playButton = UIButton(type: .custom)
     
     let fileHelper = FileHelper()
     
@@ -116,24 +115,12 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         retryButton.isHidden = true
 
         let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
-
-        let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
-        navigationItem.rightBarButtonItems = [shareButton, infoButton]
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        navigationItem.rightBarButtonItem = shareButton
         
         title = file.name
         
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = .all
-        
-        overlayView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     override func styleNavBar() {
@@ -285,11 +272,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     }
     
     func loadAudio() {
+        let playButton = UIButton(type: .custom)
+        
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.setImage(UIImage(named: "play.circle"), for: .normal)
         playButton.tintColor = .white
         playButton.addTarget(self, action: #selector(playAudioFile(_:)), for: .touchUpInside)
         
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
         overlayView.backgroundColor = .black
         view.addSubview(overlayView)
         overlayView.addSubview(playButton)
@@ -347,25 +337,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         vc.fileViewModel = file
         vc.menuItems = menuItems
         present(vc, animated: true)
-    }
-    
-    @objc func infoButtonAction(_ sender: Any) {
-        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
-        fileDetailsVC.file = viewModel?.file
-        fileDetailsVC.viewModel = viewModel
-        fileDetailsVC.delegate = self
-
-        let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-        navControl.modalPresentationStyle = .fullScreen
-        present(navControl, animated: false, completion: nil)
-    }
-    
-    @objc func closeButtonAction(_ sender: Any) {
-        (navigationController as! FilePreviewNavigationController).filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
-        
-        removeVideoPlayer()
-        
-        dismiss(animated: true, completion: nil)
     }
 
     @IBAction func retryButtonPressed(_ sender: Any) {
