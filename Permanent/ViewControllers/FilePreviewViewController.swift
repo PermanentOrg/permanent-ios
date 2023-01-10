@@ -163,8 +163,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
         
-            case FileType.video, FileType.audio:
-                self.loadAV(withURL: localURL, contentType: contentType)
+            case FileType.video:
+                self.loadVideo(withURL: localURL, contentType: contentType)
+                
+            case FileType.audio:
+                self.loadAudio(withURL: localURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: localURL)
@@ -181,8 +184,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                     self.loadImage(withURL: url)
                 }
                 
-            case FileType.video, FileType.audio:
-                self.loadAV(withURL: downloadURL, contentType: contentType)
+            case FileType.video:
+                self.loadVideo(withURL: downloadURL, contentType: contentType)
+                
+            case FileType.audio:
+                self.loadAudio(withURL: downloadURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: downloadURL)
@@ -246,34 +252,15 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
-    
-    func loadAV(withURL url: URL, contentType: String) {
-        let asset = AVURLAsset(url: url)
-        let playerItem = AVPlayerItem(asset: asset)
         
-        let player = AVPlayer(playerItem: playerItem)
-        videoPlayer = AVPlayerViewController()
-        videoPlayer!.player = player
-        
-        self.playerItem = playerItem
-        
-        addChild(videoPlayer!)
-        videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
-        videoPlayer!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(videoPlayer!.view, at: 0)
-        videoPlayer!.didMove(toParent: self)
-        
-        activityIndicator.stopAnimating()
-        thumbnailImageView.isHidden = true
-        
-        if contentType.contains("audio") {
-            loadAudio()
-        }
+    func loadVideo(withURL url: URL, contentType: String) {
+        loadAV(withURL: url, contentType: contentType)
     }
     
-    func loadAudio() {
-        let playButton = UIButton(type: .custom)
+    func loadAudio(withURL url: URL, contentType: String) {
+        loadAV(withURL: url, contentType: contentType)
         
+        let playButton = UIButton(type: .custom)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.setImage(UIImage(named: "play.circle"), for: .normal)
         playButton.tintColor = .white
@@ -293,6 +280,27 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             playButton.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor)
         ])
     }
+    
+    func loadAV(withURL url: URL, contentType: String) {
+        let asset = AVURLAsset(url: url)
+        let playerItem = AVPlayerItem(asset: asset)
+        
+        let player = AVPlayer(playerItem: playerItem)
+        videoPlayer = AVPlayerViewController()
+        videoPlayer!.player = player
+        
+        self.playerItem = playerItem
+        
+        addChild(videoPlayer!)
+        videoPlayer!.view.frame = view.bounds.insetBy(dx: 0, dy: 60)
+        videoPlayer!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(videoPlayer!.view, at: 0)
+        videoPlayer!.didMove(toParent: self)
+        
+        activityIndicator.stopAnimating()
+        thumbnailImageView.isHidden = true
+    }
+
     
     @objc func playAudioFile(_ sender: UIButton) {
         overlayView.isHidden = true
