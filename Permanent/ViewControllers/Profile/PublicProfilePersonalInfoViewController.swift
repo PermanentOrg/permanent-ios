@@ -21,12 +21,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     @IBOutlet weak var locationTitleLabel: UILabel!
     @IBOutlet weak var locationTextField: UITextField!
     
-    @IBOutlet weak var fullNameHintLabel: UILabel!
-    @IBOutlet weak var nicknameHintLabel: UILabel!
-    @IBOutlet weak var genderHintLabel: UILabel!
-    @IBOutlet weak var birthDateHintLabel: UILabel!
-    @IBOutlet weak var birthLocationHintLabel: UILabel!
-    
     let datePicker = UIDatePicker()
     
     @IBOutlet weak var genderItemsView: UIView!
@@ -85,10 +79,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         fullNameTextField.textColor = .middleGray
         fullNameTextField.font = Text.style7.font
         
-        fullNameHintLabel.textColor = .lightGray
-        fullNameHintLabel.font = Text.style8.font
-        fullNameHintLabel.textAlignment = .left
-        
         nicknameTitleLabel.textColor = .middleGray
         nicknameTitleLabel.font = Text.style12.font
         
@@ -97,10 +87,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         nicknameTextField.layer.cornerRadius = 3
         nicknameTextField.textColor = .middleGray
         nicknameTextField.font = Text.style7.font
-        
-        nicknameHintLabel.textColor = .lightGray
-        nicknameHintLabel.font = Text.style8.font
-        nicknameHintLabel.textAlignment = .left
         
         genderTitleLabel.textColor = .middleGray
         genderTitleLabel.font = Text.style12.font
@@ -111,10 +97,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         genderTextField.textColor = .middleGray
         genderTextField.font = Text.style7.font
         
-        genderHintLabel.textColor = .lightGray
-        genderHintLabel.font = Text.style8.font
-        genderHintLabel.textAlignment = .left
-        
         birthDateTitleLabel.textColor = .middleGray
         birthDateTitleLabel.font = Text.style12.font
         
@@ -123,10 +105,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         birthDateTextField.layer.cornerRadius = 3
         birthDateTextField.textColor = .middleGray
         birthDateTextField.font = Text.style7.font
-        
-        birthDateHintLabel.textColor = .lightGray
-        birthDateHintLabel.font = Text.style8.font
-        birthDateHintLabel.textAlignment = .left
         
         locationTitleLabel.textColor = .middleGray
         locationTitleLabel.font = Text.style12.font
@@ -137,10 +115,6 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         locationTextField.textColor = .middleGray
         locationTextField.font = Text.style7.font
         
-        birthLocationHintLabel.textColor = .lightGray
-        birthLocationHintLabel.font = Text.style8.font
-        birthLocationHintLabel.textAlignment = .left
-        
         if let archiveType = viewModel?.archiveType {
             fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.fullName?.count ?? 0)")
             nicknameTitleLabel.text = "\(ProfilePageData.nickNameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.nickname?.count ?? 0)")
@@ -148,11 +122,11 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
             birthDateTitleLabel.text = ProfilePageData.birthDateTitle(archiveType: archiveType)
             locationTitleLabel.text = ProfilePageData.birthLocationTitle(archiveType: archiveType)
             
-            fullNameHintLabel.text = ProfilePageData.nameHint(archiveType: archiveType)
-            nicknameHintLabel.text = ProfilePageData.nickNameHint(archiveType: archiveType)
-            genderHintLabel.text = ProfilePageData.genderHint(archiveType: archiveType)
-            birthDateHintLabel.text = ProfilePageData.birthDateHint(archiveType: archiveType)
-            birthLocationHintLabel.text = ProfilePageData.birthLocationHint(archiveType: archiveType)
+            fullNameTextField.placeholder = ProfilePageData.nameHint(archiveType: archiveType)
+            nicknameTextField.placeholder = ProfilePageData.nickNameHint(archiveType: archiveType)
+            genderTextField.placeholder = ProfilePageData.genderHint(archiveType: archiveType)
+            birthDateTextField.placeholder = ProfilePageData.birthDateHint(archiveType: archiveType)
+            locationTextField.placeholder = ProfilePageData.birthLocationHint(archiveType: archiveType)
             
             if archiveType == .organization || archiveType == .family {
                 genderItemsView.isHidden = true
@@ -235,26 +209,16 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     func setFieldValues() {
         guard let archiveType = viewModel?.archiveType else { return }
         
-        setInitialLabelValueForTextField(fullNameTextField, value: viewModel?.basicProfileItem?.fullName, associatedLabel: fullNameHintLabel)
-        setInitialLabelValueForTextField(nicknameTextField, value: viewModel?.basicProfileItem?.nickname, associatedLabel: nicknameHintLabel)
-        setInitialLabelValueForTextField(genderTextField, value: viewModel?.profileGenderProfileItem?.personGender, associatedLabel: genderHintLabel)
+        fullNameTextField.text = viewModel?.basicProfileItem?.fullName
+        nicknameTextField.text = viewModel?.basicProfileItem?.nickname
+        genderTextField.text = viewModel?.profileGenderProfileItem?.personGender
         
         if archiveType == .person {
-            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.birthInfoProfileItem?.birthDate, associatedLabel: birthDateHintLabel)
-            setInitialLabelValueForTextField(locationTextField, value: viewModel?.birthInfoProfileItem?.birthLocationFormated, associatedLabel: birthLocationHintLabel)
+            birthDateTextField.text = viewModel?.birthInfoProfileItem?.birthDate
+            locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
         } else {
-            setInitialLabelValueForTextField(birthDateTextField, value: viewModel?.establishedInfoProfileItem?.establishedDate, associatedLabel: birthDateHintLabel)
-            setInitialLabelValueForTextField(locationTextField, value: viewModel?.establishedInfoProfileItem?.establishedLocationFormated, associatedLabel: birthLocationHintLabel)
-        }
-    }
-    
-    func setInitialLabelValueForTextField(_ textField: UITextField, value: String?, associatedLabel: UILabel) {
-        if let savedValue = value,
-            savedValue.isNotEmpty {
-            textField.text = savedValue
-            associatedLabel.isHidden = true
-        } else {
-            associatedLabel.isHidden = false
+            birthDateTextField.text = viewModel?.establishedInfoProfileItem?.establishedDate
+            locationTextField.text = viewModel?.establishedInfoProfileItem?.establishedLocationFormated
         }
     }
     
@@ -342,35 +306,19 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
 
 extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        switch textField {
-        case fullNameTextField:
-            fullNameHintLabel.isHidden = true
-            
-        case nicknameTextField:
-            nicknameHintLabel.isHidden = true
-            
-        case genderTextField:
-            genderHintLabel.isHidden = true
-            
-        case birthDateTextField:
-            birthDateHintLabel.isHidden = true
-            
-        case locationTextField:
-            let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
-            locationSetVC.delegate = self
-            locationSetVC.viewModel = viewModel
-            
-            if let archiveType = viewModel?.archiveType {
-                locationSetVC.locnVO = archiveType == .person ? viewModel?.birthInfoProfileItem?.locnVOs?.first : viewModel?.establishedInfoProfileItem?.locnVOs?.first
-            }
-            
-            let navigationVC = NavigationController(rootViewController: locationSetVC)
-            navigationVC.modalPresentationStyle = .fullScreen
-            present(navigationVC, animated: true)
-            
-        default:
-            return
+        guard textField == locationTextField else { return }
+        
+        let locationSetVC = UIViewController.create(withIdentifier: .locationSetOnTap, from: .profile) as! PublicProfileLocationSetViewController
+        locationSetVC.delegate = self
+        locationSetVC.viewModel = viewModel
+        
+        if let archiveType = viewModel?.archiveType {
+            locationSetVC.locnVO = archiveType == .person ? viewModel?.birthInfoProfileItem?.locnVOs?.first : viewModel?.establishedInfoProfileItem?.locnVOs?.first
         }
+        
+        let navigationVC = NavigationController(rootViewController: locationSetVC)
+        navigationVC.modalPresentationStyle = .fullScreen
+        present(navigationVC, animated: true)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -401,40 +349,10 @@ extension PublicProfilePersonalInfoViewController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let textFieldText = textField.text else { return }
+        guard let textFieldText = textField.text, textField == birthDateTextField && textFieldText.isEmpty else { return }
         
-        switch textField {
-        case fullNameTextField:
-            if textFieldText.isEmpty {
-                fullNameHintLabel.isHidden = false
-            }
-            
-        case nicknameTextField:
-            if textFieldText.isEmpty {
-                nicknameHintLabel.isHidden = false
-            }
-            
-        case genderTextField:
-            if textFieldText.isEmpty {
-                genderHintLabel.isHidden = false
-            }
-            
-        case birthDateTextField:
-            if textFieldText.isEmpty {
-                if let birthDate = viewModel?.birthInfoProfileItem?.birthDate {
-                    birthDateTextField.text = birthDate
-                } else {
-                    birthDateHintLabel.isHidden = false
-                }
-            }
-            
-        case locationTextField:
-            if textFieldText.isEmpty {
-                birthLocationHintLabel.isHidden = false
-            }
-        
-        default:
-            return
+        if let birthDate = viewModel?.birthInfoProfileItem?.birthDate {
+            birthDateTextField.text = birthDate
         }
     }
 }
@@ -462,7 +380,6 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
             }
         }
         
-        birthLocationHintLabel.isHidden = true
         viewModel?.newLocnId = locationVC.pickedLocation?.locnID
         
         let locationDetails = getLocationDetails()

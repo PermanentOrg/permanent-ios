@@ -15,6 +15,7 @@ class BaseUITestCase: XCTestCase {
 
         app.launchArguments.append("--SkipOnboarding")
         app.launchArguments.append("--DiscardSession")
+        app.launchArguments.append("--AddTextClearButton")
         app.launch()
         sleep(5)
         // In UI tests it is usually best to stop immediately when a failure occurs.
@@ -48,6 +49,14 @@ class BaseUITestCase: XCTestCase {
                 return false
             }
         }
+        
+        let coordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.2))
+        coordinate.tap()
+        sleep(3)
+        coordinate.tap()
+        sleep(3)
+        coordinate.tap()
+        sleep(3)
     }
 
     override func tearDownWithError() throws {
