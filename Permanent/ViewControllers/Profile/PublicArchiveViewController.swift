@@ -72,7 +72,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         }
         
-        if !archiveData.permissions().contains(.ownership) {
+        if viewModel?.canEditPublicProfilePhoto() == true {
             changeProfilePhotoButton.isHidden = true
             changeProfilePhotoButtonView.alpha = 0
             changeProfileBannerPhotoButtonView.alpha = 0
