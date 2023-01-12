@@ -27,4 +27,10 @@ class AuthRepository {
             handler(result)
         }
     }
+    
+    func forgotPassword(withEmail email: String, then handler: @escaping (Result<ForgotPasswordResponse, Error>) -> Void) {
+        remoteDataSource.forgotPassword(withEmail: email) { result in
+            handler(result)
+        }
+    }
 }

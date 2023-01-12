@@ -27,7 +27,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
         
-        loginLabel.text = .login
+        loginLabel.text = .forgotPassword
         loginLabel.textColor = .white
         loginLabel.font = Text.style.font
         
@@ -48,11 +48,27 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
     
     @IBAction func recoverPasswordAction(_ sender: Any) {
         closeKeyboard()
-        guard viewModel?.areFieldsValid(nameField: "noName", emailField: emailField.text, passwordField: "12345678") ?? false else {
+        guard let email = emailField.text, viewModel?.areFieldsValid(emailField: email) ?? false else {
             showAlert(title: .error, message: .invalidFields)
             return
         }
-        showAlert(title: "Password was sent", message: "Password was sent to your email")
+        
+        viewModel?.forgotPassword(withEmail: email, then: { status in
+            switch status {
+            case .success:
+                let alert = UIAlertController(title: "Change password link was sent".localized(), message: "An email has been sent to provided address".localized(), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: {_ in
+                    self.navigationController?.popViewController(animated: true)
+                }))
+                
+                self.present(alert, animated: true)
+            case .error(let message):
+                let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: .retry, style: .default, handler: nil))
+                
+                self.present(alert, animated: true)
+            }
+        })
     }
     
     @IBAction func backButtonAction(_ sender: Any) {

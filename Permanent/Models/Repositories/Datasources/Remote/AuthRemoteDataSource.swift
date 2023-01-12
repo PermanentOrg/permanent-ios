@@ -10,6 +10,7 @@ import Foundation
 protocol AuthRemoteDataSourceInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (Result<LoginResponse, Error>) -> Void)
     func loginWithTwoFactor(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void)
+    func forgotPassword(withEmail email: String, then handler: @escaping (Result<ForgotPasswordResponse, Error>) -> Void)
 }
 
 class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
@@ -50,6 +51,27 @@ class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
                 }
                 handler(.success(model))
                 
+            case .error(let e, _):
+                handler(.failure(e ?? APIError.clientError))
+                
+            default:
+                handler(.failure(APIError.clientError))
+            }
+        }
+    }
+    
+    func forgotPassword(withEmail email: String, then handler: @escaping (Result<ForgotPasswordResponse, Error>) -> Void) {
+        let forgotPassword = APIOperation(AuthenticationEndpoint.forgotPassword(email: email))
+        
+        forgotPassword.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: ForgotPasswordResponse = JSONHelper.convertToModel(from: response), model.isSuccessful ?? false else {
+                    handler(.failure(APIError.parseError))
+                    return
+                }
+                handler(.success(model))
+
             case .error(let e, _):
                 handler(.failure(e ?? APIError.clientError))
                 
