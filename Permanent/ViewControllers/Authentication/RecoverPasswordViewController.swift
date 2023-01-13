@@ -70,7 +70,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         closeKeyboard()
         
         guard let email = emailField.text, viewModel?.areFieldsValid(emailField: email) ?? false else {
-            showAlert(title: .error, message: .invalidFields)
+            showAlert(title: "Oops!".localized(), message: "The email you entered is not a valid email.".localized())
             return
         }
         
@@ -86,7 +86,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
                 
                 self.present(alert, animated: true)
             case .error(let message):
-                self.showAlert(title: "Oops!", message: message)
+                self.showAlert(title: "Oops!".localized(), message: message)
                 
             }
         })
