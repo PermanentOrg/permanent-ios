@@ -45,6 +45,8 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         recoverPasswordButton.setFont(Text.style16.font)
         recoverPasswordButton.setTitleColor(.primary, for: [])
         recoverPasswordButton.layer.cornerRadius = 0
+        recoverPasswordButton.isUserInteractionEnabled = false
+        recoverPasswordButton.alpha = 0.6
         
         separatorTextLabel.text = "OR".localized().uppercased()
         separatorTextLabel.textColor = .white.withAlphaComponent(0.5)
@@ -66,7 +68,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
     
     @IBAction func recoverPasswordAction(_ sender: Any) {
         closeKeyboard()
-
+        
         guard let email = emailField.text, viewModel?.areFieldsValid(emailField: email) ?? false else {
             showAlert(title: .error, message: .invalidFields)
             return
@@ -77,17 +79,15 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
-                let alert = UIAlertController(title: "Change password link was sent".localized(), message: "An email has been sent to provided address".localized(), preferredStyle: .alert)
+                let alert = UIAlertController(title: "Success!".localized(), message: "You will receive an email with instructions to reset your password.".localized(), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: {_ in
                     self.navigationController?.popViewController(animated: true)
                 }))
                 
                 self.present(alert, animated: true)
             case .error(let message):
-                let alert = UIAlertController(title: .error, message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: .retry, style: .default, handler: nil))
+                self.showAlert(title: "Oops!", message: message)
                 
-                self.present(alert, animated: true)
             }
         })
     }
@@ -110,5 +110,15 @@ extension RecoverPasswordViewController: UITextFieldDelegate {
         view.endEditing(true)
         recoverPasswordAction(self)
         return false
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if let text = textField.text, let isValidEmail = viewModel?.areFieldsValid(emailField: text), isValidEmail {
+            recoverPasswordButton.isUserInteractionEnabled = true
+            recoverPasswordButton.alpha = 1
+        } else {
+            recoverPasswordButton.isUserInteractionEnabled = false
+            recoverPasswordButton.alpha = 0.6
+        }
     }
 }
