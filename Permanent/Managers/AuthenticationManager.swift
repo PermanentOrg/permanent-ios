@@ -123,8 +123,12 @@ class AuthenticationManager {
             switch result {
             case .success(_):
                 handler(.success)
-            case .failure(_):
-                handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
+            case .failure(let e):
+                if e as! APIError == APIError.parseError {
+                    handler(.success)
+                } else {
+                    handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
+                }
             }
         }
     }

@@ -79,7 +79,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
             self.hideSpinner()
             switch status {
             case .success:
-                let alert = UIAlertController(title: "Success!".localized(), message: "You will receive an email with instructions to reset your password.".localized(), preferredStyle: .alert)
+                let alert = UIAlertController(title: "Success!".localized(), message: "If the email you entered is correct, you will receive instructions to reset your password.".localized(), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Ok".localized(), style: .default, handler: {_ in
                     self.navigationController?.popViewController(animated: true)
                 }))
