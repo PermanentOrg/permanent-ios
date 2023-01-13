@@ -9,11 +9,14 @@ import UIKit
 
 class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var loginLabel: UILabel!
     @IBOutlet private var copyrightLabel: UILabel!
     @IBOutlet weak var recoverPasswordButton: RoundedButton!
     @IBOutlet weak var backButton: UIButton!
-    @IBOutlet private var emailField: CustomTextField!
+    @IBOutlet weak var screenTitle: UILabel!
+    @IBOutlet weak var separatorTextLabel: UILabel!
+    @IBOutlet weak var emailField: AuthTextField!
+    @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var separatorViewHeight: NSLayoutConstraint!
     
     private let overlayView = UIView()
     override func viewDidLoad() {
@@ -27,18 +30,33 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
         
-        loginLabel.text = .forgotPassword
-        loginLabel.textColor = .white
-        loginLabel.font = Text.style.font
+        screenTitle.text = "Forgot Password?".localized()
+        screenTitle.textColor = .tangerine
+        screenTitle.font = Text.style.font
         
-        emailField.placeholder = .email
+        emailField.placeholder = .email.uppercased()
+        emailField.accessibilityLabel = "Email"
         
-        backButton.setTitle("Go back to log in?".localized(), for: [])
-        backButton.setFont(Text.style5.font)
+        backButton.setTitle("Back to Sign in".localized(), for: [])
+        backButton.setFont(Text.style20.font)
         backButton.setTitleColor(.white, for: [])
         
+        recoverPasswordButton.setTitle("Recover password".localized(), for: .normal)
+        recoverPasswordButton.setFont(Text.style16.font)
+        recoverPasswordButton.setTitleColor(.primary, for: [])
+        recoverPasswordButton.layer.cornerRadius = 0
+        
+        separatorTextLabel.text = "OR".localized().uppercased()
+        separatorTextLabel.textColor = .white.withAlphaComponent(0.5)
+        separatorTextLabel.backgroundColor = .darkBlue
+        separatorTextLabel.font = Text.style30.font
+        separatorTextLabel.setTextSpacingBy(value: 0.8)
+        
+        separatorView.backgroundColor = .white.withAlphaComponent(0.5)
+        separatorViewHeight.constant = 1.0 / UIScreen.main.scale
+        
         copyrightLabel.text = .copyrightText
-        copyrightLabel.textColor = .white
+        copyrightLabel.textColor = .white.withAlphaComponent(0.5)
         copyrightLabel.font = Text.style12.font
         
         emailField.delegate = self
@@ -48,12 +66,15 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
     
     @IBAction func recoverPasswordAction(_ sender: Any) {
         closeKeyboard()
+
         guard let email = emailField.text, viewModel?.areFieldsValid(emailField: email) ?? false else {
             showAlert(title: .error, message: .invalidFields)
             return
         }
         
+        showSpinner()
         viewModel?.forgotPassword(withEmail: email, then: { status in
+            self.hideSpinner()
             switch status {
             case .success:
                 let alert = UIAlertController(title: "Change password link was sent".localized(), message: "An email has been sent to provided address".localized(), preferredStyle: .alert)
@@ -79,9 +100,6 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
 extension RecoverPasswordViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         (textField as? TextField)?.toggleBorder(active: true)
-    
-        let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
-        scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -90,7 +108,6 @@ extension RecoverPasswordViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
-        scrollView.setContentOffset(.zero, animated: true)
         recoverPasswordAction(self)
         return false
     }

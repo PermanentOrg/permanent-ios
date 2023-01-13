@@ -191,6 +191,13 @@
                                                     <constraint firstAttribute="height" constant="48" id="u1y-dJ-WHs"/>
                                                 </constraints>
                                             </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ypu-8B-mbH">
+                                                <rect key="frame" x="186" y="146" width="42" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wIt-7C-qTC" userLabel="Code Field" customClass="AuthTextField" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="45" y="213" width="324" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -707,62 +714,76 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dRj-2x-UrD">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="445"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNameLarge" translatesAutoresizingMaskIntoConstraints="NO" id="ms8-Wd-Ior" userLabel="Logo Image View">
-                                                <rect key="frame" x="103.5" y="20" width="207" height="226"/>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_preview" translatesAutoresizingMaskIntoConstraints="NO" id="ms8-Wd-Ior" userLabel="Logo Image View">
+                                                <rect key="frame" x="175" y="48" width="64" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="Gy4-7j-C32"/>
+                                                    <constraint firstAttribute="width" constant="64" id="npx-sy-gAE"/>
+                                                </constraints>
                                             </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eLL-bm-WU8" userLabel="Login Label">
-                                                <rect key="frame" x="207" y="266" width="0.0" height="0.0"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="euq-lL-erI">
+                                                <rect key="frame" x="186.5" y="144" width="41.5" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="Gkq-ie-cdt">
-                                                <rect key="frame" x="45" y="281" width="324" height="34"/>
-                                                <subviews>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tzo-gX-hRd" userLabel="Email Field" customClass="TextField" customModule="Permanent" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="324" height="34"/>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="next"/>
-                                                    </textField>
-                                                </subviews>
-                                            </stackView>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tzo-gX-hRd" userLabel="Email Field" customClass="AuthTextField" customModule="Permanent" customModuleProvider="target">
+                                                <rect key="frame" x="45" y="212.5" width="324" height="34"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="done" textContentType="email"/>
+                                            </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQ1-Kb-oUw" userLabel="Recover password button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="45" y="335" width="324" height="30"/>
+                                                <rect key="frame" x="45" y="262.5" width="324" height="30"/>
                                                 <state key="normal" title="Recover Password"/>
                                                 <connections>
                                                     <action selector="recoverPasswordAction:" destination="Dgk-6P-wig" eventType="touchUpInside" id="C2U-Ct-BcT"/>
                                                 </connections>
                                             </button>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Fdt-Xb-Zy8">
-                                                <rect key="frame" x="45" y="395" width="324" height="30"/>
-                                                <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mni-ox-DWv" userLabel="Back button">
-                                                        <rect key="frame" x="145" y="0.0" width="34" height="30"/>
-                                                        <state key="normal" title="Back"/>
-                                                        <connections>
-                                                            <action selector="backButtonAction:" destination="Dgk-6P-wig" eventType="touchUpInside" id="rXB-qQ-796"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                            </stackView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LUX-J6-EVL">
+                                                <rect key="frame" x="45" y="340.5" width="324" height="1"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="B2S-tK-BCt"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OR" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0tM-Hd-Gga">
+                                                <rect key="frame" x="183.5" y="335" width="47" height="12"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="47" id="GQ7-4B-LTK"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mni-ox-DWv" userLabel="Back button">
+                                                <rect key="frame" x="190" y="395" width="34" height="30"/>
+                                                <state key="normal" title="Back"/>
+                                                <connections>
+                                                    <action selector="backButtonAction:" destination="Dgk-6P-wig" eventType="touchUpInside" id="rXB-qQ-796"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="Gkq-ie-cdt" secondAttribute="trailing" constant="45" id="3yo-06-tbK"/>
-                                            <constraint firstAttribute="bottom" secondItem="Fdt-Xb-Zy8" secondAttribute="bottom" constant="20" id="4mh-l9-wCD"/>
-                                            <constraint firstItem="Gkq-ie-cdt" firstAttribute="leading" secondItem="dRj-2x-UrD" secondAttribute="leading" constant="45" id="9ZF-tN-bWb"/>
-                                            <constraint firstItem="Fdt-Xb-Zy8" firstAttribute="top" secondItem="HQ1-Kb-oUw" secondAttribute="bottom" constant="30" id="ABQ-er-kwh"/>
-                                            <constraint firstItem="Fdt-Xb-Zy8" firstAttribute="leading" secondItem="Gkq-ie-cdt" secondAttribute="leading" id="DD2-Ga-CzL"/>
-                                            <constraint firstItem="Fdt-Xb-Zy8" firstAttribute="trailing" secondItem="Gkq-ie-cdt" secondAttribute="trailing" id="Hx4-Uy-9OM"/>
-                                            <constraint firstItem="ms8-Wd-Ior" firstAttribute="width" secondItem="dRj-2x-UrD" secondAttribute="width" multiplier="0.5" id="IAh-SI-uz3"/>
-                                            <constraint firstItem="eLL-bm-WU8" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="Oax-IS-RDa"/>
-                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="leading" secondItem="Gkq-ie-cdt" secondAttribute="leading" id="Onp-XG-XrF"/>
-                                            <constraint firstItem="ms8-Wd-Ior" firstAttribute="top" secondItem="dRj-2x-UrD" secondAttribute="top" constant="20" id="VF0-WA-K6h"/>
-                                            <constraint firstItem="Gkq-ie-cdt" firstAttribute="top" secondItem="eLL-bm-WU8" secondAttribute="bottom" constant="15" id="VhP-bf-QY4"/>
-                                            <constraint firstItem="eLL-bm-WU8" firstAttribute="top" secondItem="ms8-Wd-Ior" secondAttribute="bottom" constant="20" id="hVq-n2-zNB"/>
-                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="trailing" secondItem="Gkq-ie-cdt" secondAttribute="trailing" id="lFa-YA-UCC"/>
-                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="top" secondItem="Gkq-ie-cdt" secondAttribute="bottom" constant="20" id="oSh-u1-i4Z"/>
+                                            <constraint firstItem="euq-lL-erI" firstAttribute="top" secondItem="ms8-Wd-Ior" secondAttribute="bottom" constant="48" id="A3Z-F9-QDK"/>
+                                            <constraint firstItem="euq-lL-erI" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="E6p-Zn-eLC"/>
+                                            <constraint firstItem="tzo-gX-hRd" firstAttribute="leading" secondItem="dRj-2x-UrD" secondAttribute="leading" constant="45" id="F9S-4p-ZXA"/>
+                                            <constraint firstAttribute="bottom" secondItem="Mni-ox-DWv" secondAttribute="bottom" constant="20" id="KDM-Ph-Pz3"/>
+                                            <constraint firstItem="ms8-Wd-Ior" firstAttribute="top" secondItem="dRj-2x-UrD" secondAttribute="top" constant="48" id="VF0-WA-K6h"/>
+                                            <constraint firstItem="Mni-ox-DWv" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="XMT-2E-t7T"/>
+                                            <constraint firstItem="LUX-J6-EVL" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="d8M-2s-S1D"/>
+                                            <constraint firstItem="LUX-J6-EVL" firstAttribute="trailing" secondItem="tzo-gX-hRd" secondAttribute="trailing" id="jEw-Er-pVd"/>
+                                            <constraint firstItem="LUX-J6-EVL" firstAttribute="top" secondItem="HQ1-Kb-oUw" secondAttribute="bottom" constant="48" id="jYa-mw-MH9"/>
+                                            <constraint firstItem="0tM-Hd-Gga" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="kcd-fZ-R1X"/>
+                                            <constraint firstAttribute="trailing" secondItem="tzo-gX-hRd" secondAttribute="trailing" constant="45" id="nbr-IQ-m83"/>
+                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="leading" secondItem="tzo-gX-hRd" secondAttribute="leading" id="qe6-O0-sDU"/>
+                                            <constraint firstItem="tzo-gX-hRd" firstAttribute="top" secondItem="euq-lL-erI" secondAttribute="bottom" constant="48" id="umX-HF-4fv"/>
+                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="trailing" secondItem="tzo-gX-hRd" secondAttribute="trailing" id="vYx-Ir-VPg"/>
                                             <constraint firstItem="ms8-Wd-Ior" firstAttribute="centerX" secondItem="dRj-2x-UrD" secondAttribute="centerX" id="vaT-gI-1ju"/>
+                                            <constraint firstItem="HQ1-Kb-oUw" firstAttribute="top" secondItem="tzo-gX-hRd" secondAttribute="bottom" constant="16" id="xZI-MX-wVp"/>
+                                            <constraint firstItem="LUX-J6-EVL" firstAttribute="leading" secondItem="tzo-gX-hRd" secondAttribute="leading" id="yCj-Lw-hDm"/>
+                                            <constraint firstItem="Mni-ox-DWv" firstAttribute="top" secondItem="0tM-Hd-Gga" secondAttribute="bottom" constant="48" id="yaa-ci-MVN"/>
+                                            <constraint firstItem="0tM-Hd-Gga" firstAttribute="centerY" secondItem="LUX-J6-EVL" secondAttribute="centerY" id="ysc-gG-tDv"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -791,16 +812,20 @@
                             <constraint firstItem="ohb-gC-6y7" firstAttribute="centerX" secondItem="y26-KS-94u" secondAttribute="centerX" id="Hab-Lt-1gJ"/>
                             <constraint firstItem="dCe-bR-nm4" firstAttribute="leading" secondItem="y26-KS-94u" secondAttribute="leading" id="eo6-zh-fXR"/>
                             <constraint firstItem="y26-KS-94u" firstAttribute="trailing" secondItem="dCe-bR-nm4" secondAttribute="trailing" id="k3q-ze-SJx"/>
+                            <constraint firstItem="dCe-bR-nm4" firstAttribute="centerX" secondItem="em4-Ns-mzh" secondAttribute="centerX" id="pjv-dP-hHt"/>
                             <constraint firstItem="y26-KS-94u" firstAttribute="bottom" secondItem="ohb-gC-6y7" secondAttribute="bottom" constant="20" id="wUG-3S-sL9"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="Mni-ox-DWv" id="yJx-Nv-nop"/>
                         <outlet property="copyrightLabel" destination="ohb-gC-6y7" id="aXe-sf-Cxm"/>
-                        <outlet property="emailField" destination="tzo-gX-hRd" id="2YD-tG-eJh"/>
-                        <outlet property="loginLabel" destination="eLL-bm-WU8" id="WJ5-kc-7aN"/>
+                        <outlet property="emailField" destination="tzo-gX-hRd" id="N1w-5a-dYF"/>
                         <outlet property="recoverPasswordButton" destination="HQ1-Kb-oUw" id="LON-gZ-2Ef"/>
+                        <outlet property="screenTitle" destination="euq-lL-erI" id="IlR-Sn-k0R"/>
                         <outlet property="scrollView" destination="dCe-bR-nm4" id="oNM-mf-oD8"/>
+                        <outlet property="separatorTextLabel" destination="0tM-Hd-Gga" id="ThZ-7K-oNf"/>
+                        <outlet property="separatorView" destination="LUX-J6-EVL" id="Gwb-qT-tMQ"/>
+                        <outlet property="separatorViewHeight" destination="B2S-tK-BCt" id="adh-WM-8gM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="M0x-p9-znX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
