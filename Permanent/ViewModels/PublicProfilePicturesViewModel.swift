@@ -140,4 +140,8 @@ class PublicProfilePicturesViewModel: ViewModelInterface {
             }
         }
     }
+    
+    func canEditPublicProfilePhoto() -> Bool {
+        return !archiveData.permissions().contains(.archiveShare)
+    }
 }
