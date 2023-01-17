@@ -63,4 +63,14 @@ class LoginPage {
         XCTAssertTrue(signUpButton.waitForExistence(timeout: 5))
         signUpButton.tap()
     }
+    
+    func navigateToForgotPasswordPage() {
+        XCTAssertTrue(forgotPasswordButton.waitForExistence(timeout: 5))
+        forgotPasswordButton.tap()
+    }
+    
+    func navigateToSignUpPage() {
+        XCTAssertTrue(signUpButton.waitForExistence(timeout: 5))
+        signUpButton.tap()
+    }
 }
