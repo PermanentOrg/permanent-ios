@@ -130,6 +130,7 @@
 		5E62F7C927F79FF40046F6C8 /* PopularArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */; };
 		5E62F7CE27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7CC27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift */; };
 		5E62F7CF27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62F7CD27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.xib */; };
+		5E63944E29702F830043D952 /* ForgotPasswordResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */; };
 		5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */; };
 		5E63B3E728A43EC400067FAF /* LeftSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */; };
 		5E647334263C22F900E6566D /* NotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E647333263C22F900E6566D /* NotificationName.swift */; };
@@ -204,6 +205,7 @@
 		5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */; };
 		5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
 		5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
+		5ED090E82975D24F003D797B /* ForgotPasswordPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */; };
 		5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */; };
 		5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */; };
 		5ED4B9C12875376000CF044B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
@@ -804,6 +806,7 @@
 		5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularArchive.swift; sourceTree = "<group>"; };
 		5E62F7CC27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E62F7CD27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublicGalleryCellCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordResponse.swift; sourceTree = "<group>"; };
 		5E63B3E428A3EC3300067FAF /* SharedFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedFilesUITests.swift; sourceTree = "<group>"; };
 		5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftSideMenu.swift; sourceTree = "<group>"; };
 		5E647333263C22F900E6566D /* NotificationName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationName.swift; sourceTree = "<group>"; };
@@ -883,6 +886,7 @@
 		5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Italic.ttf"; sourceTree = "<group>"; };
 		5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
+		5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordPage.swift; sourceTree = "<group>"; };
 		5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideDrawerTableViewCell.swift; sourceTree = "<group>"; };
 		5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RightSideDrawerTableViewCell.xib; sourceTree = "<group>"; };
 		5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsViewController.swift; sourceTree = "<group>"; };
@@ -1419,6 +1423,7 @@
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
 				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
+				5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */,
 				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
 				BC326AB0252738FB00A69597 /* AccountUpdateResponse.swift */,
@@ -1509,6 +1514,7 @@
 			children = (
 				5E07D44B28915C8E008C0A6B /* LoginPage.swift */,
 				5E07D44D28915CE0008C0A6B /* SignUpPage.swift */,
+				5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */,
 				5E07D4512891600A008C0A6B /* PrivateFilesPage.swift */,
 				5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */,
 				5E63B3E628A43EC400067FAF /* LeftSideMenu.swift */,
@@ -3286,6 +3292,7 @@
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */,
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
+				5E63944E29702F830043D952 /* ForgotPasswordResponse.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
 				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
@@ -3423,6 +3430,7 @@
 				5E63B3E528A3EC3300067FAF /* SharedFilesUITests.swift in Sources */,
 				5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */,
 				F569062228CB66CC00E610B6 /* DeleteAlertPage.swift in Sources */,
+				5ED090E82975D24F003D797B /* ForgotPasswordPage.swift in Sources */,
 				F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */,
 				F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */,
 				F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */,

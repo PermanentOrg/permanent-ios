@@ -14,7 +14,12 @@ extension String {
     static var email: String { return "Email".localized() }
     static var password: String { return "Password".localized() }
     static var forgotPassword: String { return "ForgotPassword".localized() }
-    static var copyrightText: String { return "CopyrightText".localized() }
+    static var copyrightText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
+        let yearString = formatter.string(from: Date())
+        
+        return  "© The Permanent Legacy Foundation <YYYY>".localized().replacingOccurrences(of: "<YYYY>", with: yearString) }
     static var alreadyMember: String { return "AlreadyMember".localized() }
     static var next: String { return "Next".localized() }
     static var enterVerificationCode: String { return "EnterVerificationCode".localized() }

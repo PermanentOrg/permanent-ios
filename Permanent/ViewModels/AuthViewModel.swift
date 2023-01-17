@@ -97,6 +97,17 @@ class AuthViewModel: ViewModelInterface {
         }
     }
     
+    func forgotPassword(withEmail email: String?, then handler: @escaping (RequestStatus) -> Void) {
+        guard let email = email else {
+            handler(.error(message: .invalidFields))
+            return
+        }
+        
+        AuthenticationManager.shared.forgotPassword(withEmail: email) { status in
+            handler(status)
+        }
+    }
+    
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
         let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
         
@@ -175,6 +186,10 @@ class AuthViewModel: ViewModelInterface {
     
     func areFieldsValid(emailField: String?, passwordField: String?) -> Bool {
         return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false) && (passwordField?.count ?? 0 >= 8)
+    }
+    
+    func areFieldsValid(emailField: String?) -> Bool {
+        return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false)
     }
     
     func bytesToReadableForm(sizeInBytes: Int, useDecimal: Bool = true) -> String {

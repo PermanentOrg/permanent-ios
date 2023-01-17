@@ -51,4 +51,30 @@ class LoginUITests: BaseUITestCase {
         
         signUpPage.waitForExistence()
     }
+    
+    func testForgotPasswordScreen() throws {
+        let accountEmail = uiTestCredentials.username
+        let invalidAccountEmail = "invalidUsername@server.com"
+        
+        let signUpPage = SignUpPage(app: app, testCase: self)
+        signUpPage.navigateToLogin()
+        
+        let loginPage = LoginPage(app: app, testCase: self)
+        loginPage.navigateToForgotPasswordPage()
+        
+        let forgotPasswordPage = ForgotPasswordPage(app: app, testCase: self)
+        forgotPasswordPage.navigateToLoginPage()
+        
+        loginPage.navigateToForgotPasswordPage()
+        forgotPasswordPage.recoverPassword(email: accountEmail)
+        forgotPasswordPage.pressOkButton()
+        
+        loginPage.navigateToForgotPasswordPage()
+        forgotPasswordPage.recoverPassword(email: invalidAccountEmail)
+        forgotPasswordPage.pressOkButton()
+        
+        loginPage.navigateToSignUpPage()
+        
+        signUpPage.waitForExistence()
+    }
 }
