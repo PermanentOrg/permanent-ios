@@ -7,6 +7,17 @@
 
 import Foundation
 
+typealias NewFolderParams = (filename: String, folderLinkId: Int)
+typealias NavigateMinParams = (archiveNo: String, folderLinkId: Int, folderName: String?)
+typealias GetLeanItemsParams = (archiveNo: String, sortOption: SortOption, folderLinkIds: [Int], folderLinkId: Int)
+typealias FileMetaParams = (folderId: Int, folderLinkId: Int, filename: String)
+typealias GetPresignedUrlParams = (folderId: Int, folderLinkId: Int, fileMimeType: String?, filename: String, fileSize: Int, derivedCreatedDT: String?)
+typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: String, derivedCreatedDT: String?, s3Url: String, destinationUrl: String)
+typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int)
+typealias ItemInfoParams = (FileViewModel)
+typealias RelocateParams = (items: ItemPair, action: FileAction)
+typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
+
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
 
@@ -103,34 +114,34 @@ extension FilesEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
         case .navigateMin(let params):
-            return Payloads.navigateMinPayload(for: params)
+            return FilesEndpointPayloads.navigateMinPayload(for: params)
             
         case .getLeanItems(let params):
-            return Payloads.getLeanItemsPayload(for: params)
+            return FilesEndpointPayloads.getLeanItemsPayload(for: params)
             
         case .getPresignedUrl(let params):
-            return Payloads.getPresignedUrlPayload(for: params)
+            return FilesEndpointPayloads.getPresignedUrlPayload(for: params)
             
         case .registerRecord(let params):
-            return Payloads.registerRecord(for: params)
+            return FilesEndpointPayloads.registerRecord(for: params)
             
         case .newFolder(let params):
-            return Payloads.newFolderPayload(for: params)
+            return FilesEndpointPayloads.newFolderPayload(for: params)
             
         case .download(_, let filename, _):
             return ["filename": filename]
             
         case .update(let params):
-            return Payloads.updateRecordRequest(params: params)
+            return FilesEndpointPayloads.updateRecordRequest(params: params)
             
         case .renameFolder(let params):
-            return Payloads.renameFolderRequest(params: params)
+            return FilesEndpointPayloads.renameFolderRequest(params: params)
             
         case .unshareRecord(let archiveID, let folderLinkId):
-            return Payloads.unshareRecord(archiveId: archiveID, folderLinkId: folderLinkId)
+            return FilesEndpointPayloads.unshareRecord(archiveId: archiveID, folderLinkId: folderLinkId)
             
         case .updateRootColumns(let params):
-            return Payloads.updateRootColumns(params)
+            return FilesEndpointPayloads.updateRootColumns(params)
             
         default:
             return nil
@@ -240,5 +251,220 @@ extension FilesEndpoint: RequestProtocol {
         default:
             return nil
         }
+    }
+}
+
+class FilesEndpointPayloads {
+    static func navigateMinPayload(for params: NavigateMinParams) -> RequestParameters {
+        if params.folderLinkId != -1 {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo,
+                                "folder_linkId": "\(params.folderLinkId)"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        } else {
+            return [
+                "RequestVO": [
+                    "data": [
+                        [
+                            "FolderVO": [
+                                "archiveNbr": params.archiveNo
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
+    }
+        
+    static func getLeanItemsPayload(for params: GetLeanItemsParams) -> RequestParameters {
+        let childItemsDict = params.folderLinkIds.map {
+            [
+                "folder_linkId": $0
+            ]
+        }
+        let dict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "FolderVO": [
+                            "archiveNbr": params.archiveNo,
+                            "sort": params.sortOption.apiValue,
+                            "ChildItemVOs": childItemsDict,
+                            "folder_linkId": params.folderLinkId
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        
+        return dict
+    }
+    
+    static func getPresignedUrlPayload(for params: GetPresignedUrlParams) -> RequestParameters {
+        let dict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "RecordVO": [
+                            "parentFolderId": params.folderId,
+                            "parentFolder_linkId": params.folderLinkId,
+                            "displayName": params.filename,
+                            "uploadFileName": params.filename,
+                            "size": params.fileSize,
+                            "derivedCreatedDT": params.derivedCreatedDT as Any
+                        ],
+                        "SimpleVO": [
+                            "key": "type",
+                            "value": params.fileMimeType ?? "application/octet-stream"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        return dict
+    }
+    
+    static func registerRecord(for params: RegisterRecordParams) -> RequestParameters {
+        var recordVO: [String: Any] = [
+            "parentFolderId": params.folderId,
+            "parentFolder_linkId": params.folderLinkId,
+            "displayName": params.filename,
+            "uploadFileName": params.filename
+        ]
+        if let createdDT = params.derivedCreatedDT {
+            recordVO["derivedCreatedDT"] = createdDT
+        }
+        
+        let dict = [
+            "RequestVO": [
+                "data": [
+                    "RecordVO": recordVO,
+                    "SimpleVO": [
+                        "key": params.s3Url,
+                        "value": params.destinationUrl
+                    ]
+                ]
+            ]
+        ]
+
+        return dict
+    }
+
+    static func newFolderPayload(for params: NewFolderParams) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "FolderVO": [
+                            "displayName": params.filename,
+                            "parentFolder_linkId": params.folderLinkId
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    static func updateRecordRequest(params: UpdateRecordParams) -> RequestParameters {
+        var recordVO: [String: Any] = [
+            "recordId": params.recordId,
+            "archiveNbr": params.archiveNbr,
+            "folder_linkId": params.folderLinkId
+        ]
+        
+        if let name = params.name {
+            recordVO["displayName"] = name
+        }
+        if let description = params.description {
+            recordVO["description"] = description
+        }
+        if let date = params.date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            
+            recordVO["displayDT"] = dateFormatter.string(from: date)
+        }
+        if let location = params.location,
+            let locationJson = try? JSONEncoder().encode(location),
+            let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
+            recordVO["locnVO"] = locationDict
+        }
+        
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "RecordVO": recordVO
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func renameFolderRequest(params: UpdateRecordParams) -> RequestParameters {
+        var folderVO: [String: Any] = [
+            "folderId": params.recordId,
+            "archiveNbr": params.archiveNbr,
+            "folder_linkId": params.folderLinkId
+        ]
+        
+        if let name = params.name {
+            folderVO["displayName"] = name
+        }
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "FolderVO": folderVO
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func unshareRecord(archiveId: Int, folderLinkId: Int) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ShareVO": [
+                                "folder_linkId": folderLinkId,
+                                "archiveId": archiveId
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    static func updateRootColumns(_ params: UpdateRootColumnsParams) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data":
+                        [
+                            [
+                                "FolderVO":
+                                    [
+                                        "archiveNbr": params.folderArchiveNbr,
+                                        "folderId": params.folderId,
+                                        "folder_linkId": params.folderLinkId,
+                                        "thumbArchiveNbr": params.thumbArchiveNbr
+                                    ]
+                            ]
+                        ]
+                ]
+        ]
     }
 }

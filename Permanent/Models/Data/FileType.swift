@@ -12,14 +12,16 @@ enum FileType: String, Codable {
     case privateFolder = "type.folder.private"
     case publicRootFolder = "type.folder.root.public"
     case privateRootFolder = "type.folder.root.private"
+    case sharedFolder = "type.share.folder"
     case image = "type.record.image"
     case video = "type.record.video"
+    case audio = "type.record.audio"
     case pdf = "type.record.pdf"
     case miscellaneous = "type.record.misc"
     
     var isFolder: Bool {
         switch self {
-        case .image, .miscellaneous, .video, .pdf:
+        case .image, .miscellaneous, .video, .pdf, .audio:
             return false
             
         default:

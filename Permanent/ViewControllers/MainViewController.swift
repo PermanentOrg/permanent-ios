@@ -105,9 +105,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             self?.viewModel?.viewModels[index].accessRole = shareLinkVM.fileViewModel.accessRole
             self?.viewModel?.viewModels[index].minArchiveVOS = shareLinkVM.fileViewModel.minArchiveVOS
+            
+            self?.collectionView.reloadData()
         }
     }
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -115,7 +121,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
 
     // MARK: - UI Related
-    
+
     fileprivate func initUI() {
         view.backgroundColor = .white
         
@@ -193,43 +199,49 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        setupUIForAction(viewModel?.fileAction ?? .none)
+        guard let source = viewModel?.selectedFile,
+              let action = viewModel?.fileAction else { return }
+              
+        fabView.isHidden = true
         
-        fileActionBottomView.closeAction = {
-            self.setupUIForAction(.none)
+        guard floatingActionIsland == nil else { return }
+        
+        let fileIconItem: FloatingActionImageItem
+        if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
+            fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
+        } else {
+            fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
         }
         
-        fileActionBottomView.fileAction = {
-            guard
-                let source = self.viewModel?.selectedFile,
-                let destination = self.viewModel?.currentFolder
-            else {
-                self.showErrorAlert(message: .errorMessage)
-                return
-            }
+        let leftItems = [
+            fileIconItem,
+            FloatingActionTextSubtitleItem(text: action == .copy ? "COPYING".localized() : "MOVING".localized(), subtitle: source.name, action: nil),
+        ]
 
-            self.didTapRelocate(source: source, destination: destination)
-        }
-    }
-    
-    fileprivate func setupUIForAction(_ action: FileAction) {
-        viewModel?.fileAction = action
-        
-        switch action {
-        case .none:
-            fabView.isHidden = false
-            fileActionBottomView.isHidden = true
-            
-        case .move, .copy:
-            fabView.isHidden = true
-            fileActionBottomView.isHidden = false
-            fileActionBottomView.setActionTitle(action.title)
-            toggleFileAction(action)
-        }
-        
-        DispatchQueue.main.async {
-            self.refreshCollectionView()
-        }
+        let closeImage = UIImage(named: "xMarkToolbarIcon")!
+        let pasteTitle = action == .copy ? "Paste Here".localized() : "Move Here".localized()
+        let rightItems = [
+            FloatingActionImageTextItem(text: pasteTitle, image: UIImage(named: "pasteToolbarIcon")!) { [weak self] _, _ in
+                guard let destination = self?.viewModel?.currentFolder else {
+                    self?.showErrorAlert(message: .errorMessage)
+                    return
+                }
+
+                self?.relocate(file: source, to: destination)
+            },
+            FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
+                self?.dismissFloatingActionIsland()
+                self?.fabView.isHidden = false
+
+                self?.viewModel?.selectedFile = nil
+                self?.viewModel?.fileAction = .none
+
+                self?.collectionView?.reloadData()
+            },
+        ]
+        showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+
+        collectionView?.reloadData()
     }
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
@@ -534,18 +546,23 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func relocate(file: FileViewModel, to destination: FileViewModel) {
-        showSpinner()
+        floatingActionIsland?.showActivityIndicator()
         viewModel?.relocate(file: file, to: destination, then: { status in
-            self.hideSpinner()
-            
+            self.floatingActionIsland?.hideActivityIndicator()
+
             switch status {
             case .success:
                 self.viewModel?.viewModels.prepend(file)
 
-                self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: self.viewModel?.fileAction.action ?? .success)
-                self.setupUIForAction(.none)
+                self.floatingActionIsland?.showDoneCheckmark() {
+                    self.dismissFloatingActionIsland()
+
+                    self.collectionView?.reloadData()
+                }
+
                 
             case .error(let message):
+                self.dismissFloatingActionIsland()
                 self.showErrorAlert(message: message)
             }
         })
@@ -563,8 +580,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 } else {
                     self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                 }
-                self.setupUIForAction(.none)
-                
+
             case .error(let message):
                 self.showErrorAlert(message: message)
             }
@@ -756,10 +772,6 @@ extension MainViewController {
             },
             overlayView: self.overlayView
         )
-    }
-    
-    private func didTapRelocate(source: FileViewModel, destination: FileViewModel) {
-        self.relocate(file: source, to: destination)
     }
     
     private func download(_ file: FileViewModel) {
@@ -1131,8 +1143,9 @@ extension MainViewController {
     
     func relocateAction(file: FileViewModel, action: FileAction) {
         viewModel?.selectedFile = file
+        viewModel?.fileAction = action
         
-        setupUIForAction(action)
+        setupBottomActionSheet()
     }
     
     func publishAction(file: FileViewModel) {

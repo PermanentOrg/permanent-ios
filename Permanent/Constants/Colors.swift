@@ -15,6 +15,7 @@ extension UIColor {
     static var barneyPurple = UIColor(red: 128 / 255, green: 0 / 255, blue: 128 / 255, alpha: 1)
     static var lightPurple = UIColor(red: 231 / 255, green: 212 / 255, blue: 231 / 255, alpha: 1)
     static var deepRed = UIColor(red: 161 / 255, green: 0 / 255, blue: 0 / 255, alpha: 1)
+    static var paleRed = UIColor(red: 255 / 255, green: 61 / 255, blue: 61 / 255, alpha: 1)
     static var tangerine = UIColor(red: 255 / 255, green: 153 / 255, blue: 51 / 255, alpha: 1)
     static var dotGreen = UIColor(red: 27 / 255, green: 201 / 255, blue: 23 / 255, alpha: 1)
     static var bilbaoGreen = UIColor(red: 22 / 255, green: 125 / 255, blue: 20 / 255, alpha: 1)
@@ -30,6 +31,7 @@ extension UIColor {
     static var dustyGray = UIColor(red: 96 / 255, green: 96 / 255, blue: 96 / 255, alpha: 1)
     static var mainPurple = UIColor(red: 141 / 255, green: 0 / 255, blue: 133 / 255, alpha: 1)
     static var paleYellow = UIColor(red: 254 / 255, green: 235 / 255, blue: 214 / 255, alpha: 1)
+    static var whiteGray = UIColor(red: 244 / 255, green: 246 / 255, blue: 253 / 255, alpha: 1)
 }
 
 extension UIColor {

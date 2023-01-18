@@ -46,9 +46,15 @@ class ArchiveTableViewCell: UITableViewCell {
     func updateCell(model: ShareVOData) {
         archiveImageView.load(urlString: model.archiveVO?.thumbURL200 ?? "")
         archiveNameLabel.text = .init(format: .archiveName, model.archiveVO?.fullName ?? "")
-        relationshipLabel.text = AccessRole.roleForValue(model.accessRole).groupName
+        
+        if ShareStatus.status(forValue: model.status ?? "") != .pending {
+            relationshipLabel.text = AccessRole.roleForValue(model.accessRole).groupName
+        } else {
+            relationshipLabel.text = "Pending".localized()
+        }
+        
         bottomView.isHidden = ShareStatus.status(forValue: model.status ?? "") != .pending
-        moreButton.isHidden = ShareStatus.status(forValue: model.status ?? "") == .pending
+        moreButton.isHidden = ShareStatus.status(forValue: model.status ?? "") == .pending || AccessRole.roleForValue(model.accessRole).groupName == .owner
     }
     
     func hideBottomButtons(status: Bool ) {

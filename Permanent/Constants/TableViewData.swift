@@ -39,9 +39,6 @@ struct StaticData {
     static let accessRoles = AccessRole.allCases
         .filter { $0 != .owner }
         .map { $0.groupName }
-    
-    static let archiveTypes = ArchiveType.allCases
-        .map { $0.archiveName }
 }
 
 enum DrawerSection: Int {

@@ -124,7 +124,7 @@ class WelcomePageViewController: UIViewController  {
     
     func permissions(_ archive: ArchiveVOData) -> String {
         var enumeratedPermissions = ""
-        let permissionStrings = archive.permissions().compactMap(prettyPermission)
+        let permissionStrings = archive.permissions().compactMap({$0.prettyPermission()})
         for (idx, permission) in permissionStrings.enumerated() {
             if idx != permissionStrings.count - 1 {
                 enumeratedPermissions += "\(permission), "
@@ -138,27 +138,5 @@ class WelcomePageViewController: UIViewController  {
         }
         
         return enumeratedPermissions
-    }
-    
-    func prettyPermission(_ permission: Permission) -> String? {
-        switch permission {
-        case .read: return "view".localized()
-        
-        case .create: return "create".localized()
-            
-        case .upload: return "upload".localized()
-            
-        case .edit: return "edit".localized()
-            
-        case .delete: return "delete".localized()
-            
-        case .move: return "move".localized()
-            
-        case .publish: return "publish".localized()
-            
-        case .share: return "share".localized()
-            
-        case .archiveShare, .ownership: return nil
-        }
     }
 }

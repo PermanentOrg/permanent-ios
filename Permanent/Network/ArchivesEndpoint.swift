@@ -72,34 +72,34 @@ extension ArchivesEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
         case .getArchivesByAccountId(let accountId):
-            return Payloads.getArchivesByAccountId(accountId: accountId)
+            return getArchivesByAccountId(accountId: accountId)
             
         case .change(let archiveId, let archiveNbr):
-            return Payloads.changeArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
+            return changeArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
             
         case .create(let name, let type):
-            return Payloads.createArchivePayload(name: name, type: type)
+            return createArchivePayload(name: name, type: type)
             
         case .delete(let archiveId, let archiveNbr):
-            return Payloads.deleteArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
+            return deleteArchivePayload(archiveId: archiveId, archiveNbr: archiveNbr)
             
         case .accept(archiveVO: let archiveVO):
-            return Payloads.acceptArchivePayload(archiveVO: archiveVO)
+            return acceptArchivePayload(archiveVO: archiveVO)
             
         case .decline(archiveVO: let archiveVO):
-            return Payloads.declineArchivePayload(archiveVO: archiveVO)
+            return declineArchivePayload(archiveVO: archiveVO)
             
         case .update(let archiveVO, let file):
-            return Payloads.updateArchiveThumbPayload(archiveVO: archiveVO, file: file)
+            return updateArchiveThumbPayload(archiveVO: archiveVO, file: file)
             
         case .transferOwnership(archiveNbr: let archiveNbr, primaryEmail: let primaryEmail):
-            return Payloads.transferOwnership(archiveNbr: archiveNbr, primaryEmail: primaryEmail)
+            return transferOwnership(archiveNbr: archiveNbr, primaryEmail: primaryEmail)
             
         case .getArchivesByArchivesNbr(archivesNbr: let archivesNbr):
-            return Payloads.getArchivesByArchivesNbr(archivesNbr: archivesNbr)
+            return getArchivesByArchivesNbr(archivesNbr: archivesNbr)
             
         case .searchArchive(searchAfter: let searchAfter):
-            return Payloads.searchArchive(searchName: searchAfter)
+            return searchArchive(searchName: searchAfter)
         }
     }
     
@@ -116,5 +116,177 @@ extension ArchivesEndpoint: RequestProtocol {
     
     var customURL: String? {
         nil
+    }
+}
+
+extension ArchivesEndpoint {
+    func getArchivesByAccountId(accountId: GetArchivesByAccountId) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "AccountVO": [
+                                "accountId": accountId
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func changeArchivePayload(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func createArchivePayload(name: String, type: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "fullName": name,
+                                "type": type,
+                                "relationType": NSNull()
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func deleteArchivePayload(archiveId: Int, archiveNbr: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveId,
+                                "archiveNbr": archiveNbr
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func acceptArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
+        var modifiedArchive: Any = []
+        let archive = archiveVO
+        if let archiveJson = try? JSONEncoder().encode(archive),
+            let archiveDict = try? JSONSerialization.jsonObject(with: archiveJson, options: []) {
+            modifiedArchive = archiveDict
+        }
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": modifiedArchive
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func declineArchivePayload(archiveVO: ArchiveVOData) -> RequestParameters {
+        var modifiedArchive: Any = []
+        let archive = archiveVO
+        if let archiveJson = try? JSONEncoder().encode(archive),
+            let archiveDict = try? JSONSerialization.jsonObject(with: archiveJson, options: []) {
+            modifiedArchive = archiveDict
+        }
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": modifiedArchive
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func transferOwnership(archiveNbr: String, primaryEmail: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveNbr": archiveNbr
+                            ],
+                            "AccountVO": [
+                                "primaryEmail": primaryEmail,
+                                "accessRole": AccessRole.apiRoleForValue(.owner)
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func updateArchiveThumbPayload(archiveVO: ArchiveVOData, file: FileViewModel) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ArchiveVO": [
+                                "archiveId": archiveVO.archiveID!,
+                                "archiveNbr": archiveVO.archiveNbr!,
+                                "thumbArchiveNbr": file.archiveNo
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
+    func getArchivesByArchivesNbr(archivesNbr: [String]) -> RequestParameters {
+        let data = archivesNbr.map {
+            [
+                "ArchiveVO": [
+                    "archiveNbr": $0
+                ]
+            ]
+        }
+        
+        return [
+            "RequestVO":
+                [
+                    "data": data
+                ]
+        ]
+    }
+    
+    func searchArchive(searchName: String) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "SearchVO": [
+                                "query": searchName
+                            ]
+                        ]
+                    ]
+                ]
+        ]
     }
 }

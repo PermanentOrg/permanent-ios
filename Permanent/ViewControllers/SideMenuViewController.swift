@@ -221,6 +221,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
             newRootVC.archiveData = archive
+            newRootVC.isViewingPublicProfile = true
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .publicGallery:
