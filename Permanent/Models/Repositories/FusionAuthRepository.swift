@@ -33,4 +33,8 @@ class AuthRepository {
             handler(result)
         }
     }
+    
+    func signup() {
+        
+    }
 }

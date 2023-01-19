@@ -514,6 +514,7 @@
 		F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		F55252A22907F6250005E011 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
+		F55350262979616B00F87EBF /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55350252979616B00F87EBF /* AccountRemoteDataSource.swift */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
 		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
@@ -1163,6 +1164,7 @@
 		F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewNavigationController.swift; sourceTree = "<group>"; };
 		F54861F928912F4300500F6F /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
+		F55350252979616B00F87EBF /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AccountRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/AccountRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareNotificationPayload.swift; sourceTree = "<group>"; };
@@ -1823,6 +1825,7 @@
 				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
 				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
 				5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */,
+				F55350252979616B00F87EBF /* AccountRemoteDataSource.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -3054,6 +3057,7 @@
 				5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
+				F55350262979616B00F87EBF /* AccountRemoteDataSource.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
 				5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */,
