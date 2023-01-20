@@ -89,6 +89,21 @@ extension AuthenticationEndpoint: RequestProtocol {
     var bodyData: Data? { nil }
     
     var customURL: String? { nil }
+    
+    var headers: RequestHeaders? {
+        if method == .post {
+            if case .createCredentials(_) = self {
+                return [
+                    "content-type": "application/json; charset=utf-8",
+                    "Request-Version": "2"
+                ]
+            } else {
+                return ["content-type": "application/json; charset=utf-8"]
+            }
+        } else {
+            return nil
+        }
+    }
 }
 
 extension AuthenticationEndpoint {

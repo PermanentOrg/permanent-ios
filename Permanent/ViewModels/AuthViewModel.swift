@@ -109,35 +109,13 @@ class AuthViewModel: ViewModelInterface {
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        let signUpOperation = APIOperation(AccountEndpoint.signUp(credentials: credentials))
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: sessionProtocol)
-        apiDispatch.ignoresMFAWarning = true
-
-        signUpOperation.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                let model: SignUpResponse? = JSONHelper.convertToModel(from: response)
-
-                if model?.isSuccessful == true {
-                    handler(.success)
-                } else {
-                    guard
-                        let message = model?.results?.first?.message?.first,
-                        let signUpError = SignUpError(rawValue: message)
-                    else {
-                        handler(.error(message: .errorMessage))
-                        return
-                    }
-
-                    handler(.error(message: signUpError.description))
-                }
-
-            case .error:
+        AuthenticationManager.shared.signUp(with: credentials) { status in
+            switch status {
+            case .success:
+                handler(.success)
+                
+            case .error(message: _):
                 handler(.error(message: .errorMessage))
-
-            default:
-                break
             }
         }
     }

@@ -34,7 +34,7 @@ class AuthRepository {
         }
     }
     
-    func signup() {
-        
+    func createCredentials(withFullName fullName: String, password: String, email: String, phone: String?, then handler: @escaping (Result<SignUpResponse, Error>) -> Void) {
+        remoteDataSource.createCredentials(withFullName: fullName, password: password, email: email, phone: phone, then: handler)
     }
 }

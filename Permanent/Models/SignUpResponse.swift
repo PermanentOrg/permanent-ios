@@ -8,35 +8,12 @@
 import Foundation
 
 struct SignUpResponse: Codable {
-    let results: [SignUpResult]?
-    let isSuccessful: Bool?
-    let actionFailKeys: [JSONAny]?
-    let isSystemUp: Bool?
-    let systemMessage: String?
-    let sessionID: JSONAny?
-    let createdDT, updatedDT: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case results = "Results"
-        case isSuccessful, actionFailKeys, isSystemUp, systemMessage
-        case sessionID = "sessionId"
-        case createdDT, updatedDT
-    }
+    let token: String
+    let user: SignUpUser
 }
 
-// MARK: - LoginResult
-struct SignUpResult: Codable {
-    let data: [SignUpData]?
-    let message: [String]?
-    let status: Bool?
-    let resultDT: String?
-    let createdDT, updatedDT: String?
-}
-
-struct SignUpData: Codable {
-    let accountVO: AccountVOData?
-
-    enum CodingKeys: String, CodingKey {
-        case accountVO = "AccountVO"
-    }
+struct SignUpUser: Codable {
+    let id: String
+    let fullName: String
+    let email: String
 }

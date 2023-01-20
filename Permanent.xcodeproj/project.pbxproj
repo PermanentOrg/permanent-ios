@@ -574,6 +574,7 @@
 		F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */; };
 		F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
 		F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
+		F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F564137929798DD4002D6423 /* AccountRepository.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
@@ -1185,6 +1186,7 @@
 		F559F88928FEBCC10015A522 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFileBrowserViewController.swift; sourceTree = "<group>"; };
 		F559F8B929017CE80015A522 /* FolderNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationView.swift; sourceTree = "<group>"; };
+		F564137929798DD4002D6423 /* AccountRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
@@ -2499,6 +2501,7 @@
 				F50E135428F43359003DF4CC /* FilesRepository.swift */,
 				5EFC404B292D722600FD244B /* ShareManagementRepository.swift */,
 				5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */,
+				F564137929798DD4002D6423 /* AccountRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -3332,6 +3335,7 @@
 				5E96F03F279223D90099C0E7 /* NetworkLogger.swift in Sources */,
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
+				F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
