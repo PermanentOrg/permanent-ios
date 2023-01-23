@@ -817,7 +817,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             collectionView.reloadData()
             
         case .uploading, .waiting, .failed:
-            break
+            viewModel?.removeFromQueue(indexPath.row)
+            
+            if viewModel?.refreshUploadQueue() == true {
+                refreshCollectionView()
+            }
         }
     }
     
