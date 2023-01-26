@@ -119,6 +119,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             
             self?.collectionView.reloadData()
         }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
+            let alertVC = UIAlertController(title: "Quota Exceeded".localized(), message: "Do you want to add more storage?".localized(), preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
+                let newRootVC = UIViewController.create(withIdentifier: .donate, from: .donate)
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            })
+            )
+            self?.present(alertVC, animated: true, completion: nil)
+        }
     }
     
     override func viewDidLayoutSubviews() {
