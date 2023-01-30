@@ -212,7 +212,9 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .members:
-            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            ///TO DO: remove after implementing "Archive Settings dropdown menu" task
+            //let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
 
         case .archives:
