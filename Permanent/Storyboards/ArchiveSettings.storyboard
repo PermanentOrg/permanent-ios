@@ -112,7 +112,7 @@
                     <connections>
                         <outlet property="addButton" destination="IVx-84-ssV" id="kmq-zQ-4zg"/>
                         <outlet property="archiveTitleNameLabel" destination="ZST-qh-kNz" id="vih-Jh-WXd"/>
-                        <outlet property="archiveTitleTagsNbrLabel" destination="yDK-Z0-R0w" id="HK3-Aw-xDo"/>
+                        <outlet property="archiveTitleTagsCountLabel" destination="yDK-Z0-R0w" id="9j3-r8-hIE"/>
                         <outlet property="collectionView" destination="POv-OY-psE" id="yPa-Ua-bDW"/>
                         <outlet property="searchTags" destination="64n-yx-OcV" id="wqT-k9-Q1n"/>
                     </connections>

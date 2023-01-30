@@ -9,12 +9,18 @@ import Foundation
 
 class ManageTagsViewModel: ViewModelInterface {
     static let didUpdateTagsNotification = Notification.Name("ManageTagsViewModel.didUpdateTagsNotification")
+    static let isLoadingNotification = Notification.Name("ManageTagsViewModel.isLoadingNotification")
     
     let tagsRepository: TagsRepository
     var tags: [TagVO] = []
     var sortedTags: [TagVO] = [] {
         didSet {
             NotificationCenter.default.post(name: Self.didUpdateTagsNotification, object: self, userInfo: nil)
+        }
+    }
+    var isLoading: Bool = false {
+        didSet {
+            NotificationCenter.default.post(name: Self.isLoadingNotification, object: self, userInfo: nil)
         }
     }
     
@@ -27,8 +33,10 @@ class ManageTagsViewModel: ViewModelInterface {
     }
     
     func refreshTags() {
+        isLoading = true
         guard let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return }
         tags = tagsRepository.getTagsByArchive(archiveId: archiveId) { tags, error in
+            self.isLoading = false
             self.tags = tags ?? []
             self.sortedTags = tags ?? []
         } ?? []
@@ -36,8 +44,9 @@ class ManageTagsViewModel: ViewModelInterface {
     
     func deleteTag(index: Int, completion: @escaping ((String?) -> Void)) {
         let selectedTag = sortedTags[index]
-        
+        isLoading = true
         tagsRepository.deleteTag(tagVO: [selectedTag]) { error in
+            self.isLoading = false
             if error == nil {
                 self.tags.removeAll { tag in
                     tag.tagVO.name == selectedTag.tagVO.name
@@ -46,6 +55,16 @@ class ManageTagsViewModel: ViewModelInterface {
                 completion(nil)
             } else {
                 completion(error.debugDescription)
+            }
+        }
+    }
+
+    func searchTags(withText text: String) {
+        if text.isEmpty {
+            sortedTags = tags
+        } else {
+            sortedTags = tags.filter { tag in
+                tag.tagVO.name?.lowercased().contains(text.lowercased()) ?? false
             }
         }
     }

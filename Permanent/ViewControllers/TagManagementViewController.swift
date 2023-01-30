@@ -10,7 +10,7 @@ import UIKit
 class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     
     @IBOutlet weak var archiveTitleNameLabel: UILabel!
-    @IBOutlet weak var archiveTitleTagsNbrLabel: UILabel!
+    @IBOutlet weak var archiveTitleTagsCountLabel: UILabel!
     @IBOutlet weak var searchTags: UISearchBar!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var addButton: FABView!
@@ -27,6 +27,13 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
             self?.updateTagsNumber()
             self?.collectionView.reloadData()
         }
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.isLoadingNotification, object: nil, queue: nil) { [weak self] notif in
+            if let isLoading = self?.viewModel?.isLoading, isLoading {
+                self?.showSpinner()
+            } else {
+                self?.hideSpinner()
+            }
+        }
     }
     
     func initUI() {
@@ -35,8 +42,8 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         archiveTitleNameLabel.font = Text.style35.font
         archiveTitleNameLabel.textColor = .darkBlue
         
-        archiveTitleTagsNbrLabel.font = Text.style34.font
-        archiveTitleTagsNbrLabel.textColor = .lightGray
+        archiveTitleTagsCountLabel.font = Text.style34.font
+        archiveTitleTagsCountLabel.textColor = .lightGray
         
         if let archiveName = AuthenticationManager.shared.session?.selectedArchive?.fullName {
             archiveTitleNameLabel.text = "The \(archiveName) Archive Tags"
@@ -74,11 +81,11 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     
     func updateTagsNumber() {
         guard let tagsNumber = viewModel?.sortedTags.count else {
-            archiveTitleTagsNbrLabel.text = nil
+            archiveTitleTagsCountLabel.text = nil
             return
         }
         
-        archiveTitleTagsNbrLabel.text = "(\(String(tagsNumber)))"
+        archiveTitleTagsCountLabel.text = "(\(String(tagsNumber)))"
     }
 }
 
@@ -92,8 +99,6 @@ extension TagManagementViewController: FABViewDelegate {
             showAlert(title: .error, message: .errorMessage)
             return
         }
-
-        //actionSheet.delegate = self
         navigationController?.display(viewController: actionSheet, modally: true)
     }
 }
@@ -101,16 +106,9 @@ extension TagManagementViewController: FABViewDelegate {
 // MARK: - SearchBar Delegate
 extension TagManagementViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-
-        let currentTagVO: [TagVO] = viewModel?.tags.map({ (item) -> TagVO in
-            return item
-        }) ?? []
-
-        viewModel?.sortedTags = searchText.isEmpty ? currentTagVO  : currentTagVO.filter({ (tag) -> Bool in
-            return tag.tagVO.name?.lowercased().contains(searchText.lowercased()) ?? false
-        })
+        viewModel?.searchTags(withText: searchText)
     }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.view.endEditing(true)
     }
@@ -119,11 +117,6 @@ extension TagManagementViewController: UISearchBarDelegate {
         if range.location >= 16 { return false }
         return true
     }
-}
-
-// MARK: - CollectionView Delegate
-extension TagManagementViewController: UICollectionViewDelegate {
-    
 }
 
 // MARK: - CollectionView DataSource
@@ -139,16 +132,13 @@ extension TagManagementViewController: UICollectionViewDataSource {
             cell.configure(tagName: tagName.tagVO.name)
             
             cell.rightSideButtonAction = {
-                self.showSpinner()
                 self.viewModel?.deleteTag(index: indexPath.item, completion: { result in
-                    self.hideSpinner()
                     if let _ = result {
                         self.showErrorAlert(message: .errorMessage)
                     }
                 })
             }
         }
-        
         return cell
     }
     
