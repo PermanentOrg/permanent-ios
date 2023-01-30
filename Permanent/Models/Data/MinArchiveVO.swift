@@ -10,7 +10,7 @@ import Foundation
 struct MinArchiveVO: Equatable, Codable {
     let name: String
     let thumbnail: String
-    let shareStatus: String
+    var shareStatus: String
     let shareId: Int
     let archiveID: Int
     let folderLinkID: Int?

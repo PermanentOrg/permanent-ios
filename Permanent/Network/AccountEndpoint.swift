@@ -7,8 +7,11 @@
 
 import Foundation
 
+typealias LoginCredentials = (email: String, password: String)
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
+typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
 typealias UpdateData = (email: String, phone: String)
+typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
 
 enum AccountEndpoint {
     /// Creates an new user account.
@@ -64,40 +67,40 @@ extension AccountEndpoint: RequestProtocol {
     var parameters: RequestParameters? {
         switch self {
         case .signUp(let credentials):
-            return Payloads.signUpPayload(for: credentials)
+            return signUpPayload(for: credentials)
             
         case .delete(let accountId):
-            return Payloads.deleteAccountPayload(accountId: accountId)
+            return deleteAccountPayload(accountId: accountId)
             
         case .updateEmailAndPhone(let accountId, let data):
-            return Payloads.updateEmailAndPhone(accountId: accountId, updateData: data)
+            return updateEmailAndPhone(accountId: accountId, updateData: data)
             
         case .update(let accountVO):
-            return Payloads.update(accountVO: accountVO)
+            return update(accountVO: accountVO)
             
         case .sendVerificationCodeSMS(let id, let email):
-            return Payloads.smsVerificationCodePayload(accountId: id, email: email)
+            return smsVerificationCodePayload(accountId: id, email: email)
             
         case .changePassword(let id, let passData):
-            return Payloads.updatePassword(accountId: id, updateData: passData)
+            return updatePassword(accountId: id, updateData: passData)
             
         case .getUserData(let id):
-            return Payloads.getUserData(accountId: id)
+            return getUserData(accountId: id)
             
         case .updateUserData(accountId: let accountId, updateData: let updateData):
-            return Payloads.updateUserData(accountId: accountId, updateUserData: updateData)
+            return updateUserData(accountId: accountId, updateUserData: updateData)
             
         case .updateShareRequest(let shareVO):
-            return Payloads.updateShareRequest(shareVO: shareVO)
+            return updateShareRequest(shareVO: shareVO)
             
         case .updateShareArchiveRequest(let archiveVO):
-            return Payloads.updateShareRequest(minArchiveVO: archiveVO)
+            return updateShareRequest(minArchiveVO: archiveVO)
             
         case .deleteShareRequest(shareId: let shareId, folderLinkId: let folderLinkId, archiveId: let archiveId):
-            return Payloads.deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
+            return deleteShareRequest(shareId: shareId, folderLinkId: folderLinkId, archiveId: archiveId)
             
         case .getSessionAccount:
-            return Payloads.getSessionAccount()
+            return getSessionAccount()
         }
     }
 
@@ -116,4 +119,215 @@ extension AccountEndpoint: RequestProtocol {
     var bodyData: Data? { nil }
     
     var customURL: String? { nil }
+}
+
+extension AccountEndpoint {
+    func signUpPayload(for credentials: SignUpCredentials) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "primaryEmail": credentials.loginCredentials.email,
+                            "fullName": credentials.name,
+                            "agreed": true,
+                            "optIn": false
+                        ],
+                        "AccountPasswordVO": [
+                            "password": credentials.loginCredentials.password,
+                            "passwordVerify": credentials.loginCredentials.password
+                        ],
+                        "SimpleVO": [
+                            "key": "createArchive",
+                            "value": false
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func deleteAccountPayload(accountId: Int) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func updateEmailAndPhone(accountId: Int, updateData: UpdateData) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId,
+                            "primaryPhone": updateData.phone,
+                            "primaryEmail": updateData.email
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func update(accountVO: AccountVOData) -> RequestParameters {
+        let accountDict: Any?
+        if let accountJson = try? JSONEncoder().encode(accountVO) {
+            accountDict = try? JSONSerialization.jsonObject(with: accountJson, options: [])
+        } else {
+            accountDict = nil
+        }
+        
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": accountDict
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func smsVerificationCodePayload(accountId: Int, email: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId,
+                            "primaryEmail": email
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func updatePassword(accountId: Int, updateData: ChangePasswordCredentials) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId
+                        ],
+                        "AccountPasswordVO": [
+                            "password": updateData.password,
+                            "passwordVerify": updateData.passwordVerify,
+                            "passwordOld": updateData.passwordOld
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func getUserData(accountId: Int) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func updateUserData(accountId: Int, updateUserData: UpdateUserData) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "AccountVO": [
+                            "accountId": accountId,
+                            "fullName": updateUserData.fullName as Any,
+                            "primaryEmail": updateUserData.primaryEmail as Any,
+                            "primaryPhone": updateUserData.primaryPhone as Any,
+                            "address": updateUserData.address as Any,
+                            "address2": updateUserData.address2 as Any,
+                            "city": updateUserData.city as Any,
+                            "state": updateUserData.state as Any,
+                            "zip": updateUserData.zip as Any,
+                            "country": updateUserData.country as Any
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func updateShareRequest(shareVO: ShareVOData) -> RequestParameters {
+        guard let shareVOJson = try? JSONEncoder().encode(shareVO),
+            let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
+            return []
+        }
+        
+        let updateDict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "ShareVO": shareVODict
+                    ]
+                ]
+            ]
+        ]
+        return updateDict
+    }
+    
+    func updateShareRequest(minArchiveVO: MinArchiveVO) -> RequestParameters {
+        let shareVO = ShareVOData(shareID: minArchiveVO.shareId, folderLinkID: minArchiveVO.folderLinkID, archiveID: minArchiveVO.archiveID, accessRole: minArchiveVO.accessRole, type: nil, status: minArchiveVO.shareStatus, requestToken: nil, previewToggle: nil, folderVO: nil, recordVO: nil, archiveVO: nil, accountVO: nil, createdDT: nil, updatedDT: nil)
+        
+        guard let shareVOJson = try? JSONEncoder().encode(shareVO),
+            let shareVODict = try? JSONSerialization.jsonObject(with: shareVOJson, options: []) else {
+            return []
+        }
+        
+        let updateDict = [
+            "RequestVO": [
+                "data": [
+                    [
+                        "ShareVO": shareVODict
+                    ]
+                ]
+            ]
+        ]
+        return updateDict
+    }
+    
+    func deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "ShareVO": [
+                            "shareId": shareId,
+                            "folder_linkId": folderLinkId,
+                            "archiveId": archiveId
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    }
+    
+    func getSessionAccount() -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [:]
+                ]
+            ]
+        ]
+    }
 }

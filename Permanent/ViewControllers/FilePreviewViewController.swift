@@ -18,6 +18,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var retryButton: RoundedButton!
+    let overlayView = UIView(frame: .zero)
     
     let fileHelper = FileHelper()
     
@@ -114,17 +115,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         retryButton.isHidden = true
 
         let shareButton = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
-
-        let infoButton = UIBarButtonItem(image: .info, style: .plain, target: self, action: #selector(infoButtonAction(_:)))
-        navigationItem.rightBarButtonItems = [shareButton, infoButton]
-        let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
+        navigationItem.rightBarButtonItem = shareButton
         
         title = file.name
         
@@ -175,6 +166,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             case FileType.video:
                 self.loadVideo(withURL: localURL, contentType: contentType)
                 
+            case FileType.audio:
+                self.loadAudio(withURL: localURL, contentType: contentType)
+                
             case FileType.pdf:
                 self.loadPDF(withURL: localURL)
                 
@@ -192,6 +186,9 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
                 
             case FileType.video:
                 self.loadVideo(withURL: downloadURL, contentType: contentType)
+                
+            case FileType.audio:
+                self.loadAudio(withURL: downloadURL, contentType: contentType)
                 
             case FileType.pdf:
                 self.loadPDF(withURL: downloadURL)
@@ -255,8 +252,36 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
             }
         }
     }
-    
+        
     func loadVideo(withURL url: URL, contentType: String) {
+        loadAV(withURL: url, contentType: contentType)
+    }
+    
+    func loadAudio(withURL url: URL, contentType: String) {
+        loadAV(withURL: url, contentType: contentType)
+        
+        let playButton = UIButton(type: .custom)
+        playButton.translatesAutoresizingMaskIntoConstraints = false
+        playButton.setImage(UIImage(named: "play.circle"), for: .normal)
+        playButton.tintColor = .white
+        playButton.addTarget(self, action: #selector(playAudioFile(_:)), for: .touchUpInside)
+        
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
+        overlayView.backgroundColor = .black
+        view.addSubview(overlayView)
+        overlayView.addSubview(playButton)
+        
+        NSLayoutConstraint.activate([
+            overlayView.leadingAnchor.constraint(equalTo: thumbnailImageView.leadingAnchor, constant: 0),
+            overlayView.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: 0),
+            overlayView.topAnchor.constraint(equalTo: thumbnailImageView.topAnchor, constant: 0),
+            overlayView.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: 0),
+            playButton.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor),
+            playButton.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor)
+        ])
+    }
+    
+    func loadAV(withURL url: URL, contentType: String) {
         let asset = AVURLAsset(url: url)
         let playerItem = AVPlayerItem(asset: asset)
         
@@ -274,6 +299,14 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         
         activityIndicator.stopAnimating()
         thumbnailImageView.isHidden = true
+    }
+
+    
+    @objc func playAudioFile(_ sender: UIButton) {
+        overlayView.isHidden = true
+        
+        videoPlayer?.entersFullScreenWhenPlaybackBegins = true
+        videoPlayer?.player?.play()
     }
     
     func loadMisc(withURL url: URL) {
@@ -312,25 +345,6 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
         vc.fileViewModel = file
         vc.menuItems = menuItems
         present(vc, animated: true)
-    }
-    
-    @objc func infoButtonAction(_ sender: Any) {
-        let fileDetailsVC = UIViewController.create(withIdentifier: .fileDetailsOnTap, from: .main) as! FileDetailsViewController
-        fileDetailsVC.file = viewModel?.file
-        fileDetailsVC.viewModel = viewModel
-        fileDetailsVC.delegate = self
-        
-        let navControl = FilePreviewNavigationController(rootViewController: fileDetailsVC)
-        navControl.modalPresentationStyle = .fullScreen
-        present(navControl, animated: false, completion: nil)
-    }
-    
-    @objc func closeButtonAction(_ sender: Any) {
-        (navigationController as! FilePreviewNavigationController).filePreviewNavDelegate?.filePreviewNavigationControllerWillClose(self, hasChanges: hasChanges)
-        
-        removeVideoPlayer()
-        
-        dismiss(animated: true, completion: nil)
     }
 
     @IBAction func retryButtonPressed(_ sender: Any) {

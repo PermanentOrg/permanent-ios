@@ -40,6 +40,15 @@ struct Text {
     static let style31 = TextStyle(UIFont(name: "OpenSans-Bold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style32 = TextStyle(UIFont(name: "OpenSans-Bold", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.natural)
     static let style33 = TextStyle(UIFont(name: "OpenSans-Bold", size: 24)!, TextStyle.calculateSpacing(fontSize: CGFloat(24), lineHeight: CGFloat(27)), NSTextAlignment.center)
+    static let style34 = TextStyle(UIFont(name: "OpenSans-Regular", size: 15)!, TextStyle.calculateSpacing(fontSize: CGFloat(15), lineHeight: CGFloat(20)), NSTextAlignment.natural)
+    static let style35 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 15)!, TextStyle.calculateSpacing(fontSize: CGFloat(15), lineHeight: CGFloat(20)), NSTextAlignment.natural)
+    static let style36 = TextStyle(UIFont(name: "OpenSans-Regular", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style37 = TextStyle(UIFont(name: "OpenSans-Regular", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style38 = TextStyle(UIFont(name: "OpenSans-Italic", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style39 = TextStyle(UIFont(name: "OpenSans-Regular", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(13)), NSTextAlignment.center)
+    static let style40 = TextStyle(UIFont(name: "OpenSans-Bold", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style41 = TextStyle(UIFont(name: "OpenSans-Bold", size: 15)!, TextStyle.calculateSpacing(fontSize: CGFloat(15), lineHeight: CGFloat(20)), NSTextAlignment.natural)
+    static let style42 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(12)), NSTextAlignment.center)
 }
 
 struct Constants {

@@ -7,6 +7,8 @@
 
 import Foundation
 import XCTest
+import AppAuth
+import KeychainSwift
 
 @testable import Permanent
 
@@ -28,12 +30,36 @@ class ShareExtensionTests: XCTestCase {
         try super.tearDownWithError()
     }
     
+    func createSession() -> PermSession {
+        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
+                                                    tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
+        let request = OIDAuthorizationRequest(
+            configuration: configuration,
+            clientId: "authServiceInfo.clientId",
+            clientSecret: "authServiceInfo.clientSecret",
+            scopes: ["offline_access"],
+            redirectURL: URL(string: "org.permanent.permanentArchive://")!,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: nil
+        )
+        let authState = OIDAuthState(authorizationResponse: OIDAuthorizationResponse(request: request, parameters: [:]))
+        let session = PermSession(authState: authState)
+        
+        return session
+    }
+    
     func positiveTestInit() {
-        sut = ShareExtensionViewModel(currentArchive: archivePositiveTests)
+        let session = createSession()
+        session.selectedArchive = archivePositiveTests
+        
+        sut = ShareExtensionViewModel(session: session)
     }
     
     func negativeTestInit() {
-        sut = ShareExtensionViewModel(currentArchive: archiveNegativeTests)
+        let session = createSession()
+        session.selectedArchive = archiveNegativeTests
+        
+        sut = ShareExtensionViewModel(session: session)
     }
     
     func testArchiveName() throws {

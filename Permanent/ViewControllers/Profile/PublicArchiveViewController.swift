@@ -35,6 +35,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     var archiveVC: PublicArchiveFileViewController!
     
     var isPickingProfilePicture: Bool = false
+    var isViewingPublicProfile: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,7 +72,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         }
         
-        if !archiveData.permissions().contains(.ownership) {
+        if viewModel?.canEditPublicProfilePhoto() == true {
             changeProfilePhotoButton.isHidden = true
             changeProfilePhotoButtonView.alpha = 0
             changeProfileBannerPhotoButtonView.alpha = 0
@@ -86,7 +87,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         profilePageVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionViewContainer.addSubview(profilePageVC.view)
         profilePageVC.didMove(toParent: self)
-        profilePageVC.view.isHidden = false
+        profilePageVC.view.isHidden = isViewingPublicProfile ? false : true
         
         archiveVC = UIViewController.create(withIdentifier: .publicArchiveFileBrowser, from: .profile) as? PublicArchiveFileViewController
         archiveVC.delegate = self
@@ -96,9 +97,9 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         archiveVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionViewContainer.addSubview(archiveVC.view)
         archiveVC.didMove(toParent: self)
-        archiveVC.view.isHidden = true
+        archiveVC.view.isHidden = isViewingPublicProfile ? true : false
         
-        segmentedControl.selectedSegmentIndex = 1
+        segmentedControl.selectedSegmentIndex = isViewingPublicProfile ? 1 : 0
         
         setupHeaderView()
     }

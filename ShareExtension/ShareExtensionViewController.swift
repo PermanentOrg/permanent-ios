@@ -14,12 +14,14 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var userNameLabel: UILabel!
+    @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var saveFolderLabel: UILabel!
     @IBOutlet weak var separatorOneView: UIView!
-    @IBOutlet weak var userNameImageView: UIImageView!
+    @IBOutlet weak var archiveImageView: UIImageView!
     @IBOutlet weak var saveFolderImageView: UIImageView!
-
+    @IBOutlet weak var selectFolderButton: UIButton!
+    @IBOutlet weak var selectArchiveButton: UIButton!
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return [.portrait]
@@ -49,14 +51,14 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upload".localized(), style: .plain, target: self, action: #selector(didTapUpload))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized(), style: .plain, target: self, action: #selector(didTapCancel))
         
-        saveFolderLabel.text = "Mobile Uploads"
-        userNameImageView.image = UIImage(named: "placeholder")
+        saveFolderLabel.text = viewModel?.folderDisplayName
+        archiveImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
-        userNameLabel.font = Text.style4.font
+        archiveNameLabel.font = Text.style4.font
         saveFolderLabel.font = Text.style4.font
         
-        userNameLabel.textColor = .black
+        archiveNameLabel.textColor = .black
         saveFolderLabel.textColor = .black
         separatorOneView.backgroundColor = .lightGray
     }
@@ -69,11 +71,7 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     private func handleSharedFile() {
-        userNameLabel.text = viewModel?.archiveName()
-        
-        if let archiveThumnailUrl = viewModel?.archiveThumbnailUrl() {
-            userNameImageView.load(urlString: archiveThumnailUrl)
-        }
+        updateArchiveView()
         
         if let hasActiveSession = viewModel?.hasActiveSession(), !hasActiveSession {
             let alert = UIAlertController(title: "Uh oh", message: "You do not have an active session. Please log in to Permanent.".localized(), preferredStyle: .alert)
@@ -82,19 +80,33 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
             }))
             
             self.present(alert, animated: true)
-        } else if let hasUploadPermission = viewModel?.hasUploadPermission(), !hasUploadPermission {
+        }
+        
+        if viewModel?.hasUploadPermission() == false {
             let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+            alert.addAction(UIAlertAction(title: .cancel, style: .default, handler: { _ in
                 self.didTapCancel()
+            }))
+            alert.addAction(UIAlertAction(title: "Change Archive".localized(), style: .default, handler: { action in
+                self.selectArchiveButtonPressed(action)
             }))
             
             self.present(alert, animated: true)
         }
+        
         let attachments = (self.extensionContext?.inputItems.first as? NSExtensionItem)?.attachments ?? []
         
         viewModel?.processSelectedFiles(attachments: attachments, then: { status in
             self.stopLoadingAnimation()
         })
+    }
+    
+    func updateArchiveView() {
+        archiveNameLabel.text = viewModel?.archiveName()
+        
+        if let archiveThumnailUrl = viewModel?.archiveThumbnailUrl() {
+            archiveImageView.load(urlString: archiveThumnailUrl)
+        }
     }
     
     func stopLoadingAnimation() {
@@ -128,6 +140,24 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     @objc func didTapCancel() {
         extensionContext!.completeRequest(returningItems: nil, completionHandler: nil)
     }
+    
+    @IBAction func selectFolderButtonPressed(_ sender: Any) {
+        let selectFolderVC = ShareFileBrowserViewController()
+        selectFolderVC.delegate = self
+        let navController = ShareExtensionNavigationController(rootViewController: selectFolderVC)
+        
+        present(navController, animated: true)
+    }
+    
+    @IBAction func selectArchiveButtonPressed(_ sender: Any) {
+        let archivesVC = UIViewController.create(withIdentifier: .archives, from: .archives) as! ArchivesViewController
+        archivesVC.delegate = self
+        archivesVC.isManaging = false
+        archivesVC.accountArchives = nil
+        
+        let navController = UINavigationController(rootViewController: archivesVC)
+        present(navController, animated: true, completion: nil)
+    }
 }
 
 extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -143,6 +173,10 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
                 let cellConfiguration = viewModel?.cellConfigurationParameters(file: selectedFile) else { return UITableViewCell() }
             
             cell.configure(with: cellConfiguration)
+            cell.rightButtonAction = { [weak self] cell in
+                self?.viewModel?.removeSelectedFile(selectedFile)
+                self?.tableView.reloadData()
+            }
             tableViewCell = cell
         }
         return tableViewCell
@@ -150,5 +184,34 @@ extension ShareExtensionViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(60)
+    }
+}
+
+extension ShareExtensionViewController: ArchivesViewControllerDelegate {
+    func archivesViewController(_ vc: ArchivesViewController, shouldChangeToArchive toArchive: ArchiveVOData) -> Bool {
+        let hasUploadPermission = toArchive.permissions().contains(.upload)
+        if hasUploadPermission == false {
+            dismiss(animated: true) {
+                let alert = UIAlertController(title: "Uh oh", message: "You are a viewer of the selected archive and do not have permission to upload files.".localized(), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+                }))
+                
+                self.present(alert, animated: true)
+            }
+        }
+        
+        return hasUploadPermission
+    }
+    
+    func archivesViewControllerDidChangeArchive(_ vc: ArchivesViewController) {
+        updateArchiveView()
+        viewModel?.archiveUpdated()
+    }
+}
+
+extension ShareExtensionViewController: ShareFileBrowserViewControllerDelegate {
+    func shareFileBrowserViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo) {
+        viewModel?.updateSelectedFolder(withName: name, folderInfo: folderInfo)
+        saveFolderLabel.text = viewModel?.folderDisplayName
     }
 }

@@ -15,6 +15,7 @@ target 'Permanent' do
   pod 'AppAuth', '1.4.0'
   pod 'KeychainSwift', '20.0'
   pod 'StripeApplePay', '22.8.1'
+  pod 'SkeletonView', '1.30.4'
 
   target 'PermanentTests' do
         inherit! :search_paths
