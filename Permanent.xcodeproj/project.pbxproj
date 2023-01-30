@@ -70,6 +70,8 @@
 		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
+		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
+		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
 		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
@@ -107,6 +109,8 @@
 		5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */; };
 		5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */; };
 		5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */; };
+		5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */; };
+		5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */; };
 		5E56FDBF2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */; };
 		5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */; };
 		5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */; };
@@ -741,6 +745,8 @@
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
+		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
+		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
 		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
@@ -780,6 +786,8 @@
 		5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingMakeDefaultArchiveTableViewCell.xib; sourceTree = "<group>"; };
 		5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingHeaderTableViewCell.swift; sourceTree = "<group>"; };
 		5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingHeaderTableViewCell.xib; sourceTree = "<group>"; };
+		5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagsHeaderCollectionView.swift; sourceTree = "<group>"; };
+		5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagsHeaderCollectionView.xib; sourceTree = "<group>"; };
 		5E56FDBD2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageArchiveCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDBE2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageArchiveCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDC1274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageAboutCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1523,6 +1531,17 @@
 			path = Local;
 			sourceTree = "<group>";
 		};
+		5E202E032981FCEF0063DDED /* ArchiveSettings */ = {
+			isa = PBXGroup;
+			children = (
+				5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */,
+				5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */,
+				5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */,
+				5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */,
+			);
+			path = ArchiveSettings;
+			sourceTree = "<group>";
+		};
 		5E218BF225A869B100B56625 /* SecurityView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2212,6 +2231,7 @@
 				5E62F7B727F5E5220046F6C8 /* PublicGalleryCollectionViewCells */,
 				5E4D0AE92832687E00C6439C /* AccountOnboarding */,
 				5E03F409291BC03500DFCE09 /* ShareManagementCollectionViewCells */,
+				5E202E032981FCEF0063DDED /* ArchiveSettings */,
 				F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */,
 				F5C37D4728AD62060062D9EB /* FileCollectionViewCell.xib */,
 				F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */,
@@ -2729,12 +2749,14 @@
 				F54257A028AE6F2300D79AA1 /* FileCollectionViewGridCell.xib in Resources */,
 				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
 				5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */,
+				5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */,
 				5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */,
 				F5C37D4928AD62060062D9EB /* FileCollectionViewCell.xib in Resources */,
 				BCC1CCF425792E950069E337 /* LinkOptionsView.xib in Resources */,
 				5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */,
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
+				5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */,
 				5E62F7CF27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.xib in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */,
@@ -3047,6 +3069,7 @@
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
+				5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */,
 				5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */,
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
@@ -3148,6 +3171,7 @@
 				5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */,
 				5E2CFA22274E843A0055941C /* PublicProfilePageEndpoint.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
+				5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
 				BC59BAD425C2B8BD005A45D3 /* NotificationTableViewCell.swift in Sources */,
 				5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */,
