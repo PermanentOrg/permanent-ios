@@ -1834,6 +1834,7 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 				F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */,
 				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
+				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -2502,6 +2503,7 @@
 			isa = PBXGroup;
 			children = (
 				F50E135328F43348003DF4CC /* DataSources */,
+				5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */,
 				F50E135428F43359003DF4CC /* FilesRepository.swift */,
 				5EFC404B292D722600FD244B /* ShareManagementRepository.swift */,
 				5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */,
