@@ -70,6 +70,7 @@
 		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
+		5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E4FA82988897F0062984C /* ManageTagsTests.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
 		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
@@ -745,6 +746,7 @@
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
+		5E1E4FA82988897F0062984C /* ManageTagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsTests.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
@@ -1737,6 +1739,7 @@
 				F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */,
 				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
 				374554B71E0322714462588A /* ShareManagementTests.swift */,
+				5E1E4FA82988897F0062984C /* ManageTagsTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -3466,6 +3469,7 @@
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
 				5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */,
