@@ -30,6 +30,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     
     var archiveData: ArchiveVOData!
     var archiveNbr: String?
+    var deeplinkPayload: PublicProfileDeeplinkPayload?
     
     var profilePageVC: PublicProfilePageViewController!
     var archiveVC: PublicArchiveFileViewController!
@@ -44,6 +45,11 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         if archiveData == nil {
             showSpinner()
+
+            if archiveNbr == nil {
+                archiveNbr = deeplinkPayload?.archiveNbr
+            }
+
             viewModel?.getPublicArchive(withArchiveNbr: archiveNbr!, { archiveVOData in
                 self.hideSpinner()
                 self.archiveData = archiveVOData
@@ -92,6 +98,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         archiveVC = UIViewController.create(withIdentifier: .publicArchiveFileBrowser, from: .profile) as? PublicArchiveFileViewController
         archiveVC.delegate = self
         archiveVC.archiveData = archiveData
+        archiveVC.deeplinkPayload = deeplinkPayload
         addChild(archiveVC)
         archiveVC.view.frame = collectionViewContainer.bounds
         archiveVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]

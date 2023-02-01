@@ -159,9 +159,9 @@ class RootViewController: UIViewController {
 
             leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
             mainViewController = sharesVC
-        } else if let archiveNbr: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.publicURLToken) {
+        } else if let deeplinkPayload: PublicProfileDeeplinkPayload = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.publicURLToken) {
             let newRootVC = UIViewController.create(withIdentifier: .publicGallery, from: .main) as! PublicGalleryViewController
-            newRootVC.initialArchiveNbr = archiveNbr
+            newRootVC.deeplinkPayload = deeplinkPayload
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
             leftSideMenuController.selectedMenuOption = .publicGallery
