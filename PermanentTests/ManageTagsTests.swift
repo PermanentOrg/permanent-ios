@@ -38,24 +38,35 @@ class ManageTagsTests: XCTestCase {
     }
 
     func testDeleteTag() {
+        var temporarySut: ManageTagsViewModel!
+        
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+        
         let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
         let tagVO = TagVO(tagVO: tag)
-        sut.tags.append(tagVO)
-        sut.sortedTags.append(tagVO)
-        sut.deleteTag(index: 0) { error in
-            XCTAssertNil(error)
-            XCTAssert(self.sut.tags.count == 0)
-            XCTAssert(self.sut.sortedTags.count == 0)
+        temporarySut.tags.append(tagVO)
+        temporarySut.sortedTags.append(tagVO)
+        temporarySut.deleteTag(index: 0) { error in
+            XCTAssertNil(tagsRemoteMockDataSource.deleteTagError)
+            XCTAssert(temporarySut.tags.count == 0)
+            XCTAssert(temporarySut.sortedTags.count == 0)
         }
     }
 
     func testSearchTags() {
-        let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
-        let tagVO = TagVO(tagVO: tag)
-        sut.tags.append(tagVO)
-        sut.sortedTags.append(tagVO)
+        let firstTag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
+        let secondTag = TagVOData(name: "sample", status: nil, tagId: 3, type: nil, createdDT: nil, updatedDT: nil)
+        let firstTagVO = TagVO(tagVO: firstTag)
+        let secondTagVO = TagVO(tagVO: secondTag)
+        sut.tags.append(firstTagVO)
+        sut.tags.append(secondTagVO)
+        sut.sortedTags = sut.tags
         sut.searchTags(withText: "test")
         XCTAssert(self.sut.sortedTags.count == 1)
+        sut.searchTags(withText: "")
+        XCTAssert(self.sut.sortedTags.count == 2)
     }
 
     func testIsLoading() {

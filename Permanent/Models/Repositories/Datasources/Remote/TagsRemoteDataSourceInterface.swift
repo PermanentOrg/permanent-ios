@@ -107,6 +107,8 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
 }
 
 class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
+    var deleteTagError: Error?
+    
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?, Error?) -> Void)) {
         let tag = TagVO(tagVO: TagVOData(status: nil, tagId: nil, type: nil, createdDT: nil, updatedDT: nil))
         completion([tag], nil)
@@ -122,6 +124,6 @@ class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
     }
     
     func deleteTag(tagVO: [TagVO], completion: @escaping ((Error?) -> Void)) {
-        completion(nil)
+        completion(deleteTagError)
     }
 }
