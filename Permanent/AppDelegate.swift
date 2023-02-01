@@ -75,6 +75,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return false
             }
             
+        case "app":
+            if url.pathComponents.count >= 3, url.pathComponents[2] == "pr" && url.pathComponents[3] == "manage" {
+                if rootViewController.isDrawerRootActive {
+                    return navigateFromSharedArchive()
+                } else {
+                    saveSharedArchiveToken()
+                    return false
+                }
+            }
+            return false
+            
         default: return false
         }
     }
@@ -156,6 +167,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     fileprivate func savePublicLinkToken(_ publicDeeplinkPayload: PublicProfileDeeplinkPayload) {
         try? PreferencesManager.shared.setCodableObject(publicDeeplinkPayload, forKey: Constants.Keys.StorageKeys.publicURLToken)
+    }
+    
+    fileprivate func navigateFromSharedArchive() -> Bool {
+        let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
+        self.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        
+        return true
+    }
+    
+    fileprivate func saveSharedArchiveToken() {
+        PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
     }
 }
 
@@ -365,7 +387,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             Constants.Keys.StorageKeys.sharedFileKey,
             Constants.Keys.StorageKeys.requestLinkAccess,
             Constants.Keys.StorageKeys.shareURLToken,
-            Constants.Keys.StorageKeys.publicURLToken
+            Constants.Keys.StorageKeys.publicURLToken,
+            Constants.Keys.StorageKeys.sharedArchiveToken
             ]
         )
     }

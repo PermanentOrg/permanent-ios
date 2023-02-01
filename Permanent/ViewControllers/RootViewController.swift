@@ -167,6 +167,14 @@ class RootViewController: UIViewController {
             leftSideMenuController.selectedMenuOption = .publicGallery
             
             mainViewController = newRootVC
+        } else if let sharedArchiveToken: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken), sharedArchiveToken {
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
+            
+            let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
+            
+            leftSideMenuController.selectedMenuOption = .none
+            
+            mainViewController = newRootVC
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
             (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
