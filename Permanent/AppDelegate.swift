@@ -55,12 +55,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
         case "p":
             let archiveNbr = url.pathComponents[3]
-            if rootViewController.isDrawerRootActive {
-                return navigateFromPublicLink(archiveNbr)
+            let folderArchiveNbr = url.pathComponents[4]
+            let folderLinkId = Int(url.pathComponents[5]) ?? 0
+
+            let publicDeeplinkPayload: PublicProfileDeeplinkPayload
+
+            if url.pathComponents.count >= 8 && url.pathComponents[6] == "record" {
+                let fileArchiveNbr = url.pathComponents[7]
+
+                publicDeeplinkPayload = PublicProfileDeeplinkPayload(archiveNbr: archiveNbr, folderArchiveNbr: folderArchiveNbr, folderLinkId: folderLinkId, fileArchiveNbr: fileArchiveNbr)
             } else {
-                savePublicLinkToken(archiveNbr)
+                publicDeeplinkPayload = PublicProfileDeeplinkPayload(archiveNbr: archiveNbr, folderArchiveNbr: folderArchiveNbr, folderLinkId: folderLinkId, fileArchiveNbr: "")
+            }
+            
+            if rootViewController.isDrawerRootActive {
+                return navigateFromPublicLink(publicDeeplinkPayload)
+            } else {
+                savePublicLinkToken(publicDeeplinkPayload)
                 return false
             }
+            
+        case "app":
+            if url.pathComponents.count >= 3, url.pathComponents[2] == "pr" && url.pathComponents[3] == "manage" {
+                if rootViewController.isDrawerRootActive {
+                    return navigateFromSharedArchive()
+                } else {
+                    saveSharedArchiveToken()
+                    return false
+                }
+            }
+            return false
             
         default: return false
         }
@@ -125,9 +149,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         PreferencesManager.shared.set(token, forKey: Constants.Keys.StorageKeys.shareURLToken)
     }
     
-    fileprivate func navigateFromPublicLink(_ archiveNbr: String) -> Bool {
+    fileprivate func navigateFromPublicLink(_ publicDeeplinkPayload: PublicProfileDeeplinkPayload) -> Bool {
         let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
-        newRootVC.archiveNbr = archiveNbr
+        newRootVC.deeplinkPayload = publicDeeplinkPayload
         let newNav = NavigationController(rootViewController: newRootVC)
         
         if let presentedVC = rootViewController.presentedViewController {
@@ -140,9 +164,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
+
+    fileprivate func savePublicLinkToken(_ publicDeeplinkPayload: PublicProfileDeeplinkPayload) {
+        try? PreferencesManager.shared.setCodableObject(publicDeeplinkPayload, forKey: Constants.Keys.StorageKeys.publicURLToken)
+    }
     
-    fileprivate func savePublicLinkToken(_ archiveNbr: String) {
-        PreferencesManager.shared.set(archiveNbr, forKey: Constants.Keys.StorageKeys.publicURLToken)
+    fileprivate func navigateFromSharedArchive() -> Bool {
+        let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
+        self.rootViewController.changeDrawerRoot(viewController: newRootVC)
+        
+        return true
+    }
+    
+    fileprivate func saveSharedArchiveToken() {
+        PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
     }
 }
 
@@ -352,7 +387,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             Constants.Keys.StorageKeys.sharedFileKey,
             Constants.Keys.StorageKeys.requestLinkAccess,
             Constants.Keys.StorageKeys.shareURLToken,
-            Constants.Keys.StorageKeys.publicURLToken
+            Constants.Keys.StorageKeys.publicURLToken,
+            Constants.Keys.StorageKeys.sharedArchiveToken
             ]
         )
     }
