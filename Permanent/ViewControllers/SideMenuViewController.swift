@@ -10,7 +10,7 @@ import UIKit
 enum LeftDrawerSection: Int {
     case header
     case files
-    case manage
+    case archiveSettings
     case publicGallery
 }
 
@@ -19,8 +19,14 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var versionLabel: UILabel!
     
     var selectedMenuOption: DrawerOption = .files
+    var archiveSetingsWasPressed: Bool = false {
+        didSet {
+            updateLeftSideMenu()
+        }
+    }
+    static let updateArchiveSettingsChevron = Notification.Name("SideMenuViewController.updateArchiveSettingsChevron")
     
-    private let tableViewData: [LeftDrawerSection: [DrawerOption]] = [
+    private var tableViewData: [LeftDrawerSection: [DrawerOption]] = [
         LeftDrawerSection.header: [
             DrawerOption.archives
         ],
@@ -29,8 +35,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.shares,
             DrawerOption.publicFiles
         ],
-        LeftDrawerSection.manage: [
-            DrawerOption.members
+        LeftDrawerSection.archiveSettings: [
+            DrawerOption.archiveSettings
         ],
         LeftDrawerSection.publicGallery: [
             DrawerOption.publicGallery
@@ -73,6 +79,19 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
             tableView.isScrollEnabled = true
         }
     }
+    
+    func updateLeftSideMenu() {
+        tableView.beginUpdates()
+        NotificationCenter.default.post(name: Self.updateArchiveSettingsChevron, object: self, userInfo: nil)
+        if archiveSetingsWasPressed {
+            tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.tagsManagement, DrawerOption.usersManagement])
+            tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+        } else {
+            tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.usersManagement || $0 == DrawerOption.tagsManagement })
+            tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+        }
+        tableView.endUpdates()
+    }
 }
 
 extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
@@ -97,7 +116,8 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         
-        if menuOption == .archives {
+        switch menuOption {
+        case .archives:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
                 if let archive = viewModel?.getCurrentArchive(), let archiveName: String = archive.fullName {
                     let archiveThumbURL: String = archive.thumbURL500 ?? ""
@@ -109,7 +129,12 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
                 
                 cell = tableViewCell
             }
-        } else {
+        case .archiveSettings:
+            if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
+                tableViewCell.updateCell(with: menuOption, isExpanded: archiveSetingsWasPressed)
+                cell = tableViewCell
+            }
+        default:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
                 tableViewCell.updateCell(with: menuOption)
                 cell = tableViewCell
@@ -211,12 +236,17 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
-        case .members:
-            ///TO DO: remove after implementing "Archive Settings dropdown menu" task
-            //let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+        case .archiveSettings:
+            archiveSetingsWasPressed.toggle()
+            
+        case .tagsManagement:
             let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-
+            
+        case .usersManagement:
+            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         case .archives:
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController

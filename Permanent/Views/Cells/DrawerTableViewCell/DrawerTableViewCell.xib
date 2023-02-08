@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -35,15 +35,25 @@
                             </label>
                         </subviews>
                     </stackView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qk0-j4-cbm">
+                        <rect key="frame" x="239" y="39" width="10" height="5.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="10" id="ESD-b8-mpe"/>
+                            <constraint firstAttribute="height" constant="5.5" id="TP8-4X-26o"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="AWw-Pt-1mx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="MGI-PO-AND"/>
+                    <constraint firstItem="qk0-j4-cbm" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="OHo-PN-vsN"/>
                     <constraint firstItem="AWw-Pt-1mx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="UCa-pV-CC8"/>
+                    <constraint firstAttribute="trailing" secondItem="qk0-j4-cbm" secondAttribute="trailing" constant="30" id="gUY-iK-sS0"/>
                     <constraint firstAttribute="bottom" secondItem="AWw-Pt-1mx" secondAttribute="bottom" constant="20" id="pjj-k6-15x"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="menuChevronImageView" destination="qk0-j4-cbm" id="lzd-zq-Mv1"/>
                 <outlet property="menuItemImageView" destination="ZhP-3S-MBW" id="gVb-Hw-a9e"/>
                 <outlet property="menuItemTitleLabel" destination="MkG-eS-8NU" id="Pc5-eV-EZ1"/>
             </connections>
