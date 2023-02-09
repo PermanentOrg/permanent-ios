@@ -226,7 +226,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == LeftDrawerSection.files.rawValue || section == LeftDrawerSection.publicGallery.rawValue {
+        if section == LeftDrawerSection.files.rawValue {
             return 4
         }
         return 0
