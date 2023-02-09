@@ -28,9 +28,9 @@ enum DrawerOption {
     
     var icon: UIImage? {
         switch self {
-        case .files: return UIImage(named: "privateFilesIcon")!
-        case .publicFiles: return UIImage(named: "publicFilesIcon")!
-        case .shares: return UIImage(named: "sharedFilesIcon")!
+        case .files: return UIImage(named: "folderBookmark")!
+        case .publicFiles: return UIImage(named: "folderBookmark")!
+        case .shares: return UIImage(named: "folderBookmark")!
         case .archiveSettings: return UIImage(named: "gearContour")!
         case .manageArchives: return UIImage(named: "manageArchivesIcon")!
         case .publicGallery: return UIImage(named: "publicGalleryIcon")!

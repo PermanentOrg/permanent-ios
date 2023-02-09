@@ -17,6 +17,7 @@ enum LeftDrawerSection: Int {
 class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var versionLabel: UILabel!
+    @IBOutlet weak var footerBackgroundView: UIView!
     
     var selectedMenuOption: DrawerOption = .files
     var archiveSetingsWasPressed: Bool = false {
@@ -58,9 +59,12 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         tableView.separatorColor = .clear
         
-        versionLabel.textColor = .white
+        versionLabel.textColor = .white.withAlphaComponent(0.33)
         versionLabel.font = Text.style12.font
-        versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
+        versionLabel.text = "v.".localized() + " \(Bundle.release) [\(Bundle.build)]"
+        versionLabel.setTextSpacingBy(value: -0.12)
+        
+        footerBackgroundView.backgroundColor = .black.withAlphaComponent(0.20)
     }
     
     fileprivate func setupTableView() {
@@ -189,14 +193,14 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         let headerView = UIView()
         
         let lineView = UIView()
-        lineView.backgroundColor = .white.withAlphaComponent(0.25)
+        lineView.backgroundColor = .white.withAlphaComponent(0.1)
         headerView.addSubview(lineView)
         
         lineView.enableAutoLayout()
         
         NSLayoutConstraint.activate([
-            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 20),
+            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 32),
+            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 32),
             lineView.heightAnchor.constraint(equalToConstant: 1),
             lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
         ])
@@ -213,7 +217,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             return 0
         }
         
-        return 21
+        return 32
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

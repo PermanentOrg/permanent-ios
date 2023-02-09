@@ -11,6 +11,9 @@ class DrawerTableViewCell: UITableViewCell {
     @IBOutlet var menuItemImageView: UIImageView!
     @IBOutlet var menuItemTitleLabel: UILabel!
     @IBOutlet weak var menuChevronImageView: UIImageView!
+    @IBOutlet weak var topSpaceConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomSpaceConstraint: NSLayoutConstraint!
+    
     var isExpanded: Bool? = nil {
         didSet {
             updateCellChevron()
@@ -19,13 +22,12 @@ class DrawerTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        
         selectionStyle = .none
     
         menuItemImageView.tintColor = .iconTintLight
         menuItemTitleLabel.textColor = .white
-        menuItemTitleLabel.font = Text.style9.font
+        menuItemTitleLabel.font = Text.style35.font
+        menuItemTitleLabel.setTextSpacingBy(value: -0.3)
         menuChevronImageView.tintColor = .white
         
         NotificationCenter.default.addObserver(forName: SideMenuViewController.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
@@ -34,12 +36,10 @@ class DrawerTableViewCell: UITableViewCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        // Configure the view for the selected state
         contentView.backgroundColor = selected ? .mainPurple : .primary
     }
     
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        // Configure the view for the selected state
         contentView.backgroundColor = highlighted ? .mainPurple : .primary
     }
     
@@ -47,6 +47,17 @@ class DrawerTableViewCell: UITableViewCell {
         menuItemImageView.image = data.icon?.templated
         menuItemTitleLabel.text = data.title
         self.isExpanded = isExpanded
+        
+        switch data {
+        case .files, .shares, .publicFiles, .publicGallery:
+            topSpaceConstraint.constant = 16
+            bottomSpaceConstraint.constant = 16
+        case .archiveSettings, .tagsManagement, .usersManagement:
+            topSpaceConstraint.constant = 12
+            bottomSpaceConstraint.constant = 12
+        default:
+            break
+        }
     }
     
     func updateCellChevron() {
