@@ -209,18 +209,26 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        return UIView()
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == LeftDrawerSection.publicGallery.rawValue || section == LeftDrawerSection.header.rawValue {
+        switch section {
+        case LeftDrawerSection.publicGallery.rawValue, LeftDrawerSection.header.rawValue:
             return 0
+        case LeftDrawerSection.files.rawValue:
+            return 40
+        case LeftDrawerSection.archiveSettings.rawValue:
+            return 40
+        default:
+            return 32
         }
-        
-        return 32
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == LeftDrawerSection.files.rawValue || section == LeftDrawerSection.publicGallery.rawValue {
+            return 4
+        }
         return 0
     }
     
