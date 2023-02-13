@@ -60,6 +60,8 @@ class AuthenticationManager {
                    let token = loginResponse.results?.first?.data?.first?.tokenVO?.value {
                     session = PermSession(token: token)
                     
+                    session?.account = loginResponse.results?.first?.data?.first?.accountVO
+                    
                     syncSession { [self] status in
                         if status == .success {
                             saveSession()
@@ -103,6 +105,7 @@ class AuthenticationManager {
                 mfaSession = nil
 
                 session = PermSession(token: token)
+                session?.account = response.results?.first?.data?.first?.accountVO
 
                 syncSession { [self] status in
                     if status == .success {
@@ -172,35 +175,17 @@ class AuthenticationManager {
     }
     
     func syncSession(then handler: @escaping ServerResponse) {
-        isLoggedIn { [self] status in
-            if status == .success {
-                getSessionAccount { [self] status, account in
-                    if status == .success {
-                        guard let account = account else {
-                            handler(.error(message: .errorMessage))
-                            return
-                        }
-                        session?.account = account
-
-                        if let _: Int = account.defaultArchiveID {
-                            refreshCurrentArchive { success, archive in
-                                if success {
-                                    self.session?.selectedArchive = archive
-                                    handler(.success)
-                                } else {
-                                    handler(.error(message: .errorMessage))
-                                }
-                            }
-                        } else {
-                            handler(.success)
-                        }
-                    } else {
-                        handler(.error(message: .errorMessage))
-                    }
+        if let _: Int = session?.account.defaultArchiveID {
+            refreshCurrentArchive { success, archive in
+                if success {
+                    self.session?.selectedArchive = archive
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
                 }
-            } else {
-                handler(.error(message: .errorMessage))
             }
+        } else {
+            handler(.success)
         }
     }
     
