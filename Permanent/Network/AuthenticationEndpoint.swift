@@ -15,6 +15,7 @@ enum CodeVerificationType: String {
 
 // TODO: See if this type is appropiate.
 typealias VerifyCodeCredentials = (email: String, code: String, type: CodeVerificationType)
+typealias CreateCredentials = (name: String, password: String, email: String, phone: String?)
 
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
@@ -25,6 +26,8 @@ enum AuthenticationEndpoint {
     case verify(credentials: VerifyCodeCredentials)
     /// Sends an email in order to change the password.
     case forgotPassword(email: String)
+    /// Creates a user object
+    case createCredentials(credentials: CreateCredentials)
     /// Logs out the user.
     case logout
 }
@@ -38,6 +41,8 @@ extension AuthenticationEndpoint: RequestProtocol {
             return verifyPayload(for: credentials)
         case .forgotPassword(let email):
             return forgotPasswordPayload(for: email)
+        case .createCredentials(let credentials):
+            return createCredentialsPayload(for: credentials)
         case .verifyAuth:
             return verifyAuth()
 
@@ -64,6 +69,8 @@ extension AuthenticationEndpoint: RequestProtocol {
             return "/auth/verify"
         case .forgotPassword:
             return "/auth/sendEmailForgotPassword"
+        case .createCredentials:
+            return "/auth/createCredentials"
         case .logout:
             return "/auth/logout"
         }
@@ -82,6 +89,21 @@ extension AuthenticationEndpoint: RequestProtocol {
     var bodyData: Data? { nil }
     
     var customURL: String? { nil }
+    
+    var headers: RequestHeaders? {
+        if method == .post {
+            if case .createCredentials(_) = self {
+                return [
+                    "content-type": "application/json; charset=utf-8",
+                    "Request-Version": "2"
+                ]
+            } else {
+                return ["content-type": "application/json; charset=utf-8"]
+            }
+        } else {
+            return nil
+        }
+    }
 }
 
 extension AuthenticationEndpoint {
@@ -127,6 +149,16 @@ extension AuthenticationEndpoint {
                     ]
                 ]]
             ]
+        ]
+    }
+    
+    func createCredentialsPayload(for credentials: CreateCredentials) -> RequestParameters {
+        return [
+            "fullName": credentials.name,
+            "password": credentials.password,
+            "passwordVerify": credentials.password,
+            "primaryEmail": credentials.email,
+            "primaryPhone": (credentials.phone ?? NSNull()) as Any
         ]
     }
     

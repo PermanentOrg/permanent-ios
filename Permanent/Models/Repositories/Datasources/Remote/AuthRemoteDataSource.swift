@@ -11,6 +11,7 @@ protocol AuthRemoteDataSourceInterface {
     func login(with credentials: LoginCredentials, then handler: @escaping (Result<LoginResponse, Error>) -> Void)
     func loginWithTwoFactor(withEmail email: String, code: String, type: CodeVerificationType, then handler: @escaping (Result<VerifyResponse, Error>) -> Void)
     func forgotPassword(withEmail email: String, then handler: @escaping (Result<ForgotPasswordResponse, Error>) -> Void)
+    func createCredentials(withFullName fullName: String, password: String, email: String, phone: String?, then handler: @escaping (Result<SignUpResponse, Error>) -> Void)
 }
 
 class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
@@ -71,7 +72,28 @@ class AuthRemoteDataSource: AuthRemoteDataSourceInterface {
                     return
                 }
                 handler(.success(model))
+            case .error(let e, _):
+                handler(.failure(e ?? APIError.clientError))
+                
+            default:
+                handler(.failure(APIError.clientError))
+            }
+        }
+    }
 
+    func createCredentials(withFullName fullName: String, password: String, email: String, phone: String?, then handler: @escaping (Result<SignUpResponse, Error>) -> Void) {
+        let credentials = CreateCredentials(fullName, password, email, phone)
+        let operation = APIOperation(AuthenticationEndpoint.createCredentials(credentials: credentials))
+        
+        operation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: SignUpResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.failure(APIError.parseError))
+                    return
+                }
+                handler(.success(model))
+                
             case .error(let e, _):
                 handler(.failure(e ?? APIError.clientError))
                 

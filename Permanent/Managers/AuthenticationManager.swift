@@ -14,6 +14,7 @@ class AuthenticationManager {
     
     var keychainHandler = SessionKeychainHandler()
     let authRepo = AuthRepository()
+    let accountRepository = AccountRepository()
     
     var token: String? {
         return session?.token
@@ -59,6 +60,8 @@ class AuthenticationManager {
                    let token = loginResponse.results?.first?.data?.first?.tokenVO?.value {
                     session = PermSession(token: token)
                     
+                    session?.account = loginResponse.results?.first?.data?.first?.accountVO
+                    
                     syncSession { [self] status in
                         if status == .success {
                             saveSession()
@@ -102,6 +105,7 @@ class AuthenticationManager {
                 mfaSession = nil
 
                 session = PermSession(token: token)
+                session?.account = response.results?.first?.data?.first?.accountVO
 
                 syncSession { [self] status in
                     if status == .success {
@@ -133,6 +137,24 @@ class AuthenticationManager {
         }
     }
     
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.loginCredentials.email, password: credentials.loginCredentials.password) { [self] result in
+            switch result {
+            case .success((let signupResponse, let account)):
+                let token = signupResponse.token
+                session = PermSession(token: token)
+                
+                session?.account = account
+                
+                saveSession()
+                handler(.success)
+                
+            default:
+                handler(.error(message: .error))
+            }
+        }
+    }
+    
     func saveSession() {
         guard let session = session else {
             return
@@ -153,35 +175,17 @@ class AuthenticationManager {
     }
     
     func syncSession(then handler: @escaping ServerResponse) {
-        isLoggedIn { [self] status in
-            if status == .success {
-                getSessionAccount { [self] status, account in
-                    if status == .success {
-                        guard let account = account else {
-                            handler(.error(message: .errorMessage))
-                            return
-                        }
-                        session?.account = account
-
-                        if let _: Int = account.defaultArchiveID {
-                            refreshCurrentArchive { success, archive in
-                                if success {
-                                    self.session?.selectedArchive = archive
-                                    handler(.success)
-                                } else {
-                                    handler(.error(message: .errorMessage))
-                                }
-                            }
-                        } else {
-                            handler(.success)
-                        }
-                    } else {
-                        handler(.error(message: .errorMessage))
-                    }
+        if let _: Int = session?.account.defaultArchiveID {
+            refreshCurrentArchive { success, archive in
+                if success {
+                    self.session?.selectedArchive = archive
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
                 }
-            } else {
-                handler(.error(message: .errorMessage))
             }
+        } else {
+            handler(.success)
         }
     }
     
