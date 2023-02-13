@@ -30,7 +30,7 @@ class DrawerTableViewCell: UITableViewCell {
         menuItemTitleLabel.setTextSpacingBy(value: -0.3)
         menuChevronImageView.tintColor = .white
         
-        NotificationCenter.default.addObserver(forName: SideMenuViewController.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
+        NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
             isExpanded?.toggle()
         }
     }

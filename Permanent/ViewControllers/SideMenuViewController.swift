@@ -20,12 +20,6 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var footerBackgroundView: UIView!
     
     var selectedMenuOption: DrawerOption = .files
-    var archiveSetingsWasPressed: Bool = false {
-        didSet {
-            updateLeftSideMenu()
-        }
-    }
-    static let updateArchiveSettingsChevron = Notification.Name("SideMenuViewController.updateArchiveSettingsChevron")
     
     private var tableViewData: [LeftDrawerSection: [DrawerOption]] = [
         LeftDrawerSection.header: [
@@ -72,6 +66,9 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
+        NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
+            updateLeftSideMenu()
+        }
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
@@ -86,13 +83,14 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     
     func updateLeftSideMenu() {
         tableView.beginUpdates()
-        NotificationCenter.default.post(name: Self.updateArchiveSettingsChevron, object: self, userInfo: nil)
-        if archiveSetingsWasPressed {
-            tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.tagsManagement, DrawerOption.usersManagement])
-            tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
-        } else {
-            tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.usersManagement || $0 == DrawerOption.tagsManagement })
-            tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+        if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {
+            if archiveSetingsWasPressed {
+                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.tagsManagement, DrawerOption.usersManagement])
+                tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+            } else {
+                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.usersManagement || $0 == DrawerOption.tagsManagement })
+                tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+            }
         }
         tableView.endUpdates()
     }
@@ -135,7 +133,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             }
         case .archiveSettings:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
-                tableViewCell.updateCell(with: menuOption, isExpanded: archiveSetingsWasPressed)
+                tableViewCell.updateCell(with: menuOption, isExpanded: viewModel?.archiveSetingsWasPressed)
                 cell = tableViewCell
             }
         default:
@@ -249,7 +247,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .archiveSettings:
-            archiveSetingsWasPressed.toggle()
+            viewModel?.archiveSetingsWasPressed.toggle()
             
         case .tagsManagement:
             let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
