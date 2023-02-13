@@ -12,7 +12,9 @@ enum DrawerOption {
     case files
     case shares
     case publicFiles
-    case members
+    case usersManagement
+    case tagsManagement
+    case archiveSettings
     case manageArchives
     case publicGallery
     case addStorage
@@ -26,10 +28,10 @@ enum DrawerOption {
     
     var icon: UIImage? {
         switch self {
-        case .files: return UIImage(named: "privateFilesIcon")!
-        case .publicFiles: return UIImage(named: "publicFilesIcon")!
-        case .shares: return UIImage(named: "sharedFilesIcon")!
-        case .members: return UIImage(named: "manageMembersIcon")!
+        case .files: return UIImage(named: "folderBookmark")!
+        case .publicFiles: return UIImage(named: "folderBookmark")!
+        case .shares: return UIImage(named: "folderBookmark")!
+        case .archiveSettings: return UIImage(named: "gearContour")!
         case .manageArchives: return UIImage(named: "manageArchivesIcon")!
         case .publicGallery: return UIImage(named: "publicGalleryIcon")!
         case .addStorage: return .storage
@@ -38,6 +40,8 @@ enum DrawerOption {
         case .invitations: return .mail
         case .activityFeed: return .alert
         case .archives: return nil
+        case .usersManagement: return UIImage(named: "groupBorder")
+        case .tagsManagement: return UIImage(named: "tagsBorder")
         case .logOut: return UIImage.logOut.templated
         case .contactSupport: return nil
         case .none: return nil
@@ -49,7 +53,9 @@ enum DrawerOption {
         case .files: return "Private Files".localized()
         case .publicFiles: return "Public Files".localized()
         case .shares: return "Shared Files".localized()
-        case .members: return "Manage Members".localized()
+        case .archiveSettings: return "Archive Settings".localized()
+        case .usersManagement: return "Users Management".localized()
+        case .tagsManagement: return "Tags Management".localized()
         case .manageArchives: return "Archives".localized()
         case .publicGallery: return "Public Gallery".localized()
         case .invitations: return .invitations

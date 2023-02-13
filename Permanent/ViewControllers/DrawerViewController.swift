@@ -181,7 +181,7 @@ class DrawerViewController: UIViewController {
             rightSideMenuController.selectedMenuOption = .none
             
         case _ where viewController is MembersViewController:
-            leftSideMenuController.selectedMenuOption = .members
+            leftSideMenuController.selectedMenuOption = .usersManagement
             rightSideMenuController.selectedMenuOption = .none
             
         case _ where viewController is ArchivesViewController:

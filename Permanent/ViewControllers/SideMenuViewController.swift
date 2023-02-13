@@ -10,17 +10,18 @@ import UIKit
 enum LeftDrawerSection: Int {
     case header
     case files
-    case manage
+    case archiveSettings
     case publicGallery
 }
 
 class SideMenuViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var versionLabel: UILabel!
+    @IBOutlet weak var footerBackgroundView: UIView!
     
     var selectedMenuOption: DrawerOption = .files
     
-    private let tableViewData: [LeftDrawerSection: [DrawerOption]] = [
+    private var tableViewData: [LeftDrawerSection: [DrawerOption]] = [
         LeftDrawerSection.header: [
             DrawerOption.archives
         ],
@@ -29,8 +30,8 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
             DrawerOption.shares,
             DrawerOption.publicFiles
         ],
-        LeftDrawerSection.manage: [
-            DrawerOption.members
+        LeftDrawerSection.archiveSettings: [
+            DrawerOption.archiveSettings
         ],
         LeftDrawerSection.publicGallery: [
             DrawerOption.publicGallery
@@ -52,9 +53,12 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         
         tableView.separatorColor = .clear
         
-        versionLabel.textColor = .white
+        versionLabel.textColor = .white.withAlphaComponent(0.33)
         versionLabel.font = Text.style12.font
-        versionLabel.text = "Version".localized() + " \(Bundle.release) (\(Bundle.build))"
+        versionLabel.text = "v.".localized() + " \(Bundle.release) [\(Bundle.build)]"
+        versionLabel.setTextSpacingBy(value: -0.12)
+        
+        footerBackgroundView.backgroundColor = .black.withAlphaComponent(0.20)
     }
     
     fileprivate func setupTableView() {
@@ -62,6 +66,9 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.register(UINib(nibName: String(describing: LeftSideHeaderTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LeftSideHeaderTableViewCell.self))
         
         tableView.tableFooterView = UIView()
+        NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
+            updateLeftSideMenu()
+        }
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
@@ -72,6 +79,20 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         } else {
             tableView.isScrollEnabled = true
         }
+    }
+    
+    func updateLeftSideMenu() {
+        tableView.beginUpdates()
+        if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {
+            if archiveSetingsWasPressed {
+                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.tagsManagement, DrawerOption.usersManagement])
+                tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+            } else {
+                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.usersManagement || $0 == DrawerOption.tagsManagement })
+                tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+            }
+        }
+        tableView.endUpdates()
     }
 }
 
@@ -97,7 +118,8 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
         
-        if menuOption == .archives {
+        switch menuOption {
+        case .archives:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: LeftSideHeaderTableViewCell.self)) as? LeftSideHeaderTableViewCell {
                 if let archive = viewModel?.getCurrentArchive(), let archiveName: String = archive.fullName {
                     let archiveThumbURL: String = archive.thumbURL500 ?? ""
@@ -109,7 +131,12 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
                 
                 cell = tableViewCell
             }
-        } else {
+        case .archiveSettings:
+            if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
+                tableViewCell.updateCell(with: menuOption, isExpanded: viewModel?.archiveSetingsWasPressed)
+                cell = tableViewCell
+            }
+        default:
             if let tableViewCell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerTableViewCell.self)) as? DrawerTableViewCell {
                 tableViewCell.updateCell(with: menuOption)
                 cell = tableViewCell
@@ -164,14 +191,14 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         let headerView = UIView()
         
         let lineView = UIView()
-        lineView.backgroundColor = .white.withAlphaComponent(0.25)
+        lineView.backgroundColor = .white.withAlphaComponent(0.1)
         headerView.addSubview(lineView)
         
         lineView.enableAutoLayout()
         
         NSLayoutConstraint.activate([
-            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 20),
+            lineView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 32),
+            headerView.trailingAnchor.constraint(equalTo: lineView.trailingAnchor, constant: 32),
             lineView.heightAnchor.constraint(equalToConstant: 1),
             lineView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
         ])
@@ -180,18 +207,26 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        return UIView()
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == LeftDrawerSection.publicGallery.rawValue || section == LeftDrawerSection.header.rawValue {
+        switch section {
+        case LeftDrawerSection.publicGallery.rawValue, LeftDrawerSection.header.rawValue:
             return 0
+        case LeftDrawerSection.files.rawValue:
+            return 40
+        case LeftDrawerSection.archiveSettings.rawValue:
+            return 40
+        default:
+            return 32
         }
-        
-        return 21
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == LeftDrawerSection.files.rawValue {
+            return 4
+        }
         return 0
     }
     
@@ -211,12 +246,17 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             let newRootVC = UIViewController.create(withIdentifier: .shares, from: .share)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
-        case .members:
-            ///TO DO: remove after implementing "Archive Settings dropdown menu" task
-            //let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+        case .archiveSettings:
+            viewModel?.archiveSetingsWasPressed.toggle()
+            
+        case .tagsManagement:
             let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-
+            
+        case .usersManagement:
+            let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
+            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
         case .archives:
             guard let archive = viewModel?.getCurrentArchive() else { return }
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController

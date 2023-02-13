@@ -12,7 +12,7 @@ struct TableViewData {
     static let drawerData: [DrawerSection: [DrawerOption]] = [
         DrawerSection.navigationScreens: [
             DrawerOption.shares,
-            DrawerOption.members
+            DrawerOption.usersManagement
         ]
     ]
 }
