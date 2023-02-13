@@ -9,22 +9,28 @@
 import Foundation
 
 protocol AccountRemoteDataSourceInterface {
-    func createAccount(fullName: String, primaryEmail: String, subject: String, token: String, then handler: @escaping (Result<SignUpResponse, Error>) -> Void)
+    func createAccount(fullName: String, primaryEmail: String, password: String, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void)
 }
 
 class AccountRemoteDataSource: AccountRemoteDataSourceInterface {
-    func createAccount(fullName: String, primaryEmail: String, subject: String, token: String, then handler: @escaping (Result<SignUpResponse, Error>) -> Void) {
-        let credentials = SignUpV2Credentials(fullName, primaryEmail, subject, token)
+    func createAccount(fullName: String, primaryEmail: String, password: String, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
+        let credentials = SignUpV2Credentials(fullName, primaryEmail, password)
         let operation = APIOperation(AccountEndpoint.signUpV2(credentials: credentials))
         
         operation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
-//                guard let model: SignUpResponse = JSONHelper.convertToModel(from: response) else {
-//                    handler(.failure(APIError.parseError))
-//                    return
-//                }
-                handler(.success(SignUpResponse(token: "", user: SignUpUser(id: "", fullName: "", email: ""))))
+                guard let signupResponse: SignUpResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.failure(APIError.parseError))
+                    return
+                }
+                
+                guard let account: AccountVOData = JSONHelper.convertToModel(from: response) else {
+                    handler(.failure(APIError.parseError))
+                    return
+                }
+                
+                handler(.success((signupResponse, account)))
 
             case .error(let e, _):
                 handler(.failure(e ?? APIError.clientError))

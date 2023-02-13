@@ -9,7 +9,7 @@ import Foundation
 
 typealias LoginCredentials = (email: String, password: String)
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
-typealias SignUpV2Credentials = (name: String, email: String, subject: String, token: String)
+typealias SignUpV2Credentials = (name: String, email: String, password: String)
 typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
 typealias UpdateData = (email: String, phone: String)
 typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
@@ -126,7 +126,7 @@ extension AccountEndpoint: RequestProtocol {
     
     var headers: RequestHeaders? {
         if method == .post {
-            if case .signUpV2(let credentials) = self {
+            if case .signUpV2(let _) = self {
                 return [
                     "content-type": "application/json; charset=utf-8",
                     "Request-Version": "2"
@@ -177,7 +177,8 @@ extension AccountEndpoint {
             "fullName": credentials.name,
             "optIn": false,
             "primaryEmail": credentials.email,
-            "subject": credentials.subject
+            "password": credentials.password,
+            "passwordVerify": credentials.password
         ]
     }
     

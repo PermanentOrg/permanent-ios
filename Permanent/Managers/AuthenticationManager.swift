@@ -135,29 +135,16 @@ class AuthenticationManager {
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        authRepo.createCredentials(withFullName: credentials.name, password: credentials.loginCredentials.password, email: credentials.loginCredentials.email, phone: nil) { result in
+        accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.loginCredentials.email, password: credentials.loginCredentials.password) { [self] result in
             switch result {
-            case .success(let response):
-                self.accountRepository.createAccount(fullName: response.user.fullName, primaryEmail: response.user.email, subject: response.user.id, token: response.token) { result in
-                    switch result {
-                    case .success(let _):
-                        let token = response.token
-                        self.session = PermSession(token: token)
-                         
-                        self.syncSession { [self] status in
-                             if status == .success {
-                                 saveSession()
-                                 
-                                 handler(.success)
-                             } else {
-                                 handler(.error(message: "Authorization error".localized()))
-                             }
-                         }
-                        
-                    default:
-                        handler(.error(message: .error))
-                    }
-                }
+            case .success((let signupResponse, let account)):
+                let token = signupResponse.token
+                session = PermSession(token: token)
+                
+                session?.account = account
+                
+                saveSession()
+                handler(.success)
                 
             default:
                 handler(.error(message: .error))
