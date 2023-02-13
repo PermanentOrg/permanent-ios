@@ -57,10 +57,10 @@ class AuthenticationManager {
             switch result {
             case .success(let loginResponse):
                 if loginResponse.isSuccessful == true,
-                   let token = loginResponse.results?.first?.data?.first?.tokenVO?.value {
+                   let token = loginResponse.results?.first?.data?.first?.tokenVO?.value,
+                   let account = loginResponse.results?.first?.data?.first?.accountVO {
                     session = PermSession(token: token)
-                    
-                    session?.account = loginResponse.results?.first?.data?.first?.accountVO
+                    session?.account = account
                     
                     syncSession { [self] status in
                         if status == .success {
@@ -98,14 +98,15 @@ class AuthenticationManager {
         authRepo.login(withEmail: email, code: code, type: method) { [self] result in
             switch result {
             case .success(let response):
-                guard let token = response.results?.first?.data?.first?.tokenVO?.value else {
+                guard let token = response.results?.first?.data?.first?.tokenVO?.value,
+                 let account = response.results?.first?.data?.first?.accountVO else {
                     handler(.error(message: .errorMessage))
                     return
                 }
                 mfaSession = nil
 
                 session = PermSession(token: token)
-                session?.account = response.results?.first?.data?.first?.accountVO
+                session?.account = account
 
                 syncSession { [self] status in
                     if status == .success {
@@ -143,7 +144,6 @@ class AuthenticationManager {
             case .success((let signupResponse, let account)):
                 let token = signupResponse.token
                 session = PermSession(token: token)
-                
                 session?.account = account
                 
                 saveSession()
@@ -186,67 +186,6 @@ class AuthenticationManager {
             }
         } else {
             handler(.success)
-        }
-    }
-    
-    func isLoggedIn(then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(AuthenticationEndpoint.verifyAuth)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: APINetworkSession())
-        apiDispatch.ignoresMFAWarning = true
-        loginOperation.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<NoDataModel> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-
-                if model.isSuccessful == true {
-                    handler(.success)
-                } else {
-                    handler(.error(message: .errorMessage))
-                }
-
-            case .error:
-                handler(.error(message: .errorMessage))
-
-            default:
-                break
-            }
-        }
-    }
-    
-    func getSessionAccount(then handler: @escaping ((RequestStatus, AccountVOData?) -> Void)) {
-        let op = APIOperation(AccountEndpoint.getSessionAccount)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: APINetworkSession())
-        op.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<AccountVO> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage), nil)
-                    return
-                }
-
-                if model.isSuccessful == true {
-                    PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
-                    
-                    if let accountVO = model.results.first?.data?.first?.accountVO {
-                        handler(.success, accountVO)
-                    } else {
-                        handler(.error(message: .errorMessage), nil)
-                    }
-                } else {
-                    handler(.error(message: .errorMessage), nil)
-                }
-
-            case .error:
-                handler(.error(message: .errorMessage), nil)
-
-            default:
-                break
-            }
         }
     }
     
