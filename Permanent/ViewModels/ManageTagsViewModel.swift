@@ -10,7 +10,7 @@ import Foundation
 class ManageTagsViewModel: ViewModelInterface {
     static let didUpdateTagsNotification = Notification.Name("ManageTagsViewModel.didUpdateTagsNotification")
     static let isLoadingNotification = Notification.Name("ManageTagsViewModel.isLoadingNotification")
-    static let showNumberOfTagsNotification = Notification.Name("ManageTagsViewModel.showNumberOfTagsNotification")
+    static let isSearchEnabled = Notification.Name("ManageTagsViewModel.isSearchEnabled")
     
     let tagsRepository: TagsRepository
     var tags: [TagVO] = []
@@ -26,7 +26,7 @@ class ManageTagsViewModel: ViewModelInterface {
     }
     var isSearchEnabled: Bool = false {
         didSet {
-            NotificationCenter.default.post(name: Self.showNumberOfTagsNotification, object: self, userInfo: ["isSearchEnabled": isSearchEnabled])
+            NotificationCenter.default.post(name: Self.isSearchEnabled, object: self, userInfo: nil)
         }
     }
     

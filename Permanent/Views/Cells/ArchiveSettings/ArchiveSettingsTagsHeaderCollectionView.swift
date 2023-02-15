@@ -24,8 +24,8 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
         
         initUI()
         
-        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.showNumberOfTagsNotification, object: nil, queue: nil) { [weak self] notification in
-            if let isSearchEnabled = notification.userInfo?["isSearchEnabled"] as? Bool,
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.isSearchEnabled, object: nil, queue: nil) { [weak self] notification in
+            if let isSearchEnabled = (notification.object as? ManageTagsViewModel)?.isSearchEnabled as? Bool,
                let numberOfTags = (notification.object as? ManageTagsViewModel)?.sortedTags.count as? Int,
                isSearchEnabled {
                 if numberOfTags > 1 {
