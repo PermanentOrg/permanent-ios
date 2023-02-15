@@ -23,6 +23,22 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
         super.awakeFromNib()
         
         initUI()
+        
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.showNumberOfTagsNotification, object: nil, queue: nil) { [self] notification in
+            if let numberOfTags = notification.userInfo?["tagsCount"] as? Int {
+                if numberOfTags > 1 {
+                    tagsHeaderLabel.text = "<COUNT> Tags found".localized().replacingOccurrences(of: "<COUNT>", with: String(numberOfTags))
+                } else if numberOfTags == 1{
+                    tagsHeaderLabel.text = "1 Tag found".localized()
+                } else {
+                    tagsHeaderLabel.text = "No Tags found".localized()
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.hideNumberOfTagsNotification, object: nil, queue: nil) { [self] _ in
+            tagsHeaderLabel.text = "Name".localized()
+        }
     }
     
     static func nib() -> UINib {
@@ -34,6 +50,7 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
     }
     
     func initUI() {
+        tagsHeaderLabel.text = "Name".localized()
         tagsHeaderLabel.font = Text.style34.font
         tagsHeaderLabel.textColor = .darkBlue
         
@@ -57,9 +74,5 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
         selectCheckBoxButton.isHidden = true
         selectButton.isHidden = true
         clearButton.isHidden = true
-    }
-    
-    func configure() {
-        
     }
 }

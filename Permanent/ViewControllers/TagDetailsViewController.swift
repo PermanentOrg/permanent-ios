@@ -229,7 +229,6 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
 
 extension TagDetailsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
         let currentTagVO = sortedArray.map({ (item) -> TagVO in
             return item.tagVO
         })
@@ -244,6 +243,7 @@ extension TagDetailsViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         addTagButtonAction(searchBar)
     }
+    
     func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if range.location >= maximumNumberOfCharactersForTagName { return false }
         return true

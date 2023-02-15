@@ -38,6 +38,7 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     
     func initUI() {
         title = "Manage Tags".localized()
+        addDismissKeyboardGesture()
         
         archiveTitleNameLabel.font = Text.style35.font
         archiveTitleNameLabel.textColor = .darkBlue
@@ -80,7 +81,7 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     }
     
     func updateTagsNumber() {
-        guard let tagsNumber = viewModel?.sortedTags.count else {
+        guard let tagsNumber = viewModel?.tags.count else {
             archiveTitleTagsCountLabel.text = nil
             return
         }
@@ -112,7 +113,7 @@ extension TagManagementViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.view.endEditing(true)
     }
-    
+        
     func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if range.location >= 16 { return false }
         return true

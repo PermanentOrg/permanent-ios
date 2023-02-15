@@ -10,6 +10,8 @@ import Foundation
 class ManageTagsViewModel: ViewModelInterface {
     static let didUpdateTagsNotification = Notification.Name("ManageTagsViewModel.didUpdateTagsNotification")
     static let isLoadingNotification = Notification.Name("ManageTagsViewModel.isLoadingNotification")
+    static let showNumberOfTagsNotification = Notification.Name("ManageTagsViewModel.showNumberOfTagsNotification")
+    static let hideNumberOfTagsNotification = Notification.Name("ManageTagsViewModel.hideNumberOfTagsNotification")
     
     let tagsRepository: TagsRepository
     var tags: [TagVO] = []
@@ -21,6 +23,15 @@ class ManageTagsViewModel: ViewModelInterface {
     var isLoading: Bool = false {
         didSet {
             NotificationCenter.default.post(name: Self.isLoadingNotification, object: self, userInfo: nil)
+        }
+    }
+    var isSearchEnabled: Bool = false {
+        didSet {
+            if isSearchEnabled {
+                NotificationCenter.default.post(name: Self.showNumberOfTagsNotification, object: nil, userInfo: ["tagsCount": sortedTags.count])
+            } else {
+                NotificationCenter.default.post(name: Self.hideNumberOfTagsNotification, object: nil, userInfo: nil)
+            }
         }
     }
     
@@ -62,9 +73,13 @@ class ManageTagsViewModel: ViewModelInterface {
     func searchTags(withText text: String) {
         if text.isEmpty {
             sortedTags = tags
+            isSearchEnabled = false
         } else {
             sortedTags = tags.filter { tag in
                 tag.tagVO.name?.lowercased().contains(text.lowercased()) ?? false
+            }
+            if sortedTags.count != tags.count {
+                isSearchEnabled = true
             }
         }
     }
