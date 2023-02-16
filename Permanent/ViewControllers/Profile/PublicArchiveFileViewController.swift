@@ -16,6 +16,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     weak var delegate: PublicArchiveChildDelegate?
     
     var archiveData: ArchiveVOData!
+    var deeplinkPayload: PublicProfileDeeplinkPayload?
     
     private var isGridView = true
     
@@ -33,7 +34,9 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         initUI()
         setupCollectionView()
         
-        getRootFolder()
+        if !checkSavedFile() {
+            getRootFolder()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -145,6 +148,43 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
 //        showSortActionSheetDialog()
     }
     
+    func checkSavedFile() -> Bool {
+        if let deeplinkPayload = deeplinkPayload {
+            self.deeplinkPayload = nil
+            
+            showSpinner()
+            
+            let navigationParams = (archiveNo: deeplinkPayload.archiveNbr, folderLinkId: deeplinkPayload.folderLinkId, folderName: "")
+            viewModel?.getRoot(then: { status in
+                self.navigateToFolder(withParams: navigationParams, backNavigation: false, then: {
+                    self.backButton.isHidden = false
+                    self.directoryLabel.text = self.viewModel?.currentFolder?.name
+                    
+                    if let file = self.viewModel?.viewModels.first(where: { $0.archiveNo == deeplinkPayload.fileArchiveNbr }) {
+                        self.presentFileDetails(file: file)
+                    }
+                })
+            })
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    func presentFileDetails(file: FileViewModel) {
+        let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
+        listPreviewVC.modalPresentationStyle = .fullScreen
+        listPreviewVC.viewModel = viewModel
+        listPreviewVC.currentFile = file
+        
+        let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
+        fileDetailsNavigationController.filePreviewNavDelegate = self
+        fileDetailsNavigationController.modalPresentationStyle = .fullScreen
+        
+        present(fileDetailsNavigationController, animated: true)
+    }
+    
     // MARK: - Network Related
     
     private func getRootFolder() {
@@ -165,13 +205,11 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     private func onFilesFetchCompletion(_ status: RequestStatus) {
-        DispatchQueue.main.async {
-            self.hideSpinner()
-        }
+        hideSpinner()
 
         switch status {
         case .success:
-            self.refreshCollectionView()
+            refreshCollectionView()
             
         case .error(let message):
             showErrorAlert(message: message)
@@ -227,16 +265,7 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
                 self.directoryLabel.text = file.name
             })
         } else {
-            let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
-            listPreviewVC.modalPresentationStyle = .fullScreen
-            listPreviewVC.viewModel = viewModel
-            listPreviewVC.currentFile = file
-            
-            let fileDetailsNavigationController = FilePreviewNavigationController(rootViewController: listPreviewVC)
-            fileDetailsNavigationController.filePreviewNavDelegate = self
-            fileDetailsNavigationController.modalPresentationStyle = .fullScreen
-            
-            present(fileDetailsNavigationController, animated: true)
+            presentFileDetails(file: file)
         }
     }
     

@@ -92,3 +92,4 @@ env-vars-staging.sh
 env-vars.sh
 
 .idea/
+*.DS_Store

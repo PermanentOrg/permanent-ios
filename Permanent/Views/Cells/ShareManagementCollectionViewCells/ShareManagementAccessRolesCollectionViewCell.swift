@@ -51,6 +51,7 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
             let imageName: String = "accessRole\(ShareManagementAccessRoleCellType.roleToString(cellType) ?? "")"
             leftImageView.image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
             leftImageView.tintColor = .darkBlue
+            titleLabel.textColor = .darkBlue
         }
         setSelected(isSelected)
     }

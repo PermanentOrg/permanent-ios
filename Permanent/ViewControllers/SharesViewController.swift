@@ -119,6 +119,17 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             
             self?.collectionView.reloadData()
         }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.quotaExceededNotification, object: nil, queue: nil) { [weak self] notif in
+            let alertVC = UIAlertController(title: "Quota Exceeded".localized(), message: "Do you want to add more storage?".localized(), preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alertVC.addAction(UIAlertAction(title: "Add Storage", style: .default, handler: { action in
+                let newRootVC = UIViewController.create(withIdentifier: .donate, from: .donate)
+                AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            })
+            )
+            self?.present(alertVC, animated: true, completion: nil)
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -817,7 +828,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             collectionView.reloadData()
             
         case .uploading, .waiting, .failed:
-            break
+            viewModel?.removeFromQueue(indexPath.row)
+            
+            if viewModel?.refreshUploadQueue() == true {
+                refreshCollectionView()
+            }
         }
     }
     
@@ -1196,12 +1211,16 @@ extension SharesViewController: UIDocumentPickerDelegate {
 // MARK: - PhotoPickerViewControllerDelegate
 extension SharesViewController: PhotoPickerViewControllerDelegate {
     func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
+        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+        present(alert, animated: true)
         viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            guard let currentFolder = viewModel?.currentFolder else {
-                return showErrorAlert(message: .cannotUpload)
+            dismiss(animated: true) { [self] in
+                guard let currentFolder = viewModel?.currentFolder else {
+                    return showErrorAlert(message: .cannotUpload)
+                }
+                
+                processUpload(toFolder: currentFolder, forURLS: urls)
             }
-            
-            processUpload(toFolder: currentFolder, forURLS: urls)
         })
     }
 }

@@ -29,7 +29,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     
     let documentInteractionController = UIDocumentInteractionController()
     
-    var initialArchiveNbr: String?
+    var deeplinkPayload: PublicProfileDeeplinkPayload?
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,14 +96,14 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
     }
     
     func checkDeeplinkedArchive() {
-        if let initialArchiveNbr = initialArchiveNbr {
+        if let deeplinkPayload = deeplinkPayload {
             let newRootVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as! PublicArchiveViewController
-            newRootVC.archiveNbr = initialArchiveNbr
+            newRootVC.deeplinkPayload = deeplinkPayload
             let newNav = NavigationController(rootViewController: newRootVC)
             present(newNav, animated: true)
             
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.publicURLToken)
-            self.initialArchiveNbr = nil
+            self.deeplinkPayload = nil
         }
     }
     
