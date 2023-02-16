@@ -499,6 +499,7 @@
 		F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */; };
 		F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */; };
 		F5465BB2288AF0520097AE02 /* PermSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D209BD285B483E006DCF9F /* PermSession.swift */; };
+		F546F1CA299765C700FAB276 /* SelectWorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F546F1C9299765C700FAB276 /* SelectWorkspaceViewController.swift */; };
 		F54861FA28912F4300500F6F /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54861F928912F4300500F6F /* SessionTests.swift */; };
 		F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
@@ -562,6 +563,11 @@
 		F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */; };
 		F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
 		F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
+		F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */; };
+		F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D9257F80500019548F /* ShareEndpoint.swift */; };
+		F561F84B299D712E00B3BD09 /* SharebyURLVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414DC257F828E0019548F /* SharebyURLVO.swift */; };
+		F561F84C299D713E00B3BD09 /* SharebyURLVOTokenPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */; };
+		F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
@@ -592,6 +598,7 @@
 		F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */; };
 		F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
+		F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A87F992996C51100C4272B /* WorkspacesContentViewModel.swift */; };
 		F5AA5E0D27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA5E0C27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift */; };
 		F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1026D0F6840090EF02 /* ArchivesViewController.swift */; };
 		F5ADBF37290ADB800007A516 /* ArchivesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F502C4D826DCF1E700657D37 /* ArchivesViewModel.swift */; };
@@ -1140,6 +1147,7 @@
 		F54201C4265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLinkAccessNotificationPayload.swift; sourceTree = "<group>"; };
 		F5428E792641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsBaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		F54596C225FF737200E0BC5F /* FilePreviewNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewNavigationController.swift; sourceTree = "<group>"; };
+		F546F1C9299765C700FAB276 /* SelectWorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWorkspaceViewController.swift; sourceTree = "<group>"; };
 		F54861F928912F4300500F6F /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
 		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
@@ -1161,6 +1169,7 @@
 		F559F88928FEBCC10015A522 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFileBrowserViewController.swift; sourceTree = "<group>"; };
 		F559F8B929017CE80015A522 /* FolderNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationView.swift; sourceTree = "<group>"; };
+		F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFolderNavigationViewModel.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
@@ -1194,6 +1203,7 @@
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A2A07826161AE6003AAF36 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F5A2A07A26161AE6003AAF36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5A87F992996C51100C4272B /* WorkspacesContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacesContentViewModel.swift; sourceTree = "<group>"; };
 		F5AA5E0C27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddOnlinePresenceViewController.swift; sourceTree = "<group>"; };
 		F5B3A252267A3D18009EBC7B /* SerialInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialInputStream.swift; sourceTree = "<group>"; };
 		F5B3F13226668CAF0040E5C4 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
@@ -1733,8 +1743,11 @@
 				5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */,
 				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */,
+				F546F1C9299765C700FAB276 /* SelectWorkspaceViewController.swift */,
 				F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */,
 				F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */,
+				F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */,
+				F5A87F992996C51100C4272B /* WorkspacesContentViewModel.swift */,
 				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
 				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5ED06F45286B2BD5006C126B /* Info.plist */,
@@ -3434,6 +3447,7 @@
 				F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
+				F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */,
 				F559F89628FEE9A50015A522 /* NavigateMinResponse.swift in Sources */,
 				F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */,
@@ -3450,8 +3464,10 @@
 				F559F89128FEE9690015A522 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				5E1CCC1B287F04D500913EEA /* BaseViewController.swift in Sources */,
 				F559F88D28FEE9690015A522 /* FolderViewSelectionViewModel.swift in Sources */,
+				F561F84C299D713E00B3BD09 /* SharebyURLVOTokenPayload.swift in Sources */,
 				F51B3323288B0B9300EA15DA /* FileState.swift in Sources */,
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
+				F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */,
 				F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
 				5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */,
@@ -3469,6 +3485,8 @@
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
 				5ED4B9CF2876E02A00CF044B /* ShareVO.swift in Sources */,
+				F561F84B299D712E00B3BD09 /* SharebyURLVO.swift in Sources */,
+				F546F1CA299765C700FAB276 /* SelectWorkspaceViewController.swift in Sources */,
 				F5D8642F286DDEBF00E88B84 /* Colors.swift in Sources */,
 				5E2EE3B32881CB150072D635 /* ViewModelDelegateInterface.swift in Sources */,
 				F559F8B5290164000015A522 /* ShareFileBrowserViewController.swift in Sources */,
@@ -3482,6 +3500,7 @@
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */,
+				F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
@@ -3530,6 +3549,7 @@
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
 				F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				F559F88E28FEE9690015A522 /* FolderContentViewModel.swift in Sources */,
+				F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */,
 				F559F8AE28FF02F20015A522 /* BaseOperation.swift in Sources */,
 				5ED4B9D72876E0C800CF044B /* RecordExifVO.swift in Sources */,
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,

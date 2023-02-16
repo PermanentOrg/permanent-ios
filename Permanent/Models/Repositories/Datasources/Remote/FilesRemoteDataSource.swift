@@ -8,16 +8,32 @@
 import Foundation
 
 protocol FilesRemoteDataSourceInterface {
+    var currentArchive: ArchiveVOData? { get }
+    var archivePermissions: [Permission] { get }
+    
     func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void))
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void))
     func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
+    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
+    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
 }
 
 class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
+    var currentArchive: ArchiveVOData? {
+        return PermSession.currentSession?.selectedArchive
+    }
+    var archivePermissions: [Permission] {
+        return currentArchive?.permissions() ?? [.read]
+    }
+    
     func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
-        let params: NavigateMinParams = NavigateMinParams(archiveNo, folderLinkId, nil)
-        
-        navigateMin(params: params, then: completion)
+        if archiveNo == "archiveNo.Shared.Files" {
+            getSharedRootContent(completion: completion)
+        } else {
+            let params: NavigateMinParams = NavigateMinParams(archiveNo, folderLinkId, nil)
+            
+            navigateMin(params: params, then: completion)
+        }
     }
     
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
@@ -59,7 +75,85 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
                 }
                 
                 if model.isSuccessful == true {
-                    self.onGetRootSuccess(model, completion)
+                    self.onGetPrivateRootSuccess(model, completion)
+                } else {
+                    completion(nil, APIError.parseError)
+                }
+                
+            case .error(let error, _):
+                completion(nil, error)
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        let folder = FileViewModel(name: "Shared Files", recordId: 0, folderLinkId: 0, archiveNbr: "archiveNo.Shared.Files", type: "", permissions: [])
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+            completion(folder, nil)
+        })
+    }
+    
+    func getSharedRootContent(completion: @escaping (([FileViewModel], Error?) -> Void)) {
+        let apiOperation = APIOperation(ShareEndpoint.getShares)
+
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding( from: response, with: APIResults<ArchiveVO>.decoder)
+                else {
+                    return completion([], nil)
+                }
+
+                var fileViewModels: [FileViewModel] = []
+
+                let currentArchiveId: Int? = self.currentArchive?.archiveID
+
+                model.results.first?.data?.forEach { archive in
+                    let itemVOS = archive.archiveVO?.itemVOS
+
+                    let archivePermissionsSet = Set(self.archivePermissions)
+
+                    itemVOS?.forEach {
+                        let accessRole = AccessRole.roleForValue($0.accessRole)
+                        let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
+                        let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
+
+                        let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
+                        let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
+
+                        if $0.archiveID != currentArchiveId {
+                            fileViewModels.append(sharedFileVM)
+                        }
+                    }
+                }
+
+                completion(fileViewModels, nil)
+
+            case .error(let error, _):
+                completion([], error)
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        let apiOperation = APIOperation(FilesEndpoint.getRoot)
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: GetRootResponse = JSONHelper.convertToModel(from: response) else {
+                    completion(nil, APIError.parseError)
+                    return
+                }
+                
+                if model.isSuccessful == true {
+                    self.onGetPublicRootSuccess(model, completion)
                 } else {
                     completion(nil, APIError.parseError)
                 }
@@ -148,19 +242,38 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
             return
         }
         
+        let archivePermissionsSet = Set(self.archivePermissions)
+            
         var viewModels: [FileViewModel] = []
         childItems.forEach {
-            let file = FileViewModel(model: $0, permissions: [], accessRole: .viewer)
+            let accessRole = AccessRole.roleForValue($0.accessRole)
+            let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
+            let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
+            
+            let file = FileViewModel(model: $0, permissions: permissionsIntersection, accessRole: .viewer)
             viewModels.append(file)
         }
         
         handler(viewModels, nil)
     }
     
-    private func onGetRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
+    private func onGetPrivateRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
-            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.displayName == Constants.API.FileType.myFilesFolder })
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.type == Constants.API.FileType.typeFolderRootPrivate })
+        else {
+            handler(nil, APIError.clientError)
+            return
+        }
+        
+        let folder = FileViewModel(model: myFilesFolder)
+        handler(folder, nil)
+    }
+    
+    private func onGetPublicRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
+        guard
+            let folderVO = model.results?.first?.data?.first?.folderVO,
+            let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.type == Constants.API.FileType.typeFolderRootPublic })
         else {
             handler(nil, APIError.clientError)
             return
@@ -172,6 +285,11 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
 }
 
 class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
+    var currentArchive: ArchiveVOData?
+    var archivePermissions: [Permission] {
+        return currentArchive?.permissions() ?? [.read]
+    }
+    
     var folderContentMockFiles: [FileViewModel] = []
     var newFolderMock: FileViewModel?
     var privateRootMock: FileViewModel?
@@ -185,6 +303,14 @@ class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
     }
     
     func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        completion(privateRootMock, nil)
+    }
+    
+    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        completion(privateRootMock, nil)
+    }
+    
+    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
         completion(privateRootMock, nil)
     }
 }

@@ -18,6 +18,7 @@ enum FileType: String, Codable {
     case audio = "type.record.audio"
     case pdf = "type.record.pdf"
     case miscellaneous = "type.record.misc"
+    case workspace = "type.workspace"
     
     var isFolder: Bool {
         switch self {

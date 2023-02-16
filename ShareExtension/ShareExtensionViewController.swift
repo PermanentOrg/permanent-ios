@@ -142,7 +142,10 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     @IBAction func selectFolderButtonPressed(_ sender: Any) {
-        let selectFolderVC = ShareFileBrowserViewController()
+//        let selectFolderVC = ShareFileBrowserViewController()
+//        selectFolderVC.delegate = self
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: nil)
+        let selectFolderVC = storyboard.instantiateViewController(withIdentifier: "selectWorkspace") as! SelectWorkspaceViewController
         selectFolderVC.delegate = self
         let navController = ShareExtensionNavigationController(rootViewController: selectFolderVC)
         
@@ -209,8 +212,8 @@ extension ShareExtensionViewController: ArchivesViewControllerDelegate {
     }
 }
 
-extension ShareExtensionViewController: ShareFileBrowserViewControllerDelegate {
-    func shareFileBrowserViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo) {
+extension ShareExtensionViewController: SelectWorkspaceViewControllerDelegate {
+    func selectWorkspaceViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo) {
         viewModel?.updateSelectedFolder(withName: name, folderInfo: folderInfo)
         saveFolderLabel.text = viewModel?.folderDisplayName
     }

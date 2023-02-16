@@ -53,6 +53,10 @@ class FolderContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     func initUI() {
         backgroundColor = .backgroundPrimary
         isSkeletonable = true
@@ -145,7 +149,15 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         if let file = viewModel?.fileForRow(atIndexPath: indexPath) {
-            cell.updateCell(model: file, fileAction: .copy, isGridCell: isGridView, isSearchCell: false)
+            cell.updateCell(model: file, fileAction: .none, isGridCell: isGridView, isSearchCell: false)
+            
+            if (file.permissions.contains(.create) || file.permissions.contains(.upload)) && file.type.isFolder {
+                cell.overlayView.isHidden = true
+                isUserInteractionEnabled = true
+            } else {
+                cell.overlayView.isHidden = false
+                isUserInteractionEnabled = false
+            }
         }
         
         cell.moreButton.isHidden = true

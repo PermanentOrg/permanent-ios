@@ -26,9 +26,7 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         edgesForExtendedLayout = []
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(doneButtonPressed(_:)))
         
-        viewModel = SaveDestinationBrowserViewModel()
         viewModel?.loadRootFolder()
         
         initUI()
@@ -37,6 +35,17 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         NotificationCenter.default.addObserver(forName: FileBrowserViewModel.didUpdateContentViewModels, object: viewModel, queue: nil) { [weak self] notif in
             guard let self = self else { return }
             self.folderContentView.viewModel = self.viewModel?.contentViewModels.last
+            
+            if self.viewModel?.hasSaveButton ?? false {
+                self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.doneButtonPressed(_:)))
+            } else {
+                self.navigationItem.rightBarButtonItem = nil
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: ShareFolderNavigationViewModel.didPopToWorkspaceNotification, object: viewModel?.navigationViewModel, queue: nil) { [weak self] notif in
+            guard let self = self else { return }
+            self.navigationController?.popViewController(animated: true)
         }
     }
     

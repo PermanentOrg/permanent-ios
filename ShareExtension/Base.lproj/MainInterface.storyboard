@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vnW-9m-cFf">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vnW-9m-cFf">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,7 +14,7 @@
             <objects>
                 <viewController id="j1y-V4-xli" customClass="ShareExtensionViewController" customModule="ShareExtension" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" opaque="NO" contentMode="scaleToFill" id="wbc-yd-nQP">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="804"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rKJ-k5-eek">
@@ -52,23 +52,23 @@
                                                 <rect key="frame" x="0.0" y="9" width="414" height="30"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="IPw-Lm-nYh">
-                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
+                                                        <rect key="frame" x="20" y="0.0" width="374" height="30"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wKO-P8-s7L">
-                                                                <rect key="frame" x="20" y="0.0" width="30" height="30"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" secondItem="wKO-P8-s7L" secondAttribute="height" multiplier="1:1" id="bLS-bZ-mIT"/>
                                                                     <constraint firstAttribute="width" constant="30" id="oRd-Qo-1e7"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EGQ-cY-rqQ">
-                                                                <rect key="frame" x="60" y="0.0" width="354" height="30"/>
+                                                                <rect key="frame" x="40" y="0.0" width="301" height="30"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="253" verticalHuggingPriority="251" horizontalCompressionResistancePriority="753" text="•••" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gUE-US-kzr">
-                                                                <rect key="frame" x="30" y="0.0" width="354" height="30"/>
+                                                                <rect key="frame" x="351" y="0.0" width="23" height="30"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -107,23 +107,23 @@
                                                 <rect key="frame" x="0.0" y="56" width="414" height="30"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="650-9F-laA">
-                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
+                                                        <rect key="frame" x="20" y="0.0" width="374" height="30"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ED3-iv-1ei">
-                                                                <rect key="frame" x="20" y="0.0" width="30" height="30"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" secondItem="ED3-iv-1ei" secondAttribute="height" multiplier="1:1" id="UAI-ua-cNE"/>
                                                                     <constraint firstAttribute="height" constant="30" id="tut-8X-H5Q"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pdI-o0-t3x">
-                                                                <rect key="frame" x="60" y="0.0" width="354" height="30"/>
+                                                                <rect key="frame" x="40" y="0.0" width="301" height="30"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="253" verticalHuggingPriority="251" horizontalCompressionResistancePriority="753" text="•••" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ijg-bR-c8n">
-                                                                <rect key="frame" x="30" y="0.0" width="354" height="30"/>
+                                                                <rect key="frame" x="351" y="0.0" width="23" height="30"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -204,6 +204,245 @@
             </objects>
             <point key="canvasLocation" x="1018.840579710145" y="69.642857142857139"/>
         </scene>
+        <!--Select Workspace View Controller-->
+        <scene sceneID="uWq-wo-cvb">
+            <objects>
+                <viewController storyboardIdentifier="selectWorkspace" id="6PD-gA-jcA" customClass="SelectWorkspaceViewController" customModule="ShareExtension" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FXv-N4-5Bp">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="kXV-KY-XxP">
+                                <rect key="frame" x="0.0" y="48" width="414" height="192"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wdp-HM-y4g">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="privateFilesWorkspaceIcon" translatesAutoresizingMaskIntoConstraints="NO" id="rO7-GM-Kzu" userLabel="File Image View">
+                                                <rect key="frame" x="24" y="12" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="40" id="PE4-wL-q1H"/>
+                                                    <constraint firstAttribute="height" constant="40" id="eNO-uh-O6W"/>
+                                                </constraints>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </imageView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="fLV-de-4ul">
+                                                <rect key="frame" x="74" y="15" width="325" height="34"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ofg-W3-48g">
+                                                        <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Private Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tr4-dJ-qSs" userLabel="File Name Label">
+                                                                <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                                <userDefinedRuntimeAttributes>
+                                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                                </userDefinedRuntimeAttributes>
+                                                            </label>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="FeK-zx-mCp">
+                                                                <rect key="frame" x="301" y="5" width="24" height="24"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="24" id="mbW-3e-uE6"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </stackView>
+                                                </subviews>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wOB-PD-ZwR">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <connections>
+                                                    <action selector="privateFilesButtonPressed:" destination="6PD-gA-jcA" eventType="touchUpInside" id="9la-i1-FXY"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <viewLayoutGuide key="safeArea" id="dlZ-Xo-DTG"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="wOB-PD-ZwR" firstAttribute="leading" secondItem="dlZ-Xo-DTG" secondAttribute="leading" id="5Dh-e7-w1B"/>
+                                            <constraint firstItem="rO7-GM-Kzu" firstAttribute="centerY" secondItem="fLV-de-4ul" secondAttribute="centerY" id="926-hc-6kB"/>
+                                            <constraint firstAttribute="trailing" secondItem="fLV-de-4ul" secondAttribute="trailing" constant="15" id="E65-uZ-3KP"/>
+                                            <constraint firstAttribute="height" constant="64" id="FlO-Y2-apo"/>
+                                            <constraint firstItem="dlZ-Xo-DTG" firstAttribute="bottom" secondItem="wOB-PD-ZwR" secondAttribute="bottom" id="RyG-uD-m9W"/>
+                                            <constraint firstItem="fLV-de-4ul" firstAttribute="top" secondItem="wdp-HM-y4g" secondAttribute="top" constant="15" id="bms-am-nNa"/>
+                                            <constraint firstItem="rO7-GM-Kzu" firstAttribute="leading" secondItem="wdp-HM-y4g" secondAttribute="leading" constant="24" id="hT4-Sb-9pI"/>
+                                            <constraint firstAttribute="bottom" secondItem="fLV-de-4ul" secondAttribute="bottom" constant="15" id="kjn-2f-J84"/>
+                                            <constraint firstItem="fLV-de-4ul" firstAttribute="leading" secondItem="rO7-GM-Kzu" secondAttribute="trailing" constant="10" id="vDH-ib-y1m"/>
+                                            <constraint firstItem="wOB-PD-ZwR" firstAttribute="top" secondItem="dlZ-Xo-DTG" secondAttribute="top" id="x8d-T3-DhF"/>
+                                            <constraint firstItem="dlZ-Xo-DTG" firstAttribute="trailing" secondItem="wOB-PD-ZwR" secondAttribute="trailing" id="ywt-7T-lUU"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lAj-jM-q3U">
+                                        <rect key="frame" x="0.0" y="64" width="414" height="64"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sharedFilesWorkspaceIcon" translatesAutoresizingMaskIntoConstraints="NO" id="xop-Of-gPN" userLabel="File Image View">
+                                                <rect key="frame" x="24" y="12" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="3GV-Le-ADe"/>
+                                                    <constraint firstAttribute="width" constant="40" id="8uR-Zp-eO2"/>
+                                                </constraints>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </imageView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Uot-In-QlF">
+                                                <rect key="frame" x="74" y="15" width="325" height="34"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="gNu-VJ-Yda">
+                                                        <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Shared Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0RQ-G9-j5i" userLabel="File Name Label">
+                                                                <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                                <userDefinedRuntimeAttributes>
+                                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                                </userDefinedRuntimeAttributes>
+                                                            </label>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="t2G-6D-vD2">
+                                                                <rect key="frame" x="301" y="5" width="24" height="24"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="24" id="V8m-kd-vmg"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </stackView>
+                                                </subviews>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0fu-Mi-Rjw">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <connections>
+                                                    <action selector="sharedFilesButtonPressed:" destination="6PD-gA-jcA" eventType="touchUpInside" id="Ogh-ss-knc"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <viewLayoutGuide key="safeArea" id="p2K-gl-bkU"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="Uot-In-QlF" firstAttribute="top" secondItem="lAj-jM-q3U" secondAttribute="top" constant="15" id="299-Tg-w33"/>
+                                            <constraint firstAttribute="trailing" secondItem="Uot-In-QlF" secondAttribute="trailing" constant="15" id="2Xx-zp-6zK"/>
+                                            <constraint firstItem="xop-Of-gPN" firstAttribute="centerY" secondItem="Uot-In-QlF" secondAttribute="centerY" id="5Px-yQ-3bf"/>
+                                            <constraint firstItem="xop-Of-gPN" firstAttribute="leading" secondItem="lAj-jM-q3U" secondAttribute="leading" constant="24" id="Jlh-dn-dc1"/>
+                                            <constraint firstItem="0fu-Mi-Rjw" firstAttribute="trailing" secondItem="p2K-gl-bkU" secondAttribute="trailing" id="Mlb-il-3ce"/>
+                                            <constraint firstAttribute="bottom" secondItem="Uot-In-QlF" secondAttribute="bottom" constant="15" id="NtI-af-KFV"/>
+                                            <constraint firstItem="0fu-Mi-Rjw" firstAttribute="bottom" secondItem="p2K-gl-bkU" secondAttribute="bottom" id="VgW-d7-nS6"/>
+                                            <constraint firstItem="0fu-Mi-Rjw" firstAttribute="top" secondItem="p2K-gl-bkU" secondAttribute="top" id="oqa-mC-iCp"/>
+                                            <constraint firstItem="0fu-Mi-Rjw" firstAttribute="leading" secondItem="p2K-gl-bkU" secondAttribute="leading" id="pH3-dd-tbI"/>
+                                            <constraint firstAttribute="height" constant="64" id="qhP-rt-IDs"/>
+                                            <constraint firstItem="Uot-In-QlF" firstAttribute="leading" secondItem="xop-Of-gPN" secondAttribute="trailing" constant="10" id="wAm-wN-PuD"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tvb-es-joD">
+                                        <rect key="frame" x="0.0" y="128" width="414" height="64"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="publicFilesWorkspaceIcon" translatesAutoresizingMaskIntoConstraints="NO" id="nii-jw-QKe" userLabel="File Image View">
+                                                <rect key="frame" x="24" y="12" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="68I-hI-od2"/>
+                                                    <constraint firstAttribute="width" constant="40" id="t3x-pv-CQt"/>
+                                                </constraints>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </imageView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="MWK-Q5-oh1">
+                                                <rect key="frame" x="74" y="15" width="325" height="34"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="tBP-dr-ha6">
+                                                        <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Public Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imq-P1-LR3" userLabel="File Name Label">
+                                                                <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                                <userDefinedRuntimeAttributes>
+                                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                                </userDefinedRuntimeAttributes>
+                                                            </label>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="f8s-oX-C36">
+                                                                <rect key="frame" x="301" y="5" width="24" height="24"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="24" id="IoQ-xE-YaK"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                    </stackView>
+                                                </subviews>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                                </userDefinedRuntimeAttributes>
+                                            </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8pi-bX-kHt">
+                                                <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <connections>
+                                                    <action selector="publicFilesButtonPressed:" destination="6PD-gA-jcA" eventType="touchUpInside" id="zJc-HE-vDL"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="8pi-bX-kHt" firstAttribute="leading" secondItem="tvb-es-joD" secondAttribute="leading" id="1Xv-Mw-riK"/>
+                                            <constraint firstItem="nii-jw-QKe" firstAttribute="leading" secondItem="tvb-es-joD" secondAttribute="leading" constant="24" id="3Ff-UO-FY7"/>
+                                            <constraint firstAttribute="height" constant="64" id="7ar-fP-api"/>
+                                            <constraint firstItem="MWK-Q5-oh1" firstAttribute="leading" secondItem="nii-jw-QKe" secondAttribute="trailing" constant="10" id="8u2-Hv-h5G"/>
+                                            <constraint firstAttribute="bottom" secondItem="8pi-bX-kHt" secondAttribute="bottom" id="Xz0-iT-VnA"/>
+                                            <constraint firstItem="nii-jw-QKe" firstAttribute="centerY" secondItem="MWK-Q5-oh1" secondAttribute="centerY" id="aYP-aE-Hbn"/>
+                                            <constraint firstItem="8pi-bX-kHt" firstAttribute="top" secondItem="tvb-es-joD" secondAttribute="top" id="eTB-mf-faA"/>
+                                            <constraint firstItem="MWK-Q5-oh1" firstAttribute="top" secondItem="tvb-es-joD" secondAttribute="top" constant="15" id="sgj-3R-O5t"/>
+                                            <constraint firstAttribute="trailing" secondItem="MWK-Q5-oh1" secondAttribute="trailing" constant="15" id="u83-q7-Q4G"/>
+                                            <constraint firstAttribute="bottom" secondItem="MWK-Q5-oh1" secondAttribute="bottom" constant="15" id="xvs-2k-mfL"/>
+                                            <constraint firstAttribute="trailing" secondItem="8pi-bX-kHt" secondAttribute="trailing" id="zWf-Vc-NgV"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSkeletonable" value="YES"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="65C-0d-8gd"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="kXV-KY-XxP" firstAttribute="top" secondItem="65C-0d-8gd" secondAttribute="top" id="4AV-3u-43g"/>
+                            <constraint firstItem="kXV-KY-XxP" firstAttribute="trailing" secondItem="65C-0d-8gd" secondAttribute="trailing" id="PEM-bv-8ZZ"/>
+                            <constraint firstItem="kXV-KY-XxP" firstAttribute="leading" secondItem="65C-0d-8gd" secondAttribute="leading" id="Ttt-x8-Pzx"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EKU-ZY-Py3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1930" y="70"/>
+        </scene>
         <!--Share Extension Navigation Controller-->
         <scene sceneID="8eJ-TM-jhl">
             <objects>
@@ -212,7 +451,7 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="htB-GZ-BXB">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="50"/>
+                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <navigationBarAppearance key="scrollEdgeAppearance" backgroundEffect="regular">
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -229,6 +468,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="disclosureIndicator" width="24" height="24"/>
+        <image name="privateFilesWorkspaceIcon" width="56" height="56"/>
+        <image name="publicFilesWorkspaceIcon" width="40" height="40"/>
+        <image name="sharedFilesWorkspaceIcon" width="56" height="56"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
