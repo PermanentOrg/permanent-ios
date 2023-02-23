@@ -11,6 +11,7 @@ class ManageTagsViewModel: ViewModelInterface {
     static let didUpdateTagsNotification = Notification.Name("ManageTagsViewModel.didUpdateTagsNotification")
     static let isLoadingNotification = Notification.Name("ManageTagsViewModel.isLoadingNotification")
     static let isSearchEnabled = Notification.Name("ManageTagsViewModel.isSearchEnabled")
+    static let showBannerNotification = Notification.Name("ManageTagsViewModel.showBannerNotification")
     
     let tagsRepository: TagsRepository
     var tags: [TagVO] = []
@@ -75,6 +76,35 @@ class ManageTagsViewModel: ViewModelInterface {
             }
             if sortedTags.count != tags.count {
                 isSearchEnabled = true
+            }
+        }
+    }
+    
+    func isNewTagNameValid(withText text: String?) -> Bool {
+        if let newTagName = text,
+           newTagName.isNotEmpty {
+            let filteredTags = tags.filter { tag in
+                tag.tagVO.name?.lowercased().contains(newTagName.lowercased()) ?? false
+            }
+            
+            return filteredTags.count == 0
+        } else {
+            return false
+        }
+    }
+    
+    func addTagToArchive(withName tagName: String?, completion: @escaping ((String?) -> Void)) {
+        guard let tagName = tagName else {
+            completion("error")
+            return
+        }
+        tagsRepository.assignTagToArchive(tagNames: [tagName]) { tags, error in
+            if let _ = tags {
+                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message":"Tag added successfully".localized()])
+                self.refreshTags()
+                completion(nil)
+            } else {
+                completion(error.debugDescription)
             }
         }
     }

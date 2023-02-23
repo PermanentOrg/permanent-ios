@@ -84,6 +84,7 @@ enum ViewControllerId: String {
     case tagManagement
     case shareManagement
     case shareManagementAccessRoles
+    case tagsOptions
 
     var value: String {
         switch self {
@@ -209,6 +210,9 @@ enum ViewControllerId: String {
             
         case .shareManagementAccessRoles:
             return "ShareManagementAccessRoles"
+            
+        case .tagsOptions:
+            return "TagsOptions"
             
         default:
             return self.rawValue.capitalized

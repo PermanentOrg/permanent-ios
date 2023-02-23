@@ -690,6 +690,9 @@
         <designable name="IIb-Jk-SGv">
             <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
+        <designable name="IZi-bu-5V6">
+            <size key="intrinsicContentSize" width="75" height="34.5"/>
+        </designable>
         <designable name="Qpj-CF-mcr">
             <size key="intrinsicContentSize" width="30" height="30"/>
         </designable>
@@ -698,6 +701,9 @@
         </designable>
         <designable name="k9G-sI-qMW">
             <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+        <designable name="zfX-6W-aLk">
+            <size key="intrinsicContentSize" width="75" height="34.5"/>
         </designable>
     </designables>
     <resources>

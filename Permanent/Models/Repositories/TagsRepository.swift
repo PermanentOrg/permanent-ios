@@ -37,6 +37,16 @@ class TagsRepository {
         }
     }
     
+    func assignTagToArchive(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void)) {
+        remoteDataSource.addTagToArchiveOnly(tagNames: tagNames) { tags, error in
+            if let tags = tags {
+                self.localDataSource.addTagToArchiveOnly(tags: tags, completion: completion)
+            } else {
+                completion(nil, error)
+            }
+        }
+    }
+    
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {
         remoteDataSource.unassignTag(tagVO: tagVO, recordId: recordId) { error in
             completion(error)
