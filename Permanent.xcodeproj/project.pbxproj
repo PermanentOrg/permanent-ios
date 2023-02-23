@@ -157,6 +157,7 @@
 		5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8AE291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib */; };
 		5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */; };
 		5E7AE8B4291E97DB00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */; };
+		5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */; };
 		5E83CC47286C5F8D00A5775B /* ExtensionUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */; };
 		5E83CC49286C601C00A5775B /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC97A4682518E73300E43205 /* StringExtension.swift */; };
 		5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC62D57C254180D300E84DA9 /* FileInfo.swift */; };
@@ -836,6 +837,7 @@
 		5E7AE8AE291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkNotGeneratedCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementLinkAndShowSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkAndShowSettingsCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABTagsManagementActionSheet.swift; sourceTree = "<group>"; };
 		5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUploadManager.swift; sourceTree = "<group>"; };
 		5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordUpdateViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
@@ -1321,6 +1323,7 @@
 				BC752BCB253EBBE100EF7941 /* UploadFilesView.swift */,
 				BC752BCE253EE52F00EF7941 /* FABView.swift */,
 				BC120C5E253EF8F500C41243 /* FABActionSheet.swift */,
+				5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */,
 				BC8E7946257A787C008ED0F5 /* LinkTextField.swift */,
 				BCF906712589FA1700DF1B64 /* TooltipView.swift */,
 			);
@@ -3411,6 +3414,7 @@
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
+				5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
 				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
 				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,

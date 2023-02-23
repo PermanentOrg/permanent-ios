@@ -9,6 +9,7 @@ import Foundation
 protocol TagsRemoteDataSourceInterface {
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?, Error?) -> Void))
     func addTag(tagNames: [String], recordId: Int, completion: @escaping (([TagLinkVO]?, Error?) -> Void))
+    func addTagToArchiveOnly(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void))
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void))
     func deleteTag(tagVO: [TagVO], completion: @escaping ((Error?) -> Void))
 }
@@ -61,6 +62,32 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
             }
         }
     }
+    
+    func addTagToArchiveOnly(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void)) {
+        let params: TagParams = (tagNames, 0)
+        let apiOperation = APIOperation(TagEndpoint.post(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
+                    completion(nil, APIError.clientError)
+                    return
+                }
+                let tagVOs: [TagVO]? =  model.results.compactMap { result in
+                    return result.data?.first
+                }
+                completion(tagVOs, nil)
+                
+            case .error(let error, _):
+                completion(nil, error)
+                
+            default:
+                completion(nil, APIError.clientError)
+            }
+        }
+    }
+
     
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {
         let params: DeleteTagParams = (tagVO, recordId)
@@ -117,6 +144,10 @@ class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
     func addTag(tagNames: [String], recordId: Int, completion: @escaping (([TagLinkVO]?, Error?) -> Void)) {
         let tag = TagLinkVO(tagLinkVO: TagLinkVOData(createdDT: nil, updatedDT: nil, refId: nil, refTable: nil, status: nil, tagId: 123, tagLinkId: 321, type: tagNames.first))
         completion([tag], nil)
+    }
+    
+    func addTagToArchiveOnly(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void)) {
+        let tag = TagVO(tagVO: TagVOData(status: nil, tagId: 1, type: nil, createdDT: nil, updatedDT: nil))
     }
     
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {

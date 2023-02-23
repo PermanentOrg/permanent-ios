@@ -34,6 +34,12 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
                 self?.hideSpinner()
             }
         }
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.showBannerNotification, object: nil, queue: nil) { [weak self] notif in
+            if let notifUserInfo = notif.userInfo,
+               let message = notifUserInfo["message"] as? String {
+                self?.view.showNotificationBanner(title: message)
+            }
+        }
     }
     
     func initUI() {
@@ -65,8 +71,6 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         
         addButton.delegate = self
         searchTags.delegate = self
-        
-        addButton.isHidden = true
     }
     
     func initCollectionView() {
@@ -93,14 +97,12 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
 // MARK: - FABView Delegate
 extension TagManagementViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
-        navigationController?.display(viewController: actionSheet, modally: true)
+        let tagsOptions = UIViewController.create(withIdentifier: .tagsOptions, from: .archiveSettings) as! FABTagsManagementActionSheet
+        tagsOptions.menuType = .newTag
+        tagsOptions.viewModel = viewModel
+        tagsOptions.modalPresentationStyle = .custom
+        tagsOptions.transitioningDelegate = tagsOptions.self
+        self.present(tagsOptions, animated: true)
     }
 }
 

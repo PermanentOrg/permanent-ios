@@ -26,6 +26,12 @@ class TagsLocalDataSource: ViewModelInterface {
         completion(tags, nil)
     }
     
+    func addTagToArchiveOnly(tags: [TagVO], completion: @escaping (([TagVO]?, Error?) -> Void)) {
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        self.allTags[archiveId] = tags
+        completion(tags, nil)
+    }
+    
     func unassignTags(tagVOs: [TagVO], recordId: Int, completion: @escaping ((Error?, String?) -> Void)) {
         completion(nil, nil)
     }
