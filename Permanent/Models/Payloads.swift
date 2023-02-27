@@ -159,6 +159,24 @@ struct Payloads {
         ]
     }
     
+    static func updateTagPost(params: TagUpdateParams) -> RequestParameters {
+        guard let tagId = params.tag.tagVO.tagId else { return [] }
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "TagVO": [
+                                "name": params.newTagName,
+                                "archiveId": params.archiveId,
+                                "tagId": tagId
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
+    
     static func deleteTagLinkPost(params: DeleteTagParams) -> RequestParameters {
         let tagLinkVO: [String: Any] = [
             "refId": params.refID,

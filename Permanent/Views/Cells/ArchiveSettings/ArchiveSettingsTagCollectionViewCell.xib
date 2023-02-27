@@ -38,6 +38,9 @@
                                     <constraint firstAttribute="height" constant="16" id="QTN-5w-OlU"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="editButtonAction:" destination="gTV-IL-0wX" eventType="touchUpInside" id="uiA-eX-OtC"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bgr-n0-Wcr">
                                 <rect key="frame" x="253" y="22" width="16" height="16"/>

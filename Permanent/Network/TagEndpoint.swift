@@ -10,12 +10,14 @@ import Foundation
 typealias TagParams = (names: [String], refID: Int)
 typealias DeleteTagParams = (tagVO: [TagVO], refID: Int)
 typealias GetTagsByArchiveParams = (Int)
+typealias TagUpdateParams = (tag: TagVO, newTagName: String, archiveId: Int)
 
 enum TagEndpoint {
     case getByArchive(params: GetTagsByArchiveParams)
     case post(params: TagParams)
     case delete(params: [TagVO])
     case unlink(params: DeleteTagParams)
+    case updateTag(params: TagUpdateParams)
 }
 
 extension TagEndpoint: RequestProtocol {
@@ -29,6 +31,8 @@ extension TagEndpoint: RequestProtocol {
             return "/tag/getTagsByArchive"
         case .unlink:
             return "/tag/DeleteTagLink"
+        case .updateTag:
+            return "/tag/updateTag"
         }
     }
     
@@ -58,6 +62,9 @@ extension TagEndpoint: RequestProtocol {
             
         case .unlink(let params):
             return Payloads.deleteTagLinkPost(params: params)
+            
+        case .updateTag(let params):
+            return Payloads.updateTagPost(params: params)
         }
     }
     

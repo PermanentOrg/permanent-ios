@@ -12,6 +12,7 @@ protocol TagsRemoteDataSourceInterface {
     func addTagToArchiveOnly(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void))
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void))
     func deleteTag(tagVO: [TagVO], completion: @escaping ((Error?) -> Void))
+    func updateTag(tagVO: TagVO, newTagName: String, completion: @escaping ((Error?) -> Void))
 }
 
 class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
@@ -87,7 +88,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
             }
         }
     }
-
+    
     
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {
         let params: DeleteTagParams = (tagVO, recordId)
@@ -131,10 +132,33 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
             }
         }
     }
+    
+    func updateTag(tagVO: TagVO, newTagName: String, completion: @escaping ((Error?) -> Void)) {
+        let archiveId: Int = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        let params: TagUpdateParams = (tagVO, newTagName, archiveId)
+        let apiOperation = APIOperation(TagEndpoint.updateTag(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
+                    completion(nil)
+                    return
+                }
+                completion(nil)
+                
+            case .error(let error, _):
+                completion(error)
+            default:
+                completion(APIError.clientError)
+            }
+        }
+    }
 }
 
 class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
     var deleteTagError: Error?
+    var updateTagError: Error?
     
     func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?, Error?) -> Void)) {
         let tag = TagVO(tagVO: TagVOData(status: nil, tagId: nil, type: nil, createdDT: nil, updatedDT: nil))
@@ -156,5 +180,9 @@ class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
     
     func deleteTag(tagVO: [TagVO], completion: @escaping ((Error?) -> Void)) {
         completion(deleteTagError)
+    }
+    
+    func updateTag(tagVO: TagVO, newTagName: String, completion: @escaping ((Error?) -> Void)) {
+        completion(updateTagError)
     }
 }

@@ -141,6 +141,16 @@ extension TagManagementViewController: UICollectionViewDataSource {
                     }
                 })
             }
+            
+            cell.editButtonAction = {
+                let tagsOptions = UIViewController.create(withIdentifier: .tagsOptions, from: .archiveSettings) as! FABTagsManagementActionSheet
+                tagsOptions.menuType = .editTag
+                tagsOptions.index = indexPath.item
+                tagsOptions.viewModel = self.viewModel
+                tagsOptions.modalPresentationStyle = .custom
+                tagsOptions.transitioningDelegate = tagsOptions.self
+                self.present(tagsOptions, animated: true)
+            }
         }
         return cell
     }

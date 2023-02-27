@@ -45,7 +45,7 @@ class ManageTagsViewModel: ViewModelInterface {
         tags = tagsRepository.getTagsByArchive(archiveId: archiveId) { tags, error in
             self.isLoading = false
             self.tags = tags ?? []
-            self.sortedTags = tags ?? []
+            self.sortedTags = tags?.sorted(by: {$0.tagVO.name?.lowercased() ?? "" < $1.tagVO.name?.lowercased() ?? ""}) ?? []
         } ?? []
     }
     
@@ -84,7 +84,7 @@ class ManageTagsViewModel: ViewModelInterface {
         if let newTagName = text,
            newTagName.isNotEmpty {
             let filteredTags = tags.filter { tag in
-                tag.tagVO.name?.lowercased().contains(newTagName.lowercased()) ?? false
+                tag.tagVO.name?.contains(newTagName) ?? false
             }
             
             return filteredTags.count == 0
@@ -107,5 +107,27 @@ class ManageTagsViewModel: ViewModelInterface {
                 completion(error.debugDescription)
             }
         }
+    }
+    
+    func updateTagName(newTagName tagName: String?, index: Int, completion: @escaping ((String?) -> Void)) {
+        let selectedTag = sortedTags[index]
+        guard let tagName = tagName else {
+            completion("error")
+            return
+        }
+        
+        tagsRepository.updateTag(tagVO: selectedTag, newTagName: tagName) { error in
+            if let _ = error {
+                completion(.errorMessage)
+            } else {
+                NotificationCenter.default.post(name: Self.showBannerNotification, object: self, userInfo: ["message":"Tag edited successfully".localized()])
+                self.refreshTags()
+                completion(nil)
+            }
+        }
+    }
+    
+    func getTagNameFromIndex(index: Int) -> String? {
+        return sortedTags[index].tagVO.name 
     }
 }
