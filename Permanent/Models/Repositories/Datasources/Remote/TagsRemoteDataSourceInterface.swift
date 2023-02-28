@@ -142,7 +142,7 @@ class TagsRemoteDataSource: TagsRemoteDataSourceInterface {
             switch result {
             case .json(let json, _):
                 guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
-                    completion(nil)
+                    completion(APIError.parseError)
                     return
                 }
                 completion(nil)
