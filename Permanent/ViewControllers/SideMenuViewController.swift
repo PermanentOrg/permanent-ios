@@ -85,10 +85,10 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.beginUpdates()
         if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {
             if archiveSetingsWasPressed {
-                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.tagsManagement, DrawerOption.usersManagement])
+                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.manageTags, DrawerOption.manageMembers])
                 tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
             } else {
-                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.usersManagement || $0 == DrawerOption.tagsManagement })
+                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags })
                 tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
             }
         }
@@ -249,11 +249,11 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         case .archiveSettings:
             viewModel?.archiveSetingsWasPressed.toggle()
             
-        case .tagsManagement:
+        case .manageTags:
             let newRootVC = UIViewController.create(withIdentifier: .tagManagement, from: .archiveSettings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
-        case .usersManagement:
+        case .manageMembers:
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
