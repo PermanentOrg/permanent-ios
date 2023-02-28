@@ -45,4 +45,15 @@ class TagsLocalDataSource: ViewModelInterface {
         allTags[archiveId] = tags
         completion(nil, nil)
     }
+    
+    func updateTag(tagVO: TagVO, newTagName: String, completion: @escaping ((Error?) -> Void)) {
+        let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID ?? 0
+        var tags = allTags[archiveId]
+        var editedTag = tags?.first(where: {$0.tagVO.tagId == tagVO.tagVO.tagId})
+        tags?.removeAll(where: {$0.tagVO.tagId == tagVO.tagVO.tagId})
+        editedTag?.tagVO.name = newTagName
+        if let editedTag = editedTag { tags?.append(editedTag) }
+        allTags[archiveId] = tags
+        completion(nil)
+    }
 }

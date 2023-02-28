@@ -58,4 +58,14 @@ class TagsRepository {
             completion(error)
         }
     }
+    
+    func updateTag(tagVO: TagVO, newTagName: String, completion: @escaping ((Error?) -> Void)) {
+        remoteDataSource.updateTag(tagVO: tagVO, newTagName: newTagName) { error in
+            if error == nil {
+                self.localDataSource.updateTag(tagVO: tagVO, newTagName: newTagName, completion: completion)
+            } else {
+                completion(error)
+            }
+        }
+    }
 }

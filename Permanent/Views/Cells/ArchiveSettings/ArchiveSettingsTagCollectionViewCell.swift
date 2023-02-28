@@ -18,6 +18,7 @@ class ArchiveSettingsTagCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var rightSideButtonWidthConstraint: NSLayoutConstraint!
     
     var rightSideButtonAction: (() -> Void)?
+    var editButtonAction: (() -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -48,8 +49,6 @@ class ArchiveSettingsTagCollectionViewCell: UICollectionViewCell {
         
         rightSideButtonWidthConstraint.constant = 14
         rightSideButtonHeightConstraint.constant = 16
-        
-        editButton.isHidden = true
     }
     
     func configure(tagName: String?) {
@@ -57,12 +56,15 @@ class ArchiveSettingsTagCollectionViewCell: UICollectionViewCell {
             return
         }
         
-        tagNameLabel.text = tagName.capitalized
+        tagNameLabel.text = tagName
     }
     
     @IBAction func rightSideButtonAction(_ sender: Any) {
         rightSideButtonAction?()
     }
     
-
+    @IBAction func editButtonAction(_ sender: Any) {
+        editButtonAction?()
+    }
+    
 }

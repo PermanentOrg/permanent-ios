@@ -33,6 +33,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
     }
     
     var menuType: MenuType!
+    var index: Int?
     
     let overlayView = UIView(frame: .zero)
     private var initialCenter: CGPoint = .zero
@@ -51,7 +52,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         view.backgroundColor = .clear
         loadOverlay()
         loadHeader()
-        loadContentItems()
+        initContentItems()
         initButtonsUI()
     }
     
@@ -87,7 +88,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         topBarView.layer.cornerRadius = 2
     }
     
-    func loadContentItems() {
+    func initContentItems() {
         tagNameLabel.text = "Tag Name".uppercased().localized()
         tagNameLabel.font = Text.style43.font
         tagNameLabel.textColor = .gray
@@ -99,6 +100,10 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         tagNameTextField.layer.cornerRadius = 2
         tagNameTextField.layer.borderWidth = 1
         tagNameTextField.layer.borderColor = UIColor(red: 0.957, green: 0.965, blue: 0.992, alpha: 1).cgColor
+        
+        if menuType == .editTag, let index = self.index, let tagName = viewModel?.getTagNameFromIndex(index: index) {
+            tagNameTextField.text = tagName
+        }
     }
     
     func initButtonsUI() {
@@ -136,7 +141,17 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
             }
             
         case .editTag:
-            break
+            if let index = self.index, let isNewTagNameValid = viewModel?.isNewTagNameValid(withText: tagNameTextField.text), isNewTagNameValid  {
+                viewModel?.updateTagName(newTagName: tagNameTextField.text, index: index, completion: { error in
+                    if let _ = error {
+                        self.showAlert(title: .error, message: .errorMessage)
+                    } else {
+                        self.dismiss(animated: true)
+                    }
+                })
+            } else {
+                self.showAlert(title: .error, message: "Enter a valid Tag Name".localized())
+            }
         default:
             break
         }
