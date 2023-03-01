@@ -26,4 +26,7 @@ enum ActionDialogStyle {
     
     /// Dialog with title, an input field and a dropdown (UIPickerView).
     case inputWithDropdown
+    
+    /// New UI design for simple dialog with title.
+    case updatedSimpleWithDescription
 }

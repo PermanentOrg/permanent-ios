@@ -15,6 +15,8 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var addButton: FABView!
     
+    private let overlayView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel = ManageTagsViewModel()
@@ -45,6 +47,11 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
     func initUI() {
         title = "Manage Tags".localized()
         addDismissKeyboardGesture()
+        
+        overlayView.frame = view.bounds
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
         
         archiveTitleNameLabel.font = Text.style35.font
         archiveTitleNameLabel.textColor = .darkBlue
@@ -135,11 +142,13 @@ extension TagManagementViewController: UICollectionViewDataSource {
             cell.configure(tagName: tagName.tagVO.name)
             
             cell.rightSideButtonAction = {
-                self.viewModel?.deleteTag(index: indexPath.item, completion: { result in
-                    if let _ = result {
-                        self.showErrorAlert(message: .errorMessage)
-                    }
-                })
+                self.showActionDialog(styled: .updatedSimpleWithDescription, withTitle: "Delete Tags".localized(), description: "Are you sure you want to delete the tags from all items in the current archive?".localized(), positiveButtonTitle: "Delete", positiveAction: { [weak self] in
+                    self?.viewModel?.deleteTag(index: indexPath.item, completion: { result in
+                        if let _ = result {
+                            self?.showErrorAlert(message: .errorMessage)
+                        }
+                    })
+                }, overlayView: self.overlayView )
             }
             
             cell.editButtonAction = { [weak self] in

@@ -52,7 +52,7 @@ class DrawerTableViewCell: UITableViewCell {
         case .files, .shares, .publicFiles, .publicGallery:
             topSpaceConstraint.constant = 16
             bottomSpaceConstraint.constant = 16
-        case .archiveSettings, .tagsManagement, .usersManagement:
+        case .archiveSettings, .manageTags, .manageMembers:
             topSpaceConstraint.constant = 12
             bottomSpaceConstraint.constant = 12
         default:

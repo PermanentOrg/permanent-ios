@@ -12,8 +12,8 @@ enum DrawerOption {
     case files
     case shares
     case publicFiles
-    case usersManagement
-    case tagsManagement
+    case manageMembers
+    case manageTags
     case archiveSettings
     case manageArchives
     case publicGallery
@@ -40,8 +40,8 @@ enum DrawerOption {
         case .invitations: return .mail
         case .activityFeed: return .alert
         case .archives: return nil
-        case .usersManagement: return UIImage(named: "groupBorder")
-        case .tagsManagement: return UIImage(named: "tagsBorder")
+        case .manageMembers: return UIImage(named: "groupBorder")
+        case .manageTags: return UIImage(named: "tagsBorder")
         case .logOut: return UIImage.logOut.templated
         case .contactSupport: return nil
         case .none: return nil
@@ -54,8 +54,8 @@ enum DrawerOption {
         case .publicFiles: return "Public Files".localized()
         case .shares: return "Shared Files".localized()
         case .archiveSettings: return "Archive Settings".localized()
-        case .usersManagement: return "Users Management".localized()
-        case .tagsManagement: return "Tags Management".localized()
+        case .manageMembers: return "Manage Members".localized()
+        case .manageTags: return "Manage Tags".localized()
         case .manageArchives: return "Archives".localized()
         case .publicGallery: return "Public Gallery".localized()
         case .invitations: return .invitations
