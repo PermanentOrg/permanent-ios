@@ -172,6 +172,7 @@ class TagsRemoteMockDataSource: TagsRemoteDataSourceInterface {
     
     func addTagToArchiveOnly(tagNames: [String], completion: @escaping (([TagVO]?, Error?) -> Void)) {
         let tag = TagVO(tagVO: TagVOData(status: nil, tagId: 1, type: nil, createdDT: nil, updatedDT: nil))
+        completion([tag], nil)
     }
     
     func unassignTag(tagVO: [TagVO], recordId: Int, completion: @escaping ((Error?) -> Void)) {
