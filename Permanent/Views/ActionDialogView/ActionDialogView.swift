@@ -19,6 +19,11 @@ class ActionDialogView: UIView {
     @IBOutlet weak var removeButton: UIButton!
     @IBOutlet weak var removeButtonContainer: UIView!
     
+    @IBOutlet weak var topStackViewConstraint: NSLayoutConstraint!
+    @IBOutlet weak var leadingStackViewConstraint: NSLayoutConstraint!
+    @IBOutlet weak var trailingStackViewConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomStackViewConstraint: NSLayoutConstraint!
+    
     private lazy var pickerView = UIPickerView()
     
     private var onDismiss: ButtonAction!
@@ -76,6 +81,8 @@ class ActionDialogView: UIView {
         
         styleActionButton(cancelButton, color: cancelButtonColor!)
         styleActionButton(positiveButton, color: positiveButtonColor!)
+
+        updateUI(forStyle: dialogStyle)
     }
     
     func commonInit() {
@@ -129,6 +136,9 @@ class ActionDialogView: UIView {
             fieldsStackView.addArrangedSubview(textField)
 
         case .simpleWithDescription:
+            fieldsStackView.isHidden = true
+            
+        case .updatedSimpleWithDescription:
             fieldsStackView.isHidden = true
         }
     }
@@ -194,6 +204,33 @@ class ActionDialogView: UIView {
         // Display the keyboard after showing dialog
         if fieldsStackView.isHidden == false {
             fieldsStackView.arrangedSubviews.first?.becomeFirstResponder()
+        }
+    }
+    
+    fileprivate func updateUI(forStyle style: ActionDialogStyle) {
+        switch style {
+        case .updatedSimpleWithDescription:
+            titleLabel.textColor = .paleRed
+            titleLabel.font = Text.style32.font
+            
+            subtitleLabel.textColor = .black
+            subtitleLabel.font = Text.style8.font
+
+            dialogView.layer.cornerRadius = 8
+            positiveButton.layer.cornerRadius = 1
+            
+            cancelButton.bgColor = .whiteGray
+            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
+            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .highlighted)
+            cancelButton.layer.cornerRadius = 1
+            cancelButton.backgroundColor = .whiteGray
+            
+            topStackViewConstraint.constant = 32
+            leadingStackViewConstraint.constant = 24
+            trailingStackViewConstraint.constant = 24
+            bottomStackViewConstraint.constant = 24
+        default:
+            break
         }
     }
     
