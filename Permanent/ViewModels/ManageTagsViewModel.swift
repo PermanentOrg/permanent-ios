@@ -84,9 +84,8 @@ class ManageTagsViewModel: ViewModelInterface {
         if let newTagName = text,
            newTagName.isNotEmpty {
             let filteredTags = tags.filter { tag in
-                tag.tagVO.name?.contains(newTagName) ?? false
+                tag.tagVO.name == newTagName
             }
-            
             return filteredTags.count == 0
         } else {
             return false
