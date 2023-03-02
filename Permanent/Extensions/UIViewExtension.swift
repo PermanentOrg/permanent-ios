@@ -166,13 +166,13 @@ extension UIView {
         layer.shadowOpacity = showShadow ? 1 : 0
         if onlyBottomShadow {
             let height = frame.height
-              let width = frame.width
-
-              let shadowSize: CGFloat = 15
+            let width = frame.width
+            
+            let shadowSize: CGFloat = 15
             let contactRect = CGRect(x: -shadowSize, y: height - shadowSize * 3, width: width, height: shadowSize/3)
-              layer.shadowPath = UIBezierPath(ovalIn: contactRect).cgPath
-             layer.shadowRadius = 5
-             layer.shadowOpacity = 0.6
+            layer.shadowPath = UIBezierPath(ovalIn: contactRect).cgPath
+            layer.shadowRadius = 5
+            layer.shadowOpacity = 0.6
         } else {
             layer.shadowColor = UIColor.black.cgColor
             layer.shadowOffset = .zero
