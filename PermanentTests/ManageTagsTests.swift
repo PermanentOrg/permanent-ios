@@ -80,6 +80,105 @@ class ManageTagsTests: XCTestCase {
         
         waitForExpectations(timeout: 5)
     }
+
+    func testIsTagNameValid() {
+        let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
+        let tagVO = TagVO(tagVO: tag)
+        sut.tags.append(tagVO)
+        sut.sortedTags.append(tagVO)
+        XCTAssertFalse(sut.isNewTagNameValid(withText: "test"))
+        XCTAssertFalse(sut.isNewTagNameValid(withText: ""))
+        XCTAssertFalse(sut.isNewTagNameValid(withText: nil))
+        XCTAssert(sut.isNewTagNameValid(withText: "test 1"))
+        XCTAssert(sut.isNewTagNameValid(withText: "test 2"))
+    }
+    
+    func testAddTag() {
+        var temporarySut: ManageTagsViewModel!
+
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+
+        expectation(forNotification: ManageTagsViewModel.showBannerNotification, object: temporarySut) { notification in
+            return true
+        }
+
+        temporarySut.addTagToArchive(withName: "test") { error in
+            XCTAssertNil(error)
+            XCTAssert(temporarySut.tags.count == 1)
+            XCTAssert(temporarySut.sortedTags.count == 1)
+        }
+
+        waitForExpectations(timeout: 5)
+    }
+
+    func testAddTagNil() {
+        var temporarySut: ManageTagsViewModel!
+
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+
+        temporarySut.addTagToArchive(withName: nil) { error in
+            XCTAssertNotNil(error)
+        }
+    }
+
+    func testUpdateTag() {
+        var temporarySut: ManageTagsViewModel!
+
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+
+        let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
+        let tagVO = TagVO(tagVO: tag)
+        temporarySut.tags.append(tagVO)
+        temporarySut.sortedTags.append(tagVO)
+
+        expectation(forNotification: ManageTagsViewModel.showBannerNotification, object: temporarySut) { notification in
+            return true
+        }
+
+        temporarySut.updateTagName(newTagName: "test 1", index: 0) { error in
+            XCTAssertNil(error)
+        }
+
+        waitForExpectations(timeout: 5)
+    }
+
+    func testUpdateTagNil() {
+        var temporarySut: ManageTagsViewModel!
+
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+
+        let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
+        let tagVO = TagVO(tagVO: tag)
+        temporarySut.tags.append(tagVO)
+        temporarySut.sortedTags.append(tagVO)
+
+        temporarySut.updateTagName(newTagName: nil, index: 0) { error in
+            XCTAssertNotNil(error)
+        }
+    }
+
+    func testGetTagName() {
+        var temporarySut: ManageTagsViewModel!
+
+        let tagsRemoteMockDataSource = TagsRemoteMockDataSource()
+        let tagsManagementRepository = TagsRepository(remoteDataSource: tagsRemoteMockDataSource)
+        temporarySut = ManageTagsViewModel(tagsRepository: tagsManagementRepository)
+
+        let tag = TagVOData(name: "test", status: nil, tagId: 2, type: nil, createdDT: nil, updatedDT: nil)
+        let tagVO = TagVO(tagVO: tag)
+        temporarySut.tags.append(tagVO)
+        temporarySut.sortedTags.append(tagVO)
+
+        XCTAssertEqual(temporarySut.getTagNameFromIndex(index: 0), "test")
+    }
     
     func createMockSession() {
         let archiveVO = ArchiveVOData(childFolderVOS: nil, folderSizeVOS: nil, recordVOS: nil, accessRole: nil, fullName: "test", spaceTotal: nil, spaceLeft: nil, fileTotal: nil, fileLeft: nil, relationType: nil, homeCity: nil, homeState: nil, homeCountry: nil, itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 1, publicDT: nil, archiveNbr: "777", view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil, updatedDT: nil, status: nil)
