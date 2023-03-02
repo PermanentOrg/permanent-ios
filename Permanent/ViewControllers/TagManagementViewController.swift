@@ -50,7 +50,7 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         
         overlayView.frame = view.bounds
         view.addSubview(overlayView)
-        overlayView.backgroundColor = .overlay
+        overlayView.backgroundColor = .bgOverlay
         overlayView.alpha = 0
         
         archiveTitleNameLabel.font = Text.style35.font
@@ -143,8 +143,9 @@ extension TagManagementViewController: UICollectionViewDataSource {
             
             cell.rightSideButtonAction = {
                 self.showActionDialog(styled: .updatedSimpleWithDescription, withTitle: "Delete Tags".localized(), description: "Are you sure you want to delete the tags from all items in the current archive?".localized(), positiveButtonTitle: "Delete", positiveAction: { [weak self] in
-                    self?.viewModel?.deleteTag(index: indexPath.item, completion: { result in
-                        if let _ = result {
+                    self?.actionDialog?.dismiss()
+                    self?.viewModel?.deleteTag(index: indexPath.item, completion: { error in
+                        if let _ = error {
                             self?.showErrorAlert(message: .errorMessage)
                         }
                     })

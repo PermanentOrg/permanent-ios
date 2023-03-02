@@ -210,6 +210,8 @@ class ActionDialogView: UIView {
     fileprivate func updateUI(forStyle style: ActionDialogStyle) {
         switch style {
         case .updatedSimpleWithDescription:
+            dialogView.shadowToBorder(showShadow: true, onlyBottomShadow: true)
+            
             titleLabel.textColor = .paleRed
             titleLabel.font = Text.style32.font
             

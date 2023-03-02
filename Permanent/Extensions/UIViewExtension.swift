@@ -162,12 +162,23 @@ extension UIView {
         self.endEditing(true)
     }
     
-    func shadowToBorder(showShadow: Bool = true) {
-        layer.shadowColor = UIColor.black.cgColor
+    func shadowToBorder(showShadow: Bool = true, onlyBottomShadow: Bool = false) {
         layer.shadowOpacity = showShadow ? 1 : 0
-        layer.shadowOffset = .zero
-        layer.shadowRadius = 10
-        layer.shouldRasterize = true
-        layer.rasterizationScale = UIScreen.main.scale
+        if onlyBottomShadow {
+            let height = frame.height
+              let width = frame.width
+
+              let shadowSize: CGFloat = 15
+            let contactRect = CGRect(x: -shadowSize, y: height - shadowSize * 3, width: width, height: shadowSize/3)
+              layer.shadowPath = UIBezierPath(ovalIn: contactRect).cgPath
+             layer.shadowRadius = 5
+             layer.shadowOpacity = 0.6
+        } else {
+            layer.shadowColor = UIColor.black.cgColor
+            layer.shadowOffset = .zero
+            layer.shadowRadius = 10
+            layer.shouldRasterize = true
+            layer.rasterizationScale = UIScreen.main.scale
+        }
     }
 }
