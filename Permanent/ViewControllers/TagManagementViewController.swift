@@ -108,7 +108,7 @@ extension TagManagementViewController: FABViewDelegate {
         tagsOptions.menuType = .newTag
         tagsOptions.viewModel = viewModel
         tagsOptions.modalPresentationStyle = .custom
-        tagsOptions.transitioningDelegate = tagsOptions.self
+        tagsOptions.transitioningDelegate = tagsOptions
         self.present(tagsOptions, animated: true)
     }
 }

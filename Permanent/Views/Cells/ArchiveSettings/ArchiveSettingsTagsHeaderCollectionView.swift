@@ -25,9 +25,9 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
         initUI()
         
         NotificationCenter.default.addObserver(forName: ManageTagsViewModel.isSearchEnabled, object: nil, queue: nil) { [weak self] notification in
-            if let isSearchEnabled = (notification.object as? ManageTagsViewModel)?.isSearchEnabled as? Bool,
-               let numberOfTags = (notification.object as? ManageTagsViewModel)?.sortedTags.count as? Int,
-               isSearchEnabled {
+            guard let numberOfTags = (notification.object as? ManageTagsViewModel)?.sortedTags.count as? Int else { return }
+            
+            if let isSearchEnabled = (notification.object as? ManageTagsViewModel)?.isSearchEnabled as? Bool, isSearchEnabled {
                 if numberOfTags > 1 {
                     self?.tagsHeaderLabel.text = "<COUNT> Tags found".localized().replacingOccurrences(of: "<COUNT>", with: String(numberOfTags))
                 } else if numberOfTags == 1 {
@@ -36,8 +36,16 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
                     self?.tagsHeaderLabel.text = "No Tags found".localized()
                 }
             } else {
-                self?.tagsHeaderLabel.text = "Name".localized()
+                if numberOfTags == .zero {
+                    self?.tagsHeaderLabel.text = "No Tags were added".localized()
+                } else {
+                    self?.tagsHeaderLabel.text = "Name".localized()
+                }
             }
+        }
+        
+        NotificationCenter.default.addObserver(forName: ManageTagsViewModel.noTagsAdded, object: nil, queue: nil) { _ in
+            self.tagsHeaderLabel.text = "No Tags were added".localized()
         }
     }
     
