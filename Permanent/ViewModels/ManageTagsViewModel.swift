@@ -12,6 +12,7 @@ class ManageTagsViewModel: ViewModelInterface {
     static let isLoadingNotification = Notification.Name("ManageTagsViewModel.isLoadingNotification")
     static let isSearchEnabled = Notification.Name("ManageTagsViewModel.isSearchEnabled")
     static let showBannerNotification = Notification.Name("ManageTagsViewModel.showBannerNotification")
+    static let noTagsAdded = Notification.Name("ManageTagsViewModel.noTagsAdded")
     
     let tagsRepository: TagsRepository
     var tags: [TagVO] = []
@@ -46,19 +47,24 @@ class ManageTagsViewModel: ViewModelInterface {
             self.isLoading = false
             self.tags = tags ?? []
             self.sortedTags = tags?.sorted(by: {$0.tagVO.name?.lowercased() ?? "" < $1.tagVO.name?.lowercased() ?? ""}) ?? []
+            if self.tags.count == .zero { NotificationCenter.default.post(name: Self.noTagsAdded, object: self, userInfo: nil) }
+            NotificationCenter.default.post(name: Self.isSearchEnabled, object: self, userInfo: nil)
         } ?? []
     }
     
     func deleteTag(index: Int, completion: @escaping ((String?) -> Void)) {
         let selectedTag = sortedTags[index]
         isLoading = true
-        tagsRepository.deleteTag(tagVO: [selectedTag]) { error in
+        tagsRepository.deleteTag(tagVO: [selectedTag]) { [weak self] error in
+            guard let self = self else { return }
+            
             self.isLoading = false
             if error == nil {
                 self.tags.removeAll { tag in
                     tag.tagVO.name == selectedTag.tagVO.name
                 }
                 self.sortedTags.remove(at: index)
+                NotificationCenter.default.post(name: Self.isSearchEnabled, object: self, userInfo: nil)
                 completion(nil)
             } else {
                 completion(error.debugDescription)

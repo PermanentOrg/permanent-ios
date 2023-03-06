@@ -199,7 +199,8 @@ extension FABTagsManagementActionSheet: UIViewControllerAnimatedTransitioning {
 
         if toVC == self {
             transitionContext.containerView.addSubview(self.view)
-
+            self.view.layoutIfNeeded()
+            
             overlayView.alpha = 0
             contentViewTopConstraint.constant = -contentViewHeightConstraint.constant
             UIView.animate(withDuration: 0.2) {
