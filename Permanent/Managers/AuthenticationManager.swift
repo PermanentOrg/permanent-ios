@@ -53,6 +53,8 @@ class AuthenticationManager {
     }
     
     func login(withUsername username: String, password: String, then handler: @escaping (LoginStatus) -> Void) {
+        logout()
+        
         authRepo.login(withUsername: username, password: password) { [self] result in
             switch result {
             case .success(let loginResponse):
@@ -139,6 +141,8 @@ class AuthenticationManager {
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        logout()
+        
         accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.loginCredentials.email, password: credentials.loginCredentials.password) { [self] result in
             switch result {
             case .success((let signupResponse, let account)):
@@ -168,6 +172,8 @@ class AuthenticationManager {
     }
     
     func logout() {
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
+
         session = nil
         keychainHandler.clearSession()
         
