@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 11.11.2022.
-// leftElementButton rightElementButton elementNameLabel
 
 import UIKit
 

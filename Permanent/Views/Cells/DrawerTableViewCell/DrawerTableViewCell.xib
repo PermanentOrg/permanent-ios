@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,35 +17,47 @@
                 <rect key="frame" x="0.0" y="0.0" width="279" height="83"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="AWw-Pt-1mx">
-                        <rect key="frame" x="24" y="20" width="85.5" height="43"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="AWw-Pt-1mx">
+                        <rect key="frame" x="40" y="16" width="89.5" height="51"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZhP-3S-MBW">
-                                <rect key="frame" x="0.0" y="6.5" width="30" height="30"/>
+                                <rect key="frame" x="0.0" y="13.5" width="24" height="24"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="Deu-kE-r9D"/>
-                                    <constraint firstAttribute="width" constant="30" id="vfk-GY-Aem"/>
+                                    <constraint firstAttribute="height" constant="24" id="Deu-kE-r9D"/>
+                                    <constraint firstAttribute="width" constant="24" id="vfk-GY-Aem"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MkG-eS-8NU">
-                                <rect key="frame" x="44" y="11.5" width="41.5" height="20.5"/>
+                                <rect key="frame" x="48" y="15.5" width="41.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                     </stackView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qk0-j4-cbm">
+                        <rect key="frame" x="239" y="39" width="10" height="5.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="10" id="ESD-b8-mpe"/>
+                            <constraint firstAttribute="height" constant="5.5" id="TP8-4X-26o"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="MGI-PO-AND"/>
-                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="UCa-pV-CC8"/>
-                    <constraint firstAttribute="bottom" secondItem="AWw-Pt-1mx" secondAttribute="bottom" constant="20" id="pjj-k6-15x"/>
+                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="40" id="MGI-PO-AND"/>
+                    <constraint firstItem="qk0-j4-cbm" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="OHo-PN-vsN"/>
+                    <constraint firstItem="AWw-Pt-1mx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="UCa-pV-CC8"/>
+                    <constraint firstAttribute="trailing" secondItem="qk0-j4-cbm" secondAttribute="trailing" constant="30" id="gUY-iK-sS0"/>
+                    <constraint firstAttribute="bottom" secondItem="AWw-Pt-1mx" secondAttribute="bottom" constant="16" id="pjj-k6-15x"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="bottomSpaceConstraint" destination="pjj-k6-15x" id="N9O-mM-v4M"/>
+                <outlet property="menuChevronImageView" destination="qk0-j4-cbm" id="lzd-zq-Mv1"/>
                 <outlet property="menuItemImageView" destination="ZhP-3S-MBW" id="gVb-Hw-a9e"/>
                 <outlet property="menuItemTitleLabel" destination="MkG-eS-8NU" id="Pc5-eV-EZ1"/>
+                <outlet property="topSpaceConstraint" destination="UCa-pV-CC8" id="MVk-h3-IZM"/>
             </connections>
             <point key="canvasLocation" x="-294.92753623188406" y="116.85267857142857"/>
         </tableViewCell>
