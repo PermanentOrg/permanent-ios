@@ -14,12 +14,21 @@ protocol SelectWorkspaceViewControllerDelegate: AnyObject {
 class SelectWorkspaceViewController: BaseViewController<SaveDestinationBrowserViewModel> {
     weak var delegate: SelectWorkspaceViewControllerDelegate?
     
+    @IBOutlet weak var sharedFilesImageView: UIImageView!
+    @IBOutlet weak var publicFilesImageView: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Choose Folder"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
         styleNavBar()
+        
+        if viewModel?.hasPublicFilesPermission() ?? false {
+            publicFilesImageView.image = UIImage(named: "PublicFilesWorkspaceIcon")
+        } else {
+            publicFilesImageView.image = UIImage(named: "publicFilesWorkspaceDisabledIcon")
+        }
     }
     
     @objc func cancelButtonPressed(_ sender: Any) {
@@ -35,20 +44,28 @@ class SelectWorkspaceViewController: BaseViewController<SaveDestinationBrowserVi
     }
     
     @IBAction func publicFilesButtonPressed(_ sender: Any) {
-        self.showActionDialog(
-            styled: .simpleWithDescription,
-            withTitle: "Public Workspace".localized(),
-            description: "Upload a publicly viewable copy of these items in your Public workspace and get a public link to share with anyone.".localized(),
-            positiveButtonTitle: "Continue".localized(),
-            positiveAction: {
-                let selectFolderVC = ShareFileBrowserViewController()
-                selectFolderVC.delegate = self
-                selectFolderVC.viewModel = SaveDestinationBrowserViewModel(workspace: .publicFiles)
-                
-                self.navigationController?.pushViewController(selectFolderVC, animated: true)
-            },
-            overlayView: nil
-        )
+        if viewModel?.hasPublicFilesPermission() ?? false {
+            self.showActionDialog(
+                styled: .simpleWithDescription,
+                withTitle: "Public Files".localized(),
+                description: "Upload a publicly viewable copy of these items in your Public workspace and get a public link to share with anyone.".localized(),
+                positiveButtonTitle: "Continue".localized(),
+                positiveAction: {
+                    let selectFolderVC = ShareFileBrowserViewController()
+                    selectFolderVC.delegate = self
+                    selectFolderVC.viewModel = SaveDestinationBrowserViewModel(workspace: .publicFiles)
+                    
+                    self.navigationController?.pushViewController(selectFolderVC, animated: true)
+                },
+                overlayView: nil
+            )
+        } else {
+            let alert = UIAlertController(title: "Uh oh".localized(), message: "You do not have permission to upload public files.".localized(), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: .ok, style: .default, handler: { _ in
+            }))
+
+            self.present(alert, animated: true)
+        }
     }
     
     @IBAction func sharedFilesButtonPressed(_ sender: Any) {

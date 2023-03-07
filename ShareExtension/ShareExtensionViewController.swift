@@ -142,8 +142,6 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
     }
     
     @IBAction func selectFolderButtonPressed(_ sender: Any) {
-//        let selectFolderVC = ShareFileBrowserViewController()
-//        selectFolderVC.delegate = self
         let storyboard = UIStoryboard(name: "MainInterface", bundle: nil)
         let selectFolderVC = storyboard.instantiateViewController(withIdentifier: "selectWorkspace") as! SelectWorkspaceViewController
         selectFolderVC.delegate = self

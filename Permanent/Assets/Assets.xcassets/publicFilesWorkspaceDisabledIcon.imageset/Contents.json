@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Public-disabled.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

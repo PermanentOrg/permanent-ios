@@ -234,7 +234,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ofg-W3-48g">
                                                         <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Private Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tr4-dJ-qSs" userLabel="File Name Label">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Private Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tr4-dJ-qSs" userLabel="File Name Label">
                                                                 <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
@@ -305,7 +305,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="gNu-VJ-Yda">
                                                         <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Shared Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0RQ-G9-j5i" userLabel="File Name Label">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Shared Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0RQ-G9-j5i" userLabel="File Name Label">
                                                                 <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
@@ -376,7 +376,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="tBP-dr-ha6">
                                                         <rect key="frame" x="0.0" y="0.0" width="325" height="34"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Public Files Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imq-P1-LR3" userLabel="File Name Label">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Public Files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imq-P1-LR3" userLabel="File Name Label">
                                                                 <rect key="frame" x="0.0" y="7" width="296" height="20.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
@@ -438,6 +438,10 @@
                             <constraint firstItem="kXV-KY-XxP" firstAttribute="leading" secondItem="65C-0d-8gd" secondAttribute="leading" id="Ttt-x8-Pzx"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="publicFilesImageView" destination="nii-jw-QKe" id="Bun-zP-yKK"/>
+                        <outlet property="sharedFilesImageView" destination="xop-Of-gPN" id="aDe-Jz-ZT2"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EKU-ZY-Py3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -469,9 +473,9 @@
     </scenes>
     <resources>
         <image name="disclosureIndicator" width="24" height="24"/>
-        <image name="privateFilesWorkspaceIcon" width="56" height="56"/>
+        <image name="privateFilesWorkspaceIcon" width="40" height="40"/>
         <image name="publicFilesWorkspaceIcon" width="40" height="40"/>
-        <image name="sharedFilesWorkspaceIcon" width="56" height="56"/>
+        <image name="sharedFilesWorkspaceIcon" width="40" height="40"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
