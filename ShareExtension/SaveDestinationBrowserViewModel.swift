@@ -68,9 +68,4 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
         guard let selectedFolder = selectedFolder() else { return nil }
         return FolderInfo(folderId: selectedFolder.folderId, folderLinkId: selectedFolder.folderLinkId)
     }
-
-    func hasPublicFilesPermission() -> Bool {
-        let archive = session.selectedArchive
-        return archive.permissions().contains(.archiveShare)
-    }
 }

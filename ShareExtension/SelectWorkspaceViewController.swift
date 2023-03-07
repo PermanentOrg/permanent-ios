@@ -11,24 +11,39 @@ protocol SelectWorkspaceViewControllerDelegate: AnyObject {
     func selectWorkspaceViewControllerDidPickFolder(named name: String, folderInfo: FolderInfo)
 }
 
-class SelectWorkspaceViewController: BaseViewController<SaveDestinationBrowserViewModel> {
+class SelectWorkspaceViewController: BaseViewController<SelectWorkspaceViewModel> {
     weak var delegate: SelectWorkspaceViewControllerDelegate?
     
     @IBOutlet weak var sharedFilesImageView: UIImageView!
     @IBOutlet weak var publicFilesImageView: UIImageView!
+    
+    private let overlayView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Choose Folder"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed(_:)))
-        styleNavBar()
+        
+        viewModel = SelectWorkspaceViewModel()
         
         if viewModel?.hasPublicFilesPermission() ?? false {
-            publicFilesImageView.image = UIImage(named: "PublicFilesWorkspaceIcon")
+            publicFilesImageView.image = UIImage(named: "publicFilesWorkspaceIcon")
         } else {
             publicFilesImageView.image = UIImage(named: "publicFilesWorkspaceDisabledIcon")
         }
+        
+        styleNavBar()
+        
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
     }
     
     @objc func cancelButtonPressed(_ sender: Any) {
@@ -57,7 +72,7 @@ class SelectWorkspaceViewController: BaseViewController<SaveDestinationBrowserVi
                     
                     self.navigationController?.pushViewController(selectFolderVC, animated: true)
                 },
-                overlayView: nil
+                overlayView: overlayView
             )
         } else {
             let alert = UIAlertController(title: "Uh oh".localized(), message: "You do not have permission to upload public files.".localized(), preferredStyle: .alert)
