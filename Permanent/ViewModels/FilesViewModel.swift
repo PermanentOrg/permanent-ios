@@ -40,6 +40,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     var selectedFile: FileViewModel?
     var currentFolder: FileViewModel? { navigationStack.last }
+    var isItemSelected: [Bool?] = []
+    var selectWasPressed: Bool = false
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
@@ -443,10 +445,12 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.removeAll()
+        isItemSelected = []
         
         childItems.forEach {
             let file = FileViewModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
             self.viewModels.append(file)
+            self.isItemSelected.append(nil)
         }
         
         handler(.success)

@@ -92,6 +92,7 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
     fileprivate func setupCollectionView() {
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -287,7 +288,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
         if kind == UICollectionView.elementKindSectionHeader {
             let section = indexPath.section
             
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }

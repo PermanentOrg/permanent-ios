@@ -26,6 +26,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     var isSearchCell: Bool = false
     var fileAction: FileAction = .none
     var sharedFile: Bool = false
+    var isItemSelected: Bool? = nil
     
     var fileInfoId: String?
     
@@ -65,10 +66,10 @@ class FileCollectionViewCell: UICollectionViewCell {
     private func initUI() {
         activityIndicator.stopAnimating()
         
-        fileNameLabel.font = Text.style11.font
-        fileNameLabel.textColor = .textPrimary
+        fileNameLabel.font = Text.style35.font
+        fileNameLabel.textColor = .black
         fileDateLabel.font = Text.style12.font
-        fileDateLabel.textColor = .textPrimary
+        fileDateLabel.textColor = .lightGray
         fileImageView.clipsToBounds = true
         
         sharesImageView.image = UIImage.group.templated
@@ -84,11 +85,12 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isItemSelected: Bool? = nil) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
         self.fileAction = fileAction
         self.sharedFile = sharedFile
+        self.isItemSelected = isItemSelected
         
         rightButtonImageView.isHidden = false
         
@@ -109,6 +111,25 @@ class FileCollectionViewCell: UICollectionViewCell {
         
         if sharedFile {
             updateSharingInfo(withModel: model)
+        }
+        
+        if let isItemSelected = isItemSelected {
+            if isItemSelected {
+                rightButtonImageView.image = UIImage(named: "fullCheckbox")?.templated
+                fileNameLabel.font = Text.style35.font
+                fileNameLabel.textColor = .black
+                rightButtonImageView.tintColor = .darkBlue
+            } else {
+                rightButtonImageView.image = UIImage(named: "emptyCheckbox")?.templated
+                fileNameLabel.font = Text.style34.font
+                fileNameLabel.textColor = .lightGray
+                rightButtonImageView.tintColor = .lightGray
+            }
+        } else {
+            rightButtonImageView.image = UIImage.more.templated
+            fileNameLabel.font = Text.style35.font
+            fileNameLabel.textColor = .black
+            rightButtonImageView.tintColor = .darkBlue
         }
     }
     

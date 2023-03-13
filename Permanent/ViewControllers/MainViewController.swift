@@ -168,6 +168,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -312,6 +313,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         uploadingCell.updateProgress(withValue: value)
+        clearButtonWasPressed(UIButton())
     }
     
     @objc
@@ -342,6 +344,32 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             cancelButtonColor: .primary,
             overlayView: self.overlayView
         )
+    }
+    
+    @objc
+    private func selectButtonWasPressed(_ sender: UIButton) {
+        guard var selectWasPressed = viewModel?.selectWasPressed,
+              let numberOfItems = viewModel?.isItemSelected.count else { return }
+        fabView.isHidden = true
+
+        if selectWasPressed {
+            viewModel?.isItemSelected = [Bool](repeating: true, count: numberOfItems)
+        } else {
+            viewModel?.isItemSelected = [Bool](repeating: false, count: numberOfItems)
+        }
+        
+        viewModel?.selectWasPressed = true
+        refreshCollectionView()
+    }
+    
+    @objc
+    private func clearButtonWasPressed(_ sender: UIButton) {
+        fabView.isHidden = false
+        if let numberOfItems = viewModel?.isItemSelected.count {
+            viewModel?.isItemSelected = [Bool?](repeating: nil, count: numberOfItems)
+            viewModel?.selectWasPressed = false
+            collectionView.reloadData()
+        }
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
@@ -393,6 +421,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
             handler?()
+            self.clearButtonWasPressed(UIButton())
         })
         viewModel?.timer?.invalidate()
     }
@@ -617,7 +646,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isItemSelected: viewModel.isItemSelected[indexPath.item])
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
@@ -644,22 +673,28 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
-
+        
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
         guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
-        if file.type.isFolder {
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                self.backButton.isHidden = false
-                self.directoryLabel.text = file.name
-            })
+        if viewModel.selectWasPressed {
+            viewModel.isItemSelected[indexPath.item]?.toggle()
+            self.refreshCollectionView()
         } else {
-            if viewModel.isPickingImage {
-                handleImagePickerSelection(file: file)
+            if file.type.isFolder {
+                viewModel.selectWasPressed = false
+                let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+                navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                    self.backButton.isHidden = false
+                    self.directoryLabel.text = file.name
+                })
             } else {
-                handlePreviewSelection(file: file)
+                if viewModel.isPickingImage {
+                    handleImagePickerSelection(file: file)
+                } else {
+                    handlePreviewSelection(file: file)
+                }
             }
         }
     }
@@ -687,7 +722,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         if kind == UICollectionView.elementKindSectionHeader {
             let section = indexPath.section
             
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
@@ -697,10 +732,21 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             
             if viewModel?.hasCancelButton(forSection: section) == true {
                 headerView.rightButtonTitle = "Cancel All".localized()
+                headerView.rightButtonImageIsVisible = false
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
-                headerView.rightButtonTitle = nil
-                headerView.rightButtonAction = nil
+                if let selectWasPressed = viewModel?.selectWasPressed, selectWasPressed {
+                    headerView.rightButtonTitle = "Select all  ".localized()
+                    headerView.rightButtonImageIsVisible = true
+                    headerView.clearButtonIsVisible = true
+                } else {
+                    headerView.rightButtonTitle = "Select".localized()
+                    headerView.rightButtonImageIsVisible = false
+                    headerView.clearButtonIsVisible = false
+                }
+                
+                headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
+                headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
             }
             
             return headerView
@@ -727,7 +773,12 @@ extension MainViewController {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            showFileActionSheet(file: file, atIndexPath: indexPath)
+            if let _ = viewModel?.isItemSelected[indexPath.item] {
+                viewModel?.isItemSelected[indexPath.item]?.toggle()
+                self.refreshCollectionView()
+            } else {
+                showFileActionSheet(file: file, atIndexPath: indexPath)
+            }
             
         case .downloading:
             viewModel?.cancelDownload()
