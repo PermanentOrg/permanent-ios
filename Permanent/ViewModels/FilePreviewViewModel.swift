@@ -23,7 +23,10 @@ class FilePreviewViewModel: ViewModelInterface {
     
     var downloader: DownloadManagerGCD? = nil
     
-    init(file: FileViewModel) {
+    let tagsRepository: TagsRepository
+    
+    init(file: FileViewModel, tagsRepository: TagsRepository = TagsRepository()) {
+        self.tagsRepository = tagsRepository
         self.file = file
         name = file.name
     }
@@ -166,75 +169,49 @@ class FilePreviewViewModel: ViewModelInterface {
         return address
     }
     
-    func addTag(tagNames: [String], completion: @escaping ((TagLinkVO?) -> Void)) {
-        let params: TagParams = (tagNames, recordVO?.recordVO?.recordID ?? 0)
-        let apiOperation = APIOperation(TagEndpoint.tagPost(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let json, _):
-                guard let model: APIResults<TagLinkVO> = JSONHelper.decoding(from: json, with: APIResults<TagLinkVO>.decoder), model.isSuccessful else {
-                    completion(nil)
-                    return
-                }
-                let tagLinkVO: TagLinkVO? =  model.results.first?.data?.first
+    func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
+        let tags = tagsRepository.getTagsByArchive(archiveId: archiveId) { tags, error in
+            if let tags = tags {
+                completion(tags)
+            } else {
+                completion(nil)
+            }
+        }
+        completion(tags)
+    }
+    
+    func addTag(tagNames: [String], completion: @escaping (([TagLinkVO]?) -> Void)) {
+        tagsRepository.assignTag(tagNames: tagNames, recordId: recordVO?.recordVO?.recordID ?? 0) { tags, error in
+            if let tags = tags {
                 self.getRecord(file: self.file) { (record) in
-                    completion(tagLinkVO)
+                    completion(tags)
                 }
-                
-            case .error(_, _):
+            } else {
                 completion(nil)
-                
-            default:
-                completion(nil)
+            }
+        }
+    }
+    
+    func unassignTag(tagVO: [TagVO], completion: @escaping ((String?) -> Void)) {
+        tagsRepository.unassignTag(tagVO: tagVO, recordId: recordVO?.recordVO?.recordID ?? 0) { error in
+            if error == nil {
+                self.getRecord(file: self.file) { (record) in
+                    completion(nil)
+                }
+            } else {
+                completion(error.debugDescription)
             }
         }
     }
     
     func deleteTag(tagVO: [TagVO], completion: @escaping ((String?) -> Void)) {
-        let params: DeleteTagParams = (tagVO, recordVO?.recordVO?.recordID ?? 0)
-        let apiOperation = APIOperation(TagEndpoint.tagDelete(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let json, _):
-                guard let model: APIResults<NoDataModel> = JSONHelper.decoding(from: json, with: APIResults<NoDataModel>.decoder), model.isSuccessful else {
-                    completion(nil)
-                    return
-                }
-                let message: String? =  model.results.first?.message.first
+        tagsRepository.deleteTag(tagVO: tagVO) { error in
+            if error == nil {
                 self.getRecord(file: self.file) { (record) in
-                    completion(message)
-                }
-                
-            case .error(_, _):
-                completion(nil)
-                
-            default:
-                completion(nil)
-            }
-        }
-    }
-    
-    func getTagsByArchive(archiveId: Int, completion: @escaping (([TagVO]?) -> Void)) {
-        let params: GetTagsByArchiveParams = (archiveId)
-        let apiOperation = APIOperation(TagEndpoint.getTagsByArchive(params: params))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let json, _):
-                guard let model: APIResults<TagVO> = JSONHelper.decoding(from: json, with: APIResults<TagVO>.decoder), model.isSuccessful else {
                     completion(nil)
-                    return
                 }
-                let tagVO: [TagVO]? =  model.results.first?.data
-                completion(tagVO)
-                
-            case .error(_, _):
-                completion(nil)
-                
-            default:
-                completion(nil)
+            } else {
+                completion(error.debugDescription)
             }
         }
     }

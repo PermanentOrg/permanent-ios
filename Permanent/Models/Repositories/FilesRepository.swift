@@ -25,4 +25,12 @@ class FilesRepository {
     func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
         remoteDataSource.getPrivateRoot(completion: completion)
     }
+    
+    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        remoteDataSource.getSharedRoot(completion: completion)
+    }
+    
+    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+        remoteDataSource.getPublicRoot(completion: completion)
+    }
 }

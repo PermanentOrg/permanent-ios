@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -10,16 +10,20 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ActionDialogView" customModule="Permanent" customModuleProvider="target">
             <connections>
+                <outlet property="bottomStackViewConstraint" destination="nyI-mk-h3X" id="Vhb-MJ-5PM"/>
                 <outlet property="cancelButton" destination="9dP-LZ-Y77" id="dvR-Eg-Fdp"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="PAR-Xh-cMt"/>
                 <outlet property="dialogView" destination="ZxG-be-PF2" id="u5D-MS-Ffv"/>
                 <outlet property="fieldsStackView" destination="673-KN-e7Q" id="YqK-YN-Ini"/>
+                <outlet property="leadingStackViewConstraint" destination="T9z-gX-WES" id="1oP-2S-Tr9"/>
                 <outlet property="positiveButton" destination="3jh-tN-6Ko" id="mal-K2-VHU"/>
                 <outlet property="removeButton" destination="Pc3-Fe-sJJ" id="hwz-Y5-idm"/>
                 <outlet property="removeButtonContainer" destination="9Do-GI-uML" id="MYb-3Z-DDL"/>
                 <outlet property="scrollView" destination="1v0-oh-HCF" id="ClM-8x-SAd"/>
                 <outlet property="subtitleLabel" destination="c1z-cU-ub9" id="eKv-W1-zo0"/>
                 <outlet property="titleLabel" destination="byv-jD-y70" id="x4R-fA-HMc"/>
+                <outlet property="topStackViewConstraint" destination="oN0-hH-VNG" id="yeq-Ha-2sc"/>
+                <outlet property="trailingStackViewConstraint" destination="MXx-FM-CGP" id="B9X-8E-pxN"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -34,10 +38,10 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="814"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZxG-be-PF2">
-                                    <rect key="frame" x="45" y="265.5" width="324" height="283"/>
+                                    <rect key="frame" x="45" y="247.5" width="324" height="319"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hpd-iG-Dy7">
-                                            <rect key="frame" x="16" y="20" width="292" height="243"/>
+                                            <rect key="frame" x="16" y="20" width="292" height="279"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="AoL-wg-7Hc">
                                                     <rect key="frame" x="0.0" y="0.0" width="292" height="51"/>
@@ -88,28 +92,34 @@
                                                     </constraints>
                                                 </view>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="T0A-Ib-DeV">
-                                                    <rect key="frame" x="0.0" y="175" width="292" height="68"/>
+                                                    <rect key="frame" x="0.0" y="175" width="292" height="104"/>
                                                     <subviews>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jh-tN-6Ko" userLabel="Positive" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="0.0" width="292" height="30"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="292" height="48"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="48" id="Nah-qm-CJF"/>
+                                                            </constraints>
                                                             <connections>
                                                                 <action selector="positiveButtonAction:" destination="-1" eventType="touchUpInside" id="zjX-1m-1W9"/>
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9dP-LZ-Y77" userLabel="Cancel" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="38" width="292" height="30"/>
+                                                            <rect key="frame" x="0.0" y="56" width="292" height="48"/>
                                                             <connections>
                                                                 <action selector="closeButtonAction" destination="-1" eventType="touchUpInside" id="gPg-QE-deQ"/>
                                                             </connections>
                                                         </button>
                                                     </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="9dP-LZ-Y77" firstAttribute="height" secondItem="3jh-tN-6Ko" secondAttribute="height" id="O4E-V2-ExK"/>
+                                                    </constraints>
                                                 </stackView>
                                             </subviews>
                                         </stackView>
                                     </subviews>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="hpd-iG-Dy7" secondAttribute="trailing" constant="16" id="Ppk-KC-t6H"/>
+                                        <constraint firstAttribute="trailing" secondItem="hpd-iG-Dy7" secondAttribute="trailing" constant="16" id="MXx-FM-CGP"/>
                                         <constraint firstItem="hpd-iG-Dy7" firstAttribute="leading" secondItem="ZxG-be-PF2" secondAttribute="leading" constant="16" id="T9z-gX-WES"/>
                                         <constraint firstAttribute="bottom" secondItem="hpd-iG-Dy7" secondAttribute="bottom" constant="20" id="nyI-mk-h3X"/>
                                         <constraint firstItem="hpd-iG-Dy7" firstAttribute="top" secondItem="ZxG-be-PF2" secondAttribute="top" constant="20" id="oN0-hH-VNG"/>

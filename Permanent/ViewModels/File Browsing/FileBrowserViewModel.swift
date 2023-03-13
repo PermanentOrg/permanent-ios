@@ -13,7 +13,7 @@ class FileBrowserViewModel: ViewModelInterface {
     let session: PermSession!
     let filesRepository: FilesRepository
     
-    let navigationViewModel: FolderNavigationViewModel = FolderNavigationViewModel(workspaceName: "")
+    let navigationViewModel: FolderNavigationViewModel
     let sortViewModel: FolderSortViewModel = FolderSortViewModel()
     let viewSelectionViewModel: FolderViewSelectionViewModel = FolderViewSelectionViewModel()
     
@@ -23,9 +23,10 @@ class FileBrowserViewModel: ViewModelInterface {
         }
     }
     
-    init(filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
+    init(navigationViewModel: FolderNavigationViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
         self.filesRepository = filesRepository
         self.session = session
+        self.navigationViewModel = navigationViewModel
         
         loadRootFolder()
         
