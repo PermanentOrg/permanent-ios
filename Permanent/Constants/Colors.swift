@@ -37,10 +37,24 @@ extension UIColor {
 extension UIColor {
     static var primary = UIColor.darkBlue
     static var secondary = UIColor.tangerine
-    static var backgroundPrimary = UIColor.white
     static var overlay = UIColor.black.withAlphaComponent(0.25)
+    static var bgOverlay = UIColor.black.withAlphaComponent(0.6)
     static var destructive = UIColor.brightRed
     static var textPrimary = UIColor.middleGray
     static var iconTintPrimary = UIColor.middleGray
     static var iconTintLight = UIColor.white
+}
+
+extension UIColor {
+    static var backgroundPrimary: UIColor {
+        if #available(iOS 13.0, *) {
+            return UIColor { (traits) -> UIColor in
+                // Return one of two colors depending on light or dark mode
+                return traits.userInterfaceStyle == .dark ? .white : .white
+            }
+        } else {
+            // Same old color used for iOS 12 and earlier
+            return .white
+        }
+    }
 }

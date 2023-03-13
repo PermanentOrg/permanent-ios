@@ -160,7 +160,7 @@ class SearchFilesViewModel: FilesViewModel {
     
     func getTags(completion: @escaping ServerResponse) {
         let params: GetTagsByArchiveParams = (currentArchive?.archiveID ?? 0)
-        let apiOperation = APIOperation(TagEndpoint.getTagsByArchive(params: params))
+        let apiOperation = APIOperation(TagEndpoint.getByArchive(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {

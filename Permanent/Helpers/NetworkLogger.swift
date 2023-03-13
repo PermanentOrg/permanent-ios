@@ -9,7 +9,7 @@ import Foundation
 
 class NetworkLogger {
     
-    static var isEnabled = false
+    static var isEnabled = true
     
     static func log(request: URLRequest) {
         if isEnabled && APIEnvironment.defaultEnv == .staging {

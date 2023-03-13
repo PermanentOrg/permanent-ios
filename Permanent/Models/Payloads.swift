@@ -119,68 +119,6 @@ struct Payloads {
             ]
     }
     
-    static func tagPost(params: TagParams) -> RequestParameters {
-        let tagLinkVO: [String: Any] = [
-            "refId": params.refID,
-            "refTable": "record"
-        ]
-        
-        let data = params.names.map {
-            [
-                "TagLinkVO": tagLinkVO,
-                "TagVO": [
-                    "name": $0
-                ]
-            ]
-        }
-        
-        return [
-            "RequestVO":
-                [
-                    "data": data
-                ]
-        ]
-    }
-    
-    static func deletePost(params: DeleteTagParams) -> RequestParameters {
-        let tagLinkVO: [String: Any] = [
-            "refId": params.refID,
-            "refTable": "record"
-        ]
-        
-        let data = params.tagVO.map {
-            [
-                "TagLinkVO": tagLinkVO,
-                "TagVO": [
-                    "name": ($0.tagVO.name ?? String() ) as String,
-                    "tagId": ($0.tagVO.tagId ?? Int() ) as Int
-                ]
-            ]
-        }
-        
-        return [
-            "RequestVO":
-                [
-                    "data": data
-                ]
-        ]
-    }
-    
-    static func getTagsByArchive(params: GetTagsByArchiveParams) -> RequestParameters {
-        return [
-            "RequestVO":
-                [
-                    "data": [
-                        [
-                            "ArchiveVO": [
-                                "archiveId": params
-                            ]
-                        ]
-                    ]
-                ]
-        ]
-    }
-    
     static func getAllByArchiveNbr(archiveId: Int, archiveNbr: String) -> RequestParameters {
         return [
             "RequestVO":
