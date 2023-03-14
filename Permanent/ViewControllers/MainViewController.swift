@@ -350,15 +350,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
-        guard var selectWasPressed = viewModel?.isSelecting else { return }
+        guard let selectWasPressed = viewModel?.isSelecting else { return }
         fabView.isHidden = true
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = false
             backButton.layer.opacity = 0.3
         }
-
+        viewModel?.selectedFiles = []
+        
         if selectWasPressed {
-            viewModel?.selectedFiles = []
             viewModel?.selectedFiles = viewModel?.viewModels
         }
         
@@ -428,7 +428,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
             self.onFilesFetchCompletion(status)
             handler?()
-            self.clearButtonWasPressed(UIButton())
         })
         viewModel?.timer?.invalidate()
     }

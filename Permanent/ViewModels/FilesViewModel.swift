@@ -444,7 +444,6 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
         
         viewModels.removeAll()
-        selectedFiles = []
         
         childItems.forEach {
             let file = FileViewModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
