@@ -211,7 +211,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        guard let source = viewModel?.selectedFile,
+        guard let source = viewModel?.selectedFiles?.first,
               let action = viewModel?.fileAction else { return }
               
         fabView.isHidden = true
@@ -245,7 +245,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismissFloatingActionIsland()
                 self?.fabView.isHidden = false
 
-                self?.viewModel?.selectedFile = nil
+                self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
 
                 self?.collectionView?.reloadData()
@@ -258,7 +258,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        let shouldDisableButton = viewModel?.selectedFiles?.first?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
 
         if let currentFolderPermissions = viewModel?.currentFolder?.permissions,
             currentFolderPermissions.contains(.upload) == true {
@@ -432,11 +432,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         refreshCollectionView()
         
         viewModel?.fileAction = .none
-        viewModel?.selectedFile = nil
+        viewModel?.selectedFiles = []
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
-        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFile?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
+        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFiles?.first?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
         if let navigationStackCount = viewModel?.navigationStack.count,
             navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
@@ -447,7 +447,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 positiveAction: {
                     self.actionDialog?.dismiss()
                     self.viewModel?.fileAction = .none
-                    self.viewModel?.selectedFile = nil
+                    self.viewModel?.selectedFiles = []
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
                 },cancelButtonTitle: "Cancel Move".localized(),
@@ -1039,7 +1039,7 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.selectedFile = file
+        viewModel?.selectedFiles?.append(file)
         viewModel?.fileAction = action
         
         setupBottomActionSheet()

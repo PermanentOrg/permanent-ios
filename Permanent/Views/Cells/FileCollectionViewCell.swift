@@ -26,7 +26,8 @@ class FileCollectionViewCell: UICollectionViewCell {
     var isSearchCell: Bool = false
     var fileAction: FileAction = .none
     var sharedFile: Bool = false
-    var isItemSelected: Bool? = nil
+    var isSelecting: Bool = false
+    var isFileSelected: Bool = false
     
     var fileInfoId: String?
     
@@ -85,12 +86,13 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isItemSelected: Bool? = nil) {
+    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
         self.fileAction = fileAction
         self.sharedFile = sharedFile
-        self.isItemSelected = isItemSelected
+        self.isSelecting = isSelecting
+        self.isFileSelected = isFileSelected
         
         rightButtonImageView.isHidden = false
         
@@ -113,8 +115,8 @@ class FileCollectionViewCell: UICollectionViewCell {
             updateSharingInfo(withModel: model)
         }
         
-        if let isItemSelected = isItemSelected {
-            if isItemSelected {
+        if isSelecting {
+            if isFileSelected {
                 rightButtonImageView.image = UIImage(named: "fullCheckbox")?.templated
                 fileNameLabel.font = Text.style35.font
                 fileNameLabel.textColor = .black

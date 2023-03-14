@@ -200,12 +200,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        guard let source = viewModel?.selectedFile,
+        guard let source = viewModel?.selectedFiles?.first as? FileViewModel,
               let action = viewModel?.fileAction else { return }
               
         fabView.isHidden = true
         
         guard floatingActionIsland == nil else { return }
+        
+        guard let numberOfItems = viewModel?.selectedFiles?.count else { return }
         
         let fileIconItem: FloatingActionImageItem
         if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
@@ -234,7 +236,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland()
                 self?.fabView.isHidden = false
 
-                self?.viewModel?.selectedFile = nil
+                self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
 
                 self?.collectionView?.reloadData()
@@ -247,7 +249,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        guard let selectedFile = viewModel?.selectedFiles?.first else { return }
+        let shouldDisableButton = selectedFile.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
         fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
@@ -313,7 +316,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         uploadingCell.updateProgress(withValue: value)
-        clearButtonWasPressed(UIButton())
     }
     
     @objc
@@ -348,28 +350,33 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
-        guard var selectWasPressed = viewModel?.selectWasPressed,
-              let numberOfItems = viewModel?.isItemSelected.count else { return }
+        guard var selectWasPressed = viewModel?.isSelecting else { return }
         fabView.isHidden = true
+        if !backButton.isHidden {
+            backButton.isUserInteractionEnabled = false
+            backButton.layer.opacity = 0.3
+        }
 
         if selectWasPressed {
-            viewModel?.isItemSelected = [Bool](repeating: true, count: numberOfItems)
-        } else {
-            viewModel?.isItemSelected = [Bool](repeating: false, count: numberOfItems)
+            viewModel?.selectedFiles = []
+            viewModel?.selectedFiles = viewModel?.viewModels
         }
         
-        viewModel?.selectWasPressed = true
+        viewModel?.isSelecting = true
         refreshCollectionView()
     }
     
     @objc
     private func clearButtonWasPressed(_ sender: UIButton) {
         fabView.isHidden = false
-        if let numberOfItems = viewModel?.isItemSelected.count {
-            viewModel?.isItemSelected = [Bool?](repeating: nil, count: numberOfItems)
-            viewModel?.selectWasPressed = false
-            collectionView.reloadData()
+        if !backButton.isHidden {
+            backButton.isUserInteractionEnabled = true
+            backButton.layer.opacity = 1
         }
+        
+        viewModel?.selectedFiles = []
+        viewModel?.isSelecting = false
+        collectionView.reloadData()
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
@@ -646,7 +653,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isItemSelected: viewModel.isItemSelected[indexPath.item])
+        let isFileSelected = viewModel.selectedFiles?.contains(file) ?? false
+        
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isSelecting: viewModel.isSelecting, isFileSelected: isFileSelected)
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
@@ -678,12 +687,16 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         
         guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
-        if viewModel.selectWasPressed {
-            viewModel.isItemSelected[indexPath.item]?.toggle()
+        if viewModel.isSelecting {
+            if let index = viewModel.selectedFiles?.firstIndex(of: file) {
+                viewModel.selectedFiles?.remove(at: index)
+            } else {
+                viewModel.selectedFiles?.append(file)
+            }
             self.refreshCollectionView()
         } else {
             if file.type.isFolder {
-                viewModel.selectWasPressed = false
+                viewModel.isSelecting = false
                 let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
                 navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
                     self.backButton.isHidden = false
@@ -735,7 +748,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 headerView.rightButtonImageIsVisible = false
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
-                if let selectWasPressed = viewModel?.selectWasPressed, selectWasPressed {
+                if let selectWasPressed = viewModel?.isSelecting, selectWasPressed {
                     headerView.rightButtonTitle = "Select all  ".localized()
                     headerView.rightButtonImageIsVisible = true
                     headerView.clearButtonIsVisible = true
@@ -773,8 +786,12 @@ extension MainViewController {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            if let _ = viewModel?.isItemSelected[indexPath.item] {
-                viewModel?.isItemSelected[indexPath.item]?.toggle()
+            if let isSelecting = viewModel?.isSelecting, isSelecting {
+                if let index = viewModel?.selectedFiles?.firstIndex(of: file) {
+                    viewModel?.selectedFiles?.remove(at: index)
+                } else {
+                    viewModel?.selectedFiles?.append(file)
+                }
                 self.refreshCollectionView()
             } else {
                 showFileActionSheet(file: file, atIndexPath: indexPath)
@@ -1193,7 +1210,7 @@ extension MainViewController {
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.selectedFile = file
+        viewModel?.selectedFiles?.append(file)
         viewModel?.fileAction = action
         
         setupBottomActionSheet()
