@@ -22,10 +22,12 @@ enum StoryboardName: String {
     case profile
     case donate
     case accountOnboarding
+    case archiveSettings
     
     var name: String {
         switch self {
         case .accountOnboarding: return "AccountOnboarding"
+        case .archiveSettings: return "ArchiveSettings"
             
         default: return self.rawValue.capitalized
         }
@@ -81,8 +83,10 @@ enum ViewControllerId: String {
     case accountOnboardingPg1Pending
     case accountOnboardingPg2Pending
     case publicGallery
+    case tagManagement
     case shareManagement
     case shareManagementAccessRoles
+    case tagsOptions
 
     var value: String {
         switch self {
@@ -202,12 +206,18 @@ enum ViewControllerId: String {
             
         case .recoverPassword:
             return "RecoverPassword"
+
+        case .tagManagement:
+            return "TagManagement"
             
         case .shareManagement:
             return "ShareManagement"
             
         case .shareManagementAccessRoles:
             return "ShareManagementAccessRoles"
+            
+        case .tagsOptions:
+            return "TagsOptions"
             
         default:
             return self.rawValue.capitalized

@@ -12,6 +12,12 @@ typealias ServerResponse = (RequestStatus) -> Void
 
 class AuthViewModel: ViewModelInterface {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
+    static let updateArchiveSettingsChevron = Notification.Name("AuthViewModel.updateArchiveSettingsChevron")
+    var archiveSetingsWasPressed: Bool = false {
+        didSet {
+            NotificationCenter.default.post(name: Self.updateArchiveSettingsChevron, object: self, userInfo: nil)
+        }
+    }
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void) ) {
         guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {

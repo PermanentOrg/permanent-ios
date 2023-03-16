@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "tagsBorder.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
