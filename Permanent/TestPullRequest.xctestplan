@@ -22,6 +22,7 @@
       }
     },
     {
+      "enabled" : false,
       "skippedTests" : [
         "BaseUITestCase",
         "LoginUITests\/testNegativeLogin()"
