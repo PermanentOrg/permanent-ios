@@ -251,7 +251,9 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.collectionView?.reloadData()
             },
         ]
-        showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+        if viewModel?.fileAction != FileAction.none {
+            showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+        }
 
         collectionView?.reloadData()
     }

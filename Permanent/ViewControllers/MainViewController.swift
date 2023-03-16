@@ -108,6 +108,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             self?.collectionView.reloadData()
         }
+        
+        NotificationCenter.default.addObserver(forName: MyFilesViewModel.didSelectFilesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let showFloatingIsland = notif.userInfo?["showFloatingIsland"] as? Bool else { return }
+            if showFloatingIsland {
+                self?.setupBottomActionSheetForMultipleFiles()
+            } else {
+                self?.dismissFloatingActionIsland()
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -201,13 +210,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func setupBottomActionSheet() {
         guard let source = viewModel?.selectedFiles?.first as? FileViewModel,
-              let action = viewModel?.fileAction else { return }
-              
+              let action = viewModel?.fileAction else {
+            viewModel?.selectedFiles = []
+            return
+        }
+        
         fabView.isHidden = true
         
         guard floatingActionIsland == nil else { return }
-        
-        guard let numberOfItems = viewModel?.selectedFiles?.count else { return }
         
         let fileIconItem: FloatingActionImageItem
         if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
@@ -238,13 +248,45 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
                 self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
+                self?.viewModel?.isSelectingDestination = false
 
                 self?.collectionView?.reloadData()
             },
         ]
-        showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+        
+        if viewModel?.fileAction != FileAction.none {
+            showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+            viewModel?.isSelectingDestination = true
+        } else {
+            viewModel?.isSelectingDestination = false
+        }
 
         collectionView?.reloadData()
+    }
+    
+    fileprivate func setupBottomActionSheetForMultipleFiles() {
+        let itemsNumber: FloatingActionTextItem
+        let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
+        let numberOfItems = viewModel?.selectedFiles?.count ?? 0
+        let itemsText = numberOfItems > 1 ? "Items" : "Item"
+        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
+        itemsNumber.barButtonItem?.tintColor = .middleGray
+
+        let leftItems = [itemsNumber]
+        let rightItems = [
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: nil),
+            FloatingActionImageItem(image: blankImage, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: nil),
+            FloatingActionImageItem(image: blankImage, action: nil),
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: nil)
+        ]
+        
+        if floatingActionIsland == nil {
+            
+            showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+        } else {
+            floatingActionIsland?.leftItems = leftItems
+        }
     }
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
@@ -356,13 +398,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             backButton.isUserInteractionEnabled = false
             backButton.layer.opacity = 0.3
         }
-        viewModel?.selectedFiles = []
         
         if selectWasPressed {
             viewModel?.selectedFiles = viewModel?.viewModels
+        } else {
+            viewModel?.isSelecting = true
         }
         
-        viewModel?.isSelecting = true
         refreshCollectionView()
     }
     
@@ -752,7 +794,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     headerView.rightButtonImageIsVisible = true
                     headerView.clearButtonIsVisible = true
                 } else {
-                    headerView.rightButtonTitle = "Select".localized()
+                    headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                     headerView.rightButtonImageIsVisible = false
                     headerView.clearButtonIsVisible = false
                 }

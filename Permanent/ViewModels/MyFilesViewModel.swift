@@ -12,6 +12,7 @@ protocol MyFilesViewModelPickerDelegate: AnyObject {
 }
 
 class MyFilesViewModel: FilesViewModel {
+    static let didSelectFilesNotifName = NSNotification.Name("MyFilesViewModel.didSelectFilesNotifName")
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
     
@@ -24,6 +25,13 @@ class MyFilesViewModel: FilesViewModel {
         
         set {
             AuthenticationManager.shared.session?.selectedFiles = newValue
+            if fileAction.action.isEmpty && isSelecting {
+                if selectedFiles?.isEmpty ?? true {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": false])
+                } else {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": true])
+                }
+            }
         }
     }
     

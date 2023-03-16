@@ -22,16 +22,42 @@ class FloatingActionItem {
 
 class FloatingActionTextItem: FloatingActionItem {
     var text: String
-
-    override var barButtonItem: UIBarButtonItem? {
-        let button = UIBarButtonItem(title: text, style: .plain, target: self, action: #selector(barButtonItemPressed(_:)))
-        return button
-    }
-
+    
     init(text: String, action: ((FloatingActionIslandViewController?, FloatingActionItem) -> Void)?) {
         self.text = text
 
         super.init(action: action)
+    }
+
+    override var barButtonItem: UIBarButtonItem? {
+        let view = UIView()
+        let label = UILabel()
+        label.text = text
+        label.font = Text.style34.font
+        label.textColor = .middleGray
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(barButtonItemPressed(_:)), for: .touchUpInside)
+
+        view.addSubview(label)
+        view.addSubview(button)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            button.topAnchor.constraint(equalTo: label.topAnchor),
+            button.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: label.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: label.bottomAnchor)
+        ])
+
+        let barButton = UIBarButtonItem(customView: view)
+        barButton.accessibilityLabel = "\(text)"
+        return barButton
     }
 }
 

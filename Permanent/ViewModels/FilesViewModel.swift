@@ -41,6 +41,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var selectedFiles: [FileViewModel]? = []
     var currentFolder: FileViewModel? { navigationStack.last }
     var isSelecting: Bool = false
+    var isSelectingDestination: Bool = false
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
