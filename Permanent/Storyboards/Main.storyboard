@@ -64,39 +64,11 @@
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="gHs-53-iVO">
                                             <size key="itemSize" width="413" height="128"/>
                                             <size key="estimatedItemSize" width="413" height="128"/>
-                                            <size key="headerReferenceSize" width="50" height="50"/>
+                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells/>
-                                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HeaderView" id="fdy-Kc-dRc" customClass="FileCollectionViewHeader" customModule="Permanent" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KKf-kI-Qug">
-                                                    <rect key="frame" x="14" y="10" width="30" height="30"/>
-                                                    <connections>
-                                                        <action selector="leftButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="yg5-Cm-w4a"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eY7-Sa-TzA">
-                                                    <rect key="frame" x="372" y="10" width="30" height="30"/>
-                                                    <connections>
-                                                        <action selector="rightButtonPressed:" destination="fdy-Kc-dRc" eventType="touchUpInside" id="jmU-OI-67Y"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="eY7-Sa-TzA" secondAttribute="trailing" constant="4" id="4WX-43-9aa"/>
-                                                <constraint firstItem="KKf-kI-Qug" firstAttribute="centerY" secondItem="fdy-Kc-dRc" secondAttribute="centerY" id="LTM-JI-1uy"/>
-                                                <constraint firstItem="KKf-kI-Qug" firstAttribute="leading" secondItem="fdy-Kc-dRc" secondAttribute="leadingMargin" constant="6" id="adf-EN-vGz"/>
-                                                <constraint firstItem="eY7-Sa-TzA" firstAttribute="centerY" secondItem="fdy-Kc-dRc" secondAttribute="centerY" id="ecw-pR-7TD"/>
-                                            </constraints>
-                                            <connections>
-                                                <outlet property="leftButton" destination="KKf-kI-Qug" id="DFo-Ez-Bm8"/>
-                                                <outlet property="rightButton" destination="eY7-Sa-TzA" id="hvb-7s-j46"/>
-                                            </connections>
-                                        </collectionReusableView>
                                         <connections>
                                             <outlet property="dataSource" destination="3PZ-n9-y83" id="Oxa-dX-bCh"/>
                                             <outlet property="delegate" destination="3PZ-n9-y83" id="P4U-rz-MZN"/>
@@ -657,13 +629,13 @@
                                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="ozM-OQ-bqF">
                                             <size key="itemSize" width="413" height="128"/>
                                             <size key="estimatedItemSize" width="413" height="128"/>
-                                            <size key="headerReferenceSize" width="50" height="50"/>
+                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
                                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SearchTagsCell" id="xCz-R8-cLB" customClass="FileSearchTagsCollectionViewCell" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.5" y="50" width="413" height="128"/>
+                                                <rect key="frame" x="0.5" y="0.0" width="413" height="128"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="8n4-5t-kdE">
                                                     <rect key="frame" x="0.0" y="0.0" width="413" height="128"/>
@@ -697,34 +669,6 @@
                                                 </connections>
                                             </collectionViewCell>
                                         </cells>
-                                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HeaderView" id="DQm-kn-MfM" customClass="FileCollectionViewHeader" customModule="Permanent" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f1W-wc-9Nd">
-                                                    <rect key="frame" x="14" y="10" width="30" height="30"/>
-                                                    <connections>
-                                                        <action selector="leftButtonPressed:" destination="DQm-kn-MfM" eventType="touchUpInside" id="etO-ge-7qB"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gZs-SG-4LT">
-                                                    <rect key="frame" x="372" y="10" width="30" height="30"/>
-                                                    <connections>
-                                                        <action selector="rightButtonPressed:" destination="DQm-kn-MfM" eventType="touchUpInside" id="WMK-Dj-Q9s"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="f1W-wc-9Nd" firstAttribute="centerY" secondItem="DQm-kn-MfM" secondAttribute="centerY" id="5IM-mH-4Hv"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="gZs-SG-4LT" secondAttribute="trailing" constant="4" id="LpN-Qa-Y35"/>
-                                                <constraint firstItem="f1W-wc-9Nd" firstAttribute="leading" secondItem="DQm-kn-MfM" secondAttribute="leadingMargin" constant="6" id="aoK-1b-bCj"/>
-                                                <constraint firstItem="gZs-SG-4LT" firstAttribute="centerY" secondItem="DQm-kn-MfM" secondAttribute="centerY" id="vNN-MW-hbn"/>
-                                            </constraints>
-                                            <connections>
-                                                <outlet property="leftButton" destination="f1W-wc-9Nd" id="h4G-td-swl"/>
-                                                <outlet property="rightButton" destination="gZs-SG-4LT" id="qrz-ZB-wl2"/>
-                                            </connections>
-                                        </collectionReusableView>
                                         <connections>
                                             <outlet property="dataSource" destination="X28-hk-wWT" id="HfZ-WQ-l3b"/>
                                             <outlet property="delegate" destination="X28-hk-wWT" id="YMR-bh-O17"/>

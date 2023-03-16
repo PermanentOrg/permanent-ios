@@ -17,13 +17,13 @@ class MyFilesViewModel: FilesViewModel {
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
-    override var selectedFile: FileViewModel? {
+    override var selectedFiles: [FileViewModel]? {
         get {
-            return AuthenticationManager.shared.session?.selectedFile
+            return AuthenticationManager.shared.session?.selectedFiles
         }
         
         set {
-            AuthenticationManager.shared.session?.selectedFile = newValue
+            AuthenticationManager.shared.session?.selectedFiles = newValue
         }
     }
     

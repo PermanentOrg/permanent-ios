@@ -38,8 +38,9 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadFolder: FolderInfo?
     var fileAction: FileAction = .none
     
-    var selectedFile: FileViewModel?
+    var selectedFiles: [FileViewModel]? = []
     var currentFolder: FileViewModel? { navigationStack.last }
+    var isSelecting: Bool = false
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
@@ -189,7 +190,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
-            self.selectedFile = nil
+            self.selectedFiles = []
             self.fileAction = .none
 
             switch result {

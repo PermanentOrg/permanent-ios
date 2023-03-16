@@ -180,6 +180,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -210,7 +211,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        guard let source = viewModel?.selectedFile,
+        guard let source = viewModel?.selectedFiles?.first,
               let action = viewModel?.fileAction else { return }
               
         fabView.isHidden = true
@@ -244,7 +245,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismissFloatingActionIsland()
                 self?.fabView.isHidden = false
 
-                self?.viewModel?.selectedFile = nil
+                self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
 
                 self?.collectionView?.reloadData()
@@ -257,7 +258,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        let shouldDisableButton = viewModel?.selectedFiles?.first?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
 
         if let currentFolderPermissions = viewModel?.currentFolder?.permissions,
             currentFolderPermissions.contains(.upload) == true {
@@ -431,11 +432,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         refreshCollectionView()
         
         viewModel?.fileAction = .none
-        viewModel?.selectedFile = nil
+        viewModel?.selectedFiles = []
     }
     
     @IBAction func backButtonAction(_ sender: UIButton) {
-        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFile?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
+        let fileTypeString: String = FileType(rawValue: self.viewModel?.selectedFiles?.first?.type.rawValue ?? "")?.isFolder ?? false ? "folder" : "file"
         if let navigationStackCount = viewModel?.navigationStack.count,
             navigationStackCount <= 1 && viewModel?.fileAction != FileAction.none {
             showActionDialog(
@@ -446,7 +447,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 positiveAction: {
                     self.actionDialog?.dismiss()
                     self.viewModel?.fileAction = .none
-                    self.viewModel?.selectedFile = nil
+                    self.viewModel?.selectedFiles = []
                     self.backButtonAction(UIButton())
                     self.dismiss(animated: false)
                 },cancelButtonTitle: "Cancel Move".localized(),
@@ -988,7 +989,7 @@ extension SharesViewController: UICollectionViewDelegateFlowLayout, UICollection
         let title = viewModel?.title(forSection: section) ?? ""
         
         if kind == UICollectionView.elementKindSectionHeader && title.isNotEmpty {
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = title
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
@@ -1038,7 +1039,7 @@ extension SharesViewController: SharedFileActionSheetDelegate {
     }
     
     func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.selectedFile = file
+        viewModel?.selectedFiles?.append(file)
         viewModel?.fileAction = action
         
         setupBottomActionSheet()

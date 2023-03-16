@@ -89,10 +89,8 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
                 let spaceLeft = (accountData.spaceLeft ?? 0)
                 let spaceUsed = spaceTotal - spaceLeft
                 
-                guard let spaceTotalHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceTotal, useDecimal: false),
-                    let spaceUsedHumanReadableContent = viewModel?.bytesToReadableForm(sizeInBytes: spaceUsed) else {
-                    return
-                }
+                let spaceTotalHumanReadableContent = spaceTotal.bytesToReadableForm(useDecimal: false)
+                let spaceUsedHumanReadableContent = spaceUsed.bytesToReadableForm()
                 
                 let storageLabelString = "<STORAGE_USED> of <STORAGE_TOTAL> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: spaceUsedHumanReadableContent).replacingOccurrences(of: "<STORAGE_TOTAL>", with: spaceTotalHumanReadableContent)
                 storageUsedLabel.text = storageLabelString
