@@ -41,3 +41,15 @@ class AccountRemoteDataSource: AccountRemoteDataSourceInterface {
         }
     }
 }
+
+class MockAccountRemoteDataSource: AccountRemoteDataSourceInterface {
+    var createAccountResponse: Result<(SignUpResponse, AccountVOData), Error>?
+
+    func createAccount(fullName: String, primaryEmail: String, password: String, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
+        if let response = createAccountResponse {
+            handler(response)
+        } else {
+            handler(.failure(NSError(domain: "MockAccountRemoteDataSource", code: -1, userInfo: nil)))
+        }
+    }
+}

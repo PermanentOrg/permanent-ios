@@ -67,6 +67,49 @@ struct ArchiveVOData: Model {
     }
 }
 
+extension ArchiveVOData {
+    static func mock() -> ArchiveVOData {
+        return ArchiveVOData(
+            childFolderVOS: nil,
+            folderSizeVOS: nil,
+            recordVOS: nil,
+            accessRole: "user",
+            fullName: "Mock User",
+            spaceTotal: nil,
+            spaceLeft: nil,
+            fileTotal: nil,
+            fileLeft: nil,
+            relationType: nil,
+            homeCity: nil,
+            homeState: nil,
+            homeCountry: nil,
+            itemVOS: nil,
+            birthDay: nil,
+            company: nil,
+            archiveVODescription: nil,
+            archiveID: 1,
+            publicDT: "2022-01-01T00:00:00Z",
+            archiveNbr: "1001",
+            view: nil,
+            viewProperty: nil,
+            archiveVOPublic: 0,
+            vaultKey: "mockVaultKey",
+            thumbArchiveNbr: "1001",
+            type: "archive",
+            thumbStatus: .ok,
+            imageRatio: nil,
+            thumbURL200: "https://example.com/thumb200.jpg",
+            thumbURL500: "https://example.com/thumb500.jpg",
+            thumbURL1000: "https://example.com/thumb1000.jpg",
+            thumbURL2000: "https://example.com/thumb2000.jpg",
+            thumbDT: "2022-01-01T00:00:00Z",
+            createdDT: "2022-01-01T00:00:00Z",
+            updatedDT: "2022-01-01T00:00:00Z",
+            status: .ok
+        )
+    }
+}
+
 // MARK: - Permissions
 extension ArchiveVOData {
     func permissions() -> [Permission] {
