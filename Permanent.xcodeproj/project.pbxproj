@@ -587,12 +587,12 @@
 		F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C37D4A28AD646D0062D9EB /* FileCollectionViewGridCell.xib */; };
 		F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
 		F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F8B929017CE80015A522 /* FolderNavigationView.swift */; };
-		F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F564137929798DD4002D6423 /* AccountRepository.swift */; };
 		F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */; };
 		F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414D9257F80500019548F /* ShareEndpoint.swift */; };
 		F561F84B299D712E00B3BD09 /* SharebyURLVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414DC257F828E0019548F /* SharebyURLVO.swift */; };
 		F561F84C299D713E00B3BD09 /* SharebyURLVOTokenPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCEECD7F25ADC87500A4520E /* SharebyURLVOTokenPayload.swift */; };
 		F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD414E3257FCEB50019548F /* SharebyURLVOPayload.swift */; };
+		F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F564137929798DD4002D6423 /* AccountRepository.swift */; };
 		F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
 		F569061228C9FD7500E610B6 /* BaseUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061128C9FD7500E610B6 /* BaseUITestCase.swift */; };
 		F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F569061B28CB58AE00E610B6 /* XCUIElement+Extensions.swift */; };
@@ -620,6 +620,9 @@
 		F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58F314E27F32E2D00B89B99 /* DonateViewController.swift */; };
 		F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58F315327F72A1500B89B99 /* BillingEndpoint.swift */; };
 		F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59B0C8D28DB21060038E474 /* ShareViewController.swift */; };
+		F59C3B7F29C3146000337E45 /* AuthenticationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */; };
+		F59C3B8129C3260100337E45 /* ArchivesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8029C3260100337E45 /* ArchivesRepository.swift */; };
+		F59C3B8329C3262F00337E45 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8229C3262F00337E45 /* ArchivesRemoteDataSource.swift */; };
 		F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */; };
 		F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */; };
 		F5A2A07926161AE6003AAF36 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2A07826161AE6003AAF36 /* NotificationService.swift */; };
@@ -1220,8 +1223,8 @@
 		F559F88928FEBCC10015A522 /* FolderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderContentView.swift; sourceTree = "<group>"; };
 		F559F8B4290164000015A522 /* ShareFileBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFileBrowserViewController.swift; sourceTree = "<group>"; };
 		F559F8B929017CE80015A522 /* FolderNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderNavigationView.swift; sourceTree = "<group>"; };
-		F564137929798DD4002D6423 /* AccountRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFolderNavigationViewModel.swift; sourceTree = "<group>"; };
+		F564137929798DD4002D6423 /* AccountRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRepository.swift; sourceTree = "<group>"; };
 		F56522632604ADB6007CA99D /* LocationEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEndpoint.swift; sourceTree = "<group>"; };
 		F569061128C9FD7500E610B6 /* BaseUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUITestCase.swift; sourceTree = "<group>"; };
 		F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Permanent-DEV-UnitTests.xctestplan"; sourceTree = "<group>"; };
@@ -1250,6 +1253,9 @@
 		F59082E82885697200027FE9 /* ShareExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtensionDebug.entitlements; sourceTree = "<group>"; };
 		F59082E92885697C00027FE9 /* ShareExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtensionRelease.entitlements; sourceTree = "<group>"; };
 		F59B0C8D28DB21060038E474 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerTests.swift; sourceTree = "<group>"; };
+		F59C3B8029C3260100337E45 /* ArchivesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesRepository.swift; sourceTree = "<group>"; };
+		F59C3B8229C3262F00337E45 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		F5A0CE1D2701D48D0005B9F0 /* PARequestNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PARequestNotificationPayload.swift; sourceTree = "<group>"; };
 		F5A0CE1F270208060005B9F0 /* BaseNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNotificationPayload.swift; sourceTree = "<group>"; };
 		F5A2A07626161AE6003AAF36 /* PushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1791,6 +1797,7 @@
 				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
 				374554B71E0322714462588A /* ShareManagementTests.swift */,
 				5E1E4FA82988897F0062984C /* ManageTagsTests.swift */,
+				F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
@@ -1893,6 +1900,7 @@
 				5EFC4049292D71F700FD244B /* ShareManagementRemoteDataSource.swift */,
 				5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */,
 				F55350252979616B00F87EBF /* AccountRemoteDataSource.swift */,
+				F59C3B8229C3262F00337E45 /* ArchivesRemoteDataSource.swift */,
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
@@ -2571,6 +2579,7 @@
 				5EFC404B292D722600FD244B /* ShareManagementRepository.swift */,
 				5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */,
 				F564137929798DD4002D6423 /* AccountRepository.swift */,
+				F59C3B8029C3260100337E45 /* ArchivesRepository.swift */,
 				5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */,
 			);
 			path = Repositories;
@@ -3146,6 +3155,7 @@
 				F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
+				F59C3B8329C3262F00337E45 /* ArchivesRemoteDataSource.swift in Sources */,
 				5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
@@ -3490,6 +3500,7 @@
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				F59C3B8129C3260100337E45 /* ArchivesRepository.swift in Sources */,
 				5EC9C69B290BD36A00AD2E37 /* RecoverPasswordViewController.swift in Sources */,
 				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
 				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,
@@ -3542,6 +3553,7 @@
 				5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */,
 				5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */,
 				5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */,
+				F59C3B7F29C3146000337E45 /* AuthenticationManagerTests.swift in Sources */,
 				F5D209BA285B3DB3006DCF9F /* AccountOnboardingTests.swift in Sources */,
 				F559F87D28F9AB070015A522 /* FolderContentViewModelTests.swift in Sources */,
 				F559F88128F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift in Sources */,

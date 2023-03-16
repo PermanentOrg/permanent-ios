@@ -13,8 +13,9 @@ class AuthenticationManager {
     static let shared = AuthenticationManager()
     
     var keychainHandler = SessionKeychainHandler()
-    let authRepo = AuthRepository()
-    let accountRepository = AccountRepository()
+    let authRepo: AuthRepository
+    let accountRepository: AccountRepository
+    let archivesRepository: ArchivesRepository
     
     var token: String? {
         return session?.token
@@ -28,7 +29,11 @@ class AuthenticationManager {
     
     var mfaSession: MFASession?
     
-    init() {
+    init(authRepo: AuthRepository = AuthRepository(), accountRepository: AccountRepository = AccountRepository(), archivesRepository: ArchivesRepository = ArchivesRepository()) {
+        self.authRepo = authRepo
+        self.accountRepository = accountRepository
+        self.archivesRepository = archivesRepository
+        
         NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [self] notification in
             logout()
         }
@@ -43,8 +48,14 @@ class AuthenticationManager {
             let selectedArchive = session.selectedArchive {
             self.session = session
             
-            changeArchive(selectedArchive) { success, error in
-                completion(success)
+            changeArchive(selectedArchive) { result in
+                switch result {
+                case .success(_):
+                    completion(true)
+                    
+                case .failure(_):
+                    completion(false)
+                }
             }
         } else {
             logout()
@@ -84,6 +95,7 @@ class AuthenticationManager {
                 } else {
                     handler(.error(message: .errorMessage))
                 }
+                
             case .failure( _):
                 handler(.error(message: "Authorization error".localized()))
             }
@@ -130,12 +142,8 @@ class AuthenticationManager {
             switch result {
             case .success(_):
                 handler(.success)
-            case .failure(let e):
-                if e as! APIError == APIError.parseError {
-                    handler(.success)
-                } else {
-                    handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
-                }
+            case .failure(_):
+                handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
             }
         }
     }
@@ -182,11 +190,13 @@ class AuthenticationManager {
     
     func syncSession(then handler: @escaping ServerResponse) {
         if let _: Int = session?.account.defaultArchiveID {
-            refreshCurrentArchive { success, archive in
-                if success {
+            refreshCurrentArchive { result in
+                switch result {
+                case .success(let archive):
                     self.session?.selectedArchive = archive
                     handler(.success)
-                } else {
+                    
+                case .failure(_):
                     handler(.error(message: .errorMessage))
                 }
             }
@@ -195,90 +205,48 @@ class AuthenticationManager {
         }
     }
     
-    func refreshCurrentArchive(_ updateHandler: @escaping ((Bool, ArchiveVOData?) -> Void)) {
-        getAccountArchives { [self] archives, error in
-            if error != nil {
-                updateHandler(false, nil)
-                return
-            }
-            
-            let hasDefault = archives?.contains(where: { archive in
-                archive.archiveVO?.status == ArchiveVOData.Status.ok
-            }) ?? false
-            
-            if hasDefault, let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == session?.account.defaultArchiveID && $0.archiveVO?.status != .pending })?.archiveVO {
-                session?.selectedArchive = defaultArchive
+    func refreshCurrentArchive(_ updateHandler: @escaping (Result<ArchiveVOData?, Error>) -> Void) {
+        getAccountArchives { [self] result in
+            switch result {
+            case .failure(let error):
+                updateHandler(.failure(error))
                 
-                updateHandler(true, defaultArchive)
-            } else {
-                updateHandler(true, nil)
+            case .success(let archives):
+                let hasDefault = archives.contains(where: { archive in
+                    archive.archiveVO?.status == ArchiveVOData.Status.ok
+                })
+                
+                if hasDefault, let defaultArchive = archives.first(where: { $0.archiveVO?.archiveID == session?.account.defaultArchiveID && $0.archiveVO?.status != .pending })?.archiveVO {
+                    session?.selectedArchive = defaultArchive
+                    
+                    updateHandler(.success(defaultArchive))
+                } else {
+                    updateHandler(.success(nil))
+                }
             }
         }
     }
     
-    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
+    func getAccountArchives(_ completionBlock: @escaping (Result<[ArchiveVO], Error>) -> Void) {
         guard let accountId: Int = session?.account.accountID else {
-            completionBlock(nil, APIError.unknown)
+            completionBlock(.failure(APIError.unknown))
             return
         }
-        
-        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
-        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(nil, APIError.invalidResponse)
-                    return
-                }
-                
-                let accountArchives = model.results.first?.data
-                
-                completionBlock(accountArchives, nil)
-                return
-                
-            case .error:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            }
+
+        archivesRepository.getAccountArchives(accountId: accountId) { result in
+            completionBlock(result)
         }
     }
     
-    func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+    func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping (Result<Bool, Error>) -> Void) {
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
-            completionBlock(false, APIError.unknown)
+            completionBlock(.failure(APIError.unknown))
             return
         }
-        
-        let changeArchiveOperation = APIOperation(ArchivesEndpoint.change(archiveId: archiveId, archiveNbr: archiveNbr))
-        changeArchiveOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(false, APIError.invalidResponse)
-                    return
-                }
-                
-                completionBlock(true, nil)
-                return
-                
-            case .error:
-                completionBlock(false, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(false, APIError.invalidResponse)
-                return
-            }
+
+        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { result in
+            completionBlock(result)
         }
     }
+
 }

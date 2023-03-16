@@ -3,7 +3,6 @@
 //  Permanent
 //
 //  Created by Vlad Alexandru Rusu on 19.01.2023.
-//  Copyright © 2023 Victory Square Partners. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +10,7 @@ import Foundation
 class AccountRepository {
     let remoteDataSource: AccountRemoteDataSourceInterface
     
-    init(remoteDataSource: AccountRemoteDataSource = AccountRemoteDataSource()) {
+    init(remoteDataSource: AccountRemoteDataSourceInterface = AccountRemoteDataSource()) {
         self.remoteDataSource = remoteDataSource
     }
     
