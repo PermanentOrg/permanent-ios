@@ -32,6 +32,7 @@ class MyFilesViewModel: FilesViewModel {
                     NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": true])
                 }
             }
+            updateCheckboxState()
         }
     }
     

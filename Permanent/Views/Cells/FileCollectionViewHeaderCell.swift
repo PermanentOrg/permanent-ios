@@ -30,28 +30,6 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         }
     }
     
-    var rightButtonImageIsVisible: Bool? {
-        didSet {
-            if let rightButtonImageIsVisible = rightButtonImageIsVisible, rightButtonImageIsVisible {
-                let image = UIImage(named: "checkbox")?.templated
-                rightButton.setImage(image, for: .normal)
-                rightButton.tintColor = .darkBlue
-            } else {
-                rightButton.setImage(nil, for: .normal)
-            }
-        }
-    }
-    
-    var clearButtonIsVisible: Bool? {
-        didSet {
-            if let cancelButtonIsVisible = clearButtonIsVisible, cancelButtonIsVisible {
-                clearButton.isHidden = false
-            } else {
-                clearButton.isHidden = true
-            }
-        }
-    }
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -69,6 +47,43 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         rightButton.semanticContentAttribute = .forceRightToLeft
         rightButton.imageView?.contentMode = .scaleAspectFit
     }
+    
+    func configure(with viewModel: FilesViewModel?) {
+         guard let viewModel = viewModel else {
+             leftButtonTitle = "Select"
+             rightButtonTitle = nil
+             rightButton.setImage(nil, for: .normal)
+             clearButton.isHidden = true
+             return
+         }
+         
+         // Update left button title
+         leftButtonTitle = viewModel.isSelecting ? "Cancel" : "Select"
+
+         // Update right button title
+         rightButtonTitle = viewModel.isSelecting ? "Select All" : nil
+         
+         // Update right button image
+         if viewModel.isSelecting {
+             let imageName: String
+             switch viewModel.checkboxState {
+             case .none:
+                 imageName = "checkBoxEmpty"
+             case .partial:
+                 imageName = "checkboxPartial"
+             case .selected:
+                 imageName = "checkbox"
+             }
+             let image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
+             rightButton.setImage(image, for: .normal)
+             rightButton.tintColor = .darkBlue
+         } else {
+             rightButton.setImage(nil, for: .normal)
+         }
+         
+         // Update clear button visibility
+         clearButton.isHidden = !viewModel.isSelecting
+     }
     
     @IBAction func leftButtonPressed(_ sender: Any) {
         leftButtonAction?(self)

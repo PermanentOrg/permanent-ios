@@ -392,19 +392,25 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     @objc
     private func selectButtonWasPressed(_ sender: UIButton) {
-        guard let selectWasPressed = viewModel?.isSelecting else { return }
+        guard let viewModel = viewModel else { return }
         fabView.isHidden = true
         if !backButton.isHidden {
             backButton.isUserInteractionEnabled = false
             backButton.layer.opacity = 0.3
         }
-        
-        if selectWasPressed {
-            viewModel?.selectedFiles = viewModel?.viewModels
+
+        if viewModel.isSelecting {
+            if viewModel.selectedFiles?.count == viewModel.viewModels.count {
+                // Deselect all files
+                viewModel.selectedFiles = []
+            } else {
+                // Select all files
+                viewModel.selectedFiles = viewModel.viewModels
+            }
         } else {
-            viewModel?.isSelecting = true
+            viewModel.isSelecting = true
         }
-        
+
         refreshCollectionView()
     }
     
@@ -778,6 +784,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
+            headerView.configure(with: viewModel)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
             } else {
@@ -786,17 +793,12 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             
             if viewModel?.hasCancelButton(forSection: section) == true {
                 headerView.rightButtonTitle = "Cancel All".localized()
-                headerView.rightButtonImageIsVisible = false
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
                 if let selectWasPressed = viewModel?.isSelecting, selectWasPressed {
                     headerView.rightButtonTitle = "Select all  ".localized()
-                    headerView.rightButtonImageIsVisible = true
-                    headerView.clearButtonIsVisible = true
                 } else {
                     headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
-                    headerView.rightButtonImageIsVisible = false
-                    headerView.clearButtonIsVisible = false
                 }
                 
                 headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
