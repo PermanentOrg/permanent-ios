@@ -119,7 +119,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             if isFileSelected {
                 rightButtonImageView.image = UIImage(named: "fullCheckbox")?.templated
                 fileNameLabel.font = Text.style35.font
-                fileNameLabel.textColor = .black
+                fileNameLabel.textColor = .darkBlue
                 rightButtonImageView.tintColor = .darkBlue
             } else {
                 rightButtonImageView.image = UIImage(named: "emptyCheckbox")?.templated

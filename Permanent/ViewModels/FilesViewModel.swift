@@ -24,6 +24,12 @@ enum PublicRootRequestStatus: Equatable {
     case error(message: String?)
 }
 
+enum CheckboxState {
+    case none
+    case partial
+    case selected
+}
+
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
@@ -41,6 +47,8 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var selectedFiles: [FileViewModel]? = []
     var currentFolder: FileViewModel? { navigationStack.last }
     var isSelecting: Bool = false
+    var isSelectingDestination: Bool = false
+    var checkboxState: CheckboxState = .none
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
@@ -568,6 +576,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 
             default:
                 break
+            }
+        }
+    }
+    
+    func updateCheckboxState() {
+        if let numberOfSelectedItems = selectedFiles?.count {
+            switch numberOfSelectedItems {
+            case .zero: checkboxState = .none
+            case viewModels.count: checkboxState = .selected
+            default: checkboxState = .partial
             }
         }
     }
