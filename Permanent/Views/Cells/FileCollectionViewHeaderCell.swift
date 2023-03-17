@@ -72,7 +72,7 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
              case .partial:
                  imageName = "checkboxPartial"
              case .selected:
-                 imageName = "checkbox"
+                 imageName = "checkBoxCheckedFill"
              }
              let image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
              rightButton.setImage(image, for: .normal)
