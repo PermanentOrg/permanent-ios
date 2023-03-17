@@ -268,7 +268,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let itemsNumber: FloatingActionTextItem
         let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
         let numberOfItems = viewModel?.selectedFiles?.count ?? 0
-        let itemsText = numberOfItems > 1 ? "Items" : "Item"
+        let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
         itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
         itemsNumber.barButtonItem?.tintColor = .middleGray
 
