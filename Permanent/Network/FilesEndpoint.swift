@@ -16,7 +16,7 @@ typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: St
 typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int)
 typealias ItemInfoParams = (FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction)
-typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
+typealias ItemPair = (files: [FileViewModel], destination: FileViewModel)
 
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
@@ -82,12 +82,12 @@ extension FilesEndpoint: RequestProtocol {
         case .getFolder:
             return "/folder/get"
         case .relocate(let parameters):
-            if parameters.items.source.type.isFolder {
+            let allFolders = parameters.items.files.allSatisfy { $0.type.isFolder }
+            if allFolders {
                 return "/folder/\(parameters.action.endpointValue)"
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
-            
         case .update:
             return "/record/update"
         case .renameFolder:
@@ -215,27 +215,30 @@ extension FilesEndpoint: RequestProtocol {
             return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
             
         case .relocate(let parameters):
-            if parameters.items.source.type.isFolder {
-                let copyVO = RelocateFolderPayload(
-                    folderLinkId: parameters.items.source.folderLinkId,
+            let isFolder = parameters.items.files.contains(where: { $0.type.isFolder })
+            if isFolder {
+                let folderPayload = RelocateFolderPayload(
+                    folderLinkId: parameters.items.files.first!.folderLinkId, // Use first item in array for folder link ID
                     folderDestLinkId: parameters.items.destination.folderLinkId
                 )
-                let requestVO = APIPayload.make(fromData: [copyVO])
-                
-                return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
+                let requestVO = RequestVOData(data: [folderPayload])
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             } else {
-                let relocateVO = RelocateRecordPayload(
-                    folderLinkId: parameters.items.source.folderLinkId,
-                    folderDestLinkId: parameters.items.destination.folderLinkId,
-                    parentFolderLinkId: parameters.items.source.parentFolderLinkId,
-                    archiveNbr: parameters.items.source.archiveNo,
-                    uploadFileName: parameters.items.source.uploadFileName,
-                    recordId: parameters.items.source.recordId,
-                    parentFolderId: parameters.items.source.parentFolderId
-                )
-                let requestVO = APIPayload.make(fromData: [relocateVO])
-                
-                return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
+                let recordPayloads = parameters.items.files.map { file in
+                    RelocateRecordPayload(
+                        folderLinkId: file.folderLinkId,
+                        folderDestLinkId: parameters.items.destination.folderLinkId,
+                        parentFolderLinkId: file.parentFolderLinkId,
+                        archiveNbr: file.archiveNo,
+                        uploadFileName: file.uploadFileName,
+                        recordId: file.recordId,
+                        parentFolderId: file.parentFolderId
+                    )
+                }
+                let requestVO = RequestVOData(data: recordPayloads)
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             }
 
         default:

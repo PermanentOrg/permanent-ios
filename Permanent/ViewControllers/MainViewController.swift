@@ -209,26 +209,33 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        guard let source = viewModel?.selectedFiles?.first as? FileViewModel,
-              let action = viewModel?.fileAction else {
+        guard let selectedFiles = viewModel?.selectedFiles,
+              let action = viewModel?.fileAction,
+              !selectedFiles.isEmpty else {
             viewModel?.selectedFiles = []
             return
         }
-        
+
         fabView.isHidden = true
-        
+
         guard floatingActionIsland == nil else { return }
-        
+
         let fileIconItem: FloatingActionImageItem
-        if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
-            fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
+        if selectedFiles.count == 1, let source = selectedFiles.first {
+            if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
+                fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
+            } else {
+                fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
+            }
         } else {
-            fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
+            fileIconItem = FloatingActionImageItem(image: UIImage(named: "Copy")!, action: nil)
         }
-        
+
+        let actionTitle = action == .copy ? "COPYING".localized() : "MOVING".localized()
+        let subtitle = selectedFiles.count == 1 ? selectedFiles.first!.name : "\(selectedFiles.count) files"
         let leftItems = [
             fileIconItem,
-            FloatingActionTextSubtitleItem(text: action == .copy ? "COPYING".localized() : "MOVING".localized(), subtitle: source.name, action: nil),
+            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil),
         ]
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
@@ -240,7 +247,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     return
                 }
 
-                self?.relocate(file: source, to: destination)
+                self?.relocate(files: selectedFiles, to: destination)
             },
             FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
                 self?.dismissFloatingActionIsland()
@@ -253,7 +260,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.collectionView?.reloadData()
             },
         ]
-        
+
         if viewModel?.fileAction != FileAction.none {
             showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
             viewModel?.isSelectingDestination = true
@@ -263,6 +270,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         collectionView?.reloadData()
     }
+
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
         let itemsNumber: FloatingActionTextItem
@@ -274,7 +282,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         let leftItems = [itemsNumber]
         let rightItems = [
-            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.copy
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
+                    self?.fabView.isHidden = true
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: nil),
             FloatingActionImageItem(image: blankImage, action: nil),
@@ -282,7 +305,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         ]
         
         if floatingActionIsland == nil {
-            
             showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
         } else {
             floatingActionIsland?.leftItems = leftItems
@@ -628,22 +650,24 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func relocate(file: FileViewModel, to destination: FileViewModel) {
+    func relocate(files: [FileViewModel], to destination: FileViewModel) {
         floatingActionIsland?.showActivityIndicator()
-        viewModel?.relocate(file: file, to: destination, then: { status in
+        viewModel?.relocate(files: files, to: destination, then: { status in
             self.floatingActionIsland?.hideActivityIndicator()
 
             switch status {
             case .success:
-                self.viewModel?.viewModels.prepend(file)
+                self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
 
                 self.floatingActionIsland?.showDoneCheckmark() {
-                    self.dismissFloatingActionIsland()
-
-                    self.collectionView?.reloadData()
+                    self.dismissFloatingActionIsland({ [weak self] in
+                        self?.fabView?.isHidden = false
+                        self?.viewModel?.isSelectingDestination = false
+                        
+                        self?.collectionView?.reloadData()
+                    })
                 }
 
-                
             case .error(let message):
                 self.dismissFloatingActionIsland()
                 self.showErrorAlert(message: message)
@@ -653,7 +677,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     func publish(file: FileViewModel) {
         showSpinner()
-        viewModel?.publish(file: file, then: { status in
+        viewModel?.publish(files: [file], then: { status in
             self.hideSpinner()
             
             switch status {
@@ -663,7 +687,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 } else {
                     self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                 }
-
+                
             case .error(let message):
                 self.showErrorAlert(message: message)
             }
@@ -1051,13 +1075,13 @@ extension MainViewController: FABActionSheetDelegate {
         
         if file.permissions.contains(.move) {
             menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
-                relocateAction(file: file, action: .move)
+                relocateAction(files: [file], action: .move)
             }))
         }
         
         if file.permissions.contains(.create) {
             menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [self] in
-                relocateAction(file: file, action: .copy)
+                relocateAction(files: [file], action: .copy)
             }))
         }
         
@@ -1252,10 +1276,10 @@ extension MainViewController {
         download(file)
     }
     
-    func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.selectedFiles?.append(file)
+    func relocateAction(files: [FileViewModel]?, action: FileAction) {
+        viewModel?.selectedFiles = files
         viewModel?.fileAction = action
-        
+
         setupBottomActionSheet()
     }
     

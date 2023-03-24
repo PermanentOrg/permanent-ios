@@ -192,38 +192,81 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
-        let parameters: RelocateParams = ((file, destination), fileAction)
-
-        let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
+    func relocate(files: [FileViewModel]?, to destination: FileViewModel, then handler: @escaping ServerResponse) {
+        guard let files = files else {
+            handler(.error(message: "No files selected".localized()))
+            return
+        }
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        let fileGroup = DispatchGroup()
+        var errors: [String] = []
+
+        let folders = files.filter { $0.type.isFolder }
+        let nonFolders = files.filter { !$0.type.isFolder }
+
+        if !folders.isEmpty {
+            fileGroup.enter()
+            let folderParameters: RelocateParams = ((files: folders, destination: destination), fileAction)
+            let folderApiOperation = APIOperation(FilesEndpoint.relocate(params: folderParameters))
+            folderApiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let httpResponse, _):
+                    if let response = httpResponse,
+                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                        // Handle successful folder response
+                        break
+                    } else {
+                        errors.append("Unknown error")
+                    }
+                case .error(let error, _):
+                    errors.append(error?.localizedDescription ?? "Unknown error")
+                default:
+                    break
+                }
+                fileGroup.leave()
+            }
+        }
+
+        if !nonFolders.isEmpty {
+            fileGroup.enter()
+            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), fileAction)
+            let nonFolderApiOperation = APIOperation(FilesEndpoint.relocate(params: nonFolderParameters))
+            nonFolderApiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let httpResponse, _):
+                    if let response = httpResponse,
+                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                        // Handle successful non-folder response
+                        break
+                    } else {
+                        errors.append("Unknown error")
+                    }
+                case .error(let error, _):
+                    errors.append(error?.localizedDescription ?? "Unknown error")
+                default:
+                    break
+                }
+                fileGroup.leave()
+            }
+        }
+
+        fileGroup.notify(queue: .main) {
             self.selectedFiles = []
             self.fileAction = .none
 
-            switch result {
-            case .json(let httpResponse, _):
-                guard
-                    let response = httpResponse,
-                    let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                    let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
-                        handler(.error(message: .errorMessage))
-                        return
-                }
-                
+            if errors.isEmpty {
                 handler(.success)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
+            } else {
+                handler(.error(message: errors.joined(separator: "\n")))
             }
         }
     }
-    
-    func publish(file: FileViewModel, then handler: @escaping ServerResponse) {
+
+    func publish(files: [FileViewModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
         guard let archiveNbr = currentArchive?.archiveNbr else { return }
         
@@ -232,7 +275,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             case .success(let folder):
                 if let rootFolder = folder {
                     let publicRoot = FileViewModel(model: rootFolder)
-                    self.relocate(file: file, to: publicRoot, then: handler)
+                    self.relocate(files: files, to: publicRoot, then: handler)
                 } else {
                     handler(.error(message: .errorMessage))
                 }
