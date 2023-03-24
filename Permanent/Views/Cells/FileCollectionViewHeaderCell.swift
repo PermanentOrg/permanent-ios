@@ -50,16 +50,11 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
     
     func configure(with viewModel: FilesViewModel?) {
          guard let viewModel = viewModel else {
-             leftButtonTitle = "Select"
              rightButtonTitle = nil
              rightButton.setImage(nil, for: .normal)
              clearButton.isHidden = true
              return
          }
-         
-         // Update left button title
-         leftButtonTitle = viewModel.isSelecting ? "Cancel" : "Select"
-
          // Update right button title
          rightButtonTitle = viewModel.isSelecting ? "Select All" : nil
          
