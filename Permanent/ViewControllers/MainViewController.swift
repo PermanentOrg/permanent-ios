@@ -286,9 +286,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
-                    self?.clearButtonWasPressed(UIButton())
                     self?.fabView.isHidden = true
                     
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
                     self?.setupBottomActionSheet()
                 })
             }),
