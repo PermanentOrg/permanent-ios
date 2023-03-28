@@ -128,10 +128,24 @@ class FileCollectionViewCell: UICollectionViewCell {
                 rightButtonImageView.tintColor = .lightGray
             }
         } else {
-            rightButtonImageView.image = UIImage.more.templated
-            fileNameLabel.font = Text.style35.font
-            fileNameLabel.textColor = .black
-            rightButtonImageView.tintColor = .darkBlue
+            if fileAction == .none {
+                rightButtonImageView.image = UIImage.more.templated
+                fileNameLabel.font = Text.style35.font
+                fileNameLabel.textColor = .black
+                rightButtonImageView.tintColor = .darkBlue
+            } else {
+                rightButtonImageView.image = nil
+                if isFileSelected {
+                    fileNameLabel.font = Text.style34.font
+                    fileNameLabel.textColor = .lightGray
+                    rightButtonImageView.tintColor = .lightGray
+                } else {
+                    fileNameLabel.font = Text.style35.font
+                    fileNameLabel.textColor = .darkBlue
+                    rightButtonImageView.tintColor = .darkBlue
+                }
+                
+            }
         }
     }
     

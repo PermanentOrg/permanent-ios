@@ -299,7 +299,22 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.move
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
+                    self?.fabView.isHidden = true
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: nil)
         ]
@@ -651,28 +666,32 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func relocate(files: [FileViewModel], to destination: FileViewModel) {
-        floatingActionIsland?.showActivityIndicator()
-        viewModel?.relocate(files: files, to: destination, then: { status in
-            self.floatingActionIsland?.hideActivityIndicator()
-
-            switch status {
-            case .success:
-                self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
-
-                self.floatingActionIsland?.showDoneCheckmark() {
-                    self.dismissFloatingActionIsland({ [weak self] in
-                        self?.fabView?.isHidden = false
-                        self?.viewModel?.isSelectingDestination = false
-                        
-                        self?.collectionView?.reloadData()
-                    })
+        if destination.folderId != files.first?.parentFolderId {
+            floatingActionIsland?.showActivityIndicator()
+            viewModel?.relocate(files: files, to: destination, then: { status in
+                self.floatingActionIsland?.hideActivityIndicator()
+                
+                switch status {
+                case .success:
+                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
+                    
+                    self.floatingActionIsland?.showDoneCheckmark() {
+                        self.dismissFloatingActionIsland({ [weak self] in
+                            self?.fabView?.isHidden = false
+                            self?.viewModel?.isSelectingDestination = false
+                            
+                            self?.refreshCollectionView()
+                        })
+                    }
+                    
+                case .error(let message):
+                    self.dismissFloatingActionIsland()
+                    self.showErrorAlert(message: message)
                 }
-
-            case .error(let message):
-                self.dismissFloatingActionIsland()
-                self.showErrorAlert(message: message)
-            }
-        })
+            })
+        } else {
+            self.showErrorAlert(message: "Please select a different destination folder.".localized())
+        }
     }
     
     func publish(file: FileViewModel) {
@@ -767,12 +786,16 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             self.refreshCollectionView()
         } else {
             if file.type.isFolder {
-                viewModel.isSelecting = false
-                let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-                navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                    self.backButton.isHidden = false
-                    self.directoryLabel.text = file.name
-                })
+                let isFolderSelected = viewModel.selectedFiles?.contains(file) ?? false
+                
+                if !isFolderSelected || viewModel.fileAction.action.isEmpty {
+                    viewModel.isSelecting = false
+                    let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                        self.backButton.isHidden = false
+                        self.directoryLabel.text = file.name
+                    })
+                }
             } else {
                 if viewModel.isPickingImage {
                     handleImagePickerSelection(file: file)

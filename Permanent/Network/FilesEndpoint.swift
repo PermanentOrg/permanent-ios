@@ -217,11 +217,13 @@ extension FilesEndpoint: RequestProtocol {
         case .relocate(let parameters):
             let isFolder = parameters.items.files.contains(where: { $0.type.isFolder })
             if isFolder {
-                let folderPayload = RelocateFolderPayload(
-                    folderLinkId: parameters.items.files.first!.folderLinkId, // Use first item in array for folder link ID
-                    folderDestLinkId: parameters.items.destination.folderLinkId
-                )
-                let requestVO = RequestVOData(data: [folderPayload])
+                let folderPayloads = parameters.items.files.filter({ $0.type.isFolder }).map { folder in
+                    RelocateFolderPayload(
+                        folderLinkId: folder.folderLinkId,
+                        folderDestLinkId: parameters.items.destination.folderLinkId
+                    )
+                }
+                let requestVO = RequestVOData(data: folderPayloads)
                 let apiPayload = APIPayload(requestVO: requestVO)
                 return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             } else {
