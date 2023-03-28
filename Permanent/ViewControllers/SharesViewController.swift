@@ -289,10 +289,26 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
         itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
         itemsNumber.barButtonItem?.tintColor = .middleGray
-
+        
         let leftItems = [itemsNumber]
         let rightItems = [
-            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: {
+                [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.move
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
+                    self?.fabView.isHidden = true
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: nil)
         ]
@@ -492,13 +508,19 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 withTitle: "Cancel Move?".localized(),
                 description: "Moving files or folders outside of the shared folder in which they are currently located is not permitted at this time. You can cancel this move action or continue to choose a destination for the selected \(fileTypeString).".localized(),
                 positiveButtonTitle: "Continue".localized(),
-                positiveAction: {
-                    self.actionDialog?.dismiss()
-                    self.viewModel?.fileAction = .none
-                    self.viewModel?.selectedFiles = []
-                    self.backButtonAction(UIButton())
-                    self.dismiss(animated: false)
-                },cancelButtonTitle: "Cancel Move".localized(),
+                positiveAction: { [weak self] in
+                    self?.actionDialog?.dismiss()
+                    self?.viewModel?.fileAction = .none
+                    self?.viewModel?.selectedFiles = []
+                    self?.backButtonAction(UIButton())
+                    self?.dismiss(animated: false)
+                    
+                    self?.dismissFloatingActionIsland()
+                    self?.viewModel?.selectedFiles = []
+                    self?.viewModel?.fileAction = .none
+                    self?.viewModel?.isSelectingDestination = false
+                },
+                cancelButtonTitle: "Cancel Move".localized(),
                 cancelButtonColor: .gray,
                 overlayView: overlayView
             )
@@ -809,28 +831,32 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func relocate(files: [FileViewModel], to destination: FileViewModel) {
-        floatingActionIsland?.showActivityIndicator()
-        viewModel?.relocate(files: files, to: destination, then: { status in
-            self.floatingActionIsland?.hideActivityIndicator()
-
-            switch status {
-            case .success:
-                self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
-
-                self.floatingActionIsland?.showDoneCheckmark() {
-                    self.dismissFloatingActionIsland({ [weak self] in
-                        self?.fabView?.isHidden = false
-                        self?.viewModel?.isSelectingDestination = false
-                        
-                        self?.collectionView?.reloadData()
-                    })
+        if destination.folderId != files.first?.parentFolderId {
+            floatingActionIsland?.showActivityIndicator()
+            viewModel?.relocate(files: files, to: destination, then: { status in
+                self.floatingActionIsland?.hideActivityIndicator()
+                
+                switch status {
+                case .success:
+                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
+                    
+                    self.floatingActionIsland?.showDoneCheckmark() {
+                        self.dismissFloatingActionIsland({ [weak self] in
+                            self?.fabView?.isHidden = false
+                            self?.viewModel?.isSelectingDestination = false
+                            
+                            self?.refreshCollectionView()
+                        })
+                    }
+                    
+                case .error(let message):
+                    self.dismissFloatingActionIsland()
+                    self.showErrorAlert(message: message)
                 }
-
-            case .error(let message):
-                self.dismissFloatingActionIsland()
-                self.showErrorAlert(message: message)
-            }
-        })
+            })
+        } else {
+            self.showErrorAlert(message: "Please select a different destination folder.".localized())
+        }
     }
     
     private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {

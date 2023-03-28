@@ -666,28 +666,32 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func relocate(files: [FileViewModel], to destination: FileViewModel) {
-        floatingActionIsland?.showActivityIndicator()
-        viewModel?.relocate(files: files, to: destination, then: { status in
-            self.floatingActionIsland?.hideActivityIndicator()
-
-            switch status {
-            case .success:
-                self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
-
-                self.floatingActionIsland?.showDoneCheckmark() {
-                    self.dismissFloatingActionIsland({ [weak self] in
-                        self?.fabView?.isHidden = false
-                        self?.viewModel?.isSelectingDestination = false
-                        
-                        self?.collectionView?.reloadData()
-                    })
+        if destination.folderId != files.first?.parentFolderId {
+            floatingActionIsland?.showActivityIndicator()
+            viewModel?.relocate(files: files, to: destination, then: { status in
+                self.floatingActionIsland?.hideActivityIndicator()
+                
+                switch status {
+                case .success:
+                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
+                    
+                    self.floatingActionIsland?.showDoneCheckmark() {
+                        self.dismissFloatingActionIsland({ [weak self] in
+                            self?.fabView?.isHidden = false
+                            self?.viewModel?.isSelectingDestination = false
+                            
+                            self?.refreshCollectionView()
+                        })
+                    }
+                    
+                case .error(let message):
+                    self.dismissFloatingActionIsland()
+                    self.showErrorAlert(message: message)
                 }
-
-            case .error(let message):
-                self.dismissFloatingActionIsland()
-                self.showErrorAlert(message: message)
-            }
-        })
+            })
+        } else {
+            self.showErrorAlert(message: "Please select a different destination folder.".localized())
+        }
     }
     
     func publish(file: FileViewModel) {
