@@ -286,7 +286,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.copy
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
-                    self?.fabView.isHidden = true
                     
                     self?.fabView.isHidden = false
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
@@ -303,8 +302,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
                     self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
-                    self?.fabView.isHidden = true
-                    
+
                     self?.fabView.isHidden = false
                     if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
                         self?.backButton.isUserInteractionEnabled = true
@@ -316,7 +314,23 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 })
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
-            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: nil)
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
+                self?.showActionDialog(
+                    styled: .simple,
+                    withTitle: "Delete".localized(),
+                    positiveButtonTitle: .delete,
+                    positiveAction: { [weak self] in
+                        self?.actionDialog?.dismiss()
+                        self?.deleteFile(self?.viewModel?.selectedFiles)
+                        
+                        self?.dismissFloatingActionIsland()
+                        self?.fabView.isHidden = false
+                        self?.clearButtonWasPressed(UIButton())
+                    }, positiveButtonColor: .brightRed,
+                    cancelButtonColor: .primary,
+                    overlayView: self?.overlayView
+                )
+            })
         ]
         
         if floatingActionIsland == nil {
@@ -627,15 +641,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func deleteFile(_ files: [FileViewModel]?) {
         showSpinner()
-        viewModel?.delete(file, then: { status in
+        viewModel?.delete(files, then: { status in
             self.hideSpinner()
             
             switch status {
             case .success:
                 DispatchQueue.main.async {
-                    self.viewModel?.removeSyncedFile(file)
+                    self.viewModel?.removeSyncedFiles(files)
                     self.refreshCollectionView()
                 }
                 
@@ -910,7 +924,7 @@ extension MainViewController {
                 positiveButtonTitle: .delete,
                 positiveAction: {
                     self.actionDialog?.dismiss()
-                    self.deleteFile(file, atIndexPath: indexPath)
+                    self.deleteFile([file])
                 }, positiveButtonColor: .brightRed,
                 cancelButtonColor: .primary,
                 overlayView: self.overlayView
