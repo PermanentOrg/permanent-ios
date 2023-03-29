@@ -339,35 +339,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 self.downloadQueue.safeRemoveFirst()
             }
         )}
-    
-//    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
-//        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
-//
-//        apiOperation.execute(in: APIRequestDispatcher()) { result in
-//            switch result {
-//            case .json(let response, _):
-//                guard
-//                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
-//                        from: response,
-//                        with: APIResults<NoDataModel>.decoder
-//                    ),
-//                    model.isSuccessful
-//
-//                else {
-//                    handler(.error(message: .errorMessage))
-//                    return
-//                }
-//
-//                handler(.success)
-//
-//            case .error(let error, _):
-//                handler(.error(message: error?.localizedDescription))
-//
-//            default:
-//                break
-//            }
-//        }
-//    }
+
     func delete(_ files: [FileViewModel]?, then handler: @escaping ServerResponse) {
         guard let files = files else {
             handler(.error(message: .errorMessage))
