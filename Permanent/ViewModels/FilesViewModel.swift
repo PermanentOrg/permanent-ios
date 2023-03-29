@@ -169,12 +169,17 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return false
     }
     
-    func removeSyncedFile(_ file: FileViewModel) {
-        guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+    func removeSyncedFiles(_ files: [FileViewModel]?) {
+        guard let files = files else {
             return
         }
         
-        viewModels.remove(at: index)
+        for file in files {
+            guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+                return
+            }
+            viewModels.remove(at: index)
+        }
     }
     
     func updateTimerCount() {
@@ -335,35 +340,94 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
         )}
     
-    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<NoDataModel>.decoder
-                    ),
-                    model.isSuccessful
+//    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+//        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
+//
+//        apiOperation.execute(in: APIRequestDispatcher()) { result in
+//            switch result {
+//            case .json(let response, _):
+//                guard
+//                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+//                        from: response,
+//                        with: APIResults<NoDataModel>.decoder
+//                    ),
+//                    model.isSuccessful
+//
+//                else {
+//                    handler(.error(message: .errorMessage))
+//                    return
+//                }
+//
+//                handler(.success)
+//
+//            case .error(let error, _):
+//                handler(.error(message: error?.localizedDescription))
+//
+//            default:
+//                break
+//            }
+//        }
+//    }
+    func delete(_ files: [FileViewModel]?, then handler: @escaping ServerResponse) {
+        guard let files = files else {
+            handler(.error(message: .errorMessage))
+            return
+        }
 
-                else {
-                    handler(.error(message: .errorMessage))
-                    return
+        let folders = files.filter({ $0.type.isFolder })
+        let records = files.filter({ !$0.type.isFolder })
+
+        let group = DispatchGroup()
+
+        var folderError: String?
+        var recordError: String?
+
+        if !folders.isEmpty {
+            group.enter()
+            let apiOperation = APIOperation(FilesEndpoint.delete(params: folders))
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
+                        folderError = .errorMessage
+                    }
+                case .error(let error, _):
+                    folderError = error?.localizedDescription
+                default:
+                    break
                 }
-                
+                group.leave()
+            }
+        }
+
+        if !records.isEmpty {
+            group.enter()
+            let apiOperation = APIOperation(FilesEndpoint.delete(params: records))
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
+                        recordError = .errorMessage
+                    }
+                case .error(let error, _):
+                    recordError = error?.localizedDescription
+                default:
+                    break
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            if let error = folderError ?? recordError {
+                handler(.error(message: error))
+            } else {
                 handler(.success)
-
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
             }
         }
     }
-    
+
+
     func removeFromQueue(_ position: Int) {
         UploadManager.shared.cancelUpload(fileId: queueItemsForCurrentFolder[position].id)
     }
