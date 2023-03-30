@@ -315,21 +315,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }),
             FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
-                self?.showActionDialog(
-                    styled: .simple,
-                    withTitle: "Delete".localized(),
-                    positiveButtonTitle: .delete,
-                    positiveAction: { [weak self] in
-                        self?.actionDialog?.dismiss()
-                        self?.deleteFile(self?.viewModel?.selectedFiles)
-                        
-                        self?.dismissFloatingActionIsland()
-                        self?.fabView.isHidden = false
-                        self?.clearButtonWasPressed(UIButton())
-                    }, positiveButtonColor: .brightRed,
-                    cancelButtonColor: .primary,
-                    overlayView: self?.overlayView
-                )
+                self?.showFileActionSheetForSelection()
             })
         ]
         
@@ -1135,6 +1121,74 @@ extension MainViewController: FABActionSheetDelegate {
         present(vc, animated: true)
     }
     
+    func showFileActionSheetForSelection() {
+        guard let file = viewModel?.selectedFiles?.first else { return }
+        var menuItems: [FileMenuViewController.MenuItem] = []
+        
+        if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [weak self] in
+                self?.showActionDialog(
+                    styled: .simple,
+                    withTitle: "Delete".localized(),
+                    positiveButtonTitle: .delete,
+                    positiveAction: { [weak self] in
+                        self?.actionDialog?.dismiss()
+                        self?.deleteFile(self?.viewModel?.selectedFiles)
+                        
+                        self?.dismissFloatingActionIsland()
+                        self?.fabView.isHidden = false
+                        self?.clearButtonWasPressed(UIButton())
+                    }, positiveButtonColor: .brightRed,
+                    cancelButtonColor: .primary,
+                    overlayView: self?.overlayView
+                )
+            }))
+        }
+        
+        if file.permissions.contains(.move) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [weak self] in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.move
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }))
+        }
+        
+        if file.permissions.contains(.create) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [weak self] in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.copy
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }))
+        }
+        
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        vc.selectedItemCount = viewModel?.selectedFiles?.count
+        
+        present(vc, animated: true)
+    }
+        
     func showActionSheet() {
         let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
