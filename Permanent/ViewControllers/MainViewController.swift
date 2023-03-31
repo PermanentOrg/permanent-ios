@@ -1129,7 +1129,7 @@ extension MainViewController: FABActionSheetDelegate {
             menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [weak self] in
                 self?.showActionDialog(
                     styled: .simple,
-                    withTitle: "Delete".localized(),
+                    withTitle: "Delete selected items?".localized(),
                     positiveButtonTitle: .delete,
                     positiveAction: { [weak self] in
                         self?.actionDialog?.dismiss()
