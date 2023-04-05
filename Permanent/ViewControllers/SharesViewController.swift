@@ -292,6 +292,22 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         
         let leftItems = [itemsNumber]
         let rightItems = [
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.copy
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
+            FloatingActionImageItem(image: blankImage, action: nil),
             FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: {
                 [weak self] _,_  in
                 self?.dismissFloatingActionIsland({ [weak self] in
@@ -700,6 +716,12 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             }))
         }
         
+        if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.create) && !currentFolderIsRoot {
+            menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [self] in
+                relocateAction(files: [file], action: .copy)
+            }))
+        }
+        
         if let currentFolderIsRoot = viewModel?.currentFolderIsRoot, file.permissions.contains(.move) && !currentFolderIsRoot {
             menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
                 relocateAction(files: [file], action: .move)
@@ -882,7 +904,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     }
     
     func relocate(files: [FileViewModel], to destination: FileViewModel) {
-        if destination.folderId != files.first?.parentFolderId {
+        let isInvalidDestination = destination.folderId == files.first?.parentFolderId
+        if isInvalidDestination && viewModel?.fileAction == .move {
+            showErrorAlert(message: "Please select a different destination folder.".localized())
+            return
+        }
+
+        if !isInvalidDestination || viewModel?.fileAction != .move {
             floatingActionIsland?.showActivityIndicator()
             viewModel?.relocate(files: files, to: destination, then: { status in
                 self.floatingActionIsland?.hideActivityIndicator()
@@ -905,8 +933,6 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                     self.showErrorAlert(message: message)
                 }
             })
-        } else {
-            self.showErrorAlert(message: "Please select a different destination folder.".localized())
         }
     }
     
