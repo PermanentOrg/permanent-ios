@@ -246,8 +246,35 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.showErrorAlert(message: .errorMessage)
                     return
                 }
+                
+                if self?.viewModel is PublicFilesViewModel {
+                    let title = ""
+                    let description = "You are about to \(action == .copy ? "copy" : "move") files to a public folder. This will make them accessible to others. Are you sure you want to proceed?".localized()
+                    let confirmButtonText = action == .copy ? "Copy Here".localized() : "Move Here".localized()
 
-                self?.relocate(files: selectedFiles, to: destination)
+                    self?.showActionDialog(
+                        styled: .simpleWithDescription,
+                        withTitle: title,
+                        description: description,
+                        positiveButtonTitle: confirmButtonText,
+                        positiveAction: { [weak self] in
+                            self?.view.dismissPopup(
+                                self?.actionDialog,
+                                overlayView: self?.overlayView,
+                                completion: { _ in
+                                    self?.actionDialog?.removeFromSuperview()
+                                    self?.actionDialog = nil
+                                    
+                                    self?.relocate(files: selectedFiles, to: destination)
+                                }
+                            )
+                        },
+                        cancelButtonTitle: "Cancel".localized(),
+                        overlayView: self?.overlayView
+                    )
+                } else {
+                    self?.relocate(files: selectedFiles, to: destination)
+                }                
             },
             FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
                 self?.dismissFloatingActionIsland()
@@ -270,7 +297,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         collectionView?.reloadData()
     }
-
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
         let itemsNumber: FloatingActionTextItem
@@ -666,7 +692,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func relocate(files: [FileViewModel], to destination: FileViewModel) {
-        if destination.folderId != files.first?.parentFolderId {
+        let isInvalidDestination = destination.folderId == files.first?.parentFolderId
+        if isInvalidDestination && viewModel?.fileAction == .move {
+            showErrorAlert(message: "Please select a different destination folder.".localized())
+            return
+        }
+
+        if !isInvalidDestination || viewModel?.fileAction != .move {
             floatingActionIsland?.showActivityIndicator()
             viewModel?.relocate(files: files, to: destination, then: { status in
                 self.floatingActionIsland?.hideActivityIndicator()
@@ -689,8 +721,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self.showErrorAlert(message: message)
                 }
             })
-        } else {
-            self.showErrorAlert(message: "Please select a different destination folder.".localized())
         }
     }
     
@@ -1174,9 +1204,6 @@ extension MainViewController: FABActionSheetDelegate {
                         self?.backButton.isUserInteractionEnabled = true
                         self?.backButton.layer.opacity = 1
                     }
-                    
-                    self?.viewModel?.isSelecting = false
-                    self?.setupBottomActionSheet()
                 })
             }))
         }
