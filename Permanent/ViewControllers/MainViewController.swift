@@ -274,9 +274,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     )
                 } else {
                     self?.relocate(files: selectedFiles, to: destination)
-                }
-
-                
+                }                
             },
             FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
                 self?.dismissFloatingActionIsland()
@@ -299,7 +297,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
 
         collectionView?.reloadData()
     }
-
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
         let itemsNumber: FloatingActionTextItem
