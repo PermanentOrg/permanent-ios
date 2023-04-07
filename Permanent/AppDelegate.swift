@@ -82,7 +82,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     saveSharedArchiveToken()
                     return false
                 }
+            } else if url.pathComponents[2] == "fa-reset" {
+                let changePwdId = url.pathComponents[3]
+                
+                return navigateFromResetPwd(changePwdId: changePwdId)
             }
+            
             return false
             
         default: return false
@@ -171,6 +176,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func saveSharedArchiveToken() {
         PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
+    }
+    
+    fileprivate func navigateFromResetPwd(changePwdId: String) -> Bool {
+//        let newRootVC = UIViewController.create(withIdentifier: .resetPassword, from: .authentication)
+//        self.rootViewController.setRoot(named: .resetPassword, from: .authentication)
+        
+        let navController = NavigationController()
+        let viewController = UIViewController.create(withIdentifier: .resetPassword, from: .authentication)
+        navController.viewControllers = [viewController]
+        
+        (viewController as? ResetPasswordViewController)?.changePasswordId = changePwdId
+        
+        rootViewController.setRoot(navController)
+        
+        return true
     }
 }
 

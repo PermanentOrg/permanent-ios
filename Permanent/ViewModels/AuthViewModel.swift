@@ -10,6 +10,11 @@ import UIKit
 
 typealias ServerResponse = (RequestStatus) -> Void
 
+struct ChangePasswordRequest: Codable {
+    let changePasswordId: String
+    let password: String
+}
+
 class AuthViewModel: ViewModelInterface {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     static let updateArchiveSettingsChevron = Notification.Name("AuthViewModel.updateArchiveSettingsChevron")
@@ -112,6 +117,44 @@ class AuthViewModel: ViewModelInterface {
         AuthenticationManager.shared.forgotPassword(withEmail: email) { status in
             handler(status)
         }
+    }
+    
+    func resetPassword(changePasswordId: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let apiUrl = APIEnvironment.defaultEnv.fusionBaseURL + "/user/change-password"
+        guard let url = URL(string: apiUrl) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let requestBody = ChangePasswordRequest(changePasswordId: changePasswordId, password: password)
+        do {
+            request.httpBody = try JSONEncoder().encode(requestBody)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
+                    completion(.failure(NSError(domain: "Server error", code: 0, userInfo: nil)))
+                    return
+                }
+
+                completion(.success(()))
+            }
+        }
+
+        task.resume()
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {

@@ -191,12 +191,15 @@ class RootViewController: UIViewController {
     func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {
         let navController = NavigationController()
         let viewController = UIViewController.create(withIdentifier: controller, from: storyboard)
-        
         navController.viewControllers = [viewController]
         
-        setupChild(navController)
+        setRoot(navController)
+    }
+    
+    func setRoot(_ viewController: UIViewController) {
+        setupChild(viewController)
         removeChild(current)
-        current = navController
+        current = viewController
     }
     
     fileprivate func setupChild(_ viewController: UIViewController?) {

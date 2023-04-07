@@ -38,7 +38,7 @@ class AuthTextField: CustomTextField {
     
     override func setup() {
         placeholderEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
-        contentEdgeInsets = UIEdgeInsets(top: 8, left: 92, bottom: 8, right: 10)
+        contentEdgeInsets = UIEdgeInsets(top: 8, left: 95, bottom: 8, right: 10)
         
         backgroundColor = .white.withAlphaComponent(0.04)
         textColor = .white
@@ -66,7 +66,7 @@ class AuthTextField: CustomTextField {
     }
     
     override func leftViewRect(forBounds bounds: CGRect) -> CGRect {
-        return CGRect(x: 16, y: 12, width: 92, height: 24)
+        return CGRect(x: 16, y: 12, width: 95, height: 24)
     }
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
