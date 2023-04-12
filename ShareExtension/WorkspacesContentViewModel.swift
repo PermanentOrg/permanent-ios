@@ -23,7 +23,7 @@ class WorkspacesContentViewModel: FolderContentViewModel {
         }
     }
     
-    override init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
+    override init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession, byMe: Bool = false) {
         super.init(folder: folder)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

@@ -71,12 +71,17 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
             folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            folderNavigationView.heightAnchor.constraint(equalToConstant: 40),
             folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
             folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
             folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
         ])
+        
+        if let workspace = viewModel?.workspace, (workspace == Workspace.sharedByMeFiles || workspace == Workspace.shareWithMeFiles) {
+            NSLayoutConstraint.activate([folderNavigationView.heightAnchor.constraint(equalToConstant: 110)])
+        } else {
+            NSLayoutConstraint.activate([folderNavigationView.heightAnchor.constraint(equalToConstant: 40)])
+        }
     }
     
     @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {

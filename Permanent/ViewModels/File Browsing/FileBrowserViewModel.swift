@@ -41,6 +41,10 @@ class FileBrowserViewModel: ViewModelInterface {
         NotificationCenter.default.addObserver(forName: FolderNavigationViewModel.didPopFolderNotification, object: nil, queue: nil) { [weak self] notif in
             self?.navigateBack()
         }
+        
+        NotificationCenter.default.addObserver(forName: FolderNavigationViewModel.didPopFolderNotification, object: nil, queue: nil) { [weak self] notif in
+            self?.navigateBack()
+        }
     }
     
     func loadRootFolder() {
