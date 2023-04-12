@@ -15,6 +15,8 @@ protocol ShareFileBrowserViewControllerDelegate {
 class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserViewModel> {
     let folderContentView: FolderContentView = FolderContentView()
     let folderNavigationView: FolderNavigationView = FolderNavigationView()
+    let segmentedControlView = UIView()
+    let segmentedControl = UISegmentedControl(items: ["", ""])
     
     var delegate: ShareFileBrowserViewControllerDelegate?
     
@@ -67,20 +69,51 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         folderNavigationView.layer.shadowRadius = 3
         view.addSubview(folderNavigationView)
         
-        NSLayoutConstraint.activate([
-            folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
-            folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
-            folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
-        ])
-        
         if let workspace = viewModel?.workspace, (workspace == Workspace.sharedByMeFiles || workspace == Workspace.shareWithMeFiles) {
-            NSLayoutConstraint.activate([folderNavigationView.heightAnchor.constraint(equalToConstant: 110)])
+            segmentedControlView.backgroundColor = .backgroundPrimary
+            segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
+            segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+            segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
+            segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
+            if #available(iOS 13.0, *) {
+                segmentedControl.selectedSegmentTintColor = .primary
+            }
+            
+            segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+            segmentedControlView.translatesAutoresizingMaskIntoConstraints = false
+            segmentedControlView.addSubview(segmentedControl)
+            view.addSubview(segmentedControlView)
+            
+            NSLayoutConstraint.activate([
+                segmentedControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                segmentedControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+                segmentedControlView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+                segmentedControlView.heightAnchor.constraint(equalTo: segmentedControl.heightAnchor, constant: 25),
+                segmentedControl.topAnchor.constraint(equalTo: segmentedControlView.topAnchor, constant: 20),
+                segmentedControl.leadingAnchor.constraint(equalTo: segmentedControlView.leadingAnchor, constant: 12),
+                segmentedControl.trailingAnchor.constraint(equalTo: segmentedControlView.trailingAnchor, constant: -12),
+                folderNavigationView.topAnchor.constraint(equalTo: segmentedControlView.bottomAnchor, constant: 0),
+                folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+                folderNavigationView.heightAnchor.constraint(equalToConstant: 40),
+                folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
+                folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+                folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
+            ])
+            segmentedControl.selectedSegmentIndex = 0
+            segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         } else {
-            NSLayoutConstraint.activate([folderNavigationView.heightAnchor.constraint(equalToConstant: 40)])
+            NSLayoutConstraint.activate([
+                folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+                folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+                folderNavigationView.heightAnchor.constraint(equalToConstant: 40),
+                folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
+                folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+                folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
+            ])
         }
     }
     
@@ -94,5 +127,10 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
             delegate?.shareFileBrowserViewControllerDidPickFolder(named: folderName, folderInfo: folderInfo)
         }
         dismiss(animated: true)
+    }
+    
+    @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        viewModel?.workspace = sender.selectedSegmentIndex == 0 ? .shareWithMeFiles : .sharedByMeFiles
+        NotificationCenter.default.post(name: FolderNavigationViewModel.didChangeSegmentedControlValueNotification, object: self, userInfo: ["workspace": viewModel?.workspace])
     }
 }
