@@ -130,7 +130,6 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
     }
     
     @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        viewModel?.workspace = sender.selectedSegmentIndex == 0 ? .shareWithMeFiles : .sharedByMeFiles
-        NotificationCenter.default.post(name: FolderNavigationViewModel.didChangeSegmentedControlValueNotification, object: self, userInfo: ["workspace": viewModel?.workspace])
+        viewModel?.workspace = sender.selectedSegmentIndex == 0 ? .sharedByMeFiles : .shareWithMeFiles
     }
 }

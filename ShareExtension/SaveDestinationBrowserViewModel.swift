@@ -8,10 +8,19 @@
 import Foundation
 
 class SaveDestinationBrowserViewModel: FileBrowserViewModel {
-    var workspace: Workspace = .privateFiles
-    
+    var workspace: Workspace = .privateFiles {
+        didSet {
+            loadRootFolder()
+        }
+    }
+     
     var hasSaveButton: Bool {
-        return workspace == .sharedByMeFiles ? self.contentViewModels.count > 1 : true
+        switch workspace {
+        case .sharedByMeFiles, .shareWithMeFiles:
+            return self.contentViewModels.count > 1
+        default:
+            return true
+        }
     }
     
     init(workspace: Workspace, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
@@ -25,13 +34,6 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
         }
 
         super.init(navigationViewModel: FolderNavigationViewModel(workspaceName: initialWorkspaceName, workspace: workspace), filesRepository: filesRepository, session: session)
-        
-        NotificationCenter.default.addObserver(forName: FolderNavigationViewModel.didChangeSegmentedControlValueNotification, object: nil, queue: nil) { [weak self] notif in
-            if let workspace = notif.userInfo?["workspace"] as? Workspace {
-                self?.workspace = workspace
-                self?.loadRootFolder()
-            }
-        }
     }
     
     override func loadRootFolder() {
@@ -52,7 +54,7 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             filesRepository.getSharedRoot() { rootFolder, error in
                 if let rootFolder = rootFolder {
                     self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: false))
+                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: true))
                 }
             }
             
@@ -62,7 +64,7 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
             filesRepository.getSharedRoot() { rootFolder, error in
                 if let rootFolder = rootFolder {
                     self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: true))
+                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: false))
                 }
             }
             
