@@ -13,10 +13,9 @@ protocol ShareFileBrowserViewControllerDelegate {
 }
 
 class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserViewModel> {
-    let folderContentView: FolderContentView = FolderContentView()
+    let segmentedControlView: WorkspaceSegmentedControlView = WorkspaceSegmentedControlView()
     let folderNavigationView: FolderNavigationView = FolderNavigationView()
-    let segmentedControlView = UIView()
-    let segmentedControl = UISegmentedControl(items: ["", ""])
+    let folderContentView: FolderContentView = FolderContentView()
     
     var delegate: ShareFileBrowserViewControllerDelegate?
     
@@ -34,21 +33,8 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         initUI()
         styleNavBar()
         
-        NotificationCenter.default.addObserver(forName: FileBrowserViewModel.didUpdateContentViewModels, object: viewModel, queue: nil) { [weak self] notif in
-            guard let self = self else { return }
-            self.folderContentView.viewModel = self.viewModel?.contentViewModels.last
-            
-            if self.viewModel?.hasSaveButton ?? false {
-                self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.doneButtonPressed(_:)))
-            } else {
-                self.navigationItem.rightBarButtonItem = nil
-            }
-        }
-        
-        NotificationCenter.default.addObserver(forName: ShareFolderNavigationViewModel.didPopToWorkspaceNotification, object: viewModel?.navigationViewModel, queue: nil) { [weak self] notif in
-            guard let self = self else { return }
-            self.navigationController?.popViewController(animated: true)
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(updateContentViewModels), name: FileBrowserViewModel.didUpdateContentViewModels, object: viewModel)
+        NotificationCenter.default.addObserver(self, selector: #selector(popToWorkspace), name: ShareFolderNavigationViewModel.didPopToWorkspaceNotification, object: viewModel?.navigationViewModel)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,9 +44,18 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
     }
     
     func initUI() {
+        setupFolderContentView()
+        setupFolderNavigationView()
+        setupWorkspaceSegmentedControlView()
+        activateConstraints()
+    }
+    
+    func setupFolderContentView() {
         folderContentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(folderContentView)
-        
+    }
+    
+    func setupFolderNavigationView() {
         folderNavigationView.translatesAutoresizingMaskIntoConstraints = false
         folderNavigationView.viewModel = viewModel?.navigationViewModel
         folderNavigationView.layer.shadowColor = UIColor.black.cgColor
@@ -69,46 +64,38 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         folderNavigationView.layer.shadowRadius = 3
         view.addSubview(folderNavigationView)
         
+    }
+    
+    func setupWorkspaceSegmentedControlView() {
         if let workspace = viewModel?.workspace, (workspace == Workspace.sharedByMeFiles || workspace == Workspace.shareWithMeFiles) {
-            segmentedControlView.backgroundColor = .backgroundPrimary
-            segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
-            segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
-            segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
-            segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
-            if #available(iOS 13.0, *) {
-                segmentedControl.selectedSegmentTintColor = .primary
-            }
-            
-            segmentedControl.translatesAutoresizingMaskIntoConstraints = false
             segmentedControlView.translatesAutoresizingMaskIntoConstraints = false
-            segmentedControlView.addSubview(segmentedControl)
+            segmentedControlView.viewModel = viewModel
             view.addSubview(segmentedControlView)
-            
+        }
+    }
+    
+    func activateConstraints() {
+        if let workspace = viewModel?.workspace, (workspace == Workspace.sharedByMeFiles || workspace == Workspace.shareWithMeFiles) {
             NSLayoutConstraint.activate([
                 segmentedControlView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 segmentedControlView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
                 segmentedControlView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-                segmentedControlView.heightAnchor.constraint(equalTo: segmentedControl.heightAnchor, constant: 25),
-                segmentedControl.topAnchor.constraint(equalTo: segmentedControlView.topAnchor, constant: 20),
-                segmentedControl.leadingAnchor.constraint(equalTo: segmentedControlView.leadingAnchor, constant: 12),
-                segmentedControl.trailingAnchor.constraint(equalTo: segmentedControlView.trailingAnchor, constant: -12),
+                segmentedControlView.heightAnchor.constraint(equalToConstant: segmentedControlView.intrinsicContentSize.height),
                 folderNavigationView.topAnchor.constraint(equalTo: segmentedControlView.bottomAnchor, constant: 0),
                 folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-                folderNavigationView.heightAnchor.constraint(equalToConstant: 40),
+                folderNavigationView.heightAnchor.constraint(equalToConstant: folderNavigationView.intrinsicContentSize.height),
                 folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
                 folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
                 folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 folderContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
             ])
-            segmentedControl.selectedSegmentIndex = 0
-            segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         } else {
             NSLayoutConstraint.activate([
                 folderNavigationView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
                 folderNavigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
                 folderNavigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-                folderNavigationView.heightAnchor.constraint(equalToConstant: 40),
+                folderNavigationView.heightAnchor.constraint(equalToConstant: folderNavigationView.intrinsicContentSize.height),
                 folderContentView.topAnchor.constraint(equalTo: folderNavigationView.bottomAnchor, constant: 0),
                 folderContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
                 folderContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
@@ -129,7 +116,16 @@ class ShareFileBrowserViewController: BaseViewController<SaveDestinationBrowserV
         dismiss(animated: true)
     }
     
-    @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        viewModel?.workspace = sender.selectedSegmentIndex == 0 ? .sharedByMeFiles : .shareWithMeFiles
+    @objc func updateContentViewModels() {
+        folderContentView.viewModel = viewModel?.contentViewModels.last
+        if viewModel?.hasSaveButton ?? false {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(doneButtonPressed(_:)))
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+
+    @objc func popToWorkspace() {
+        navigationController?.popViewController(animated: true)
     }
 }

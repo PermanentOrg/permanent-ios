@@ -40,6 +40,10 @@ class FolderNavigationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: UIView.noIntrinsicMetric, height: 40)
+    }
+    
     func initUI() {
         backgroundColor = .backgroundPrimary
         
