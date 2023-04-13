@@ -21,14 +21,14 @@ class FolderNavigationViewModelTests: XCTestCase {
 
     func testRootDisplayName() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
         XCTAssertEqual(sut.displayName, workspaceName)
     }
     
     func testChildDisplayName() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
@@ -38,14 +38,14 @@ class FolderNavigationViewModelTests: XCTestCase {
     
     func testRootBackButton() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
         XCTAssertFalse(sut.hasBackButton)
     }
     
     func testChildBackButton() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
@@ -55,7 +55,7 @@ class FolderNavigationViewModelTests: XCTestCase {
     
     func testPushNavigation() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         
@@ -71,7 +71,7 @@ class FolderNavigationViewModelTests: XCTestCase {
     
     func testPopNavigation() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
@@ -88,7 +88,7 @@ class FolderNavigationViewModelTests: XCTestCase {
     
     func testPopToFolderNavigation() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
@@ -109,7 +109,7 @@ class FolderNavigationViewModelTests: XCTestCase {
     
     func testOverPopNavigation() {
         let workspaceName = "Private Files"
-        sut = FolderNavigationViewModel(workspaceName: workspaceName)
+        sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
         let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)

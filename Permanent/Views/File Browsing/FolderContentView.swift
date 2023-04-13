@@ -153,10 +153,10 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
             
             if (file.permissions.contains(.create) || file.permissions.contains(.upload)) && file.type.isFolder {
                 cell.overlayView.isHidden = true
-                isUserInteractionEnabled = true
+                cell.isUserInteractionEnabled = true
             } else {
                 cell.overlayView.isHidden = false
-                isUserInteractionEnabled = false
+                cell.isUserInteractionEnabled = false
             }
         }
         
@@ -185,52 +185,5 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
         guard let file = viewModel?.fileForRow(atIndexPath: indexPath), file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
         viewModel?.didSelectFile(file)
-        // Call Delegate
-        
-//        if file.type.isFolder {
-//            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-//            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-//                self.backButton.isHidden = false
-//                self.directoryLabel.text = file.name
-//            })
-//        } else {
-//            if viewModel.isPickingImage {
-//                handleImagePickerSelection(file: file)
-//            } else {
-//                handlePreviewSelection(file: file)
-//            }
-//        }
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//        if kind == UICollectionView.elementKindSectionHeader {
-//            let section = indexPath.section
-//
-//            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
-//            headerView.leftButtonTitle = viewModel?.title(forSection: section)
-//            if viewModel?.shouldPerformAction(forSection: section) == true {
-//                headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
-//            } else {
-//                headerView.leftButtonAction = nil
-//            }
-//
-//            if viewModel?.hasCancelButton(forSection: section) == true {
-//                headerView.rightButtonTitle = "Cancel All".localized()
-//                headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
-//            } else {
-//                headerView.rightButtonTitle = nil
-//                headerView.rightButtonAction = nil
-//            }
-//
-//            return headerView
-//        }
-//
-//        return UICollectionReusableView()
-//    }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-//        let height: CGFloat = viewModel?.numberOfRowsInSection(section) != 0 ? 40 : 0
-//        return CGSize(width: UIScreen.main.bounds.width, height: height)
-//    }
-
 }
