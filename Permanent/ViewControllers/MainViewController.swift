@@ -108,6 +108,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             
             self?.collectionView.reloadData()
         }
+        
+        NotificationCenter.default.addObserver(forName: MyFilesViewModel.didSelectFilesNotifName, object: nil, queue: nil) { [weak self] notif in
+            guard let showFloatingIsland = notif.userInfo?["showFloatingIsland"] as? Bool else { return }
+            if showFloatingIsland {
+                self?.setupBottomActionSheetForMultipleFiles()
+            } else {
+                self?.dismissFloatingActionIsland()
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -168,6 +177,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
+        collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
@@ -199,23 +209,33 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     fileprivate func setupBottomActionSheet() {
-        guard let source = viewModel?.selectedFile,
-              let action = viewModel?.fileAction else { return }
-              
-        fabView.isHidden = true
-        
-        guard floatingActionIsland == nil else { return }
-        
-        let fileIconItem: FloatingActionImageItem
-        if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
-            fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
-        } else {
-            fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
+        guard let selectedFiles = viewModel?.selectedFiles,
+              let action = viewModel?.fileAction,
+              !selectedFiles.isEmpty else {
+            viewModel?.selectedFiles = []
+            return
         }
-        
+
+        fabView.isHidden = true
+
+        guard floatingActionIsland == nil else { return }
+
+        let fileIconItem: FloatingActionImageItem
+        if selectedFiles.count == 1, let source = selectedFiles.first {
+            if let url = URL(string: source.thumbnailURL), !source.type.isFolder {
+                fileIconItem = FloatingActionImageItem(url: url, contentMode: .scaleAspectFill, action: nil)
+            } else {
+                fileIconItem = FloatingActionImageItem(image: UIImage(named: "folderIconFigma")!, action: nil)
+            }
+        } else {
+            fileIconItem = FloatingActionImageItem(image: UIImage(named: "Copy")!, action: nil)
+        }
+
+        let actionTitle = action == .copy ? "COPYING".localized() : "MOVING".localized()
+        let subtitle = selectedFiles.count == 1 ? selectedFiles.first!.name : "\(selectedFiles.count) files"
         let leftItems = [
             fileIconItem,
-            FloatingActionTextSubtitleItem(text: action == .copy ? "COPYING".localized() : "MOVING".localized(), subtitle: source.name, action: nil),
+            FloatingActionTextSubtitleItem(text: actionTitle, subtitle: subtitle, action: nil),
         ]
 
         let closeImage = UIImage(named: "xMarkToolbarIcon")!
@@ -226,27 +246,116 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                     self?.showErrorAlert(message: .errorMessage)
                     return
                 }
+                
+                if self?.viewModel is PublicFilesViewModel {
+                    let title = ""
+                    let description = "You are about to \(action == .copy ? "copy" : "move") files to a public folder. This will make them accessible to others. Are you sure you want to proceed?".localized()
+                    let confirmButtonText = action == .copy ? "Copy Here".localized() : "Move Here".localized()
 
-                self?.relocate(file: source, to: destination)
+                    self?.showActionDialog(
+                        styled: .simpleWithDescription,
+                        withTitle: title,
+                        description: description,
+                        positiveButtonTitle: confirmButtonText,
+                        positiveAction: { [weak self] in
+                            self?.view.dismissPopup(
+                                self?.actionDialog,
+                                overlayView: self?.overlayView,
+                                completion: { _ in
+                                    self?.actionDialog?.removeFromSuperview()
+                                    self?.actionDialog = nil
+                                    
+                                    self?.relocate(files: selectedFiles, to: destination)
+                                }
+                            )
+                        },
+                        cancelButtonTitle: "Cancel".localized(),
+                        overlayView: self?.overlayView
+                    )
+                } else {
+                    self?.relocate(files: selectedFiles, to: destination)
+                }                
             },
             FloatingActionImageItem(image: closeImage) { [weak self] vc, item in
                 self?.dismissFloatingActionIsland()
                 self?.fabView.isHidden = false
 
-                self?.viewModel?.selectedFile = nil
+                self?.viewModel?.selectedFiles = []
                 self?.viewModel?.fileAction = .none
+                self?.viewModel?.isSelectingDestination = false
 
                 self?.collectionView?.reloadData()
             },
         ]
-        showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+
+        if viewModel?.fileAction != FileAction.none {
+            showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+            viewModel?.isSelectingDestination = true
+        } else {
+            viewModel?.isSelectingDestination = false
+        }
 
         collectionView?.reloadData()
     }
     
+    fileprivate func setupBottomActionSheetForMultipleFiles() {
+        let itemsNumber: FloatingActionTextItem
+        let blankImage = UIColor.clear.imageWithColor(width: 0, height: 0)
+        let numberOfItems = viewModel?.selectedFiles?.count ?? 0
+        let itemsText = numberOfItems > 1 ? "Items".localized() : "Item".localized()
+        itemsNumber = FloatingActionTextItem(text: "<COUNT> \(itemsText)".localized().replacingOccurrences(of: "<COUNT>" , with: String(numberOfItems)), action: nil)
+        itemsNumber.barButtonItem?.tintColor = .middleGray
+
+        let leftItems = [itemsNumber]
+        let rightItems = [
+            FloatingActionImageItem(image: UIImage(named: "floatingCopy")!, action: { [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.copy
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
+            FloatingActionImageItem(image: blankImage, action: nil),
+            FloatingActionImageItem(image: UIImage(named: "floatingMove")!, action: { [weak self] _,_  in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.move
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
+
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }),
+            FloatingActionImageItem(image: blankImage, action: nil),
+            FloatingActionImageItem(image: (UIImage(named: "floatingMore")?.templated!)!, action: { [weak self] _,_  in
+                self?.showFileActionSheetForSelection()
+            })
+        ]
+        
+        if floatingActionIsland == nil {
+            showFloatingActionIsland(withLeftItems: leftItems, rightItems: rightItems)
+        } else {
+            floatingActionIsland?.leftItems = leftItems
+        }
+    }
+    
     fileprivate func toggleFileAction(_ action: FileAction?) {
         // If we try to move file in the same folder, disable the button
-        let shouldDisableButton = viewModel?.selectedFile?.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
+        guard let selectedFile = viewModel?.selectedFiles?.first else { return }
+        let shouldDisableButton = selectedFile.parentFolderId == viewModel?.currentFolder?.folderId && action == .move
         fileActionBottomView.toggleActionButton(enabled: !shouldDisableButton)
     }
     
@@ -342,6 +451,43 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             cancelButtonColor: .primary,
             overlayView: self.overlayView
         )
+    }
+    
+    @objc
+    private func selectButtonWasPressed(_ sender: UIButton) {
+        guard let viewModel = viewModel else { return }
+        fabView.isHidden = true
+        if !backButton.isHidden {
+            backButton.isUserInteractionEnabled = false
+            backButton.layer.opacity = 0.3
+        }
+
+        if viewModel.isSelecting {
+            if viewModel.selectedFiles?.count == viewModel.viewModels.count {
+                // Deselect all files
+                viewModel.selectedFiles = []
+            } else {
+                // Select all files
+                viewModel.selectedFiles = viewModel.viewModels
+            }
+        } else {
+            viewModel.isSelecting = true
+        }
+
+        refreshCollectionView()
+    }
+    
+    @objc
+    private func clearButtonWasPressed(_ sender: UIButton) {
+        fabView.isHidden = false
+        if !backButton.isHidden {
+            backButton.isUserInteractionEnabled = true
+            backButton.layer.opacity = 1
+        }
+        
+        viewModel?.selectedFiles = []
+        viewModel?.isSelecting = false
+        collectionView.reloadData()
     }
     
     @IBAction func switchViewButtonPressed(_ sender: Any) {
@@ -507,15 +653,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func deleteFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func deleteFile(_ files: [FileViewModel]?) {
         showSpinner()
-        viewModel?.delete(file, then: { status in
+        viewModel?.delete(files, then: { status in
             self.hideSpinner()
             
             switch status {
             case .success:
                 DispatchQueue.main.async {
-                    self.viewModel?.removeSyncedFile(file)
+                    self.viewModel?.removeSyncedFiles(files)
                     self.refreshCollectionView()
                 }
                 
@@ -545,32 +691,42 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func relocate(file: FileViewModel, to destination: FileViewModel) {
-        floatingActionIsland?.showActivityIndicator()
-        viewModel?.relocate(file: file, to: destination, then: { status in
-            self.floatingActionIsland?.hideActivityIndicator()
+    func relocate(files: [FileViewModel], to destination: FileViewModel) {
+        let isInvalidDestination = destination.folderId == files.first?.parentFolderId
+        if isInvalidDestination && viewModel?.fileAction == .move {
+            showErrorAlert(message: "Please select a different destination folder.".localized())
+            return
+        }
 
-            switch status {
-            case .success:
-                self.viewModel?.viewModels.prepend(file)
-
-                self.floatingActionIsland?.showDoneCheckmark() {
-                    self.dismissFloatingActionIsland()
-
-                    self.collectionView?.reloadData()
-                }
-
+        if !isInvalidDestination || viewModel?.fileAction != .move {
+            floatingActionIsland?.showActivityIndicator()
+            viewModel?.relocate(files: files, to: destination, then: { status in
+                self.floatingActionIsland?.hideActivityIndicator()
                 
-            case .error(let message):
-                self.dismissFloatingActionIsland()
-                self.showErrorAlert(message: message)
-            }
-        })
+                switch status {
+                case .success:
+                    self.viewModel?.viewModels.insert(contentsOf: files, at: 0)
+                    
+                    self.floatingActionIsland?.showDoneCheckmark() {
+                        self.dismissFloatingActionIsland({ [weak self] in
+                            self?.fabView?.isHidden = false
+                            self?.viewModel?.isSelectingDestination = false
+                            
+                            self?.refreshCollectionView()
+                        })
+                    }
+                    
+                case .error(let message):
+                    self.dismissFloatingActionIsland()
+                    self.showErrorAlert(message: message)
+                }
+            })
+        }
     }
     
     func publish(file: FileViewModel) {
         showSpinner()
-        viewModel?.publish(file: file, then: { status in
+        viewModel?.publish(files: [file], then: { status in
             self.hideSpinner()
             
             switch status {
@@ -580,7 +736,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 } else {
                     self.view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "File published successfully".localized())
                 }
-
+                
             case .error(let message):
                 self.showErrorAlert(message: message)
             }
@@ -617,7 +773,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! FileCollectionViewCell
         let file = viewModel.fileForRowAt(indexPath: indexPath)
-        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false)
+        let isFileSelected = viewModel.selectedFiles?.contains(file) ?? false
+        
+        cell.updateCell(model: file, fileAction: viewModel.fileAction, isGridCell: isGridView, isSearchCell: false, isSelecting: viewModel.isSelecting, isFileSelected: isFileSelected)
         
         cell.moreButton.isHidden = cell.moreButton.isHidden || viewModel.isPickingImage
         cell.rightButtonImageView.isHidden = cell.rightButtonImageView.isHidden || viewModel.isPickingImage
@@ -644,22 +802,36 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
-
+        
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
         guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
         
-        if file.type.isFolder {
-            let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
-            navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
-                self.backButton.isHidden = false
-                self.directoryLabel.text = file.name
-            })
-        } else {
-            if viewModel.isPickingImage {
-                handleImagePickerSelection(file: file)
+        if viewModel.isSelecting {
+            if let index = viewModel.selectedFiles?.firstIndex(of: file) {
+                viewModel.selectedFiles?.remove(at: index)
             } else {
-                handlePreviewSelection(file: file)
+                viewModel.selectedFiles?.append(file)
+            }
+            self.refreshCollectionView()
+        } else {
+            if file.type.isFolder {
+                let isFolderSelected = viewModel.selectedFiles?.contains(file) ?? false
+                
+                if !isFolderSelected || viewModel.fileAction.action.isEmpty {
+                    viewModel.isSelecting = false
+                    let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
+                    navigateToFolder(withParams: navigateParams, backNavigation: false, then: {
+                        self.backButton.isHidden = false
+                        self.directoryLabel.text = file.name
+                    })
+                }
+            } else {
+                if viewModel.isPickingImage {
+                    handleImagePickerSelection(file: file)
+                } else {
+                    handlePreviewSelection(file: file)
+                }
             }
         }
     }
@@ -687,8 +859,9 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         if kind == UICollectionView.elementKindSectionHeader {
             let section = indexPath.section
             
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderView", for: indexPath) as! FileCollectionViewHeader
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
+            headerView.configure(with: viewModel)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
             } else {
@@ -699,8 +872,14 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                 headerView.rightButtonTitle = "Cancel All".localized()
                 headerView.rightButtonAction = { [weak self] header in self?.cancelAllUploadsAction(UIButton()) }
             } else {
-                headerView.rightButtonTitle = nil
-                headerView.rightButtonAction = nil
+                if let selectWasPressed = viewModel?.isSelecting, selectWasPressed {
+                    headerView.rightButtonTitle = "Select all  ".localized()
+                } else {
+                    headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
+                }
+                
+                headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
+                headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
             }
             
             return headerView
@@ -727,7 +906,16 @@ extension MainViewController {
     private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
-            showFileActionSheet(file: file, atIndexPath: indexPath)
+            if let isSelecting = viewModel?.isSelecting, isSelecting {
+                if let index = viewModel?.selectedFiles?.firstIndex(of: file) {
+                    viewModel?.selectedFiles?.remove(at: index)
+                } else {
+                    viewModel?.selectedFiles?.append(file)
+                }
+                self.refreshCollectionView()
+            } else {
+                showFileActionSheet(file: file, atIndexPath: indexPath)
+            }
             
         case .downloading:
             viewModel?.cancelDownload()
@@ -752,7 +940,7 @@ extension MainViewController {
                 positiveButtonTitle: .delete,
                 positiveAction: {
                     self.actionDialog?.dismiss()
-                    self.deleteFile(file, atIndexPath: indexPath)
+                    self.deleteFile([file])
                 }, positiveButtonColor: .brightRed,
                 cancelButtonColor: .primary,
                 overlayView: self.overlayView
@@ -940,13 +1128,13 @@ extension MainViewController: FABActionSheetDelegate {
         
         if file.permissions.contains(.move) {
             menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [self] in
-                relocateAction(file: file, action: .move)
+                relocateAction(files: [file], action: .move)
             }))
         }
         
         if file.permissions.contains(.create) {
             menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [self] in
-                relocateAction(file: file, action: .copy)
+                relocateAction(files: [file], action: .copy)
             }))
         }
         
@@ -963,6 +1151,71 @@ extension MainViewController: FABActionSheetDelegate {
         present(vc, animated: true)
     }
     
+    func showFileActionSheetForSelection() {
+        guard let file = viewModel?.selectedFiles?.first else { return }
+        var menuItems: [FileMenuViewController.MenuItem] = []
+        
+        if file.permissions.contains(.delete) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .delete, action: { [weak self] in
+                self?.showActionDialog(
+                    styled: .simple,
+                    withTitle: "Delete selected items?".localized(),
+                    positiveButtonTitle: .delete,
+                    positiveAction: { [weak self] in
+                        self?.actionDialog?.dismiss()
+                        self?.deleteFile(self?.viewModel?.selectedFiles)
+                        
+                        self?.dismissFloatingActionIsland()
+                        self?.fabView.isHidden = false
+                        self?.clearButtonWasPressed(UIButton())
+                    }, positiveButtonColor: .brightRed,
+                    cancelButtonColor: .primary,
+                    overlayView: self?.overlayView
+                )
+            }))
+        }
+        
+        if file.permissions.contains(.move) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [weak self] in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.move
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .move)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                    
+                    self?.viewModel?.isSelecting = false
+                    self?.setupBottomActionSheet()
+                })
+            }))
+        }
+        
+        if file.permissions.contains(.create) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .copy, action: { [weak self] in
+                self?.dismissFloatingActionIsland({ [weak self] in
+                    self?.viewModel?.fileAction = FileAction.copy
+                    self?.relocateAction(files: self?.viewModel?.selectedFiles, action: .copy)
+                    
+                    self?.fabView.isHidden = false
+                    if let backButtonIsHidden = self?.backButton.isHidden, !backButtonIsHidden {
+                        self?.backButton.isUserInteractionEnabled = true
+                        self?.backButton.layer.opacity = 1
+                    }
+                })
+            }))
+        }
+        
+        let vc = FileMenuViewController()
+        vc.fileViewModel = file
+        vc.menuItems = menuItems
+        vc.selectedItemCount = viewModel?.selectedFiles?.count
+        
+        present(vc, animated: true)
+    }
+        
     func showActionSheet() {
         let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
@@ -1141,10 +1394,10 @@ extension MainViewController {
         download(file)
     }
     
-    func relocateAction(file: FileViewModel, action: FileAction) {
-        viewModel?.selectedFile = file
+    func relocateAction(files: [FileViewModel]?, action: FileAction) {
+        viewModel?.selectedFiles = files
         viewModel?.fileAction = action
-        
+
         setupBottomActionSheet()
     }
     

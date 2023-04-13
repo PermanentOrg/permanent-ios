@@ -24,6 +24,12 @@ enum PublicRootRequestStatus: Equatable {
     case error(message: String?)
 }
 
+enum CheckboxState {
+    case none
+    case partial
+    case selected
+}
+
 class FilesViewModel: NSObject, ViewModelInterface {
     var viewModels: [FileViewModel] = []
     var navigationStack: [FileViewModel] = []
@@ -38,8 +44,11 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadFolder: FolderInfo?
     var fileAction: FileAction = .none
     
-    var selectedFile: FileViewModel?
+    var selectedFiles: [FileViewModel]? = []
     var currentFolder: FileViewModel? { navigationStack.last }
+    var isSelecting: Bool = false
+    var isSelectingDestination: Bool = false
+    var checkboxState: CheckboxState = .none
     
     lazy var searchViewModels: [FileViewModel] = { [] }()
     private var downloader: DownloadManagerGCD?
@@ -160,12 +169,17 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return false
     }
     
-    func removeSyncedFile(_ file: FileViewModel) {
-        guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+    func removeSyncedFiles(_ files: [FileViewModel]?) {
+        guard let files = files else {
             return
         }
         
-        viewModels.remove(at: index)
+        for file in files {
+            guard let index = viewModels.firstIndex(where: { $0 == file }) else {
+                return
+            }
+            viewModels.remove(at: index)
+        }
     }
     
     func updateTimerCount() {
@@ -183,38 +197,81 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func relocate(file: FileViewModel, to destination: FileViewModel, then handler: @escaping ServerResponse) {
-        let parameters: RelocateParams = ((file, destination), fileAction)
-
-        let apiOperation = APIOperation(FilesEndpoint.relocate(params: parameters))
+    func relocate(files: [FileViewModel]?, to destination: FileViewModel, then handler: @escaping ServerResponse) {
+        guard let files = files else {
+            handler(.error(message: "No files selected".localized()))
+            return
+        }
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            self.selectedFile = nil
+        let fileGroup = DispatchGroup()
+        var errors: [String] = []
+
+        let folders = files.filter { $0.type.isFolder }
+        let nonFolders = files.filter { !$0.type.isFolder }
+
+        if !folders.isEmpty {
+            fileGroup.enter()
+            let folderParameters: RelocateParams = ((files: folders, destination: destination), fileAction)
+            let folderApiOperation = APIOperation(FilesEndpoint.relocate(params: folderParameters))
+            folderApiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let httpResponse, _):
+                    if let response = httpResponse,
+                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                        // Handle successful folder response
+                        break
+                    } else {
+                        errors.append("Unknown error")
+                    }
+                case .error(let error, _):
+                    errors.append(error?.localizedDescription ?? "Unknown error")
+                default:
+                    break
+                }
+                fileGroup.leave()
+            }
+        }
+
+        if !nonFolders.isEmpty {
+            fileGroup.enter()
+            let nonFolderParameters: RelocateParams = ((files: nonFolders, destination: destination), fileAction)
+            let nonFolderApiOperation = APIOperation(FilesEndpoint.relocate(params: nonFolderParameters))
+            nonFolderApiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let httpResponse, _):
+                    if let response = httpResponse,
+                       let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
+                       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful {
+                        // Handle successful non-folder response
+                        break
+                    } else {
+                        errors.append("Unknown error")
+                    }
+                case .error(let error, _):
+                    errors.append(error?.localizedDescription ?? "Unknown error")
+                default:
+                    break
+                }
+                fileGroup.leave()
+            }
+        }
+
+        fileGroup.notify(queue: .main) {
+            self.selectedFiles = []
             self.fileAction = .none
 
-            switch result {
-            case .json(let httpResponse, _):
-                guard
-                    let response = httpResponse,
-                    let data = try? JSONSerialization.data(withJSONObject: response, options: .prettyPrinted),
-                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                    let isSuccessful = json["isSuccessful"] as? Bool, isSuccessful else {
-                        handler(.error(message: .errorMessage))
-                        return
-                }
-                
+            if errors.isEmpty {
                 handler(.success)
-                
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
+            } else {
+                handler(.error(message: errors.joined(separator: "\n")))
             }
         }
     }
-    
-    func publish(file: FileViewModel, then handler: @escaping ServerResponse) {
+
+    func publish(files: [FileViewModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
         guard let archiveNbr = currentArchive?.archiveNbr else { return }
         
@@ -223,7 +280,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             case .success(let folder):
                 if let rootFolder = folder {
                     let publicRoot = FileViewModel(model: rootFolder)
-                    self.relocate(file: file, to: publicRoot, then: handler)
+                    self.relocate(files: files, to: publicRoot, then: handler)
                 } else {
                     handler(.error(message: .errorMessage))
                 }
@@ -282,36 +339,67 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 self.downloadQueue.safeRemoveFirst()
             }
         )}
-    
-    func delete(_ file: FileViewModel, then handler: @escaping ServerResponse) {
-        let apiOperation = APIOperation(FilesEndpoint.delete(params: (file)))
-        
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
-                        from: response,
-                        with: APIResults<NoDataModel>.decoder
-                    ),
-                    model.isSuccessful
 
-                else {
-                    handler(.error(message: .errorMessage))
-                    return
+    func delete(_ files: [FileViewModel]?, then handler: @escaping ServerResponse) {
+        guard let files = files else {
+            handler(.error(message: .errorMessage))
+            return
+        }
+
+        let folders = files.filter({ $0.type.isFolder })
+        let records = files.filter({ !$0.type.isFolder })
+
+        let group = DispatchGroup()
+
+        var folderError: String?
+        var recordError: String?
+
+        if !folders.isEmpty {
+            group.enter()
+            let apiOperation = APIOperation(FilesEndpoint.delete(params: folders))
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
+                        folderError = .errorMessage
+                    }
+                case .error(let error, _):
+                    folderError = error?.localizedDescription
+                default:
+                    break
                 }
-                
+                group.leave()
+            }
+        }
+
+        if !records.isEmpty {
+            group.enter()
+            let apiOperation = APIOperation(FilesEndpoint.delete(params: records))
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                switch result {
+                case .json(let response, _):
+                    if let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), !model.isSuccessful {
+                        recordError = .errorMessage
+                    }
+                case .error(let error, _):
+                    recordError = error?.localizedDescription
+                default:
+                    break
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            if let error = folderError ?? recordError {
+                handler(.error(message: error))
+            } else {
                 handler(.success)
-
-            case .error(let error, _):
-                handler(.error(message: error?.localizedDescription))
-
-            default:
-                break
             }
         }
     }
-    
+
+
     func removeFromQueue(_ position: Int) {
         UploadManager.shared.cancelUpload(fileId: queueItemsForCurrentFolder[position].id)
     }
@@ -567,6 +655,16 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 
             default:
                 break
+            }
+        }
+    }
+    
+    func updateCheckboxState() {
+        if let numberOfSelectedItems = selectedFiles?.count {
+            switch numberOfSelectedItems {
+            case .zero: checkboxState = .none
+            case viewModels.count: checkboxState = .selected
+            default: checkboxState = .partial
             }
         }
     }
