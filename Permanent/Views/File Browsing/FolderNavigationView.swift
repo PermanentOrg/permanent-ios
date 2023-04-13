@@ -14,15 +14,15 @@ class FolderNavigationView: UIView {
             let folderName = viewModel?.displayName ?? ""
             
             folderTitleLabel.text = hasBackButton ? "<  " + folderName : folderName
+            initUI()
         }
     }
     
     let folderTitleLabel = UILabel()
+
     
     init() {
         super.init(frame: .zero)
-        
-        initUI()
         
         NotificationCenter.default.addObserver(forName: FolderNavigationViewModel.didUpdateFolderStackNotification, object: nil, queue: nil) { [weak self] notif in
             guard let self = self
@@ -40,6 +40,10 @@ class FolderNavigationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: UIView.noIntrinsicMetric, height: 40)
+    }
+    
     func initUI() {
         backgroundColor = .backgroundPrimary
         
@@ -51,9 +55,9 @@ class FolderNavigationView: UIView {
         
         NSLayoutConstraint.activate([
             folderTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            folderTitleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 16),
+            folderTitleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             folderTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 0),
-            folderTitleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+            folderTitleLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped(_:))))

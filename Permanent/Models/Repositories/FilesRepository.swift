@@ -14,8 +14,8 @@ class FilesRepository {
         self.remoteDataSource = remoteDataSource
     }
     
-    func folderContent(archiveNo: String, folderLinkId: Int, completion: @escaping (([FileViewModel], Error?) -> Void)) {
-        remoteDataSource.folderContent(archiveNo: archiveNo, folderLinkId: folderLinkId, completion: completion)
+    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool = false, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+        remoteDataSource.folderContent(archiveNo: archiveNo, folderLinkId: folderLinkId, byMe: byMe, completion: completion)
     }
     
     func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {

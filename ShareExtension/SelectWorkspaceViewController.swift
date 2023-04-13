@@ -86,7 +86,7 @@ class SelectWorkspaceViewController: BaseViewController<SelectWorkspaceViewModel
     @IBAction func sharedFilesButtonPressed(_ sender: Any) {
         let selectFolderVC = ShareFileBrowserViewController()
         selectFolderVC.delegate = self
-        selectFolderVC.viewModel = SaveDestinationBrowserViewModel(workspace: .sharedFiles)
+        selectFolderVC.viewModel = SaveDestinationBrowserViewModel(workspace: .sharedByMeFiles)
         
         navigationController?.pushViewController(selectFolderVC, animated: true)
     }
