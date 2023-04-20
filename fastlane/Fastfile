@@ -39,6 +39,7 @@ platform :ios do
     #get_provisioning_profile(app_identifier: "org.permanent.permanent.staging")
     match(type: "appstore",
         readonly: true,
+        app_identifier: "org.permanent.permanent.staging",
         git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
         )
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'])
