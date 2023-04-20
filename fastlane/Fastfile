@@ -31,6 +31,9 @@ platform :ios do
   end
 
   lane :beta do
+    cocoapods(use_bundle_exec: true,
+              podfile: "./Podfile")
+              
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
                               in_house: false,
                               is_key_content_base64: true
