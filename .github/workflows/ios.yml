@@ -2,8 +2,8 @@ name: PR Automated tests
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ "Development" ]
+  #pull_request:
+   # branches: [ "Development" ]
 
 jobs:
   build:

@@ -42,4 +42,5 @@ jobs:
           FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
           FIREBASE_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
           FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta
