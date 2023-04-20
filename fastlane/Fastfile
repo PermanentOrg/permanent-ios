@@ -35,8 +35,12 @@ platform :ios do
                               in_house: false,
                               is_key_content_base64: true
                               )
-    get_certificates
-    get_provisioning_profile(app_identifier: "org.permanent.permanent.staging")
+    #get_certificates
+    #get_provisioning_profile(app_identifier: "org.permanent.permanent.staging")
+    match(type: "appstore",
+        readonly: true,
+        git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+        )
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'])
     increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
     build_app(scheme: "Permanent-DEV",
@@ -53,8 +57,11 @@ platform :ios do
                               in_house: false,
                               is_key_content_base64: true
                               )
-    get_certificates
-    get_provisioning_profile(app_identifier: "org.permanent.PermanentArchive")
+    #match(type: "appstore",
+     #   readonly: true,
+      #  git_url: "https://#{ENV['GITHUB_PAT']}@github.com/yourusername/your-match-repo.git"
+      #  )
+                              
     increment_build_number(build_number: latest_testflight_build_number + 1)
     build_app(workspace: "Permanent.xcworkspace",
               scheme: "Permanent",
