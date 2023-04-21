@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '14.7'
 use_frameworks!
 inhibit_all_warnings!
 
@@ -7,7 +7,7 @@ target 'Permanent' do
   pod 'Firebase/Crashlytics', '6.32.2'
   pod 'Firebase/Messaging'
   pod 'Firebase/RemoteConfig'
-  pod 'Protobuf', '3.21.11'
+  pod 'Protobuf', '3.22.3'
   pod 'ObjectMapper', '4.2.0'
   pod 'SDWebImage', '5.10.0'
   pod 'Sourcery', '1.4.1'
@@ -31,5 +31,13 @@ end
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|
     config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+  end
+
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.7'
+         end
+    end
   end
 end

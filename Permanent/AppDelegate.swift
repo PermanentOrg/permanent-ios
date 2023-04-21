@@ -199,11 +199,7 @@ extension AppDelegate: MessagingDelegate {
 extension AppDelegate: UNUserNotificationCenterDelegate {
     // Called when app is in the foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if #available(iOS 14.0, *) {
-            completionHandler([.list, .banner])
-        } else {
-            completionHandler(.alert)
-        }
+        completionHandler([.list, .banner])
     }
 
     // Called after the user interacts with the notification

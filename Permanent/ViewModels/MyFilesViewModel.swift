@@ -12,18 +12,27 @@ protocol MyFilesViewModelPickerDelegate: AnyObject {
 }
 
 class MyFilesViewModel: FilesViewModel {
+    static let didSelectFilesNotifName = NSNotification.Name("MyFilesViewModel.didSelectFilesNotifName")
     var isPickingImage: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
-    override var selectedFile: FileViewModel? {
+    override var selectedFiles: [FileViewModel]? {
         get {
-            return AuthenticationManager.shared.session?.selectedFile
+            return AuthenticationManager.shared.session?.selectedFiles
         }
         
         set {
-            AuthenticationManager.shared.session?.selectedFile = newValue
+            AuthenticationManager.shared.session?.selectedFiles = newValue
+            if fileAction.action.isEmpty && isSelecting {
+                if selectedFiles?.isEmpty ?? true {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": false])
+                } else {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": true])
+                }
+            }
+            updateCheckboxState()
         }
     }
     

@@ -14,6 +14,7 @@ class FolderContentViewModel: ViewModelInterface {
     let session: PermSession!
     let folder: FileViewModel
     let filesRepository: FilesRepository
+    var byMe: Bool = false
     
     var files: [FileViewModel] = [] {
         didSet {
@@ -28,16 +29,17 @@ class FolderContentViewModel: ViewModelInterface {
         }
     }
     
-    init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
+    init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession, byMe: Bool = false) {
         self.folder = folder
         self.filesRepository = filesRepository
         self.session = session
+        self.byMe = byMe
         
         refreshFolder()
     }
     
     func refreshFolder() {
-        filesRepository.folderContent(archiveNo: folder.archiveNo, folderLinkId: folder.folderLinkId) { files, error in
+        filesRepository.folderContent(archiveNo: folder.archiveNo, folderLinkId: folder.folderLinkId, byMe: byMe) { files, error in
             self.isLoading = false
             self.files = files
         }

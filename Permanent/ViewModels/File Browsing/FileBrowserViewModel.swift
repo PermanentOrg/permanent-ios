@@ -53,7 +53,6 @@ class FileBrowserViewModel: ViewModelInterface {
     }
     
     func navigateBack() {
-//        navigationViewModel.popFolder()
         _ = contentViewModels.popLast()
     }
     

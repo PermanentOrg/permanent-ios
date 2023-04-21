@@ -39,6 +39,8 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     var menuItems: [MenuItem] = []
     
     var showsPermission: Bool = false
+    
+    var selectedItemCount: Int?
 
     let overlayView = UIView(frame: .zero)
     var contentViewBottomConstraint: NSLayoutConstraint!
@@ -105,7 +107,12 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         ])
         
         let itemNameLabel = UILabel()
-        itemNameLabel.text = fileViewModel.name
+        if let selectedItemCount = selectedItemCount, selectedItemCount > 1 {
+            itemNameLabel.text = "<COUNT> Items selected".localized().replacingOccurrences(of: "<COUNT>", with: "\(selectedItemCount)")
+        } else {
+            itemNameLabel.text = fileViewModel.name
+        }
+
         itemNameLabel.textColor = .white
         itemNameLabel.font = Text.style3.font
         
@@ -195,18 +202,20 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         ])
         
         view.layoutIfNeeded()
-        viewModel?.getShareLink(option: .retrieve, then: { shareVO, error in
-            guard let shareVO = shareVO,
-                shareVO.sharebyURLID != nil,
-                let shareURL = shareVO.shareURL
-            else {
-                return
-            }
-            
-            self.shareURL = shareURL
-            
-            self.loadSubviews()
-        })
+        if selectedItemCount == nil {
+            viewModel?.getShareLink(option: .retrieve, then: { shareVO, error in
+                guard let shareVO = shareVO,
+                      shareVO.sharebyURLID != nil,
+                      let shareURL = shareVO.shareURL
+                else {
+                    return
+                }
+                
+                self.shareURL = shareURL
+                
+                self.loadSubviews()
+            })
+        }
         
         NotificationCenter.default.addObserver(forName: ShareLinkViewModel.didRevokeShareLinkNotifName, object: viewModel, queue: nil) { [weak self] notif in
             self?.shareURL = nil
@@ -238,23 +247,23 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         stackView.arrangedSubviews.forEach { view in
             view.removeFromSuperview()
         }
-        
-        if showsPermission {
-            setupPermissionView()
+        if selectedItemCount == nil {
+            if showsPermission {
+                setupPermissionView()
+            }
+            
+            if fileViewModel.sharedByArchive != nil {
+                setupInitiatedByView()
+            }
+            
+            if !fileViewModel.minArchiveVOS.isEmpty {
+                setupSharedWithView()
+            }
+            
+            if shareURL != nil {
+                setupShareLink()
+            }
         }
-
-        if fileViewModel.sharedByArchive != nil {
-            setupInitiatedByView()
-        }
-
-        if !fileViewModel.minArchiveVOS.isEmpty {
-            setupSharedWithView()
-        }
-
-        if shareURL != nil {
-            setupShareLink()
-        }
-        
         setupMenuView()
     }
     
@@ -348,9 +357,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             containerView.translatesAutoresizingMaskIntoConstraints = false
             
             var image: UIImage? = nil
-            if #available(iOS 13.0, *) {
-                image = UIImage(systemName: "chevron.down")?.templated
-            }
+            image = UIImage(systemName: "chevron.down")?.templated
             
             let imageView = UIImageView(image: image)
             imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -552,12 +559,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         containerView.addSubview(button)
         
         var shareImageView: UIImageView = UIImageView()
-        if #available(iOS 13.0, *) {
-            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light, scale: .small)
-            shareImageView = UIImageView(image: UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig)?.templated)
-        } else {
-            shareImageView = UIImageView(image: UIImage(named: "share")?.templated ?? .placeholder.templated)
-        }
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light, scale: .small)
+        shareImageView = UIImageView(image: UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig)?.templated)
+
         shareImageView.translatesAutoresizingMaskIntoConstraints = false
         shareImageView.tintColor = .primary
         shareImageView.contentMode = .scaleAspectFit

@@ -11,7 +11,7 @@ class PermSession: Codable {
     enum CodingKeys: String, CodingKey {
         case account
         case selectedArchive
-        case selectedFile
+        case selectedFiles
         case fileAction
         case isGridView
         case token
@@ -30,7 +30,7 @@ class PermSession: Codable {
     
     var selectedArchive: ArchiveVOData?
     
-    var selectedFile: FileViewModel?
+    var selectedFiles: [FileViewModel]?
     var fileAction: FileAction?
     
     var isGridView: Bool = false
@@ -47,7 +47,7 @@ class PermSession: Codable {
         account = try container.decode(AccountVOData.self, forKey: .account)
         selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
         
-        selectedFile = try container.decodeIfPresent(FileViewModel.self, forKey: .selectedFile)
+        selectedFiles = try container.decodeIfPresent([FileViewModel].self, forKey: .selectedFiles)
         fileAction = try container.decodeIfPresent(FileAction.self, forKey: .fileAction)
         
         isGridView = try container.decode(Bool.self, forKey: .isGridView)
@@ -61,7 +61,7 @@ class PermSession: Codable {
         try container.encode(account, forKey: .account)
         try container.encode(selectedArchive, forKey: .selectedArchive)
         
-        try container.encode(selectedFile, forKey: .selectedFile)
+        try container.encode(selectedFiles, forKey: .selectedFiles)
         try container.encode(fileAction, forKey: .fileAction)
         
         try container.encode(isGridView, forKey: .isGridView)

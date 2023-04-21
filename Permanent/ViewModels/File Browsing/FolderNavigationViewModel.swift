@@ -10,12 +10,20 @@ import Foundation
 class FolderNavigationViewModel: ViewModelInterface {
     static let didUpdateFolderStackNotification = Notification.Name("FolderNavigationViewModel.didUpdateFolderStackNotification")
     static let didPopFolderNotification = Notification.Name("FolderNavigationViewModel.didPopFolderNotification")
+    static let didChangeSegmentedControlValueNotification = Notification.Name("FolderNavigationViewModel.didChangeSegmentedControlValueNotification")
     
     var workspaceName: String
     var folderStack: [FileViewModel] = [] {
         didSet {
             NotificationCenter.default.post(name: Self.didUpdateFolderStackNotification, object: self, userInfo: nil)
         }
+    }
+    
+    var workspace: Workspace
+
+    init(workspaceName: String, workspace: Workspace) {
+        self.workspaceName = workspaceName
+        self.workspace = workspace
     }
     
     var displayName: String {
@@ -28,10 +36,6 @@ class FolderNavigationViewModel: ViewModelInterface {
     
     var hasBackButton: Bool {
         folderStack.isEmpty == false
-    }
-    
-    init(workspaceName: String) {
-        self.workspaceName = workspaceName
     }
     
     func pushFolder(_ folder: FileViewModel) {

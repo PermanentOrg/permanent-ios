@@ -8,7 +8,6 @@
 import UIKit
 
 extension UIColor {
-
     func lighter(_ color: UIColor, by percentage: CGFloat = 30.0) -> UIColor? {
         return color.adjust(by: abs(percentage))
     }
@@ -30,6 +29,16 @@ extension UIColor {
                            alpha: alpha)
         } else {
             return nil
+        }
+    }
+}
+
+extension UIColor {
+    func imageWithColor(width: Int, height: Int) -> UIImage {
+        let size = CGSize(width: width, height: height)
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            self.setFill()
+            rendererContext.fill(CGRect(origin: .zero, size: size))
         }
     }
 }

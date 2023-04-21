@@ -8,27 +8,35 @@
 import Foundation
 
 class SaveDestinationBrowserViewModel: FileBrowserViewModel {
-    enum Workspace {
-        case privateFiles
-        case sharedFiles
-        case publicFiles
+    var workspace: Workspace = .privateFiles {
+        didSet {
+            loadRootFolder()
+        }
     }
-    
-    var workspace: Workspace = .privateFiles
-    
+     
     var hasSaveButton: Bool {
-        return workspace == .sharedFiles ? self.contentViewModels.count > 1 : true
+        switch workspace {
+        case .sharedByMeFiles, .shareWithMeFiles:
+            return self.contentViewModels.count > 1
+        default:
+            return true
+        }
     }
     
     init(workspace: Workspace, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession) {
         self.workspace = workspace
-        
-        super.init(navigationViewModel: ShareFolderNavigationViewModel(workspaceName: ""), filesRepository: filesRepository, session: session)
-        
-        navigationViewModel.workspaceName = "Private Files"
+
+        let initialWorkspaceName: String
+        switch workspace {
+        case .privateFiles: initialWorkspaceName = "Private Files"
+        case .sharedByMeFiles, .shareWithMeFiles: initialWorkspaceName = "Shared Files"
+        case .publicFiles: initialWorkspaceName = "Public Files"
+        }
+
+        super.init(navigationViewModel: FolderNavigationViewModel(workspaceName: initialWorkspaceName, workspace: workspace), filesRepository: filesRepository, session: session)
     }
     
-    override func loadRootFolder() {        
+    override func loadRootFolder() {
         switch workspace {
         case .privateFiles:
             navigationViewModel.workspaceName = "Private Files"
@@ -39,15 +47,27 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
                     self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
                 }
             }
-        case .sharedFiles:
+            
+        case .sharedByMeFiles:
             navigationViewModel.workspaceName = "Shared Files"
             
-            filesRepository.getSharedRoot { rootFolder, error in
+            filesRepository.getSharedRoot() { rootFolder, error in
                 if let rootFolder = rootFolder {
                     self.contentViewModels.removeAll()
-                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder))
+                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: true))
                 }
             }
+            
+        case .shareWithMeFiles:
+            navigationViewModel.workspaceName = "Shared Files"
+            
+            filesRepository.getSharedRoot() { rootFolder, error in
+                if let rootFolder = rootFolder {
+                    self.contentViewModels.removeAll()
+                    self.contentViewModels.append(FolderContentViewModel(folder: rootFolder, byMe: false))
+                }
+            }
+            
         case .publicFiles:
             navigationViewModel.workspaceName = "Public Files"
             

@@ -49,11 +49,7 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
         
         rightButton.isHidden = false
         if isDefault {
-            if #available(iOS 13.0, *) {
-                rightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-            } else {
-                rightButton.setImage(UIImage(named: "star.fill"), for: .normal)
-            }
+            rightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
             
             rightButton.isEnabled = false
         } else if isManaging {

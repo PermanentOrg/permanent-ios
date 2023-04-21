@@ -16,7 +16,7 @@ typealias RegisterRecordParams = (folderId: Int, folderLinkId: Int, filename: St
 typealias GetRecordParams = (folderLinkId: Int, parentFolderLinkId: Int)
 typealias ItemInfoParams = (FileViewModel)
 typealias RelocateParams = (items: ItemPair, action: FileAction)
-typealias ItemPair = (source: FileViewModel, destination: FileViewModel)
+typealias ItemPair = (files: [FileViewModel], destination: FileViewModel)
 
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
@@ -31,7 +31,7 @@ enum FilesEndpoint {
     
     // FILES MANAGEMENT
     case newFolder(params: NewFolderParams)
-    case delete(params: ItemInfoParams)
+    case delete(params: ([FileViewModel]))
     case relocate(params: RelocateParams)
     case update(params: UpdateRecordParams)
     
@@ -71,23 +71,23 @@ extension FilesEndpoint: RequestProtocol {
         case .newFolder:
             return "/folder/post"
         case .delete(let parameters):
-            if parameters.type.isFolder {
+            let allFolders = parameters.allSatisfy { $0.type.isFolder }
+            if allFolders {
                 return "/folder/delete"
             } else {
                 return "/record/delete"
             }
-            
         case .getRecord:
             return "/record/get"
         case .getFolder:
             return "/folder/get"
         case .relocate(let parameters):
-            if parameters.items.source.type.isFolder {
+            let allFolders = parameters.items.files.allSatisfy { $0.type.isFolder }
+            if allFolders {
                 return "/folder/\(parameters.action.endpointValue)"
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
-            
         case .update:
             return "/record/update"
         case .renameFolder:
@@ -188,16 +188,21 @@ extension FilesEndpoint: RequestProtocol {
             return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
 
         case .delete(let parameters):
-            if parameters.type.isFolder {
-                let folderVO = FolderVOPayload(folderLinkId: parameters.folderLinkId)
-                let requestVO = APIPayload.make(fromData: [folderVO])
-                
-                return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
+            let isFolder = parameters.contains(where: { $0.type.isFolder })
+            if isFolder {
+                let folderPayloads = parameters.filter({ $0.type.isFolder }).map { folder in
+                    FolderVOPayload(folderLinkId: folder.folderLinkId)
+                }
+                let requestVO = RequestVOData(data: folderPayloads)
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             } else {
-                let recordVO = RecordVOPayload(folderLinkId: parameters.folderLinkId, parentFolderLinkId: parameters.parentFolderLinkId)
-                let requestVO = APIPayload.make(fromData: [recordVO])
-                
-                return try? APIPayload<RecordVOPayload>.encoder.encode(requestVO)
+                let recordPayloads = parameters.map { file in
+                    RecordVOPayload(folderLinkId: file.folderLinkId, parentFolderLinkId: file.parentFolderLinkId)
+                }
+                let requestVO = RequestVOData(data: recordPayloads)
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<RecordVOPayload>.encoder.encode(apiPayload)
             }
             
         case .getRecord(let itemInfo):
@@ -215,27 +220,32 @@ extension FilesEndpoint: RequestProtocol {
             return try? APIPayload<FolderVOPayload>.encoder.encode(requestVO)
             
         case .relocate(let parameters):
-            if parameters.items.source.type.isFolder {
-                let copyVO = RelocateFolderPayload(
-                    folderLinkId: parameters.items.source.folderLinkId,
-                    folderDestLinkId: parameters.items.destination.folderLinkId
-                )
-                let requestVO = APIPayload.make(fromData: [copyVO])
-                
-                return try? APIPayload<RelocateFolderPayload>.encoder.encode(requestVO)
+            let isFolder = parameters.items.files.contains(where: { $0.type.isFolder })
+            if isFolder {
+                let folderPayloads = parameters.items.files.filter({ $0.type.isFolder }).map { folder in
+                    RelocateFolderPayload(
+                        folderLinkId: folder.folderLinkId,
+                        folderDestLinkId: parameters.items.destination.folderLinkId
+                    )
+                }
+                let requestVO = RequestVOData(data: folderPayloads)
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             } else {
-                let relocateVO = RelocateRecordPayload(
-                    folderLinkId: parameters.items.source.folderLinkId,
-                    folderDestLinkId: parameters.items.destination.folderLinkId,
-                    parentFolderLinkId: parameters.items.source.parentFolderLinkId,
-                    archiveNbr: parameters.items.source.archiveNo,
-                    uploadFileName: parameters.items.source.uploadFileName,
-                    recordId: parameters.items.source.recordId,
-                    parentFolderId: parameters.items.source.parentFolderId
-                )
-                let requestVO = APIPayload.make(fromData: [relocateVO])
-                
-                return try? APIPayload<RelocateRecordPayload>.encoder.encode(requestVO)
+                let recordPayloads = parameters.items.files.map { file in
+                    RelocateRecordPayload(
+                        folderLinkId: file.folderLinkId,
+                        folderDestLinkId: parameters.items.destination.folderLinkId,
+                        parentFolderLinkId: file.parentFolderLinkId,
+                        archiveNbr: file.archiveNo,
+                        uploadFileName: file.uploadFileName,
+                        recordId: file.recordId,
+                        parentFolderId: file.parentFolderId
+                    )
+                }
+                let requestVO = RequestVOData(data: recordPayloads)
+                let apiPayload = APIPayload(requestVO: requestVO)
+                return try? APIPayload<FolderVOPayload>.encoder.encode(apiPayload)
             }
 
         default:

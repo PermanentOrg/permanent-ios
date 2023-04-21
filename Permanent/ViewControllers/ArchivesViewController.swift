@@ -192,11 +192,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             
             currentArchiveRightButton.isHidden = false
             if archive.archiveID == viewModel?.defaultArchiveId {
-                if #available(iOS 13.0, *) {
-                    currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                } else {
-                    currentArchiveRightButton.setImage(UIImage(named: "star.fill"), for: .normal)
-                }
+                currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
                 currentArchiveRightButton.isEnabled = false
             } else if isManaging {
                 currentArchiveRightButton.setImage(UIImage(named: "more"), for: .normal)

@@ -28,12 +28,7 @@ class PhotoTabBarViewController: UITabBarController {
         let assetFetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: nil)
         if let assetCollection = assetFetchResult.firstObject {
             let favoritesVC = UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "assets")
-            if #available(iOS 13.0, *) {
-                favoritesVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "star.fill"), selectedImage: nil)
-            } else {
-                favoritesVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(named: "star-fill"), selectedImage: nil)
-            }
-            
+            favoritesVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "star.fill"), selectedImage: nil)
             let assetGridVC = (favoritesVC as! UINavigationController).viewControllers.first as! AssetGridViewController
             assetGridVC.assetCollection = assetCollection
             assetGridVC.fetchResult = PHAsset.fetchAssets(in: assetCollection, options: nil)

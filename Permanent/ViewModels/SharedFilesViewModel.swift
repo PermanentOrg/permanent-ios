@@ -8,6 +8,7 @@
 import Foundation
 
 class SharedFilesViewModel: FilesViewModel {
+    static let didSelectFilesNotifName = NSNotification.Name("SharedFilesViewModel.didSelectFilesNotifName")
     override var currentFolderIsRoot: Bool { navigationStack.count == 0 }
     
     var shareListType: ShareListType = .sharedByMe {
@@ -30,6 +31,23 @@ class SharedFilesViewModel: FilesViewModel {
         case FileListType.uploading.rawValue: return .uploads
         case FileListType.synced.rawValue: return currentFolderIsRoot ? "" : activeSortOption.title
         default: return "" // We cannot have more than 3 sections.
+        }
+    }
+    
+    override var selectedFiles: [FileViewModel]? {
+        get {
+            return super.selectedFiles
+        }
+        set {
+            super.selectedFiles = newValue
+            if fileAction.action.isEmpty && isSelecting {
+                if selectedFiles?.isEmpty ?? true {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": false])
+                } else {
+                    NotificationCenter.default.post(name: Self.didSelectFilesNotifName, object: self, userInfo: ["showFloatingIsland": true])
+                }
+            }
+            updateCheckboxState()
         }
     }
     

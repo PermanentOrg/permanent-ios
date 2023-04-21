@@ -175,31 +175,6 @@ class AuthViewModel: ViewModelInterface {
     func areFieldsValid(emailField: String?) -> Bool {
         return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false)
     }
-    
-    func bytesToReadableForm(sizeInBytes: Int, useDecimal: Bool = true) -> String {
-        var unit = "B"
-        var exp = 0
-        var transformedSizeInBytes = Float(sizeInBytes)
-        
-        let byteSize: Float = 1024
-        let unitsOfMeasure = ["KB", "MB", "GB", "TB", "PB"]
-        
-        if sizeInBytes < Int(byteSize) { return "\(sizeInBytes) \(unit)" }
-        
-        while transformedSizeInBytes >= byteSize {
-            transformedSizeInBytes /= byteSize
-            exp += 1
-        }
-        
-        unit = unitsOfMeasure[exp - 1]
-        
-        if transformedSizeInBytes > 100 {
-            unit = unitsOfMeasure[exp]
-            transformedSizeInBytes /= 1000
-        }
-        
-        return useDecimal ? String(format: "%.1f %@", transformedSizeInBytes, unit) : String(format: "%.0f %@", transformedSizeInBytes, unit)
-    }
 }
 
 enum LoginStatus: Equatable {
