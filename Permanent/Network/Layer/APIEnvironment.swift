@@ -95,6 +95,18 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    /// The base Fusion Auth URL of the given environment.
+    var fusionBaseURL: String {
+        switch self {
+        case .staging:
+            return "https://permanent-dev.fusionauth.io/api"
+        case .development:
+            return "https://permanent-dev.fusionauth.io/api"
+        case .production:
+            return "https://permanent.fusionauth.io/api"
+        }
+    }
+    
     var rolesMatrix: String {
         return "https://permanent.zohodesk.com/portal/en/kb/articles/roles-for-collaboration-and-sharing"
     }

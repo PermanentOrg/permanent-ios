@@ -46,3 +46,46 @@ struct AccountVOData: Model {
         case status, type, emailStatus, phoneStatus, notificationPreferences, agreed, optIn, emailArray, inviteCode, rememberMe, keepLoggedIn, accessRole, spaceTotal, spaceLeft, fileTotal, fileLeft, changePrimaryEmail, changePrimaryPhone, createdDT, updatedDT
     }
 }
+
+extension AccountVOData {
+    static func mock() -> AccountVOData {
+        return AccountVOData(
+            accountID: 1,
+            primaryEmail: "mock@example.com",
+            fullName: "Mock User",
+            address: "123 Mock Street",
+            address2: "Apt 4",
+            country: "US",
+            city: "Mock City",
+            state: "CA",
+            zip: "12345",
+            primaryPhone: "+1 555-555-5555",
+            defaultArchiveID: 10,
+            level: nil,
+            apiToken: nil,
+            betaParticipant: 0,
+            facebookAccountID: nil,
+            googleAccountID: nil,
+            status: "active",
+            type: "normal",
+            emailStatus: "verified",
+            phoneStatus: "verified",
+            notificationPreferences: "default",
+            agreed: nil,
+            optIn: nil,
+            emailArray: nil,
+            inviteCode: nil,
+            rememberMe: nil,
+            keepLoggedIn: nil,
+            accessRole: "user",
+            spaceTotal: 100000,
+            spaceLeft: 95000,
+            fileTotal: nil,
+            fileLeft: 1000,
+            changePrimaryEmail: nil,
+            changePrimaryPhone: nil,
+            createdDT: "2022-01-01T00:00:00Z",
+            updatedDT: "2022-01-01T00:00:00Z"
+        )
+    }
+}

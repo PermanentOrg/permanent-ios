@@ -134,7 +134,13 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
-        profilePhotoImageView.sd_setImage(with: URL(string: archiveData.thumbURL200!))
+        
+        if let archiveThumb200 = archiveData.thumbURL200 {
+            profilePhotoImageView.sd_setImage(with: URL(string: archiveThumb200))
+        } else {
+            profilePhotoImageView.image = UIColor.lightGray.imageWithColor(width: 48, height: 48)
+        }
+        
         
         viewModel?.getPublicRoot(then: { status in
             if status == .success, let bannerURL = self.viewModel?.bannerURL {

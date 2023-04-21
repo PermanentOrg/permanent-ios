@@ -38,6 +38,8 @@ enum ViewControllerId: String {
     case main
     case signUp
     case onboarding
+    case login
+    case recoverPassword
     case welcomePage
     case verificationCode
     case termsConditions
@@ -202,6 +204,9 @@ enum ViewControllerId: String {
         case .publicGallery:
             return "publicGallery"
             
+        case .recoverPassword:
+            return "RecoverPassword"
+
         case .tagManagement:
             return "TagManagement"
             

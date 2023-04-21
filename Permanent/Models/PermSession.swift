@@ -6,21 +6,26 @@
 //
 
 import Foundation
-import AppAuth
 
 class PermSession: Codable {
     enum CodingKeys: String, CodingKey {
-        case authState
         case account
         case selectedArchive
         case selectedFiles
         case fileAction
         case isGridView
+        case token
+        case methodId
+        case twoFactorId
     }
-    
+
     static var currentSession: PermSession?
     
-    var authState: OIDAuthState
+    let token: String
+    
+    var expirationDate: Date {
+        return Date.distantFuture
+    }
     var account: AccountVOData!
     
     var selectedArchive: ArchiveVOData?
@@ -30,20 +35,14 @@ class PermSession: Codable {
     
     var isGridView: Bool = false
     
-    init(authState: OIDAuthState) {
-        self.authState = authState
+    init(token: String) {
+        self.token = token
     }
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let authStateData = try container.decode(Data.self, forKey: .authState)
-        let decodedAuthState = try NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: authStateData)
-        if decodedAuthState != nil {
-            self.authState = decodedAuthState!
-        } else {
-            throw NSError(domain: "org.permanent", code: 401)
-        }
+        token = try container.decode(String.self, forKey: .token)
         
         account = try container.decode(AccountVOData.self, forKey: .account)
         selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
@@ -57,8 +56,7 @@ class PermSession: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        let authStateData = try NSKeyedArchiver.archivedData(withRootObject: authState, requiringSecureCoding: true)
-        try container.encode(authStateData, forKey: .authState)
+        try container.encode(token, forKey: .token)
         
         try container.encode(account, forKey: .account)
         try container.encode(selectedArchive, forKey: .selectedArchive)

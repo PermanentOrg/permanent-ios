@@ -9,6 +9,7 @@ import Foundation
 
 typealias LoginCredentials = (email: String, password: String)
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
+typealias SignUpV2Credentials = (name: String, email: String, password: String)
 typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
 typealias UpdateData = (email: String, phone: String)
 typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
@@ -16,6 +17,8 @@ typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPho
 enum AccountEndpoint {
     /// Creates an new user account.
     case signUp(credentials: SignUpCredentials)
+    /// Creates an new user account.
+    case signUpV2(credentials: SignUpV2Credentials)
     /// Deletes user account
     case delete(accountId: Int)
     /// Updates user account.
@@ -43,6 +46,8 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp:
             return "/account/post"
+        case .signUpV2:
+            return "/account/post"
         case .delete:
             return "/account/delete"
         case .update, .updateEmailAndPhone:
@@ -68,6 +73,9 @@ extension AccountEndpoint: RequestProtocol {
         switch self {
         case .signUp(let credentials):
             return signUpPayload(for: credentials)
+            
+        case .signUpV2(let credentials):
+            return signUpV2Payload(for: credentials)
             
         case .delete(let accountId):
             return deleteAccountPayload(accountId: accountId)
@@ -116,6 +124,21 @@ extension AccountEndpoint: RequestProtocol {
         set { }
     }
     
+    var headers: RequestHeaders? {
+        if method == .post {
+            if case .signUpV2(let _) = self {
+                return [
+                    "content-type": "application/json; charset=utf-8",
+                    "Request-Version": "2"
+                ]
+            } else {
+                return ["content-type": "application/json; charset=utf-8"]
+            }
+        } else {
+            return nil
+        }
+    }
+    
     var bodyData: Data? { nil }
     
     var customURL: String? { nil }
@@ -144,6 +167,18 @@ extension AccountEndpoint {
                     ]
                 ]
             ]
+        ]
+    }
+    
+    func signUpV2Payload(for credentials: SignUpV2Credentials) -> RequestParameters {
+        return [
+            "agreed": true,
+            "createArchive": false,
+            "fullName": credentials.name,
+            "optIn": false,
+            "primaryEmail": credentials.email,
+            "password": credentials.password,
+            "passwordVerify": credentials.password
         ]
     }
     

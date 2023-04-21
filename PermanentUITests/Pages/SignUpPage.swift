@@ -30,8 +30,5 @@ class SignUpPage {
         XCTAssertTrue(enterLoginScreenButton.waitForExistence(timeout: 120))
         enterLoginScreenButton.tap()
         sleep(5)
-        app.tap()
-        
-        sleep(5)
     }
 }

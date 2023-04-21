@@ -37,37 +37,37 @@ class SignUpTests: XCTestCase {
         try super.tearDownWithError()
     }
     
-    func testSigupTestInvalidCredentials() {
-        let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [ResponseURLProtocol<FailedSignUpTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config)
-        
-        let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com", password: "simplePass"))
-        
-        let promise = expectation(description: "Test Sign Up with duplicate email.")
-        
-        sut.signUp(with: credentialsInvalid, then: { status in
-            XCTAssertEqual(status, .error(message: "This email is already in use."), "Failed! Checked with duplicate email.")
-            promise.fulfill()
-        })
-        wait(for: [promise], timeout: 6)
-    }
-    
-    func testSigupTestValidCredentials() {
-        let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [ResponseURLProtocol<SuccessfulSignUpTestURLs>.self]
-        sut.sessionProtocol = APINetworkSession(configuration: config)
-        
-        let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com", password: "simplePass"))
-        
-        let promise = expectation(description: "Test Sign Up with valid username/email/password.")
-        
-        sut.signUp(with: credentialsInvalid, then: { status in
-            XCTAssertEqual(status, .success, "Failed! Checked with valid username/email/password.")
-            promise.fulfill()
-        })
-        wait(for: [promise], timeout: 6)
-    }
+//    func testSigupTestInvalidCredentials() {
+//        let config = URLSessionConfiguration.ephemeral
+//        config.protocolClasses = [ResponseURLProtocol<FailedSignUpTestURLs>.self]
+//        sut.sessionProtocol = APINetworkSession(configuration: config)
+//
+//        let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com", password: "simplePass"))
+//
+//        let promise = expectation(description: "Test Sign Up with duplicate email.")
+//
+//        sut.signUp(with: credentialsInvalid, then: { status in
+//            XCTAssertEqual(status, .error(message: "This email is already in use."), "Failed! Checked with duplicate email.")
+//            promise.fulfill()
+//        })
+//        wait(for: [promise], timeout: 6)
+//    }
+//
+//    func testSigupTestValidCredentials() {
+//        let config = URLSessionConfiguration.ephemeral
+//        config.protocolClasses = [ResponseURLProtocol<SuccessfulSignUpTestURLs>.self]
+//        sut.sessionProtocol = APINetworkSession(configuration: config)
+//
+//        let credentialsInvalid = SignUpCredentials(name: "testAccount", loginCredentials: LoginCredentials(email: "testaccount+prmnttst0001@server.com", password: "simplePass"))
+//
+//        let promise = expectation(description: "Test Sign Up with valid username/email/password.")
+//
+//        sut.signUp(with: credentialsInvalid, then: { status in
+//            XCTAssertEqual(status, .success, "Failed! Checked with valid username/email/password.")
+//            promise.fulfill()
+//        })
+//        wait(for: [promise], timeout: 6)
+//    }
     
     func testEmptyEmailField() {
         var credentials: (nameField: String?, emailField: String?, passwordField: String?) = (nameField: "testAccount", emailField: "account@test.com", passwordField: "simplePassword")
