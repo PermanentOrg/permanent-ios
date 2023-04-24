@@ -2,6 +2,20 @@ name: PR Automated tests
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+      test_plan:
+        description: 'TestPlan to run'
+        required: true
+        default: 'unit-tests'
+        type: choice
+        options:
+        - unit-tests
+        - ui-tests
+        - all-tests
   #pull_request:
    # branches: [ "Development" ]
 
@@ -9,7 +23,7 @@ jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
     runs-on: self-hosted
-    environment: staging
+    environment: $ENVIRONMENT
 
     steps:
       - name: Checkout
@@ -44,4 +58,5 @@ jobs:
           FIREBASEAPPDISTRO_APP: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
           FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
           FIREBASEAPPDISTRO_CLI_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
+          TEST_PLAN: ${{ inputs.test_plan }}
         run: bundle exec fastlane tests

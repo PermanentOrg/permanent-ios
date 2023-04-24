@@ -26,7 +26,7 @@ platform :ios do
               devices: ["iPhone 13"],
               scheme: "Permanent-DEV",
 	            configuration: "DEV-Debug",
-              testplan: "TestPullRequest",
+              testplan: "#{ENV['TEST_PLAN']}",
 	            reset_simulator: true)
   end
 
