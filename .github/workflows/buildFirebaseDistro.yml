@@ -12,8 +12,6 @@ jobs:
     environment: staging
 
     steps:
-      - name: Clean Working directory
-        run: rm -rf *
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update Bundler
