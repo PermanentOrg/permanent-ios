@@ -119,7 +119,7 @@ platform :ios do
     build_app(workspace: "Permanent.xcworkspace",
               scheme: "Permanent",
 	            configuration: "Release",
-              include_bitcode: true,
+              include_bitcode: false,
 	            xcargs: "-allowProvisioningUpdates",
               export_method: "app-store")
 
