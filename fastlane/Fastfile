@@ -109,7 +109,7 @@ platform :ios do
           )
 
     # get the latest release build # from firebase
-    latest_release = latest_testflight_build_number
+    latest_release = latest_testflight_build_number(app_identifier: "org.permanent.PermanentArchive")
     if latest_release
       # update the app build number
       increment_build_number({ build_number: latest_release + 1 })
