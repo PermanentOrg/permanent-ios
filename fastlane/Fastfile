@@ -52,9 +52,9 @@ platform :ios do
     end
     build_app(scheme: "Permanent-DEV",
 	            configuration: "DEV-Release",
-              include_bitcode: true,
 	            xcargs: "-allowProvisioningUpdates",
-              export_options: "fastlane/firebase_gym_config.plist")
+              include_bitcode: false,
+              export_method: "ad-hoc")
 	  firebase_app_distribution(release_notes: "Lots of amazing new features to test out!",
                               firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN'])
   end
