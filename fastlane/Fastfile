@@ -65,6 +65,9 @@ platform :ios do
 	            xcargs: "-allowProvisioningUpdates",
               include_bitcode: false,
               export_method: "ad-hoc")
+
+    echo changelog_from_git_commits
+
 	  firebase_app_distribution(release_notes: "Lots of amazing new features to test out!",
                               firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN'])
   end
