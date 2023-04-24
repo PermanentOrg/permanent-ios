@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Clean Working directory
-        run: pod deintegrate
+        run: rm -rf *
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update Bundler
