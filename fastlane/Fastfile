@@ -31,7 +31,6 @@ platform :ios do
   end
 
   lane :beta do
-
     # resolve cocoapods
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
@@ -44,20 +43,20 @@ platform :ios do
                               
     # resolve the provisioning profiles and certs from private repo
     match(type: "adhoc",
-        readonly: true,
-        app_identifier: "org.permanent.permanent.staging",
-        git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
-        )
+          readonly: true,
+          app_identifier: "org.permanent.permanent.staging",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
     match(type: "adhoc",
-        readonly: true,
-        app_identifier: "org.permanent.permanent.staging.PushExtension",
-        git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
-        )
+          readonly: true,
+          app_identifier: "org.permanent.permanent.staging.PushExtension",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
     match(type: "adhoc",
-        readonly: true,
-        app_identifier: "org.permanent.permanent.staging.ShareExtension",
-        git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
-        )
+          readonly: true,
+          app_identifier: "org.permanent.permanent.staging.ShareExtension",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
 
     # get the latest release build # from firebase
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'])
@@ -82,22 +81,49 @@ platform :ios do
   end
   
   lane :app_store do 
+    # resolve cocoapods
+    cocoapods(use_bundle_exec: true,
+              podfile: "./Podfile")
+           
+    # connect to the app store
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
                               in_house: false,
                               is_key_content_base64: true
                               )
-    #match(type: "appstore",
-     #   readonly: true,
-      #  git_url: "https://#{ENV['GITHUB_PAT']}@github.com/yourusername/your-match-repo.git"
-      #  )
-                              
-    increment_build_number(build_number: latest_testflight_build_number + 1)
+
+    # resolve the provisioning profiles and certs from private repo
+    match(type: "appstore",
+          readonly: true,
+          app_identifier: "org.permanent.PermanentArchive",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
+    match(type: "appstore",
+          readonly: true,
+          app_identifier: "org.permanent.PermanentArchive.PushExtension",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
+    match(type: "appstore",
+          readonly: true,
+          app_identifier: "org.permanent.PermanentArchive.ShareExtension",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          )
+
+    # get the latest release build # from firebase
+    latest_release = latest_testflight_build_number
+    if latest_release
+      # update the app build number
+      increment_build_number({ build_number: latest_release + 1 })
+    end
+
+     # actually build the app
     build_app(workspace: "Permanent.xcworkspace",
               scheme: "Permanent",
 	            configuration: "Release",
               include_bitcode: true,
 	            xcargs: "-allowProvisioningUpdates",
-              export_options: "fastlane/testflight_gym_config.plist")
+              export_method: "app-store")
+
+    #upload to TestFlight
     upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
   end
 end
