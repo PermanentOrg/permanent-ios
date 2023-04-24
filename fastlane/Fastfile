@@ -23,7 +23,7 @@ platform :ios do
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
     run_tests(workspace: "Permanent.xcworkspace",
-              devices: ["iPhone 13"],
+              devices: ["iPhone 14"],
               scheme: "Permanent-DEV",
 	            configuration: "DEV-Debug",
               testplan: "#{ENV['TEST_PLAN']}",
