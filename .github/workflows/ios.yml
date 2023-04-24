@@ -3,10 +3,6 @@ name: PR Automated tests
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
       test_plan:
         description: 'TestPlan to run'
         required: true
@@ -23,7 +19,7 @@ jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
     runs-on: self-hosted
-    environment: $ENVIRONMENT
+    environment: Staging
 
     steps:
       - name: Checkout
