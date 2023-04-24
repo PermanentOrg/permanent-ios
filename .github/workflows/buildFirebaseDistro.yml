@@ -12,6 +12,8 @@ jobs:
     environment: staging
 
     steps:
+      - name: Clean Working directory
+        uses: AutoModality/action-clean@v1
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update Bundler
