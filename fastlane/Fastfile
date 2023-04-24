@@ -31,16 +31,18 @@ platform :ios do
   end
 
   lane :beta do
+
+    # resolve cocoapods
     cocoapods(use_bundle_exec: true,
-              repo_update: true,
               podfile: "./Podfile")
               
+    # connect to the app store
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
                               in_house: false,
                               is_key_content_base64: true
                               )
-    #get_certificates
-    #get_provisioning_profile(app_identifier: "org.permanent.permanent.staging")
+                              
+    # resolve the provisioning profiles and certs from private repo
     match(type: "adhoc",
         readonly: true,
         app_identifier: "org.permanent.permanent.staging",
@@ -56,18 +58,25 @@ platform :ios do
         app_identifier: "org.permanent.permanent.staging.ShareExtension",
         git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
         )
+
+    # get the latest release build # from firebase
     latest_release = firebase_app_distribution_get_latest_release(app: ENV['GOOGLE_APP_ID'])
     if latest_release
+      # update the app build number
       increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
     end
+
+    # actually build the app
     build_app(scheme: "Permanent-DEV",
 	            configuration: "DEV-Release",
 	            xcargs: "-allowProvisioningUpdates",
               include_bitcode: false,
               export_method: "ad-hoc")
 
-    changelog = changelog_from_git_commits
+    # get the change log - all the commits since the last tag in git
+    changelog = changelog_from_git_commits(merge_commit_filtering: 'exclude_merges')
 
+    # upload to firebase
 	  firebase_app_distribution(release_notes: changelog,
                               firebase_cli_token: ENV['FIREBASEAPPDISTRO_CLI_TOKEN'])
   end
