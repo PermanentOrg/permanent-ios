@@ -34,7 +34,7 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
     claide (1.1.0)
-    cocoapods (1.11.3)
+    cocoapods (1.12.1)
       addressable (~> 2.8)
       claide (>= 1.0.2, < 2.0)
       cocoapods-core (= 1.11.3)
