@@ -35,6 +35,15 @@
          <TestPlanReference
             reference = "container:Permanent/TestPullRequest.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:Permanent/unit-tests.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:Permanent/ui-tests.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:Permanent/all-tests.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference
