@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Clean Working directory
-        uses: AutoModality/action-clean@v1
+        run: bundle exec pod deintegrate
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update Bundler
