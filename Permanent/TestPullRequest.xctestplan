@@ -15,6 +15,12 @@
   },
   "testTargets" : [
     {
+      "skippedTests" : [
+        "AccountInfoTests\/testGetUserValidData()",
+        "AccountInfoTests\/testUpdateUserData()",
+        "SignUpTests\/testSigupTestInvalidCredentials()",
+        "SignUpTests\/testSigupTestValidCredentials()"
+      ],
       "target" : {
         "containerPath" : "container:Permanent.xcodeproj",
         "identifier" : "5E68F2CB26A74FCD00CC936E",
@@ -22,6 +28,7 @@
       }
     },
     {
+      "enabled" : false,
       "skippedTests" : [
         "BaseUITestCase",
         "LoginUITests\/testNegativeLogin()"

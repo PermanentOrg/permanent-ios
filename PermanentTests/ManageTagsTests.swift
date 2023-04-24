@@ -5,7 +5,6 @@
 //  Created by Lucian Cerbu on 31.01.2023.
 //
 import XCTest
-import AppAuth
 import KeychainSwift
 @testable import Permanent
 
@@ -181,23 +180,9 @@ class ManageTagsTests: XCTestCase {
     }
     
     func createMockSession() {
-        let archiveVO = ArchiveVOData(childFolderVOS: nil, folderSizeVOS: nil, recordVOS: nil, accessRole: nil, fullName: "test", spaceTotal: nil, spaceLeft: nil, fileTotal: nil, fileLeft: nil, relationType: nil, homeCity: nil, homeState: nil, homeCountry: nil, itemVOS: nil, birthDay: nil, company: nil, archiveVODescription: nil, archiveID: 1, publicDT: nil, archiveNbr: "777", view: nil, viewProperty: nil, archiveVOPublic: nil, vaultKey: nil, thumbArchiveNbr: nil, type: nil, thumbStatus: nil, imageRatio: nil, thumbURL200: nil, thumbURL500: nil, thumbURL1000: nil, thumbURL2000: nil, thumbDT: nil, createdDT: nil, updatedDT: nil, status: nil)
-        let accountVO = AccountVOData(accountID: 1000, primaryEmail: "email@email.com", fullName: "Test Account", address: "Street", address2: nil, country: nil, city: nil, state: nil, zip: nil, primaryPhone: nil, level: nil, apiToken: nil, betaParticipant: nil, facebookAccountID: nil, googleAccountID: nil, status: nil, type: nil, emailStatus: nil, phoneStatus: nil, notificationPreferences: nil, agreed: nil, optIn: nil, emailArray: nil, inviteCode: nil, rememberMe: nil, keepLoggedIn: nil, accessRole: nil, spaceTotal: nil, spaceLeft: nil, fileTotal: nil, fileLeft: nil, changePrimaryEmail: nil, changePrimaryPhone: nil, createdDT: "2021-01-27T19:48:08", updatedDT: nil)
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: URL(string: "permanent.fusionAuth.org")!,
-                tokenEndpoint: URL(string: "permanent.fusionAuth.org")!)
-        let request = OIDAuthorizationRequest(
-                configuration: configuration,
-                clientId: "authServiceInfo.clientId",
-                clientSecret: "authServiceInfo.clientSecret",
-                scopes: ["offline_access"],
-                redirectURL: URL(string: "org.permanent.permanentArchive://")!,
-                responseType: OIDResponseTypeCode,
-                additionalParameters: nil
-        )
-        let authState = OIDAuthState(authorizationResponse: OIDAuthorizationResponse(request: request, parameters: [:]))
-        let session = PermSession(authState: authState)
-        session.selectedArchive = archiveVO
-        session.account = accountVO
+        let session = PermSession(token: "test_token")
+        session.selectedArchive = ArchiveVOData.mock()
+        session.account = AccountVOData.mock()
 
         AuthenticationManager.shared.session = session
     }

@@ -7,26 +7,33 @@
 
 import UIKit
 import KeychainSwift
-import AppAuth
 import FirebaseMessaging
 
 class AuthenticationManager {
     static let shared = AuthenticationManager()
     
     var keychainHandler = SessionKeychainHandler()
+    let authRepo: AuthRepository
+    let accountRepository: AccountRepository
+    let archivesRepository: ArchivesRepository
     
-    var authState: OIDAuthState? {
-        return session?.authState
+    var token: String? {
+        return session?.token
     }
     
-    var currentAuthorizationFlow: OIDExternalUserAgentSession?
     var session: PermSession? {
         didSet {
             PermSession.currentSession = session
         }
     }
     
-    init() {
+    var mfaSession: MFASession?
+    
+    init(authRepo: AuthRepository = AuthRepository(), accountRepository: AccountRepository = AccountRepository(), archivesRepository: ArchivesRepository = ArchivesRepository()) {
+        self.authRepo = authRepo
+        self.accountRepository = accountRepository
+        self.archivesRepository = archivesRepository
+        
         NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [self] notification in
             logout()
         }
@@ -41,8 +48,14 @@ class AuthenticationManager {
             let selectedArchive = session.selectedArchive {
             self.session = session
             
-            changeArchive(selectedArchive) { success, error in
-                completion(success)
+            changeArchive(selectedArchive) { result in
+                switch result {
+                case .success(_):
+                    completion(true)
+                    
+                case .failure(_):
+                    completion(false)
+                }
             }
         } else {
             logout()
@@ -50,43 +63,106 @@ class AuthenticationManager {
         }
     }
     
-    func performLoginFlow(fromPresentingVC presentingVC: UIViewController, completion: @escaping ServerResponse) {
-        guard let authorizationEndpoint = URL(string: APIEnvironment.defaultEnv.authorizationURL),
-            let tokenEndpoint = URL(string: APIEnvironment.defaultEnv.tokenURL),
-            let bundleId = Bundle.main.bundleIdentifier,
-            let redirectURL = URL(string: bundleId + "://auth-redirect") else {
-            completion(.error(message: .errorMessage))
+    func login(withUsername username: String, password: String, then handler: @escaping (LoginStatus) -> Void) {
+        logout()
+        
+        authRepo.login(withUsername: username, password: password) { [self] result in
+            switch result {
+            case .success(let loginResponse):
+                if loginResponse.isSuccessful == true,
+                   let token = loginResponse.results?.first?.data?.first?.tokenVO?.value,
+                   let account = loginResponse.results?.first?.data?.first?.accountVO {
+                    session = PermSession(token: token)
+                    session?.account = account
+                    
+                    syncSession { [self] status in
+                        if status == .success {
+                            saveSession()
+                            
+                            handler(.success)
+                        } else {
+                            handler(.error(message: "Authorization error".localized()))
+                        }
+                    }
+                } else if let message = loginResponse.results?.first?.message?.first,
+                          let loginError = LoginError(rawValue: message) {
+                    if loginError == .mfaToken {
+                        mfaSession = MFASession(email: username, methodType: CodeVerificationType.mfa)
+                        handler(.mfaToken)
+                    } else {
+                        handler(.error(message: loginError.description))
+                    }
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+                
+            case .failure( _):
+                handler(.error(message: "Authorization error".localized()))
+            }
+        }
+    }
+    
+    func verify2FA(code: String, then handler: @escaping ServerResponse) {
+        guard let email = mfaSession?.email,
+        let method = mfaSession?.methodType else {
+            handler(.error(message: .errorMessage))
             return
         }
         
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: authorizationEndpoint, tokenEndpoint: tokenEndpoint)
-        let request = OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: authServiceInfo.clientId,
-            clientSecret: authServiceInfo.clientSecret,
-            scopes: ["offline_access"],
-            redirectURL: redirectURL,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: nil
-        )
-        
-        currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: presentingVC) { [self] authState, error in
-            if let authState = authState {
-                session = PermSession(authState: authState)
-                
+        authRepo.login(withEmail: email, code: code, type: method) { [self] result in
+            switch result {
+            case .success(let response):
+                guard let token = response.results?.first?.data?.first?.tokenVO?.value,
+                 let account = response.results?.first?.data?.first?.accountVO else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+                mfaSession = nil
+
+                session = PermSession(token: token)
+                session?.account = account
+
                 syncSession { [self] status in
                     if status == .success {
                         saveSession()
-                        
-                        completion(.success)
+
+                        handler(.success)
                     } else {
-                        completion(.error(message: "Authorization error".localized()))
+                        handler(.error(message: "Authorization error".localized()))
                     }
                 }
-            } else {
-                session = nil
+            case .failure(_):
+                handler(.error(message: "Authorization error".localized()))
+            }
+        }
+    }
+    
+    func forgotPassword(withEmail email: String, then handler: @escaping ServerResponse) {
+        authRepo.forgotPassword(withEmail: email) { result in
+            switch result {
+            case .success(_):
+                handler(.success)
+            case .failure(_):
+                handler(.error(message: "Sorry for the inconvenience, the action could not be completed please try again.".localized()))
+            }
+        }
+    }
+    
+    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+        logout()
+        
+        accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.loginCredentials.email, password: credentials.loginCredentials.password) { [self] result in
+            switch result {
+            case .success((let signupResponse, let account)):
+                let token = signupResponse.token
+                session = PermSession(token: token)
+                session?.account = account
                 
-                completion(.error(message: "Authorization error".localized()))
+                saveSession()
+                handler(.success)
+                
+            default:
+                handler(.error(message: .error))
             }
         }
     }
@@ -104,6 +180,8 @@ class AuthenticationManager {
     }
     
     func logout() {
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
+
         session = nil
         keychainHandler.clearSession()
         
@@ -111,183 +189,64 @@ class AuthenticationManager {
     }
     
     func syncSession(then handler: @escaping ServerResponse) {
-        isLoggedIn { [self] status in
-            if status == .success {
-                getSessionAccount { [self] status, account in
-                    if status == .success {
-                        guard let account = account else {
-                            handler(.error(message: .errorMessage))
-                            return
-                        }
-                        session?.account = account
-
-                        if let _: Int = account.defaultArchiveID {
-                            refreshCurrentArchive { success, archive in
-                                if success {
-                                    self.session?.selectedArchive = archive
-                                    handler(.success)
-                                } else {
-                                    handler(.error(message: .errorMessage))
-                                }
-                            }
-                        } else {
-                            handler(.success)
-                        }
-                    } else {
-                        handler(.error(message: .errorMessage))
-                    }
-                }
-            } else {
-                handler(.error(message: .errorMessage))
-            }
-        }
-    }
-    
-    func isLoggedIn(then handler: @escaping (LoginStatus) -> Void) {
-        let loginOperation = APIOperation(AuthenticationEndpoint.verifyAuth)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: APINetworkSession())
-        apiDispatch.ignoresMFAWarning = true
-        loginOperation.execute(in: apiDispatch) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: APIResults<NoDataModel> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage))
-                    return
-                }
-
-                if model.isSuccessful == true {
+        if let _: Int = session?.account.defaultArchiveID {
+            refreshCurrentArchive { result in
+                switch result {
+                case .success(let archive):
+                    self.session?.selectedArchive = archive
                     handler(.success)
-                } else {
+                    
+                case .failure(_):
                     handler(.error(message: .errorMessage))
                 }
-
-            case .error:
-                handler(.error(message: .errorMessage))
-
-            default:
-                break
             }
+        } else {
+            handler(.success)
         }
     }
     
-    func getSessionAccount(then handler: @escaping ((RequestStatus, AccountVOData?) -> Void)) {
-        let op = APIOperation(AccountEndpoint.getSessionAccount)
-        
-        let apiDispatch = APIRequestDispatcher(networkSession: APINetworkSession())
-        op.execute(in: apiDispatch) { result in
+    func refreshCurrentArchive(_ updateHandler: @escaping (Result<ArchiveVOData?, Error>) -> Void) {
+        getAccountArchives { [self] result in
             switch result {
-            case .json(let response, _):
-                guard let model: APIResults<AccountVO> = JSONHelper.convertToModel(from: response) else {
-                    handler(.error(message: .errorMessage), nil)
-                    return
-                }
-
-                if model.isSuccessful == true {
-                    PreferencesManager.shared.set(1, forKey: Constants.Keys.StorageKeys.modelVersion)
+            case .failure(let error):
+                updateHandler(.failure(error))
+                
+            case .success(let archives):
+                let hasDefault = archives.contains(where: { archive in
+                    archive.archiveVO?.status == ArchiveVOData.Status.ok
+                })
+                
+                if hasDefault, let defaultArchive = archives.first(where: { $0.archiveVO?.archiveID == session?.account.defaultArchiveID && $0.archiveVO?.status != .pending })?.archiveVO {
+                    session?.selectedArchive = defaultArchive
                     
-                    if let accountVO = model.results.first?.data?.first?.accountVO {
-                        handler(.success, accountVO)
-                    } else {
-                        handler(.error(message: .errorMessage), nil)
-                    }
+                    updateHandler(.success(defaultArchive))
                 } else {
-                    handler(.error(message: .errorMessage), nil)
+                    updateHandler(.success(nil))
                 }
-
-            case .error:
-                handler(.error(message: .errorMessage), nil)
-
-            default:
-                break
             }
         }
     }
     
-    func refreshCurrentArchive(_ updateHandler: @escaping ((Bool, ArchiveVOData?) -> Void)) {
-        getAccountArchives { [self] archives, error in
-            if error != nil {
-                updateHandler(false, nil)
-                return
-            }
-            
-            let hasDefault = archives?.contains(where: { archive in
-                archive.archiveVO?.status == ArchiveVOData.Status.ok
-            }) ?? false
-            
-            if hasDefault, let defaultArchive = archives?.first(where: { $0.archiveVO?.archiveID == session?.account.defaultArchiveID && $0.archiveVO?.status != .pending })?.archiveVO {
-                session?.selectedArchive = defaultArchive
-                
-                updateHandler(true, defaultArchive)
-            } else {
-                updateHandler(true, nil)
-            }
-        }
-    }
-    
-    func getAccountArchives(_ completionBlock: @escaping (([ArchiveVO]?, Error?) -> Void) ) {
+    func getAccountArchives(_ completionBlock: @escaping (Result<[ArchiveVO], Error>) -> Void) {
         guard let accountId: Int = session?.account.accountID else {
-            completionBlock(nil, APIError.unknown)
+            completionBlock(.failure(APIError.unknown))
             return
         }
-        
-        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
-        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(nil, APIError.invalidResponse)
-                    return
-                }
-                
-                let accountArchives = model.results.first?.data
-                
-                completionBlock(accountArchives, nil)
-                return
-                
-            case .error:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(nil, APIError.invalidResponse)
-                return
-            }
+
+        archivesRepository.getAccountArchives(accountId: accountId) { result in
+            completionBlock(result)
         }
     }
     
-    func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+    func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping (Result<Bool, Error>) -> Void) {
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
-            completionBlock(false, APIError.unknown)
+            completionBlock(.failure(APIError.unknown))
             return
         }
-        
-        let changeArchiveOperation = APIOperation(ArchivesEndpoint.change(archiveId: archiveId, archiveNbr: archiveNbr))
-        changeArchiveOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard
-                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-                    model.isSuccessful
-                else {
-                    completionBlock(false, APIError.invalidResponse)
-                    return
-                }
-                
-                completionBlock(true, nil)
-                return
-                
-            case .error:
-                completionBlock(false, APIError.invalidResponse)
-                return
-                
-            default:
-                completionBlock(false, APIError.invalidResponse)
-                return
-            }
+
+        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { result in
+            completionBlock(result)
         }
     }
+
 }

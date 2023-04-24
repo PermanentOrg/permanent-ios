@@ -6,41 +6,9 @@
 //
 
 import Foundation
+import UIKit
 
 struct Payloads {
-    static func forgotPasswordPayload(for email: String) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": email
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-    
-    static func loginPayload(for credentials: LoginCredentials) -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [
-                        "AccountVO": [
-                            "primaryEmail": credentials.email
-                        ],
-                        "AccountPasswordVO": [
-                            "password": credentials.password
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    }
-    
-    
-    
     static func uploadFileMetaPayload(for params: FileMetaParams) -> RequestParameters {
         return [
             "RequestVO": [
@@ -53,16 +21,6 @@ struct Payloads {
                             "uploadFileName": params.filename
                         ]
                     ]
-                ]
-            ]
-        ]
-    }
-    
-    static func verifyAuth() -> RequestParameters {
-        return [
-            "RequestVO": [
-                "data": [
-                    [:]
                 ]
             ]
         ]

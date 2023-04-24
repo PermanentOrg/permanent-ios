@@ -36,9 +36,7 @@ class WorkspaceSegmentedControlView: UIView {
         segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
-        if #available(iOS 13.0, *) {
-            segmentedControl.selectedSegmentTintColor = .primary
-        }
+        segmentedControl.selectedSegmentTintColor = .primary
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
     }

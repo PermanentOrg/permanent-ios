@@ -98,12 +98,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
         styleNavBar()
         
         let leftButtonImage: UIImage!
-        if #available(iOS 13.0, *) {
-            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-        } else {
-            leftButtonImage = UIImage(named: "close")
-        }
-        
+        leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
+
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!, style: .plain, target: self, action: #selector(showShareMenu(_:)))
     }
@@ -111,12 +107,8 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     override func styleNavBar() {
         super.styleNavBar()
         
-        if #available(iOS 13.0, *) {
-            navigationController?.navigationBar.standardAppearance.backgroundColor = .black
-            navigationController?.navigationBar.scrollEdgeAppearance?.backgroundColor = .black
-        } else {
-            navigationController?.navigationBar.barTintColor = .black
-        }
+        navigationController?.navigationBar.standardAppearance.backgroundColor = .black
+        navigationController?.navigationBar.scrollEdgeAppearance?.backgroundColor = .black
     }
     
     @objc func showShareMenu(_ sender: Any) {

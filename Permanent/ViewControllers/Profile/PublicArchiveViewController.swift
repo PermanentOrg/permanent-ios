@@ -69,12 +69,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         if navigationController?.presentingViewController != nil {
             let leftButtonImage: UIImage!
-            if #available(iOS 13.0, *) {
-                leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
-            } else {
-                leftButtonImage = UIImage(named: "close")
-            }
-            
+            leftButtonImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(weight: .regular))
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: leftButtonImage, style: .plain, target: self, action: #selector(closeButtonAction(_:)))
         }
         
@@ -139,7 +134,13 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         profilePhotoBorderView.layer.cornerRadius = 2
         profilePhotoImageView.layer.cornerRadius = 2
-        profilePhotoImageView.sd_setImage(with: URL(string: archiveData.thumbURL200!))
+        
+        if let archiveThumb200 = archiveData.thumbURL200 {
+            profilePhotoImageView.sd_setImage(with: URL(string: archiveThumb200))
+        } else {
+            profilePhotoImageView.image = UIColor.lightGray.imageWithColor(width: 48, height: 48)
+        }
+        
         
         viewModel?.getPublicRoot(then: { status in
             if status == .success, let bannerURL = self.viewModel?.bannerURL {
@@ -152,9 +153,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
 
         segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
         segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
-        if #available(iOS 13.0, *) {
-            segmentedControl.selectedSegmentTintColor = .primary
-        }
+        segmentedControl.selectedSegmentTintColor = .primary
     }
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {

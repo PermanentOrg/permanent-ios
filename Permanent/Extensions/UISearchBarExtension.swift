@@ -55,15 +55,13 @@ extension UISearchBar {
         setSearchFieldBackgroundImage(image, for: .normal)
         for subview in self.subviews {
             for subSubViews in subview.subviews {
-                if #available(iOS 13.0, *) {
-                    for child in subSubViews.subviews {
-                        if let textField = child as? UISearchTextField {
-                            textField.layer.cornerRadius = radius
-                            textField.clipsToBounds = true
-                        }
+                for child in subSubViews.subviews {
+                    if let textField = child as? UISearchTextField {
+                        textField.layer.cornerRadius = radius
+                        textField.clipsToBounds = true
                     }
-                    continue
                 }
+                
                 if let textField = subSubViews as? UITextField {
                     textField.layer.cornerRadius = radius
                     textField.clipsToBounds = true

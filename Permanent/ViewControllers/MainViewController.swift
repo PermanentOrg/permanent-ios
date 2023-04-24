@@ -169,11 +169,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     fileprivate func setupCollectionView() {
         isGridView = viewModel?.isGridView ?? false
-        if #available(iOS 13.0, *) {
-            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
-        } else {
-            // Fallback on earlier versions
-        }
+        switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
@@ -495,12 +491,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.isGridView = isGridView
         
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
-        
-        if #available(iOS 13.0, *) {
-            switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
-        } else {
-            // Fallback on earlier versions
-        }
+    
+        switchViewButton.setImage(UIImage(systemName: isGridView ? "list.bullet" : "square.grid.2x2.fill"), for: .normal)
         
         collectionView.reloadData()
         let flowLayout = UICollectionViewFlowLayout()

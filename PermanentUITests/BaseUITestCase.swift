@@ -22,16 +22,6 @@ class BaseUITestCase: XCTestCase {
         continueAfterFailure = false
 
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-        addUIInterruptionMonitor(withDescription: "Auth Prompt") { (alert) -> Bool in
-            if alert.staticTexts["“Permanent” Wants to Use “permanent.org” to Sign In"].exists ||
-                alert.staticTexts["“Permanent” Wants to Use “fusionauth.io” to Sign In"].exists {
-                alert.buttons["Continue"].tap()
-                return true
-            } else {
-                return false
-            }
-        }
-        
         addUIInterruptionMonitor(withDescription: "Push Notifications Prompt") { (alert) -> Bool in
             if alert.staticTexts["“Permanent” Would Like to Send You Notifications"].exists {
                 alert.buttons["Allow"].tap()

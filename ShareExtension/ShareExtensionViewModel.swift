@@ -51,7 +51,7 @@ class ShareExtensionViewModel: ViewModelInterface {
     }
     
     func hasActiveSession() -> Bool {
-        guard let expirationDate = session?.authState.lastTokenResponse?.accessTokenExpirationDate else { return false }
+        guard let expirationDate = session?.expirationDate else { return false }
         return expirationDate.timeIntervalSince1970 > Date().timeIntervalSince1970
     }
     

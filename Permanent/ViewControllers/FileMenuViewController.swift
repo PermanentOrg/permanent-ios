@@ -357,9 +357,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             containerView.translatesAutoresizingMaskIntoConstraints = false
             
             var image: UIImage? = nil
-            if #available(iOS 13.0, *) {
-                image = UIImage(systemName: "chevron.down")?.templated
-            }
+            image = UIImage(systemName: "chevron.down")?.templated
             
             let imageView = UIImageView(image: image)
             imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -561,12 +559,9 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         containerView.addSubview(button)
         
         var shareImageView: UIImageView = UIImageView()
-        if #available(iOS 13.0, *) {
-            let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light, scale: .small)
-            shareImageView = UIImageView(image: UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig)?.templated)
-        } else {
-            shareImageView = UIImageView(image: UIImage(named: "share")?.templated ?? .placeholder.templated)
-        }
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .light, scale: .small)
+        shareImageView = UIImageView(image: UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig)?.templated)
+
         shareImageView.translatesAutoresizingMaskIntoConstraints = false
         shareImageView.tintColor = .primary
         shareImageView.contentMode = .scaleAspectFit

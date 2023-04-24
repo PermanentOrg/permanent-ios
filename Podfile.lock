@@ -1,9 +1,4 @@
 PODS:
-  - AppAuth (1.4.0):
-    - AppAuth/Core (= 1.4.0)
-    - AppAuth/ExternalUserAgent (= 1.4.0)
-  - AppAuth/Core (1.4.0)
-  - AppAuth/ExternalUserAgent (1.4.0)
   - Firebase (6.32.2):
     - Firebase/Core (= 6.32.2)
   - Firebase/Analytics (6.32.2):
@@ -113,7 +108,7 @@ PODS:
   - nanopb/encode (1.30906.0)
   - ObjectMapper (4.2.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.22.1)
+  - Protobuf (3.22.3)
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
@@ -124,7 +119,6 @@ PODS:
   - StripeCore (22.8.1)
 
 DEPENDENCIES:
-  - AppAuth (= 1.4.0)
   - Firebase
   - Firebase/Analytics (= 6.32.2)
   - Firebase/Crashlytics (= 6.32.2)
@@ -134,6 +128,7 @@ DEPENDENCIES:
   - GooglePlaces (= 6.1.1.0)
   - KeychainSwift (= 20.0)
   - ObjectMapper (= 4.2.0)
+  - Protobuf (= 3.22.3)
   - SDWebImage (= 5.10.0)
   - SkeletonView (= 1.30.4)
   - Sourcery (= 1.4.1)
@@ -141,7 +136,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AppAuth
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -169,7 +163,6 @@ SPEC REPOS:
     - StripeCore
 
 SPEC CHECKSUMS:
-  AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   Firebase: 47176280bfba198e531f909cfb1612dad216cb96
   FirebaseABTesting: 8a9d8df3acc2b43f4a22014ddf9f601bca6af699
   FirebaseAnalytics: 3c2fee6a922023ccfda7af87e4e641bad1fc11ba
@@ -189,13 +182,13 @@ SPEC CHECKSUMS:
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: d7f7c8329edf5eb8af65547a8ba3e9c1cee927d5
+  Protobuf: d03938d5f7e974a97964fb0567771e36fbe9ecce
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   SkeletonView: 5a050f6411e697abd4cda0a8d767013399dccd69
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   StripeApplePay: 858c1dadc39b658d317661dea8cc2b7158533a17
   StripeCore: 52e0aba2fad604455692db593bf5edc04758b760
 
-PODFILE CHECKSUM: 3293a65b259c6135bc9a1a8217a9a2ad90e99568
+PODFILE CHECKSUM: e4115c8edd2525e07aa9bfdba2a6d368bfec7118
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

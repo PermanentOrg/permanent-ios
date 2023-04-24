@@ -67,9 +67,8 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         }
         
         searchTags.updateHeight(height: 40, radius: 2)
-        if #available(iOS 13.0, *) {
-            searchTags.searchTextField.font = Text.style39.font
-        }
+        searchTags.searchTextField.font = Text.style39.font
+
         searchTags.setPlaceholderTextColor(.lightGray)
         searchTags.tintColor = .lightGray
         searchTags.searchTextPositionAdjustment = UIOffset(horizontal: 8, vertical: 0)
