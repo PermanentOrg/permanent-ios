@@ -32,6 +32,7 @@ platform :ios do
 
   lane :beta do
     cocoapods(use_bundle_exec: true,
+              clean_install: true,
               podfile: "./Podfile")
               
     app_store_connect_api_key(duration: 1200, # optional (maximum 1200)
