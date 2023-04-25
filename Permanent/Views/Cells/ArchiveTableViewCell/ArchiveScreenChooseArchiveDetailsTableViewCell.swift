@@ -12,6 +12,7 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archiveAccessLabel: UILabel!
     @IBOutlet weak var rightButton: UIButton!
+    @IBOutlet weak var currentArchiveDefaultIcon: UIImageView!
     
     var rightButtonAction: ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void)?
     
@@ -49,12 +50,23 @@ class ArchiveScreenChooseArchiveDetailsTableViewCell: UITableViewCell {
         
         rightButton.isHidden = false
         if isDefault {
-            rightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+            if AppEnvironment.shared.isRunningInAppExtension() {
+                rightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                
+                rightButton.isEnabled = false
+            } else {
+                currentArchiveDefaultIcon.isHidden = false
+                
+                rightButton.setImage(UIImage(named: "more"), for: .normal)
+                rightButton.isEnabled = true
+            }
             
-            rightButton.isEnabled = false
         } else if isManaging {
-            rightButton.setImage(UIImage(named: "more"), for: .normal)
-            rightButton.isEnabled = true
+            if !AppEnvironment.shared.isRunningInAppExtension() {
+                rightButton.setImage(UIImage(named: "more"), for: .normal)
+                rightButton.isEnabled = true
+                currentArchiveDefaultIcon.isHidden = true
+            }
         } else {
             rightButton.isHidden = true
         }

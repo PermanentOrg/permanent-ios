@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -26,6 +26,13 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="LwX-eX-yZ0"/>
                                     <constraint firstAttribute="width" constant="50" id="MzP-uX-CM9"/>
+                                </constraints>
+                            </imageView>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star-fill" translatesAutoresizingMaskIntoConstraints="NO" id="IxC-2L-RBF">
+                                <rect key="frame" x="50.5" y="17" width="12.5" height="12.5"/>
+                                <color key="tintColor" systemColor="systemYellowColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="IxC-2L-RBF" secondAttribute="height" multiplier="1:1" id="5ro-hv-inW"/>
                                 </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="252" horizontalCompressionResistancePriority="752" verticalCompressionResistancePriority="752" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ZV3-xF-Yyr">
@@ -64,9 +71,12 @@
                             <constraint firstItem="Mug-XK-ORg" firstAttribute="leading" secondItem="ZV3-xF-Yyr" secondAttribute="trailing" id="35e-vo-eGs"/>
                             <constraint firstItem="tHz-8X-Jhr" firstAttribute="leading" secondItem="SYv-es-Q6N" secondAttribute="leading" constant="15" id="3T9-ln-STr"/>
                             <constraint firstItem="ZV3-xF-Yyr" firstAttribute="centerY" secondItem="SYv-es-Q6N" secondAttribute="centerY" id="ByJ-u7-Hz1"/>
+                            <constraint firstItem="IxC-2L-RBF" firstAttribute="height" secondItem="tHz-8X-Jhr" secondAttribute="height" multiplier="0.25" id="D16-fQ-BhV"/>
                             <constraint firstAttribute="height" constant="80" id="K78-FK-Huh"/>
+                            <constraint firstItem="IxC-2L-RBF" firstAttribute="top" secondItem="tHz-8X-Jhr" secondAttribute="top" constant="2" id="fMY-uR-cfk"/>
                             <constraint firstItem="ZV3-xF-Yyr" firstAttribute="leading" secondItem="tHz-8X-Jhr" secondAttribute="trailing" constant="10" id="pAG-An-nKi"/>
                             <constraint firstItem="Mug-XK-ORg" firstAttribute="centerY" secondItem="SYv-es-Q6N" secondAttribute="centerY" id="uhs-cY-ROb"/>
+                            <constraint firstItem="IxC-2L-RBF" firstAttribute="trailing" secondItem="tHz-8X-Jhr" secondAttribute="trailing" constant="-2" id="xTc-nk-hyK"/>
                             <constraint firstItem="tHz-8X-Jhr" firstAttribute="centerY" secondItem="SYv-es-Q6N" secondAttribute="centerY" id="xyR-wN-nq3"/>
                         </constraints>
                     </view>
@@ -83,12 +93,14 @@
                 <outlet property="archiveAccessLabel" destination="qen-D3-pPH" id="9UO-jG-kem"/>
                 <outlet property="archiveNameLabel" destination="9Db-NQ-h85" id="dlt-EZ-5Bo"/>
                 <outlet property="archiveThumbnailImage" destination="tHz-8X-Jhr" id="oph-Qv-H0I"/>
+                <outlet property="currentArchiveDefaultIcon" destination="IxC-2L-RBF" id="PEc-Md-iWV"/>
                 <outlet property="rightButton" destination="Mug-XK-ORg" id="Vfh-m8-TvJ"/>
             </connections>
             <point key="canvasLocation" x="19.565217391304348" y="57.589285714285708"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="star-fill" width="20" height="19"/>
         <image name="star.fill" catalog="system" width="128" height="116"/>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
