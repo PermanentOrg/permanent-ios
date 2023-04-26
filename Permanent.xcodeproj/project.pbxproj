@@ -230,6 +230,16 @@
 		5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */; };
 		5ED0856E24E4257500CDB4D3 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */; };
 		5ED090E82975D24F003D797B /* ForgotPasswordPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */; };
+		5ED3B3A929F7D6D6000CFF48 /* LegacyPlanning.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED3B3A829F7D6D6000CFF48 /* LegacyPlanning.storyboard */; };
+		5ED3B3AC29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */; };
+		5ED3B3AE29F7E017000CFF48 /* LegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */; };
+		5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */; };
+		5ED3B3B129F7E4FF000CFF48 /* ArchiveLegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */; };
+		5ED3B3B229F7E503000CFF48 /* LegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */; };
+		5ED3B3B329F7E945000CFF48 /* LegacyPlanningViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */; };
+		5ED3B3B429F7EBD1000CFF48 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
+		5ED3B3B629F7F4B2000CFF48 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */; };
+		5ED3B3B729F7F4B6000CFF48 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */; };
 		5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */; };
 		5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */; };
 		5ED4B9C12875376000CF044B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
@@ -939,6 +949,11 @@
 		5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		5ED090E72975D24F003D797B /* ForgotPasswordPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordPage.swift; sourceTree = "<group>"; };
+		5ED3B3A829F7D6D6000CFF48 /* LegacyPlanning.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LegacyPlanning.storyboard; sourceTree = "<group>"; };
+		5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveLegacyPlanningViewController.swift; sourceTree = "<group>"; };
+		5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningViewController.swift; sourceTree = "<group>"; };
+		5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningViewModel.swift; sourceTree = "<group>"; };
+		5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideDrawerTableViewCell.swift; sourceTree = "<group>"; };
 		5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RightSideDrawerTableViewCell.xib; sourceTree = "<group>"; };
 		5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsViewController.swift; sourceTree = "<group>"; };
@@ -1399,6 +1414,7 @@
 				BC4526EB251CD61500E24A51 /* Onboarding */,
 				BC6D3B3F251363D600390927 /* Authentication */,
 				5E5EF854273B23A3004F7EBC /* Profile */,
+				5ED3B3AA29F7D71E000CFF48 /* LegacyPlanning */,
 				5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */,
 				5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */,
 				06644A7F24EA6F47003CD359 /* BaseViewController.swift */,
@@ -1534,6 +1550,7 @@
 				5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */,
 				F57CE595282BE9D000B06D95 /* DonateViewModel.swift */,
 				5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */,
+				5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1878,6 +1895,15 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		5ED3B3AA29F7D71E000CFF48 /* LegacyPlanning */ = {
+			isa = PBXGroup;
+			children = (
+				5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */,
+				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */,
+			);
+			path = LegacyPlanning;
+			sourceTree = "<group>";
+		};
 		5ED581BD25EF7F6F00A5A79E /* FileDetailsCollectionViewCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -1988,6 +2014,7 @@
 				5E5EF852273B1E56004F7EBC /* Profile.storyboard */,
 				F58F314A27F1A52600B89B99 /* Donate.storyboard */,
 				5E1C3C5528F82FEA007C1A63 /* ArchiveSettings.storyboard */,
+				5ED3B3A829F7D6D6000CFF48 /* LegacyPlanning.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -2160,6 +2187,7 @@
 				5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */,
 				5E96F03E279223D90099C0E7 /* NetworkLogger.swift */,
 				5E744F9027E36EAA00A47D27 /* RCValues.swift */,
+				5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -2890,6 +2918,7 @@
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
 				5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */,
+				5ED3B3A929F7D6D6000CFF48 /* LegacyPlanning.storyboard in Resources */,
 				5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */,
 				5E1C546229B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib in Resources */,
 				5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */,
@@ -3207,6 +3236,7 @@
 				BC6AF9A625922CBA00483BBA /* AccountVOPayload.swift in Sources */,
 				BC0D99B0256C08F000D29041 /* SideMenuViewController.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
+				5ED3B3AC29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
@@ -3327,6 +3357,7 @@
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
+				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
@@ -3501,6 +3532,7 @@
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */,
 				5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */,
+				5ED3B3AE29F7E017000CFF48 /* LegacyPlanningViewController.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */,
@@ -3524,6 +3556,7 @@
 				F59C3B8129C3260100337E45 /* ArchivesRepository.swift in Sources */,
 				5EC9C69B290BD36A00AD2E37 /* RecoverPasswordViewController.swift in Sources */,
 				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
+				5ED3B3B629F7F4B2000CFF48 /* AppEnvironment.swift in Sources */,
 				BC6358842535C7D000EEC48C /* NavigationController.swift in Sources */,
 				F5EEB4D62821556C00D584AD /* AccountOnboardingViewModel.swift in Sources */,
 				5E62F7CE27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift in Sources */,
@@ -3610,6 +3643,7 @@
 				F5ADBF36290ADB7C0007A516 /* ArchivesViewController.swift in Sources */,
 				5ED4B9C52876DF0E00CF044B /* ArchiveVO.swift in Sources */,
 				F559F89F28FEEAD50015A522 /* RelocateFolderPayload.swift in Sources */,
+				5ED3B3B329F7E945000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F5ADBF42290BC0770007A516 /* PRMNTActionSheetViewController.swift in Sources */,
 				F559F8AB28FF02A10015A522 /* FileListType.swift in Sources */,
 				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
@@ -3627,6 +3661,7 @@
 				5E83CC4A286C602000A5775B /* FileInfo.swift in Sources */,
 				F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */,
 				F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */,
+				5ED3B3B129F7E4FF000CFF48 /* ArchiveLegacyPlanningViewController.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
 				5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */,
 				5E1CCC1A287EE4B900913EEA /* ShareExtensionViewModel.swift in Sources */,
@@ -3638,6 +3673,7 @@
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
 				F559F88B28FEE9610015A522 /* FolderContentView.swift in Sources */,
 				F559F8B228FF03720015A522 /* UploadManager.swift in Sources */,
+				5ED3B3B429F7EBD1000CFF48 /* NavigationController.swift in Sources */,
 				F51B3322288B0B8D00EA15DA /* FileType.swift in Sources */,
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
@@ -3663,6 +3699,7 @@
 				5E1CCC20287F050500913EEA /* CustomButton.swift in Sources */,
 				5ED4B9C72876DF3100CF044B /* Model.swift in Sources */,
 				F559F89D28FEEABA0015A522 /* APIPayload.swift in Sources */,
+				5ED3B3B229F7E503000CFF48 /* LegacyPlanningViewController.swift in Sources */,
 				F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */,
 				F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
@@ -3715,6 +3752,7 @@
 				5ED4B9D12876E03F00CF044B /* RecordVO.swift in Sources */,
 				5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */,
 				5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */,
+				5ED3B3B729F7F4B6000CFF48 /* AppEnvironment.swift in Sources */,
 				F559F8A828FF025C0015A522 /* APIEnvironment.swift in Sources */,
 				F559F8A328FEEC010015A522 /* OperationProtocol.swift in Sources */,
 				3745548C512E2FD1EB1F3AFC /* FloatingActionIslandViewController.swift in Sources */,

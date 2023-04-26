@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -24,6 +25,13 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="4ZB-vn-D2Y"/>
                                             <constraint firstAttribute="width" constant="50" id="vbe-Mn-tzv"/>
+                                        </constraints>
+                                    </imageView>
+                                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star-fill" translatesAutoresizingMaskIntoConstraints="NO" id="Irh-JE-Iqr">
+                                        <rect key="frame" x="50.5" y="17" width="12.5" height="12.5"/>
+                                        <color key="tintColor" systemColor="systemYellowColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Irh-JE-Iqr" secondAttribute="height" multiplier="1:1" id="cx1-LM-WUa"/>
                                         </constraints>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="TfW-Cl-Ioc">
@@ -58,7 +66,9 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="f17-Ki-h3h" firstAttribute="top" secondItem="Irh-JE-Iqr" secondAttribute="top" constant="-2" id="0f0-ow-h4F"/>
                                     <constraint firstItem="f17-Ki-h3h" firstAttribute="leading" secondItem="LiA-iD-9rz" secondAttribute="leading" constant="15" id="2Hy-T0-ymk"/>
+                                    <constraint firstItem="Irh-JE-Iqr" firstAttribute="height" secondItem="f17-Ki-h3h" secondAttribute="height" multiplier="0.25" id="M8S-Tz-BWI"/>
                                     <constraint firstItem="oQs-fu-9qL" firstAttribute="leading" secondItem="TfW-Cl-Ioc" secondAttribute="trailing" id="N4m-PN-DD5"/>
                                     <constraint firstAttribute="trailing" secondItem="oQs-fu-9qL" secondAttribute="trailing" constant="15" id="O2z-wo-0nS"/>
                                     <constraint firstItem="TfW-Cl-Ioc" firstAttribute="leading" secondItem="f17-Ki-h3h" secondAttribute="trailing" constant="10" id="Pw6-NA-8Ro"/>
@@ -66,6 +76,7 @@
                                     <constraint firstItem="TfW-Cl-Ioc" firstAttribute="centerY" secondItem="LiA-iD-9rz" secondAttribute="centerY" id="aq3-pF-EGB"/>
                                     <constraint firstAttribute="height" constant="80" id="pgu-yk-g4m"/>
                                     <constraint firstItem="oQs-fu-9qL" firstAttribute="centerY" secondItem="LiA-iD-9rz" secondAttribute="centerY" id="rOg-3X-Zjj"/>
+                                    <constraint firstItem="f17-Ki-h3h" firstAttribute="trailing" secondItem="Irh-JE-Iqr" secondAttribute="trailing" constant="2" id="sLe-2q-gSS"/>
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1XR-vW-kpT">
@@ -105,6 +116,7 @@
                     <connections>
                         <outlet property="createNewArchiveButton" destination="Ke2-ZL-CVN" id="4MM-hg-e3B"/>
                         <outlet property="currentArchiveContainer" destination="LiA-iD-9rz" id="qFh-s8-0NZ"/>
+                        <outlet property="currentArchiveDefaultIcon" destination="Irh-JE-Iqr" id="2Gc-fc-nQv"/>
                         <outlet property="currentArchiveLabel" destination="tpa-Dw-3Ha" id="cMx-rr-140"/>
                         <outlet property="currentArchiveRightButton" destination="oQs-fu-9qL" id="Dcr-h1-kis"/>
                         <outlet property="currentArhiveImage" destination="f17-Ki-h3h" id="S6l-js-VZ1"/>
@@ -16116,6 +16128,7 @@ j64ADo+wAA6PsgAOj7QADqFUAA6hWQAOoWYADqFpAA6hdgAOoXsADqGDAA6hhgAOoYsADqGTAAAAAAAA
 BAEAAAAAAAAAVgAAAAAAAAAAAAAAAAAOoZY
 </mutableData>
         </image>
+        <image name="star-fill" width="20" height="19"/>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
