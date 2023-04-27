@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build and deploy a release build to TestFlight
     runs-on: macos-latest
+    environment: production
 
     steps:
       - name: Checkout
@@ -37,4 +38,6 @@ jobs:
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane app_store
