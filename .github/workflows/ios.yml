@@ -12,13 +12,13 @@ on:
         - unit-tests
         - ui-tests
         - all-tests
-  #pull_request:
-   # branches: [ "Development" ]
+  pull_request:
+    branches: [ "Development" ]
 
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: self-hosted
+    runs-on: macos-latest
     environment: Staging
 
     steps:

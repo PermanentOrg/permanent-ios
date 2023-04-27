@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: self-hosted
+    runs-on: macos-latest
     environment: staging
 
     steps:
