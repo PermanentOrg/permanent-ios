@@ -54,5 +54,5 @@ jobs:
           FIREBASEAPPDISTRO_APP: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
           FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
           FIREBASEAPPDISTRO_CLI_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
-          TEST_PLAN: ${{ inputs.test_plan == "" && "unit-tests" || inputs.test_plan }}
+          TEST_PLAN: ${{ inputs.test_plan == '' && 'unit-tests' || inputs.test_plan }}
         run: bundle exec fastlane tests
