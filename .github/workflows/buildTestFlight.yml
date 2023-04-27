@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and deploy a release build to TestFlight
-    runs-on: macos-latest
+    runs-on: macos-13
     environment: production
 
     steps:
@@ -19,6 +19,9 @@ jobs:
         with: 
           ruby-version: '2.6.8'
           bundler-cache: true
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.3'
       - name: Run Fastlane AppStore
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_PROD_CLIENT_ID }}
@@ -40,4 +43,6 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 6
         run: bundle exec fastlane app_store

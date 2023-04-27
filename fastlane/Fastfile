@@ -19,6 +19,8 @@ platform :ios do
   desc "Description of what the lane does"
   
   lane :tests do
+    setup_ci
+
     # add actions here: https://docs.fastlane.tools/actions
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
@@ -31,6 +33,8 @@ platform :ios do
   end
 
   lane :beta do
+    setup_ci
+
     # resolve cocoapods
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
@@ -40,22 +44,22 @@ platform :ios do
                               in_house: false,
                               is_key_content_base64: true
                               )
-                              
+   
     # resolve the provisioning profiles and certs from private repo
     match(type: "adhoc",
           readonly: true,
           app_identifier: "org.permanent.permanent.staging",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git"
           )
     match(type: "adhoc",
           readonly: true,
           app_identifier: "org.permanent.permanent.staging.PushExtension",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git"
           )
     match(type: "adhoc",
           readonly: true,
           app_identifier: "org.permanent.permanent.staging.ShareExtension",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git"
           )
 
     # get the latest release build # from firebase
@@ -70,7 +74,10 @@ platform :ios do
 	            configuration: "DEV-Release",
 	            xcargs: "-allowProvisioningUpdates",
               include_bitcode: false,
-              export_method: "ad-hoc")
+              export_method: "ad-hoc",
+              skip_codesigning: true,
+              clean: true,
+              export_team_id: "C8YKZNBVWT")
 
     # get the change log - all the commits since the last tag in git
     changelog = changelog_from_git_commits(merge_commit_filtering: 'exclude_merges')
@@ -81,6 +88,8 @@ platform :ios do
   end
   
   lane :app_store do 
+    setup_ci
+
     # resolve cocoapods
     cocoapods(use_bundle_exec: true,
               podfile: "./Podfile")
@@ -95,17 +104,20 @@ platform :ios do
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive.PushExtension",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive.ShareExtension",
-          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/v-rusu/permanent-ios-certs.git"
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
           )
 
     # get the latest release build # from firebase
@@ -120,8 +132,18 @@ platform :ios do
               scheme: "Permanent",
 	            configuration: "Release",
               include_bitcode: false,
-	            xcargs: "-allowProvisioningUpdates",
-              export_method: "app-store")
+              clean: true,
+              export_options: {
+                  method: "app-store",
+                  provisioningProfiles: {
+                        "org.permanent.PermanentArchive": "match AppStore org.permanent.PermanentArchive",
+                        "org.permanent.PermanentArchive.PushExtension": "match AppStore org.permanent.PermanentArchive.PushExtension",
+                        "org.permanent.PermanentArchive.ShareExtension": "match AppStore org.permanent.PermanentArchive.ShareExtension"
+                  }
+              },
+              xcargs: "CODE_SIGN_STYLE='Manual' DEVELOPMENT_TEAM='C8YKZNBVWT'",
+              codesigning_identity: "Apple Distribution: Permrecord Foundation (C8YKZNBVWT)"
+      )
 
     #upload to TestFlight
     upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
