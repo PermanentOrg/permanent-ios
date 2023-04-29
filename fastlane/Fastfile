@@ -88,7 +88,7 @@ platform :ios do
   end
   
   lane :app_store do 
-    #setup_ci
+    setup_ci
 
     # resolve cocoapods
     cocoapods(use_bundle_exec: true,
@@ -158,15 +158,8 @@ platform :ios do
               include_bitcode: false,
               clean: true,
               export_options: {
-                  method: "app-store",
-                  provisioningProfiles: {
-                        "org.permanent.PermanentArchive": "match AppStore org.permanent.PermanentArchive",
-                        "org.permanent.PermanentArchive.PushExtension": "match AppStore org.permanent.PermanentArchive.PushExtension",
-                        "org.permanent.PermanentArchive.ShareExtension": "match AppStore org.permanent.PermanentArchive.ShareExtension"
-                  }
-              },
-              xcargs: "CODE_SIGN_STYLE='Manual' DEVELOPMENT_TEAM='C8YKZNBVWT'",
-              codesigning_identity: "Apple Distribution: Permrecord Foundation (C8YKZNBVWT)"
+                  method: "app-store"
+              }
       )
 
     #upload to TestFlight
