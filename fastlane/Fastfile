@@ -88,7 +88,7 @@ platform :ios do
   end
   
   lane :app_store do 
-    setup_ci
+    #setup_ci
 
     # resolve cocoapods
     cocoapods(use_bundle_exec: true,
@@ -104,19 +104,19 @@ platform :ios do
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive",
-          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive.PushExtension",
-          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
     match(type: "appstore",
           readonly: true,
           app_identifier: "org.permanent.PermanentArchive.ShareExtension",
-          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          git_url: "https://#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
           keychain_password: ""
           )
 
@@ -126,6 +126,30 @@ platform :ios do
       # update the app build number
       increment_build_number({ build_number: latest_release + 1 })
     end
+    
+    update_code_signing_settings(
+        targets: ["Permanent"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive",
+        code_sign_identity: "Apple Distribution"
+    )
+    
+    update_code_signing_settings(
+        targets: ["PushExtension"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive.PushExtension",
+        code_sign_identity: "Apple Distribution"
+    )
+    
+    update_code_signing_settings(
+        targets: ["ShareExtension"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive.ShareExtension",
+        code_sign_identity: "Apple Distribution"
+    )
 
      # actually build the app
     build_app(workspace: "Permanent.xcworkspace",
@@ -147,5 +171,9 @@ platform :ios do
 
     #upload to TestFlight
     upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
+  end
+  
+  lane :manual do
+    
   end
 end
