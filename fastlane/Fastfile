@@ -126,6 +126,30 @@ platform :ios do
       # update the app build number
       increment_build_number({ build_number: latest_release + 1 })
     end
+    
+    update_code_signing_settings(
+        targets: ["Permanent"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive",
+        code_sign_identity: "Apple Distribution"
+    )
+    
+    update_code_signing_settings(
+        targets: ["PushExtension"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive.PushExtension",
+        code_sign_identity: "Apple Distribution"
+    )
+    
+    update_code_signing_settings(
+        targets: ["ShareExtension"],
+        use_automatic_signing: false,
+        path: "Permanent.xcodeproj",
+        profile_name: "match AppStore org.permanent.PermanentArchive.ShareExtension",
+        code_sign_identity: "Apple Distribution"
+    )
 
      # actually build the app
     build_app(workspace: "Permanent.xcworkspace",
@@ -134,15 +158,8 @@ platform :ios do
               include_bitcode: false,
               clean: true,
               export_options: {
-                  method: "app-store",
-                  provisioningProfiles: {
-                        "org.permanent.PermanentArchive": "match AppStore org.permanent.PermanentArchive",
-                        "org.permanent.PermanentArchive.PushExtension": "match AppStore org.permanent.PermanentArchive.PushExtension",
-                        "org.permanent.PermanentArchive.ShareExtension": "match AppStore org.permanent.PermanentArchive.ShareExtension"
-                  }
-              },
-              xcargs: "CODE_SIGN_STYLE='Manual' DEVELOPMENT_TEAM='C8YKZNBVWT'",
-              codesigning_identity: "Apple Distribution: Permrecord Foundation (C8YKZNBVWT)"
+                  method: "app-store"
+              }
       )
 
     #upload to TestFlight
