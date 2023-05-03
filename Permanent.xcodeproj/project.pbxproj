@@ -237,9 +237,11 @@
 		5ED3B3B129F7E4FF000CFF48 /* ArchiveLegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */; };
 		5ED3B3B229F7E503000CFF48 /* LegacyPlanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */; };
 		5ED3B3B329F7E945000CFF48 /* LegacyPlanningViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */; };
-		5ED3B3B429F7EBD1000CFF48 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
 		5ED3B3B629F7F4B2000CFF48 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */; };
 		5ED3B3B729F7F4B6000CFF48 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */; };
+		5ED3B3BA29F95D16000CFF48 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6358832535C7D000EEC48C /* NavigationController.swift */; };
+		5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */; };
+		5ED3B3BD29FAB2C5000CFF48 /* LegacyPlanButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */; };
 		5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */; };
 		5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */; };
 		5ED4B9C12875376000CF044B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2924E67EC4003D90C6 /* Constants.swift */; };
@@ -954,6 +956,7 @@
 		5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningViewController.swift; sourceTree = "<group>"; };
 		5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningViewModel.swift; sourceTree = "<group>"; };
 		5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanButton.swift; sourceTree = "<group>"; };
 		5ED4B02026C130E00077FDDB /* RightSideDrawerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideDrawerTableViewCell.swift; sourceTree = "<group>"; };
 		5ED4B02126C130E00077FDDB /* RightSideDrawerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RightSideDrawerTableViewCell.xib; sourceTree = "<group>"; };
 		5ED581B725EE4AB100A5A79E /* FileDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsViewController.swift; sourceTree = "<group>"; };
@@ -1900,6 +1903,7 @@
 			children = (
 				5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */,
 				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */,
+				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */,
 			);
 			path = LegacyPlanning;
 			sourceTree = "<group>";
@@ -3504,6 +3508,7 @@
 				BC59BAB525C2B7D6005A45D3 /* SharePreviewViewModel.swift in Sources */,
 				F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */,
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
+				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanButton.swift in Sources */,
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
@@ -3673,11 +3678,11 @@
 				5ED4B9C12875376000CF044B /* Constants.swift in Sources */,
 				F559F88B28FEE9610015A522 /* FolderContentView.swift in Sources */,
 				F559F8B228FF03720015A522 /* UploadManager.swift in Sources */,
-				5ED3B3B429F7EBD1000CFF48 /* NavigationController.swift in Sources */,
 				F51B3322288B0B8D00EA15DA /* FileType.swift in Sources */,
 				F559F8B128FF03340015A522 /* UploadFileMetaResponse.swift in Sources */,
 				5ED4B9CE2876E02500CF044B /* TagVO.swift in Sources */,
 				F559F8BB29017CF00015A522 /* FolderNavigationView.swift in Sources */,
+				5ED3B3BD29FAB2C5000CFF48 /* LegacyPlanButton.swift in Sources */,
 				5ED4B9CF2876E02A00CF044B /* ShareVO.swift in Sources */,
 				F561F84B299D712E00B3BD09 /* SharebyURLVO.swift in Sources */,
 				F546F1CA299765C700FAB276 /* SelectWorkspaceViewController.swift in Sources */,
@@ -3688,6 +3693,7 @@
 				F559F89528FEE99E0015A522 /* APIError.swift in Sources */,
 				F559F8AC28FF02AE0015A522 /* UploadOperation.swift in Sources */,
 				F51B3320288B0A7D00EA15DA /* FileViewModel.swift in Sources */,
+				5ED3B3BA29F95D16000CFF48 /* NavigationController.swift in Sources */,
 				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
 				F559F8A528FEEC1E0015A522 /* NetworkLogger.swift in Sources */,
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,

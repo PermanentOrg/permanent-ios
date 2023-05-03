@@ -148,12 +148,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         }
         
         actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-            
             let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as! ArchiveLegacyPlanningViewController
-            
+
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
             navControl.modalPresentationStyle = .fullScreen
-            self?.present(navControl, animated: false, completion: nil)
+            self?.present(navControl, animated: true, completion: nil)
         }), at: 0)
         
         let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: actions)
@@ -278,12 +277,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             
             if archiveVO.accessRole == "access.role.owner" {
                 actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                    
                     let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as! ArchiveLegacyPlanningViewController
-                    
+
                     let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
                     navControl.modalPresentationStyle = .fullScreen
-                    self?.present(navControl, animated: false, completion: nil)
+                    self?.present(navControl, animated: true, completion: nil)
                 }), at: 0)
                 
                 actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
