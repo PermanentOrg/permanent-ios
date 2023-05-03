@@ -113,7 +113,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OlH-ct-Abv" customClass="LegacyPlanButton" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="32" y="738" width="329" height="48"/>
+                                <rect key="frame" x="32" y="772" width="329" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="M7k-d9-GWv"/>
                                 </constraints>
@@ -191,9 +191,32 @@
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6yB-Xk-Viy">
                                                 <rect key="frame" x="0.0" y="129" width="281" height="24"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NPO-R4-kV2">
+                                                        <rect key="frame" x="0.0" y="2" width="41.333333333333336" height="20.333333333333332"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xkk-Ni-MsT">
+                                                        <rect key="frame" x="257" y="0.0" width="24" height="24"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="24" id="UHa-bL-i5g"/>
+                                                            <constraint firstAttribute="height" constant="24" id="bUo-QT-paT"/>
+                                                        </constraints>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <connections>
+                                                            <action selector="addLegacyPersonButtonAction:" destination="cF9-eZ-PVT" eventType="touchUpInside" id="tYj-vd-0by"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="0SG-Ta-8IY"/>
+                                                    <constraint firstItem="Xkk-Ni-MsT" firstAttribute="centerY" secondItem="6yB-Xk-Viy" secondAttribute="centerY" id="8OZ-ZX-hJu"/>
+                                                    <constraint firstItem="NPO-R4-kV2" firstAttribute="leading" secondItem="6yB-Xk-Viy" secondAttribute="leading" id="L4m-cv-YNV"/>
+                                                    <constraint firstItem="NPO-R4-kV2" firstAttribute="centerY" secondItem="6yB-Xk-Viy" secondAttribute="centerY" id="TdE-uK-4t7"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Xkk-Ni-MsT" secondAttribute="trailing" id="bT9-Ou-MSi"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -225,7 +248,7 @@
                         <constraints>
                             <constraint firstItem="7PC-D3-RdO" firstAttribute="trailing" secondItem="Ue0-45-iiy" secondAttribute="trailing" constant="32" id="5pb-vO-ZEb"/>
                             <constraint firstItem="7PC-D3-RdO" firstAttribute="trailing" secondItem="lO6-1s-Zgo" secondAttribute="trailing" constant="32" id="EYo-PR-aA0"/>
-                            <constraint firstItem="7PC-D3-RdO" firstAttribute="bottom" secondItem="OlH-ct-Abv" secondAttribute="bottom" constant="32" id="JcM-SF-Isv"/>
+                            <constraint firstAttribute="bottom" secondItem="OlH-ct-Abv" secondAttribute="bottom" constant="32" id="JcM-SF-Isv"/>
                             <constraint firstItem="UVY-TS-o0g" firstAttribute="top" secondItem="Ue0-45-iiy" secondAttribute="bottom" constant="4" id="NFC-qW-1XQ"/>
                             <constraint firstItem="7HL-jn-WLv" firstAttribute="top" secondItem="7PC-D3-RdO" secondAttribute="top" id="TwE-A9-jif"/>
                             <constraint firstItem="lO6-1s-Zgo" firstAttribute="leading" secondItem="7PC-D3-RdO" secondAttribute="leading" constant="32" id="dG8-bq-IOG"/>
@@ -242,6 +265,8 @@
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
+                        <outlet property="addLegacyStewardButton" destination="Xkk-Ni-MsT" id="Zu6-JO-was"/>
+                        <outlet property="addLegacyStewardLabel" destination="NPO-R4-kV2" id="nJo-ff-Kr0"/>
                         <outlet property="archiveNameLabel" destination="Wy9-a5-Y1g" id="3Ws-nP-mWx"/>
                         <outlet property="archivePermissionLabel" destination="5d9-Jq-IEs" id="hey-Wh-bqP"/>
                         <outlet property="archivePermissionView" destination="qes-PO-lNq" id="UgP-4j-eOp"/>

@@ -20,6 +20,8 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var trustedStewardImage: UIImageView!
     @IBOutlet weak var trustedStewardTitleLabel: UILabel!
     @IBOutlet weak var trustedStewardDescriptionLabel: UILabel!
+    @IBOutlet weak var addLegacyStewardLabel: UILabel!
+    @IBOutlet weak var addLegacyStewardButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +41,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         titleLabelSetup()
         backButtonSetup()
         closeButtonSetup()
+        addLegacyStewardSetup()
         
         archiveNameLabelSetup(text: "Sophia Petrillo")
         archivePermissionSetup(text: "owner")
@@ -194,12 +197,23 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
 
     private func saveArchiveLegacyButtonSetup(text: String) {
-        saveArchiveLegacyButton.label1.text = text
         saveArchiveLegacyButton.layer.cornerRadius = 8
+        saveArchiveLegacyButton.clipsToBounds = true
+        saveArchiveLegacyButton.rightSideImage.image = UIImage(named: "legacyPlanRightArrow")
+        saveArchiveLegacyButton.leftSideLabel.text = text
+    }
+    
+    private func addLegacyStewardSetup() {
+        addLegacyStewardLabel.text = "Add Legacy Steward".localized()
+        addLegacyStewardLabel.textColor = .darkBlue
+        addLegacyStewardLabel.font = Text.style44.font
+        addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        addLegacyStewardButton.tintColor = .darkBlue
     }
     
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+        saveArchiveLegacyButton.isSelectable.toggle()
     }
     
     @objc func closeButtonTapped() {
@@ -207,5 +221,10 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func saveArchiveLegacyButtonAction(_ sender: Any) {
+        
+    }
+    
+    @IBAction func addLegacyPersonButtonAction(_ sender: Any) {
+        
     }
 }
