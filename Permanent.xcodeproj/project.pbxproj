@@ -107,6 +107,8 @@
 		5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */; };
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
 		5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */; };
+		5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
+		5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
 		5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217125C17C5A007642BE /* AccountInfoViewController.swift */; };
 		5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217425C17CE2007642BE /* InfoViewModel.swift */; };
 		5E46217A25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */; };
@@ -827,6 +829,7 @@
 		5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNameUI.swift; sourceTree = "<group>"; };
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
 		5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
+		5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustedStewardViewController.swift; sourceTree = "<group>"; };
 		5E46217125C17C5A007642BE /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
 		5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextWithLabelElementViewViewController.swift; sourceTree = "<group>"; };
@@ -1903,6 +1906,7 @@
 			children = (
 				5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */,
 				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */,
+				5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */,
 				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */,
 			);
 			path = LegacyPlanning;
@@ -3567,6 +3571,7 @@
 				5E62F7CE27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift in Sources */,
 				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
+				5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */,
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,
 				F54201C5265E8C4D0001444C /* RequestLinkAccessNotificationPayload.swift in Sources */,
 				F502C48E26D6220300657D37 /* PhotoTabBarViewController.swift in Sources */,
@@ -3693,6 +3698,7 @@
 				F559F89528FEE99E0015A522 /* APIError.swift in Sources */,
 				F559F8AC28FF02AE0015A522 /* UploadOperation.swift in Sources */,
 				F51B3320288B0A7D00EA15DA /* FileViewModel.swift in Sources */,
+				5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */,
 				5ED3B3BA29F95D16000CFF48 /* NavigationController.swift in Sources */,
 				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
 				F559F8A528FEEC1E0015A522 /* NetworkLogger.swift in Sources */,

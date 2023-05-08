@@ -225,6 +225,9 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func addLegacyPersonButtonAction(_ sender: Any) {
+        let trustedStewardVC = UIViewController.create(withIdentifier: .trustedSteward, from: .legacyPlanning) as! TrustedStewardViewController
         
+        let navControl = NavigationController(rootViewController: trustedStewardVC)
+        self.present(navControl, animated: true, completion: nil)
     }
 }
