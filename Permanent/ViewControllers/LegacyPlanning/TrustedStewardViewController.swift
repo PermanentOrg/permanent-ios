@@ -15,17 +15,23 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     @IBOutlet weak var designateStewardNameTextField: UITextField!
     @IBOutlet weak var designateStewardEmailTextField: UITextField!
     @IBOutlet weak var designateStewardSelectionInfoLabel: UILabel!
+    @IBOutlet weak var designateStewardEmailVerificationLabel: UILabel!
     
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var designateStewardNameView: UIView!
-    @IBOutlet weak var designateStewardEmailView: UIView!
+    @IBOutlet weak var designateStewardEmailStackView: UIStackView!
     @IBOutlet weak var designateStewardInfoView: UIView!
+    @IBOutlet weak var emailVerificationImageView: UIImageView!
+    @IBOutlet weak var inviteUserToPermanentLabel: UILabel!
+    @IBOutlet weak var inviteUserToPermanentSwitch: UISwitch!
+    @IBOutlet weak var inviteUserToPermanentStackView: UIStackView!
     
     @IBOutlet weak var noteTitleLabel: UILabel!
     @IBOutlet weak var noteDescriptionLabel: UILabel!
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = LegacyPlanningViewModel()
         
         setupUI()
     }
@@ -42,13 +48,15 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         customizeDesignateStewardNameTextField()
         customizeDesignateStewardEmailTextField()
         customizeDesignateStewardSelectionInfoLabel()
+        customizeEmailVerificationLabel()
         
         customizeNoteTitleLabel()
         customizeNoteDescriptionLabel()
+        customizeInviteUserToPermanentLabel()
         
         customizeSeparatorView()
         customizeView(designateStewardNameView)
-        customizeView(designateStewardEmailView)
+        customizeView(designateStewardEmailStackView)
         customizeView(designateStewardInfoView)
     }
     
@@ -165,6 +173,33 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         noteDescriptionLabel.attributedText = attributedText
     }
     
+    private func customizeEmailVerificationLabel() {
+        designateStewardEmailVerificationLabel.font = Text.style12.font
+        designateStewardEmailVerificationLabel.textColor = .lightRed
+        
+        let emailVerificationParagraphStyle = NSMutableParagraphStyle()
+        emailVerificationParagraphStyle.lineHeightMultiple = 1.47
+        
+        let emailVerificationAttributedText = NSMutableAttributedString(string: "User not found in Permanent database.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: emailVerificationParagraphStyle])
+        
+        designateStewardEmailVerificationLabel.attributedText = emailVerificationAttributedText
+    }
+    
+    private func customizeInviteUserToPermanentLabel() {
+        inviteUserToPermanentLabel.textColor = .darkBlue
+        inviteUserToPermanentLabel.font = Text.style35.font
+        
+        let inviteUserParagraphStyle = NSMutableParagraphStyle()
+        inviteUserParagraphStyle.lineHeightMultiple = 1.17
+        
+        let inviteUserAttributedText = NSMutableAttributedString(string: "Invite steward to Permanent now?".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: inviteUserParagraphStyle])
+        
+        inviteUserToPermanentLabel.attributedText = inviteUserAttributedText
+        inviteUserToPermanentSwitch.transform = CGAffineTransform(scaleX: 0.77, y: 0.77)
+//        inviteUserToPermanentSwitch.sca
+        
+    }
+    
     private func customizeSeparatorView() {
         separatorView.alpha = 0.08
 
@@ -186,5 +221,42 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     @objc func cancelButtonTapped() {
 
         dismiss(animated: true, completion: nil)
+    }
+    @IBAction func inviteUserToPermanentTapped(_ sender: Any) {
+        
+    }
+    
+    private func updateEmailValidationUI(isValid: Bool) {
+        if isValid {
+            designateStewardEmailStackView.layer.borderColor = UIColor.clear.cgColor
+            emailVerificationImageView.isHidden = false
+            emailVerificationImageView.image = UIImage(named: "legacyPlanningCheckMark")
+            designateStewardEmailVerificationLabel.isHidden = true
+            inviteUserToPermanentStackView.isHidden = true
+        } else {
+            designateStewardEmailStackView.layer.borderColor = UIColor.lightRed.cgColor
+            emailVerificationImageView.isHidden = false
+            emailVerificationImageView.image = UIImage(named: "legacyPlanningError")
+            designateStewardEmailVerificationLabel.isHidden = false
+            inviteUserToPermanentStackView.isHidden = false
+        }
+    }
+}
+
+extension TrustedStewardViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
+            updateEmailValidationUI(isValid: isValidEmail)
+        }
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == designateStewardEmailTextField {
+            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
+                updateEmailValidationUI(isValid: isValidEmail)
+            }
+        }
     }
 }
