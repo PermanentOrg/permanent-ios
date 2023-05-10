@@ -197,8 +197,6 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         
         inviteUserToPermanentLabel.attributedText = inviteUserAttributedText
         inviteUserToPermanentSwitch.transform = CGAffineTransform(scaleX: 0.77, y: 0.77)
-//        inviteUserToPermanentSwitch.sca
-        
     }
     
     private func customizeSeparatorView() {

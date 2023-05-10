@@ -23,7 +23,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var addLegacyStewardLabel: UILabel!
     @IBOutlet weak var addLegacyStewardButton: UIButton!
     
-    var selectedArchive: ArchiveVOData? = nil
+    var selectedArchive: ArchiveVOData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
