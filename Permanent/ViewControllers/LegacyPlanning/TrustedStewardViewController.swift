@@ -37,6 +37,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     }
     
     private func setupUI() {
+        addDismissKeyboardGesture()
         customizeNavigationController()
 
         title = "Trusted Steward".localized()
@@ -245,9 +246,13 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
 
 extension TrustedStewardViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
-            updateEmailValidationUI(isValid: isValidEmail)
+        if textField == designateStewardNameTextField {
+            designateStewardEmailTextField.becomeFirstResponder()
+        } else if textField == designateStewardEmailTextField {
+            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
+                updateEmailValidationUI(isValid: isValidEmail)
+            }
+            textField.resignFirstResponder()
         }
         return true
     }

@@ -23,8 +23,12 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var addLegacyStewardLabel: UILabel!
     @IBOutlet weak var addLegacyStewardButton: UIButton!
     
+    var selectedArchive: ArchiveVOData? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = LegacyPlanningViewModel()
+        viewModel?.selectedArchive = selectedArchive
         
         setupUI()
         styleNavBar()
@@ -43,8 +47,12 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         closeButtonSetup()
         addLegacyStewardSetup()
         
-        archiveNameLabelSetup(text: "Sophia Petrillo")
-        archivePermissionSetup(text: "owner")
+        if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
+            archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
+        }
+
+        archiveNameLabelSetup(text: "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: viewModel?.selectedArchive?.fullName ?? ""))
+        archivePermissionSetup(text: AccessRole.roleForValue(viewModel?.selectedArchive?.accessRole ?? "").groupName)
         designateStewardLabelSetup(text: "Designate an Archive Steward".localized())
         designateArchiveStewardLabelSetup(text: "Who should be the owner of this archive in the event of incapacitation?".localized())
         saveArchiveLegacyButtonSetup(text: "Save archive Legacy Plan".localized())
@@ -93,7 +101,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         
         archiveNameLabel.textAlignment = .left
         archiveNameLabel.attributedText = NSMutableAttributedString(
-            string: "The \(text) Archive",
+            string: text,
             attributes: [
                 NSAttributedString.Key.kern: -0.26,
                 NSAttributedString.Key.paragraphStyle: paragraphStyle
