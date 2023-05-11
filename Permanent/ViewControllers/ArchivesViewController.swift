@@ -146,15 +146,16 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 })
             }), at: 0)
         }
-        
-        actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-            let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as! ArchiveLegacyPlanningViewController
-
-            let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-            navControl.modalPresentationStyle = .fullScreen
-            self?.present(navControl, animated: true, completion: nil)
-        }), at: 0)
-        
+        if AccessRole.roleForValue(viewModel?.currentArchive()?.accessRole ?? "") == .owner {
+            actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
+                if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as? ArchiveLegacyPlanningViewController {
+                    archiveLegacyPlanningVC.selectedArchive = self?.viewModel?.currentArchive()
+                    let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
+                    navControl.modalPresentationStyle = .fullScreen
+                    self?.present(navControl, animated: true, completion: nil)
+                }
+            }), at: 0)
+        }
         let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: actions)
         present(actionSheet, animated: true)
     }
@@ -254,7 +255,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         })
     }
     
-    private func rightButtonAction(archiveName: String, archiveThumbnail: String) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
+    private func rightButtonAction(archiveName: String, archiveThumbnail: String, archive: ArchiveVOData) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
             var actions: [PRMNTAction] = []
@@ -275,13 +276,14 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 }), at: 0)
             }
             
-            if archiveVO.accessRole == "access.role.owner" {
+            if AccessRole.roleForValue(archiveVO.accessRole ?? "") == .owner {
                 actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                    let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as! ArchiveLegacyPlanningViewController
-
-                    let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-                    navControl.modalPresentationStyle = .fullScreen
-                    self?.present(navControl, animated: true, completion: nil)
+                    if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as? ArchiveLegacyPlanningViewController {
+                        archiveLegacyPlanningVC.selectedArchive = archive
+                        let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
+                        navControl.modalPresentationStyle = .fullScreen
+                        self?.present(navControl, animated: true, completion: nil)
+                    }
                 }), at: 0)
                 
                 actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
@@ -362,7 +364,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
 
-                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "")
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "", archive: archiveVO)
                 
                 cell = tableViewCell
             }
