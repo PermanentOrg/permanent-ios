@@ -47,6 +47,8 @@
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
+		5E187FA22A0CE3A800DCD52F /* LegacyPlanning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanning.swift */; };
+		5E187FA32A0CE3CE00DCD52F /* LegacyPlanning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanning.swift */; };
 		5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */; };
 		5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */; };
 		5E1C3C5028ED7828007C1A63 /* TagsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */; };
@@ -785,6 +787,7 @@
 		5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFilesUITests.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
+		5E187FA12A0CE3A800DCD52F /* LegacyPlanning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanning.swift; sourceTree = "<group>"; };
 		5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsLocalDataSource.swift; sourceTree = "<group>"; };
 		5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRemoteDataSourceInterface.swift; sourceTree = "<group>"; };
 		5E1C3C4F28ED7828007C1A63 /* TagsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRepository.swift; sourceTree = "<group>"; };
@@ -2180,6 +2183,7 @@
 				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
 				F5C8D246273204CA00707301 /* SearchVO.swift */,
 				5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */,
+				5E187FA12A0CE3A800DCD52F /* LegacyPlanning.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -3332,6 +3336,7 @@
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */,
 				5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */,
+				5E187FA22A0CE3A800DCD52F /* LegacyPlanning.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
@@ -3750,6 +3755,7 @@
 				F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */,
 				F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */,
 				F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */,
+				5E187FA32A0CE3CE00DCD52F /* LegacyPlanning.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
