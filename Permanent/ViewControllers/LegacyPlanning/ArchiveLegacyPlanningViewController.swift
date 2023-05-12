@@ -22,7 +22,15 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var trustedStewardDescriptionLabel: UILabel!
     @IBOutlet weak var addLegacyStewardLabel: UILabel!
     @IBOutlet weak var addLegacyStewardButton: UIButton!
+    @IBOutlet weak var separatorView: UIView!
     
+    @IBOutlet weak var addLegacyStewardView: UIView!
+    @IBOutlet weak var addedLegacyStewardView: UIView!
+    @IBOutlet weak var addedLegacyStewardName: UILabel!
+    @IBOutlet weak var addedLegacyStewardEmail: UILabel!
+    @IBOutlet weak var addedLegacyStewardStatusView: UIView!
+    @IBOutlet weak var addedLegacyStewardStatusLabel: UILabel!
+    @IBOutlet weak var addedLegacyStewardDeleteButton: UIButton!
     var selectedArchive: ArchiveVOData?
     
     override func viewDidLoad() {
@@ -32,6 +40,10 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         
         setupUI()
         styleNavBar()
+        
+        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.didUpdateSelectedSteward, object: nil, queue: nil) { [weak self] notif in
+            self?.updateTrustedSteward()
+        }
     }
     
     override func styleNavBar() {
@@ -46,6 +58,9 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         backButtonSetup()
         closeButtonSetup()
         addLegacyStewardSetup()
+        addedLegacyStewardSetup()
+        updateTrustedSteward()
+        customizeSeparatorView()
         
         if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
             archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
@@ -219,9 +234,92 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardButton.tintColor = .darkBlue
     }
     
+    private func addedLegacyStewardSetup() {
+        formatAddedLegacyStewardName()
+        formatAddedLegacyStewardEmail()
+        formatAddedLegacyStewardStatus()
+        formatAddedLegacyStewardDeleteButton()
+    }
+    
+    func formatAddedLegacyStewardName() {
+        addedLegacyStewardName.textColor = .darkBlue
+        addedLegacyStewardName.font = Text.style44.font
+    }
+    
+    func formatAddedLegacyStewardEmail() {
+        addedLegacyStewardEmail.textColor = .middleGray
+        addedLegacyStewardEmail.font = Text.style39.font
+    }
+    
+    private func formatAddedLegacyStewardStatus() {
+        addedLegacyStewardStatusLabel.backgroundColor = .clear
+        addedLegacyStewardStatusLabel.textColor = .warning
+        addedLegacyStewardStatusLabel.font = Text.style36.font
+        
+        addedLegacyStewardStatusView.backgroundColor = .white
+        addedLegacyStewardStatusView.layer.backgroundColor = UIColor.lightWarning.cgColor
+        addedLegacyStewardStatusView.layer.cornerRadius = 4
+    }
+    
+    private func addSelectedStewardText() {
+        if let name = viewModel?.selectedSteward?.name, let email = viewModel?.selectedSteward?.email, let status = viewModel?.selectedSteward?.currentStatus() {
+            let paragraphStyleName = NSMutableParagraphStyle()
+            paragraphStyleName.lineHeightMultiple = 1.36
+            addedLegacyStewardName.attributedText = NSMutableAttributedString(
+                string: name,
+                attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyleName]
+            )
+            
+            let paragraphStyleEmail = NSMutableParagraphStyle()
+            paragraphStyleEmail.lineHeightMultiple = 1.36
+            
+            addedLegacyStewardEmail.attributedText = NSMutableAttributedString(
+                string: email,
+                attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyleEmail]
+            )
+            
+            let paragraphStyleStatus = NSMutableParagraphStyle()
+            paragraphStyleStatus.lineHeightMultiple = 1.47
+            
+            addedLegacyStewardStatusLabel.textAlignment = .center
+            addedLegacyStewardStatusLabel.attributedText = NSMutableAttributedString(
+                string: status.uppercased(),
+                attributes: [
+                    NSAttributedString.Key.kern: 0.8,
+                    NSAttributedString.Key.paragraphStyle: paragraphStyleStatus
+                ]
+            )
+        }
+    }
+    
+    private func formatAddedLegacyStewardDeleteButton() {
+        addedLegacyStewardDeleteButton.setImage(UIImage(named: "deleteLegacySteward")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        addedLegacyStewardDeleteButton.tintColor = .lightRed
+    }
+    
+    func updateTrustedSteward() {
+        if let _ = viewModel?.selectedSteward {
+            addLegacyStewardView.isHidden = true
+            addedLegacyStewardView.isHidden = false
+            
+            addSelectedStewardText()
+        } else {
+            addLegacyStewardView.isHidden = false
+            addedLegacyStewardView.isHidden = true
+        }
+        
+        saveArchiveLegacyButton.isSelectable = viewModel?.selectedSteward?.status == .pending
+    }
+    
+    private func customizeSeparatorView() {
+        separatorView.alpha = 0.08
+
+        separatorView.layer.backgroundColor = UIColor.middleGray.cgColor
+        separatorView.layer.cornerRadius = 2
+    }
+    
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
-        saveArchiveLegacyButton.isSelectable.toggle()
     }
     
     @objc func closeButtonTapped() {
@@ -233,9 +331,14 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func addLegacyPersonButtonAction(_ sender: Any) {
-        let trustedStewardVC = UIViewController.create(withIdentifier: .trustedSteward, from: .legacyPlanning) as! TrustedStewardViewController
-        
-        let navControl = NavigationController(rootViewController: trustedStewardVC)
-        self.present(navControl, animated: true, completion: nil)
+        if let trustedStewardVC = UIViewController.create(withIdentifier: .trustedSteward, from: .legacyPlanning) as? TrustedStewardViewController {
+            trustedStewardVC.viewModel = viewModel
+            let navControl = NavigationController(rootViewController: trustedStewardVC)
+            self.present(navControl, animated: true, completion: nil)
+        }
+    }
+    
+    @IBAction func deleteAddedLegacyPersonButtonAction(_ sender: Any) {
+        viewModel?.deleteSelectedSteward()
     }
 }

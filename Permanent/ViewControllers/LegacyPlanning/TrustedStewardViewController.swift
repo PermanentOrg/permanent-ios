@@ -31,7 +31,6 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = LegacyPlanningViewModel()
         
         setupUI()
     }
@@ -214,13 +213,30 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     }
     
     @objc func doneButtonTapped() {
-        dismiss(animated: true, completion: nil)
+        guard let selectedStewardName = designateStewardNameTextField.text, selectedStewardName.isNotEmpty else {
+            showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
+            return
+        }
+
+        guard let selectedStewardEmail = designateStewardEmailTextField.text, selectedStewardEmail.isNotEmpty else {
+            showAlert(title: "Email Required".localized(), message: "Please enter an email address.".localized())
+            return
+        }
+
+        guard let isValidEmail = viewModel?.isValidEmail(email: selectedStewardEmail), isValidEmail else {
+            showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
+            return
+        }
+
+        dismiss(animated: true, completion: { [weak self] in
+            self?.viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, status: .pending)
+        })
     }
 
     @objc func cancelButtonTapped() {
-
         dismiss(animated: true, completion: nil)
     }
+    
     @IBAction func inviteUserToPermanentTapped(_ sender: Any) {
         
     }
