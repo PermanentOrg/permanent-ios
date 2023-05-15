@@ -49,7 +49,7 @@ class NavigationBarView: UIView {
         contentView.backgroundColor = .secondary
         
         titleLabel.textColor = .white
-        titleLabel.font = Text.style9.font
+        titleLabel.font = TextFontStyle.style9.font
         
         leftButton.tintColor = .white
     }

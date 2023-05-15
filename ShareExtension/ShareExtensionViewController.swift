@@ -55,8 +55,8 @@ class ShareExtensionViewController: BaseViewController<ShareExtensionViewModel> 
         archiveImageView.image = UIImage(named: "placeholder")
         saveFolderImageView.image = UIImage(named: "shareFolder")
         
-        archiveNameLabel.font = Text.style4.font
-        saveFolderLabel.font = Text.style4.font
+        archiveNameLabel.font = TextFontStyle.style4.font
+        saveFolderLabel.font = TextFontStyle.style4.font
         
         archiveNameLabel.textColor = .black
         saveFolderLabel.textColor = .black

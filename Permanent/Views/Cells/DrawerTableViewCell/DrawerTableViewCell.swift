@@ -26,7 +26,7 @@ class DrawerTableViewCell: UITableViewCell {
     
         menuItemImageView.tintColor = .iconTintLight
         menuItemTitleLabel.textColor = .white
-        menuItemTitleLabel.font = Text.style35.font
+        menuItemTitleLabel.font = TextFontStyle.style35.font
         menuItemTitleLabel.setTextSpacingBy(value: -0.3)
         menuChevronImageView.tintColor = .white
         

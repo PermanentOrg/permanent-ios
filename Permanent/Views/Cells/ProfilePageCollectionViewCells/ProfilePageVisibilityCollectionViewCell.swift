@@ -20,8 +20,8 @@ class ProfilePageVisibilityCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         isPublicSwitch.onTintColor = .primary
-        titleLabel.font = Text.style32.font
-        subtitleLabel.font = Text.style30.font
+        titleLabel.font = TextFontStyle.style32.font
+        subtitleLabel.font = TextFontStyle.style30.font
         subtitleLabel.textColor = .middleGray
     }
     

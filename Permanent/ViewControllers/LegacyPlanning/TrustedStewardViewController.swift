@@ -89,7 +89,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Designate archive Legacy steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardTitleLabel.textColor = .primary
-        designateStewardTitleLabel.font = Text.style41.font
+        designateStewardTitleLabel.font = TextFontStyle.style41.font
         designateStewardTitleLabel.attributedText = attributedText
     }
     
@@ -100,7 +100,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "In order to designate someone as a steward for your archive, they must have a Permanent.org account.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardDescriptionLabel.textColor = .black
-        designateStewardDescriptionLabel.font = Text.style39.font
+        designateStewardDescriptionLabel.font = TextFontStyle.style39.font
         designateStewardDescriptionLabel.numberOfLines = 0
         designateStewardDescriptionLabel.lineBreakMode = .byWordWrapping
         designateStewardDescriptionLabel.attributedText = attributedText
@@ -113,7 +113,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone. Please do the following things to my archive when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardSelectionInfoLabel.textColor = .black
-        designateStewardSelectionInfoLabel.font = Text.style45.font
+        designateStewardSelectionInfoLabel.font = TextFontStyle.style45.font
         designateStewardSelectionInfoLabel.numberOfLines = 0
         designateStewardSelectionInfoLabel.lineBreakMode = .byWordWrapping
         designateStewardSelectionInfoLabel.attributedText = attributedText
@@ -126,7 +126,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Note".localized().uppercased(), attributes: [NSAttributedString.Key.kern: 0.8, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         noteTitleLabel.textColor = .darkBlue
-        noteTitleLabel.font = Text.style30.font
+        noteTitleLabel.font = TextFontStyle.style30.font
         noteTitleLabel.attributedText = attributedText
     }
     
@@ -140,7 +140,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedPlaceholder = NSMutableAttributedString(string: "Steward name...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardNameTextField.textColor = textColor
-        designateStewardNameTextField.font = Text.style11.font
+        designateStewardNameTextField.font = TextFontStyle.style11.font
         designateStewardNameTextField.attributedPlaceholder = attributedPlaceholder
         designateStewardNameTextField.borderStyle = .none
     }
@@ -155,7 +155,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardEmailTextField.textColor = textColor
-        designateStewardEmailTextField.font = Text.style8.font
+        designateStewardEmailTextField.font = TextFontStyle.style8.font
         designateStewardEmailTextField.attributedPlaceholder = attributedPlaceholder
         designateStewardEmailTextField.borderStyle = .none
     }
@@ -167,14 +167,14 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Your Archive Steward will get an email from Permanent with instructions. Discuss your Legacy Plan first. They'll receive another email when the plan is activated with steps to accept ownership. Add instructions in the note section above.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         noteDescriptionLabel.textColor = .black
-        noteDescriptionLabel.font = Text.style39.font
+        noteDescriptionLabel.font = TextFontStyle.style39.font
         noteDescriptionLabel.numberOfLines = 0
         noteDescriptionLabel.lineBreakMode = .byWordWrapping
         noteDescriptionLabel.attributedText = attributedText
     }
     
     private func customizeEmailVerificationLabel() {
-        designateStewardEmailVerificationLabel.font = Text.style12.font
+        designateStewardEmailVerificationLabel.font = TextFontStyle.style12.font
         designateStewardEmailVerificationLabel.textColor = .lightRed
         
         let emailVerificationParagraphStyle = NSMutableParagraphStyle()
@@ -187,7 +187,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     private func customizeInviteUserToPermanentLabel() {
         inviteUserToPermanentLabel.textColor = .darkBlue
-        inviteUserToPermanentLabel.font = Text.style35.font
+        inviteUserToPermanentLabel.font = TextFontStyle.style35.font
         
         let inviteUserParagraphStyle = NSMutableParagraphStyle()
         inviteUserParagraphStyle.lineHeightMultiple = 1.17

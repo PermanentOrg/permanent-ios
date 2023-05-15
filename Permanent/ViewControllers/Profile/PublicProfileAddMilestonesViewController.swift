@@ -70,7 +70,7 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
         
         for label in titleLabels {
             label?.textColor = .middleGray
-            label?.font = Text.style12.font
+            label?.font = TextFontStyle.style12.font
         }
         
         for textField in textFields {
@@ -78,17 +78,17 @@ class PublicProfileAddMilestonesViewController: BaseViewController<PublicProfile
             textField?.layer.borderWidth = 0.5
             textField?.layer.cornerRadius = 3
             textField?.textColor = .middleGray
-            textField?.font = Text.style7.font
+            textField?.font = TextFontStyle.style7.font
         }
         
         descriptionTextView.layer.borderColor = UIColor.lightGray.cgColor
         descriptionTextView.layer.borderWidth = 0.5
         descriptionTextView.layer.cornerRadius = 3
         descriptionTextView.textColor = .middleGray
-        descriptionTextView.font = Text.style7.font
+        descriptionTextView.font = TextFontStyle.style7.font
         
         descriptionHintLabel?.textColor = .lightGray
-        descriptionHintLabel?.font = Text.style7.font
+        descriptionHintLabel?.font = TextFontStyle.style7.font
         descriptionHintLabel?.textAlignment = .left
         
         titleLabel.text = "\(ProfilePageData.milestoneTitle()) (<COUNT>/140)".localized().replacingOccurrences(of: "<COUNT>", with: "\(milestone?.title?.count ?? 0)")

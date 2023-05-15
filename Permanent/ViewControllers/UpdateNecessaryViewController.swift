@@ -20,8 +20,8 @@ class UpdateNecessaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateTextLabel.attributedText = Text.style17.setTextWithLineSpacing(text: Constants.onboardingTextNormal[0])
-        updateTextLabel.font = Text.style17.font
+        updateTextLabel.attributedText = TextFontStyle.style17.setTextWithLineSpacing(text: Constants.onboardingTextNormal[0])
+        updateTextLabel.font = TextFontStyle.style17.font
         updateTextLabel.textAlignment = .center
         updateTextLabel.textColor = .white
         updateTextLabel.text = "Update Permanent Archive? \n\nYou must update to the latest version of this app in order to maintain access to your Permanent Archives on this device.".localized()

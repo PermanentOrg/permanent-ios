@@ -21,7 +21,7 @@ class ShareManagementLinkNotGeneratedCollectionViewCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFit
         
         createShareLinkButton.configureActionButtonUI(title: "Create share link".localized(),bgColor: .darkBlue)
-        createShareLinkButton.setFont(Text.style8.font)
+        createShareLinkButton.setFont(TextFontStyle.style8.font)
     }
     @IBAction func buttonAction(_ sender: Any) {
         buttonAction?()

@@ -32,25 +32,25 @@ class TwoStepVerificationViewController: BaseViewController<AuthViewModel> {
         
         titleLabel.text = .twoStepTitle
         titleLabel.textColor = .white
-        titleLabel.font = Text.style.font
+        titleLabel.font = TextFontStyle.style.font
         
         subtitleLabel.text = .twoStepSubtitle
         subtitleLabel.textColor = .white
-        subtitleLabel.font = Text.style2.font
+        subtitleLabel.font = TextFontStyle.style2.font
         
         extraInfoLabel.text = .addLater
         extraInfoLabel.textColor = .lightGray
-        extraInfoLabel.font = Text.style6.font
+        extraInfoLabel.font = TextFontStyle.style6.font
         
         confirmButton.setTitle(.submit, for: [])
     
         skipButton.setTitle(.skip, for: [])
-        skipButton.setFont(Text.style9.font)
+        skipButton.setFont(TextFontStyle.style9.font)
         skipButton.setTitleColor(.white, for: [])
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
         
         phoneField.placeholder = "( ___ ) ___ - ____"
         phoneField.delegate = self

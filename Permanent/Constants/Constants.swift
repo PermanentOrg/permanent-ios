@@ -14,7 +14,7 @@ typealias CellButtonTapAction = (UITableViewCell) -> Void
 
 struct Font { }
 
-struct Text {
+struct TextFontStyle {
     static let style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
     static let style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
     static let style3 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(24)), NSTextAlignment.natural)

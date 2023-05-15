@@ -114,7 +114,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         }
 
         itemNameLabel.textColor = .white
-        itemNameLabel.font = Text.style3.font
+        itemNameLabel.font = TextFontStyle.style3.font
         
         let doneButton = UIButton(type: .custom)
         doneButton.translatesAutoresizingMaskIntoConstraints = false
@@ -286,13 +286,13 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     func setupPermissionView() {
         let permissionLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionLabel.text = "Permission".localizedUppercase
-        permissionLabel.font = Text.style30.font
+        permissionLabel.font = TextFontStyle.style30.font
         permissionLabel.textColor = UIColor.middleGray
         permissionLabel.setTextSpacingBy(value: 0.8)
         
         let permissionValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         permissionValueLabel.text = fileViewModel.accessRole.groupName
-        permissionValueLabel.font = Text.style34.font
+        permissionValueLabel.font = TextFontStyle.style34.font
         permissionValueLabel.textColor = .dustyGray
         
         let subStackView = UIStackView(arrangedSubviews: [permissionLabel, permissionValueLabel])
@@ -308,7 +308,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     func setupInitiatedByView() {
         let initiatedLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         initiatedLabel.text = "Initiated by".localizedUppercase
-        initiatedLabel.font = Text.style30.font
+        initiatedLabel.font = TextFontStyle.style30.font
         initiatedLabel.textColor = UIColor.middleGray
         initiatedLabel.setTextSpacingBy(value: 0.8)
         stackView.addArrangedSubview(initiatedLabel)
@@ -326,7 +326,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let initiatedValueLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         initiatedValueLabel.text = "The \(fileViewModel.sharedByArchive?.name ?? "") Archive"
-        initiatedValueLabel.font = Text.style34.font
+        initiatedValueLabel.font = TextFontStyle.style34.font
         initiatedValueLabel.textColor = .dustyGray
         
         let itemStackView = UIStackView(arrangedSubviews: [imageView, initiatedValueLabel])
@@ -369,7 +369,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             label.translatesAutoresizingMaskIntoConstraints = false
             label.text = "View all".localized()
             label.textColor = .primary
-            label.font = Text.style34.font
+            label.font = TextFontStyle.style34.font
             containerView.addSubview(label)
             
             let button = UIButton(type: .custom)
@@ -408,7 +408,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let attributedString = NSMutableAttributedString(string: "Shared with (\(fileViewModel.minArchiveVOS.count))".localizedUppercase, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.middleGray], range: NSRange(location: 0, length: 11))
         sharedWithLabel.attributedText = attributedString
-        sharedWithLabel.font = Text.style30.font
+        sharedWithLabel.font = TextFontStyle.style30.font
         sharedWithLabel.setTextSpacingBy(value: 0.8)
         NSLayoutConstraint.activate([
             sharedWithLabel.heightAnchor.constraint(equalToConstant: 40)
@@ -416,7 +416,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
 
         let manageSharingLabel = UILabel(frame: .zero)
         manageSharingLabel.text = "Manage sharing".localized()
-        manageSharingLabel.font = Text.style35.font
+        manageSharingLabel.font = TextFontStyle.style35.font
         manageSharingLabel.textColor = .primary
         
         let manageSharingImageView = UIImageView(image: UIImage(named: "manageSharing")?.templated)
@@ -485,7 +485,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let archiveNameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         archiveNameLabel.text = name
-        archiveNameLabel.font = Text.style34.font
+        archiveNameLabel.font = TextFontStyle.style34.font
         archiveNameLabel.textColor = .dustyGray
         
         let roleContainer = UIView(frame: .zero)
@@ -503,7 +503,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         accessRoleLabel.translatesAutoresizingMaskIntoConstraints = false
         accessRoleLabel.text = role.uppercased()
         accessRoleLabel.textColor = .primary
-        accessRoleLabel.font = Text.style36.font
+        accessRoleLabel.font = TextFontStyle.style36.font
         accessRoleLabel.setTextSpacingBy(value: 0.8)
         
         accessRoleLabel.textAlignment = .center
@@ -547,7 +547,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let linkLabel = UILabel()
         linkLabel.translatesAutoresizingMaskIntoConstraints = false
         linkLabel.text = shareURL
-        linkLabel.font = Text.style13.font
+        linkLabel.font = TextFontStyle.style13.font
         linkLabel.textColor = .mainPurple
         linkLabel.textAlignment = .left
         linkLabel.minimumScaleFactor = 0.7
@@ -650,7 +650,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         
         let nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         nameLabel.text = name
-        nameLabel.font = Text.style7.font
+        nameLabel.font = TextFontStyle.style7.font
         if let color = color {
             nameLabel.textColor = color
         }

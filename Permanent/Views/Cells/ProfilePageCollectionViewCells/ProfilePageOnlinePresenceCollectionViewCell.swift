@@ -18,7 +18,7 @@ class ProfilePageOnlinePresenceCollectionViewCell: UICollectionViewCell {
         let attributedString = NSMutableAttributedString(string: "website link")
         attributedString.addAttribute(NSAttributedString.Key.underlineStyle, value: 1, range: NSRange(location: 0, length: attributedString.length))
         attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.primary, range: NSRange(location: 0, length: attributedString.length))
-        attributedString.addAttribute(NSAttributedString.Key.font, value: Text.style5.font, range: NSRange(location: 0, length: attributedString.length))
+        attributedString.addAttribute(NSAttributedString.Key.font, value: TextFontStyle.style5.font, range: NSRange(location: 0, length: attributedString.length))
         
         linkLabel.attributedText = attributedString
     }

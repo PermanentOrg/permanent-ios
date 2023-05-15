@@ -78,7 +78,7 @@ extension UIView {
         let messageLabel = UILabel()
         messageLabel.text = title
         messageLabel.textColor = textColor
-        messageLabel.font = Text.style17.font
+        messageLabel.font = TextFontStyle.style17.font
         messageLabel.sizeToFit()
         messageLabel.numberOfLines = 2
         messageLabel.textAlignment = .center
@@ -110,7 +110,7 @@ extension UIView {
         bgView.backgroundColor = .backgroundPrimary
         
         let noSharesLabel = UILabel()
-        noSharesLabel.font = Text.style8.font
+        noSharesLabel.font = TextFontStyle.style8.font
         noSharesLabel.textColor = .textPrimary
         noSharesLabel.text = title
         

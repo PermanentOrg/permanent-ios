@@ -18,13 +18,13 @@ class ShareManagementNumberOfUsesCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         maxUsesLabel.delegate = self
         
-        maxUsesLabel.font = Text.style39.font
+        maxUsesLabel.font = TextFontStyle.style39.font
         maxUsesLabel.textColor = .darkBlue
         maxUsesLabel.backgroundColor = .whiteGray
         maxUsesLabel.keyboardType = .numberPad
         configureUI()
         
-        additionalInformationLabel.font = Text.style38.font
+        additionalInformationLabel.font = TextFontStyle.style38.font
         additionalInformationLabel.textColor = .middleGray
     }
     

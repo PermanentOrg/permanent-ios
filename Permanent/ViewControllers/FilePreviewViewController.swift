@@ -106,11 +106,11 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     func initUI() {
         styleNavBar()
         
-        errorLabel.font = Text.style17.font
+        errorLabel.font = TextFontStyle.style17.font
         errorLabel.textColor = .white
         errorLabel.isHidden = true
         retryButton.configureActionButtonUI(title: "Retry".localized(), bgColor: .tangerine, buttonHeight: 30)
-        retryButton.setFont(Text.style10.font)
+        retryButton.setFont(TextFontStyle.style10.font)
         retryButton.setTitleColor(.white, for: .normal)
         retryButton.isHidden = true
 

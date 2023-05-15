@@ -34,10 +34,10 @@ class PublicProfileAddOnlinePresenceViewController: BaseViewController<PublicPro
         textField.layer.borderWidth = 0.5
         textField.layer.cornerRadius = 3
         textField.textColor = .middleGray
-        textField.font = Text.style7.font
+        textField.font = TextFontStyle.style7.font
         
         titleLabel.textColor = .middleGray
-        titleLabel.font = Text.style12.font
+        titleLabel.font = TextFontStyle.style12.font
         
         if fieldType == .email {
             title = ((profileItem != nil ? "Update" : "Add") + " Email").localized()

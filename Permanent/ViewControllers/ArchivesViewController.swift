@@ -71,11 +71,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         currentArchiveContainer.layer.borderColor = UIColor.gray.cgColor
         
         currentArchiveLabel.text = "Current Archive".localized()
-        currentArchiveLabel.font = Text.style7.font
+        currentArchiveLabel.font = TextFontStyle.style7.font
         currentArchiveLabel.textColor = .darkBlue
         
         currentArhiveNameLabel.text = nil
-        currentArhiveNameLabel.font = Text.style17.font
+        currentArhiveNameLabel.font = TextFontStyle.style17.font
         currentArhiveNameLabel.textColor = .darkBlue
         
         createNewArchiveButton.configureActionButtonUI(title: String("Create new archive".localized()))

@@ -71,49 +71,49 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
         edgesForExtendedLayout = .all
         
         fullNameTitleLabel.textColor = .middleGray
-        fullNameTitleLabel.font = Text.style12.font
+        fullNameTitleLabel.font = TextFontStyle.style12.font
         
         fullNameTextField.layer.borderColor = UIColor.lightGray.cgColor
         fullNameTextField.layer.borderWidth = 0.5
         fullNameTextField.layer.cornerRadius = 3
         fullNameTextField.textColor = .middleGray
-        fullNameTextField.font = Text.style7.font
+        fullNameTextField.font = TextFontStyle.style7.font
         
         nicknameTitleLabel.textColor = .middleGray
-        nicknameTitleLabel.font = Text.style12.font
+        nicknameTitleLabel.font = TextFontStyle.style12.font
         
         nicknameTextField.layer.borderColor = UIColor.lightGray.cgColor
         nicknameTextField.layer.borderWidth = 0.5
         nicknameTextField.layer.cornerRadius = 3
         nicknameTextField.textColor = .middleGray
-        nicknameTextField.font = Text.style7.font
+        nicknameTextField.font = TextFontStyle.style7.font
         
         genderTitleLabel.textColor = .middleGray
-        genderTitleLabel.font = Text.style12.font
+        genderTitleLabel.font = TextFontStyle.style12.font
         
         genderTextField.layer.borderColor = UIColor.lightGray.cgColor
         genderTextField.layer.borderWidth = 0.5
         genderTextField.layer.cornerRadius = 3
         genderTextField.textColor = .middleGray
-        genderTextField.font = Text.style7.font
+        genderTextField.font = TextFontStyle.style7.font
         
         birthDateTitleLabel.textColor = .middleGray
-        birthDateTitleLabel.font = Text.style12.font
+        birthDateTitleLabel.font = TextFontStyle.style12.font
         
         birthDateTextField.layer.borderColor = UIColor.lightGray.cgColor
         birthDateTextField.layer.borderWidth = 0.5
         birthDateTextField.layer.cornerRadius = 3
         birthDateTextField.textColor = .middleGray
-        birthDateTextField.font = Text.style7.font
+        birthDateTextField.font = TextFontStyle.style7.font
         
         locationTitleLabel.textColor = .middleGray
-        locationTitleLabel.font = Text.style12.font
+        locationTitleLabel.font = TextFontStyle.style12.font
         
         locationTextField.layer.borderColor = UIColor.lightGray.cgColor
         locationTextField.layer.borderWidth = 0.5
         locationTextField.layer.cornerRadius = 3
         locationTextField.textColor = .middleGray
-        locationTextField.font = Text.style7.font
+        locationTextField.font = TextFontStyle.style7.font
         
         if let archiveType = viewModel?.archiveType {
             fullNameTitleLabel.text = "\(ProfilePageData.nameTitle(archiveType: archiveType)) (<COUNT>/120)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.basicProfileItem?.fullName?.count ?? 0)")

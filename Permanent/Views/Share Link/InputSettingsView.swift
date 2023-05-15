@@ -73,11 +73,11 @@ class InputSettingsView: UIView {
         
         textField = TextField()
         textField.placeholderColor = .primary
-        textField.placeholderFont = Text.style3.font
+        textField.placeholderFont = TextFontStyle.style3.font
         textField.backgroundColor = .backgroundPrimary
         textField.tintColor = .primary
         textField.textColor = .primary
-        textField.font = Text.style3.font
+        textField.font = TextFontStyle.style3.font
         textField.layer.cornerRadius = 0
         
         self.addSubview(textField)

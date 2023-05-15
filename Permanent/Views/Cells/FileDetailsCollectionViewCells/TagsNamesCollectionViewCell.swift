@@ -36,12 +36,12 @@ class TagsNamesCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         cellTitleLabel.text = "Tags".localized()
         cellTitleLabel.textColor = .white
-        cellTitleLabel.font = Text.style9.font
+        cellTitleLabel.font = TextFontStyle.style9.font
         
         cellNoItemLabel.text = "Tap to add tags".localized()
         cellNoItemLabel.textColor = .white
         cellNoItemLabel.backgroundColor = .clear
-        cellNoItemLabel.font = Text.style8.font
+        cellNoItemLabel.font = TextFontStyle.style8.font
         cellNoItemLabel.isHidden = true
         
         let columnLayout = TagsCollectionViewLayout()
@@ -75,7 +75,7 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as! TagCollectionViewCell
 
-        cell.configure(name: tagNames[indexPath.row], font: Text.style8.font, fontColor: .white, cornerRadius: 5, backgroundColor: .darkGray)
+        cell.configure(name: tagNames[indexPath.row], font: TextFontStyle.style8.font, fontColor: .white, cornerRadius: 5, backgroundColor: .darkGray)
         
         return cell
     }
@@ -90,7 +90,7 @@ extension TagsNamesCollectionViewCell: UICollectionViewDelegateFlowLayout, UICol
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let name = tagNames[indexPath.row]
-        let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+        let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: TextFontStyle.style8.font as Any])
         let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width.rounded(.up)
         
         return CGSize(width: 20 + width , height: 30)

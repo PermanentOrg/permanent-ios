@@ -20,8 +20,8 @@ class AccountOnboardingPageTwoWithPendingArchives: BaseViewController<AccountOnb
     }
     
     private func initUI() {
-        welcomeLabel.font = Text.style.font
-        detailsLabel.font = Text.style5.font
+        welcomeLabel.font = TextFontStyle.style.font
+        detailsLabel.font = TextFontStyle.style5.font
         
         detailsLabel.text = "Congratulations! You’ve joined \(viewModel?.accountArchives?.count ?? 0) archives. The last step is to choose which archive to set as your default, the first one you’ll see when you log in. Select your default archive below, or create a new one of your own to be your default."
     }

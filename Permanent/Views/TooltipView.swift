@@ -40,7 +40,7 @@ class TooltipView: UIView {
         
         infoLabel = UILabel()
         infoLabel.textColor = .galleryGray
-        infoLabel.font = Text.style8.font
+        infoLabel.font = TextFontStyle.style8.font
         infoLabel.numberOfLines = 0
         
         addSubview(infoLabel)

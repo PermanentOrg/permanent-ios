@@ -374,7 +374,7 @@ extension FileDetailsViewController: UICollectionViewDelegateFlowLayout {
             let tagsName: [String] = viewModel?.recordVO?.recordVO?.tagVOS?.compactMap { $0.name } ?? []
             
             let tagsWidth = tagsName.map {
-                NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+                NSAttributedString(string: $0, attributes: [NSAttributedString.Key.font: TextFontStyle.style8.font as Any])
             }.map {
                 $0.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width.rounded(.up) + tagAdditionalSpacing
             }

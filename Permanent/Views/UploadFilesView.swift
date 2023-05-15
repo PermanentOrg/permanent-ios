@@ -31,7 +31,7 @@ class UploadFilesView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
         emptyFolderLabel.text = .uploadFilesMessage
-        emptyFolderLabel.font = Text.style13.font
+        emptyFolderLabel.font = TextFontStyle.style13.font
         emptyFolderLabel.textColor = .primary
     }
 }

@@ -24,15 +24,15 @@ class MilestonesTableViewCell: UITableViewCell {
         moreButton.tintColor = .darkBlue
         
         milestoneTitleLabel.textColor = .primary
-        milestoneTitleLabel.font = Text.style32.font
+        milestoneTitleLabel.font = TextFontStyle.style32.font
         milestoneTitleLabel.text = "Title".localized()
         
         milestoneLocationLabel.textColor = .lightGray
-        milestoneLocationLabel.font = Text.style11.font
+        milestoneLocationLabel.font = TextFontStyle.style11.font
         milestoneLocationLabel.text = "Location not set".localized()
         
         milestoneDateLabel.textColor = .lightGray
-        milestoneDateLabel.font = Text.style11.font
+        milestoneDateLabel.font = TextFontStyle.style11.font
         milestoneDateLabel.text = "Start date".localized()
     }
 

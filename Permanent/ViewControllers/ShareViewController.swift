@@ -57,7 +57,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
         filenameLabel.text = sharedFile.name
         titleLabel.text = .shareLink
         descriptionLabel.text = .shareDescription
-        descriptionLabel.font = Text.style8.font
+        descriptionLabel.font = TextFontStyle.style8.font
         descriptionLabel.textColor = .textPrimary
         
         linkOptionsView.configureButtons(withData: StaticData.shareLinkButtonsConfig)
@@ -79,7 +79,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     
     fileprivate func styleHeaderLabels(_ labels: [UILabel]) {
         labels.forEach {
-            $0.font = Text.style3.font
+            $0.font = TextFontStyle.style3.font
             $0.textColor = .primary
         }
     }

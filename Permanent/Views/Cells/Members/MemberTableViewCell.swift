@@ -39,18 +39,18 @@ class MemberTableViewCell: UITableViewCell {
     fileprivate func configureUI() {
         nameLabel = UILabel()
         nameLabel.textColor = .primary
-        nameLabel.font = Text.style11.font
+        nameLabel.font = TextFontStyle.style11.font
         
         statusLabel = UILabel()
         statusLabel.textColor = .textPrimary
-        statusLabel.font = Text.style12.font
+        statusLabel.font = TextFontStyle.style12.font
         
         let hStack = UIStackView(arrangedSubviews: [nameLabel, statusLabel])
         hStack.spacing = 10
         
         emailLabel = UILabel()
         emailLabel.textColor = .textPrimary
-        emailLabel.font = Text.style8.font
+        emailLabel.font = TextFontStyle.style8.font
         
         let vStack = UIStackView(arrangedSubviews: [hStack, emailLabel])
         vStack.axis = .vertical
@@ -63,7 +63,7 @@ class MemberTableViewCell: UITableViewCell {
         editButton = BigAreaButton(type: .custom)
         editButton.setImage(UIImage(named: "more"), for: .normal)
         editButton.tintColor = .lightGray
-        editButton.setFont(Text.style11.font)
+        editButton.setFont(TextFontStyle.style11.font)
         editButton.enableAutoLayout()
         contentView.addSubview(editButton)
         

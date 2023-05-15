@@ -56,27 +56,27 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         shortAboutDescriptionTextField.layer.borderWidth = 0.5
         shortAboutDescriptionTextField.layer.cornerRadius = 3
         shortAboutDescriptionTextField.textColor = .middleGray
-        shortAboutDescriptionTextField.font = Text.style7.font
+        shortAboutDescriptionTextField.font = TextFontStyle.style7.font
         
         longAboutDescriptionTextView.layer.borderColor = UIColor.lightGray.cgColor
         longAboutDescriptionTextView.layer.borderWidth = 0.5
         longAboutDescriptionTextView.layer.cornerRadius = 3
         longAboutDescriptionTextView.textColor = .middleGray
-        longAboutDescriptionTextView.font = Text.style7.font
+        longAboutDescriptionTextView.font = TextFontStyle.style7.font
         
         shortDescriptionEmptyLabel.textColor = .lightGray
-        shortDescriptionEmptyLabel.font = Text.style8.font
+        shortDescriptionEmptyLabel.font = TextFontStyle.style8.font
         shortDescriptionEmptyLabel.textAlignment = .left
         
         longDescriptionEmptyLabel.textColor = .lightGray
-        longDescriptionEmptyLabel.font = Text.style8.font
+        longDescriptionEmptyLabel.font = TextFontStyle.style8.font
         longDescriptionEmptyLabel.textAlignment = .left
         
         shortAboutDescriptionTitleLabel.textColor = .middleGray
-        shortAboutDescriptionTitleLabel.font = Text.style12.font
+        shortAboutDescriptionTitleLabel.font = TextFontStyle.style12.font
         
         longAboutDescriptionTitleLabel.textColor = .middleGray
-        longAboutDescriptionTitleLabel.font = Text.style12.font
+        longAboutDescriptionTitleLabel.font = TextFontStyle.style12.font
         
         shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
         shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint

@@ -24,8 +24,8 @@ class FileDetailsMenuCollectionViewCell: FileDetailsBaseCollectionViewCell {
         segmentedControl.tintColor = .clear
         segmentedControl.selectedSegmentTintColor = .black
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style9.font], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style9.font], for: .normal)
     }
 
     @IBAction func segmentedControlAction(_ sender: Any) {

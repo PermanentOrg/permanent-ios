@@ -283,7 +283,7 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
             
         default: break
         }
-        cell.textLabel?.font = Text.style8.font
+        cell.textLabel?.font = TextFontStyle.style8.font
         cell.textLabel?.numberOfLines = 0
         
         return cell
@@ -293,7 +293,7 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
         let label = UILabel(frame: CGRect(x: 16, y: 8, width: view.frame.width - 32, height: 22))
         label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        label.font = Text.style3.font
+        label.font = TextFontStyle.style3.font
         label.textColor = .primary
         
         view.addSubview(label)
@@ -301,7 +301,7 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             label.frame = CGRect(x: 16, y: 16, width: view.frame.width - 32, height: 23)
-            label.font = Text.style33.font
+            label.font = TextFontStyle.style33.font
             label.textAlignment = .center
             label.adjustsFontSizeToFitWidth = true
             label.minimumScaleFactor = 0.5
@@ -309,7 +309,7 @@ extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
             
             let secondaryLabel = UILabel(frame: CGRect(x: 16, y: label.frame.maxY, width: view.frame.width - 32, height: 22))
             secondaryLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            secondaryLabel.font = Text.style4.font
+            secondaryLabel.font = TextFontStyle.style4.font
             secondaryLabel.textColor = .primary
             secondaryLabel.textAlignment = .center
             secondaryLabel.adjustsFontSizeToFitWidth = true

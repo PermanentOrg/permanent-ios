@@ -36,9 +36,9 @@ class InvitesViewController: ViewController {
         view.backgroundColor = .backgroundPrimary
         navigationItem.title = .invitations
         
-        titleLabel.style(withFont: Text.style9.font, textColor: .primary, text: .giveAGig)
-        infoLabel.style(withFont: Text.style8.font, textColor: .textPrimary, text: .inviteInfo)
-        yourInvitationsLabel.style(withFont: Text.style3.font, textColor: .primary, text: .yourInvitations)
+        titleLabel.style(withFont: TextFontStyle.style9.font, textColor: .primary, text: .giveAGig)
+        infoLabel.style(withFont: TextFontStyle.style8.font, textColor: .textPrimary, text: .inviteInfo)
+        yourInvitationsLabel.style(withFont: TextFontStyle.style3.font, textColor: .primary, text: .yourInvitations)
         
         inviteButton.configureActionButtonUI(title: .sendInvite)
         
