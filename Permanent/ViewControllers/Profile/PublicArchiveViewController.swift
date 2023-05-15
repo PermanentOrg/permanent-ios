@@ -151,8 +151,8 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
             self.changeProfileBannerPhotoButtonView.isHidden = false
         })
 
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
         segmentedControl.selectedSegmentTintColor = .primary
     }
     

@@ -25,10 +25,10 @@ class ShareManagementAccessRolesHeaderCollectionReusableView: UICollectionReusab
         leftImageView.tintColor = .lightGray
         
         headerTitle.text = "Access Roles".localized()
-        headerTitle.font = Text.style41.font
+        headerTitle.font = TextFontStyle.style41.font
         headerTitle.textColor = .darkBlue
         
-        let attributedText = NSAttributedString(string: "What's this".localized(), attributes: [.foregroundColor: UIColor.middleGray, .font: Text.style5.font])
+        let attributedText = NSAttributedString(string: "What's this".localized(), attributes: [.foregroundColor: UIColor.middleGray, .font: TextFontStyle.style5.font])
         rightButton.setAttributedTitle(attributedText, for: .normal)
     }
     

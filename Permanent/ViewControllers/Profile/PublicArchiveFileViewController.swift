@@ -50,7 +50,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
 
         styleNavBar()
         
-        directoryLabel.font = Text.style3.font
+        directoryLabel.font = TextFontStyle.style3.font
         directoryLabel.textColor = .primary
         directoryLabel.text = "Public"
         backButton.tintColor = .primary

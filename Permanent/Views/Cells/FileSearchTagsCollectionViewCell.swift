@@ -74,7 +74,7 @@ extension FileSearchTagsCollectionViewCell: UICollectionViewDataSource, UICollec
         if let tag = viewModel?.tagVOs[indexPath.row],
            let isChecked = viewModel?.selectedTagVOs.map({ $0.name ?? "" }).contains(tag.name) {
             let additionalSpace: CGFloat = isChecked ? ( 45 ) : ( 35 )
-            let attributedName = NSAttributedString(string: tag.name ?? "", attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
+            let attributedName = NSAttributedString(string: tag.name ?? "", attributes: [NSAttributedString.Key.font: TextFontStyle.style2.font as Any])
             let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
             return CGSize(width: additionalSpace + width , height: 40)
         }

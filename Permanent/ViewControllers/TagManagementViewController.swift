@@ -53,10 +53,10 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         overlayView.backgroundColor = .bgOverlay
         overlayView.alpha = 0
         
-        archiveTitleNameLabel.font = Text.style35.font
+        archiveTitleNameLabel.font = TextFontStyle.style35.font
         archiveTitleNameLabel.textColor = .darkBlue
         
-        archiveTitleTagsCountLabel.font = Text.style34.font
+        archiveTitleTagsCountLabel.font = TextFontStyle.style34.font
         archiveTitleTagsCountLabel.textColor = .lightGray
         
         if let archiveName = AuthenticationManager.shared.session?.selectedArchive?.fullName {
@@ -67,7 +67,7 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         }
         
         searchTags.updateHeight(height: 40, radius: 2)
-        searchTags.searchTextField.font = Text.style39.font
+        searchTags.searchTextField.font = TextFontStyle.style39.font
 
         searchTags.setPlaceholderTextColor(.lightGray)
         searchTags.tintColor = .lightGray

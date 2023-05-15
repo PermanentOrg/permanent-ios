@@ -35,14 +35,14 @@ class ShareManagementLinkAndShowSettingsCollectionViewCell: UICollectionViewCell
             leftElementButton.tintColor = .lightGray
             rightElementButton.setImage(UIImage(named: "Share Other")?.withRenderingMode(.alwaysTemplate), for: .normal)
             rightElementButton.tintColor = .darkBlue
-            elementNameLabel.font = Text.style7.font
+            elementNameLabel.font = TextFontStyle.style7.font
             elementNameLabel.textColor = .barneyPurple
             elementNameLabel.text = linkLocation.replacingOccurrences(of: "https://www.", with: "")
         } else {
             leftElementButton.setImage(UIImage(named: "expand")?.withRenderingMode(.alwaysTemplate), for: .normal)
             leftElementButton.tintColor = .darkBlue
             rightElementButton.isHidden = true
-            elementNameLabel.font = Text.style7.font
+            elementNameLabel.font = TextFontStyle.style7.font
             elementNameLabel.textColor = .darkBlue
             elementNameLabel.text = linkWasGeneratedNow ? "Hide link settings".localized() : "Show link settings".localized()
             isMenuExpanded = linkWasGeneratedNow

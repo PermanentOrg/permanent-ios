@@ -152,7 +152,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         styleNavBar()
         
-        directoryLabel.font = Text.style3.font
+        directoryLabel.font = TextFontStyle.style3.font
         directoryLabel.textColor = .primary
         directoryLabel.text = viewModel?.rootFolderName
         backButton.tintColor = .primary

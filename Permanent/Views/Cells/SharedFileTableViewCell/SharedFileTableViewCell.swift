@@ -28,9 +28,9 @@ class SharedFileTableViewCell: UITableViewCell {
     }
     
     private func initUI() {
-        fileNameLabel.font = Text.style11.font
+        fileNameLabel.font = TextFontStyle.style11.font
         fileNameLabel.textColor = .textPrimary
-        fileDateLabel.font = Text.style12.font
+        fileDateLabel.font = TextFontStyle.style12.font
         fileDateLabel.textColor = .textPrimary
         fileImageView.clipsToBounds = true
         

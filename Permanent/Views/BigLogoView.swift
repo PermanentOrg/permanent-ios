@@ -17,7 +17,7 @@ final class BigLogoView: CustomView {
     bundle.loadNibNamed("BigLogoView", owner: self, options: nil)
     addSubview(contentView)
     contentView.backgroundColor = .clear
-    logoLabel.font = Text.style.font
+    logoLabel.font = TextFontStyle.style.font
     logoLabel.textColor = UIColor.tangerine
     contentView.frame = self.bounds
     contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]

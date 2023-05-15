@@ -32,8 +32,8 @@ class WorkspaceSegmentedControlView: UIView {
     }
     
     func configureSegmentedControl() {
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
         segmentedControl.selectedSegmentTintColor = .primary

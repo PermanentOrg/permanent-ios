@@ -18,7 +18,7 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
         
         contentLabel.text = ""
         contentLabel.textColor = .middleGray
-        contentLabel.font = Text.style8.font
+        contentLabel.font = TextFontStyle.style8.font
     }
     
     func configure(_ text: String?) {
@@ -30,7 +30,7 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
     }
     
     static func size(withText text: String?, collectionView: UICollectionView) -> CGSize {
-        let currentText: NSAttributedString = NSAttributedString(string: text ?? "", attributes: [NSAttributedString.Key.font: Text.style8.font as Any])
+        let currentText: NSAttributedString = NSAttributedString(string: text ?? "", attributes: [NSAttributedString.Key.font: TextFontStyle.style8.font as Any])
         let textHeight = currentText.boundingRect(with: CGSize(width: collectionView.bounds.width - 40, height: CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)
 
         return CGSize(width: collectionView.bounds.width, height: textHeight + 20)

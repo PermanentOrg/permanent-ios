@@ -44,7 +44,7 @@ class SwitchSettingsView: UIView {
     fileprivate func commonInit() {
         
         textLabel = UILabel()
-        textLabel.font = Text.style3.font
+        textLabel.font = TextFontStyle.style3.font
         textLabel.textColor = .primary
         
         switchView = UISwitch()

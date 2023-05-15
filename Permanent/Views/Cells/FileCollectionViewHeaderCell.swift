@@ -33,15 +33,15 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        leftButton.setFont(Text.style34.font)
+        leftButton.setFont(TextFontStyle.style34.font)
         leftButton.setTitleColor(.lightGray, for: [])
         
         clearButton.setTitle("Clear".localized(), for: .normal)
-        clearButton.setFont(Text.style34.font)
+        clearButton.setFont(TextFontStyle.style34.font)
         clearButton.setTitleColor(.paleRed, for: [])
         clearButton.isHidden = true
         
-        rightButton.setFont(Text.style34.font)
+        rightButton.setFont(TextFontStyle.style34.font)
         rightButton.setTitleColor(.darkBlue, for: [])
         
         rightButton.semanticContentAttribute = .forceRightToLeft

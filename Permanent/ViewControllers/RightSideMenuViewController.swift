@@ -56,13 +56,13 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         storageProgressBar.tintColor = .mainPurple
         
         loggedInLabel.text = "Logged in as".localized() + ":"
-        loggedInLabel.font = Text.style8.font
+        loggedInLabel.font = TextFontStyle.style8.font
         loggedInLabel.textColor = .middleGray
         
-        emailLabel.font = Text.style11.font
+        emailLabel.font = TextFontStyle.style11.font
         emailLabel.textColor = .middleGray
         
-        storageUsedLabel.font = Text.style11.font
+        storageUsedLabel.font = TextFontStyle.style11.font
         storageUsedLabel.textColor = .middleGray
     }
     

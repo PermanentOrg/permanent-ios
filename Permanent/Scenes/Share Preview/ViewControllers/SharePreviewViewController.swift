@@ -50,13 +50,13 @@ class SharePreviewViewController: UIViewController {
         collectionView.backgroundColor = .backgroundPrimary
         
         shareNameLabel.textColor = .black
-        shareNameLabel.font = Text.style18.font
+        shareNameLabel.font = TextFontStyle.style18.font
         
         sharedByLabel.textColor = .textPrimary
-        sharedByLabel.font = Text.style12.font
+        sharedByLabel.font = TextFontStyle.style12.font
         
         archiveNameLabel.textColor = .textPrimary
-        archiveNameLabel.font = Text.style19.font
+        archiveNameLabel.font = TextFontStyle.style19.font
         
         archiveImage.backgroundColor = .primary
         archiveImage.clipsToBounds = true
@@ -72,11 +72,11 @@ class SharePreviewViewController: UIViewController {
         currentArchiveContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(changeArchiveButtonPressed(_:))))
         
         currentArchiveName.text = nil
-        currentArchiveName.font = Text.style17.font
+        currentArchiveName.font = TextFontStyle.style17.font
         currentArchiveName.textColor = .darkBlue
         
         selectArchiveLabel.text = "Tap to change archive".localized()
-        selectArchiveLabel.font = Text.style7.font
+        selectArchiveLabel.font = TextFontStyle.style7.font
         selectArchiveLabel.textColor = .darkBlue
         
         updateCurrentArchiveView()

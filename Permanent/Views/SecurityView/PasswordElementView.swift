@@ -44,7 +44,7 @@ class PasswordElementView: UIView {
     func configurePasswordElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default, passFieldContentType: UITextContentType = .password) {
         self.contentView.backgroundColor = .white
         self.valueLabel.text = label
-        self.valueLabel.font = Text.style3.font
+        self.valueLabel.font = TextFontStyle.style3.font
         self.passwordTextField.textColor = .middleGray
         self.passwordTextField.returnKeyType = returnKey
         self.passwordTextField.textContentType = passFieldContentType

@@ -22,7 +22,7 @@ class ShareManagementTitleCollectionViewCell: UICollectionViewCell {
         imageView.tintColor = .lightGray
         
         titleLabel.text = "Share Management".localized()
-        titleLabel.font = Text.style35.font
+        titleLabel.font = TextFontStyle.style35.font
         titleLabel.textColor = .primary
     }
     

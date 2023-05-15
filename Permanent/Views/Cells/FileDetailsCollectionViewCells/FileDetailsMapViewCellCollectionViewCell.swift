@@ -43,7 +43,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
 
         titleLabelField.text = title
         titleLabelField.textColor = .white
-        titleLabelField.font = Text.style9.font
+        titleLabelField.font = TextFontStyle.style9.font
 
         if let locnVO = viewModel.recordVO?.recordVO?.locnVO {
             let address = viewModel.getAddressString([locnVO.streetNumber, locnVO.streetName, locnVO.locality, locnVO.country])
@@ -54,7 +54,7 @@ class FileDetailsMapViewCellCollectionViewCell: FileDetailsBaseCollectionViewCel
         
         detailsLabelField.backgroundColor = .clear
         detailsLabelField.textColor = .white
-        detailsLabelField.font = Text.style8.font
+        detailsLabelField.font = TextFontStyle.style8.font
         detailsLabelField.layer.cornerRadius = 5
         detailsLabelField.layer.masksToBounds = true
         detailsLabelField.baselineAdjustment = .alignCenters

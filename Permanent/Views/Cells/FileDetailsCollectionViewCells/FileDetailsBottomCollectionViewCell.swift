@@ -29,12 +29,12 @@ class FileDetailsBottomCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         titleLabelField.text = title
         titleLabelField.textColor = .white
-        titleLabelField.font = Text.style9.font
+        titleLabelField.font = TextFontStyle.style9.font
 
         detailsTextField.text = cellDetails()
         detailsTextField.backgroundColor = .clear
         detailsTextField.textColor = .white
-        detailsTextField.font = Text.style8.font
+        detailsTextField.font = TextFontStyle.style8.font
         
         detailsTextField.isUserInteractionEnabled = isEditable
         if isEditable {

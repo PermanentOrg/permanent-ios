@@ -17,7 +17,7 @@ class ShareMangementAdditionalOptionCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        optionTitleLabel.font = Text.style34.font
+        optionTitleLabel.font = TextFontStyle.style34.font
     }
     
     func configure(cellType: ShareManagementCellType) {

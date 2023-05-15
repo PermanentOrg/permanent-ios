@@ -48,9 +48,9 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         rightSideBackgroundView.backgroundColor = .primary
         
         archiveTitleLabel.textColor = .white
-        archiveTitleLabel.font = Text.style9.font
+        archiveTitleLabel.font = TextFontStyle.style9.font
         archiveUserRole.textColor = .white
-        archiveUserRole.font = Text.style12.font
+        archiveUserRole.font = TextFontStyle.style12.font
         linkIconButton.tintColor = .white
     }
     
@@ -58,7 +58,7 @@ class PublicGalleryCellCollectionViewCell: UICollectionViewCell {
         rightSideBackgroundView.backgroundColor = .galleryGray
         
         archiveTitleLabel.textColor = .primary
-        archiveTitleLabel.font = Text.style9.font
+        archiveTitleLabel.font = TextFontStyle.style9.font
         archiveUserRole.isHidden = true
         linkIconButton.tintColor = .primary
     }

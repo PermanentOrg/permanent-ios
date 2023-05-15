@@ -80,7 +80,7 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         }
         
         headerTitleLabel.textColor = .white
-        headerTitleLabel.font = Text.style32.font
+        headerTitleLabel.font = TextFontStyle.style32.font
         headerTitleLabel.setTextSpacingBy(value: -0.16)
         
         topBarView.alpha = 0.5
@@ -90,11 +90,11 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
     
     func initContentItems() {
         tagNameLabel.text = "Tag Name".uppercased().localized()
-        tagNameLabel.font = Text.style43.font
+        tagNameLabel.font = TextFontStyle.style43.font
         tagNameLabel.textColor = .gray
         
         tagNameTextField.placeholder = "Tag name...".localized()
-        tagNameTextField.font = Text.style39.font
+        tagNameTextField.font = TextFontStyle.style39.font
         tagNameTextField.textColor = .darkBlue
         tagNameTextField.layer.backgroundColor = UIColor(red: 0.957, green: 0.965, blue: 0.992, alpha: 0.5).cgColor
         tagNameTextField.layer.cornerRadius = 2
@@ -110,13 +110,13 @@ class FABTagsManagementActionSheet: BaseViewController<ManageTagsViewModel> {
         let rightButtonLabelText = menuType == .newTag ? "Add tag".localized() : "Save".localized()
         
         cancelButton.bgColor = .whiteGray
-        cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
-        cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .highlighted)
+        cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: TextFontStyle.style11.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
+        cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: TextFontStyle.style11.font, .foregroundColor: UIColor.darkBlue]), for: .highlighted)
         cancelButton.layer.cornerRadius = 1
         
         rightBottomButton.bgColor = .darkBlue
-        rightBottomButton.setAttributedTitle(NSAttributedString(string: rightButtonLabelText, attributes: [.font: Text.style8.font, .foregroundColor: UIColor.white]), for: .normal)
-        rightBottomButton.setAttributedTitle(NSAttributedString(string: rightButtonLabelText, attributes: [.font: Text.style8.font, .foregroundColor: UIColor.white]), for: .highlighted)
+        rightBottomButton.setAttributedTitle(NSAttributedString(string: rightButtonLabelText, attributes: [.font: TextFontStyle.style8.font, .foregroundColor: UIColor.white]), for: .normal)
+        rightBottomButton.setAttributedTitle(NSAttributedString(string: rightButtonLabelText, attributes: [.font: TextFontStyle.style8.font, .foregroundColor: UIColor.white]), for: .highlighted)
         rightBottomButton.layer.cornerRadius = 1
     }
     

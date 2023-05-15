@@ -27,16 +27,16 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
         
         verificationCodeTitleLabel.text = .enterVerificationCode
         verificationCodeTitleLabel.textColor = .tangerine
-        verificationCodeTitleLabel.font = Text.style.font
+        verificationCodeTitleLabel.font = TextFontStyle.style.font
         
         confirmButton.setTitle("Verify".localized(), for: .normal)
-        confirmButton.setFont(Text.style16.font)
+        confirmButton.setFont(TextFontStyle.style16.font)
         confirmButton.setTitleColor(.primary, for: [])
         confirmButton.layer.cornerRadius = 0
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white.withAlphaComponent(0.5)
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
         
         codeField.placeholder = "Code".uppercased()
         codeField.accessibilityLabel = "Code"

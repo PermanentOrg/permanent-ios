@@ -116,7 +116,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         let itemNameLabel = UILabel()
         itemNameLabel.text = sharedFile.name
         itemNameLabel.textColor = .white
-        itemNameLabel.font = Text.style3.font
+        itemNameLabel.font = TextFontStyle.style3.font
         
         let headerStackView = UIStackView(arrangedSubviews: [imageView, itemNameLabel])
         headerStackView.translatesAutoresizingMaskIntoConstraints = false

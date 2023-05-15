@@ -26,11 +26,11 @@ class PublicGalleryNoArchiveCellCollectionViewCell: UICollectionViewCell {
         backgroudView.backgroundColor = .galleryGray
         
         textLabel.textColor = .darkGray
-        textLabel.font = Text.style32.font
+        textLabel.font = TextFontStyle.style32.font
         textLabel.text = "None of your archives are public.".localized()
         
         secondTextLabel.textColor = .primary
-        secondTextLabel.font = Text.style9.font
+        secondTextLabel.font = TextFontStyle.style9.font
         secondTextLabel.text = "Learn how to publish an archive".localized()
     }
     

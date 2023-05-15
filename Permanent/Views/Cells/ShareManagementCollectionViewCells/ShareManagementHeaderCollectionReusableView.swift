@@ -22,7 +22,7 @@ class ShareManagementHeaderCollectionReusableView: UICollectionReusableView {
         
         badgeLabel.backgroundColor = .paleRed
         badgeLabel.textColor = .white
-        badgeLabel.font = Text.style40.font
+        badgeLabel.font = TextFontStyle.style40.font
         badgeLabel.layer.cornerRadius = 9
         badgeLabel.clipsToBounds = true
         badgeLabel.isHidden = true
@@ -38,7 +38,7 @@ class ShareManagementHeaderCollectionReusableView: UICollectionReusableView {
     func configure(withTitle title: String, badgeValue badge: Int, isRedBadge: Bool = false) {
         let baseAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.middleGray,
-            NSAttributedString.Key.font: Text.style37.font
+            NSAttributedString.Key.font: TextFontStyle.style37.font
         ]
         
         if isRedBadge {

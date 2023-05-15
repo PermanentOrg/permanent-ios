@@ -159,7 +159,7 @@ class AssetGridViewController: UICollectionViewController {
         appearance.backgroundColor = .darkBlue
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.white,
-            .font: Text.style14.font
+            .font: TextFontStyle.style14.font
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance

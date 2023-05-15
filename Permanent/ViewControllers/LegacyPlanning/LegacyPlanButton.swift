@@ -12,7 +12,7 @@ class LegacyPlanButton: UIButton {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
-        label.font = Text.style35.font
+        label.font = TextFontStyle.style35.font
         label.textAlignment = .left
         return label
     }()

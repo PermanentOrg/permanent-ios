@@ -37,7 +37,7 @@ class EmptyFolderView: UIView {
         loadNib()
         setupView(contentView, positionOffset: positionOffset)
         
-        emptyFolderLabel.font = Text.style8.font
+        emptyFolderLabel.font = TextFontStyle.style8.font
         emptyFolderLabel.textColor = .textPrimary
     }
 }

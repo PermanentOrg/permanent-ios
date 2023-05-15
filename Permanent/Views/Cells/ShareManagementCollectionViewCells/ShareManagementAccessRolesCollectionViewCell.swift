@@ -19,9 +19,9 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        titleLabel.font = Text.style34.font
+        titleLabel.font = TextFontStyle.style34.font
         titleLabel.textColor = .middleGray
-        descriptionLabel.font = Text.style38.font
+        descriptionLabel.font = TextFontStyle.style38.font
         descriptionLabel.textColor = .middleGray
         descriptionLabel.text = "none"
         selectedImageView.image = UIImage(named: "accessRoleNotSelected")?.withRenderingMode(.alwaysTemplate)
@@ -61,7 +61,7 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
         
         if isSelected {
             backgroundColor = .whiteGray
-            titleLabel.font = Text.style35.font
+            titleLabel.font = TextFontStyle.style35.font
             selectedImageView.image = UIImage(named: "accessRoleSelected")?.withRenderingMode(.alwaysTemplate)
             selectedImageView.tintColor = .darkBlue
             
@@ -82,7 +82,7 @@ class ShareManagementAccessRolesCollectionViewCell: UICollectionViewCell {
             selectedImageView.image = UIImage(named: "accessRoleNotSelected")?.withRenderingMode(.alwaysTemplate)
             selectedImageView.tintColor = .middleGray
             descriptionLabel.isHidden = true
-            titleLabel.font = Text.style34.font
+            titleLabel.font = TextFontStyle.style34.font
         }
         UIView.animate(withDuration: 0.2) { [self] in
             view.backgroundColor = backgroundColor

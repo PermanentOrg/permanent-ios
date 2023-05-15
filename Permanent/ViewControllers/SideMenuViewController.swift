@@ -54,7 +54,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         tableView.separatorColor = .clear
         
         versionLabel.textColor = .white.withAlphaComponent(0.33)
-        versionLabel.font = Text.style12.font
+        versionLabel.font = TextFontStyle.style12.font
         versionLabel.text = "v.".localized() + " \(Bundle.release) [\(Bundle.build)]"
         versionLabel.setTextSpacingBy(value: -0.12)
         
