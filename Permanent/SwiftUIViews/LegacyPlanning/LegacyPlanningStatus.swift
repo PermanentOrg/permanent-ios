@@ -18,6 +18,7 @@ struct LegacyPlanningStatus: View {
                     accountView
                     completedArchiveView
                     archiveView
+                    tellMeMore
                 }
             }
             .padding(32)
@@ -220,6 +221,19 @@ struct LegacyPlanningStatus: View {
             }
             .padding(6)
             
+        }
+    }
+    
+    var tellMeMore: some View {
+        VStack {
+            Button {
+                
+            } label: {
+                Text("Tell me more about Legacy Plan")
+                    .textStyle(OpenSansSemiBoldRegular())
+                    .foregroundColor(.white)
+            }
+
         }
     }
 }
