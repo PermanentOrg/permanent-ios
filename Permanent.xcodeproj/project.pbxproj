@@ -303,6 +303,7 @@
 		5EFC404C292D722600FD244B /* ShareManagementRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC404B292D722600FD244B /* ShareManagementRepository.swift */; };
 		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
+		92C73E352A12396A000EF633 /* LegacyPlanningStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E342A12396A000EF633 /* LegacyPlanningStatus.swift */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -999,6 +1000,7 @@
 		7140D969038744326FFA1126 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 		85EA62B3A7DAEAF3E0BBD69A /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8D026D33BE20D4A089D7FA61 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
+		92C73E342A12396A000EF633 /* LegacyPlanningStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatus.swift; sourceTree = "<group>"; };
 		9950B75349DCBB545F884761 /* Pods-PermanentTests.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-release.xcconfig"; sourceTree = "<group>"; };
 		BBBF1EF271142B1F297B305F /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
@@ -1699,6 +1701,7 @@
 				5EE17FFF24EEC44700496AF7 /* Services */,
 				BC1BDF17251355E100F2D239 /* Storyboards */,
 				06B0EB2124E6786F003D90C6 /* ViewControllers */,
+				92C73E312A12392D000EF633 /* SwiftUIViews */,
 				06B0EB2C24E68289003D90C6 /* ViewModels */,
 				06644A8124EA70D5003CD359 /* Views */,
 				F569061528CA024300E610B6 /* Permanent-DEV-UnitTests.xctestplan */,
@@ -1954,6 +1957,22 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		92C73E312A12392D000EF633 /* SwiftUIViews */ = {
+			isa = PBXGroup;
+			children = (
+				92C73E322A123948000EF633 /* LegacyPlanning */,
+			);
+			path = SwiftUIViews;
+			sourceTree = "<group>";
+		};
+		92C73E322A123948000EF633 /* LegacyPlanning */ = {
+			isa = PBXGroup;
+			children = (
+				92C73E342A12396A000EF633 /* LegacyPlanningStatus.swift */,
+			);
+			path = LegacyPlanning;
 			sourceTree = "<group>";
 		};
 		BC0D35AE2553FC0A00786E8C /* ActionDialogView */ = {
@@ -3502,6 +3521,7 @@
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
+				92C73E352A12396A000EF633 /* LegacyPlanningStatus.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
 				F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */,
