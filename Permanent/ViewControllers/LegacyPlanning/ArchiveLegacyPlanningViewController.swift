@@ -33,6 +33,8 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var addedLegacyStewardDeleteButton: UIButton!
     var selectedArchive: ArchiveVOData?
     
+    private let overlayView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel = LegacyPlanningViewModel()
@@ -44,6 +46,16 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.didUpdateSelectedSteward, object: nil, queue: nil) { [weak self] notif in
             self?.updateTrustedSteward()
         }
+        
+        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.isLoadingNotification, object: nil, queue: nil) { [weak self] notif in
+            if let isLoading = self?.viewModel?.isLoading, isLoading {
+                self?.showSpinner()
+            } else {
+                self?.hideSpinner()
+            }
+        }
+        
+        addedLegacyStewardDeleteButton.isHidden = true
     }
     
     override func styleNavBar() {
@@ -54,13 +66,18 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         view.backgroundColor = .backgroundPrimary
         view.layer.backgroundColor = UIColor.whiteGray.cgColor
         
+        overlayView.frame = view.bounds
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .bgOverlay
+        overlayView.alpha = 0
+        
         titleLabelSetup()
         backButtonSetup()
         closeButtonSetup()
         addLegacyStewardSetup()
         addedLegacyStewardSetup()
-        updateTrustedSteward()
         customizeSeparatorView()
+        viewModel?.getCurrentSteward()
         
         if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
             archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))

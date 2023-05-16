@@ -9,8 +9,22 @@ import Foundation
 
 class LegacyPlanningViewModel: ViewModelInterface {
     static let didUpdateSelectedSteward = NSNotification.Name("LegacyPlanningViewModel.didUpdateSelectedSteward")
+    static let isLoadingNotification = Notification.Name("LegacyPlanningViewModel.isLoadingNotification")
+    
+    var isLoading: Bool = false {
+        didSet {
+            NotificationCenter.default.post(name: Self.isLoadingNotification, object: self, userInfo: nil)
+        }
+    }
+
     var selectedArchive: ArchiveVOData?
     var selectedSteward: ArchiveSteward?
+    
+    let legacyPlanningRepository: LegacyPlanningRepository
+    
+    init(legacyPlanningRepository: LegacyPlanningRepository = LegacyPlanningRepository()) {
+        self.legacyPlanningRepository = legacyPlanningRepository
+    }
     
     func isValidEmail(email: String?) -> Bool {
         guard let email = email else { return false }
@@ -20,9 +34,25 @@ class LegacyPlanningViewModel: ViewModelInterface {
     }
     
     func addSelectedSteward(name: String, email: String, status: ArchiveSteward.StewardStatus) {
-        selectedSteward = ArchiveSteward(name: name, email: email, status: status)
-        
-        NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)
+        isLoading = true
+        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: "") { result, error in
+            self.isLoading = false
+            if result {
+                self.getCurrentSteward()
+            }
+        }
+    }
+    
+    func getCurrentSteward() {
+        isLoading = true
+        guard let archiveId = selectedArchive?.archiveID else { return }
+        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { response, error in
+            self.isLoading = false
+            if let response = response {
+                self.selectedSteward?.name = response.stewardAccountId ?? ""
+                self.selectedSteward?.email = response.note ?? ""
+                NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)}
+        }
     }
     
     func deleteSelectedSteward() {
