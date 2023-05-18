@@ -303,6 +303,15 @@
 		5EFC404C292D722600FD244B /* ShareManagementRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC404B292D722600FD244B /* ShareManagementRepository.swift */; };
 		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
+		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
+		92C73E3D2A13BC6D000EF633 /* LegacyStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3C2A13BC6D000EF633 /* LegacyStatusViewController.swift */; };
+		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
+		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
+		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
+		92C73E462A14D530000EF633 /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E452A14D530000EF633 /* RoundedView.swift */; };
+		92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */; };
+		92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */; };
+		92DCF7872A1509E0004C36CB /* LegacyArchiveCreateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -999,6 +1008,15 @@
 		7140D969038744326FFA1126 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 		85EA62B3A7DAEAF3E0BBD69A /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8D026D33BE20D4A089D7FA61 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
+		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
+		92C73E3C2A13BC6D000EF633 /* LegacyStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyStatusViewController.swift; sourceTree = "<group>"; };
+		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
+		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
+		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
+		92C73E452A14D530000EF633 /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
+		92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyAccountStatusCell.xib; sourceTree = "<group>"; };
+		92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCompletedCell.xib; sourceTree = "<group>"; };
+		92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCreateCell.xib; sourceTree = "<group>"; };
 		9950B75349DCBB545F884761 /* Pods-PermanentTests.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-release.xcconfig"; sourceTree = "<group>"; };
 		BBBF1EF271142B1F297B305F /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
@@ -1401,6 +1419,8 @@
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
+				924E839B2A165D28005D813B /* ButtonWithRightImage.swift */,
+				92C73E452A14D530000EF633 /* RoundedView.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				F5E793D6294B5AB000CFCCA5 /* AuthTextField.swift */,
 				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
@@ -1910,6 +1930,7 @@
 				5ED3B3AB29F7E008000CFF48 /* ArchiveLegacyPlanningViewController.swift */,
 				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningViewController.swift */,
 				5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */,
+				92C73E3C2A13BC6D000EF633 /* LegacyStatusViewController.swift */,
 				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanButton.swift */,
 			);
 			path = LegacyPlanning;
@@ -1954,6 +1975,19 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		92C73E3E2A13BD97000EF633 /* LegacyPlanningCells */ = {
+			isa = PBXGroup;
+			children = (
+				92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */,
+				92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */,
+				92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */,
+				92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */,
+				92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */,
+				92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */,
+			);
+			path = LegacyPlanningCells;
 			sourceTree = "<group>";
 		};
 		BC0D35AE2553FC0A00786E8C /* ActionDialogView */ = {
@@ -2341,6 +2375,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				92C73E3E2A13BD97000EF633 /* LegacyPlanningCells */,
 				F557A64727A1C81600C061D4 /* OnlinePresenceTableCells */,
 				5E381F0927AB0B3A00F7E277 /* MilestonesTableCells */,
 				5E611E36261CFDD000B17491 /* TagDetailsTableViewCells */,
@@ -2879,6 +2914,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F54257A028AE6F2300D79AA1 /* FileCollectionViewGridCell.xib in Resources */,
+				92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */,
 				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
 				5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */,
 				5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */,
@@ -2912,6 +2948,7 @@
 				F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */,
 				5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
+				92DCF7872A1509E0004C36CB /* LegacyArchiveCreateCell.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				F52D2B89292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
@@ -2940,6 +2977,7 @@
 				5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */,
+				92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */,
 				F52D2B85292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib in Resources */,
 				5E048FD42923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.xib in Resources */,
 				5E048FCC2923057F0023C929 /* ShareManagementToggleCollectionViewCell.xib in Resources */,
@@ -3187,10 +3225,12 @@
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
+				92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
 				5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */,
 				5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				F559F88528F9D91D0015A522 /* FileBrowserViewModel.swift in Sources */,
+				92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */,
 				5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
@@ -3203,6 +3243,7 @@
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				F55350262979616B00F87EBF /* AccountRemoteDataSource.swift in Sources */,
+				924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
 				5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */,
@@ -3296,6 +3337,7 @@
 				5E048FD7292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.swift in Sources */,
 				5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
+				92C73E3D2A13BC6D000EF633 /* LegacyStatusViewController.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
 				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
@@ -3550,6 +3592,7 @@
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */,
+				92C73E462A14D530000EF633 /* RoundedView.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
@@ -3562,6 +3605,7 @@
 				F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */,
 				BC59BACD25C2B8BD005A45D3 /* ActivityFeedViewModel.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
+				92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,

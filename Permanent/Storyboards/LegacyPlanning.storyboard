@@ -722,6 +722,40 @@
             </objects>
             <point key="canvasLocation" x="834" y="-96"/>
         </scene>
+        <!--Legacy Status View Controller-->
+        <scene sceneID="iqE-Ta-U7y">
+            <objects>
+                <viewController storyboardIdentifier="LegacyPlanningStatus" id="VaV-Si-WKL" customClass="LegacyStatusViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kN2-sI-29a">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="t6a-xS-7Um">
+                                <rect key="frame" x="32" y="59" width="329" height="759"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="VaV-Si-WKL" id="gPg-nG-I9E"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="rWp-Bb-qu9"/>
+                        <color key="backgroundColor" red="0.074509803921568626" green="0.10588235294117647" blue="0.29019607843137252" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="t6a-xS-7Um" firstAttribute="leading" secondItem="rWp-Bb-qu9" secondAttribute="leading" constant="32" id="FA5-2j-yu6"/>
+                            <constraint firstItem="rWp-Bb-qu9" firstAttribute="bottom" secondItem="t6a-xS-7Um" secondAttribute="bottom" id="ZEH-st-ooG"/>
+                            <constraint firstItem="rWp-Bb-qu9" firstAttribute="trailing" secondItem="t6a-xS-7Um" secondAttribute="trailing" constant="32" id="hON-Z8-6ML"/>
+                            <constraint firstItem="t6a-xS-7Um" firstAttribute="top" secondItem="rWp-Bb-qu9" secondAttribute="top" id="pPC-A8-rxt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="t6a-xS-7Um" id="MaH-Y7-w9m"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Qya-m5-o9f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1664.885496183206" y="-117.60563380281691"/>
+        </scene>
     </scenes>
     <resources>
         <image name="legacyPlanningCheckMark" width="24" height="24"/>
