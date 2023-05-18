@@ -7,15 +7,21 @@
 
 import Foundation
 
-struct ArchiveSteward {
+struct LegacyPlanningSteward {
     var name: String
     var email: String
     var status: StewardStatus
+    var type: StewardType
 
     enum StewardStatus: String {
         case pending
         case accepted
         case declined
+    }
+    
+    enum StewardType: String {
+        case account
+        case archive
     }
 
     func currentStatus() -> String {

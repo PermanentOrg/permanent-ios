@@ -25,6 +25,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         RightDrawerSection.rightSideMenu: [
             DrawerOption.addStorage,
             DrawerOption.accountInfo,
+            DrawerOption.legacyPlanning,
             DrawerOption.activityFeed,
             DrawerOption.manageArchives,
             DrawerOption.invitations,
@@ -217,6 +218,14 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .legacyPlanning:
+            if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
+                legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+                let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
+                customNavController.modalPresentationStyle = .fullScreen
+                self.present(customNavController, animated: true, completion: nil)
+            }
+        
         case .manageArchives:
             let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
