@@ -305,7 +305,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="selectedTextColor" catalog="System" colorSpace="catalog"/>
                         <constraints>
                             <constraint firstItem="Acf-HJ-wMl" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" id="692-Ai-L6Q"/>
                             <constraint firstItem="4JU-Jj-91a" firstAttribute="width" secondItem="5EZ-qb-Rvc" secondAttribute="width" id="7Pd-cw-SRP"/>

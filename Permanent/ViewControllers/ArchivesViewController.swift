@@ -148,13 +148,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         }
         if AccessRole.roleForValue(viewModel?.currentArchive()?.accessRole ?? "") == .owner {
             actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
-                    archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
-                    archiveLegacyPlanningVC.selectedArchive = self?.viewModel?.currentArchive()
-                    let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-                    navControl.modalPresentationStyle = .fullScreen
-                    self?.present(navControl, animated: true, completion: nil)
-                }
+                self?.presentArchiveStewardScreen(archiveData: self?.viewModel?.currentArchive())
             }), at: 0)
         }
         let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: actions)
@@ -279,13 +273,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             
             if AccessRole.roleForValue(archiveVO.accessRole ?? "") == .owner {
                 actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                    if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
-                        archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
-                        archiveLegacyPlanningVC.selectedArchive = archive
-                        let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-                        navControl.modalPresentationStyle = .fullScreen
-                        self?.present(navControl, animated: true, completion: nil)
-                    }
+                    self?.presentArchiveStewardScreen(archiveData: archive)
                 }), at: 0)
                 
                 actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
@@ -340,6 +328,17 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                     self?.showAlert(title: .error, message: .errorMessage)
                 }
             })
+        }
+    }
+    
+    private func presentArchiveStewardScreen(archiveData: ArchiveVOData?) {
+        if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController,
+            let archiveData = archiveData {
+            archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
+            archiveLegacyPlanningVC.selectedArchive = archiveData
+            let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
+            navControl.modalPresentationStyle = .fullScreen
+            self.present(navControl, animated: true, completion: nil)
         }
     }
 }
