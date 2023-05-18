@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningViewModel> {
+class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningViewModel> {
     @IBOutlet weak var archiveThumbnailImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archivePermissionView: UIView!
@@ -15,7 +15,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var archivePermissionLabel: UILabel!
     @IBOutlet weak var designateStewardLabel: UILabel!
     @IBOutlet weak var designateArchiveStewardLabel: UILabel!
-    @IBOutlet weak var saveArchiveLegacyButton: LegacyPlanButton!
+    @IBOutlet weak var saveArchiveLegacyButton: LegacyPlanningSaveButton!
     @IBOutlet weak var trustedStewardView: UIView!
     @IBOutlet weak var trustedStewardImage: UIImageView!
     @IBOutlet weak var trustedStewardTitleLabel: UILabel!
@@ -35,7 +35,6 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = LegacyPlanningViewModel()
         viewModel?.selectedArchive = selectedArchive
         
         setupUI()

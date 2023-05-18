@@ -89,8 +89,9 @@ enum ViewControllerId: String {
     case shareManagement
     case shareManagementAccessRoles
     case tagsOptions
-    case legacyPlanning
-    case archiveLegacyPlanning
+    case legacyPlanningIntro
+    case legacyPlanningLoading
+    case legacyPlanningSteward
     case trustedSteward
 
     var value: String {
@@ -224,11 +225,14 @@ enum ViewControllerId: String {
         case .tagsOptions:
             return "TagsOptions"
             
-        case .legacyPlanning:
-            return "LegacyPlanning"
+        case .legacyPlanningIntro:
+            return "LegacyPlanningIntro"
             
-        case .archiveLegacyPlanning:
-            return "ArchiveLegacyPlanning"
+        case .legacyPlanningLoading:
+            return "LegacyPlanningLoading"
+            
+        case .legacyPlanningSteward:
+            return "LegacyPlanningSteward"
             
         case .trustedSteward:
             return "TrustedSteward"
