@@ -148,7 +148,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         }
         if AccessRole.roleForValue(viewModel?.currentArchive()?.accessRole ?? "") == .owner {
             actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as? ArchiveLegacyPlanningViewController {
+                if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
+                    archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
                     archiveLegacyPlanningVC.selectedArchive = self?.viewModel?.currentArchive()
                     let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
                     navControl.modalPresentationStyle = .fullScreen
@@ -278,7 +279,8 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             
             if AccessRole.roleForValue(archiveVO.accessRole ?? "") == .owner {
                 actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
-                    if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .archiveLegacyPlanning, from: .legacyPlanning) as? ArchiveLegacyPlanningViewController {
+                    if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
+                        archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
                         archiveLegacyPlanningVC.selectedArchive = archive
                         let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
                         navControl.modalPresentationStyle = .fullScreen
