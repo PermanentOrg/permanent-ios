@@ -223,7 +223,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             return
         }
 
-        guard let isValidEmail = viewModel?.isValidEmail(email: selectedStewardEmail), isValidEmail else {
+        if !selectedStewardEmail.isValidEmail {
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
@@ -263,8 +263,8 @@ extension TrustedStewardViewController: UITextFieldDelegate {
         if textField == designateStewardNameTextField {
             designateStewardEmailTextField.becomeFirstResponder()
         } else if textField == designateStewardEmailTextField {
-            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
-                updateEmailValidationUI(isValid: isValidEmail)
+            if let email = textField.text, email.isValidEmail {
+                updateEmailValidationUI(isValid: email.isValidEmail)
             }
             textField.resignFirstResponder()
         }
@@ -273,8 +273,8 @@ extension TrustedStewardViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == designateStewardEmailTextField {
-            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
-                updateEmailValidationUI(isValid: isValidEmail)
+            if let email = textField.text, email.isValidEmail {
+                updateEmailValidationUI(isValid: email.isValidEmail)
             }
         }
     }
