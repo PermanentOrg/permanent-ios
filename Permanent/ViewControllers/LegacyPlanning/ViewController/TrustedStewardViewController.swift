@@ -14,8 +14,9 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     @IBOutlet weak var designateStewardNameTextField: UITextField!
     @IBOutlet weak var designateStewardEmailTextField: UITextField!
-    @IBOutlet weak var designateStewardSelectionInfoLabel: UILabel!
+    @IBOutlet weak var designateStewardSelectionInfoTextView: UITextView!
     @IBOutlet weak var designateStewardEmailVerificationLabel: UILabel!
+    @IBOutlet weak var designateStewardInfoTextViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var designateStewardNameView: UIView!
@@ -45,8 +46,9 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         customizeDesignateStewardTitleLabel()
         customizeDesignateStewardDescriptionLabel()
         
-        customizeDesignateStewardNameTextField()
-        customizeDesignateStewardEmailTextField()
+        customizeTextFieldElements(textField: [designateStewardNameTextField, designateStewardEmailTextField])
+        customizeInfoTextView()
+
         customizeDesignateStewardSelectionInfoLabel()
         customizeEmailVerificationLabel()
         
@@ -111,12 +113,14 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         paragraphStyle.lineHeightMultiple = 1.26
 
         let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone. Please do the following things to my archive when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardSelectionInfoLabel.textColor = .black
-        designateStewardSelectionInfoLabel.font = TextFontStyle.style45.font
-        designateStewardSelectionInfoLabel.numberOfLines = 0
-        designateStewardSelectionInfoLabel.lineBreakMode = .byWordWrapping
-        designateStewardSelectionInfoLabel.attributedText = attributedText
+        
+        designateStewardSelectionInfoTextView.attributedText = attributedText
+        designateStewardSelectionInfoTextView.textAlignment = .left
+        designateStewardSelectionInfoTextView.textColor = .black
+        designateStewardSelectionInfoTextView.font = TextFontStyle.style45.font
+        designateStewardSelectionInfoTextView.backgroundColor = .clear
+        
+        updateTextViewHeight()
     }
     
     private func customizeNoteTitleLabel() {
@@ -129,35 +133,36 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         noteTitleLabel.font = TextFontStyle.style30.font
         noteTitleLabel.attributedText = attributedText
     }
-    
-    private func customizeDesignateStewardNameTextField() {
+
+    private func customizeTextFieldElements(textField: [UITextField]) {
         let placeholderTextColor = UIColor.lightGray
         let textColor = UIColor.black
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
 
-        let attributedPlaceholder = NSMutableAttributedString(string: "Steward name...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardNameTextField.textColor = textColor
-        designateStewardNameTextField.font = TextFontStyle.style11.font
-        designateStewardNameTextField.attributedPlaceholder = attributedPlaceholder
-        designateStewardNameTextField.borderStyle = .none
+        var attributedPlaceholder = NSMutableAttributedString()
+        
+        for textField in textField {
+            switch textField {
+            case designateStewardNameTextField:
+                attributedPlaceholder = NSMutableAttributedString(string: "Steward name...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                break
+            case designateStewardEmailTextField:
+                attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                break
+            default:
+                break
+            }
+            textField.attributedPlaceholder = attributedPlaceholder
+            textField.textColor = textColor
+            textField.font = TextFontStyle.style8.font
+            textField.borderStyle = .none
+        }
     }
-
-    private func customizeDesignateStewardEmailTextField() {
-        let placeholderTextColor = UIColor.lightGray
-        let textColor = UIColor.black
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.26
-
-        let attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardEmailTextField.textColor = textColor
-        designateStewardEmailTextField.font = TextFontStyle.style8.font
-        designateStewardEmailTextField.attributedPlaceholder = attributedPlaceholder
-        designateStewardEmailTextField.borderStyle = .none
+    
+    private func customizeInfoTextView() {
+        
     }
 
     private func customizeNoteDescriptionLabel() {
@@ -210,6 +215,16 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         view.layer.cornerRadius = 2
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.whiteGray.cgColor
+    }
+    
+    func updateTextViewHeight() {
+        let fixedWidth = designateStewardSelectionInfoTextView.frame.size.width
+        let newSize = designateStewardSelectionInfoTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        if newSize.height <= 132 {
+            designateStewardInfoTextViewHeightConstraint.constant = newSize.height
+        } else {
+            designateStewardInfoTextViewHeightConstraint.constant = 132
+        }
     }
     
     @objc func doneButtonTapped() {
@@ -277,5 +292,11 @@ extension TrustedStewardViewController: UITextFieldDelegate {
                 updateEmailValidationUI(isValid: email.isValidEmail)
             }
         }
+    }
+}
+
+extension TrustedStewardViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        updateTextViewHeight()
     }
 }
