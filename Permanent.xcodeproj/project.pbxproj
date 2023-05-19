@@ -307,6 +307,23 @@
 		5EFC404C292D722600FD244B /* ShareManagementRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC404B292D722600FD244B /* ShareManagementRepository.swift */; };
 		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
+		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
+		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
+		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
+		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
+		92C73E462A14D530000EF633 /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E452A14D530000EF633 /* RoundedView.swift */; };
+		92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */; };
+		92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */; };
+		92DCF7872A1509E0004C36CB /* LegacyArchiveCreateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */; };
+		92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */; };
+		92E3FB522A17686E00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */; };
+		92E3FB592A176A4600E9E5A6 /* UITableViewCellExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */; };
+		92E3FB5A2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
+		92E3FB5B2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */; };
+		92E3FB5C2A176A5B00E9E5A6 /* LegacyAccountStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */; };
+		92E3FB5D2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */; };
+		92E3FB5E2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
+		92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		BC04DAC425669AC4009D9C0C /* FolderDestVOPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */; };
 		BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC625669B8C009D9C0C /* RelocateFolderPayload.swift */; };
 		BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC04DAC92567D040009D9C0C /* RelocateRecordPayload.swift */; };
@@ -1005,6 +1022,15 @@
 		7140D969038744326FFA1126 /* Pods-Permanent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.debug.xcconfig"; sourceTree = "<group>"; };
 		85EA62B3A7DAEAF3E0BBD69A /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8D026D33BE20D4A089D7FA61 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
+		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
+		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
+		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
+		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
+		92C73E452A14D530000EF633 /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
+		92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyAccountStatusCell.xib; sourceTree = "<group>"; };
+		92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCompletedCell.xib; sourceTree = "<group>"; };
+		92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCreateCell.xib; sourceTree = "<group>"; };
+		92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewController.swift; sourceTree = "<group>"; };
 		9950B75349DCBB545F884761 /* Pods-PermanentTests.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.dev-release.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.dev-release.xcconfig"; sourceTree = "<group>"; };
 		BBBF1EF271142B1F297B305F /* Pods-Permanent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.release.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.release.xcconfig"; sourceTree = "<group>"; };
 		BC04DAC325669AC4009D9C0C /* FolderDestVOPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderDestVOPayload.swift; sourceTree = "<group>"; };
@@ -1407,6 +1433,8 @@
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
+				924E839B2A165D28005D813B /* ButtonWithRightImage.swift */,
+				92C73E452A14D530000EF633 /* RoundedView.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				F5E793D6294B5AB000CFCCA5 /* AuthTextField.swift */,
 				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
@@ -1565,7 +1593,6 @@
 				5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */,
 				F57CE595282BE9D000B06D95 /* DonateViewModel.swift */,
 				5E1C3C5128F0772A007C1A63 /* ManageTagsViewModel.swift */,
-				5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1913,12 +1940,10 @@
 		5ED3B3AA29F7D71E000CFF48 /* LegacyPlanning */ = {
 			isa = PBXGroup;
 			children = (
-				5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */,
-				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningIntroViewController.swift */,
-				5ED3B3AB29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift */,
-				5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */,
-				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift */,
-				5EBAFCE92A1572CD005DB527 /* LegacyPlanningSetUpButton.swift */,
+				92E3FB622A176BE900E9E5A6 /* Cells */,
+				92E3FB602A176BD700E9E5A6 /* ViewController */,
+				92E3FB612A176BE300E9E5A6 /* ViewModels */,
+				92E3FB632A176BFE00E9E5A6 /* Views */,
 			);
 			path = LegacyPlanning;
 			sourceTree = "<group>";
@@ -1962,6 +1987,55 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		92C73E3E2A13BD97000EF633 /* LegacyPlanningCells */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = LegacyPlanningCells;
+			sourceTree = "<group>";
+		};
+		92E3FB602A176BD700E9E5A6 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				5ED3B3AD29F7E017000CFF48 /* LegacyPlanningIntroViewController.swift */,
+				5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */,
+				92E3FB502A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift */,
+				5ED3B3AB29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift */,
+				5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		92E3FB612A176BE300E9E5A6 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5ED3B3AF29F7E0BC000CFF48 /* LegacyPlanningViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		92E3FB622A176BE900E9E5A6 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */,
+				92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */,
+				92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */,
+				92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */,
+				92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */,
+				92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		92E3FB632A176BFE00E9E5A6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift */,
+				5EBAFCE92A1572CD005DB527 /* LegacyPlanningSetUpButton.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		BC0D35AE2553FC0A00786E8C /* ActionDialogView */ = {
@@ -2349,6 +2423,7 @@
 		BC6358962535D27300EEC48C /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				92C73E3E2A13BD97000EF633 /* LegacyPlanningCells */,
 				F557A64727A1C81600C061D4 /* OnlinePresenceTableCells */,
 				5E381F0927AB0B3A00F7E277 /* MilestonesTableCells */,
 				5E611E36261CFDD000B17491 /* TagDetailsTableViewCells */,
@@ -2887,6 +2962,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F54257A028AE6F2300D79AA1 /* FileCollectionViewGridCell.xib in Resources */,
+				92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */,
 				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
 				5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */,
 				5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */,
@@ -2920,6 +2996,7 @@
 				F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */,
 				5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */,
 				5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */,
+				92DCF7872A1509E0004C36CB /* LegacyArchiveCreateCell.xib in Resources */,
 				5ED0856B24E4256500CDB4D3 /* OpenSans-Bold.ttf in Resources */,
 				F52D2B89292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.xib in Resources */,
 				BCC1CCE92578F8DA0069E337 /* Share.storyboard in Resources */,
@@ -2948,6 +3025,7 @@
 				5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
 				5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */,
+				92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */,
 				F52D2B85292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib in Resources */,
 				5E048FD42923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.xib in Resources */,
 				5E048FCC2923057F0023C929 /* ShareManagementToggleCollectionViewCell.xib in Resources */,
@@ -2992,9 +3070,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */,
+				92E3FB5D2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.xib in Resources */,
 				F55252A22907F6250005E011 /* Localizable.strings in Resources */,
 				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
 				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
+				92E3FB5C2A176A5B00E9E5A6 /* LegacyAccountStatusCell.xib in Resources */,
+				92E3FB5B2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.xib in Resources */,
 				F5ADBF3C290BBF970007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
 				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
@@ -3195,10 +3276,12 @@
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
+				92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
 				5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */,
 				5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				F559F88528F9D91D0015A522 /* FileBrowserViewModel.swift in Sources */,
+				92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */,
 				5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */,
 				BC4526E5251CACB300E24A51 /* AccountVO.swift in Sources */,
 				5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */,
@@ -3211,6 +3294,7 @@
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				F55350262979616B00F87EBF /* AccountRemoteDataSource.swift in Sources */,
+				924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
 				5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */,
@@ -3312,6 +3396,7 @@
 				5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */,
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
+				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
@@ -3560,6 +3645,7 @@
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */,
+				92C73E462A14D530000EF633 /* RoundedView.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
@@ -3572,6 +3658,7 @@
 				F509D6FE2742E2FA007E4594 /* SearchFilesViewModel.swift in Sources */,
 				BC59BACD25C2B8BD005A45D3 /* ActivityFeedViewModel.swift in Sources */,
 				BC4526E8251CACDF00E24A51 /* CodableHelper.swift in Sources */,
+				92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */,
 				BC97A4692518E73300E43205 /* StringExtension.swift in Sources */,
 				06B0EB2824E67E6A003D90C6 /* UIColor.swift in Sources */,
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
@@ -3662,6 +3749,7 @@
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,
 				5ED4B9CB2876E01400CF044B /* Strings.swift in Sources */,
 				F561F846299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift in Sources */,
+				92E3FB522A17686E00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
 				F5E418A329B7A8D1009932CF /* SelectWorkspaceViewModel.swift in Sources */,
 				F559F89628FEE9A50015A522 /* NavigateMinResponse.swift in Sources */,
 				F5ADBF3B290BBF900007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
@@ -3721,6 +3809,7 @@
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
+				92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */,
 				5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */,
 				F5A87F9A2996C51100C4272B /* WorkspacesContentViewModel.swift in Sources */,
 				5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */,
@@ -3732,6 +3821,7 @@
 				F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
 				F559F89E28FEEACC0015A522 /* FolderVOPayload.swift in Sources */,
+				92E3FB5E2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */,
 				5ED4B9D82876E0EF00CF044B /* FolderSizeVO.swift in Sources */,
 				5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */,
@@ -3773,6 +3863,7 @@
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
 				F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */,
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
+				92E3FB592A176A4600E9E5A6 /* UITableViewCellExtension.swift in Sources */,
 				F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				F559F88E28FEE9690015A522 /* FolderContentViewModel.swift in Sources */,
 				F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */,
@@ -3781,6 +3872,7 @@
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,
 				5ED4B9D12876E03F00CF044B /* RecordVO.swift in Sources */,
 				5E1CCC19287EE4B900913EEA /* ShareExtensionNavigationController.swift in Sources */,
+				92E3FB5A2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.swift in Sources */,
 				5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */,
 				5ED3B3B729F7F4B6000CFF48 /* AppEnvironment.swift in Sources */,
 				F559F8A828FF025C0015A522 /* APIEnvironment.swift in Sources */,

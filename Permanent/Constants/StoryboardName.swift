@@ -93,6 +93,7 @@ enum ViewControllerId: String {
     case legacyPlanningLoading
     case legacyPlanningSteward
     case trustedSteward
+    case legacyPlanningStatus
 
     var value: String {
         switch self {
@@ -236,6 +237,9 @@ enum ViewControllerId: String {
             
         case .trustedSteward:
             return "TrustedSteward"
+            
+        case .legacyPlanningStatus:
+            return "LegacyPlanningStatus"
             
         default:
             return self.rawValue.capitalized
