@@ -3,13 +3,12 @@
 //  Permanent
 //
 //  Created by Flaviu Silaghi on 16.05.2023.
-//  Copyright © 2023 Victory Square Partners. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-class LegacyStatusViewController: BaseViewController<LegacyPlanningViewModel>, UITableViewDataSource {
+class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningViewModel>, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     

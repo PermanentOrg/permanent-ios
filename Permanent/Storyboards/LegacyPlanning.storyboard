@@ -1031,10 +1031,10 @@
             </objects>
             <point key="canvasLocation" x="834" y="-96"/>
         </scene>
-        <!--Legacy Status View Controller-->
+        <!--Legacy Planning Status View Controller-->
         <scene sceneID="iqE-Ta-U7y">
             <objects>
-                <viewController storyboardIdentifier="LegacyPlanningStatus" id="VaV-Si-WKL" customClass="LegacyStatusViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LegacyPlanningStatus" id="VaV-Si-WKL" customClass="LegacyPlanningStatusViewController" customModule="Permanent" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="kN2-sI-29a">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -326,7 +326,10 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func saveArchiveLegacyButtonAction(_ sender: Any) {
-        
+        if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
+            statusViewController.viewModel = viewModel
+            navigationController?.viewControllers = [statusViewController]
+        }
     }
     
     @IBAction func addLegacyPersonButtonAction(_ sender: Any) {

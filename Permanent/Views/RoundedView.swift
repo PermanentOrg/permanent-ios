@@ -8,7 +8,6 @@
 
 import UIKit
 
-@IBDesignable
 class RoundedView: UIView {
     
     @IBInspectable var cornerRadius: Double {
