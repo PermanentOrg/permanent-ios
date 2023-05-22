@@ -10,4 +10,17 @@ import UIKit
 
 class LegacyAccountStatusCell: UITableViewCell {
     
+    func setup(directive: Directive) {
+        name.text = directive.stewardName
+    }
+    
+    @IBOutlet weak var name: UILabel!
+    
+    @IBAction func turnOff(_ sender: Any) {
+        
+    }
+    
+    @IBAction func editPlan(_ sender: Any) {
+        
+    }
 }

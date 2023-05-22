@@ -10,4 +10,13 @@ import UIKit
 
 class LegacyArchiveCreateCell: UITableViewCell {
     
+    func setup(directive: Directive) {
+        name.text = directive.stewardName
+    }
+    
+    @IBOutlet weak var nameAbbreviation: UILabel!
+    @IBOutlet weak var name: UILabel!
+    
+    @IBAction func create(_ sender: Any) {
+    }
 }

@@ -7,8 +7,9 @@
 
 import Foundation
 import UIKit
+import Combine
 
-class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningViewModel>, UITableViewDataSource {
+class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatusViewModel>, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -32,22 +33,28 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningViewM
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return viewModel?.archives.count ?? 0 + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = tableView.dequeue(cellClass: LegacyAccountStatusCell.self, forIndexPath: indexPath)
-            cell.layer.backgroundColor = UIColor.clear.cgColor
-            return cell
-        }
-        if indexPath.section == 1 {
-            let cell = tableView.dequeue(cellClass: LegacyArchiveCreateCell.self, forIndexPath: indexPath)
-            cell.layer.backgroundColor = UIColor.clear.cgColor
-            return cell
-        }
+        var cell = UITableViewCell()
         
-        let cell = tableView.dequeue(cellClass: LegacyArchiveCompletedCell.self, forIndexPath: indexPath)
+        if indexPath.section == 0 {
+            cell = tableView.dequeue(cellClass: LegacyAccountStatusCell.self, forIndexPath: indexPath)
+            
+        } else {
+            guard let archive = viewModel?.archives[indexPath.section] else {
+                return cell
+            }
+            
+            if archive.stewardName != nil {
+                cell = tableView.dequeue(cellClass: LegacyArchiveCompletedCell.self, forIndexPath: indexPath)
+                (cell as? LegacyArchiveCompletedCell)?.setup(directive: archive)
+            } else {
+                cell = tableView.dequeue(cellClass: LegacyArchiveCreateCell.self, forIndexPath: indexPath)
+                (cell as? LegacyArchiveCreateCell)?.setup(directive: archive)
+            }
+        }
         cell.layer.backgroundColor = UIColor.clear.cgColor
         return cell
     }

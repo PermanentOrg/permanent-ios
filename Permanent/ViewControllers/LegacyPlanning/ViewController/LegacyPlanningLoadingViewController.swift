@@ -32,7 +32,7 @@ class LegacyPlanningLoadingViewController: BaseViewController<LegacyPlanningView
     
     func showStatus() {
         if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
-            statusViewController.viewModel = viewModel
+            statusViewController.viewModel = LegacyPlanningStatusViewModel()
             navigationController?.viewControllers = [statusViewController]
         }
     }

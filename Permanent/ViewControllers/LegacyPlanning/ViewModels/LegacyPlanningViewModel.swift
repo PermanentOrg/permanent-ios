@@ -26,6 +26,6 @@ class LegacyPlanningViewModel: ViewModelInterface {
     }
     
     func getLegacyPlanningAccount() -> Bool {
-        return false
+        return true
     }
 }
