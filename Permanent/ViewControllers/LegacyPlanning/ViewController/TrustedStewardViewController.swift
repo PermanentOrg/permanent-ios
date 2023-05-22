@@ -45,17 +45,12 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         
         customizeDesignateStewardTitleLabel()
         customizeDesignateStewardDescriptionLabel()
-        
         customizeTextFieldElements(textField: [designateStewardNameTextField, designateStewardEmailTextField])
-        customizeInfoTextView()
-
         customizeDesignateStewardSelectionInfoLabel()
         customizeEmailVerificationLabel()
-        
         customizeNoteTitleLabel()
         customizeNoteDescriptionLabel()
         customizeInviteUserToPermanentLabel()
-        
         customizeSeparatorView()
         customizeView(designateStewardNameView)
         customizeView(designateStewardEmailStackView)
@@ -159,10 +154,6 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             textField.font = TextFontStyle.style8.font
             textField.borderStyle = .none
         }
-    }
-    
-    private func customizeInfoTextView() {
-        
     }
 
     private func customizeNoteDescriptionLabel() {
