@@ -19,14 +19,14 @@ class OnboardingPageThree: UIViewController {
         labelOne.textColor = .white
         labelTwo.textColor = .white
         
-        labelOne.attributedText = Text.style.setTextWithLineSpacing(text: Constants.onboardingTextBold[2])
-        labelOne.font = Text.style.font
-        labelOne.textAlignment = Text.style.alignment
+        labelOne.attributedText = TextFontStyle.style.setTextWithLineSpacing(text: Constants.onboardingTextBold[2])
+        labelOne.font = TextFontStyle.style.font
+        labelOne.textAlignment = TextFontStyle.style.alignment
         labelOne.numberOfLines = 3
         
-        labelTwo.attributedText = Text.style2.setTextWithLineSpacing(text: Constants.onboardingTextNormal[2])
-        labelTwo.font = Text.style2.font
-        labelTwo.textAlignment = Text.style2.alignment
+        labelTwo.attributedText = TextFontStyle.style2.setTextWithLineSpacing(text: Constants.onboardingTextNormal[2])
+        labelTwo.font = TextFontStyle.style2.font
+        labelTwo.textAlignment = TextFontStyle.style2.alignment
         labelTwo.numberOfLines = 3
     }
 }

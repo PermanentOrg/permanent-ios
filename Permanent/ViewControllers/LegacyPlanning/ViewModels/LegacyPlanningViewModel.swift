@@ -18,7 +18,8 @@ class LegacyPlanningViewModel: ViewModelInterface {
     }
 
     var selectedArchive: ArchiveVOData?
-    var selectedSteward: ArchiveSteward?
+    var selectedSteward: LegacyPlanningSteward?
+    var stewardType: LegacyPlanningSteward.StewardType?
     
     let legacyPlanningRepository: LegacyPlanningRepository
     
@@ -26,14 +27,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
         self.legacyPlanningRepository = legacyPlanningRepository
     }
     
-    func isValidEmail(email: String?) -> Bool {
-        guard let email = email else { return false }
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-        return emailPredicate.evaluate(with: email)
-    }
-    
-    func addSelectedSteward(name: String, email: String, status: ArchiveSteward.StewardStatus) {
+    func addSelectedSteward(name: String, email: String, status: LegacyPlanningSteward.StewardStatus) {
         isLoading = true
         legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: "") { result, error in
             self.isLoading = false
@@ -48,16 +42,14 @@ class LegacyPlanningViewModel: ViewModelInterface {
         guard let archiveId = selectedArchive?.archiveID else { return }
         legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { response, error in
             self.isLoading = false
-            if let response = response {
-                self.selectedSteward?.name = response.stewardAccountId ?? ""
-                self.selectedSteward?.email = response.note ?? ""
+            if let steward = response?.first {
+                self.selectedSteward?.name = steward.stewardAccountId ?? ""
+                self.selectedSteward?.email = steward.note ?? ""
                 NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)}
         }
     }
     
-    func deleteSelectedSteward() {
-        selectedSteward = nil
-        
-        NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)
+    func getLegacyPlanningAccount() -> Bool {
+        return false
     }
 }

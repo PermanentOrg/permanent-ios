@@ -51,6 +51,6 @@ class FileLargeCollectionViewCell: UICollectionViewCell {
     fileprivate func configureUI() {
         fileThumbImage.contentMode = .scaleAspectFill        
         nameLabel.textColor = .textPrimary
-        nameLabel.font = Text.style20.font
+        nameLabel.font = TextFontStyle.style20.font
     }
 }

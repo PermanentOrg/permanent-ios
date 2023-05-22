@@ -16,7 +16,7 @@ class RightSideDrawerTableViewCell: UITableViewCell {
         selectionStyle = .none
     
         menuItemTitleLabel.textColor = .darkBlue
-        menuItemTitleLabel.font = Text.style10.font
+        menuItemTitleLabel.font = TextFontStyle.style10.font
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

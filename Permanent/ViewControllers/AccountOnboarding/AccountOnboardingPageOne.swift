@@ -15,7 +15,7 @@ class AccountOnboardingPageOne: BaseViewController<AccountOnboardingViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        welcomeLabel.font = Text.style.font
-        detailsLabel.font = Text.style5.font
+        welcomeLabel.font = TextFontStyle.style.font
+        detailsLabel.font = TextFontStyle.style5.font
     }
 }

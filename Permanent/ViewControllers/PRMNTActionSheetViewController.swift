@@ -103,7 +103,7 @@ class PRMNTActionSheetViewController: UIViewController {
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.text = title
             titleLabel.textColor = .white
-            titleLabel.font = Text.style3.font
+            titleLabel.font = TextFontStyle.style3.font
             
             let headerView = UIView()
             
@@ -161,7 +161,7 @@ class PRMNTActionSheetViewController: UIViewController {
         
         let nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 20))
         nameLabel.text = name
-        nameLabel.font = Text.style7.font
+        nameLabel.font = TextFontStyle.style7.font
         
         let itemStackView = UIStackView(arrangedSubviews: [imageView, nameLabel])
         itemStackView.axis = .horizontal

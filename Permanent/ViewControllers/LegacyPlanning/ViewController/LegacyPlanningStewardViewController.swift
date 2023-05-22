@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningViewModel> {
+class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningViewModel> {
     @IBOutlet weak var archiveThumbnailImage: UIImageView!
     @IBOutlet weak var archiveNameLabel: UILabel!
     @IBOutlet weak var archivePermissionView: UIView!
@@ -15,7 +15,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var archivePermissionLabel: UILabel!
     @IBOutlet weak var designateStewardLabel: UILabel!
     @IBOutlet weak var designateArchiveStewardLabel: UILabel!
-    @IBOutlet weak var saveArchiveLegacyButton: LegacyPlanButton!
+    @IBOutlet weak var saveArchiveLegacyButton: LegacyPlanningSaveButton!
     @IBOutlet weak var trustedStewardView: UIView!
     @IBOutlet weak var trustedStewardImage: UIImageView!
     @IBOutlet weak var trustedStewardTitleLabel: UILabel!
@@ -37,7 +37,6 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = LegacyPlanningViewModel()
         viewModel?.selectedArchive = selectedArchive
         
         setupUI()
@@ -96,7 +95,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         let titleLabel = UILabel()
         titleLabel.text = "Archive Legacy Planning".localized()
         titleLabel.textColor = .white
-        titleLabel.font = Text.style35.font
+        titleLabel.font = TextFontStyle.style35.font
         titleLabel.sizeToFit()
         
         navigationItem.titleView = titleLabel
@@ -126,7 +125,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     private func archiveNameLabelSetup(text: String) {
         archiveNameLabel.textColor = .darkBlue
-        archiveNameLabel.font = Text.style15.font
+        archiveNameLabel.font = TextFontStyle.style15.font
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 0.9
@@ -144,7 +143,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     private func archivePermissionSetup(text: String) {
         archivePermissionLabel.backgroundColor = .clear
         archivePermissionLabel.textColor = .darkBlue
-        archivePermissionLabel.font = Text.style36.font
+        archivePermissionLabel.font = TextFontStyle.style36.font
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.47
@@ -167,7 +166,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     private func designateStewardLabelSetup(text: String) {
         designateStewardLabel.textColor = .darkBlue
-        designateStewardLabel.font = Text.style31.font
+        designateStewardLabel.font = TextFontStyle.style31.font
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.91
@@ -184,7 +183,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     private func designateArchiveStewardLabelSetup(text: String) {
         designateArchiveStewardLabel.textColor = .darkBlue
-        designateArchiveStewardLabel.font = Text.style3.font
+        designateArchiveStewardLabel.font = TextFontStyle.style3.font
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.06
@@ -204,7 +203,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
         trustedStewardImage.image = UIImage(named: "trustedSteward")
         
         trustedStewardTitleLabel.textColor = .darkBlue
-        trustedStewardTitleLabel.font = Text.style35.font
+        trustedStewardTitleLabel.font = TextFontStyle.style35.font
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.17
@@ -221,7 +220,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     private func trustedStewardDescriptionLabelSetup(text: String) {
         trustedStewardDescriptionLabel.textColor = .black
-        trustedStewardDescriptionLabel.font = Text.style39.font
+        trustedStewardDescriptionLabel.font = TextFontStyle.style39.font
         trustedStewardDescriptionLabel.lineBreakMode = .byWordWrapping
         
         let paragraphStyle = NSMutableParagraphStyle()
@@ -246,7 +245,7 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     private func addLegacyStewardSetup() {
         addLegacyStewardLabel.text = "Add Legacy Steward".localized()
         addLegacyStewardLabel.textColor = .darkBlue
-        addLegacyStewardLabel.font = Text.style44.font
+        addLegacyStewardLabel.font = TextFontStyle.style44.font
         addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
         addLegacyStewardButton.tintColor = .darkBlue
     }
@@ -260,18 +259,18 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     
     func formatAddedLegacyStewardName() {
         addedLegacyStewardName.textColor = .darkBlue
-        addedLegacyStewardName.font = Text.style44.font
+        addedLegacyStewardName.font = TextFontStyle.style44.font
     }
     
     func formatAddedLegacyStewardEmail() {
         addedLegacyStewardEmail.textColor = .middleGray
-        addedLegacyStewardEmail.font = Text.style39.font
+        addedLegacyStewardEmail.font = TextFontStyle.style39.font
     }
     
     private func formatAddedLegacyStewardStatus() {
         addedLegacyStewardStatusLabel.backgroundColor = .clear
         addedLegacyStewardStatusLabel.textColor = .warning
-        addedLegacyStewardStatusLabel.font = Text.style36.font
+        addedLegacyStewardStatusLabel.font = TextFontStyle.style36.font
         
         addedLegacyStewardStatusView.backgroundColor = .white
         addedLegacyStewardStatusView.layer.backgroundColor = UIColor.lightWarning.cgColor
@@ -344,7 +343,10 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func saveArchiveLegacyButtonAction(_ sender: Any) {
-        
+        if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
+            statusViewController.viewModel = viewModel
+            navigationController?.viewControllers = [statusViewController]
+        }
     }
     
     @IBAction func addLegacyPersonButtonAction(_ sender: Any) {
@@ -356,6 +358,5 @@ class ArchiveLegacyPlanningViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func deleteAddedLegacyPersonButtonAction(_ sender: Any) {
-        viewModel?.deleteSelectedSteward()
     }
 }

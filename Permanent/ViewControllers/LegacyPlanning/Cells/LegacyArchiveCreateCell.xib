@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="OpenSans-Regular.ttf">
+            <string>OpenSans-Regular</string>
+        </array>
+        <array key="OpenSans-SemiBold.ttf">
+            <string>OpenSans-SemiBold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="LegacyArchiveCreateCell" customModule="Permanent" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="250"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DHP-1V-wA1" customClass="RoundedView" customModule="Permanent" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="250"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="legacy_name_icon" translatesAutoresizingMaskIntoConstraints="NO" id="iaz-Jd-Sp1">
+                            <rect key="frame" x="24" y="24" width="30" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="jqO-mO-ewx"/>
+                                <constraint firstAttribute="width" constant="30" id="tWH-e8-Y7L"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SP" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BW3-Tw-OOv">
+                            <rect key="frame" x="32" y="34.666666666666664" width="14" height="16.666666666666664"/>
+                            <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="12"/>
+                            <color key="textColor" white="1" alpha="0.33000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oXb-eQ-ObU">
+                            <rect key="frame" x="24" y="78" width="193.66666666666666" height="20.666666666666671"/>
+                            <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="15"/>
+                            <color key="textColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7aN-tj-bFF" customClass="RoundedView" customModule="Permanent" customModuleProvider="target">
+                            <rect key="frame" x="24.000000000000004" y="106.66666666666667" width="45.333333333333343" height="15"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OWNER" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jai-Vq-VrC">
+                                    <rect key="frame" x="7.9999999999999982" y="2" width="29.333333333333329" height="11"/>
+                                    <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="8"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" red="0.90980392160000001" green="0.80000000000000004" blue="0.90588235289999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="Jai-Vq-VrC" secondAttribute="trailing" constant="8" id="SZ0-Vu-Gye"/>
+                                <constraint firstItem="Jai-Vq-VrC" firstAttribute="top" secondItem="7aN-tj-bFF" secondAttribute="top" constant="2" id="Scj-jK-mUM"/>
+                                <constraint firstAttribute="bottom" secondItem="Jai-Vq-VrC" secondAttribute="bottom" constant="2" id="Sv7-gS-lc0"/>
+                                <constraint firstItem="Jai-Vq-VrC" firstAttribute="leading" secondItem="7aN-tj-bFF" secondAttribute="leading" constant="8" id="knf-M8-oEO"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="4"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJW-ON-Ecx" userLabel="Divider">
+                            <rect key="frame" x="24" y="145.66666666666666" width="345" height="1"/>
+                            <color key="backgroundColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="0.16" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="q1C-08-1Qx"/>
+                            </constraints>
+                        </view>
+                        <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LXN-aG-1cQ" customClass="ButtonWithRightImage" customModule="Permanent" customModuleProvider="target">
+                            <rect key="frame" x="24" y="170.66666666666666" width="345" height="55.333333333333343"/>
+                            <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="16"/>
+                            <color key="tintColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                            <inset key="imageEdgeInsets" minX="12" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="Create archive Legacy Plan" image="power" catalog="system">
+                                <color key="titleColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="BW3-Tw-OOv" firstAttribute="centerX" secondItem="iaz-Jd-Sp1" secondAttribute="centerX" id="5Io-md-USL"/>
+                        <constraint firstItem="lJW-ON-Ecx" firstAttribute="leading" secondItem="7aN-tj-bFF" secondAttribute="leading" id="5bV-9a-3pA"/>
+                        <constraint firstItem="7aN-tj-bFF" firstAttribute="leading" secondItem="oXb-eQ-ObU" secondAttribute="leading" id="9kn-gW-1rr"/>
+                        <constraint firstItem="oXb-eQ-ObU" firstAttribute="leading" secondItem="iaz-Jd-Sp1" secondAttribute="leading" id="Fua-dl-z8X"/>
+                        <constraint firstAttribute="trailing" secondItem="lJW-ON-Ecx" secondAttribute="trailing" constant="24" id="H48-lg-63c"/>
+                        <constraint firstItem="LXN-aG-1cQ" firstAttribute="top" secondItem="lJW-ON-Ecx" secondAttribute="bottom" constant="24" id="HmA-Eg-J1a"/>
+                        <constraint firstItem="lJW-ON-Ecx" firstAttribute="top" secondItem="7aN-tj-bFF" secondAttribute="bottom" constant="24" id="Kc8-vY-cBq"/>
+                        <constraint firstItem="oXb-eQ-ObU" firstAttribute="top" secondItem="iaz-Jd-Sp1" secondAttribute="bottom" constant="24" id="LEd-a0-kLK"/>
+                        <constraint firstItem="BW3-Tw-OOv" firstAttribute="centerY" secondItem="iaz-Jd-Sp1" secondAttribute="centerY" constant="4" id="Rcu-1n-x69"/>
+                        <constraint firstItem="LXN-aG-1cQ" firstAttribute="leading" secondItem="DHP-1V-wA1" secondAttribute="leading" constant="24" id="Wl4-nb-Pkj"/>
+                        <constraint firstAttribute="bottom" secondItem="LXN-aG-1cQ" secondAttribute="bottom" constant="24" id="YnB-Vt-WAb"/>
+                        <constraint firstItem="iaz-Jd-Sp1" firstAttribute="top" secondItem="DHP-1V-wA1" secondAttribute="top" constant="24" id="irZ-Al-UHr"/>
+                        <constraint firstItem="7aN-tj-bFF" firstAttribute="top" secondItem="oXb-eQ-ObU" secondAttribute="bottom" constant="8" id="rIQ-OY-zag"/>
+                        <constraint firstAttribute="trailing" secondItem="LXN-aG-1cQ" secondAttribute="trailing" constant="24" id="s7k-9v-cfy"/>
+                        <constraint firstItem="iaz-Jd-Sp1" firstAttribute="leading" secondItem="DHP-1V-wA1" secondAttribute="leading" constant="24" id="wqL-7K-BxD"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="8"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="DHP-1V-wA1" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="XJy-yT-3BY"/>
+                <constraint firstAttribute="bottom" secondItem="DHP-1V-wA1" secondAttribute="bottom" id="hZ1-Uy-0Bi"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="DHP-1V-wA1" secondAttribute="trailing" id="iFJ-xW-cHH"/>
+                <constraint firstItem="DHP-1V-wA1" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="reo-YV-0qG"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="-25.190839694656489" y="-191.5492957746479"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="legacy_name_icon" width="40" height="40"/>
+        <image name="power" catalog="system" width="127" height="128"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

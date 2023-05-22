@@ -35,11 +35,11 @@ class BottomActionSheet: UIView {
         
         closeButton.setTitleColor(.primary, for: [])
         closeButton.setTitle(.cancel, for: [])
-        closeButton.setFont(Text.style11.font)
+        closeButton.setFont(TextFontStyle.style11.font)
         
         actionButton.setTitleColor(.primary, for: .normal)
         actionButton.setTitleColor(UIColor.primary.withAlphaComponent(0.5), for: .disabled)
-        actionButton.setFont(Text.style11.font)
+        actionButton.setFont(TextFontStyle.style11.font)
     }
     
     @IBAction func closeButtonAction(_ sender: UIButton) {

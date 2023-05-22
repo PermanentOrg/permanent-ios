@@ -15,7 +15,7 @@ class TextField: CustomTextField {
     var placeholderColor: UIColor = .white
     
     @IBInspectable
-    var placeholderFont: UIFont = Text.style7.font
+    var placeholderFont: UIFont = TextFontStyle.style7.font
     
     override var placeholder: String? {
         didSet {
@@ -34,7 +34,7 @@ class TextField: CustomTextField {
 
         backgroundColor = .primary
         textColor = .white
-        font = Text.style4.font
+        font = TextFontStyle.style4.font
         tintColor = .white
 
         clipsToBounds = true

@@ -7,12 +7,12 @@
 
 import UIKit
 
-class LegacyPlanButton: UIButton {
+class LegacyPlanningSaveButton: UIButton {
     let leftSideLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
-        label.font = Text.style35.font
+        label.font = TextFontStyle.style35.font
         label.textAlignment = .left
         return label
     }()
@@ -79,7 +79,6 @@ class LegacyPlanButton: UIButton {
             self.layer.backgroundColor = UIColor.darkBlue.cgColor
             self.isUserInteractionEnabled = true
         } else {
-            // Set the disabled background color
             self.layer.backgroundColor = UIColor.lightGray.cgColor
             self.isUserInteractionEnabled = false
         }

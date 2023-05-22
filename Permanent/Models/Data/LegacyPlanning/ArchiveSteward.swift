@@ -6,9 +6,9 @@
 //
 
 import Foundation
-struct ArchiveStewardResponse: Model {
+struct ArchiveSteward: Model {
     let directiveId: String?
-    let archiveId: Int?
+    let archiveId: String?
     let type: String?
     let createdDT: String?
     let updatedDT: String?
@@ -16,12 +16,4 @@ struct ArchiveStewardResponse: Model {
     let stewardAccountId: String?
     let note: String?
     let executionDT: String?
-}
-
-struct ArchiveStewardResponseTriggerType: Model {
-    let directiveTriggerId: String?
-    let directiveId: String?
-    let type: String?
-    let createdDT: String?
-    let updatedDT: String?
 }

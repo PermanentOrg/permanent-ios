@@ -43,9 +43,9 @@ class AccountOnboardingMakeDefaultArchiveTableViewCell: UITableViewCell {
     
     private func initUI() {
         archiveTitleLabel.textColor = .black
-        archiveTitleLabel.font = Text.style17.font
+        archiveTitleLabel.font = TextFontStyle.style17.font
         archiveInvitedByLabel.textColor = .darkGray
-        archiveInvitedByLabel.font = Text.style8.font
+        archiveInvitedByLabel.font = TextFontStyle.style8.font
         
         makeDefaultButton.setup()
         makeDefaultButton.setTitleColor(UIColor.white.darker(by: 30), for: .disabled)

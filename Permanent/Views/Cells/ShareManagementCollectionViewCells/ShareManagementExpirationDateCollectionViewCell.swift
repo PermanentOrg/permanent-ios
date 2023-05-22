@@ -19,12 +19,12 @@ class ShareManagementExpirationDateCollectionViewCell: UICollectionViewCell {
         
         expirationDateField.delegate = self
         
-        expirationDateField.font = Text.style39.font
+        expirationDateField.font = TextFontStyle.style39.font
         expirationDateField.textColor = .darkBlue
         expirationDateField.backgroundColor = .whiteGray
         expirationDateField.clearButtonMode = .always
         
-        detailsLabel.font = Text.style38.font
+        detailsLabel.font = TextFontStyle.style38.font
         detailsLabel.textColor = .middleGray
     }
     

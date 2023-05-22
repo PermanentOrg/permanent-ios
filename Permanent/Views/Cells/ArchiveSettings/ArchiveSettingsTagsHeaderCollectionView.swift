@@ -59,16 +59,16 @@ class ArchiveSettingsTagsHeaderCollectionView: UICollectionReusableView {
     
     func initUI() {
         tagsHeaderLabel.text = "Name".localized()
-        tagsHeaderLabel.font = Text.style34.font
+        tagsHeaderLabel.font = TextFontStyle.style34.font
         tagsHeaderLabel.textColor = .darkBlue
         
         selectCheckBoxButton.setImage(UIImage(named: "checkBoxChecked")?.withRenderingMode(.alwaysTemplate), for: .normal)
         selectCheckBoxButton.tintColor = .darkBlue
         
-        let selectAttributedText = NSAttributedString(string: "Select".localized(), attributes: [.foregroundColor: UIColor.darkBlue, .font: Text.style34.font])
+        let selectAttributedText = NSAttributedString(string: "Select".localized(), attributes: [.foregroundColor: UIColor.darkBlue, .font: TextFontStyle.style34.font])
         selectButton.setAttributedTitle(selectAttributedText, for: .normal)
     
-        let clearAttributedText = NSAttributedString(string: "Clear".localized(), attributes: [.foregroundColor: UIColor.paleRed, .font: Text.style34.font])
+        let clearAttributedText = NSAttributedString(string: "Clear".localized(), attributes: [.foregroundColor: UIColor.paleRed, .font: TextFontStyle.style34.font])
         clearButton.setAttributedTitle(clearAttributedText, for: .normal)
         
         smallArrowButton.setImage(UIImage(named: "arrowDownSmall")?.withRenderingMode(.alwaysTemplate), for: .normal)

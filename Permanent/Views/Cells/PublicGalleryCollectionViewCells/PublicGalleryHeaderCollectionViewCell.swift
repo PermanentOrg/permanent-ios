@@ -20,17 +20,17 @@ class PublicGalleryHeaderCollectionViewCell: UICollectionViewCell {
     func configure(section: PublicGalleryCellType) {
         switch section {
         case .onlineArchives:
-            sectionNameLabel.font = Text.style32.font
+            sectionNameLabel.font = TextFontStyle.style32.font
             sectionNameLabel.textColor = .primary
             sectionNameLabel.text = "Your Public Archives".localized()
             
         case .popularPublicArchives:
-            sectionNameLabel.font = Text.style32.font
+            sectionNameLabel.font = TextFontStyle.style32.font
             sectionNameLabel.textColor = .primary
             sectionNameLabel.text = "Public Popular Archives".localized()
             
         case .searchResultArchives:
-            sectionNameLabel.font = Text.style32.font
+            sectionNameLabel.font = TextFontStyle.style32.font
             sectionNameLabel.textColor = .primary
             sectionNameLabel.text = "Results".localized()
         }

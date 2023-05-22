@@ -38,7 +38,7 @@ class DropdownView: UIView {
         
         backgroundColor = .galleryGray
         valueLabel.textColor = .dustyGray
-        valueLabel.font = Text.style4.font
+        valueLabel.font = TextFontStyle.style4.font
         
         arrowImage.contentMode = .scaleAspectFit
         arrowImage.image = .expand

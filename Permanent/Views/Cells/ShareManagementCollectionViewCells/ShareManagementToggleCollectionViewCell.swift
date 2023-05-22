@@ -20,10 +20,10 @@ class ShareManagementToggleCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         backgroundColor = .backgroundPrimary
         
-        cellTitleLabel.font = Text.style34.font
+        cellTitleLabel.font = TextFontStyle.style34.font
         cellTitleLabel.textColor = .darkBlue
         
-        cellSubtitleLabel.font = Text.style38.font
+        cellSubtitleLabel.font = TextFontStyle.style38.font
         cellSubtitleLabel.textColor = .middleGray
     }
     

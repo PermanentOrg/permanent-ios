@@ -22,18 +22,18 @@ class ShareManagementDefaultAccessRoleCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         editDefaultRoleButton.setTitle("", for: .normal)
         
-        titleLabel.font = Text.style34.font
+        titleLabel.font = TextFontStyle.style34.font
         titleLabel.textColor = .darkBlue
         titleLabel.text = "Default access role".localized()
         
-        detailsLabel.font = Text.style38.font
+        detailsLabel.font = TextFontStyle.style38.font
         detailsLabel.textColor = .middleGray
         detailsLabel.text = "Archives are granted access with this role by default.".localized()
         
         userDefaultRoleBackgroundView.backgroundColor = UIColor.tangerine.withAlphaComponent(0.2)
         userDefaultRoleBackgroundView.layer.cornerRadius = 4
         
-        userDefaultRoleLabel.font = Text.style36.font
+        userDefaultRoleLabel.font = TextFontStyle.style36.font
         userDefaultRoleLabel.textColor = UIColor.darkBlue
     }
     

@@ -28,18 +28,18 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         
         titleLabel.text = .welcomeMessage
         titleLabel.textColor = .white
-        titleLabel.font = Text.style.font
+        titleLabel.font = TextFontStyle.style.font
         
         biometricsButton.setTitle(String(format: .unlockWithBiometrics, BiometryUtils.biometryInfo.name), for: [])
         biometricsImageView.image = UIImage(named: BiometryUtils.biometryInfo.iconName)
             
         loginButton.setTitle(.useLoginCredentials, for: [])
-        loginButton.setFont(Text.style5.font)
+        loginButton.setFont(TextFontStyle.style5.font)
         loginButton.setTitleColor(.white, for: [])
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
     }
     
     private func attemptBiometricsAuth() {

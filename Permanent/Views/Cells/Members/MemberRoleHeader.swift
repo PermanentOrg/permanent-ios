@@ -34,7 +34,7 @@ class MemberRoleHeader: UIView {
         backgroundColor = .backgroundPrimary
         
         roleLabel = UILabel()
-        roleLabel.font = Text.style3.font
+        roleLabel.font = TextFontStyle.style3.font
         roleLabel.textColor = .primary
         
         infoButton = UIButton()
@@ -55,7 +55,7 @@ class MemberRoleHeader: UIView {
         noDataHeader = UILabel()
         noDataHeader.text = String.none
         noDataHeader.textColor = .textPrimary
-        noDataHeader.font = Text.style8.font
+        noDataHeader.font = TextFontStyle.style8.font
         
         let vStack = UIStackView(arrangedSubviews: [
             hStack,

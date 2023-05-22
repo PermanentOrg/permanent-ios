@@ -7,17 +7,17 @@
 
 import Foundation
 protocol LegacyPlanningDataSourceInterface {
-    func getArchiveSteward(archiveId: Int, completion: @escaping (Result<ArchiveStewardResponse, Error>) -> Void)
+    func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void)
     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void)
 }
  class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
-     func getArchiveSteward(archiveId: Int, completion: @escaping (Result<ArchiveStewardResponse, Error>) -> Void) {
+     func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void) {
          let getArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.getArchiveSteward(archiveId: archiveId))
          getArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
              switch result {
              case .json(let response, _):
                  guard
-                     let model: ArchiveStewardResponse = JSONHelper.decoding(from: response, with: ArchiveStewardResponse.decoder)
+                    let model: [ArchiveSteward] = JSONHelper.decoding(from: response, with: JSONDecoder.init())
                  else {
                      completion(.failure(APIError.parseError))
                      return
@@ -39,7 +39,7 @@ protocol LegacyPlanningDataSourceInterface {
              switch result {
              case .json(let response, _):
                  guard
-                    let model: ArchiveStewardResponse = JSONHelper.decoding(from: response, with: ArchiveStewardResponse.decoder)
+                    let model: ArchiveSteward = JSONHelper.decoding(from: response, with: ArchiveSteward.decoder)
                  else {
                      completion(.failure(APIError.invalidResponse))
                      return

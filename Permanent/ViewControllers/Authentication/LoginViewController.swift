@@ -40,7 +40,7 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         
         loginLabel.text = "Sign in".localized()
         loginLabel.textColor = .tangerine
-        loginLabel.font = Text.style.font
+        loginLabel.font = TextFontStyle.style.font
         
         emailField.placeholder = .email.uppercased()
         emailField.accessibilityLabel = "Email"
@@ -48,25 +48,25 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         passwordField.accessibilityLabel = "Password"
         
         loginButton.setTitle("Sign in".localized(), for: .normal)
-        loginButton.setFont(Text.style16.font)
+        loginButton.setFont(TextFontStyle.style16.font)
         loginButton.setTitleColor(.primary, for: [])
         loginButton.layer.cornerRadius = 0
         
         signUpButton.setTitle(.signup, for: [])
-        signUpButton.setFont(Text.style20.font)
+        signUpButton.setFont(TextFontStyle.style20.font)
         signUpButton.setTitleColor(.white, for: [])
         
         forgotPasswordButton.setTitle(.forgotPassword, for: [])
-        forgotPasswordButton.setFont(Text.style12.font)
+        forgotPasswordButton.setFont(TextFontStyle.style12.font)
         forgotPasswordButton.setTitleColor(.white, for: [])
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white.withAlphaComponent(0.5)
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
         
         newToPermanentLabel.textColor = .white.withAlphaComponent(0.5)
         newToPermanentLabel.backgroundColor = .darkBlue
-        newToPermanentLabel.font = Text.style30.font
+        newToPermanentLabel.font = TextFontStyle.style30.font
         newToPermanentLabel.setTextSpacingBy(value: 0.8)
         
         separatorView.backgroundColor = .white.withAlphaComponent(0.5)

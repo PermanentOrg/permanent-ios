@@ -67,16 +67,16 @@ class FileCollectionViewCell: UICollectionViewCell {
     private func initUI() {
         activityIndicator.stopAnimating()
         
-        fileNameLabel.font = Text.style35.font
+        fileNameLabel.font = TextFontStyle.style35.font
         fileNameLabel.textColor = .black
-        fileDateLabel.font = Text.style12.font
+        fileDateLabel.font = TextFontStyle.style12.font
         fileDateLabel.textColor = .lightGray
         fileImageView.clipsToBounds = true
         
         sharesImageView.image = UIImage.group.templated
         sharesImageView.tintColor = .iconTintPrimary
         
-        statusLabel.font = Text.style12.font
+        statusLabel.font = TextFontStyle.style12.font
         statusLabel.textColor = .middleGray
         statusLabel.text = .waiting
         
@@ -118,29 +118,29 @@ class FileCollectionViewCell: UICollectionViewCell {
         if isSelecting {
             if isFileSelected {
                 rightButtonImageView.image = UIImage(named: "fullCheckbox")?.templated
-                fileNameLabel.font = Text.style35.font
+                fileNameLabel.font = TextFontStyle.style35.font
                 fileNameLabel.textColor = .darkBlue
                 rightButtonImageView.tintColor = .darkBlue
             } else {
                 rightButtonImageView.image = UIImage(named: "emptyCheckbox")?.templated
-                fileNameLabel.font = Text.style34.font
+                fileNameLabel.font = TextFontStyle.style34.font
                 fileNameLabel.textColor = .lightGray
                 rightButtonImageView.tintColor = .lightGray
             }
         } else {
             if fileAction == .none {
                 rightButtonImageView.image = UIImage.more.templated
-                fileNameLabel.font = Text.style35.font
+                fileNameLabel.font = TextFontStyle.style35.font
                 fileNameLabel.textColor = .black
                 rightButtonImageView.tintColor = .darkBlue
             } else {
                 rightButtonImageView.image = nil
                 if isFileSelected {
-                    fileNameLabel.font = Text.style34.font
+                    fileNameLabel.font = TextFontStyle.style34.font
                     fileNameLabel.textColor = .lightGray
                     rightButtonImageView.tintColor = .lightGray
                 } else {
-                    fileNameLabel.font = Text.style35.font
+                    fileNameLabel.font = TextFontStyle.style35.font
                     fileNameLabel.textColor = .darkBlue
                     rightButtonImageView.tintColor = .darkBlue
                 }
@@ -265,7 +265,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             guard let archive = model.sharedByArchive else { return }
             
             let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
-            extraLabel.font = Text.style8.font
+            extraLabel.font = TextFontStyle.style8.font
             extraLabel.textColor = .middleGray
             extraLabel.contentMode = .center
             extraLabel.text = "The \(archive.name) Archive"
@@ -283,7 +283,7 @@ class FileCollectionViewCell: UICollectionViewCell {
             
             if model.minArchiveVOS.count > maxArchivesCount {
                 let extraLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 20))
-                extraLabel.font = Text.style8.font
+                extraLabel.font = TextFontStyle.style8.font
                 extraLabel.textColor = .middleGray
                 extraLabel.contentMode = .center
                 extraLabel.text = " +\(model.minArchiveVOS.count - maxArchivesCount)"

@@ -14,8 +14,9 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     @IBOutlet weak var designateStewardNameTextField: UITextField!
     @IBOutlet weak var designateStewardEmailTextField: UITextField!
-    @IBOutlet weak var designateStewardSelectionInfoLabel: UILabel!
+    @IBOutlet weak var designateStewardSelectionInfoTextView: UITextView!
     @IBOutlet weak var designateStewardEmailVerificationLabel: UILabel!
+    @IBOutlet weak var designateStewardInfoTextViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var designateStewardNameView: UIView!
@@ -44,16 +45,12 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         
         customizeDesignateStewardTitleLabel()
         customizeDesignateStewardDescriptionLabel()
-        
-        customizeDesignateStewardNameTextField()
-        customizeDesignateStewardEmailTextField()
+        customizeTextFieldElements(textField: [designateStewardNameTextField, designateStewardEmailTextField])
         customizeDesignateStewardSelectionInfoLabel()
         customizeEmailVerificationLabel()
-        
         customizeNoteTitleLabel()
         customizeNoteDescriptionLabel()
         customizeInviteUserToPermanentLabel()
-        
         customizeSeparatorView()
         customizeView(designateStewardNameView)
         customizeView(designateStewardEmailStackView)
@@ -89,7 +86,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Designate archive Legacy steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardTitleLabel.textColor = .primary
-        designateStewardTitleLabel.font = Text.style41.font
+        designateStewardTitleLabel.font = TextFontStyle.style41.font
         designateStewardTitleLabel.attributedText = attributedText
     }
     
@@ -100,7 +97,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "In order to designate someone as a steward for your archive, they must have a Permanent.org account.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         designateStewardDescriptionLabel.textColor = .black
-        designateStewardDescriptionLabel.font = Text.style39.font
+        designateStewardDescriptionLabel.font = TextFontStyle.style39.font
         designateStewardDescriptionLabel.numberOfLines = 0
         designateStewardDescriptionLabel.lineBreakMode = .byWordWrapping
         designateStewardDescriptionLabel.attributedText = attributedText
@@ -111,12 +108,14 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         paragraphStyle.lineHeightMultiple = 1.26
 
         let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone. Please do the following things to my archive when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardSelectionInfoLabel.textColor = .black
-        designateStewardSelectionInfoLabel.font = Text.style45.font
-        designateStewardSelectionInfoLabel.numberOfLines = 0
-        designateStewardSelectionInfoLabel.lineBreakMode = .byWordWrapping
-        designateStewardSelectionInfoLabel.attributedText = attributedText
+        
+        designateStewardSelectionInfoTextView.attributedText = attributedText
+        designateStewardSelectionInfoTextView.textAlignment = .left
+        designateStewardSelectionInfoTextView.textColor = .black
+        designateStewardSelectionInfoTextView.font = TextFontStyle.style45.font
+        designateStewardSelectionInfoTextView.backgroundColor = .clear
+        
+        updateTextViewHeight()
     }
     
     private func customizeNoteTitleLabel() {
@@ -126,38 +125,35 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Note".localized().uppercased(), attributes: [NSAttributedString.Key.kern: 0.8, NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         noteTitleLabel.textColor = .darkBlue
-        noteTitleLabel.font = Text.style30.font
+        noteTitleLabel.font = TextFontStyle.style30.font
         noteTitleLabel.attributedText = attributedText
     }
-    
-    private func customizeDesignateStewardNameTextField() {
+
+    private func customizeTextFieldElements(textField: [UITextField]) {
         let placeholderTextColor = UIColor.lightGray
         let textColor = UIColor.black
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
 
-        let attributedPlaceholder = NSMutableAttributedString(string: "Steward name...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardNameTextField.textColor = textColor
-        designateStewardNameTextField.font = Text.style11.font
-        designateStewardNameTextField.attributedPlaceholder = attributedPlaceholder
-        designateStewardNameTextField.borderStyle = .none
-    }
-
-    private func customizeDesignateStewardEmailTextField() {
-        let placeholderTextColor = UIColor.lightGray
-        let textColor = UIColor.black
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.26
-
-        let attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...", attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
-
-        designateStewardEmailTextField.textColor = textColor
-        designateStewardEmailTextField.font = Text.style8.font
-        designateStewardEmailTextField.attributedPlaceholder = attributedPlaceholder
-        designateStewardEmailTextField.borderStyle = .none
+        var attributedPlaceholder = NSMutableAttributedString()
+        
+        for textField in textField {
+            switch textField {
+            case designateStewardNameTextField:
+                attributedPlaceholder = NSMutableAttributedString(string: "Steward name...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                break
+            case designateStewardEmailTextField:
+                attributedPlaceholder = NSMutableAttributedString(string: "Steward email address...".localized(), attributes: [NSAttributedString.Key.foregroundColor: placeholderTextColor, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                break
+            default:
+                break
+            }
+            textField.attributedPlaceholder = attributedPlaceholder
+            textField.textColor = textColor
+            textField.font = TextFontStyle.style8.font
+            textField.borderStyle = .none
+        }
     }
 
     private func customizeNoteDescriptionLabel() {
@@ -167,14 +163,14 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let attributedText = NSMutableAttributedString(string: "Your Archive Steward will get an email from Permanent with instructions. Discuss your Legacy Plan first. They'll receive another email when the plan is activated with steps to accept ownership. Add instructions in the note section above.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         noteDescriptionLabel.textColor = .black
-        noteDescriptionLabel.font = Text.style39.font
+        noteDescriptionLabel.font = TextFontStyle.style39.font
         noteDescriptionLabel.numberOfLines = 0
         noteDescriptionLabel.lineBreakMode = .byWordWrapping
         noteDescriptionLabel.attributedText = attributedText
     }
     
     private func customizeEmailVerificationLabel() {
-        designateStewardEmailVerificationLabel.font = Text.style12.font
+        designateStewardEmailVerificationLabel.font = TextFontStyle.style12.font
         designateStewardEmailVerificationLabel.textColor = .lightRed
         
         let emailVerificationParagraphStyle = NSMutableParagraphStyle()
@@ -187,7 +183,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     private func customizeInviteUserToPermanentLabel() {
         inviteUserToPermanentLabel.textColor = .darkBlue
-        inviteUserToPermanentLabel.font = Text.style35.font
+        inviteUserToPermanentLabel.font = TextFontStyle.style35.font
         
         let inviteUserParagraphStyle = NSMutableParagraphStyle()
         inviteUserParagraphStyle.lineHeightMultiple = 1.17
@@ -212,6 +208,16 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         view.layer.borderColor = UIColor.whiteGray.cgColor
     }
     
+    func updateTextViewHeight() {
+        let fixedWidth = designateStewardSelectionInfoTextView.frame.size.width
+        let newSize = designateStewardSelectionInfoTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        if newSize.height <= 132 {
+            designateStewardInfoTextViewHeightConstraint.constant = newSize.height
+        } else {
+            designateStewardInfoTextViewHeightConstraint.constant = 132
+        }
+    }
+    
     @objc func doneButtonTapped() {
         guard let selectedStewardName = designateStewardNameTextField.text, selectedStewardName.isNotEmpty else {
             showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
@@ -223,7 +229,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             return
         }
 
-        guard let isValidEmail = viewModel?.isValidEmail(email: selectedStewardEmail), isValidEmail else {
+        if !selectedStewardEmail.isValidEmail {
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
@@ -263,8 +269,8 @@ extension TrustedStewardViewController: UITextFieldDelegate {
         if textField == designateStewardNameTextField {
             designateStewardEmailTextField.becomeFirstResponder()
         } else if textField == designateStewardEmailTextField {
-            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
-                updateEmailValidationUI(isValid: isValidEmail)
+            if let email = textField.text, email.isValidEmail {
+                updateEmailValidationUI(isValid: email.isValidEmail)
             }
             textField.resignFirstResponder()
         }
@@ -273,9 +279,15 @@ extension TrustedStewardViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == designateStewardEmailTextField {
-            if let isValidEmail = viewModel?.isValidEmail(email: textField.text) {
-                updateEmailValidationUI(isValid: isValidEmail)
+            if let email = textField.text, email.isValidEmail {
+                updateEmailValidationUI(isValid: email.isValidEmail)
             }
         }
+    }
+}
+
+extension TrustedStewardViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        updateTextViewHeight()
     }
 }

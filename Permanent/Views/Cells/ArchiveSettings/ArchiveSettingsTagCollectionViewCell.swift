@@ -39,7 +39,7 @@ class ArchiveSettingsTagCollectionViewCell: UICollectionViewCell {
         tagBackgroundView.alpha = 0.25
         tagBackgroundView.layer.cornerRadius = 10
         
-        tagNameLabel.font = Text.style39.font
+        tagNameLabel.font = TextFontStyle.style39.font
         
         editButton.setImage(UIImage(named: "editBorder")?.withRenderingMode(.alwaysTemplate), for: .normal)
         editButton.tintColor = .darkBlue

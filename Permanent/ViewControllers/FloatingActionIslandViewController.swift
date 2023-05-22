@@ -33,7 +33,7 @@ class FloatingActionTextItem: FloatingActionItem {
         let view = UIView()
         let label = UILabel()
         label.text = text
-        label.font = Text.style34.font
+        label.font = TextFontStyle.style34.font
         label.textColor = .middleGray
         label.translatesAutoresizingMaskIntoConstraints = false
 
@@ -74,13 +74,13 @@ class FloatingActionTextSubtitleItem: FloatingActionTextItem {
         let view = UIView()
         let label = UILabel()
         label.text = text
-        label.font = Text.style42.font
+        label.font = TextFontStyle.style42.font
         label.textColor = .lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.text = subtitle
-        subtitleLabel.font = Text.style12.font
+        subtitleLabel.font = TextFontStyle.style12.font
         subtitleLabel.textColor = .dustyGray
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -183,7 +183,7 @@ class FloatingActionImageTextItem: FloatingActionTextItem {
         label.text = text
         label.sizeToFit()
         label.frame = CGRect(x: 28, y: 0, width: label.frame.width, height: 32)
-        label.font = Text.style34.font
+        label.font = TextFontStyle.style34.font
         label.textColor = .black
         label.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleWidth]
 

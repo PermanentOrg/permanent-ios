@@ -22,29 +22,29 @@ class AccountOnboardingPageThree: BaseViewController<AccountOnboardingViewModel>
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleLabel.font = Text.style.font
-        detailsLabel.font = Text.style5.font
+        titleLabel.font = TextFontStyle.style.font
+        detailsLabel.font = TextFontStyle.style5.font
         
-        archiveTitleLabel.font = Text.style17.font
-        archiveDetailsLabel.font = Text.style5.font
+        archiveTitleLabel.font = TextFontStyle.style17.font
+        archiveDetailsLabel.font = TextFontStyle.style5.font
         typeImageView.tintColor = .primary
         updateSelectedType()
         
         let leftLabel = UILabel(frame: .zero)
-        leftLabel.font = Text.style5.font
+        leftLabel.font = TextFontStyle.style5.font
         leftLabel.text = " The "
         leftLabel.sizeToFit()
         titleTextField.leftView = leftLabel
         titleTextField.leftViewMode = .always
         
         let rightLabel = UILabel(frame: .zero)
-        rightLabel.font = Text.style5.font
+        rightLabel.font = TextFontStyle.style5.font
         rightLabel.text = " Archive "
         rightLabel.sizeToFit()
         titleTextField.rightView = rightLabel
         titleTextField.rightViewMode = .always
         
-        titleTextField.font = Text.style5.font
+        titleTextField.font = TextFontStyle.style5.font
         
         archiveContainerView.layer.borderColor = UIColor.primary.cgColor
         archiveContainerView.layer.borderWidth = 1

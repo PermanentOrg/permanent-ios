@@ -19,19 +19,19 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         milestoneTitleLabel.textColor = .lightGray
-        milestoneTitleLabel.font = Text.style32.font
+        milestoneTitleLabel.font = TextFontStyle.style32.font
         milestoneTitleLabel.text = "Title".localized()
     
         milestoneLocationLabel.textColor = .lightGray
-        milestoneLocationLabel.font = Text.style11.font
+        milestoneLocationLabel.font = TextFontStyle.style11.font
         milestoneLocationLabel.text = "Location not set".localized()
         
         milestoneDateLabel.textColor = .lightGray
-        milestoneDateLabel.font = Text.style11.font
+        milestoneDateLabel.font = TextFontStyle.style11.font
         milestoneDateLabel.text = "Start date".localized()
         
         milestoneTextLabel.textColor = .lightGray
-        milestoneTextLabel.font = Text.style12.font
+        milestoneTextLabel.font = TextFontStyle.style12.font
         milestoneTextLabel.text = "Description".localized()
     }
     
@@ -81,8 +81,8 @@ class ProfilePageMilestonesCollectionViewCell: UICollectionViewCell {
         let horizontalMargin: CGFloat = 40
         let verticalMargin: CGFloat = 20
         
-        let currentTitleText: NSAttributedString = NSAttributedString(string: titleText ?? "", attributes: [NSAttributedString.Key.font: Text.style32.font as Any])
-        let currentDescriptionText: NSAttributedString = NSAttributedString(string: descriptionText ?? "", attributes: [NSAttributedString.Key.font: Text.style12.font as Any])
+        let currentTitleText: NSAttributedString = NSAttributedString(string: titleText ?? "", attributes: [NSAttributedString.Key.font: TextFontStyle.style32.font as Any])
+        let currentDescriptionText: NSAttributedString = NSAttributedString(string: descriptionText ?? "", attributes: [NSAttributedString.Key.font: TextFontStyle.style12.font as Any])
         
         let maxTitleHeight: CGFloat = 54 // Equivalent of 2 rows
         let titleTextHeight = currentTitleText.boundingRect(with: CGSize(width: collectionView.bounds.width - horizontalMargin, height: maxTitleHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).height.rounded(.up)

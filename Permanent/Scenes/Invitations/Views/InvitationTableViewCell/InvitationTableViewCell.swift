@@ -32,8 +32,8 @@ class InvitationTableViewCell: UITableViewCell {
     }
     
     fileprivate func configureUI() {
-        emailLabel.style(withFont: Text.style8.font, textColor: .textPrimary, text: "Kevin Bacon")
-        nameLabel.style(withFont: Text.style3.font, textColor: .primary, text: "kevin.bacon@gmail.com")
+        emailLabel.style(withFont: TextFontStyle.style8.font, textColor: .textPrimary, text: "Kevin Bacon")
+        nameLabel.style(withFont: TextFontStyle.style3.font, textColor: .primary, text: "kevin.bacon@gmail.com")
         
         resendButton.configureActionButtonUI(title: .resend)
         revokeButton.configureActionButtonUI(title: .revoke, bgColor: .destructive)

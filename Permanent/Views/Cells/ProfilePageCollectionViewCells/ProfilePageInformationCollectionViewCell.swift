@@ -18,10 +18,10 @@ class ProfilePageInformationCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         titleLabel.textColor = .darkGray
-        titleLabel.font = Text.style12.font
+        titleLabel.font = TextFontStyle.style12.font
         
         contentLabel.textColor = .black
-        contentLabel.font = Text.style13.font
+        contentLabel.font = TextFontStyle.style13.font
     }
     
     func configure(with content: String?, archiveType: ArchiveType?, cellType: ProfileCellType, isEditDataEnabled: Bool = true) {

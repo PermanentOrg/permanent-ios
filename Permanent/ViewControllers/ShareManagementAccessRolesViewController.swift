@@ -151,7 +151,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
 
         let itemNameLabel = UILabel()
         itemNameLabel.textColor = .white
-        itemNameLabel.font = Text.style41.font
+        itemNameLabel.font = TextFontStyle.style41.font
         
         let headerStackView: UIStackView
         if isSharedArchive {
@@ -172,14 +172,14 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     
     func initButtonsUI() {
         leftButton.bgColor = .whiteGray
-        leftButton.titleLabel?.font = Text.style14.font
+        leftButton.titleLabel?.font = TextFontStyle.style14.font
         leftButton.setTitleColor(.darkBlue, for: .normal)
         leftButton.setTitleColor(.darkBlue, for: .highlighted)
         leftButton.setTitle("Cancel".localized(), for: .normal)
         leftButton.layer.cornerRadius = 1
         
         rightButton.bgColor = .darkBlue
-        rightButton.titleLabel?.font = Text.style14.font
+        rightButton.titleLabel?.font = TextFontStyle.style14.font
         rightButton.setTitleColor(.white, for: .normal)
         rightButton.setTitleColor(.white, for: .highlighted)
         rightButton.setTitle("Update Role".localized(), for: .normal)

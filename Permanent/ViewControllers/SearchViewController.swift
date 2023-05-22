@@ -63,7 +63,7 @@ class SearchViewController: BaseViewController<SearchFilesViewModel> {
         
         styleNavBar()
         
-        directoryLabel.font = Text.style3.font
+        directoryLabel.font = TextFontStyle.style3.font
         directoryLabel.textColor = .primary
         directoryLabel.text = ""
         backButton.tintColor = .primary

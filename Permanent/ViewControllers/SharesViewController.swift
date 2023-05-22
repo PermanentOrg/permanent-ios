@@ -151,8 +151,8 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         navigationItem.title = .shares
         view.backgroundColor = .backgroundPrimary
         
-        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: Text.style11.font], for: .selected)
-        segmentedControl.setTitleTextAttributes([.font: Text.style8.font], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white, .font: TextFontStyle.style11.font], for: .selected)
+        segmentedControl.setTitleTextAttributes([.font: TextFontStyle.style8.font], for: .normal)
         segmentedControl.setTitle(.sharedByMe, forSegmentAt: 0)
         segmentedControl.setTitle(.sharedWithMe, forSegmentAt: 1)
         
@@ -162,7 +162,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
         segmentedControl.selectedSegmentTintColor = .primary
         
-        directoryLabel.font = Text.style3.font
+        directoryLabel.font = TextFontStyle.style3.font
         directoryLabel.textColor = .primary
         backButton.tintColor = .primary
         backButton.isHidden = true

@@ -45,7 +45,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     func initUI() {
         titleLabel.text = .signup
         titleLabel.textColor = .tangerine
-        titleLabel.font = Text.style.font
+        titleLabel.font = TextFontStyle.style.font
         
         nameField.placeholder = .fullName.uppercased()
         nameField.accessibilityLabel = "Full Name"
@@ -55,22 +55,22 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         passwordField.accessibilityLabel = "Password"
         
         loginButton.setTitle("Sign in".localized(), for: .normal)
-        loginButton.setFont(Text.style5.font)
+        loginButton.setFont(TextFontStyle.style5.font)
         loginButton.setTitleColor(.white, for: [])
         
         signUpButton.setTitle(.signup, for: [])
-        signUpButton.setFont(Text.style16.font)
+        signUpButton.setFont(TextFontStyle.style16.font)
         signUpButton.setTitleColor(.primary, for: [])
         signUpButton.layer.cornerRadius = 0
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white.withAlphaComponent(0.5)
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
         
         loginLabel.text = "ALREADY REGISTERED?".localized()
         loginLabel.textColor = .white.withAlphaComponent(0.5)
         loginLabel.backgroundColor = .darkBlue
-        loginLabel.font = Text.style30.font
+        loginLabel.font = TextFontStyle.style30.font
         loginLabel.setTextSpacingBy(value: 0.8)
         
         separatorView.backgroundColor = .white.withAlphaComponent(0.5)

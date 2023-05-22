@@ -14,7 +14,7 @@ class LegacyPlanningRepository {
         self.remoteDataSource = remoteDataSource
     }
     
-    func getArchiveSteward(archiveId: Int, completion: @escaping ((ArchiveStewardResponse?, Error?) -> Void)) {
+    func getArchiveSteward(archiveId: Int, completion: @escaping (([ArchiveSteward]?, Error?) -> Void)) {
         remoteDataSource.getArchiveSteward(archiveId: archiveId) { result in
             switch result {
             case .success(let response):

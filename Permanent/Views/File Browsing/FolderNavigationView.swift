@@ -47,7 +47,7 @@ class FolderNavigationView: UIView {
     func initUI() {
         backgroundColor = .backgroundPrimary
         
-        folderTitleLabel.font = Text.style3.font
+        folderTitleLabel.font = TextFontStyle.style3.font
         folderTitleLabel.textColor = .primary
         folderTitleLabel.text = viewModel?.displayName
         folderTitleLabel.translatesAutoresizingMaskIntoConstraints = false

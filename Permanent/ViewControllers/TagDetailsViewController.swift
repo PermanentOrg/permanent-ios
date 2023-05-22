@@ -73,7 +73,7 @@ class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonPressed(_:)))
         
         tagSearchBar.setDefaultStyle(placeholder: "Add new tag".localized())
-        tagSearchBar.setFont(Text.style2.font)
+        tagSearchBar.setFont(TextFontStyle.style2.font)
         tagSearchBar.setPlaceholderTextColor(.lightGray)
         tagSearchBar.setTextColor(.lightGray)
         tagSearchBar.setBackgroundColor(.darkGray)
@@ -215,7 +215,7 @@ extension TagDetailsViewController: UICollectionViewDelegate, UICollectionViewDa
         if  let name = filteredTagVO[indexPath.row].tagVO.name,
             let isChecked = sortedArray.first(where: { $0.tagVO.tagVO.name == name })?.checked {
             let additionalSpace: CGFloat = isChecked ? ( 45 ) : ( 35 )
-            let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: Text.style2.font as Any])
+            let attributedName = NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: TextFontStyle.style2.font as Any])
             let width = attributedName.boundingRect(with: CGSize(width: collectionView.bounds.width, height: 30), options: [], context: nil).size.width
             return CGSize(width: additionalSpace + width , height: 40)
         }
