@@ -233,6 +233,8 @@
 		5ECBAF9E2A1B5EF500FACFDF /* ArchiveSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */; };
 		5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */; };
 		5ECBAFA52A1B643400FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */; };
+		5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
+		5ECBAFA82A1B735900FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */; };
 		5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED06F42286B2BD5006C126B /* MainInterface.storyboard */; };
 		5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -976,6 +978,7 @@
 		5EC9C69A290BD36A00AD2E37 /* RecoverPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverPasswordViewController.swift; sourceTree = "<group>"; };
 		5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSteward.swift; sourceTree = "<group>"; };
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
+		5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningArchiveDetails.swift; sourceTree = "<group>"; };
 		5ED06F3E286B2BD5006C126B /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
 		5ED06F43286B2BD5006C126B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1920,6 +1923,7 @@
 				5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */,
 				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
 				5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */,
+				5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */,
 			);
 			path = LegacyPlanning;
 			sourceTree = "<group>";
@@ -3301,6 +3305,7 @@
 				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
+				5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */,
 				5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */,
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
@@ -3907,6 +3912,7 @@
 				F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
 				F559F88E28FEE9690015A522 /* FolderContentViewModel.swift in Sources */,
 				F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */,
+				5ECBAFA82A1B735900FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */,
 				F559F8AE28FF02F20015A522 /* BaseOperation.swift in Sources */,
 				5ED4B9D72876E0C800CF044B /* RecordExifVO.swift in Sources */,
 				5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */,

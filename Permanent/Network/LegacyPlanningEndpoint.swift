@@ -7,17 +7,9 @@
 
 import Foundation
 
-struct legacyPlanningArchiveDetails {
-    let archiveId: Int
-    let stewardEmail: String
-    let type = "transfer"
-    let note: String
-    let triggerType = "admin"
-}
-
 enum LegacyPlanningEndpoint {
     case getArchiveSteward(archiveId: Int)
-    case setArchiveSteward(archiveDetails: legacyPlanningArchiveDetails)
+    case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
 }
 
 extension LegacyPlanningEndpoint: RequestProtocol {
@@ -63,7 +55,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
     }
     
     var bodyData: Data? {
-        nil
+        return nil
     }
     
     var customURL: String? {
@@ -82,7 +74,7 @@ extension LegacyPlanningEndpoint {
         return [Any]()
     }
     
-    func setArchiveSteward(archiveDetails: legacyPlanningArchiveDetails) -> RequestParameters {
+    func setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
         return [
             "archiveId": "\(archiveDetails.archiveId)",
             "stewardEmail": archiveDetails.stewardEmail,

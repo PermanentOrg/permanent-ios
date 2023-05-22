@@ -34,13 +34,11 @@ protocol LegacyPlanningDataSourceInterface {
      }
 
      func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-         let setArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.setArchiveSteward(archiveDetails: legacyPlanningArchiveDetails(archiveId: archiveId, stewardEmail: stewardEmail, note: note)))
+         let setArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails(archiveId: archiveId, stewardEmail: stewardEmail, note: note)))
          setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
              switch result {
              case .json(let response, _):
-                 guard
-                    let model: ArchiveSteward = JSONHelper.decoding(from: response, with: ArchiveSteward.decoder)
-                 else {
+                 guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: ArchiveSteward.decoder) else {
                      completion(.failure(APIError.invalidResponse))
                      return
                  }

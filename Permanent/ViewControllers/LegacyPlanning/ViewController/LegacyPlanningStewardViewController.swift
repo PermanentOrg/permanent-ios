@@ -38,6 +38,7 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel?.selectedArchive = selectedArchive
+        viewModel?.getCurrentSteward()
         
         setupUI()
         styleNavBar()
@@ -76,7 +77,6 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardSetup()
         addedLegacyStewardSetup()
         customizeSeparatorView()
-        viewModel?.getCurrentSteward()
         
         if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
             archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
