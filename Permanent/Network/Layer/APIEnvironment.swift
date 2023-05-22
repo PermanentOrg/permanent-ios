@@ -36,6 +36,17 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    var stelaServer: String {
+        switch self {
+        case .staging:
+            return "https://api.staging.permanent.org/"
+        case .development:
+            return ""
+        case .production:
+            return ""
+        }
+    }
+    
     var buyStorageURL: String {
         switch self {
         case .staging:
