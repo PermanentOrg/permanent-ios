@@ -9,7 +9,7 @@ import Foundation
 
 class JSONHelper {
     
-    static func decoding<M: Model>(from object: Any?, with decoder: JSONDecoder) -> M? {
+    static func decoding<M: Codable>(from object: Any?, with decoder: JSONDecoder) -> M? {
         guard let json = object else { return nil }
         
         do {
