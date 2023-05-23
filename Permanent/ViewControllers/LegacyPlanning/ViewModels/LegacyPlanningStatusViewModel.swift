@@ -5,40 +5,29 @@
 //  Created by Flaviu Silaghi on 19.05.2023.
 
 import Foundation
-import Combine
-
-struct Directive {
-    var directiveId: Int
-    var archiveId: Int
-    var stewardName: String?
-    var stewardEmail: String?
-    var note: String
-}
 
 class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
     
-    private var archivesRepository = ArchivesRepository()
+    var didLoad: (() -> Void)?
+    
+    private var archivesRepository: ArchivesRepository
+    private var legacyRepository: LegacyPlanningRepository
     
     private var session: PermSession? {
+        return PermSession.currentSession
+    }
+    
+    var legacyData: [(archive: ArchiveVOData, steward: ArchiveSteward?)] = [] {
         didSet {
-            PermSession.currentSession = session
+            didLoad?()
         }
     }
     
-    @Published var archives: [Directive] = []
-    
-    init(archivesRepository: ArchivesRepository = ArchivesRepository()) {
+    init(archivesRepository: ArchivesRepository = ArchivesRepository(),
+         legacyRepository: LegacyPlanningRepository = LegacyPlanningRepository()) {
         self.archivesRepository = archivesRepository
-        createMock()
-    }
-    
-    func createMock() {
-        var archives: [Directive] = []
-        for i in 1...6 {
-            archives.append(Directive(directiveId: i, archiveId: i, stewardName: i % 2 == 0 ? nil : "Name\(i)", stewardEmail: "email\(i)@email.com", note: "Note\(i)"))
-        }
-        
-        self.archives.append(contentsOf: archives)
+        self.legacyRepository = legacyRepository
+        fetchArchives()
     }
     
     func fetchArchives() {
@@ -46,12 +35,39 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
             return
         }
         
-        archivesRepository.getAccountArchives(accountId: accountID) { result in
+        archivesRepository.getAccountArchives(accountId: accountID) {[weak self] result in
             switch result {
             case .failure(let error):
                 break
-            case .success(let archives):
-                break
+            case .success(let archivesVO):
+                let archives = archivesVO.compactMap { $0.archiveVO }
+                self?.getStewards(archives: archives)
+            }
+        }
+    }
+    
+    func getStewards(archives: [ArchiveVOData]) {
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            let stewards = try await archives.asyncMap(strongSelf.fetchSteward)
+            await MainActor.run {
+                strongSelf.legacyData = stewards
+            }
+        }
+    }
+    
+    func fetchSteward(archive: ArchiveVOData) async throws -> (ArchiveVOData, ArchiveSteward?) {
+        guard let archiveId = archive.archiveID else {
+            return (archive, nil)
+        }
+        return try await withCheckedThrowingContinuation { continuation in
+            legacyRepository.getArchiveSteward(archiveId: archiveId) { result in
+                switch result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let steward):
+                    continuation.resume(returning: (archive, steward?.first))
+                }
             }
         }
     }

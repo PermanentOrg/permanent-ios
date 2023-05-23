@@ -10,8 +10,9 @@ import UIKit
 
 class LegacyArchiveCreateCell: UITableViewCell {
     
-    func setup(directive: Directive) {
-        name.text = directive.stewardName
+    func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {
+        name.text = "\(data.archive.fullName ?? "") Archive"
+        nameAbbreviation.text = data.archive.shortName()
     }
     
     @IBOutlet weak var nameAbbreviation: UILabel!

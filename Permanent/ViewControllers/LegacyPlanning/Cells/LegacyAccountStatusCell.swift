@@ -10,9 +10,9 @@ import UIKit
 
 class LegacyAccountStatusCell: UITableViewCell {
     
-    func setup(directive: Directive) {
-        name.text = directive.stewardName
-    }
+//    func setup(archive: ArchiveVOData) {
+////        name.text = directive.stewardName
+//    }
     
     @IBOutlet weak var name: UILabel!
     

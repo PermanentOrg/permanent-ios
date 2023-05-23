@@ -182,7 +182,9 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="name" destination="cO6-BB-3oV" id="dEw-qY-gYk"/>
+                <outlet property="archiveName" destination="f7w-hV-tof" id="db3-ih-klQ"/>
+                <outlet property="shortArchiveName" destination="QyB-xV-7CI" id="AX0-gB-cZx"/>
+                <outlet property="stewardName" destination="cO6-BB-3oV" id="bQC-LX-t5H"/>
             </connections>
             <point key="canvasLocation" x="-74.809160305343511" y="-137.67605633802819"/>
         </view>

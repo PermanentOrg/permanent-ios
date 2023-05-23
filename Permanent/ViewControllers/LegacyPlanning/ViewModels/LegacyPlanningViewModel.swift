@@ -16,7 +16,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
             NotificationCenter.default.post(name: Self.isLoadingNotification, object: self, userInfo: nil)
         }
     }
-
+    
     var selectedArchive: ArchiveVOData?
     var selectedSteward: LegacyPlanningSteward?
     var stewardType: LegacyPlanningSteward.StewardType?
@@ -29,9 +29,10 @@ class LegacyPlanningViewModel: ViewModelInterface {
     
     func addSelectedSteward(name: String, email: String, status: LegacyPlanningSteward.StewardStatus) {
         isLoading = true
-        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: "") { result, error in
+        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: "") { result in
             self.isLoading = false
-            if result {
+            
+            if case .success(_) = result {
                 self.getCurrentSteward()
             }
         }
@@ -40,16 +41,21 @@ class LegacyPlanningViewModel: ViewModelInterface {
     func getCurrentSteward() {
         isLoading = true
         guard let archiveId = selectedArchive?.archiveID else { return }
-        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { response, error in
+        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { response in
             self.isLoading = false
-            if let steward = response?.first {
-                self.selectedSteward?.name = steward.stewardAccountId ?? ""
-                self.selectedSteward?.email = steward.note ?? ""
-                NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)}
+            if case .success(let success) = response {
+                if let steward = success?.first {
+                    self.selectedSteward?.name = steward.stewardAccountId ?? ""
+                    self.selectedSteward?.email = steward.note ?? ""
+                    NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)}
+            }
         }
     }
     
     func getLegacyPlanningAccount() -> Bool {
         return true
     }
+
 }
+
+

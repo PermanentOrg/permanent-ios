@@ -14,25 +14,11 @@ class LegacyPlanningRepository {
         self.remoteDataSource = remoteDataSource
     }
     
-    func getArchiveSteward(archiveId: Int, completion: @escaping (([ArchiveSteward]?, Error?) -> Void)) {
-        remoteDataSource.getArchiveSteward(archiveId: archiveId) { result in
-            switch result {
-            case .success(let response):
-                completion(response, nil)
-            case .failure(let error):
-                completion(nil, error)
-            }
-        }
+    func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void) {
+        remoteDataSource.getArchiveSteward(archiveId: archiveId, completion: completion)
     }
     
-    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping ((Bool, Error?) -> Void)) {
-        remoteDataSource.setArchiveSteward(archiveId: archiveId, stewardEmail: stewardEmail, note: note) { result in
-            switch result {
-            case .success(let response):
-                completion(response, nil)
-            case .failure(let error):
-                completion(false, error)
-            }
-        }
+    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        remoteDataSource.setArchiveSteward(archiveId: archiveId, stewardEmail: stewardEmail, note: note, completion: completion)
     }
 }

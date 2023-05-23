@@ -321,6 +321,10 @@
 		5EFF99F1269ED77D00B1EFE1 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFF99F0269ED77D00B1EFE1 /* WelcomePageViewController.swift */; };
 		9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
+		9220ACC62A1B8706003797C9 /* ArchivesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8029C3260100337E45 /* ArchivesRepository.swift */; };
+		9220ACC72A1B8713003797C9 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8229C3262F00337E45 /* ArchivesRemoteDataSource.swift */; };
+		9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */; };
+		9220ACCA2A1CAE4A003797C9 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
@@ -1044,6 +1048,7 @@
 		85EA62B3A7DAEAF3E0BBD69A /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8D026D33BE20D4A089D7FA61 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewModel.swift; sourceTree = "<group>"; };
+		9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
@@ -1525,29 +1530,30 @@
 			isa = PBXGroup;
 			children = (
 				BCC1E3242549A43F00B71866 /* ArrayExtension.swift */,
+				5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */,
+				5E980AB62657D3D400ED5764 /* BundleExtension.swift */,
 				BC62D57F254181BD00E84DA9 /* DataExtension.swift */,
+				5E559EC729BF438200F129BF /* IntExtension.swift */,
+				5E647333263C22F900E6566D /* NotificationName.swift */,
 				BC915F4F254718FA00C86012 /* PHAssetExtension.swift */,
+				9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */,
 				BC97A4682518E73300E43205 /* StringExtension.swift */,
 				BC566CE12546CD61000249E1 /* UIAlertControllerExtension.swift */,
 				BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */,
 				06B0EB2724E67E6A003D90C6 /* UIColor.swift */,
 				BC11C7FD25558E03008BDEFA /* UIContextualActionExtension.swift */,
+				5EB45A452943403600277800 /* UIDeviceExtension.swift */,
 				BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */,
 				BCE3C94825384C6700EC3A66 /* UIImageViewExtension.swift */,
+				BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */,
 				BC4526F2251CDB7000E24A51 /* UINavigationControllerExtension.swift */,
 				BC2E3BB1255AE7D700301C07 /* UISearchBarExtension.swift */,
 				BCF9065725877D5F00DF1B64 /* UITableViewCellExtension.swift */,
+				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
+				F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */,
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
-				BC6AF9A22590E6EC00483BBA /* UILabelExtension.swift */,
-				BC600DD525B1E36D00193C96 /* UITableViewExtension.swift */,
-				5E647333263C22F900E6566D /* NotificationName.swift */,
-				5E980AB62657D3D400ED5764 /* BundleExtension.swift */,
-				F56AF714283676FF0069725A /* UITapGestureRecognizerExtension.swift */,
-				5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */,
-				5EB45A452943403600277800 /* UIDeviceExtension.swift */,
-				5E559EC729BF438200F129BF /* IntExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3381,6 +3387,7 @@
 				5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				5ED3B3AC29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
+				9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
@@ -3785,6 +3792,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5ED4B9C82876DFC200CF044B /* ItemVO.swift in Sources */,
+				9220ACC72A1B8713003797C9 /* ArchivesRemoteDataSource.swift in Sources */,
 				F559F8AA28FF02710015A522 /* FileCollectionViewCell.swift in Sources */,
 				5E1CCC21287F050E00913EEA /* UIColor.swift in Sources */,
 				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
@@ -3852,8 +3860,10 @@
 				F559F8AC28FF02AE0015A522 /* UploadOperation.swift in Sources */,
 				F51B3320288B0A7D00EA15DA /* FileViewModel.swift in Sources */,
 				5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */,
+				9220ACC62A1B8706003797C9 /* ArchivesRepository.swift in Sources */,
 				5ED3B3BA29F95D16000CFF48 /* NavigationController.swift in Sources */,
 				F51B3325288B0B9E00EA15DA /* DateUtils.swift in Sources */,
+				9220ACCA2A1CAE4A003797C9 /* SequenceExtension.swift in Sources */,
 				F559F8A528FEEC1E0015A522 /* NetworkLogger.swift in Sources */,
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
 				5ED4288B2A12D1D7001F88FB /* LegacyPlanningDataSourceInterface.swift in Sources */,

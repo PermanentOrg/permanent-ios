@@ -10,11 +10,14 @@ import UIKit
 
 class LegacyArchiveCompletedCell: UITableViewCell {
     
-    func setup(directive: Directive) {
-        name.text = directive.stewardName
+    func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {
+        archiveName.text = "\(data.archive.fullName ?? "") Archive"
+        shortArchiveName.text = data.archive.shortName()
     }
     
-    @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var shortArchiveName: UILabel!
+    @IBOutlet weak var archiveName: UILabel!
+    @IBOutlet weak var stewardName: UILabel!
     
     @IBAction func turnOff(_ sender: Any) {
     }

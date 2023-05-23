@@ -142,3 +142,18 @@ extension ArchiveVOData {
         }
     }
 }
+
+//MARK: Utils
+
+extension ArchiveVOData {
+    
+    func shortName() -> String {
+        let components = fullName?.components(separatedBy: " ") ?? []
+        
+        let acronyms = fullName?.components(separatedBy: " ")
+            .map{ String($0.first!) }
+            .joined()
+        
+        return acronyms ?? ""
+    }
+}
