@@ -31,9 +31,30 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     @IBOutlet weak var noteDescriptionLabel: UILabel!
     
     private let overlayView = UIView()
-   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel?.isLoading = { [weak self] loading in
+            if loading {
+                self?.showSpinner()
+            } else {
+                self?.hideSpinner()
+            }
+        }
+        
+        viewModel?.showError = { [weak self] error in
+            if error == .badRequest {
+                self?.showAlert(title: .error, message: "Please enter a valid email address that is associated with an existing account.")
+            } else {
+                self?.showAlert(title: .error, message: .errorMessage)
+            }
+        }
+        
+        viewModel?.stewardWasUpdated = { [weak self] result in
+            if result {
+                self?.dismiss(animated: true)
+            }
+        }
         
         setupUI()
     }
@@ -235,30 +256,18 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
             return
         }
-
+        
         guard let selectedStewardEmail = designateStewardEmailTextField.text, selectedStewardEmail.isNotEmpty else {
             showAlert(title: "Email Required".localized(), message: "Please enter an email address.".localized())
             return
         }
-
+        
         if !selectedStewardEmail.isValidEmail {
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
-        showSpinner()
-        viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending, completion: { result in
-            self.hideSpinner()
-            switch result {
-            case .success(_):
-                self.dismiss(animated: true)
-            case .failure(let error):
-                if let error = error as? APIError, error == .badRequest {
-                    self.showAlert(title: .error, message: "Please enter a valid email address that is associated with an existing account.")
-                } else {
-                    self.showAlert(title: .error, message: .errorMessage)
-                }
-            }
-        })
+        
+        viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
     }
 
     @objc func cancelButtonTapped() {

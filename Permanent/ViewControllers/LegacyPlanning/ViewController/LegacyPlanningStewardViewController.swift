@@ -38,20 +38,27 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel?.selectedArchive = selectedArchive
+        
+        viewModel?.isLoading = { [weak self] loading in
+            if loading {
+                self?.showSpinner()
+            } else {
+                self?.hideSpinner()
+            }
+        }
+        
+        viewModel?.showError = { [weak self] error in
+            self?.showAlert(title: .error, message: .errorMessage)
+        }
+        
+        viewModel?.stewardWasUpdated = { [weak self] _ in
+            self?.updateTrustedSteward()
+        }
+        
         viewModel?.getCurrentSteward()
         
         setupUI()
         styleNavBar()
-        
-        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.didUpdateSelectedSteward, object: nil, queue: nil) { [weak self] notif in
-            self?.updateTrustedSteward()
-        }
-        
-        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.getStewardAlert, object: nil, queue: nil) { [weak self] notification in
-            guard let userInfo = notification.userInfo,
-                  let _ = userInfo["error"] as? APIError else { return }
-            self?.showAlert(title: .error, message: .errorMessage)
-        }
         
         addedLegacyStewardDeleteButton.isHidden = true
     }
@@ -64,10 +71,6 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     
     override func styleNavBar() {
         super.styleNavBar()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     private func setupUI() {
