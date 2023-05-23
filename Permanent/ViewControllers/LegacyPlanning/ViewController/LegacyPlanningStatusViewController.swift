@@ -19,7 +19,22 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
         
         setupTableView()
         setupNavBar()
+        viewModel?.isLoading = {[weak self] isLoading in
+            self?.updateSpinner(isLoading: isLoading)
+        }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel?.getStewards()
+    }
+    
+    func updateSpinner(isLoading: Bool) {
+        isLoading ? showSpinner() : hideSpinner()
+        tableView.isHidden = isLoading ? true : false
+    }
+    
+    // MARK: Table View
     
     func setupTableView() {
         tableView.register(UINib(nibName: String(describing: LegacyAccountStatusCell.self), bundle: nil), forCellReuseIdentifier: String(describing: LegacyAccountStatusCell.self))
@@ -39,31 +54,54 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        let count = (viewModel?.legacyData.count ?? 0) + 1
+        let count = (viewModel?.legacyArchiveData.count ?? 0) + 1
         return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = UITableViewCell()
-        
         if indexPath.section == 0 {
-            cell = tableView.dequeue(cellClass: LegacyAccountStatusCell.self, forIndexPath: indexPath)
-            
+            let cell: LegacyAccountStatusCell = tableView.dequeue(cellClass: LegacyAccountStatusCell.self, forIndexPath: indexPath)
+            cell.setup(account: viewModel?.legacyContact)
+            cell.layer.backgroundColor = UIColor.clear.cgColor
+            cell.goToEdit = {
+                [weak self] in
+                    self?.goToAddSteward(archive: nil, type: .account)
+            }
+            return cell
         } else {
-            guard let data = viewModel?.legacyData[indexPath.section - 1] else {
-                return cell
+            guard let data = viewModel?.legacyArchiveData[indexPath.section - 1] else {
+                return UITableViewCell()
             }
             
             if data.steward != nil {
-                cell = tableView.dequeue(cellClass: LegacyArchiveCompletedCell.self, forIndexPath: indexPath)
-                (cell as? LegacyArchiveCompletedCell)?.setup(data: data)
+                let cell: LegacyArchiveCompletedCell = tableView.dequeue(cellClass: LegacyArchiveCompletedCell.self, forIndexPath: indexPath)
+                cell.setup(data: data)
+                cell.layer.backgroundColor = UIColor.clear.cgColor
+                cell.goToEdit = {[weak self] in
+                    self?.goToAddSteward(archive: data.archive, type: .archive)
+                }
+                return cell
             } else {
-                cell = tableView.dequeue(cellClass: LegacyArchiveCreateCell.self, forIndexPath: indexPath)
-                (cell as? LegacyArchiveCreateCell)?.setup(data: data)
+                let cell = tableView.dequeue(cellClass: LegacyArchiveCreateCell.self, forIndexPath: indexPath)
+                cell.setup(data: data)
+                cell.layer.backgroundColor = UIColor.clear.cgColor
+                cell.goToCreate = {[weak self] in
+                    self?.goToAddSteward(archive: data.archive, type: .archive)
+                }
+                return cell
             }
         }
-        cell.layer.backgroundColor = UIColor.clear.cgColor
-        return cell
+    }
+    
+    // MARK: Navigation
+    
+    func goToAddSteward(archive: ArchiveVOData?, type: LegacyPlanningSteward.StewardType) {
+        if let legacyPlanningStewardVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
+            legacyPlanningStewardVC.viewModel = LegacyPlanningViewModel()
+            legacyPlanningStewardVC.viewModel?.stewardType = type
+            legacyPlanningStewardVC.selectedArchive = archive
+            navigationController?.pushViewController(legacyPlanningStewardVC, animated: true)
+        }
     }
     
     // MARK: Setup Navigation

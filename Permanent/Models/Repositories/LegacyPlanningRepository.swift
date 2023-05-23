@@ -14,6 +14,10 @@ class LegacyPlanningRepository {
         self.remoteDataSource = remoteDataSource
     }
     
+    func getLegacyContact(completion: @escaping (Result<[AccountSteward]?, Error>) -> Void) {
+        remoteDataSource.getLegacyContact(completion: completion)
+    }
+    
     func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void) {
         remoteDataSource.getArchiveSteward(archiveId: archiveId, completion: completion)
     }

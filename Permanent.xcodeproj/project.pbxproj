@@ -325,6 +325,8 @@
 		9220ACC72A1B8713003797C9 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59C3B8229C3262F00337E45 /* ArchivesRemoteDataSource.swift */; };
 		9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */; };
 		9220ACCA2A1CAE4A003797C9 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */; };
+		9220ACCC2A1CBB4F003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
+		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
@@ -1049,6 +1051,7 @@
 		8D026D33BE20D4A089D7FA61 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewModel.swift; sourceTree = "<group>"; };
 		9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
+		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
@@ -1930,6 +1933,7 @@
 			isa = PBXGroup;
 			children = (
 				5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */,
+				9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */,
 				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
 				5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */,
 				5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */,
@@ -3671,6 +3675,7 @@
 				5E8B706B283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
 				F5EAD0652822BBDC00EC2584 /* AccountOnboardingPageTwo.swift in Sources */,
+				9220ACCC2A1CBB4F003797C9 /* AccountSteward.swift in Sources */,
 				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
 				F5AA5E0D27A1E11C00FCA399 /* PublicProfileAddOnlinePresenceViewController.swift in Sources */,
@@ -3878,6 +3883,7 @@
 				F559F89D28FEEABA0015A522 /* APIPayload.swift in Sources */,
 				5ED3B3B229F7E503000CFF48 /* LegacyPlanningIntroViewController.swift in Sources */,
 				F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */,
+				9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */,
 				F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
 				F559F89E28FEEACC0015A522 /* FolderVOPayload.swift in Sources */,

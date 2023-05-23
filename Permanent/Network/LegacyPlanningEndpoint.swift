@@ -8,6 +8,7 @@
 import Foundation
 
 enum LegacyPlanningEndpoint {
+    case getLegacyContact
     case getArchiveSteward(archiveId: Int)
     case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
 }
@@ -23,7 +24,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
     
     var method: RequestMethod {
         switch self {
-        case .getArchiveSteward(_):
+        case .getArchiveSteward(_), .getLegacyContact:
             return .get
         case .setArchiveSteward(_):
             return .post
@@ -44,6 +45,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return getArchiveSteward()
         case .setArchiveSteward(let archiveDetails):
             return setArchiveSteward(archiveDetails: archiveDetails)
+        case .getLegacyContact:
+            return getLegacyPlanning()
         }
     }
     
@@ -65,11 +68,18 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return "\(endpointPath)api/v2/directive/archive/\(archiveId)"
         case .setArchiveSteward(_):
             return "\(endpointPath)api/v2/directive"
+        case .getLegacyContact:
+            return "\(endpointPath)api/v2/legacy-contact"
         }
     }
 }
 
 extension LegacyPlanningEndpoint {
+    
+    func getLegacyPlanning() -> RequestParameters {
+        return [Any]()
+    }
+    
     func getArchiveSteward() -> RequestParameters {
         return [Any]()
     }

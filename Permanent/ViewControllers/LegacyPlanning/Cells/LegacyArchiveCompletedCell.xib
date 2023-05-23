@@ -33,7 +33,7 @@
                             </constraints>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cxl-6X-o8g">
-                            <rect key="frame" x="197" y="20.000000000000004" width="111" height="34.333333333333343"/>
+                            <rect key="frame" x="196" y="20.000000000000004" width="112" height="34.333333333333343"/>
                             <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="8" maxY="0.0"/>
@@ -46,7 +46,7 @@
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SP" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QyB-xV-7CI">
-                            <rect key="frame" x="27.333333333333332" y="34" width="15.666666666666668" height="14"/>
+                            <rect key="frame" x="28" y="32.666666666666664" width="14" height="16.666666666666664"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="12"/>
                             <color key="textColor" white="1" alpha="0.33000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -59,16 +59,16 @@
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7w-hV-tof">
-                            <rect key="frame" x="20" y="103.33333333333333" width="180.33333333333334" height="17.666666666666671"/>
+                            <rect key="frame" x="20" y="103.33333333333333" width="193.66666666666666" height="20.666666666666671"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="15"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yjq-0G-u5z" customClass="RoundedView" customModule="Permanent" customModuleProvider="target">
-                            <rect key="frame" x="20.000000000000004" y="129" width="45.333333333333343" height="13.333333333333343"/>
+                            <rect key="frame" x="20.000000000000004" y="132" width="45.333333333333343" height="15"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OWNER" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="358-3p-mt9">
-                                    <rect key="frame" x="7.9999999999999982" y="2" width="29.333333333333329" height="9.3333333333333339"/>
+                                    <rect key="frame" x="7.9999999999999982" y="2" width="29.333333333333329" height="11"/>
                                     <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="8"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -88,13 +88,13 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="In the event of your death or incapacitation, the following Legacy contact can activate your Legacy Plan:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K0o-wK-XW1">
-                            <rect key="frame" x="20" y="150.33333333333334" width="288" height="45.666666666666657"/>
+                            <rect key="frame" x="20" y="155" width="288" height="53.333333333333343"/>
                             <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </label>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="dte-hf-JAU">
-                            <rect key="frame" x="20" y="225.66666666666666" width="16" height="13.333333333333343"/>
+                            <rect key="frame" x="20" y="238" width="16" height="13.333333333333343"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="16" id="H0b-0n-B69"/>
@@ -104,24 +104,24 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cO6-BB-3oV">
-                            <rect key="frame" x="48.000000000000007" y="224.33333333333334" width="71.666666666666686" height="15.333333333333343"/>
+                            <rect key="frame" x="47.999999999999993" y="235.33333333333334" width="77.333333333333314" height="18"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jo3-WS-4Tq" userLabel="Divider">
-                            <rect key="frame" x="20" y="263.66666666666669" width="288" height="1"/>
+                            <rect key="frame" x="20" y="277.33333333333331" width="288" height="1"/>
                             <color key="backgroundColor" white="1" alpha="0.16191535600000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="oZP-CA-ld8"/>
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="brI-1d-OT2" customClass="ButtonWithRightImage" customModule="Permanent" customModuleProvider="target">
-                            <rect key="frame" x="20" y="288.66666666666669" width="288" height="94.333333333333314"/>
+                            <rect key="frame" x="20" y="302.33333333333331" width="288" height="80.666666666666686"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="16"/>
                             <color key="tintColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <inset key="imageEdgeInsets" minX="12" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Turn off my account Legacy Plan" image="power" catalog="system">
+                            <state key="normal" title="Turn off this archive Legacy Plan" image="power" catalog="system">
                                 <color key="titleColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <connections>
@@ -183,6 +183,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="archiveName" destination="f7w-hV-tof" id="db3-ih-klQ"/>
+                <outlet property="role" destination="358-3p-mt9" id="DWn-dT-iNT"/>
                 <outlet property="shortArchiveName" destination="QyB-xV-7CI" id="AX0-gB-cZx"/>
                 <outlet property="stewardName" destination="cO6-BB-3oV" id="bQC-LX-t5H"/>
             </connections>

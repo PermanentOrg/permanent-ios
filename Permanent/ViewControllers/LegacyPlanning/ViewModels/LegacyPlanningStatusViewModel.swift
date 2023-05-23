@@ -9,6 +9,7 @@ import Foundation
 class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
     
     var didLoad: (() -> Void)?
+    var isLoading: ((Bool) -> Void)?
     
     private var archivesRepository: ArchivesRepository
     private var legacyRepository: LegacyPlanningRepository
@@ -17,41 +18,64 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
         return PermSession.currentSession
     }
     
-    var legacyData: [(archive: ArchiveVOData, steward: ArchiveSteward?)] = [] {
-        didSet {
-            didLoad?()
-        }
-    }
+    var legacyArchiveData: [(archive: ArchiveVOData, steward: ArchiveSteward?)] = []
+    var legacyContact: AccountSteward?
     
     init(archivesRepository: ArchivesRepository = ArchivesRepository(),
          legacyRepository: LegacyPlanningRepository = LegacyPlanningRepository()) {
         self.archivesRepository = archivesRepository
         self.legacyRepository = legacyRepository
-        fetchArchives()
     }
     
-    func fetchArchives() {
-        guard let accountID = session?.account.accountID else {
-            return
-        }
-        
-        archivesRepository.getAccountArchives(accountId: accountID) {[weak self] result in
-            switch result {
-            case .failure(let error):
-                break
-            case .success(let archivesVO):
-                let archives = archivesVO.compactMap { $0.archiveVO }
-                self?.getStewards(archives: archives)
+    // MARK: Steward
+    
+    func getStewards() {
+        isLoading?(true)
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            
+            let archives = try await strongSelf.fetchArchives()
+            strongSelf.legacyArchiveData = try await archives.asyncMap(strongSelf.fetchSteward)
+            strongSelf.legacyContact = try await strongSelf.fetchAccount()
+            
+            await MainActor.run {
+                strongSelf.didLoad?()
+                strongSelf.isLoading?(false)
             }
         }
     }
     
-    func getStewards(archives: [ArchiveVOData]) {
-        Task {[weak self] in
-            guard let strongSelf = self else { return }
-            let stewards = try await archives.asyncMap(strongSelf.fetchSteward)
-            await MainActor.run {
-                strongSelf.legacyData = stewards
+    // MARK: Account
+    
+    func fetchAccount() async throws -> AccountSteward? {
+        return try await withCheckedThrowingContinuation { continuation in
+            legacyRepository.getLegacyContact { result in
+                switch result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let contact):
+                    continuation.resume(returning: contact?.first)
+                }
+            }
+        }
+    }
+    
+    // MARK: Archives
+    
+    func fetchArchives() async throws -> [ArchiveVOData] {
+        guard let accountID = session?.account.accountID else {
+            return []
+        }
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            archivesRepository.getAccountArchives(accountId: accountID) { result in
+                switch result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let archivesVO):
+                    let archives = archivesVO.compactMap { $0.archiveVO }
+                    continuation.resume(returning: archives)
+                }
             }
         }
     }
