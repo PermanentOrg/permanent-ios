@@ -11,7 +11,6 @@ import Combine
 
 class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatusViewModel>, UITableViewDataSource {
     
-    var cancellables: [AnyCancellable] = []
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
