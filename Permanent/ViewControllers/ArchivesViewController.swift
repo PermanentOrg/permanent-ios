@@ -87,6 +87,10 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         overlayView.alpha = 0.0
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     fileprivate func setupTableView() {
         tableView.separatorColor = .clear
         

@@ -22,7 +22,12 @@ protocol LegacyPlanningDataSourceInterface {
                      completion(.failure(APIError.parseError))
                      return
                  }
-                 completion(.success(model))
+                 if model.isEmpty {
+                     completion(.failure(APIError.noData))
+                 } else {
+                     completion(.success(model))
+                 }
+                 
              case .error(let error, _):
                  completion(.failure(error ?? APIError.invalidResponse))
                  return
@@ -38,7 +43,7 @@ protocol LegacyPlanningDataSourceInterface {
          setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
              switch result {
              case .json(let response, _):
-                 guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: ArchiveSteward.decoder) else {
+                 guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: JSONDecoder.init()) else {
                      completion(.failure(APIError.invalidResponse))
                      return
                  }

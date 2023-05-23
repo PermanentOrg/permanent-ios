@@ -29,6 +29,8 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     @IBOutlet weak var noteTitleLabel: UILabel!
     @IBOutlet weak var noteDescriptionLabel: UILabel!
+    
+    private let overlayView = UIView()
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +38,17 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         setupUI()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
+    }
+    
     private func setupUI() {
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
+        
         addDismissKeyboardGesture()
         customizeNavigationController()
 
@@ -233,9 +245,19 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
-
-        dismiss(animated: true, completion: { [weak self] in
-            self?.viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, status: .pending)
+        showSpinner()
+        viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending, completion: { result in
+            self.hideSpinner()
+            switch result {
+            case .success(_):
+                self.dismiss(animated: true)
+            case .failure(let error):
+                if let error = error as? APIError, error == .badRequest {
+                    self.showAlert(title: .error, message: "Please enter a valid email address that is associated with an existing account.")
+                } else {
+                    self.showAlert(title: .error, message: .errorMessage)
+                }
+            }
         })
     }
 
@@ -250,14 +272,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     private func updateEmailValidationUI(isValid: Bool) {
         if isValid {
             designateStewardEmailStackView.layer.borderColor = UIColor.clear.cgColor
-            emailVerificationImageView.isHidden = false
-            emailVerificationImageView.image = UIImage(named: "legacyPlanningCheckMark")
             designateStewardEmailVerificationLabel.isHidden = true
             inviteUserToPermanentStackView.isHidden = true
         } else {
             designateStewardEmailStackView.layer.borderColor = UIColor.lightRed.cgColor
-            emailVerificationImageView.isHidden = false
-            emailVerificationImageView.image = UIImage(named: "legacyPlanningError")
             designateStewardEmailVerificationLabel.isHidden = false
             inviteUserToPermanentStackView.isHidden = false
         }
