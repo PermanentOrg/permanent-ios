@@ -148,10 +148,16 @@ extension ArchiveVOData {
 extension ArchiveVOData {
     
     func shortName() -> String {
-        let acronyms = fullName?.components(separatedBy: " ")
-            .map{ String($0.first!) }
-            .joined()
-        
+        let components = fullName?.components(separatedBy: " ")
+        let acronyms = components?.compactMap { component in
+            if !component.isEmpty {
+                return component.first
+            }
+            return nil
+        }.compactMap({ element in
+            return String(element)
+        }).joined()
+
         return acronyms ?? ""
     }
 }

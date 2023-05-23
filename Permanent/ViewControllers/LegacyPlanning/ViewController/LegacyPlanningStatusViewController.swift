@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import Combine
 
 class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatusViewModel>, UITableViewDataSource {
     
