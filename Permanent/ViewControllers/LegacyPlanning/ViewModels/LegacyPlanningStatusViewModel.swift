@@ -96,10 +96,14 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
             return (archive, nil)
         }
         return try await withCheckedThrowingContinuation { continuation in
-            legacyRepository.getArchiveSteward(archiveId: 50) { result in
+            legacyRepository.getArchiveSteward(archiveId: archiveId) { result in
                 switch result {
                 case .failure(let error):
-                    continuation.resume(throwing: error)
+                    if let error = error as? APIError, error == .noData {
+                        continuation.resume(returning: (archive, nil))
+                    } else {
+                        continuation.resume(throwing: error)
+                    }
                 case .success(let steward):
                     continuation.resume(returning: (archive, steward?.first))
                 }
