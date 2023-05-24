@@ -18,6 +18,7 @@ enum Permission: Codable {
     case share
     case archiveShare
     case ownership
+    case legacyPlanning
     
     func prettyPermission() -> String? {
         switch self {
@@ -37,7 +38,7 @@ enum Permission: Codable {
             
         case .share: return "share".localized()
             
-        case .archiveShare, .ownership: return nil
+        case .archiveShare, .ownership, .legacyPlanning: return nil
         }
     }
 }
