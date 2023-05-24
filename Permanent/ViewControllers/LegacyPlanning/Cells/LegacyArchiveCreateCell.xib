@@ -80,9 +80,12 @@
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="16"/>
                             <color key="tintColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                             <inset key="imageEdgeInsets" minX="12" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Create archive Legacy Plan" image="power" catalog="system">
+                            <state key="normal" title="Create archive Legacy Plan" image="chevron.right" catalog="system">
                                 <color key="titleColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
+                            <connections>
+                                <action selector="create:" destination="iN0-l3-epB" eventType="touchUpInside" id="cD4-q9-oiU"/>
+                            </connections>
                         </button>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -119,12 +122,17 @@
                 <constraint firstItem="DHP-1V-wA1" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="reo-YV-0qG"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="name" destination="oXb-eQ-ObU" id="D5C-l8-oPd"/>
+                <outlet property="nameAbbreviation" destination="BW3-Tw-OOv" id="oo3-va-IGq"/>
+                <outlet property="role" destination="Jai-Vq-VrC" id="IrI-36-6Io"/>
+            </connections>
             <point key="canvasLocation" x="-25.190839694656489" y="-191.5492957746479"/>
         </view>
     </objects>
     <resources>
+        <image name="chevron.right" catalog="system" width="97" height="128"/>
         <image name="legacy_name_icon" width="40" height="40"/>
-        <image name="power" catalog="system" width="127" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

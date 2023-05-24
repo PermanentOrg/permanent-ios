@@ -41,6 +41,9 @@
                             <buttonConfiguration key="configuration" style="plain" image="square.and.pencil" catalog="system" title="Edit Plan" imagePadding="8">
                                 <fontDescription key="titleFontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             </buttonConfiguration>
+                            <connections>
+                                <action selector="editPlan:" destination="iN0-l3-epB" eventType="touchUpInside" id="qYT-Xa-gcP"/>
+                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SP" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QyB-xV-7CI">
                             <rect key="frame" x="28" y="32.666666666666664" width="14" height="16.666666666666664"/>
@@ -118,9 +121,12 @@
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="16"/>
                             <color key="tintColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <inset key="imageEdgeInsets" minX="12" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Turn off my account Legacy Plan" image="power" catalog="system">
+                            <state key="normal" title="Turn off this archive Legacy Plan" image="power" catalog="system">
                                 <color key="titleColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
+                            <connections>
+                                <action selector="turnOff:" destination="iN0-l3-epB" eventType="touchUpInside" id="ur3-Mk-v6K"/>
+                            </connections>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.0039215686269999999" green="0.039215686270000001" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -175,6 +181,12 @@
                 <constraint firstAttribute="trailing" secondItem="NJ8-TF-Nh4" secondAttribute="trailing" id="WjE-A6-dUP"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="archiveName" destination="f7w-hV-tof" id="db3-ih-klQ"/>
+                <outlet property="role" destination="358-3p-mt9" id="DWn-dT-iNT"/>
+                <outlet property="shortArchiveName" destination="QyB-xV-7CI" id="AX0-gB-cZx"/>
+                <outlet property="stewardName" destination="cO6-BB-3oV" id="bQC-LX-t5H"/>
+            </connections>
             <point key="canvasLocation" x="-74.809160305343511" y="-137.67605633802819"/>
         </view>
     </objects>
