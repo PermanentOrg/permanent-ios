@@ -36,7 +36,9 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
             guard let strongSelf = self else { return }
             
             do {
-                let archives = try await strongSelf.fetchArchives()
+                let archives = try await strongSelf.fetchArchives().filter({ archive in
+                    return archive.accessRole == AccessRole.owner.apiValue
+                })
                 strongSelf.legacyArchiveData = try await archives.asyncMap(strongSelf.fetchSteward)
                 strongSelf.legacyContact = try await strongSelf.fetchAccount()
                 
