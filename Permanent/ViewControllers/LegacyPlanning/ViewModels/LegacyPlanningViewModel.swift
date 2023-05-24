@@ -23,18 +23,19 @@ class LegacyPlanningViewModel: ViewModelInterface {
         self.legacyPlanningRepository = legacyPlanningRepository
     }
     
-
     func addSelectedSteward(name: String, email: String, note: String, status: LegacyPlanningSteward.StewardStatus) {
         isLoading?(true)
-        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: note) { [weak self] result, error in
-            if result {
-                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .archive)
-                self?.stewardWasUpdated?(true)
-            } else {
+        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: note) { [weak self] result in
+            switch result {
+            case .failure(let error):
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
+            case .success:
+                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .archive)
+                self?.stewardWasUpdated?(true)
             }
+
             self?.isLoading?(false)
         }
     }
@@ -42,8 +43,9 @@ class LegacyPlanningViewModel: ViewModelInterface {
     func getCurrentSteward() {
         guard let archiveId = selectedArchive?.archiveID else { return }
         isLoading?(true)
-        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { [weak self] response, error in
-            guard let steward = response?.first else {
+        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { [weak self] result in
+            switch result {
+            case .failure(let error):
                 if let error = error as? APIError {
                     switch error {
                     case .noData:
@@ -55,11 +57,19 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     }
                 }
                 self?.isLoading?(false)
-                return
+            case .success(let response):
+                guard let steward = response?.first else {
+                    self?.selectedSteward = nil
+                    self?.stewardWasUpdated?(true)
+
+                    self?.isLoading?(false)
+                    return
+                }
+                
+                self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
+                self?.isLoading?(false)
+                self?.stewardWasUpdated?(true)
             }
-            self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
-            self?.isLoading?(false)
-            self?.stewardWasUpdated?(true)
         }
     }
     
