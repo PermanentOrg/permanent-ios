@@ -86,7 +86,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         overlayView.alpha = 0
         
         titleLabelSetup()
-        backButtonSetup()
+        if let viewControllersCount = navigationController?.viewControllers.count, viewControllersCount > 1 {
+            backButtonSetup()
+        }
         closeButtonSetup()
         addLegacyStewardSetup()
         addedLegacyStewardSetup()

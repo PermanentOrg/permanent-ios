@@ -332,8 +332,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     private func presentArchiveStewardScreen(archiveData: ArchiveVOData?) {
-        if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController,
-            let archiveData = archiveData {
+        if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = archiveData {
             archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
             archiveLegacyPlanningVC.selectedArchive = archiveData
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)

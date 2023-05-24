@@ -16,11 +16,18 @@ class LegacyPlanningLoadingViewController: BaseViewController<LegacyPlanningView
         
         navigationItem.title = "Legacy Planning".localized()
         
-        if viewModel?.getLegacyPlanningAccount() == true {
-            showStatus()
-        } else {
-            showIntro()
-        }
+        viewModel?.getLegacyPlanningAccount(completion: { [weak self] result in
+            switch result {
+            case .success(let haveLegacySteward):
+                if let haveLegacySteward = haveLegacySteward, haveLegacySteward {
+                    self?.showStatus()
+                } else {
+                    self?.showIntro()
+                }
+            case .failure(_):
+                self?.showAlert(title: .error, message: .errorMessage)
+            }
+        })
     }
     
     func showIntro() {

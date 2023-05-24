@@ -45,7 +45,7 @@ enum DrawerOption {
         case .manageTags: return UIImage(named: "tagsBorder")
         case .logOut: return UIImage.logOut.templated
         case .contactSupport: return nil
-        case .legacyPlanning: return nil
+        case .legacyPlanning: return UIImage(named: "legacyPlanning")
         case .none: return nil
         }
     }

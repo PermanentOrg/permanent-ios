@@ -73,8 +73,15 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
     
-    func getLegacyPlanningAccount() -> Bool {
-        return true
+    func getLegacyPlanningAccount(completion: @escaping (Result<Bool?, APIError>) -> Void) {
+        legacyPlanningRepository.getLegacyContact { [weak self] result in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error as? APIError ?? .invalidResponse))
+            case .success(let contact):
+                completion(.success(contact?.first?.name != nil))
+            }
+        }
     }
 
 }

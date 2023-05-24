@@ -142,7 +142,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
 
-        let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone. Please do the following things to my archive when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         
         designateStewardSelectionInfoTextView.attributedText = attributedText
         designateStewardSelectionInfoTextView.textAlignment = .left
