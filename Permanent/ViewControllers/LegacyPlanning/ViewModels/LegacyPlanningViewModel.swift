@@ -11,6 +11,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
     var isLoading: ((Bool) -> Void)?
     var stewardWasUpdated: ((Bool) -> Void)?
     var showError: ((APIError) -> Void)?
+    var stewardWasSaved: ((Bool) -> Void)?
     
     var selectedArchive: ArchiveVOData?
     var selectedSteward: LegacyPlanningSteward?
@@ -55,7 +56,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 self?.isLoading?(false)
                 return
             }
-            self?.selectedSteward = LegacyPlanningSteward(name: steward.stewardAccountId ?? "", email: steward.note ?? "", status: .pending, type: .archive)
+            self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
             self?.isLoading?(false)
             self?.stewardWasUpdated?(true)
         }

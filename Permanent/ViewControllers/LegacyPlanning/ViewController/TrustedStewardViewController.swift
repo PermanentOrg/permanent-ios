@@ -52,7 +52,9 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         
         viewModel?.stewardWasUpdated = { [weak self] result in
             if result {
-                self?.dismiss(animated: true)
+                self?.dismiss(animated: true, completion: {
+                    (self?.viewModel?.stewardWasSaved ?? { _ in })(true)
+                })
             }
         }
         

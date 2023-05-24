@@ -55,6 +55,10 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             self?.updateTrustedSteward()
         }
         
+        viewModel?.stewardWasSaved = { [weak self] _ in
+            self?.updateTrustedSteward()
+        }
+        
         viewModel?.getCurrentSteward()
         
         setupUI()
