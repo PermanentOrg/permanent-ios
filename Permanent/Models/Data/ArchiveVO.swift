@@ -126,7 +126,7 @@ extension ArchiveVOData {
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership, .legacyPlanning]
             
         case .manager:
-            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .legacyPlanning]
+            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]
             
         case .curator:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share]

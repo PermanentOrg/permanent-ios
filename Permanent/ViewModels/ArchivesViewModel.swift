@@ -8,6 +8,7 @@
 import Foundation
 
 class ArchivesViewModel: ViewModelInterface {
+    static let closeArchiveSettings = Notification.Name("ArchivesViewModel.closeArchiveSettings")
     
     var account: AccountVOData?
     var defaultArchiveId: Int? { account?.defaultArchiveID }
@@ -147,6 +148,7 @@ class ArchivesViewModel: ViewModelInterface {
     }
     
     func changeArchive(_ archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        NotificationCenter.default.post(name: ArchivesViewModel.closeArchiveSettings, object: self, userInfo: nil)
         guard let archiveId = archive.archiveID, let archiveNbr = archive.archiveNbr else {
             completionBlock(false, APIError.unknown)
             return
