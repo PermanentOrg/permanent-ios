@@ -16,7 +16,7 @@ class LegacyArchiveCompletedCell: UITableViewCell {
     func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {
         archiveName.text = "\(data.archive.fullName ?? "") Archive"
         shortArchiveName.text = data.archive.shortName()
-        stewardName.text = data.steward?.stewardAccountId
+        stewardName.text = data.steward?.steward?.name
         if let archiveRole = data.archive.accessRole {
             let accessRole = AccessRole.roleForValue(archiveRole).groupName
             role.text = accessRole.uppercased()

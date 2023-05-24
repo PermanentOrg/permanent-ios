@@ -20,6 +20,11 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
         viewModel?.isLoading = {[weak self] isLoading in
             self?.updateSpinner(isLoading: isLoading)
         }
+        
+        viewModel?.showError = {[weak self] error in
+            self?.showAlert(title: .error, message: .errorMessage)
+            self?.tableView.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
