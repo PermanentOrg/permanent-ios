@@ -33,7 +33,7 @@
                             </constraints>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fPp-I2-dxk">
-                            <rect key="frame" x="258" y="30.000000000000004" width="111" height="34.333333333333343"/>
+                            <rect key="frame" x="257" y="30.000000000000004" width="112" height="34.333333333333343"/>
                             <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="8" maxY="0.0"/>
@@ -53,34 +53,34 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xTY-iB-APU" userLabel="Divider">
-                            <rect key="frame" x="24" y="217" width="345" height="1"/>
+                            <rect key="frame" x="24" y="223.66666666666666" width="345" height="1"/>
                             <color key="backgroundColor" white="1" alpha="0.16191535600000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="OD5-Y5-EOm"/>
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="In the event of your death or incapacitation, the following Legacy contact can activate your Legacy Plan:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssL-yV-MDh">
-                            <rect key="frame" x="24" y="118.99999999999999" width="345" height="30.333333333333329"/>
+                            <rect key="frame" x="24" y="119.00000000000001" width="345" height="35.666666666666671"/>
                             <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="0.75" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </label>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="j3Q-76-pTO">
-                            <rect key="frame" x="24" y="179" width="16" height="13.333333333333343"/>
+                            <rect key="frame" x="24" y="184.33333333333331" width="16" height="13.333333333333343"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="R74-iO-CDb"/>
                                 <constraint firstAttribute="width" constant="16" id="YCB-Q3-JET"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UVf-vU-A0N">
-                            <rect key="frame" x="52.000000000000007" y="177.66666666666666" width="71.666666666666686" height="15.333333333333343"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UVf-vU-A0N">
+                            <rect key="frame" x="52" y="181.66666666666666" width="321" height="18"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dol-DC-rgF" customClass="ButtonWithRightImage" customModule="Permanent" customModuleProvider="target">
-                            <rect key="frame" x="24" y="242" width="345" height="143"/>
+                            <rect key="frame" x="24" y="248.66666666666663" width="345" height="136.33333333333337"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="16"/>
                             <color key="tintColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <inset key="imageEdgeInsets" minX="67" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -104,6 +104,7 @@
                         <constraint firstItem="ssL-yV-MDh" firstAttribute="leading" secondItem="BHg-rl-sMs" secondAttribute="leading" constant="24" id="Q8c-wa-cfN"/>
                         <constraint firstItem="dol-DC-rgF" firstAttribute="trailing" secondItem="xTY-iB-APU" secondAttribute="trailing" id="QLG-eC-ef4"/>
                         <constraint firstItem="dol-DC-rgF" firstAttribute="leading" secondItem="xTY-iB-APU" secondAttribute="leading" id="Qvy-Lx-ls8"/>
+                        <constraint firstAttribute="trailing" secondItem="UVf-vU-A0N" secondAttribute="trailing" constant="20" id="UzP-Kd-PsJ"/>
                         <constraint firstAttribute="trailing" secondItem="ssL-yV-MDh" secondAttribute="trailing" constant="24" id="acL-JF-IHD"/>
                         <constraint firstItem="wDl-bf-Wng" firstAttribute="top" secondItem="BHg-rl-sMs" secondAttribute="top" constant="24" id="auZ-LY-D6y"/>
                         <constraint firstItem="qst-bL-R9Z" firstAttribute="top" secondItem="wDl-bf-Wng" secondAttribute="bottom" constant="24" id="cvH-1G-DOv"/>

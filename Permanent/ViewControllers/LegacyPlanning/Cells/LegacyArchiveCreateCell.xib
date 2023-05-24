@@ -39,8 +39,8 @@
                             <color key="textColor" white="1" alpha="0.33000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oXb-eQ-ObU">
-                            <rect key="frame" x="24" y="78" width="193.66666666666666" height="20.666666666666671"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oXb-eQ-ObU">
+                            <rect key="frame" x="24" y="78" width="345" height="20.666666666666671"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="15"/>
                             <color key="textColor" red="0.074509803920000006" green="0.1058823529" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -93,6 +93,7 @@
                         <constraint firstItem="BW3-Tw-OOv" firstAttribute="centerX" secondItem="iaz-Jd-Sp1" secondAttribute="centerX" id="5Io-md-USL"/>
                         <constraint firstItem="lJW-ON-Ecx" firstAttribute="leading" secondItem="7aN-tj-bFF" secondAttribute="leading" id="5bV-9a-3pA"/>
                         <constraint firstItem="7aN-tj-bFF" firstAttribute="leading" secondItem="oXb-eQ-ObU" secondAttribute="leading" id="9kn-gW-1rr"/>
+                        <constraint firstAttribute="trailing" secondItem="oXb-eQ-ObU" secondAttribute="trailing" constant="24" id="CpS-lT-vyV"/>
                         <constraint firstItem="oXb-eQ-ObU" firstAttribute="leading" secondItem="iaz-Jd-Sp1" secondAttribute="leading" id="Fua-dl-z8X"/>
                         <constraint firstAttribute="trailing" secondItem="lJW-ON-Ecx" secondAttribute="trailing" constant="24" id="H48-lg-63c"/>
                         <constraint firstItem="LXN-aG-1cQ" firstAttribute="top" secondItem="lJW-ON-Ecx" secondAttribute="bottom" constant="24" id="HmA-Eg-J1a"/>

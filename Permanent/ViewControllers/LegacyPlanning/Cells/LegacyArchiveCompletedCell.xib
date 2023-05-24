@@ -58,8 +58,8 @@
                                 <constraint firstAttribute="height" constant="1" id="KD0-Pg-IWX"/>
                             </constraints>
                         </view>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7w-hV-tof">
-                            <rect key="frame" x="20" y="103.33333333333333" width="193.66666666666666" height="20.666666666666671"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7w-hV-tof">
+                            <rect key="frame" x="20" y="103.33333333333333" width="288" height="20.666666666666671"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="15"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -103,8 +103,8 @@
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="16" id="xQO-At-jbk"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cO6-BB-3oV">
-                            <rect key="frame" x="47.999999999999993" y="235.33333333333334" width="77.333333333333314" height="18"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cO6-BB-3oV">
+                            <rect key="frame" x="48" y="235.33333333333334" width="260" height="18"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -154,9 +154,11 @@
                         <constraint firstItem="dte-hf-JAU" firstAttribute="leading" secondItem="K0o-wK-XW1" secondAttribute="leading" id="eS2-eI-o33"/>
                         <constraint firstItem="f7w-hV-tof" firstAttribute="top" secondItem="7dG-D8-W5M" secondAttribute="bottom" constant="24" id="fRS-9u-9mY"/>
                         <constraint firstItem="cxl-6X-o8g" firstAttribute="centerY" secondItem="kV0-g7-Lmm" secondAttribute="centerY" id="jvY-j5-yjr"/>
+                        <constraint firstAttribute="trailing" secondItem="f7w-hV-tof" secondAttribute="trailing" constant="20" id="kTe-o2-I23"/>
                         <constraint firstItem="yjq-0G-u5z" firstAttribute="top" secondItem="f7w-hV-tof" secondAttribute="bottom" constant="8" id="m3y-nn-zuv"/>
                         <constraint firstItem="cO6-BB-3oV" firstAttribute="leading" secondItem="dte-hf-JAU" secondAttribute="trailing" constant="12" id="or4-WH-BTH"/>
                         <constraint firstItem="dte-hf-JAU" firstAttribute="top" secondItem="K0o-wK-XW1" secondAttribute="bottom" constant="28" id="y74-TO-RPk"/>
+                        <constraint firstAttribute="trailing" secondItem="cO6-BB-3oV" secondAttribute="trailing" constant="20" id="zQr-9i-9Jd"/>
                         <constraint firstItem="QyB-xV-7CI" firstAttribute="centerX" secondItem="kV0-g7-Lmm" secondAttribute="centerX" id="zmS-Ri-0mJ"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
