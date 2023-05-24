@@ -10,6 +10,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
     
     var didLoad: (() -> Void)?
     var isLoading: ((Bool) -> Void)?
+    var showError: ((APIError) -> Void)?
     
     private var archivesRepository: ArchivesRepository
     private var legacyRepository: LegacyPlanningRepository
@@ -34,13 +35,23 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
         Task {[weak self] in
             guard let strongSelf = self else { return }
             
-            let archives = try await strongSelf.fetchArchives()
-            strongSelf.legacyArchiveData = try await archives.asyncMap(strongSelf.fetchSteward)
-            strongSelf.legacyContact = try await strongSelf.fetchAccount()
-            
-            await MainActor.run {
-                strongSelf.didLoad?()
-                strongSelf.isLoading?(false)
+            do {
+                let archives = try await strongSelf.fetchArchives()
+                strongSelf.legacyArchiveData = try await archives.asyncMap(strongSelf.fetchSteward)
+                strongSelf.legacyContact = try await strongSelf.fetchAccount()
+                
+                await MainActor.run {
+                    strongSelf.isLoading?(false)
+                    strongSelf.didLoad?()
+                }
+            }
+            catch {
+                await MainActor.run {
+                    strongSelf.isLoading?(false)
+                    if let apiError = error as? APIError {
+                        strongSelf.showError?(apiError)
+                    }
+                }
             }
         }
     }
@@ -88,7 +99,11 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
             legacyRepository.getArchiveSteward(archiveId: archiveId) { result in
                 switch result {
                 case .failure(let error):
-                    continuation.resume(throwing: error)
+                    if let error = error as? APIError, error == .noData {
+                        continuation.resume(returning: (archive, nil))
+                    } else {
+                        continuation.resume(throwing: error)
+                    }
                 case .success(let steward):
                     continuation.resume(returning: (archive, steward?.first))
                 }
