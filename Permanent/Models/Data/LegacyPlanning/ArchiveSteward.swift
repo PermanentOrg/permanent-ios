@@ -16,4 +16,5 @@ struct ArchiveSteward: Model {
     let stewardAccountId: String?
     let note: String?
     let executionDT: String?
+    let steward: StewardDetails?
 }

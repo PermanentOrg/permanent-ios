@@ -8,14 +8,10 @@
 import Foundation
 
 class LegacyPlanningViewModel: ViewModelInterface {
-    static let didUpdateSelectedSteward = NSNotification.Name("LegacyPlanningViewModel.didUpdateSelectedSteward")
-    static let isLoadingNotification = Notification.Name("LegacyPlanningViewModel.isLoadingNotification")
-    
-    var isLoading: Bool = false {
-        didSet {
-            NotificationCenter.default.post(name: Self.isLoadingNotification, object: self, userInfo: nil)
-        }
-    }
+    var isLoading: ((Bool) -> Void)?
+    var stewardWasUpdated: ((Bool) -> Void)?
+    var showError: ((APIError) -> Void)?
+    var stewardWasSaved: ((Bool) -> Void)?
     
     var selectedArchive: ArchiveVOData?
     var selectedSteward: LegacyPlanningSteward?
@@ -27,28 +23,43 @@ class LegacyPlanningViewModel: ViewModelInterface {
         self.legacyPlanningRepository = legacyPlanningRepository
     }
     
-    func addSelectedSteward(name: String, email: String, status: LegacyPlanningSteward.StewardStatus) {
-        isLoading = true
-        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: "") { result in
-            self.isLoading = false
-            
-            if case .success(_) = result {
-                self.getCurrentSteward()
+
+    func addSelectedSteward(name: String, email: String, note: String, status: LegacyPlanningSteward.StewardStatus) {
+        isLoading?(true)
+        legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: note) { [weak self] result, error in
+            if result {
+                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .archive)
+                self?.stewardWasUpdated?(true)
+            } else {
+                if let error = error as? APIError {
+                    self?.showError?(error)
+                }
             }
+            self?.isLoading?(false)
         }
     }
     
     func getCurrentSteward() {
-        isLoading = true
         guard let archiveId = selectedArchive?.archiveID else { return }
-        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { response in
-            self.isLoading = false
-            if case .success(let success) = response {
-                if let steward = success?.first {
-                    self.selectedSteward?.name = steward.stewardAccountId ?? ""
-                    self.selectedSteward?.email = steward.note ?? ""
-                    NotificationCenter.default.post(name: Self.didUpdateSelectedSteward, object: self, userInfo: nil)}
+        isLoading?(true)
+        legacyPlanningRepository.getArchiveSteward(archiveId: archiveId) { [weak self] response, error in
+            guard let steward = response?.first else {
+                if let error = error as? APIError {
+                    switch error {
+                    case .noData:
+                        self?.selectedSteward = nil
+                        self?.stewardWasUpdated?(true)
+                        break
+                    default:
+                        self?.showError?(error)
+                    }
+                }
+                self?.isLoading?(false)
+                return
             }
+            self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
+            self?.isLoading?(false)
+            self?.stewardWasUpdated?(true)
         }
     }
     

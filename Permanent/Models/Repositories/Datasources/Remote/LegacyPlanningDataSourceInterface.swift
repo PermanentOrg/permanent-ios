@@ -42,39 +42,44 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
             case .json(let response, _):
                 guard
                     let model: [ArchiveSteward] = JSONHelper.decoding(from: response, with: JSONDecoder.init())
-                else {
-                    completion(.failure(APIError.parseError))
-                    return
-                }
-                completion(.success(model))
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.invalidResponse))
-                return
-            default:
-                completion(.failure(APIError.invalidResponse))
-                return
-            }
-        }
-    }
-    
-    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        let setArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails(archiveId: archiveId, stewardEmail: stewardEmail, note: note)))
-        setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
-            switch result {
-            case .json(let response, _):
-                guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: ArchiveSteward.decoder) else {
-                    completion(.failure(APIError.invalidResponse))
-                    return
-                }
-                completion(.success(true))
-                return
-            case .error(let error, _):
-                completion(.failure(error ?? APIError.invalidResponse))
-                return
-            default:
-                completion(.failure(APIError.invalidResponse))
-                return
-            }
-        }
-    }
-}
+                 else {
+                     completion(.failure(APIError.parseError))
+                     return
+                 }
+                 if model.isEmpty {
+                     completion(.failure(APIError.noData))
+                 } else {
+                     completion(.success(model))
+                 }
+                 
+             case .error(let error, _):
+                 completion(.failure(error ?? APIError.invalidResponse))
+                 return
+             default:
+                 completion(.failure(APIError.invalidResponse))
+                 return
+             }
+         }
+     }
+
+     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+         let setArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails(archiveId: archiveId, stewardEmail: stewardEmail, note: note)))
+         setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
+             switch result {
+             case .json(let response, _):
+                 guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: JSONDecoder.init()) else {
+                     completion(.failure(APIError.invalidResponse))
+                     return
+                 }
+                 completion(.success(true))
+                 return
+             case .error(let error, _):
+                 completion(.failure(error ?? APIError.invalidResponse))
+                 return
+             default:
+                 completion(.failure(APIError.invalidResponse))
+                 return
+             }
+         }
+     }
+ }

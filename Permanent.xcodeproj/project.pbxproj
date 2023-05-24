@@ -149,6 +149,8 @@
 		5E624DC129476C10002D6ECB /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */; };
 		5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */; };
 		5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC4294B27F7002D6ECB /* MFASession.swift */; };
+		5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E626CA62A1D6BB400EA9981 /* StewardDetails.swift */; };
+		5E626CA82A1D6BF300EA9981 /* StewardDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E626CA62A1D6BB400EA9981 /* StewardDetails.swift */; };
 		5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */; };
 		5E62F7BB27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */; };
 		5E62F7BE27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */; };
@@ -909,6 +911,7 @@
 		5E624DC029476C10002D6ECB /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Models/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionLoginResponse.swift; sourceTree = "<group>"; };
 		5E624DC4294B27F7002D6ECB /* MFASession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MFASession.swift; sourceTree = "<group>"; };
+		5E626CA62A1D6BB400EA9981 /* StewardDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StewardDetails.swift; sourceTree = "<group>"; };
 		5E62F7B827F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E62F7B927F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PublicGalleryHeaderCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E62F7BC27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryFooterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1937,6 +1940,8 @@
 				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
 				5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */,
 				5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */,
+				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
+				5E626CA62A1D6BB400EA9981 /* StewardDetails.swift */,
 			);
 			path = LegacyPlanning;
 			sourceTree = "<group>";
@@ -3428,6 +3433,7 @@
 				5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */,
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
+				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
@@ -3924,6 +3930,7 @@
 				F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */,
 				F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */,
 				F55252A02907F1DD0005E011 /* EmptyFolderView.swift in Sources */,
+				5E626CA82A1D6BF300EA9981 /* StewardDetails.swift in Sources */,
 				5E187FA32A0CE3CE00DCD52F /* LegacyPlanningSteward.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
