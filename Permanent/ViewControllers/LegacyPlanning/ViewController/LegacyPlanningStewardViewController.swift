@@ -38,24 +38,39 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel?.selectedArchive = selectedArchive
-        viewModel?.getCurrentSteward()
         
-        setupUI()
-        styleNavBar()
-        
-        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.didUpdateSelectedSteward, object: nil, queue: nil) { [weak self] notif in
-            self?.updateTrustedSteward()
-        }
-        
-        NotificationCenter.default.addObserver(forName: LegacyPlanningViewModel.isLoadingNotification, object: nil, queue: nil) { [weak self] notif in
-            if let isLoading = self?.viewModel?.isLoading, isLoading {
+        viewModel?.isLoading = { [weak self] loading in
+            if loading {
                 self?.showSpinner()
             } else {
                 self?.hideSpinner()
             }
         }
         
+        viewModel?.showError = { [weak self] error in
+            self?.showAlert(title: .error, message: .errorMessage)
+        }
+        
+        viewModel?.stewardWasUpdated = { [weak self] _ in
+            self?.updateTrustedSteward()
+        }
+        
+        viewModel?.stewardWasSaved = { [weak self] _ in
+            self?.updateTrustedSteward()
+        }
+        
+        viewModel?.getCurrentSteward()
+        
+        setupUI()
+        styleNavBar()
+        
         addedLegacyStewardDeleteButton.isHidden = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
     }
     
     override func styleNavBar() {
@@ -66,9 +81,8 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         view.backgroundColor = .backgroundPrimary
         view.layer.backgroundColor = UIColor.whiteGray.cgColor
         
-        overlayView.frame = view.bounds
         view.addSubview(overlayView)
-        overlayView.backgroundColor = .bgOverlay
+        overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
         titleLabelSetup()
@@ -117,7 +131,7 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         closeButton.setImage(UIImage(named: "newCloseButton"), for: .normal)
         closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         closeButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20) // Adjust the position
+        closeButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -20)
         
         let closeButtonItem = UIBarButtonItem(customView: closeButton)
         navigationItem.rightBarButtonItem = closeButtonItem
@@ -315,13 +329,20 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     
     func updateTrustedSteward() {
         if let _ = viewModel?.selectedSteward {
-            addLegacyStewardView.isHidden = true
-            addedLegacyStewardView.isHidden = false
-            
+            UIView.animate(withDuration: 0.4, animations: {
+                self.separatorView.isHidden = false
+                self.addLegacyStewardView.isHidden = true
+                self.addedLegacyStewardView.isHidden = false
+                self.view.layoutIfNeeded()
+            })
             addSelectedStewardText()
         } else {
-            addLegacyStewardView.isHidden = false
-            addedLegacyStewardView.isHidden = true
+            UIView.animate(withDuration: 0.4, animations: {
+                self.separatorView.isHidden = false
+                self.addLegacyStewardView.isHidden = false
+                self.addedLegacyStewardView.isHidden = true
+                self.view.layoutIfNeeded()
+            })
         }
         
         saveArchiveLegacyButton.isSelectable = viewModel?.selectedSteward?.status == .pending

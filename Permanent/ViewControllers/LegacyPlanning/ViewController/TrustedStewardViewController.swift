@@ -29,14 +29,49 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     
     @IBOutlet weak var noteTitleLabel: UILabel!
     @IBOutlet weak var noteDescriptionLabel: UILabel!
-   
+    
+    private let overlayView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel?.isLoading = { [weak self] loading in
+            if loading {
+                self?.showSpinner()
+            } else {
+                self?.hideSpinner()
+            }
+        }
+        
+        viewModel?.showError = { [weak self] error in
+            if error == .badRequest {
+                self?.showAlert(title: .error, message: "Please enter a valid email address that is associated with an existing account.")
+            } else {
+                self?.showAlert(title: .error, message: .errorMessage)
+            }
+        }
+        
+        viewModel?.stewardWasUpdated = { [weak self] result in
+            if result {
+                self?.dismiss(animated: true, completion: {
+                    (self?.viewModel?.stewardWasSaved ?? { _ in })(true)
+                })
+            }
+        }
         
         setupUI()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        overlayView.frame = view.bounds
+    }
+    
     private func setupUI() {
+        view.addSubview(overlayView)
+        overlayView.backgroundColor = .overlay
+        overlayView.alpha = 0
+        
         addDismissKeyboardGesture()
         customizeNavigationController()
 
@@ -223,20 +258,18 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
             return
         }
-
+        
         guard let selectedStewardEmail = designateStewardEmailTextField.text, selectedStewardEmail.isNotEmpty else {
             showAlert(title: "Email Required".localized(), message: "Please enter an email address.".localized())
             return
         }
-
+        
         if !selectedStewardEmail.isValidEmail {
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
-
-        dismiss(animated: true, completion: { [weak self] in
-            self?.viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, status: .pending)
-        })
+        
+        viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
     }
 
     @objc func cancelButtonTapped() {
@@ -250,14 +283,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     private func updateEmailValidationUI(isValid: Bool) {
         if isValid {
             designateStewardEmailStackView.layer.borderColor = UIColor.clear.cgColor
-            emailVerificationImageView.isHidden = false
-            emailVerificationImageView.image = UIImage(named: "legacyPlanningCheckMark")
             designateStewardEmailVerificationLabel.isHidden = true
             inviteUserToPermanentStackView.isHidden = true
         } else {
             designateStewardEmailStackView.layer.borderColor = UIColor.lightRed.cgColor
-            emailVerificationImageView.isHidden = false
-            emailVerificationImageView.image = UIImage(named: "legacyPlanningError")
             designateStewardEmailVerificationLabel.isHidden = false
             inviteUserToPermanentStackView.isHidden = false
         }
