@@ -88,14 +88,11 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func updateLeftSideMenu() {
-        var menuIndexPaths: [IndexPath] = []
-        var menuTitles: [DrawerOption] = []
-        if let selectedArchivePermission = AuthenticationManager.shared.session?.selectedArchive?.permissions(), selectedArchivePermission.contains(.legacyPlanning) {
+        var menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
+        var menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
+        if let hasLegacyPermissions = viewModel?.hasLegacyPermissions(), hasLegacyPermissions {
             menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2), IndexPath(item: 3, section: 2)]
             menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers, DrawerOption.legacyPlanning]
-        } else {
-            menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
-            menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
         }
         tableView.beginUpdates()
         if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {

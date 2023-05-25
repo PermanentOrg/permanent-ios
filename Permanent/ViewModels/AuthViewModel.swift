@@ -175,6 +175,14 @@ class AuthViewModel: ViewModelInterface {
     func areFieldsValid(emailField: String?) -> Bool {
         return (emailField?.isNotEmpty ?? false) && (emailField?.isValidEmail ?? false)
     }
+    
+    func hasLegacyPermissions() -> Bool {
+        if let selectedArchivePermission = AuthenticationManager.shared.session?.selectedArchive?.permissions(), selectedArchivePermission.contains(.legacyPlanning) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 enum LoginStatus: Equatable {
