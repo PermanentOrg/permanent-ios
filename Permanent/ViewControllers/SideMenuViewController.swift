@@ -69,6 +69,12 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         NotificationCenter.default.addObserver(forName: AuthViewModel.updateArchiveSettingsChevron, object: nil, queue: nil) { [self] notification in
             updateLeftSideMenu()
         }
+        
+        NotificationCenter.default.addObserver(forName: ArchivesViewModel.closeArchiveSettings, object: nil, queue: nil) { [self] notification in
+            if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed, archiveSetingsWasPressed {
+                viewModel?.archiveSetingsWasPressed = false
+            }
+        }
     }
     
     func adjustUIForAnimation(isOpening: Bool) {
@@ -82,14 +88,20 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     }
     
     func updateLeftSideMenu() {
+        var menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)]
+        var menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers]
+        if let hasLegacyPermissions = viewModel?.hasLegacyPermissions(), hasLegacyPermissions {
+            menuIndexPaths = [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2), IndexPath(item: 3, section: 2)]
+            menuTitles = [DrawerOption.manageTags, DrawerOption.manageMembers, DrawerOption.legacyPlanning]
+        }
         tableView.beginUpdates()
         if let archiveSetingsWasPressed = viewModel?.archiveSetingsWasPressed {
             if archiveSetingsWasPressed {
-                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: [DrawerOption.manageTags, DrawerOption.manageMembers])
-                tableView.insertRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+                tableViewData[LeftDrawerSection.archiveSettings]?.append(contentsOf: menuTitles)
+                tableView.insertRows(at: menuIndexPaths, with: .automatic)
             } else {
-                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags })
-                tableView.deleteRows(at: [IndexPath(item: 1, section: 2), IndexPath(item: 2, section: 2)], with: .automatic)
+                tableViewData[LeftDrawerSection.archiveSettings]?.removeAll(where: { $0 == DrawerOption.manageMembers || $0 == DrawerOption.manageTags || $0 == DrawerOption.legacyPlanning })
+                tableView.deleteRows(at: menuIndexPaths, with: .automatic)
             }
         }
         tableView.endUpdates()
@@ -256,6 +268,15 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
         case .manageMembers:
             let newRootVC = UIViewController.create(withIdentifier: .members, from: .members)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
+            
+        case .legacyPlanning:
+            if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = AuthenticationManager.shared.session?.selectedArchive {
+                archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
+                archiveLegacyPlanningVC.selectedArchive = archiveData
+                let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
+                navControl.modalPresentationStyle = .fullScreen
+                self.present(navControl, animated: true, completion: nil)
+            }
             
         case .archives:
             guard let archive = viewModel?.getCurrentArchive() else { return }
