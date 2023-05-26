@@ -109,10 +109,7 @@ class LegacyPlanningIntroViewController: BaseViewController<LegacyPlanningViewMo
         UIView.animate(withDuration: 0.4, animations: {
             self.logoWidthConstraint.constant = 48
             self.logoHeightConstraint.constant = 48
-            self.tellMoreButton.setTitle("I’ll do this later".localized(), for: .normal)
-            
-            self.setUpTitleLabel.textAlignment = .left
-            self.setUpDescriptionLabel.textAlignment = .left
+
             self.setUpDescriptionLabel.text = "Your Legacy Plan will determine when, how, and with whom your materials will be shared. Your Legacy Plan has two parts. First, decide when Permanent should consider your account to be inactive by creating an Account Legacy Plan. Second, decide what happens to the materials in your Archives by creating an Archive Legacy Plan for each of them.".localized()
             self.accountLegacyTitleLabel.isHidden = false
             self.accountLegacyDescriptionLabel.isHidden = false
@@ -120,17 +117,18 @@ class LegacyPlanningIntroViewController: BaseViewController<LegacyPlanningViewMo
             self.archiveLegacyDescriptionLabel.isHidden = false
             self.view.layoutIfNeeded()
         })
+        self.tellMoreButton.setTitle("I’ll do this later".localized(), for: .normal)
+        self.setUpTitleLabel.textAlignment = .left
+        self.setUpDescriptionLabel.textAlignment = .left
     }
     
     func hideElements() {
         scrollView.isScrollEnabled = false
+        
         UIView.animate(withDuration: 0.4, animations: {
             self.scrollView.contentOffset = .zero
             self.logoWidthConstraint.constant = 128
             self.logoHeightConstraint.constant = 128
-            
-            self.setUpTitleLabel.textAlignment = .center
-            self.setUpDescriptionLabel.textAlignment = .center
             self.setUpDescriptionLabel.text = "Decide when your account becomes inactive and what happens to your files. Share them with trusted people or have us delete them.".localized()
             
             self.accountLegacyTitleLabel.isHidden = true
@@ -139,10 +137,13 @@ class LegacyPlanningIntroViewController: BaseViewController<LegacyPlanningViewMo
             self.archiveLegacyDescriptionLabel.isHidden = true
             self.view.layoutIfNeeded()
         })
+        self.setUpTitleLabel.textAlignment = .center
+        self.setUpDescriptionLabel.textAlignment = .center
     }
     
     @IBAction func setUpAccountAction(_ sender: Any) {
         if let legacyPlanningStewardVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
+            legacyPlanningStewardVC.viewModel = viewModel
             legacyPlanningStewardVC.viewModel?.stewardType = .account
             navigationController?.pushViewController(legacyPlanningStewardVC, animated: true)
         }
