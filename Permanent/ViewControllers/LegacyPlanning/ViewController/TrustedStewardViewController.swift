@@ -59,12 +59,18 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         }
         
         setupUI()
+        loadSteward()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         overlayView.frame = view.bounds
+    }
+    
+    private func loadSteward() {
+        designateStewardNameTextField.text = viewModel?.selectedSteward?.name
+        designateStewardEmailTextField.text = viewModel?.selectedSteward?.email
     }
     
     private func setupUI() {
@@ -269,7 +275,11 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             return
         }
         
-        viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+        if viewModel?.selectedSteward != nil {
+            viewModel?.updateSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+        } else {
+            viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+        }
     }
 
     @objc func cancelButtonTapped() {
