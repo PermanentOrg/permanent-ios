@@ -40,4 +40,10 @@ post_install do |installer|
          end
     end
   end
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['DEVELOPMENT_TEAM'] = 'C8YKZNBVWT'
+    end
+  end
 end

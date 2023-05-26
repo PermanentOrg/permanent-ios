@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "73290C4B-2666-4667-B5BD-8EFDD53B11F6",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Permanent.xcodeproj",
+        "identifier" : "5E68F2CB26A74FCD00CC936E",
+        "name" : "PermanentTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Permanent.xcodeproj",
+        "identifier" : "5E68830428902DBF0006F434",
+        "name" : "PermanentUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build and deploy a beta build to Firebase Distribution
     runs-on: macos-latest
+    environment: staging
 
     steps:
       - name: Checkout
@@ -40,4 +41,6 @@ jobs:
           FIREBASEAPPDISTRO_APP: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
           FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
           FIREBASE_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
+          FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta

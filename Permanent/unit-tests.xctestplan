@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "08D9CF18-0F3B-4542-93A6-79D9125F3C5A",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Permanent.xcodeproj",
+        "identifier" : "5E68F2CB26A74FCD00CC936E",
+        "name" : "PermanentTests"
+      }
+    }
+  ],
+  "version" : 1
+}
