@@ -11,6 +11,7 @@ enum LegacyPlanningEndpoint {
     case getLegacyContact
     case getArchiveSteward(archiveId: Int)
     case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
+    case setAccountSteward(name: String, stewardEmail: String)
 }
 
 extension LegacyPlanningEndpoint: RequestProtocol {
@@ -26,7 +27,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
         switch self {
         case .getArchiveSteward(_), .getLegacyContact:
             return .get
-        case .setArchiveSteward(_):
+        case .setArchiveSteward(_), .setAccountSteward(_, _):
             return .post
         }
     }
@@ -47,6 +48,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return setArchiveSteward(archiveDetails: archiveDetails)
         case .getLegacyContact:
             return getLegacyPlanning()
+        case .setAccountSteward(let name,let stewardEmail):
+            return setAccountSteward(name: name, stewardEmail: stewardEmail)
         }
     }
     
@@ -68,7 +71,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return "\(endpointPath)api/v2/directive/archive/\(archiveId)"
         case .setArchiveSteward(_):
             return "\(endpointPath)api/v2/directive"
-        case .getLegacyContact:
+        case .getLegacyContact, .setAccountSteward(_, _):
             return "\(endpointPath)api/v2/legacy-contact"
         }
     }
@@ -93,6 +96,13 @@ extension LegacyPlanningEndpoint {
             "trigger": [
                 "type": archiveDetails.triggerType
             ]
+        ] as [String : Any]
+    }
+    
+    func setAccountSteward(name: String, stewardEmail: String) -> RequestParameters {
+        return [
+            "name": name,
+            "email": stewardEmail
         ] as [String : Any]
     }
 }

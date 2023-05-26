@@ -10,6 +10,7 @@ protocol LegacyPlanningDataSourceInterface {
     func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void)
     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void)
     func getLegacyContact(completion: @escaping (Result<[AccountSteward]?, Error>) -> Void)
+    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void)
 }
 class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
     
@@ -82,4 +83,25 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
              }
          }
      }
+    
+    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let setAccountStewardOperation = APIOperation(LegacyPlanningEndpoint.setAccountSteward(name: name, stewardEmail: stewardEmail))
+        setAccountStewardOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: AccountSteward = JSONHelper.decoding(from: response, with: JSONDecoder.init()) else {
+                    completion(.failure(APIError.invalidResponse))
+                    return
+                }
+                completion(.success(true))
+                return
+            case .error(let error, _):
+                completion(.failure(error ?? APIError.invalidResponse))
+                return
+            default:
+                completion(.failure(APIError.invalidResponse))
+                return
+            }
+        }
+    }
  }

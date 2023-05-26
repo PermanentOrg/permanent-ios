@@ -50,7 +50,20 @@ class LegacyPlanningViewModel: ViewModelInterface {
     }
     
     func addAccountSteward(name: String, email: String) {
-        stewardWasUpdated?(true)
+        isLoading?(true)
+        legacyPlanningRepository.setAccountSteward(name: name, stewardEmail: email) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                if let error = error as? APIError {
+                    self?.showError?(error)
+                }
+            case .success:
+                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .account)
+                self?.stewardWasUpdated?(true)
+            }
+
+            self?.isLoading?(false)
+        }
     }
     
     func getSteward() {
