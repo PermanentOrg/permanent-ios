@@ -15,7 +15,7 @@ class LegacyArchiveCompletedCell: UITableViewCell {
     
     func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {
         archiveName.text = "\(data.archive.fullName ?? "") Archive"
-        shortArchiveName.text = data.archive.shortName()
+        loadImage(archive: data.archive)
         stewardName.text = data.steward?.steward?.name
         if let archiveRole = data.archive.accessRole {
             let accessRole = AccessRole.roleForValue(archiveRole).groupName
@@ -23,7 +23,13 @@ class LegacyArchiveCompletedCell: UITableViewCell {
         }
     }
     
-    @IBOutlet weak var shortArchiveName: UILabel!
+    func loadImage(archive: ArchiveVOData) {
+        if let imageThumbnail = archive.thumbURL500 {
+            icon.sd_setImage(with: URL(string: imageThumbnail))
+        }
+    }
+    
+    @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var archiveName: UILabel!
     @IBOutlet weak var stewardName: UILabel!
     @IBOutlet weak var role: UILabel!

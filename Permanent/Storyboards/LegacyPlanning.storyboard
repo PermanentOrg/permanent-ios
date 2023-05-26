@@ -348,12 +348,17 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Cjm-Jm-uE5">
                                         <rect key="frame" x="32" y="24" width="329" height="40"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xkW-mF-hEN">
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xkW-mF-hEN" customClass="RoundedImageView" customModule="Permanent" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="642-tJ-7SG"/>
                                                     <constraint firstAttribute="width" constant="40" id="u86-IO-UHm"/>
                                                 </constraints>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                        <real key="value" value="6"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                </userDefinedRuntimeAttributes>
                                             </imageView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="sm2-O3-ETQ">
                                                 <rect key="frame" x="56" y="0.0" width="273" height="40"/>
@@ -536,7 +541,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="281" height="4"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="mQg-tb-pWw">
-                                                                <rect key="frame" x="0.0" y="0.0" width="210" height="4"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="215" height="4"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wuf-ae-7eF">
                                                                         <rect key="frame" x="0.0" y="0.0" width="41.333333333333336" height="0.0"/>
@@ -571,7 +576,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IaY-uC-LOo">
-                                                                <rect key="frame" x="210" y="0.0" width="50" height="4"/>
+                                                                <rect key="frame" x="215" y="0.0" width="50" height="4"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NEL-TM-apU">
                                                                         <rect key="frame" x="26" y="4" width="24" height="24"/>
@@ -592,10 +597,10 @@
                                                                 </constraints>
                                                             </view>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OqV-Ez-0dK">
-                                                                <rect key="frame" x="260" y="0.0" width="21" height="4"/>
+                                                                <rect key="frame" x="265" y="0.0" width="16" height="4"/>
                                                                 <color key="tintColor" name="DarkBlue"/>
                                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                                <state key="normal" image="square.and.pencil" catalog="system"/>
+                                                                <state key="normal" image="editIcon"/>
                                                                 <connections>
                                                                     <action selector="editButtonTapped:" destination="cF9-eZ-PVT" eventType="touchUpInside" id="u7J-EW-oUC"/>
                                                                 </connections>
@@ -1085,9 +1090,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="editIcon" width="16" height="16"/>
         <image name="legacyPlanningCheckMark" width="24" height="24"/>
         <image name="legacyPlanningLogo" width="129" height="128"/>
-        <image name="square.and.pencil" catalog="system" width="128" height="113"/>
         <image name="trustedStewardChatBox" width="24" height="24"/>
         <image name="trustedStewardEmail" width="24" height="24"/>
         <image name="trustedStewardPerson" width="24" height="24"/>
