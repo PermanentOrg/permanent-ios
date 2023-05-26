@@ -59,13 +59,19 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             self?.updateTrustedSteward()
         }
         
-        viewModel?.getCurrentSteward()
-        
         setupUI()
         styleNavBar()
         
         addedLegacyStewardDeleteButton.isHidden = true
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel?.getCurrentSteward()
+    }
+    
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -365,6 +371,10 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         dismiss(animated: true, completion: nil)
     }
     
+    @IBAction func editButtonTapped(_ sender: Any) {
+        navigateToAdd()
+    }
+    
     @IBAction func saveArchiveLegacyButtonAction(_ sender: Any) {
         if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
             statusViewController.viewModel = LegacyPlanningStatusViewModel()
@@ -373,13 +383,18 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func addLegacyPersonButtonAction(_ sender: Any) {
-        if let trustedStewardVC = UIViewController.create(withIdentifier: .trustedSteward, from: .legacyPlanning) as? TrustedStewardViewController {
-            trustedStewardVC.viewModel = viewModel
-            let navControl = NavigationController(rootViewController: trustedStewardVC)
-            self.present(navControl, animated: true, completion: nil)
-        }
+        navigateToAdd()
     }
     
     @IBAction func deleteAddedLegacyPersonButtonAction(_ sender: Any) {
+    }
+    
+    func navigateToAdd() {
+        if let trustedStewardVC = UIViewController.create(withIdentifier: .trustedSteward, from: .legacyPlanning) as? TrustedStewardViewController {
+            trustedStewardVC.viewModel = viewModel
+            let navControl = NavigationController(rootViewController: trustedStewardVC)
+            navControl.modalPresentationStyle = .fullScreen
+            self.present(navControl, animated: true, completion: nil)
+        }
     }
 }

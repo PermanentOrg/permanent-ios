@@ -31,8 +31,8 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
-            case .success:
-                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .archive)
+            case .success(let steward):
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
                 self?.stewardWasUpdated?(true)
             }
 
@@ -66,10 +66,31 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     return
                 }
                 
-                self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
                 self?.isLoading?(false)
                 self?.stewardWasUpdated?(true)
             }
+        }
+    }
+    
+    func updateSelectedSteward(name: String, email: String, note: String, status: LegacyPlanningSteward.StewardStatus) {
+        isLoading?(true)
+        guard let id = selectedSteward?.id else {
+            isLoading?(false)
+            return
+        }
+        legacyPlanningRepository.updateArchiveSteward(directiveId: id, stewardEmail: email, note: note) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                if let error = error as? APIError {
+                    self?.showError?(error)
+                }
+            case .success(let steward):
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
+                self?.stewardWasUpdated?(true)
+            }
+
+            self?.isLoading?(false)
         }
     }
     
