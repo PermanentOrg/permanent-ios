@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -535,7 +536,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="281" height="4"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="mQg-tb-pWw">
-                                                                <rect key="frame" x="0.0" y="0.0" width="231" height="4"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="210" height="4"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wuf-ae-7eF">
                                                                         <rect key="frame" x="0.0" y="0.0" width="41.333333333333336" height="0.0"/>
@@ -570,7 +571,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IaY-uC-LOo">
-                                                                <rect key="frame" x="231" y="0.0" width="50" height="4"/>
+                                                                <rect key="frame" x="210" y="0.0" width="50" height="4"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NEL-TM-apU">
                                                                         <rect key="frame" x="26" y="4" width="24" height="24"/>
@@ -590,6 +591,15 @@
                                                                     <constraint firstAttribute="trailing" secondItem="NEL-TM-apU" secondAttribute="trailing" id="nqA-z8-KOd"/>
                                                                 </constraints>
                                                             </view>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OqV-Ez-0dK">
+                                                                <rect key="frame" x="260" y="0.0" width="21" height="4"/>
+                                                                <color key="tintColor" name="DarkBlue"/>
+                                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                <state key="normal" image="square.and.pencil" catalog="system"/>
+                                                                <connections>
+                                                                    <action selector="editButtonTapped:" destination="cF9-eZ-PVT" eventType="touchUpInside" id="u7J-EW-oUC"/>
+                                                                </connections>
+                                                            </button>
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
@@ -1079,9 +1089,13 @@
     <resources>
         <image name="legacyPlanningCheckMark" width="24" height="24"/>
         <image name="legacyPlanningLogo" width="129" height="128"/>
+        <image name="square.and.pencil" catalog="system" width="128" height="113"/>
         <image name="trustedStewardChatBox" width="24" height="24"/>
         <image name="trustedStewardEmail" width="24" height="24"/>
         <image name="trustedStewardPerson" width="24" height="24"/>
+        <namedColor name="DarkBlue">
+            <color red="0.074509803921568626" green="0.10588235294117647" blue="0.29019607843137257" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

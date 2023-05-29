@@ -8,13 +8,14 @@
 import Foundation
 protocol LegacyPlanningDataSourceInterface {
     func getArchiveSteward(archiveId: Int, completion: @escaping (Result<[ArchiveSteward]?, Error>) -> Void)
-    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void)
+    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void)
+    func updateArchiveSteward(directiveId: String, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void)
     func getLegacyContact(completion: @escaping (Result<[AccountSteward]?, Error>) -> Void)
     func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void)
-    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<[AccountSteward]?, Error>) -> Void)
+    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<AccountSteward?, Error>) -> Void)
 }
+
 class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
-    
     func getLegacyContact(completion: @escaping (Result<[AccountSteward]?, Error>) -> Void) {
         let operation = APIOperation(LegacyPlanningEndpoint.getLegacyContact)
         operation.execute(in: APIRequestDispatcher()) { result in
@@ -64,7 +65,7 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
          }
      }
 
-     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
          let setArchiveStewardOperation = APIOperation(LegacyPlanningEndpoint.setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails(archiveId: archiveId, stewardEmail: stewardEmail, note: note)))
          setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
              switch result {
@@ -73,7 +74,7 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                      completion(.failure(APIError.invalidResponse))
                      return
                  }
-                 completion(.success(true))
+                 completion(.success(model))
                  return
              case .error(let error, _):
                  completion(.failure(error ?? APIError.invalidResponse))
@@ -106,18 +107,42 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
         }
     }
     
-    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<[AccountSteward]?, Error>) -> Void) {
-        let operation = APIOperation(LegacyPlanningEndpoint.updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: name))
+    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<AccountSteward?, Error>) -> Void) {
+        let operation = APIOperation(LegacyPlanningEndpoint.updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail))
         operation.execute(in: APIRequestDispatcher()) { result in
             switch result {
             case .json(let response, _):
                 guard
-                    let model: [AccountSteward] = JSONHelper.decoding(from: response, with: JSONDecoder.init())
+                    let model: AccountSteward = JSONHelper.decoding(from: response, with: JSONDecoder.init())
                 else {
                     completion(.failure(APIError.parseError))
                     return
                 }
                 completion(.success(model))
+                return
+            case .error(let error, _):
+                completion(.failure(error ?? APIError.invalidResponse))
+                return
+            default:
+                completion(.failure(APIError.invalidResponse))
+                return
+            }
+        }
+    }
+    
+    func updateArchiveSteward(directiveId: String, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
+        let details = LegacyPlanningArchiveDetails(archiveId: nil, stewardEmail: stewardEmail, note: note)
+        let endpoint = LegacyPlanningEndpoint.updateArchiveSteward(directiveId: directiveId, stewardDetails: details)
+        let setArchiveStewardOperation = APIOperation(endpoint)
+        setArchiveStewardOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: ArchiveSteward = JSONHelper.decoding(from: response, with: JSONDecoder.init()) else {
+                    completion(.failure(APIError.invalidResponse))
+                    return
+                }
+                completion(.success(model))
+                return
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))
                 return

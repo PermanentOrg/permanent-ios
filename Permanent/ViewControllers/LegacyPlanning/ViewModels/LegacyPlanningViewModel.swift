@@ -40,9 +40,11 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
     
-    func editTrustedSteward(name: String?, stewardEmail: String?) {
-        if stewardType == .account {
-            editAccountSteward(name: name, stewardEmail: stewardEmail)
+    func updateTrustedSteward(name: String?, stewardEmail: String?, note: String = "") {
+        if stewardType == .archive {
+            updateArchiveSteward(name: name ?? "", email: stewardEmail ?? "", note: note, status: .pending)
+        } else {
+            updateAccountSteward(name: name, stewardEmail: stewardEmail)
         }
     }
     
@@ -54,8 +56,8 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
-            case .success:
-                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .archive)
+            case .success(let steward):
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
                 self?.stewardWasUpdated?(true)
             }
 
@@ -106,7 +108,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     return
                 }
                 
-                self?.selectedSteward = LegacyPlanningSteward(name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
                 self?.isLoading?(false)
                 self?.stewardWasUpdated?(true)
             }
@@ -123,6 +125,8 @@ class LegacyPlanningViewModel: ViewModelInterface {
             case .failure(let error):
                 self?.showError?(error)
             }
+            
+            self?.isLoading?(false)
         }
     }
     
@@ -133,7 +137,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 completion(.failure(error as? APIError ?? .invalidResponse))
             case .success(let contact):
                 if let name = contact?.first?.name, let email = contact?.first?.email, let legacyContactId = contact?.first?.legacyContactId {
-                    self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, legacyContactId: legacyContactId, status: .pending, type: .account)
+                    self?.selectedSteward = LegacyPlanningSteward(id: legacyContactId, name: name, email: email, status: .pending, type: .account)
                 } else {
                     self?.selectedSteward = nil
                 }
@@ -142,16 +146,37 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
     
-    func editAccountSteward(name: String?, stewardEmail: String?) {
+    func updateArchiveSteward(name: String, email: String, note: String, status: LegacyPlanningSteward.StewardStatus) {
         isLoading?(true)
-        legacyPlanningRepository.updateAccountSteward(legacyContactId: selectedSteward?.legacyContactId ?? "", name: name, stewardEmail: stewardEmail) { [weak self] result in
+        guard let id = selectedSteward?.id else {
+            isLoading?(false)
+            return
+        }
+        legacyPlanningRepository.updateArchiveSteward(directiveId: id, stewardEmail: email, note: note) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                if let error = error as? APIError {
+                    self?.showError?(error)
+                }
+            case .success(let steward):
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
+                self?.stewardWasUpdated?(true)
+            }
+
+            self?.isLoading?(false)
+        }
+    }
+    
+    func updateAccountSteward(name: String?, stewardEmail: String?) {
+        isLoading?(true)
+        legacyPlanningRepository.updateAccountSteward(legacyContactId: selectedSteward?.id ?? "", name: name, stewardEmail: stewardEmail) { [weak self] result in
             switch result {
             case .failure(let error):
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
             case .success:
-                self?.selectedSteward = LegacyPlanningSteward(name: name ?? "", email: stewardEmail ?? "", legacyContactId: self?.selectedSteward?.legacyContactId ?? "", status: .pending, type: .account)
+                self?.selectedSteward = LegacyPlanningSteward(id: self?.selectedSteward?.id ?? "", name: name ?? "", email: stewardEmail ?? "", status: .pending, type: .account)
                 self?.stewardWasUpdated?(true)
             }
 

@@ -22,7 +22,7 @@ class LegacyPlanningRepository {
         remoteDataSource.getArchiveSteward(archiveId: archiveId, completion: completion)
     }
     
-    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
         remoteDataSource.setArchiveSteward(archiveId: archiveId, stewardEmail: stewardEmail, note: note, completion: completion)
     }
     
@@ -30,7 +30,11 @@ class LegacyPlanningRepository {
         remoteDataSource.setAccountSteward(name: name, stewardEmail: stewardEmail, completion: completion)
     }
     
-    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<[AccountSteward]?, Error>) -> Void) {
+    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<AccountSteward?, Error>) -> Void) {
         remoteDataSource.updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail, completion: completion)
     }
+    func updateArchiveSteward(directiveId: String, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void) {
+        remoteDataSource.updateArchiveSteward(directiveId: directiveId, stewardEmail: stewardEmail, note: note, completion: completion)
+    }
+
 }

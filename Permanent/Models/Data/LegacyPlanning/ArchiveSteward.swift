@@ -7,7 +7,7 @@
 import Foundation
 
 struct ArchiveSteward: Model {
-    let directiveId: String?
+    let directiveId: String
     let archiveId: String?
     let type: String?
     let createdDT: String?

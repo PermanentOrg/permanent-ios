@@ -8,7 +8,7 @@
 import Foundation
 
 struct LegacyPlanningArchiveDetails {
-    let archiveId: Int
+    let archiveId: Int?
     let stewardEmail: String
     let type = "transfer"
     let note: String

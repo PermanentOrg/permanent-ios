@@ -13,6 +13,7 @@ enum LegacyPlanningEndpoint {
     case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
     case setAccountSteward(name: String, stewardEmail: String)
     case updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?)
+    case updateArchiveSteward(directiveId: String, stewardDetails: LegacyPlanningArchiveDetails)
 }
 
 extension LegacyPlanningEndpoint: RequestProtocol {
@@ -30,7 +31,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return .get
         case .setArchiveSteward(_), .setAccountSteward(_, _):
             return .post
-        case .updateAccountSteward(_, _, _):
+        case .updateAccountSteward(_, _, _), .updateArchiveSteward:
             return .put
         }
     }
@@ -55,6 +56,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return setAccountSteward(name: name, stewardEmail: stewardEmail)
         case .updateAccountSteward(let legacyContactId, let name, let stewardEmail):
             return updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail)
+        case .updateArchiveSteward(_, stewardDetails: let stewardDetails):
+            return updateArchiveSteward(archiveDetails: stewardDetails)
         }
     }
     
@@ -80,6 +83,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return "\(endpointPath)api/v2/legacy-contact"
         case .updateAccountSteward(let legacyContactId, _, _):
             return "\(endpointPath)api/v2/legacy-contact/\(legacyContactId)"
+        case .updateArchiveSteward(directiveId: let directiveId, _):
+            return "\(endpointPath)api/v2/directive/\(directiveId)"
         }
     }
 }
@@ -96,7 +101,18 @@ extension LegacyPlanningEndpoint {
     
     func setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
         return [
-            "archiveId": "\(archiveDetails.archiveId)",
+            "archiveId": "\(String(describing: archiveDetails.archiveId ?? 0))",
+            "stewardEmail": archiveDetails.stewardEmail,
+            "type": archiveDetails.type,
+            "note": archiveDetails.note,
+            "trigger": [
+                "type": archiveDetails.triggerType
+            ]
+        ] as [String : Any]
+    }
+    
+    func updateArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
+        return [
             "stewardEmail": archiveDetails.stewardEmail,
             "type": archiveDetails.type,
             "note": archiveDetails.note,

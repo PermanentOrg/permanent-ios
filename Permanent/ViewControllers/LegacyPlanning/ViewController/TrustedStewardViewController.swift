@@ -59,12 +59,18 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         }
         
         setupUI()
+        loadSteward()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         overlayView.frame = view.bounds
+    }
+    
+    private func loadSteward() {
+        designateStewardNameTextField.text = viewModel?.selectedSteward?.name
+        designateStewardEmailTextField.text = viewModel?.selectedSteward?.email
     }
     
     private func setupUI() {
@@ -287,8 +293,12 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
-        
-        viewModel?.addSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+
+        if viewModel?.selectedSteward != nil {
+            viewModel?.updateTrustedSteward(name: selectedStewardName, stewardEmail: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "")
+        } else {
+            viewModel?.addSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+        }
     }
 
     @objc func cancelButtonTapped() {
