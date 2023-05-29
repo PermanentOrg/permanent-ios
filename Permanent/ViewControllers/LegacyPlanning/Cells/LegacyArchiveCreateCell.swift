@@ -14,14 +14,20 @@ class LegacyArchiveCreateCell: UITableViewCell {
     
     func setup(data: (archive: ArchiveVOData, steward: ArchiveSteward?)) {
         name.text = "\(data.archive.fullName ?? "") Archive"
-        nameAbbreviation.text = data.archive.shortName()
+        loadImage(archive: data.archive)
         if let archiveRole = data.archive.accessRole {
             let accessRole = AccessRole.roleForValue(archiveRole).groupName
             role.text = accessRole.uppercased()
         }
     }
     
-    @IBOutlet weak var nameAbbreviation: UILabel!
+    func loadImage(archive: ArchiveVOData) {
+        if let imageThumbnail = archive.thumbURL500 {
+            icon.sd_setImage(with: URL(string: imageThumbnail))
+        }
+    }
+    
+    @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var role: UILabel!
     

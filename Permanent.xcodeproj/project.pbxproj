@@ -329,6 +329,7 @@
 		9220ACCA2A1CAE4A003797C9 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */; };
 		9220ACCC2A1CBB4F003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
+		9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
@@ -1055,6 +1056,7 @@
 		9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningStatusViewModel.swift; sourceTree = "<group>"; };
 		9220ACC82A1CAA72003797C9 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
+		9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
@@ -1469,6 +1471,7 @@
 				06819AA524EC208F003D0EB0 /* CustomTextField.swift */,
 				06644A8A24EBF4CD003CD359 /* CustomView.swift */,
 				06644A8424EA7156003CD359 /* RoundedButton.swift */,
+				9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */,
 				924E839B2A165D28005D813B /* ButtonWithRightImage.swift */,
 				92C73E452A14D530000EF633 /* RoundedView.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
@@ -1943,7 +1946,6 @@
 			children = (
 				5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */,
 				9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */,
-				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
 				5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */,
 				5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */,
 				5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */,
@@ -3348,6 +3350,7 @@
 				5E31B62C292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift in Sources */,
 				BCC4066E25A6F8FA00E29CC4 /* MemberOperation.swift in Sources */,
 				BC4526E0251CAB7F00E24A51 /* VerifyCodeResponse.swift in Sources */,
+				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
 				5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */,
