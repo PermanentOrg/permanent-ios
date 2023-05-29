@@ -10,6 +10,7 @@ import Foundation
 struct LegacyPlanningSteward {
     var name: String
     var email: String
+    var legacyContactId: String = ""
     var status: StewardStatus
     var type: StewardType
 

@@ -32,6 +32,20 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
     
+    func getSteward() {
+        if stewardType == .archive {
+            getArchiveSteward()
+        } else {
+            getAccountSteward()
+        }
+    }
+    
+    func editTrustedSteward(name: String?, stewardEmail: String?) {
+        if stewardType == .account {
+            editAccountSteward(name: name, stewardEmail: stewardEmail)
+        }
+    }
+    
     func addArchiveSteward(name: String, email: String, note: String, status: LegacyPlanningSteward.StewardStatus) {
         isLoading?(true)
         legacyPlanningRepository.setArchiveSteward(archiveId: selectedArchive?.archiveID ?? 0, stewardEmail: email, note: note) { [weak self] result in
@@ -63,14 +77,6 @@ class LegacyPlanningViewModel: ViewModelInterface {
             }
 
             self?.isLoading?(false)
-        }
-    }
-    
-    func getSteward() {
-        if stewardType == .archive {
-            getArchiveSteward()
-        } else {
-            getAccountSteward()
         }
     }
     
@@ -126,8 +132,8 @@ class LegacyPlanningViewModel: ViewModelInterface {
             case .failure(let error):
                 completion(.failure(error as? APIError ?? .invalidResponse))
             case .success(let contact):
-                if let name = contact?.first?.name, let email = contact?.first?.email {
-                    self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .account)
+                if let name = contact?.first?.name, let email = contact?.first?.email, let legacyContactId = contact?.first?.legacyContactId {
+                    self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, legacyContactId: legacyContactId, status: .pending, type: .account)
                 } else {
                     self?.selectedSteward = nil
                 }
@@ -136,6 +142,22 @@ class LegacyPlanningViewModel: ViewModelInterface {
         }
     }
     
+    func editAccountSteward(name: String?, stewardEmail: String?) {
+        isLoading?(true)
+        legacyPlanningRepository.updateAccountSteward(legacyContactId: selectedSteward?.legacyContactId ?? "", name: name, stewardEmail: stewardEmail) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                if let error = error as? APIError {
+                    self?.showError?(error)
+                }
+            case .success:
+                self?.selectedSteward = LegacyPlanningSteward(name: name ?? "", email: stewardEmail ?? "", legacyContactId: self?.selectedSteward?.legacyContactId ?? "", status: .pending, type: .account)
+                self?.stewardWasUpdated?(true)
+            }
+
+            self?.isLoading?(false)
+        }
+    }
 }
 
 

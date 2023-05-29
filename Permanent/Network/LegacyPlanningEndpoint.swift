@@ -12,6 +12,7 @@ enum LegacyPlanningEndpoint {
     case getArchiveSteward(archiveId: Int)
     case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
     case setAccountSteward(name: String, stewardEmail: String)
+    case updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?)
 }
 
 extension LegacyPlanningEndpoint: RequestProtocol {
@@ -29,6 +30,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return .get
         case .setArchiveSteward(_), .setAccountSteward(_, _):
             return .post
+        case .updateAccountSteward(_, _, _):
+            return .put
         }
     }
     
@@ -50,6 +53,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return getLegacyPlanning()
         case .setAccountSteward(let name,let stewardEmail):
             return setAccountSteward(name: name, stewardEmail: stewardEmail)
+        case .updateAccountSteward(let legacyContactId, let name, let stewardEmail):
+            return updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail)
         }
     }
     
@@ -73,6 +78,8 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return "\(endpointPath)api/v2/directive"
         case .getLegacyContact, .setAccountSteward(_, _):
             return "\(endpointPath)api/v2/legacy-contact"
+        case .updateAccountSteward(let legacyContactId, _, _):
+            return "\(endpointPath)api/v2/legacy-contact/\(legacyContactId)"
         }
     }
 }
@@ -104,5 +111,17 @@ extension LegacyPlanningEndpoint {
             "name": name,
             "email": stewardEmail
         ] as [String : Any]
+    }
+    
+    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?) -> RequestParameters {
+        var body: [String: Any] = [:]
+        if let name = name {
+            body["name"] = name
+        }
+        if let stewardEmail = stewardEmail {
+            body["email"] = stewardEmail
+        }
+        
+        return body
     }
 }
