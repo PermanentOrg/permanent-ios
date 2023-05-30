@@ -8,7 +8,7 @@
 import Foundation
 
 struct LegacyPlanningSteward {
-    var id: String
+    var id: String = ""
     var name: String
     var email: String
     var status: StewardStatus

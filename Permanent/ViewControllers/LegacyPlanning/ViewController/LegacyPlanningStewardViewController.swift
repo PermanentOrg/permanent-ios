@@ -23,6 +23,8 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var addLegacyStewardLabel: UILabel!
     @IBOutlet weak var addLegacyStewardButton: UIButton!
     @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var topArchiveDetailsView: UIView!
+    @IBOutlet weak var topArchiveDetailsHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var addLegacyStewardView: UIView!
     @IBOutlet weak var addedLegacyStewardView: UIView!
@@ -37,7 +39,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel?.selectedArchive = selectedArchive
+        if viewModel?.stewardType == .archive {
+            viewModel?.selectedArchive = selectedArchive
+        }
         
         viewModel?.isLoading = { [weak self] loading in
             if loading {
@@ -59,6 +63,8 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             self?.updateTrustedSteward()
         }
         
+        viewModel?.getSteward()
+        
         setupUI()
         styleNavBar()
         
@@ -68,10 +74,8 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel?.getCurrentSteward()
+        viewModel?.getSteward()
     }
-    
-    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -100,22 +104,39 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addedLegacyStewardSetup()
         customizeSeparatorView()
         
-        if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
-            archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
+        if viewModel?.stewardType == .archive {
+            topArchiveDetailsView.isHidden = false
+            topArchiveDetailsHeightConstraint.constant = 88
+            if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
+                archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
+            }
+            
+            archiveNameLabelSetup(text: "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: viewModel?.selectedArchive?.fullName ?? ""))
+            archivePermissionSetup(text: AccessRole.roleForValue(viewModel?.selectedArchive?.accessRole ?? "").groupName)
+            designateStewardLabelSetup(text: "Designate an Archive Steward".localized())
+            designateArchiveStewardLabelSetup(text: "Who should be the owner of this archive in the event of incapacitation?".localized())
+            saveArchiveLegacyButtonSetup(text: "Go to Legacy Plan".localized())
+            trustedStewardTitleLabelSetup(text: "A trusted steward".localized())
+            trustedStewardDescriptionLabelSetup(text: "The Archive steward will receive a note when your Legacy Plan is activated.".localized())
+        } else {
+            topArchiveDetailsView.isHidden = true
+            topArchiveDetailsHeightConstraint.constant = 0
+            
+            designateStewardLabelSetup(text: "Designate a Legacy Contact".localized())
+            designateArchiveStewardLabelSetup(text: "Who will reach out to Permanent to let us know of your death or incapacitation?".localized())
+            saveArchiveLegacyButtonSetup(text: "Go to Legacy Plan".localized())
+            trustedStewardTitleLabelSetup(text: "A trusted legacy contact".localized())
+            trustedStewardDescriptionLabelSetup(text: "A trusted person who can inform Permanent about your death or long term disability.".localized())
         }
-
-        archiveNameLabelSetup(text: "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: viewModel?.selectedArchive?.fullName ?? ""))
-        archivePermissionSetup(text: AccessRole.roleForValue(viewModel?.selectedArchive?.accessRole ?? "").groupName)
-        designateStewardLabelSetup(text: "Designate an Archive Steward".localized())
-        designateArchiveStewardLabelSetup(text: "Who should be the owner of this archive in the event of incapacitation?".localized())
-        saveArchiveLegacyButtonSetup(text: "Save archive Legacy Plan".localized())
-        trustedStewardTitleLabelSetup(text: "A trusted steward".localized())
-        trustedStewardDescriptionLabelSetup(text: "The Archive steward will receive a note when your Legacy Plan is activated.".localized())
     }
     
     private func titleLabelSetup() {
         let titleLabel = UILabel()
-        titleLabel.text = "Archive Legacy Planning".localized()
+        if viewModel?.stewardType == .archive {
+            titleLabel.text = "Archive Legacy Planning".localized()
+        } else {
+            titleLabel.text = "Legacy Planning".localized()
+        }
         titleLabel.textColor = .white
         titleLabel.font = TextFontStyle.style35.font
         titleLabel.sizeToFit()
@@ -262,10 +283,15 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         saveArchiveLegacyButton.clipsToBounds = true
         saveArchiveLegacyButton.rightSideImage.image = UIImage(named: "legacyPlanRightArrow")
         saveArchiveLegacyButton.leftSideLabel.text = text
+        saveArchiveLegacyButton.isSelectable = true
     }
     
     private func addLegacyStewardSetup() {
-        addLegacyStewardLabel.text = "Add Legacy Steward".localized()
+        if viewModel?.stewardType == .archive {
+            addLegacyStewardLabel.text = "Add Legacy Steward".localized()
+        } else {
+            addLegacyStewardLabel.text = "Add Legacy Contact".localized()
+        }
         addLegacyStewardLabel.textColor = .darkBlue
         addLegacyStewardLabel.font = TextFontStyle.style44.font
         addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -352,8 +378,6 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
                 self.view.layoutIfNeeded()
             })
         }
-        
-        saveArchiveLegacyButton.isSelectable = viewModel?.selectedSteward?.status == .pending
     }
     
     private func customizeSeparatorView() {

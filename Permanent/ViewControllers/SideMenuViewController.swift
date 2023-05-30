@@ -273,6 +273,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = AuthenticationManager.shared.session?.selectedArchive {
                 archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
                 archiveLegacyPlanningVC.selectedArchive = archiveData
+                archiveLegacyPlanningVC.viewModel?.stewardType = .archive
                 let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
                 navControl.modalPresentationStyle = .fullScreen
                 self.present(navControl, animated: true, completion: nil)

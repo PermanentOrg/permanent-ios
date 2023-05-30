@@ -8,7 +8,7 @@ import Foundation
 
 struct AccountSteward: Model {
     var legacyContactId: String
-    var accountId: String
+    var accountId: String?
     var name: String
     var email: String
     var createdDt: String?

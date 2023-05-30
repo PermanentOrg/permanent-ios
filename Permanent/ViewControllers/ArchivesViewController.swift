@@ -147,7 +147,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             }), at: 0)
         }
         if AccessRole.roleForValue(viewModel?.currentArchive()?.accessRole ?? "") == .owner {
-            actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
+            actions.insert(PRMNTAction(title: "Configure Archive Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
                 self?.presentArchiveStewardScreen(archiveData: self?.viewModel?.currentArchive())
             }), at: 0)
         }
@@ -272,7 +272,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             }
             
             if AccessRole.roleForValue(archiveVO.accessRole ?? "") == .owner {
-                actions.insert(PRMNTAction(title: "Configure Legacy Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
+                actions.insert(PRMNTAction(title: "Configure Archive Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
                     self?.presentArchiveStewardScreen(archiveData: archive)
                 }), at: 0)
                 
@@ -335,6 +335,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = archiveData {
             archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
             archiveLegacyPlanningVC.selectedArchive = archiveData
+            archiveLegacyPlanningVC.viewModel?.stewardType = .archive
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
             navControl.modalPresentationStyle = .fullScreen
             self.present(navControl, animated: true, completion: nil)

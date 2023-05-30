@@ -680,6 +680,8 @@
                         <outlet property="designateStewardLabel" destination="Ue0-45-iiy" id="YSf-RG-huh"/>
                         <outlet property="saveArchiveLegacyButton" destination="OlH-ct-Abv" id="GcL-DV-2e6"/>
                         <outlet property="separatorView" destination="KXW-XY-gp2" id="2wf-0H-rcI"/>
+                        <outlet property="topArchiveDetailsHeightConstraint" destination="GHB-eG-0dT" id="y4Q-Zb-Wyq"/>
+                        <outlet property="topArchiveDetailsView" destination="7HL-jn-WLv" id="fPa-W2-q9w"/>
                         <outlet property="trustedStewardDescriptionLabel" destination="Waf-nM-9Oy" id="9Oz-fQ-xzH"/>
                         <outlet property="trustedStewardImage" destination="tbB-sp-fEu" id="38h-3r-pbx"/>
                         <outlet property="trustedStewardTitleLabel" destination="boH-ho-mAE" id="1CW-mA-IH0"/>
