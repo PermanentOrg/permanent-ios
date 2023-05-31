@@ -9,6 +9,7 @@ import MobileCoreServices
 import Photos
 import UIKit
 import WebKit
+import SwiftUI
 
 class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -117,6 +118,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland()
             }
         }
+        
+        let bannerView = BannerView(action: {
+            if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
+                statusViewController.viewModel = LegacyPlanningStatusViewModel()
+                self.present(statusViewController, animated: true)
+            }
+        })
+        
+        view.addSubview(AnyView(bannerView))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -511,6 +521,13 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let navController = NavigationController(rootViewController: searchVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: false)
+    }
+    
+    func showBanner() {
+        var viewModel = BannerViewModel(type: .legacy)
+        if viewModel.shouldShowBanner() {
+            
+        }
     }
     
     // MARK: - Network Related
