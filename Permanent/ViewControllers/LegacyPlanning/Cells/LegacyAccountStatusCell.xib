@@ -19,11 +19,11 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view opaque="NO" contentMode="scaleToFill" id="iN0-l3-epB" customClass="LegacyAccountStatusCell" customModule="Permanent" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="393" height="409"/>
+            <rect key="frame" x="0.0" y="0.0" width="393" height="293"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BHg-rl-sMs" customClass="RoundedView" customModule="Permanent" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="409"/>
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="293"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="legacy_logo" translatesAutoresizingMaskIntoConstraints="NO" id="wDl-bf-Wng">
                             <rect key="frame" x="24" y="24" width="48" height="46"/>
@@ -50,15 +50,8 @@
                                 <constraint firstAttribute="height" constant="1" id="pj8-rr-m6m"/>
                             </constraints>
                         </view>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xTY-iB-APU" userLabel="Divider">
-                            <rect key="frame" x="24" y="228.66666666666666" width="345" height="1"/>
-                            <color key="backgroundColor" white="1" alpha="0.16191535600000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="OD5-Y5-EOm"/>
-                            </constraints>
-                        </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssL-yV-MDh">
-                            <rect key="frame" x="24" y="119.00000000000001" width="345" height="40.666666666666671"/>
+                            <rect key="frame" x="24" y="119" width="345" height="105"/>
                             <attributedString key="attributedText">
                                 <fragment content="In the event of your death or incapacitation, the following Legacy contact can activate your Legacy Plan:">
                                     <attributes>
@@ -71,7 +64,7 @@
                             <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </label>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="archive-person" translatesAutoresizingMaskIntoConstraints="NO" id="j3Q-76-pTO">
-                            <rect key="frame" x="24" y="187.66666666666666" width="16" height="16"/>
+                            <rect key="frame" x="24" y="252" width="16" height="16"/>
                             <color key="tintColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="R74-iO-CDb"/>
@@ -79,36 +72,20 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dorothy Zee" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UVf-vU-A0N">
-                            <rect key="frame" x="52" y="186.66666666666666" width="321" height="18"/>
+                            <rect key="frame" x="52" y="251" width="321" height="18"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="13"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dol-DC-rgF" customClass="ButtonWithRightImage" customModule="Permanent" customModuleProvider="target">
-                            <rect key="frame" x="24" y="253.66666666666663" width="345" height="131.33333333333337"/>
-                            <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="13"/>
-                            <color key="tintColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <inset key="imageEdgeInsets" minX="67" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title="Turn off my account Legacy Plan" image="power" catalog="system">
-                                <color key="titleColor" red="0.97647058819999999" green="0.43921568630000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="turnOff:" destination="iN0-l3-epB" eventType="touchUpInside" id="ZBW-Qa-WYD"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <color key="backgroundColor" red="0.0039215686269999999" green="0.039215686270000001" blue="0.2470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstItem="xTY-iB-APU" firstAttribute="leading" secondItem="BHg-rl-sMs" secondAttribute="leading" constant="24" id="5aI-4i-Rbc"/>
+                        <constraint firstAttribute="bottom" secondItem="UVf-vU-A0N" secondAttribute="bottom" constant="24" id="2rJ-0D-TnM"/>
                         <constraint firstItem="wDl-bf-Wng" firstAttribute="leading" secondItem="BHg-rl-sMs" secondAttribute="leading" constant="24" id="6Or-CR-n9l"/>
-                        <constraint firstAttribute="bottom" secondItem="dol-DC-rgF" secondAttribute="bottom" constant="24" id="7tY-7R-aox"/>
                         <constraint firstItem="fPp-I2-dxk" firstAttribute="centerY" secondItem="wDl-bf-Wng" secondAttribute="centerY" id="ClK-dY-9qR"/>
                         <constraint firstItem="j3Q-76-pTO" firstAttribute="leading" secondItem="ssL-yV-MDh" secondAttribute="leading" id="D8W-v4-T9o"/>
                         <constraint firstAttribute="trailing" secondItem="qst-bL-R9Z" secondAttribute="trailing" constant="24" id="MkP-a4-LHU"/>
-                        <constraint firstItem="dol-DC-rgF" firstAttribute="top" secondItem="xTY-iB-APU" secondAttribute="bottom" constant="24" id="P63-mM-gec"/>
                         <constraint firstItem="ssL-yV-MDh" firstAttribute="leading" secondItem="BHg-rl-sMs" secondAttribute="leading" constant="24" id="Q8c-wa-cfN"/>
-                        <constraint firstItem="dol-DC-rgF" firstAttribute="trailing" secondItem="xTY-iB-APU" secondAttribute="trailing" id="QLG-eC-ef4"/>
-                        <constraint firstItem="dol-DC-rgF" firstAttribute="leading" secondItem="xTY-iB-APU" secondAttribute="leading" id="Qvy-Lx-ls8"/>
                         <constraint firstAttribute="trailing" secondItem="UVf-vU-A0N" secondAttribute="trailing" constant="20" id="UzP-Kd-PsJ"/>
                         <constraint firstAttribute="trailing" secondItem="ssL-yV-MDh" secondAttribute="trailing" constant="24" id="acL-JF-IHD"/>
                         <constraint firstItem="wDl-bf-Wng" firstAttribute="top" secondItem="BHg-rl-sMs" secondAttribute="top" constant="24" id="auZ-LY-D6y"/>
@@ -116,11 +93,9 @@
                         <constraint firstItem="j3Q-76-pTO" firstAttribute="top" secondItem="ssL-yV-MDh" secondAttribute="bottom" constant="28" id="e6o-t3-yhY"/>
                         <constraint firstAttribute="trailing" secondItem="fPp-I2-dxk" secondAttribute="trailing" constant="24" id="haw-Wg-dTB"/>
                         <constraint firstItem="UVf-vU-A0N" firstAttribute="leading" secondItem="j3Q-76-pTO" secondAttribute="trailing" constant="12" id="lIQ-xd-Xyy"/>
-                        <constraint firstItem="xTY-iB-APU" firstAttribute="top" secondItem="UVf-vU-A0N" secondAttribute="bottom" constant="24" id="oew-ja-oFh"/>
                         <constraint firstItem="UVf-vU-A0N" firstAttribute="centerY" secondItem="j3Q-76-pTO" secondAttribute="centerY" id="rE3-Kf-4iH"/>
                         <constraint firstItem="qst-bL-R9Z" firstAttribute="leading" secondItem="BHg-rl-sMs" secondAttribute="leading" constant="24" id="ryP-fy-eCl"/>
                         <constraint firstItem="ssL-yV-MDh" firstAttribute="top" secondItem="qst-bL-R9Z" secondAttribute="bottom" constant="24" id="u4T-mA-EDc"/>
-                        <constraint firstAttribute="trailing" secondItem="xTY-iB-APU" secondAttribute="trailing" constant="24" id="xpQ-uO-lPn"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -147,13 +122,12 @@
             <connections>
                 <outlet property="name" destination="UVf-vU-A0N" id="aZC-V1-16U"/>
             </connections>
-            <point key="canvasLocation" x="-25.190839694656489" y="-135.56338028169014"/>
+            <point key="canvasLocation" x="-25.190839694656489" y="-176.40845070422537"/>
         </view>
     </objects>
     <resources>
         <image name="archive-person" width="200" height="122"/>
         <image name="editIcon" width="16" height="16"/>
         <image name="legacy_logo" width="48" height="48"/>
-        <image name="power" catalog="system" width="127" height="128"/>
     </resources>
 </document>
