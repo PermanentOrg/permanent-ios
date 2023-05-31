@@ -93,8 +93,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         customizeTextFieldElements(textField: [designateStewardNameTextField, designateStewardEmailTextField])
         if viewModel?.stewardType == .archive {
             designateStewardInfoView.isHidden = false
+            designateStewardNameView.isHidden = true
             customizeDesignateStewardSelectionInfoLabel()
         } else {
+            designateStewardNameView.isHidden = false
             designateStewardInfoView.isHidden = true
         }
         customizeEmailVerificationLabel()
@@ -279,7 +281,12 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     }
     
     @objc func doneButtonTapped() {
-        guard let selectedStewardName = designateStewardNameTextField.text, selectedStewardName.isNotEmpty else {
+        guard let selectedStewardName = designateStewardNameTextField.text else {
+            showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
+            return
+        }
+
+        if viewModel?.stewardType == .account && selectedStewardName.isEmpty {
             showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
             return
         }

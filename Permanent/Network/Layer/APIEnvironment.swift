@@ -36,14 +36,14 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
-    var stelaServer: String {
+    var apiServer: String {
         switch self {
         case .staging:
             return "https://api.staging.permanent.org/"
         case .development:
-            return ""
+            return "https://dev.permanent.org/"
         case .production:
-            return ""
+            return "https://api.permanent.org/"
         }
     }
     
