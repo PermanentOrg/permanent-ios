@@ -73,7 +73,7 @@ extension LegacyPlanningEndpoint: RequestProtocol {
     }
     
     var customURL: String? {
-        let endpointPath = APIEnvironment.defaultEnv.stelaServer
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .getArchiveSteward(let archiveId):
             return "\(endpointPath)api/v2/directive/archive/\(archiveId)"
