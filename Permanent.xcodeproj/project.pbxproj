@@ -331,6 +331,10 @@
 		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
+		927AE0C52A260D7700BDF26A /* BannerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0C42A260D7700BDF26A /* BannerType.swift */; };
+		927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 927AE0C82A262EA100BDF26A /* BannerView.xib */; };
+		927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CA2A2634CA00BDF26A /* GradientView.swift */; };
+		927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CC2A2F290E00BDF26A /* BannerView.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
@@ -1058,6 +1062,10 @@
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
 		9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
+		927AE0C42A260D7700BDF26A /* BannerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerType.swift; sourceTree = "<group>"; };
+		927AE0C82A262EA100BDF26A /* BannerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerView.xib; sourceTree = "<group>"; };
+		927AE0CA2A2634CA00BDF26A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		927AE0CC2A2F290E00BDF26A /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
 		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
@@ -1455,6 +1463,7 @@
 		06644A8124EA70D5003CD359 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				927AE0BD2A24BF5100BDF26A /* Banner */,
 				F559F88828FEBCAA0015A522 /* File Browsing */,
 				5E46217725C194E8007642BE /* AccountInfo */,
 				5E218BF225A869B100B56625 /* SecurityView */,
@@ -1474,6 +1483,7 @@
 				9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */,
 				924E839B2A165D28005D813B /* ButtonWithRightImage.swift */,
 				92C73E452A14D530000EF633 /* RoundedView.swift */,
+				927AE0CA2A2634CA00BDF26A /* GradientView.swift */,
 				06819AA724EC20CB003D0EB0 /* TextField.swift */,
 				F5E793D6294B5AB000CFCCA5 /* AuthTextField.swift */,
 				BCB0726125235DB9003E2F66 /* NavigationBarView.swift */,
@@ -2045,6 +2055,16 @@
 				5ED428842A126E5D001F88FB /* LegacyPlanningDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		927AE0BD2A24BF5100BDF26A /* Banner */ = {
+			isa = PBXGroup;
+			children = (
+				927AE0C42A260D7700BDF26A /* BannerType.swift */,
+				927AE0CC2A2F290E00BDF26A /* BannerView.swift */,
+				927AE0C82A262EA100BDF26A /* BannerView.xib */,
+			);
+			path = Banner;
 			sourceTree = "<group>";
 		};
 		92C73E3E2A13BD97000EF633 /* LegacyPlanningCells */ = {
@@ -3078,6 +3098,7 @@
 				5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */,
 				5ED3B3A929F7D6D6000CFF48 /* LegacyPlanning.storyboard in Resources */,
 				5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */,
+				927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */,
 				5E1C546229B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib in Resources */,
 				5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
@@ -3375,6 +3396,7 @@
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
+				927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */,
 				BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */,
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */,
@@ -3600,6 +3622,7 @@
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
 				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,
 				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
+				927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */,
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
@@ -3744,6 +3767,7 @@
 				F5EEB4D62821556C00D584AD /* AccountOnboardingViewModel.swift in Sources */,
 				5E62F7CE27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.swift in Sources */,
 				BC3DF868252DE642003D3829 /* BiometryUtils.swift in Sources */,
+				927AE0C52A260D7700BDF26A /* BannerType.swift in Sources */,
 				06644A8524EA7156003CD359 /* RoundedButton.swift in Sources */,
 				5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */,
 				BCC4067125A86E9C00E29CC4 /* AccountStatus.swift in Sources */,

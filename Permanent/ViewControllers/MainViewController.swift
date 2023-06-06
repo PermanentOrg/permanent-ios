@@ -9,6 +9,7 @@ import MobileCoreServices
 import Photos
 import UIKit
 import WebKit
+import SwiftUI
 
 class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -117,6 +118,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.dismissFloatingActionIsland()
             }
         }
+        
+        showBanner()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -511,6 +514,38 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         let navController = NavigationController(rootViewController: searchVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: false)
+    }
+    
+    func showBanner() {
+        var bannerType = BannerType.legacy
+        if bannerType.shouldShowBanner() {
+            let bannerView = BannerView(type: bannerType)
+            bannerView.dismissAction = {
+                bannerView.removeFromSuperview()
+            }
+            
+            bannerView.action = {[weak self] in
+                self?.showLegacy()
+                bannerView.removeFromSuperview()
+            }
+            
+            view.addSubview(bannerView)
+            
+            bannerView.translatesAutoresizingMaskIntoConstraints = false
+            let padding: CGFloat = 12
+            bannerView.topAnchor.constraint(equalTo: view.topAnchor, constant: padding).isActive = true
+            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding).isActive = true
+            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding).isActive = true
+        }
+    }
+    
+    func showLegacy() {
+        if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
+            legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
+            customNavController.modalPresentationStyle = .fullScreen
+            self.present(customNavController, animated: true, completion: nil)
+        }
     }
     
     // MARK: - Network Related

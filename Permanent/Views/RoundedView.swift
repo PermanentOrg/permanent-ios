@@ -57,5 +57,14 @@ class RoundedView: UIView {
         }
     }
     
+    @IBInspectable
+    var shadowOffset: CGSize {
+        get {
+            return self.layer.shadowOffset
+        }
+        set {
+            self.layer.shadowOffset = newValue
+        }
+    }
     
 }
