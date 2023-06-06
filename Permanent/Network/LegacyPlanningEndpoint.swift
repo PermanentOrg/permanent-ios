@@ -11,6 +11,8 @@ enum LegacyPlanningEndpoint {
     case getLegacyContact
     case getArchiveSteward(archiveId: Int)
     case setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails)
+    case setAccountSteward(name: String, stewardEmail: String)
+    case updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?)
     case updateArchiveSteward(directiveId: String, stewardDetails: LegacyPlanningArchiveDetails)
 }
 
@@ -27,9 +29,9 @@ extension LegacyPlanningEndpoint: RequestProtocol {
         switch self {
         case .getArchiveSteward(_), .getLegacyContact:
             return .get
-        case .setArchiveSteward(_):
+        case .setArchiveSteward(_), .setAccountSteward(_, _):
             return .post
-        case .updateArchiveSteward:
+        case .updateAccountSteward(_, _, _), .updateArchiveSteward:
             return .put
         }
     }
@@ -50,6 +52,10 @@ extension LegacyPlanningEndpoint: RequestProtocol {
             return setArchiveSteward(archiveDetails: archiveDetails)
         case .getLegacyContact:
             return getLegacyPlanning()
+        case .setAccountSteward(let name,let stewardEmail):
+            return setAccountSteward(name: name, stewardEmail: stewardEmail)
+        case .updateAccountSteward(let legacyContactId, let name, let stewardEmail):
+            return updateAccountSteward(legacyContactId: legacyContactId, name: name, stewardEmail: stewardEmail)
         case .updateArchiveSteward(_, stewardDetails: let stewardDetails):
             return updateArchiveSteward(archiveDetails: stewardDetails)
         }
@@ -67,14 +73,16 @@ extension LegacyPlanningEndpoint: RequestProtocol {
     }
     
     var customURL: String? {
-        let endpointPath = APIEnvironment.defaultEnv.stelaServer
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .getArchiveSteward(let archiveId):
             return "\(endpointPath)api/v2/directive/archive/\(archiveId)"
         case .setArchiveSteward(_):
             return "\(endpointPath)api/v2/directive"
-        case .getLegacyContact:
+        case .getLegacyContact, .setAccountSteward(_, _):
             return "\(endpointPath)api/v2/legacy-contact"
+        case .updateAccountSteward(let legacyContactId, _, _):
+            return "\(endpointPath)api/v2/legacy-contact/\(legacyContactId)"
         case .updateArchiveSteward(directiveId: let directiveId, _):
             return "\(endpointPath)api/v2/directive/\(directiveId)"
         }
@@ -112,5 +120,24 @@ extension LegacyPlanningEndpoint {
                 "type": archiveDetails.triggerType
             ]
         ] as [String : Any]
+    }
+    
+    func setAccountSteward(name: String, stewardEmail: String) -> RequestParameters {
+        return [
+            "name": name,
+            "email": stewardEmail
+        ] as [String : Any]
+    }
+    
+    func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?) -> RequestParameters {
+        var body: [String: Any] = [:]
+        if let name = name {
+            body["name"] = name
+        }
+        if let stewardEmail = stewardEmail {
+            body["email"] = stewardEmail
+        }
+        
+        return body
     }
 }

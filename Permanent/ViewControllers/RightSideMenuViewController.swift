@@ -221,6 +221,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
         case .legacyPlanning:
             if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
                 legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+                legacyPlanningLoadingVC.viewModel?.account = AuthenticationManager.shared.session?.account
                 let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
                 customNavController.modalPresentationStyle = .fullScreen
                 self.present(customNavController, animated: true, completion: nil)

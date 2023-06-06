@@ -81,13 +81,24 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         addDismissKeyboardGesture()
         customizeNavigationController()
 
-        title = "Trusted Steward".localized()
+        if viewModel?.stewardType == .archive {
+            title = "Trusted Steward".localized()
+        } else {
+            title = "Legacy Contact".localized()
+        }
         view.backgroundColor = .backgroundPrimary
         
         customizeDesignateStewardTitleLabel()
         customizeDesignateStewardDescriptionLabel()
         customizeTextFieldElements(textField: [designateStewardNameTextField, designateStewardEmailTextField])
-        customizeDesignateStewardSelectionInfoLabel()
+        if viewModel?.stewardType == .archive {
+            designateStewardInfoView.isHidden = false
+            designateStewardNameView.isHidden = true
+            customizeDesignateStewardSelectionInfoLabel()
+        } else {
+            designateStewardNameView.isHidden = false
+            designateStewardInfoView.isHidden = true
+        }
         customizeEmailVerificationLabel()
         customizeNoteTitleLabel()
         customizeNoteDescriptionLabel()
@@ -124,7 +135,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.17
 
-        let attributedText = NSMutableAttributedString(string: "Designate archive Legacy steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        var attributedText = NSMutableAttributedString(string: "Designate archive Legacy steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        if viewModel?.stewardType == .account {
+            attributedText = NSMutableAttributedString(string: "Designate legacy contact".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        }
 
         designateStewardTitleLabel.textColor = .primary
         designateStewardTitleLabel.font = TextFontStyle.style41.font
@@ -135,7 +149,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.36
 
-        let attributedText = NSMutableAttributedString(string: "In order to designate someone as a steward for your archive, they must have a Permanent.org account.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        var attributedText = NSMutableAttributedString(string: "In order to designate someone as a steward for your archive, they must have a Permanent.org account.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        if viewModel?.stewardType == .account {
+            attributedText = NSMutableAttributedString(string: "Choose someone to be your legacy contact to save your account legacy plan.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        }
 
         designateStewardDescriptionLabel.textColor = .black
         designateStewardDescriptionLabel.font = TextFontStyle.style39.font
@@ -149,6 +166,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         paragraphStyle.lineHeightMultiple = 1.26
 
         let attributedText = NSMutableAttributedString(string: "Thank you for being the steward of my archive. I appreciate you taking care of my legacy when I am gone.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        
         
         designateStewardSelectionInfoTextView.attributedText = attributedText
         designateStewardSelectionInfoTextView.textAlignment = .left
@@ -201,7 +219,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.36
 
-        let attributedText = NSMutableAttributedString(string: "Your Archive Steward will get an email from Permanent with instructions. Discuss your Legacy Plan first. They'll receive another email when the plan is activated with steps to accept ownership. Add instructions in the note section above.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        var attributedText = NSMutableAttributedString(string: "Your Archive Steward will get an email from Permanent with instructions. Discuss your Legacy Plan first. They'll receive another email when the plan is activated with steps to accept ownership. Add instructions in the note section above.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        if viewModel?.stewardType == .account {
+            attributedText = NSMutableAttributedString(string: "Permanent will send an automatic email to your Legacy Contact to inform them that they have been designated to activate your Account Legacy Plan, alongside instructions on how to do so. However, we strongly recommend that you also discuss your Legacy Plan with this person.".localized(), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        }
 
         noteDescriptionLabel.textColor = .black
         noteDescriptionLabel.font = TextFontStyle.style39.font
@@ -260,7 +281,12 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     }
     
     @objc func doneButtonTapped() {
-        guard let selectedStewardName = designateStewardNameTextField.text, selectedStewardName.isNotEmpty else {
+        guard let selectedStewardName = designateStewardNameTextField.text else {
+            showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
+            return
+        }
+
+        if viewModel?.stewardType == .account && selectedStewardName.isEmpty {
             showAlert(title: "Name Required".localized(), message: "Please enter a name.".localized())
             return
         }
@@ -274,11 +300,11 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
         }
-        
+
         if viewModel?.selectedSteward != nil {
-            viewModel?.updateSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+            viewModel?.updateTrustedSteward(name: selectedStewardName, stewardEmail: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "")
         } else {
-            viewModel?.addSelectedSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
+            viewModel?.addSteward(name: selectedStewardName, email: selectedStewardEmail, note: designateStewardSelectionInfoTextView.text ?? "", status: .pending)
         }
     }
 
