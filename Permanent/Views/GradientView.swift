@@ -19,19 +19,27 @@ class GradientView: RoundedView {
     
     // implement cgcolorgradient in the next section
     @IBInspectable var startColor: UIColor? {
-        didSet { gradientLayer.colors = cgColorGradient }
+        didSet {
+            gradientLayer.colors = cgColorGradient
+        }
     }
     
     @IBInspectable var endColor: UIColor? {
-        didSet { gradientLayer.colors = cgColorGradient }
+        didSet {
+            gradientLayer.colors = cgColorGradient
+        }
     }
     
     @IBInspectable var startPoint: CGPoint = CGPoint(x: 0.0, y: 0.0) {
-        didSet { gradientLayer.startPoint = startPoint }
+        didSet {
+            gradientLayer.startPoint = startPoint
+        }
     }
     
     @IBInspectable var endPoint: CGPoint = CGPoint(x: 1.0, y: 1.0) {
-        didSet { gradientLayer.endPoint = endPoint }
+        didSet {
+            gradientLayer.endPoint = endPoint
+        }
     }
 }
 
