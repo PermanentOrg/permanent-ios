@@ -331,12 +331,10 @@
 		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
-		927AE0C12A24BF9300BDF26A /* SwiftUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0C02A24BF9300BDF26A /* SwiftUIHelpers.swift */; };
-		927AE0C32A24C3C000BDF26A /* BannerViewSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0C22A24C3C000BDF26A /* BannerViewSwiftUI.swift */; };
 		927AE0C52A260D7700BDF26A /* BannerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0C42A260D7700BDF26A /* BannerType.swift */; };
-		927AE0C72A26194200BDF26A /* BannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0C62A26194200BDF26A /* BannerViewModel.swift */; };
 		927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 927AE0C82A262EA100BDF26A /* BannerView.xib */; };
 		927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CA2A2634CA00BDF26A /* GradientView.swift */; };
+		927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CC2A2F290E00BDF26A /* BannerView.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
@@ -1064,12 +1062,10 @@
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
 		9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
-		927AE0C02A24BF9300BDF26A /* SwiftUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIHelpers.swift; sourceTree = "<group>"; };
-		927AE0C22A24C3C000BDF26A /* BannerViewSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewSwiftUI.swift; sourceTree = "<group>"; };
 		927AE0C42A260D7700BDF26A /* BannerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerType.swift; sourceTree = "<group>"; };
-		927AE0C62A26194200BDF26A /* BannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewModel.swift; sourceTree = "<group>"; };
 		927AE0C82A262EA100BDF26A /* BannerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerView.xib; sourceTree = "<group>"; };
 		927AE0CA2A2634CA00BDF26A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		927AE0CC2A2F290E00BDF26A /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
 		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
@@ -2064,10 +2060,8 @@
 		927AE0BD2A24BF5100BDF26A /* Banner */ = {
 			isa = PBXGroup;
 			children = (
-				927AE0C02A24BF9300BDF26A /* SwiftUIHelpers.swift */,
-				927AE0C22A24C3C000BDF26A /* BannerViewSwiftUI.swift */,
 				927AE0C42A260D7700BDF26A /* BannerType.swift */,
-				927AE0C62A26194200BDF26A /* BannerViewModel.swift */,
+				927AE0CC2A2F290E00BDF26A /* BannerView.swift */,
 				927AE0C82A262EA100BDF26A /* BannerView.xib */,
 			);
 			path = Banner;
@@ -3402,6 +3396,7 @@
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
+				927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */,
 				BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */,
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */,
@@ -3556,7 +3551,6 @@
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
-				927AE0C32A24C3C000BDF26A /* BannerViewSwiftUI.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
@@ -3673,7 +3667,6 @@
 				5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
-				927AE0C12A24BF9300BDF26A /* SwiftUIHelpers.swift in Sources */,
 				BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
@@ -3729,7 +3722,6 @@
 				F5EAD0672822BBE900EC2584 /* AccountOnboardingPageThree.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
-				927AE0C72A26194200BDF26A /* BannerViewModel.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,

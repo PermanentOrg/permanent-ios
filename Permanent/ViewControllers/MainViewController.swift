@@ -119,14 +119,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }
         }
         
-        let bannerView = BannerView(action: {
-            if let statusViewController = UIViewController.create(withIdentifier: .legacyPlanningStatus, from: .legacyPlanning) as? LegacyPlanningStatusViewController {
-                statusViewController.viewModel = LegacyPlanningStatusViewModel()
-                self.present(statusViewController, animated: true)
-            }
-        })
-        
-        view.addSubview(AnyView(bannerView))
+        showBanner()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -524,9 +517,34 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func showBanner() {
-        var viewModel = BannerViewModel(type: .legacy)
-        if viewModel.shouldShowBanner() {
+        var bannerType = BannerType.legacy
+        if bannerType.shouldShowBanner() {
+            let bannerView = BannerView(type: bannerType)
+            bannerView.dismissAction = {
+                bannerView.removeFromSuperview()
+            }
             
+            bannerView.action = {[weak self] in
+                self?.showLegacy()
+                bannerView.removeFromSuperview()
+            }
+            
+            view.addSubview(bannerView)
+            
+            bannerView.translatesAutoresizingMaskIntoConstraints = false
+            let padding: CGFloat = 12
+            bannerView.topAnchor.constraint(equalTo: view.topAnchor, constant: padding).isActive = true
+            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding).isActive = true
+            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding).isActive = true
+        }
+    }
+    
+    func showLegacy() {
+        if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
+            legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
+            customNavController.modalPresentationStyle = .fullScreen
+            self.present(customNavController, animated: true, completion: nil)
         }
     }
     
