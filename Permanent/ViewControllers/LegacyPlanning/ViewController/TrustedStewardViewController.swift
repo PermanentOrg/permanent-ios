@@ -122,7 +122,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         navigationController?.navigationBar.standardAppearance = navigationBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
         
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
+        let doneButton = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(doneButtonTapped))
         doneButton.tintColor = .white
         navigationItem.rightBarButtonItem = doneButton
 

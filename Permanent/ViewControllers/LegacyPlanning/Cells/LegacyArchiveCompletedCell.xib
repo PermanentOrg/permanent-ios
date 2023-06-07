@@ -38,7 +38,7 @@
                             </userDefinedRuntimeAttributes>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cxl-6X-o8g">
-                            <rect key="frame" x="225" y="-30" width="83" height="134"/>
+                            <rect key="frame" x="225" y="-52.666666666666664" width="83" height="179.33333333333334"/>
                             <fontDescription key="fontDescription" name="OpenSans-Regular" family="Open Sans" pointSize="13"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="14" maxY="0.0"/>
@@ -49,20 +49,20 @@
                             </connections>
                         </button>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7dG-D8-W5M" userLabel="Divider">
-                            <rect key="frame" x="20" y="128" width="288" height="1"/>
+                            <rect key="frame" x="20" y="150.66666666666666" width="288" height="1"/>
                             <color key="backgroundColor" white="1" alpha="0.16191535600000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="KD0-Pg-IWX"/>
                             </constraints>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Sophia Petrillo Archive" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7w-hV-tof">
-                            <rect key="frame" x="20" y="153" width="288" height="20.666666666666657"/>
+                            <rect key="frame" x="20" y="175.66666666666666" width="288" height="20.666666666666657"/>
                             <fontDescription key="fontDescription" name="OpenSans-SemiBold" family="Open Sans" pointSize="15"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yjq-0G-u5z" customClass="RoundedView" customModule="Permanent" customModuleProvider="target">
-                            <rect key="frame" x="20.000000000000004" y="181.66666666666666" width="45.333333333333343" height="15"/>
+                            <rect key="frame" x="20.000000000000004" y="204.33333333333334" width="45.333333333333343" height="15"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OWNER" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="358-3p-mt9">
                                     <rect key="frame" x="7.9999999999999982" y="2" width="29.333333333333329" height="11"/>
@@ -85,9 +85,9 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K0o-wK-XW1">
-                            <rect key="frame" x="20" y="204.66666666666666" width="288" height="63.333333333333343"/>
+                            <rect key="frame" x="20" y="227.33333333333334" width="288" height="40.666666666666657"/>
                             <attributedString key="attributedText">
-                                <fragment content="In the event of your death or incapacitation, the following Legacy contact can activate your Legacy Plan:">
+                                <fragment content="Your archive will be transferred to the following archive steward:">
                                     <attributes>
                                         <color key="NSColor" red="1" green="1" blue="1" alpha="0.75" colorSpace="custom" customColorSpace="sRGB"/>
                                         <font key="NSFont" size="13" name="OpenSans-Regular"/>
