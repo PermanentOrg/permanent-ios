@@ -16,7 +16,7 @@ class AuthTextField: CustomTextField {
     var placeholderColor: UIColor = .white.withAlphaComponent(0.5)
     
     @IBInspectable
-    var placeholderFont: UIFont = Text.style30.font
+    var placeholderFont: UIFont = TextFontStyle.style30.font
     
     let border = CALayer()
     
@@ -42,7 +42,7 @@ class AuthTextField: CustomTextField {
         
         backgroundColor = .white.withAlphaComponent(0.04)
         textColor = .white
-        font = Text.style4.font
+        font = TextFontStyle.style4.font
         tintColor = .white
     }
     

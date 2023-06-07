@@ -30,17 +30,17 @@ class AccountOnboardingPageTwo: BaseViewController<AccountOnboardingViewModel> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleLabel.font = Text.style.font
-        detailsLabel.font = Text.style5.font
+        titleLabel.font = TextFontStyle.style.font
+        detailsLabel.font = TextFontStyle.style5.font
         
-        personTitleLabel.font = Text.style17.font
-        personDetailsLabel.font = Text.style5.font
+        personTitleLabel.font = TextFontStyle.style17.font
+        personDetailsLabel.font = TextFontStyle.style5.font
         
-        groupTitleLabel.font = Text.style17.font
-        groupDetailsLabel.font = Text.style5.font
+        groupTitleLabel.font = TextFontStyle.style17.font
+        groupDetailsLabel.font = TextFontStyle.style5.font
         
-        organizationTitleLabel.font = Text.style17.font
-        organizationDetailsLabel.font = Text.style5.font
+        organizationTitleLabel.font = TextFontStyle.style17.font
+        organizationDetailsLabel.font = TextFontStyle.style5.font
         
         setupContainerView(personContainerView)
         personImageView.tintColor = .primary

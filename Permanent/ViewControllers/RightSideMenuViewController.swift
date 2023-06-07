@@ -25,6 +25,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         RightDrawerSection.rightSideMenu: [
             DrawerOption.addStorage,
             DrawerOption.accountInfo,
+            DrawerOption.legacyPlanning,
             DrawerOption.activityFeed,
             DrawerOption.manageArchives,
             DrawerOption.invitations,
@@ -56,13 +57,13 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         storageProgressBar.tintColor = .mainPurple
         
         loggedInLabel.text = "Logged in as".localized() + ":"
-        loggedInLabel.font = Text.style8.font
+        loggedInLabel.font = TextFontStyle.style8.font
         loggedInLabel.textColor = .middleGray
         
-        emailLabel.font = Text.style11.font
+        emailLabel.font = TextFontStyle.style11.font
         emailLabel.textColor = .middleGray
         
-        storageUsedLabel.font = Text.style11.font
+        storageUsedLabel.font = TextFontStyle.style11.font
         storageUsedLabel.textColor = .middleGray
     }
     
@@ -217,6 +218,15 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             let newRootVC = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .legacyPlanning:
+            if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
+                legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+                legacyPlanningLoadingVC.viewModel?.account = AuthenticationManager.shared.session?.account
+                let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
+                customNavController.modalPresentationStyle = .fullScreen
+                self.present(customNavController, animated: true, completion: nil)
+            }
+        
         case .manageArchives:
             let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)

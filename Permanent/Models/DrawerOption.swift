@@ -24,6 +24,7 @@ enum DrawerOption {
     case invitations
     case logOut
     case contactSupport
+    case legacyPlanning
     case none
     
     var icon: UIImage? {
@@ -44,6 +45,7 @@ enum DrawerOption {
         case .manageTags: return UIImage(named: "tagsBorder")
         case .logOut: return UIImage.logOut.templated
         case .contactSupport: return nil
+        case .legacyPlanning: return UIImage(named: "legacyPlanning")
         case .none: return nil
         }
     }
@@ -66,6 +68,7 @@ enum DrawerOption {
         case .logOut: return .logOut
         case .archives: return ""
         case .contactSupport: return .contactSupport
+        case .legacyPlanning: return "Legacy Planning".localized()
         case .none: return ""
         }
     }

@@ -20,8 +20,8 @@ class AccountOnboardingPageOneWithPendingArchives: BaseViewController<AccountOnb
     }
     
     private func initUI() {
-        welcomeLabel.font = Text.style.font
-        detailsLabel.font = Text.style5.font
+        welcomeLabel.font = TextFontStyle.style.font
+        detailsLabel.font = TextFontStyle.style5.font
     }
     
     private func setupTableView() {

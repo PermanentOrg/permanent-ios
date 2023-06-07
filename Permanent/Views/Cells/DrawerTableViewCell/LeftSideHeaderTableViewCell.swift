@@ -21,12 +21,12 @@ class LeftSideHeaderTableViewCell: UITableViewCell {
         
         selectionStyle = .none
         
-        archiveNameLabel.font = Text.style35.font
+        archiveNameLabel.font = TextFontStyle.style35.font
         archiveNameLabel.adjustsFontSizeToFitWidth = true
         archiveNameLabel.minimumScaleFactor = 2 / 3
         archiveNameLabel.textColor = .white
         
-        actionDescriptionLabel.font = Text.style12.font
+        actionDescriptionLabel.font = TextFontStyle.style12.font
         actionDescriptionLabel.textColor = .white
         actionDescriptionLabel.layer.opacity = 0.5
         actionDescriptionLabel.text = "View Profile".localized()

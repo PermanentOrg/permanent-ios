@@ -27,6 +27,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     @IBOutlet weak var currentArchiveRightButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var currentArchiveDefaultIcon: UIImageView!
     
     weak var delegate: ArchivesViewControllerDelegate?
     var isManaging = true
@@ -70,11 +71,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         currentArchiveContainer.layer.borderColor = UIColor.gray.cgColor
         
         currentArchiveLabel.text = "Current Archive".localized()
-        currentArchiveLabel.font = Text.style7.font
+        currentArchiveLabel.font = TextFontStyle.style7.font
         currentArchiveLabel.textColor = .darkBlue
         
         currentArhiveNameLabel.text = nil
-        currentArhiveNameLabel.font = Text.style17.font
+        currentArhiveNameLabel.font = TextFontStyle.style17.font
         currentArhiveNameLabel.textColor = .darkBlue
         
         createNewArchiveButton.configureActionButtonUI(title: String("Create new archive".localized()))
@@ -128,21 +129,29 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     @IBAction func currentArchiveRightButtonPressed(_ sender: Any) {
-        let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: [
-            PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { [self] action in
-                guard let archiveId = viewModel?.currentArchive()?.archiveID else { return }
-                showSpinner()
-                viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
-                    hideSpinner()
+        var actions: [PRMNTAction] = []
+        
+        if viewModel?.currentArchive()?.archiveID != self.viewModel?.defaultArchiveId {
+            actions.insert(PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { [weak self] action in
+                guard let archiveId = self?.viewModel?.currentArchive()?.archiveID else { return }
+                self?.showSpinner()
+                self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
+                    self?.hideSpinner()
                     if error == nil {
-                        updateCurrentArchive()
-                        tableView.reloadData()
+                        self?.updateCurrentArchive()
+                        self?.tableView.reloadData()
                     } else {
-                        showAlert(title: .error, message: .errorMessage)
+                        self?.showAlert(title: .error, message: .errorMessage)
                     }
                 })
-            })
-        ])
+            }), at: 0)
+        }
+        if AccessRole.roleForValue(viewModel?.currentArchive()?.accessRole ?? "") == .owner {
+            actions.insert(PRMNTAction(title: "Configure Archive Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
+                self?.presentArchiveStewardScreen(archiveData: self?.viewModel?.currentArchive())
+            }), at: 0)
+        }
+        let actionSheet = PRMNTActionSheetViewController(title: currentArchiveLabel.text, actions: actions)
         present(actionSheet, animated: true)
     }
     
@@ -183,22 +192,30 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     // MARK: - UI
     func updateCurrentArchive() {
         if let archive = viewModel?.currentArchive(),
-            let archiveName: String = archive.fullName,
-            let archiveThumbURL: String = archive.thumbURL500 {
+           let archiveName: String = archive.fullName,
+           let archiveThumbURL: String = archive.thumbURL500 {
             currentArhiveImage.image = nil
+            currentArchiveRightButton.isHidden = true
             currentArhiveImage.load(urlString: archiveThumbURL)
             
             currentArhiveNameLabel.text = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
-            
-            currentArchiveRightButton.isHidden = false
-            if archive.archiveID == viewModel?.defaultArchiveId {
-                currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                currentArchiveRightButton.isEnabled = false
-            } else if isManaging {
-                currentArchiveRightButton.setImage(UIImage(named: "more"), for: .normal)
-                currentArchiveRightButton.isEnabled = true
+            if AppEnvironment.shared.isRunningInAppExtension() {
+                if archive.archiveID == viewModel?.defaultArchiveId {
+                    currentArchiveRightButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                    currentArchiveRightButton.isEnabled = false
+                    currentArchiveRightButton.isHidden = false
+                } else {
+                    currentArchiveRightButton.isHidden = true
+                }
             } else {
-                currentArchiveRightButton.isHidden = true
+                currentArchiveRightButton.isHidden = false
+                if archive.archiveID == viewModel?.defaultArchiveId || isManaging {
+                    currentArchiveRightButton.setImage(UIImage(named: "more"), for: .normal)
+                    currentArchiveRightButton.isEnabled = true
+                    currentArchiveDefaultIcon.isHidden = !(archive.archiveID == viewModel?.defaultArchiveId)
+                } else {
+                    currentArchiveRightButton.isHidden = true
+                }
             }
         }
     }
@@ -233,11 +250,13 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         })
     }
     
-    private func rightButtonAction(archiveName: String, archiveThumbnail: String) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
+    private func rightButtonAction(archiveName: String, archiveThumbnail: String, archive: ArchiveVOData) -> ((ArchiveScreenChooseArchiveDetailsTableViewCell) -> Void) {
         return { [weak self] cell in
             guard let archiveVO = cell.archiveData else { return }
-            var actions = [
-                PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { action in
+            var actions: [PRMNTAction] = []
+            if archiveVO.archiveID != self?.viewModel?.defaultArchiveId
+            {
+                actions.insert(PRMNTAction(title: "Make Default".localized(), iconName: "star-fill", color: .primary, handler: { action in
                     guard let archiveId = archiveVO.archiveID else { return }
                     self?.showSpinner()
                     self?.viewModel?.updateAccount(withDefaultArchiveId: archiveId, { accountVO, error in
@@ -249,10 +268,14 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                             self?.showAlert(title: .error, message: .errorMessage)
                         }
                     })
-                })
-            ]
+                }), at: 0)
+            }
             
-            if archiveVO.accessRole == "access.role.owner" {
+            if AccessRole.roleForValue(archiveVO.accessRole ?? "") == .owner {
+                actions.insert(PRMNTAction(title: "Configure Archive Steward".localized(), iconName: "legacyPlanning", color: .primary, handler: { [weak self] action in
+                    self?.presentArchiveStewardScreen(archiveData: archive)
+                }), at: 0)
+                
                 actions.insert(PRMNTAction(title: "Delete Archive".localized(), iconName: "Delete-1", color: .destructive, handler: { [self] action in
                     let description = "Are you sure you want to permanently delete The <ARCHIVE_NAME> Archive?".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveVO.fullName ?? "")
                     
@@ -307,6 +330,17 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             })
         }
     }
+    
+    private func presentArchiveStewardScreen(archiveData: ArchiveVOData?) {
+        if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = archiveData {
+            archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
+            archiveLegacyPlanningVC.selectedArchive = archiveData
+            archiveLegacyPlanningVC.viewModel?.stewardType = .archive
+            let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
+            navControl.modalPresentationStyle = .fullScreen
+            self.present(navControl, animated: true, completion: nil)
+        }
+    }
 }
 
 extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
@@ -331,7 +365,7 @@ extension ArchivesViewController: UITableViewDataSource, UITableViewDelegate {
                 let archiveVO = tableViewData[indexPath.row]
                 tableViewCell.updateCell(withArchiveVO: archiveVO, isDefault: archiveVO.archiveID == viewModel?.defaultArchiveId, isManaging: isManaging)
 
-                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "")
+                tableViewCell.rightButtonAction = rightButtonAction(archiveName: archiveVO.fullName ?? "", archiveThumbnail: archiveVO.thumbURL200 ?? "", archive: archiveVO)
                 
                 cell = tableViewCell
             }

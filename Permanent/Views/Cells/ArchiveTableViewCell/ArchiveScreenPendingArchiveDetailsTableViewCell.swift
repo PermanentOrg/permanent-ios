@@ -25,10 +25,10 @@ class ArchiveScreenPendingArchiveDetailsTableViewCell: UITableViewCell {
         
         selectionStyle = .gray
         
-        archiveNameLabel.font = Text.style16.font
+        archiveNameLabel.font = TextFontStyle.style16.font
         archiveNameLabel.textColor = .darkBlue
         
-        archiveAccessLabel.font = Text.style8.font
+        archiveAccessLabel.font = TextFontStyle.style8.font
         archiveAccessLabel.textColor = .darkBlue
     }
     

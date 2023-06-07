@@ -36,6 +36,17 @@ enum APIEnvironment: EnvironmentProtocol {
         }
     }
     
+    var apiServer: String {
+        switch self {
+        case .staging:
+            return "https://api.staging.permanent.org/"
+        case .development:
+            return "https://dev.permanent.org/"
+        case .production:
+            return "https://api.permanent.org/"
+        }
+    }
+    
     var buyStorageURL: String {
         switch self {
         case .staging:

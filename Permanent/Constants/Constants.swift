@@ -14,7 +14,7 @@ typealias CellButtonTapAction = (UITableViewCell) -> Void
 
 struct Font { }
 
-struct Text {
+struct TextFontStyle {
     static let style = TextStyle(UIFont(name: "OpenSans-Bold", size: 20)!, TextStyle.calculateSpacing(fontSize: CGFloat(20), lineHeight: CGFloat(27)), NSTextAlignment.center)
     static let style2 = TextStyle(UIFont(name: "OpenSans-Regular", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(22)), NSTextAlignment.center)
     static let style3 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 18)!, TextStyle.calculateSpacing(fontSize: CGFloat(18), lineHeight: CGFloat(24)), NSTextAlignment.natural)
@@ -50,6 +50,8 @@ struct Text {
     static let style41 = TextStyle(UIFont(name: "OpenSans-Bold", size: 15)!, TextStyle.calculateSpacing(fontSize: CGFloat(15), lineHeight: CGFloat(20)), NSTextAlignment.natural)
     static let style42 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 8)!, TextStyle.calculateSpacing(fontSize: CGFloat(8), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style43 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
+    static let style44 = TextStyle(UIFont(name: "OpenSans-Bold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
+    static let style45 = TextStyle(UIFont(name: "OpenSans-Italic", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
 }
 
 struct Constants {

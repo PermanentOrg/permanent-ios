@@ -123,7 +123,7 @@ extension ArchiveVOData {
         
         switch accessRole {
         case .owner:
-            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership]
+            return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare, .ownership, .legacyPlanning]
             
         case .manager:
             return [.read, .create, .upload, .edit, .delete, .move, .publish, .share, .archiveShare]

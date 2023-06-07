@@ -28,9 +28,9 @@ class ArchiveTableViewCell: UITableViewCell {
     }
     
     private func configureUI() {
-        archiveNameLabel.font = Text.style11.font
+        archiveNameLabel.font = TextFontStyle.style11.font
         archiveNameLabel.textColor = .textPrimary
-        relationshipLabel.font = Text.style12.font
+        relationshipLabel.font = TextFontStyle.style12.font
         relationshipLabel.textColor = .textPrimary
         archiveImageView.clipsToBounds = true
         

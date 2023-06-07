@@ -42,12 +42,12 @@ class AccountOnboardingAcceptArchiveTableViewCell: UITableViewCell {
     
     private func initUI(screenType: AccountOnboardingViewModel.Page?) {
         archiveTitleLabel.textColor = .black
-        archiveTitleLabel.font = Text.style17.font
+        archiveTitleLabel.font = TextFontStyle.style17.font
         archiveInvitedByLabel.textColor = .darkGray
-        archiveInvitedByLabel.font = Text.style8.font
+        archiveInvitedByLabel.font = TextFontStyle.style8.font
         
         acceptButton.isHidden = (screenType == .acceptedInvitation)
-        acceptButton.setFont(Text.style11.font)
+        acceptButton.setFont(TextFontStyle.style11.font)
         acceptButton.setTitleColor(.darkBlue, for: .normal)
     }
     

@@ -15,10 +15,10 @@ extension UISearchBar {
         self.setBackgroundColor(.galleryGray)
         
         self.setTextColor(.primary)
-        self.setFont(Text.style12.font)
+        self.setFont(TextFontStyle.style12.font)
         
         self.setPlaceholderTextColor(.lightGray)
-        self.setPlaceholderFont(Text.style12.font)
+        self.setPlaceholderFont(TextFontStyle.style12.font)
     }
     
     func setTextColor(_ color: UIColor?) {

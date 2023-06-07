@@ -32,17 +32,17 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         
         screenTitle.text = "Forgot Password?".localized()
         screenTitle.textColor = .tangerine
-        screenTitle.font = Text.style.font
+        screenTitle.font = TextFontStyle.style.font
         
         emailField.placeholder = .email.uppercased()
         emailField.accessibilityLabel = "Email"
         
         backButton.setTitle("Back to Sign in".localized(), for: [])
-        backButton.setFont(Text.style20.font)
+        backButton.setFont(TextFontStyle.style20.font)
         backButton.setTitleColor(.white, for: [])
         
         recoverPasswordButton.setTitle("Recover password".localized(), for: .normal)
-        recoverPasswordButton.setFont(Text.style16.font)
+        recoverPasswordButton.setFont(TextFontStyle.style16.font)
         recoverPasswordButton.setTitleColor(.primary, for: [])
         recoverPasswordButton.layer.cornerRadius = 0
         recoverPasswordButton.isUserInteractionEnabled = false
@@ -51,7 +51,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         separatorTextLabel.text = "OR".localized().uppercased()
         separatorTextLabel.textColor = .white.withAlphaComponent(0.5)
         separatorTextLabel.backgroundColor = .darkBlue
-        separatorTextLabel.font = Text.style30.font
+        separatorTextLabel.font = TextFontStyle.style30.font
         separatorTextLabel.setTextSpacingBy(value: 0.8)
         
         separatorView.backgroundColor = .white.withAlphaComponent(0.5)
@@ -59,7 +59,7 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
         
         copyrightLabel.text = .copyrightText
         copyrightLabel.textColor = .white.withAlphaComponent(0.5)
-        copyrightLabel.font = Text.style12.font
+        copyrightLabel.font = TextFontStyle.style12.font
         
         emailField.delegate = self
     }

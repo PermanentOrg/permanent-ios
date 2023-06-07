@@ -96,10 +96,10 @@ class ActionDialogView: UIView {
     fileprivate func initUI() {
         dialogView.layer.cornerRadius = Constants.Design.sheetCornerRadius
         
-        titleLabel.font = Text.style3.font
+        titleLabel.font = TextFontStyle.style3.font
         titleLabel.textColor = .primary
         
-        subtitleLabel.font = Text.style8.font
+        subtitleLabel.font = TextFontStyle.style8.font
         subtitleLabel.textColor = .textPrimary
         
         styleFields()
@@ -107,7 +107,7 @@ class ActionDialogView: UIView {
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))
         
         removeButton.setTitle("Remove".localized(), for: .normal)
-        removeButton.setFont(Text.style11.font)
+        removeButton.setFont(TextFontStyle.style11.font)
         removeButton.setTitleColor(.primary, for: .normal)
         removeButtonContainer.isHidden = true
     }
@@ -213,17 +213,17 @@ class ActionDialogView: UIView {
             dialogView.shadowToBorder(showShadow: true, onlyBottomShadow: true)
             
             titleLabel.textColor = .paleRed
-            titleLabel.font = Text.style32.font
+            titleLabel.font = TextFontStyle.style32.font
             
             subtitleLabel.textColor = .black
-            subtitleLabel.font = Text.style8.font
+            subtitleLabel.font = TextFontStyle.style8.font
 
             dialogView.layer.cornerRadius = 8
             positiveButton.layer.cornerRadius = 1
             
             cancelButton.bgColor = .whiteGray
-            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
-            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: Text.style11.font, .foregroundColor: UIColor.darkBlue]), for: .highlighted)
+            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: TextFontStyle.style11.font, .foregroundColor: UIColor.darkBlue]), for: .normal)
+            cancelButton.setAttributedTitle(NSAttributedString(string: "Cancel".localized(), attributes: [.font: TextFontStyle.style11.font, .foregroundColor: UIColor.darkBlue]), for: .highlighted)
             cancelButton.layer.cornerRadius = 1
             cancelButton.backgroundColor = .whiteGray
             

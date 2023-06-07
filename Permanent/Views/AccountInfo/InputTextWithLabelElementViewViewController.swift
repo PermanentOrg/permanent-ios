@@ -44,7 +44,7 @@ class InputTextWithLabelElementViewViewController: UIView {
     func configureElementUI(label: String, returnKey: UIReturnKeyType = UIReturnKeyType.default, keyboardType: UIKeyboardType = .default) {
         self.contentView.backgroundColor = .white
         self.valueLabel.text = label
-        self.valueLabel.font = Text.style8.font
+        self.valueLabel.font = TextFontStyle.style8.font
         self.textField.textColor = .middleGray
         self.textField.returnKeyType = returnKey
         self.textField.autocorrectionType = .no

@@ -49,7 +49,7 @@ class SharedFileActionSheet: UIView {
 
         sheetView.layer.cornerRadius = 4
         titleLabel.text = title
-        titleLabel.font = Text.style11.font
+        titleLabel.font = TextFontStyle.style11.font
         titleLabel.textColor = .textPrimary
         
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismiss)))

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "legacyPlanRightArrow.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

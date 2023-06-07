@@ -19,7 +19,7 @@ class ArchiveScreenSectionTitleTableViewCell: UITableViewHeaderFooterView {
     func configureUI() {
         contentView.isUserInteractionEnabled = false
         topSectionTitleLabel.backgroundColor = .white
-        topSectionTitleLabel.font = Text.style3.font
+        topSectionTitleLabel.font = TextFontStyle.style3.font
         topSectionTitleLabel.textColor = .darkBlue
     }
     

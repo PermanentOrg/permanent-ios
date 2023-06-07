@@ -31,9 +31,9 @@ class NotificationTableViewCell: UITableViewCell {
     
     fileprivate func configureUI() {
         notificationLabel.textColor = .textPrimary
-        notificationLabel.font = Text.style8.font
+        notificationLabel.font = TextFontStyle.style8.font
         dateLabel.textColor = .textPrimary
-        dateLabel.font = Text.style12.font
+        dateLabel.font = TextFontStyle.style12.font
     }
     
 }

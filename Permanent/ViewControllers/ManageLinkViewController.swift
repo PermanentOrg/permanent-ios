@@ -43,9 +43,9 @@ class ManageLinkViewController: BaseViewController<ShareLinkViewModel> {
         saveButton.configureActionButtonUI(title: .save)
         revokeButton.configureActionButtonUI(title: .revokeLink, bgColor: .deepRed)
         
-        autoApproveTooltipLabel.style(withFont: Text.style4.font, text: .autoApproveTooltip)
-        maxUsesTooltipLabel.style(withFont: Text.style4.font, text: .maxUsesTooltip)
-        expDateTooltipLabel.style(withFont: Text.style4.font, text: .expDateTooltip)
+        autoApproveTooltipLabel.style(withFont: TextFontStyle.style4.font, text: .autoApproveTooltip)
+        maxUsesTooltipLabel.style(withFont: TextFontStyle.style4.font, text: .maxUsesTooltip)
+        expDateTooltipLabel.style(withFont: TextFontStyle.style4.font, text: .expDateTooltip)
         
         prefillDataIfNeeded()
     }

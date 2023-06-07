@@ -16,7 +16,7 @@ class AccountOnboardingHeaderTableViewCell: UITableViewHeaderFooterView {
     }
     
     func configure(label: String) {
-        headerLabel.font = Text.style32.font
+        headerLabel.font = TextFontStyle.style32.font
         headerLabel.textColor = .black
         headerLabel.text = label.localized()
     }

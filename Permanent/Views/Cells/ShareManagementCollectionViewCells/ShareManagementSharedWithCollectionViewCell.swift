@@ -27,13 +27,13 @@ class ShareManagementSharedWithCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        nameLabel.font = Text.style34.font
+        nameLabel.font = TextFontStyle.style34.font
         nameLabel.textColor = UIColor.middleGray
         
         roleContainerView.backgroundColor = UIColor.tangerine.withAlphaComponent(0.2)
         roleContainerView.layer.cornerRadius = 4
         
-        roleLabel.font = Text.style36.font
+        roleLabel.font = TextFontStyle.style36.font
         roleLabel.textColor = UIColor.darkBlue
     }
 
