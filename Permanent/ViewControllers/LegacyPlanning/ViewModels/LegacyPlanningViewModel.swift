@@ -108,7 +108,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     return
                 }
                 
-                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", status: .pending, type: .archive)
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: steward.steward?.name ?? "", email: steward.steward?.email ?? "", note: steward.note, status: .pending, type: .archive)
                 self?.isLoading?(false)
                 self?.stewardWasUpdated?(true)
             }

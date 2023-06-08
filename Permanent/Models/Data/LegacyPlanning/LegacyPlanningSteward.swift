@@ -11,6 +11,7 @@ struct LegacyPlanningSteward {
     var id: String = ""
     var name: String
     var email: String
+    var note: String?
     var status: StewardStatus
     var type: StewardType
 

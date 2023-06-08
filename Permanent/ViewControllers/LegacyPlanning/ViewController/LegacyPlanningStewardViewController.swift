@@ -114,16 +114,16 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             archiveNameLabelSetup(text: "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: viewModel?.selectedArchive?.fullName ?? ""))
             archivePermissionSetup(text: AccessRole.roleForValue(viewModel?.selectedArchive?.accessRole ?? "").groupName)
             designateStewardLabelSetup(text: "Designate an Archive Steward".localized())
-            designateArchiveStewardLabelSetup(text: "Who should be the owner of this archive in the event of incapacitation?".localized())
+            designateArchiveStewardLabelSetup(text: "Who should be the owner of this archive in the event of your death or incapacitation?".localized())
             saveArchiveLegacyButtonSetup(text: "Go to Legacy Plan".localized())
-            trustedStewardTitleLabelSetup(text: "A trusted steward".localized())
+            trustedStewardTitleLabelSetup(text: "A trusted archive steward".localized())
             trustedStewardDescriptionLabelSetup(text: "The Archive steward will receive a note when your Legacy Plan is activated.".localized())
         } else {
             topArchiveDetailsView.isHidden = true
             topArchiveDetailsHeightConstraint.constant = 0
             
             designateStewardLabelSetup(text: "Designate a Legacy Contact".localized())
-            designateArchiveStewardLabelSetup(text: "Who will reach out to Permanent to let us know of your death or incapacitation?".localized())
+            designateArchiveStewardLabelSetup(text: "Who will reach out to Permanent to let us know of your death or permanent incapacitation?".localized())
             saveArchiveLegacyButtonSetup(text: "Go to Legacy Plan".localized())
             trustedStewardTitleLabelSetup(text: "A trusted legacy contact".localized())
             trustedStewardDescriptionLabelSetup(text: "A trusted person who can inform Permanent about your death or long term disability.".localized())

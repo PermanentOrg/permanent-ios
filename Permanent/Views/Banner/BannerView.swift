@@ -11,13 +11,7 @@ class BannerView: UIView {
     var action: (() -> Void)?
     var dismissAction: (() -> Void)?
     
-    private var type: BannerType = .legacy {
-        didSet {
-            icon.image = type.icon
-            title.text = type.title
-            subtitle.text = type.subtitle
-        }
-    }
+    private var type: BannerType = .legacy
     
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var icon: UIImageView!
@@ -49,13 +43,20 @@ class BannerView: UIView {
     convenience init(type: BannerType) {
         self.init(frame: .zero)
         
-        commonInit()
-        
         self.type = type
+        
+        commonInit()
+        setupUI()
     }
     
     private func commonInit(positionOffset: CGPoint = CGPoint(x: 0.0, y: 0.0)) {
         loadNib()
         setupView(contentView, positionOffset: positionOffset)
+    }
+    
+    private func setupUI() {
+        icon.image = type.icon
+        title.text = type.title
+        subtitle.text = type.subtitle
     }
 }
