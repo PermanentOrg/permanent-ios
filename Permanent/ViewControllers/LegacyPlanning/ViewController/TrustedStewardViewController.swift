@@ -306,6 +306,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         
         if viewModel?.stewardType == .archive && designateStewardSelectionInfoTextView.text.isEmpty {
             showAlert(title: "Invalid note".localized(), message: "Note is not allowed to be empty".localized())
+            return
         }
 
         if viewModel?.selectedSteward != nil {
