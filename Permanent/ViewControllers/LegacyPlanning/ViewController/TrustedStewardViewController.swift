@@ -71,6 +71,9 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
     private func loadSteward() {
         designateStewardNameTextField.text = viewModel?.selectedSteward?.name
         designateStewardEmailTextField.text = viewModel?.selectedSteward?.email
+        if let note = viewModel?.selectedSteward?.note {
+            designateStewardSelectionInfoTextView.text = note
+        }
     }
     
     private func setupUI() {
@@ -135,7 +138,7 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.17
 
-        var attributedText = NSMutableAttributedString(string: "Designate archive Legacy steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        var attributedText = NSMutableAttributedString(string: "Designate archive steward".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
         if viewModel?.stewardType == .account {
             attributedText = NSMutableAttributedString(string: "Designate legacy contact".localized(), attributes: [NSAttributedString.Key.kern: -0.3, NSAttributedString.Key.paragraphStyle: paragraphStyle])
         }
@@ -299,6 +302,10 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
         if !selectedStewardEmail.isValidEmail {
             showAlert(title: "Invalid Email".localized(), message: "Please enter a valid email address.".localized())
             return
+        }
+        
+        if viewModel?.stewardType == .archive && designateStewardSelectionInfoTextView.text.isEmpty {
+            showAlert(title: "Invalid note".localized(), message: "Note is not allowed to be empty".localized())
         }
 
         if viewModel?.selectedSteward != nil {

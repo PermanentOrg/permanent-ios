@@ -24,7 +24,7 @@ extension BannerType {
     var subtitle: String? {
         switch self {
         case .legacy:
-            return "Your Legacy Plan will determine when, how, and with whom your materials will be shared."
+            return "Your Legacy Plan will determine when, how, and with whom your materials will be shared when you are gone."
         }
     }
     

@@ -15,7 +15,7 @@ class LegacyAccountStatusCell: UITableViewCell {
     
     func setup(account: AccountSteward?) {
         
-        name.text = account?.name != nil ? account?.name : "No Steward Added"
+        name.text = account?.name != nil ? account?.name : "No Legacy Contact Added"
     }
     
     @IBOutlet weak var name: UILabel!

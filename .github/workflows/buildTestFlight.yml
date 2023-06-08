@@ -3,7 +3,7 @@ name: Deploy TestFlight
 on:
   workflow_dispatch:
   push:
-    branches: [ "Release-**" ]
+    branches: [ "Release-Disable-**" ]
 
 jobs:
   build:
