@@ -100,26 +100,33 @@ extension LegacyPlanningEndpoint {
     }
     
     func setArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
-        return [
+        var parameters: [String : Any] = [
             "archiveId": "\(String(describing: archiveDetails.archiveId ?? 0))",
             "stewardEmail": archiveDetails.stewardEmail,
             "type": archiveDetails.type,
-            "note": archiveDetails.note,
             "trigger": [
                 "type": archiveDetails.triggerType
             ]
-        ] as [String : Any]
+        ]
+        if !archiveDetails.note.isEmpty {
+            parameters["note"] = archiveDetails.note
+        }
+        
+        return parameters
     }
     
     func updateArchiveSteward(archiveDetails: LegacyPlanningArchiveDetails) -> RequestParameters {
-        return [
+        var parameters: [String : Any] = [
             "stewardEmail": archiveDetails.stewardEmail,
             "type": archiveDetails.type,
-            "note": archiveDetails.note,
             "trigger": [
                 "type": archiveDetails.triggerType
             ]
-        ] as [String : Any]
+        ]
+        if !archiveDetails.note.isEmpty {
+            parameters["note"] = archiveDetails.note
+        }
+        return parameters
     }
     
     func setAccountSteward(name: String, stewardEmail: String) -> RequestParameters {
