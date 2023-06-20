@@ -30,20 +30,20 @@
       codeCoverageEnabled = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Permanent/Permanent-DEV-UnitTests.xctestplan"
+            reference = "container:Permanent/Tests/Permanent-DEV-UnitTests.xctestplan"
             default = "YES">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Permanent/TestPullRequest.xctestplan">
+            reference = "container:Permanent/Tests/TestPullRequest.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Permanent/ui-tests.xctestplan">
+            reference = "container:Permanent/Tests/ui-tests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Permanent/unit-tests.xctestplan">
+            reference = "container:Permanent/Tests/unit-tests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Permanent/all-tests.xctestplan">
+            reference = "container:Permanent/Tests/all-tests.xctestplan">
          </TestPlanReference>
       </TestPlans>
       <Testables>

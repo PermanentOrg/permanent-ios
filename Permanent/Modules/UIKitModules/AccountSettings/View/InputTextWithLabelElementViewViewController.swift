@@ -8,7 +8,6 @@
 import UIKit
 
 class InputTextWithLabelElementViewViewController: UIView {
-
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var valueLabel: UILabel!
     @IBOutlet weak var textField: UITextField!
