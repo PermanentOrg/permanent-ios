@@ -41,7 +41,6 @@
 		5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44D28915CE0008C0A6B /* SignUpPage.swift */; };
 		5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */; };
 		5E07D4522891600A008C0A6B /* PrivateFilesPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D4512891600A008C0A6B /* PrivateFilesPage.swift */; };
-		5E07D453289167E5008C0A6B /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		5E07D45528917D83008C0A6B /* UploadFilesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
@@ -116,6 +115,7 @@
 		5E3E12232A41906700682DE5 /* ShareManagementRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */; };
 		5E3E12452A41F16500682DE5 /* EmptyFolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C94E25385FB500EC3A66 /* EmptyFolderView.swift */; };
 		5E3E12462A41F3B700682DE5 /* FileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C37D4628AD62060062D9EB /* FileCollectionViewCell.swift */; };
+		5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */; };
 		5E4455D32A08F0BB00A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
 		5E4455D42A08F1F100A56235 /* TrustedStewardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */; };
 		5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46217125C17C5A007642BE /* AccountInfoViewController.swift */; };
@@ -137,7 +137,6 @@
 		5E4739EC2A41872000A20D85 /* SignUpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8945102524B24000FA8D7A /* SignUpResponse.swift */; };
 		5E4739ED2A41872C00A20D85 /* MFASession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC4294B27F7002D6ECB /* MFASession.swift */; };
 		5E4739EF2A41874200A20D85 /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC326AAE2526195E00A69597 /* APIErrors.swift */; };
-		5E4739F02A41874D00A20D85 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		5E4739F12A41875F00A20D85 /* DeviceEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56AA03F261F1B930054B6EF /* DeviceEndpoint.swift */; };
 		5E4739F22A41876B00A20D85 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC648783251BA24C009D7DE1 /* Payloads.swift */; };
 		5E4739F32A41877700A20D85 /* LocationEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56522632604ADB6007CA99D /* LocationEndpoint.swift */; };
@@ -636,7 +635,6 @@
 		F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCE3C94B253852E300EC3A66 /* EmptyFolderView.xib */; };
 		F55252A22907F6250005E011 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BC4526DC251BE53900E24A51 /* Localizable.strings */; };
 		F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */ = {isa = PBXBuildFile; fileRef = F5551D87261C559B00A7C540 /* EnvVars.stencil */; };
-		F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */; };
 		F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */; };
 		F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F557A64127A190F900C061D4 /* SocialMediaProfileItem.swift */; };
 		F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F557A64327A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift */; };
@@ -917,6 +915,7 @@
 		5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LegacyPlanningDataSourceInterface.swift; path = Permanent/Services/Repositories/Datasources/Remote/LegacyPlanningDataSourceInterface.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareManagementRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ShareManagementRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12492A42EEA900682DE5 /* ShareExtensionDEV-Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Release.entitlements"; sourceTree = "<group>"; };
+		5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustedStewardViewController.swift; sourceTree = "<group>"; };
 		5E46217125C17C5A007642BE /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
@@ -1349,7 +1348,6 @@
 		F546F1C9299765C700FAB276 /* SelectWorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWorkspaceViewController.swift; sourceTree = "<group>"; };
 		F54861F928912F4300500F6F /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		F5551D87261C559B00A7C540 /* EnvVars.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = EnvVars.stencil; sourceTree = "<group>"; };
-		F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVars.generated.swift; sourceTree = "<group>"; };
 		F5551E05261E2F5100A7C540 /* ShareNotificationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareNotificationPayload.swift; sourceTree = "<group>"; };
 		F557A64127A190F900C061D4 /* SocialMediaProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaProfileItem.swift; sourceTree = "<group>"; };
 		F557A64327A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileOnlinePresenceViewController.swift; sourceTree = "<group>"; };
@@ -2160,9 +2158,9 @@
 		5E4739A02A40BEBC00A20D85 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
 				F5551D87261C559B00A7C540 /* EnvVars.stencil */,
-				F5551D9D261C5BC400A7C540 /* EnvVars.generated.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -3808,7 +3806,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET,authTenantId=$AUTH_TENANT_ID,stripePublishableKey=$STRIPE_PUB_KEY,uiTestUsername=$UI_TEST_USERNAME,uiTestPassword=$UI_TEST_PASSWORD,authFusionAuthorization=$AUTH_FUSION_AUTHORIZATION\n";
+			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent/App --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET,authTenantId=$AUTH_TENANT_ID,stripePublishableKey=$STRIPE_PUB_KEY,uiTestUsername=$UI_TEST_USERNAME,uiTestPassword=$UI_TEST_PASSWORD,authFusionAuthorization=$AUTH_FUSION_AUTHORIZATION\n";
 		};
 		F5A784992785D84A00738389 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3999,7 +3997,6 @@
 				BCB0725C25234993003E2F66 /* TermsConditionsPopup.swift in Sources */,
 				F559F87728F99D120015A522 /* FolderSortViewModel.swift in Sources */,
 				5E3E12232A41906700682DE5 /* ShareManagementRemoteDataSource.swift in Sources */,
-				F5551D9E261C5BC400A7C540 /* EnvVars.generated.swift in Sources */,
 				5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */,
 				5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */,
 				5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */,
@@ -4152,6 +4149,7 @@
 				5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */,
 				BC566CE22546CD61000249E1 /* UIAlertControllerExtension.swift in Sources */,
 				BCC1E31F2549861C00B71866 /* FileStatus.swift in Sources */,
+				5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */,
 				5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
@@ -4272,7 +4270,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E07D453289167E5008C0A6B /* EnvVars.generated.swift in Sources */,
 				5E07D4522891600A008C0A6B /* PrivateFilesPage.swift in Sources */,
 				5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */,
 				F5BEF69029241A1F00668A29 /* PublicProfilePage.swift in Sources */,
@@ -4480,7 +4477,6 @@
 				F5ADBF3A290BBDC40007A516 /* ArchivesEndpoint.swift in Sources */,
 				F5ADBF39290BBD970007A516 /* APIResults.swift in Sources */,
 				5E626CA82A1D6BF300EA9981 /* StewardDetails.swift in Sources */,
-				5E4739F02A41874D00A20D85 /* EnvVars.generated.swift in Sources */,
 				5E187FA32A0CE3CE00DCD52F /* LegacyPlanningSteward.swift in Sources */,
 				5E4739F32A41877700A20D85 /* LocationEndpoint.swift in Sources */,
 				5ED4B9C92876DFC700CF044B /* Permission.swift in Sources */,
