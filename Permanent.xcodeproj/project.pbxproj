@@ -916,6 +916,7 @@
 		5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E121B2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LegacyPlanningDataSourceInterface.swift; path = Permanent/Services/Repositories/Datasources/Remote/LegacyPlanningDataSourceInterface.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12222A41906700682DE5 /* ShareManagementRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareManagementRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ShareManagementRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
+		5E3E12492A42EEA900682DE5 /* ShareExtensionDEV-Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Release.entitlements"; sourceTree = "<group>"; };
 		5E4455D22A08F0BB00A56235 /* TrustedStewardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustedStewardViewController.swift; sourceTree = "<group>"; };
 		5E46217125C17C5A007642BE /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
 		5E46217425C17CE2007642BE /* InfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewModel.swift; sourceTree = "<group>"; };
@@ -2101,23 +2102,6 @@
 		5E47399B2A40B8A700A20D85 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				5E47399E2A40BE0000A20D85 /* SwiftUIModules */,
-				5E47399D2A40BDE200A20D85 /* UIKitModules */,
-			);
-			path = Modules;
-			sourceTree = "<group>";
-		};
-		5E47399C2A40BDCD00A20D85 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				BC1BDF17251355E100F2D239 /* Storyboards */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		5E47399D2A40BDE200A20D85 /* UIKitModules */ = {
-			isa = PBXGroup;
-			children = (
 				5E4739AD2A40FA1F00A20D85 /* Onboarding */,
 				5E4739AE2A40FA6000A20D85 /* Authentication */,
 				5E4739AC2A40F9F100A20D85 /* AccountOnboarding */,
@@ -2125,6 +2109,7 @@
 				5E4739A72A40F1CB00A20D85 /* SideMenus */,
 				5E4739AF2A40FAAA00A20D85 /* PublicProfile */,
 				5E4739A52A40F19E00A20D85 /* Main */,
+				5E4739CB2A41094700A20D85 /* FileOperations */,
 				5E4739AB2A40F9DB00A20D85 /* Shares */,
 				5E4739B02A40FC0300A20D85 /* ManageTags */,
 				5E4739B12A40FC5400A20D85 /* ManageMembers */,
@@ -2137,26 +2122,26 @@
 				5E4739C92A4106C800A20D85 /* Invitations */,
 				5E4739C42A41022600A20D85 /* AccountSecurity */,
 			);
-			path = UIKitModules;
+			path = Modules;
 			sourceTree = "<group>";
 		};
-		5E47399E2A40BE0000A20D85 /* SwiftUIModules */ = {
+		5E47399C2A40BDCD00A20D85 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BC1BDF162513558800F2D239 /* Assets */,
+				BC1BDF17251355E100F2D239 /* Storyboards */,
 			);
-			path = SwiftUIModules;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		5E47399F2A40BE1600A20D85 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				BC1BDF162513558800F2D239 /* Assets */,
 				5E4739D52A4182E600A20D85 /* Authentication */,
 				5E4739D12A4180F200A20D85 /* Base */,
 				BC1BDF192513561800F2D239 /* Constants */,
 				06B0EB2624E67E52003D90C6 /* Extensions */,
 				5E3E122F2A41E45000682DE5 /* FABActionSheet */,
-				5E4739CB2A41094700A20D85 /* FileOperations */,
 				5E4739D72A41832A00A20D85 /* Files */,
 				BC4526E6251CACD500E24A51 /* Helpers */,
 				06644A7C24EA6E35003CD359 /* Interfaces */,
@@ -2598,8 +2583,10 @@
 		5ED06F3F286B2BD5006C126B /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
+				5E3E12492A42EEA900682DE5 /* ShareExtensionDEV-Release.entitlements */,
 				F59082E92885697C00027FE9 /* ShareExtensionRelease.entitlements */,
 				F59082E82885697200027FE9 /* ShareExtensionDebug.entitlements */,
+				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */,
 				5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */,
 				5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */,
@@ -2610,7 +2597,6 @@
 				F561F845299ABF5200B3BD09 /* ShareFolderNavigationViewModel.swift */,
 				F5A87F992996C51100C4272B /* WorkspacesContentViewModel.swift */,
 				5ED06F42286B2BD5006C126B /* MainInterface.storyboard */,
-				5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */,
 				5ED06F45286B2BD5006C126B /* Info.plist */,
 				5EEC8E13286DCE3E00603FC4 /* FileDetailsTableViewCell.xib */,
 				5EEC8E12286DCE3E00603FC4 /* FileDetailsTableViewCell.swift */,
@@ -4708,14 +4694,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Permanent/Common/Assets/Entitlements/Permanent.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/Permanent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 106;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Common/Assets/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4737,14 +4723,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Permanent/Common/Assets/Entitlements/PermanentRelease.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Permanent/Resources/Assets/Entitlements/PermanentRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 106;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Common/Assets/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5142,14 +5128,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Permanent/Common/Assets/Entitlements/PermanentDEV-Debug.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/PermanentDEV-Debug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 106;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Common/Assets/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5225,14 +5211,14 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "Permanent/Common/Assets/Entitlements/Permanent-Staging.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Permanent/Resources/Assets/Entitlements/Permanent-Staging.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 106;
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Common/Assets/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
