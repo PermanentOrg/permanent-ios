@@ -150,12 +150,12 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
     }
     
     func checkSavedFile() -> Bool {
-        if let deeplinkPayload = deeplinkPayload {
+        if let deeplinkPayload = deeplinkPayload, let folderLinkId = deeplinkPayload.folderLinkId, let folderId = Int(folderLinkId) {
             self.deeplinkPayload = nil
             
             showSpinner()
             
-            let navigationParams = (archiveNo: deeplinkPayload.archiveNbr, folderLinkId: deeplinkPayload.folderLinkId, folderName: "")
+            let navigationParams = (archiveNo: deeplinkPayload.archiveNbr, folderLinkId: folderId, folderName: "")
             viewModel?.getRoot(then: { status in
                 self.navigateToFolder(withParams: navigationParams, backNavigation: false, then: {
                     self.backButton.isHidden = false
