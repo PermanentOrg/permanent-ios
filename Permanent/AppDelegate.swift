@@ -53,10 +53,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
         case "p":
-            let archiveNbr = url.pathComponents[3]
-            let folderArchiveNbr = url.pathComponents[4]
-            let folderLinkId = Int(url.pathComponents[5]) ?? 0
-
+            let archiveNbr: String = url.pathComponents[3]
+            
+            var folderArchiveNbr: String?
+            if url.pathComponents.count > 4 {
+                folderArchiveNbr = url.pathComponents[4]
+            }
+            var folderLinkId: String?
+            if url.pathComponents.count > 5 {
+                folderLinkId = url.pathComponents[5]
+            }
+            
             let publicDeeplinkPayload: PublicProfileDeeplinkPayload
 
             if url.pathComponents.count >= 8 && url.pathComponents[6] == "record" {

@@ -50,16 +50,20 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
                 archiveNbr = deeplinkPayload?.archiveNbr
             }
 
-            viewModel?.getPublicArchive(withArchiveNbr: archiveNbr!, { archiveVOData in
-                self.hideSpinner()
-                self.archiveData = archiveVOData
-                self.initUI()
+            viewModel?.getPublicArchive(withArchiveNbr: archiveNbr!, {[weak self] archiveVOData in
+                guard let archiveVOData = archiveVOData else {
+                    self?.showErrorAlert(message: "Something went wrong, please try again!")
+                    return
+                }
+                self?.hideSpinner()
+                self?.archiveData = archiveVOData
+                self?.initUI()
             })
         } else {
             initUI()
         }
     }
-    
+
     func initUI() {
         viewModel?.archiveData = archiveData
         

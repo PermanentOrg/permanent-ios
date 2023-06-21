@@ -9,11 +9,11 @@ import Foundation
 
 class PublicProfileDeeplinkPayload: Codable {
     let archiveNbr: String
-    let folderArchiveNbr: String
-    let folderLinkId: Int
-    let fileArchiveNbr: String
+    let folderArchiveNbr: String?
+    let folderLinkId: String?
+    let fileArchiveNbr: String?
     
-    init(archiveNbr: String, folderArchiveNbr: String, folderLinkId: Int, fileArchiveNbr: String) {
+    init(archiveNbr: String, folderArchiveNbr: String?, folderLinkId: String?, fileArchiveNbr: String?) {
         self.archiveNbr = archiveNbr
         self.folderArchiveNbr = folderArchiveNbr
         self.folderLinkId = folderLinkId
