@@ -3,7 +3,7 @@ name: Deploy Firebase Beta
 on:
   workflow_dispatch:
   push:
-    branches: [ "Development" ]
+    branches: [ "main" ]
 
 jobs:
   build:
