@@ -1,15 +1,15 @@
-name: Deploy Firebase Beta
+name: Deploy TestFlight
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "Development" ]
+    branches: [ "release/**" ]
 
 jobs:
   build:
-    name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-latest
-    environment: staging
+    name: Build and deploy a release build to TestFlight
+    runs-on: macos-13
+    environment: production
 
     steps:
       - name: Checkout
@@ -19,7 +19,10 @@ jobs:
         with: 
           ruby-version: '2.6.8'
           bundler-cache: true
-      - name: Run Fastlane Beta
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.3'
+      - name: Run Fastlane AppStore
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
           REVERSED_CLIENT_ID: ${{ secrets.IOS_FIREBASE_REVERSED_CLIENT_ID }}
@@ -28,19 +31,18 @@ jobs:
           PROJECT_ID: ${{ secrets.IOS_FIREBASE_PROJECT_ID }}
           STORAGE_BUCKET: ${{ secrets.IOS_FIREBASE_STORAGE_BUCKET }}
           GOOGLE_APP_ID: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
-          AUTH_TENANT_ID: ${{ secrets.MOBILE_AUTH_TENANT_ID }}
-          AUTH_CLIENT_ID: ${{ secrets.MOBILE_AUTH_CLIENT_ID }}
-          AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_AUTH_CLIENT_SECRET }}
-          STRIPE_PUB_KEY: ${{ secrets.MOBILE_STRIPE_TEST_PUB_KEY }}
+          AUTH_TENANT_ID: ${{ secrets.MOBILE_PROD_AUTH_TENANT_ID }}
+          AUTH_CLIENT_ID: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_ID }}
+          AUTH_CLIENT_SECRET: ${{ secrets.MOBILE_PROD_AUTH_CLIENT_SECRET }}
+          STRIPE_PUB_KEY: ${{ secrets.MOBILE_PROD_STRIPE_PUB_KEY }}
           UI_TEST_USERNAME: ${{ secrets.IOS_UI_TEST_USERNAME }}
           UI_TEST_PASSWORD: ${{ secrets.IOS_UI_TEST_PASSWORD }}
           SKIPLINT: true
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          FIREBASEAPPDISTRO_APP: ${{ secrets.IOS_FIREBASE_GOOGLE_APP_ID }}
-          FIREBASEAPPDISTRO_GROUPS: ${{ secrets.IOS_FIREBASE_APP_DISTRIBUTION_GROUPS }}
-          FIREBASE_TOKEN: ${{ secrets.IOS_FIREBASE_APP_CLI_TOKEN }}
           FASTLANE_MATCH_TOKEN: ${{ secrets.FASTLANE_MATCH_TOKEN }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        run: bundle exec fastlane beta
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 6
+        run: bundle exec fastlane app_store
