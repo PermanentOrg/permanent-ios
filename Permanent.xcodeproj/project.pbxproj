@@ -240,6 +240,8 @@
 		5E991EE22A4AD2F3006229C0 /* RightButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */; };
 		5E991EE42A4ADDE4006229C0 /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E991EE32A4ADDE3006229C0 /* SectionView.swift */; };
 		5E991EE72A4AE144006229C0 /* CustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E991EE62A4AE144006229C0 /* CustomNavigationView.swift */; };
+		5E991EE82A4AFB88006229C0 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */; };
+		5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */; };
 		5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */; };
 		5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AD284E8BFC003E0C46 /* DonateTests.swift */; };
 		5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */; };
@@ -4373,6 +4375,7 @@
 				5ED090E82975D24F003D797B /* ForgotPasswordPage.swift in Sources */,
 				F569061C28CB58AE00E610B6 /* XCUIElement+Extensions.swift in Sources */,
 				F569061E28CB60E900E610B6 /* RenameAlertPage.swift in Sources */,
+				5E991EE82A4AFB88006229C0 /* EnvVars.generated.swift in Sources */,
 				F5216AED2923E03B0042914D /* XCUIApplication+Extensions.swift in Sources */,
 				F569062028CB618500E610B6 /* FileMenuPage.swift in Sources */,
 				5E969F7A28A452A3007431BC /* SharedFilesPage.swift in Sources */,
@@ -4399,6 +4402,7 @@
 				5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */,
 				F53DADDD28804FA80094B738 /* ExtensionUploadManagerTests.swift in Sources */,
 				5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */,
+				5E991EE92A4AFB89006229C0 /* EnvVars.generated.swift in Sources */,
 				5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */,
 				5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */,
 				F559F88328F9C32E0015A522 /* FolderNavigationViewModelTests.swift in Sources */,
