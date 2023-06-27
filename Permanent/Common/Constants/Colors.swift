@@ -61,4 +61,5 @@ extension UIColor {
 extension Color {
     static var indianSaffron = Color("IndianSaffron")
     static var darkBlue = Color("DarkBlue")
+    static var whiteGray = Color("WhiteGray")
 }

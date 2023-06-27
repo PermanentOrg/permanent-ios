@@ -154,7 +154,7 @@ extension AccountInfoViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
         let changePosition: [CGFloat] = [view.frame.height / 10, view.frame.height / 7]
-        (textField as? TextField)?.toggleBorder(active: true)
+        (textField as? PETextField)?.toggleBorder(active: true)
         
         let point: CGPoint
         switch textField {
@@ -177,6 +177,6 @@ extension AccountInfoViewController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: false)
+        (textField as? PETextField)?.toggleBorder(active: false)
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 @IBDesignable
-class TextField: CustomTextField {
+class PETextField: CustomTextField {
     var contentEdgeInsets: UIEdgeInsets = .zero
     
     @IBInspectable

@@ -9,7 +9,7 @@ import UIKit
 
 @IBDesignable
 class InputSettingsView: UIView {
-    fileprivate var textField: TextField!
+    fileprivate var textField: PETextField!
     
     fileprivate lazy var datePicker: UIDatePicker = {
         let picker = UIDatePicker()
@@ -71,7 +71,7 @@ class InputSettingsView: UIView {
         layer.borderColor = UIColor.lightGray.cgColor
         layer.cornerRadius = Constants.Design.actionButtonRadius
         
-        textField = TextField()
+        textField = PETextField()
         textField.placeholderColor = .primary
         textField.placeholderFont = TextFontStyle.style3.font
         textField.backgroundColor = .backgroundPrimary

@@ -1202,7 +1202,21 @@ extension MainViewController: FABActionSheetDelegate {
             }))
         }
         
+        if file.permissions.contains(.edit) {
+            menuItems.append(FileMenuViewController.MenuItem(type: .editMetadata, action: { [weak self] in
+
+                let hostingController = UIHostingController(rootView: MetadataEditView())
+                hostingController.modalPresentationStyle = .fullScreen
+                self?.present(hostingController, animated: true)
+                
+                self?.dismissFloatingActionIsland()
+                self?.fabView.isHidden = false
+                self?.clearButtonWasPressed(UIButton())
+            }))
+        }
+        
         if file.permissions.contains(.move) {
+            
             menuItems.append(FileMenuViewController.MenuItem(type: .move, action: { [weak self] in
                 self?.dismissFloatingActionIsland({ [weak self] in
                     self?.viewModel?.fileAction = FileAction.move
@@ -1214,6 +1228,7 @@ extension MainViewController: FABActionSheetDelegate {
                         self?.backButton.layer.opacity = 1
                     }
                     
+                    self?.viewModel?.selectedFiles = nil
                     self?.viewModel?.isSelecting = false
                     self?.setupBottomActionSheet()
                 })

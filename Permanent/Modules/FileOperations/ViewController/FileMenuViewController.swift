@@ -20,6 +20,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
             case shareToPermanent
             case shareToAnotherApp
             case getLink
+            case editMetadata
         }
         
         let type: ItemType
@@ -128,7 +129,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         handleBar.backgroundColor = .white
         handleBar.layer.cornerRadius = 2
         
-        let headerStackView = UIStackView(arrangedSubviews: [itemThumbImageView, itemNameLabel, doneButton])
+        let headerStackView = UIStackView(arrangedSubviews: [itemThumbImageView, itemNameLabel])
         headerStackView.translatesAutoresizingMaskIntoConstraints = false
         headerStackView.spacing = 8
         
@@ -613,6 +614,11 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         if file.permissions.contains(.edit), let menuIndex = menuItems.firstIndex(where: { $0.type == .rename }) {
             stackView.addArrangedSubview(menuItem(withName: "Rename".localized(), iconName: "Rename", tag: menuIndex + 1))
         }
+        
+        if file.permissions.contains(.edit) && file.type.isFolder == false, let menuIndex = menuItems.firstIndex(where: { $0.type == .editMetadata }) {
+            stackView.addArrangedSubview(menuItem(withName: "Edit files metadata".localized(), iconName: "Rename", tag: menuIndex + 1))
+        }
+        
         if file.permissions.contains(.publish), let menuIndex = menuItems.firstIndex(where: { $0.type == .publish }) {
             stackView.addArrangedSubview(menuItem(withName: "Publish".localized(), iconName: "Public Files", tag: menuIndex + 1))
         }
