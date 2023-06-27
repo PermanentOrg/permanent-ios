@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct MetadataEditView: View {
-    @State private var fileName: String = ""
-    @State private var author: String = ""
-    
     var body: some View {
         CustomNavigationView {
             VStack {
