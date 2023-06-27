@@ -82,14 +82,14 @@ class TwoStepVerificationViewController: BaseViewController<AuthViewModel> {
 
 extension TwoStepVerificationViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: true)
+        (textField as? PETextField)?.toggleBorder(active: true)
         
         let point = CGPoint(x: 0, y: textField.frame.origin.y - 10)
         scrollView.setContentOffset(point, animated: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: false)
+        (textField as? PETextField)?.toggleBorder(active: false)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

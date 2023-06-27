@@ -99,11 +99,11 @@ class RecoverPasswordViewController: BaseViewController<AuthViewModel> {
 
 extension RecoverPasswordViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: true)
+        (textField as? PETextField)?.toggleBorder(active: true)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: false)
+        (textField as? PETextField)?.toggleBorder(active: false)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

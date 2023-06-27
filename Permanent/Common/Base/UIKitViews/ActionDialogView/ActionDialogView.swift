@@ -50,7 +50,7 @@ class ActionDialogView: UIView {
         var inputArray = [String]()
         
         for element in fieldsStackView.arrangedSubviews {
-            if let fieldValue = (element as? TextField)?.text {
+            if let fieldValue = (element as? PETextField)?.text {
                 inputArray.append(fieldValue)
             } else if let dropdownValue = (element as? DropdownView)?.value {
                 inputArray.append(dropdownValue)
@@ -132,7 +132,7 @@ class ActionDialogView: UIView {
             
         case .multipleFields:
             subtitleLabel.isHidden = true
-            let textField = TextField()
+            let textField = PETextField()
             fieldsStackView.addArrangedSubview(textField)
 
         case .simpleWithDescription:
@@ -175,7 +175,7 @@ class ActionDialogView: UIView {
         button.layer.cornerRadius = Constants.Design.actionButtonRadius
     }
     
-    fileprivate func styleTextField(_ field: TextField, placeholder: String?, fieldValue: String? = nil) {
+    fileprivate func styleTextField(_ field: PETextField, placeholder: String?, fieldValue: String? = nil) {
         field.backgroundColor = .galleryGray
         field.layer.borderColor = UIColor.doveGray.cgColor
         field.tintColor = .dustyGray
@@ -192,7 +192,7 @@ class ActionDialogView: UIView {
             let fieldValue = prefilledValues?[index] ?? ""
             let fieldPlaceholder = placeholders?[index]
             
-            if let textField = field as? TextField {
+            if let textField = field as? PETextField {
                 styleTextField(textField, placeholder: fieldPlaceholder, fieldValue: fieldValue)
             } else {
                 if let dropdownView = field as? DropdownView {

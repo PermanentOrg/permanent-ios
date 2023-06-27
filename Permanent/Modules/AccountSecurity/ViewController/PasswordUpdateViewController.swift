@@ -108,7 +108,7 @@ extension PasswordUpdateViewController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        (textField as? TextField)?.toggleBorder(active: false)
+        (textField as? PETextField)?.toggleBorder(active: false)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

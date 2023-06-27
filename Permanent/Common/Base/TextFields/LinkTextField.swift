@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LinkTextField: TextField {
+class LinkTextField: PETextField {
     
     override func setup() {
         

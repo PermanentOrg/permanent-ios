@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 extension UIColor {
     static var mainPink = UIColor(named: "MainPink") ?? UIColor(red: 232 / 255, green: 68 / 255, blue: 133 / 255, alpha: 1)
@@ -55,4 +56,10 @@ extension UIColor {
             return traits.userInterfaceStyle == .dark ? .white : .white
         }
     }
+}
+
+extension Color {
+    static var indianSaffron = Color("IndianSaffron")
+    static var darkBlue = Color("DarkBlue")
+    static var whiteGray = Color("WhiteGray")
 }
