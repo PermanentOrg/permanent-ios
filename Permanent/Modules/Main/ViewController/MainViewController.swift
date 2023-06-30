@@ -1203,9 +1203,10 @@ extension MainViewController: FABActionSheetDelegate {
         }
         
         if file.permissions.contains(.edit) {
+            guard let selectedFiles = self.viewModel?.selectedFiles else { return }
             menuItems.append(FileMenuViewController.MenuItem(type: .editMetadata, action: { [weak self] in
-
-                let hostingController = UIHostingController(rootView: MetadataEditView())
+                let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
+                
                 hostingController.modalPresentationStyle = .fullScreen
                 self?.present(hostingController, animated: true)
                 

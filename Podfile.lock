@@ -112,6 +112,8 @@ PODS:
   - SDWebImage (5.10.0):
     - SDWebImage/Core (= 5.10.0)
   - SDWebImage/Core (5.10.0)
+  - SDWebImageSwiftUI (2.2.3):
+    - SDWebImage (~> 5.10)
   - SkeletonView (1.30.4)
   - Sourcery (1.4.1)
   - StripeApplePay (22.8.1):
@@ -130,6 +132,7 @@ DEPENDENCIES:
   - ObjectMapper (= 4.2.0)
   - Protobuf (= 3.22.3)
   - SDWebImage (= 5.10.0)
+  - SDWebImageSwiftUI (= 2.2.3)
   - SkeletonView (= 1.30.4)
   - Sourcery (= 1.4.1)
   - StripeApplePay (= 22.8.1)
@@ -157,6 +160,7 @@ SPEC REPOS:
     - PromisesObjC
     - Protobuf
     - SDWebImage
+    - SDWebImageSwiftUI
     - SkeletonView
     - Sourcery
     - StripeApplePay
@@ -184,11 +188,12 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: d03938d5f7e974a97964fb0567771e36fbe9ecce
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
+  SDWebImageSwiftUI: 17396b7889f9abc27231caaeb64c537564284aab
   SkeletonView: 5a050f6411e697abd4cda0a8d767013399dccd69
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   StripeApplePay: 858c1dadc39b658d317661dea8cc2b7158533a17
   StripeCore: 52e0aba2fad604455692db593bf5edc04758b760
 
-PODFILE CHECKSUM: d9fb7c3916b1de417fe89817bbc624b7ea232ef6
+PODFILE CHECKSUM: fc47a3d21db54b6beabb70893d6908a4b0cb3254
 
 COCOAPODS: 1.12.1

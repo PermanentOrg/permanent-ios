@@ -15,6 +15,7 @@ struct RightButtonView: View {
         Button(action: action) {
             HStack(spacing: 10) {
                 Text(text)
+                    .textStyle(SmallSemiBoldTextStyle())
                 Image(systemName: "chevron.right")
             }
             .foregroundColor(.darkBlue)

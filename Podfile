@@ -10,6 +10,7 @@ target 'Permanent' do
   pod 'Protobuf', '3.22.3'
   pod 'ObjectMapper', '4.2.0'
   pod 'SDWebImage', '5.10.0'
+  pod 'SDWebImageSwiftUI', '2.2.3'
   pod 'Sourcery', '1.4.1'
   pod 'GoogleMaps', '6.1.1.0'
   pod 'GooglePlaces', '6.1.1.0'
