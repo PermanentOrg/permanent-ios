@@ -9,6 +9,7 @@ import UIKit
 
 struct TextView: UIViewRepresentable {
     @Binding var text: String
+    @Binding var didSaved: Bool
     var viewModel: FilesMetadataViewModel
     var textStyle: TextStyle = TextFontStyle.style
     var textColor: UIColor = .black
@@ -43,6 +44,7 @@ struct TextView: UIViewRepresentable {
         
         func textViewDidEndEditing(_ textView: UITextView) {
             parent.viewModel.saveDescription(textView.text)
+            parent.didSaved = true
         }
     }
 }

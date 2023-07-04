@@ -9,21 +9,20 @@ import SwiftUI
 
 struct MetadataEditView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
-    @State var inputText: String = ""
     
     init(viewModel: FilesMetadataViewModel) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         CustomNavigationView {
             VStack {
-                SectionView(
-                    imageUrl: viewModel.selectedFiles.first?.thumbnailURL500,
-                    title: "Editing \(Int(viewModel.selectedFiles.count)) items",
-                    rightButtonView: nil,
-                    divider: Divider.init()
-                )
+                Group {
+                    SectionHeaderView(viewModel: viewModel)
+                    Divider()
+                        .padding(.horizontal, 0)
+                        .padding(.top, 24)
+                }
                 Group {
                     VStack {
                         SectionView(
@@ -44,7 +43,7 @@ struct MetadataEditView: View {
                                         .inset(by: 0.5)
                                         .stroke(Color.galleryGray, lineWidth: 1)
                                 )
-                            TextView(text: $inputText, viewModel: viewModel, textStyle: TextFontStyle.style39, textColor: .middleGray)
+                            TextView(text: $viewModel.inputText, didSaved: $viewModel.didSaved, viewModel: viewModel, textStyle: TextFontStyle.style39, textColor: .middleGray)
                                 .padding(.all, 5)
                                 .frame(maxHeight: 72)
                         }
