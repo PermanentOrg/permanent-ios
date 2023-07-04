@@ -8,26 +8,51 @@
 import SwiftUI
 
 struct MetadataEditView: View {
+    @ObservedObject var viewModel: FilesMetadataViewModel
+    
+    init(viewModel: FilesMetadataViewModel) {
+        self.viewModel = viewModel
+    }
+
     var body: some View {
         CustomNavigationView {
             VStack {
-                SectionView(
-                    image: "photo",
-                    title: "Editing 3 items",
-                    rightButtonView: nil,
-                    divider: Divider.init()
-                )
-                SectionView(
-                    image: "metadataDescription",
-                    title: "Description",
-                    rightButtonView: RightButtonView(
-                        text: "Enter Description",
-                        action: { print("Description tapped")
+                Group {
+                    SectionHeaderView(viewModel: viewModel)
+                    Divider()
+                        .padding(.horizontal, 0)
+                        .padding(.top, 24)
+                }
+                Group {
+                    VStack {
+                        SectionView(
+                            assetName: "metadataDescription",
+                            title: "Description",
+                            rightButtonView: RightButtonView(
+                                text: "Enter Description",
+                                action: { print("Description tapped") }
+                            ),
+                            haveRightSection: false
+                        )
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .inset(by: 0.5)
+                                        .stroke(Color.galleryGray, lineWidth: 1)
+                                )
+                            TextView(text: $viewModel.inputText, didSaved: $viewModel.didSaved, viewModel: viewModel, textStyle: TextFontStyle.style39, textColor: .middleGray)
+                                .padding(.all, 5)
+                                .frame(maxHeight: 72)
                         }
-                    )
-                )
+                        .frame(height: 72)
+                        .foregroundColor(.clear)
+                    }
+                }
                 SectionView(
-                    image: "metadataTags",
+                    assetName: "metadataTags",
                     title: "Tags",
                     rightButtonView: RightButtonView(
                         text: "Manage Tags",
@@ -36,7 +61,7 @@ struct MetadataEditView: View {
                     divider: Divider.init()
                 )
                 SectionView(
-                    image: "metadataFileNames",
+                    assetName: "metadataFileNames",
                     title: "File names",
                     rightButtonView: RightButtonView(
                         text: "Modify",
@@ -45,7 +70,7 @@ struct MetadataEditView: View {
                     divider: Divider.init()
                 )
                 SectionView(
-                    image: "metadataDateAndTime",
+                    assetName: "metadataDateAndTime",
                     title: "Date and time",
                     rightButtonView: RightButtonView(
                         text: "Add",
@@ -54,7 +79,7 @@ struct MetadataEditView: View {
                     divider: Divider.init()
                 )
                 SectionView(
-                    image: "metadataLocations",
+                    assetName: "metadataLocations",
                     title: "Locations",
                     rightButtonView: RightButtonView(
                         text: "Add",
@@ -68,12 +93,19 @@ struct MetadataEditView: View {
             .navigationBarBackButtonHidden(true)
             .ignoresSafeArea()
             .background(Color.whiteGray)
+            .onTapGesture {
+                dismissKeyboard()
+            }
         }
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
 struct MetadataEditView_Previews: PreviewProvider {
     static var previews: some View {
-        MetadataEditView()
+        MetadataEditView(viewModel: FilesMetadataViewModel(files: []))
     }
 }

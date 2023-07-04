@@ -8,6 +8,8 @@ import SwiftUI
 
 fileprivate enum FontName: String {
     case openSansRegular = "OpenSans-Regular"
+    case openSansSemiBold = "OpenSans-SemiBold"
+    case openSansBold = "OpenSans-Bold"
 }
 
 fileprivate enum FontSize: CGFloat {
@@ -24,6 +26,30 @@ struct SmallXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
                              size: FontSize.xxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansBold.rawValue,
+                             size: FontSize.small.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.small.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.small.rawValue,
                              relativeTo: .largeTitle))
     }
 }
