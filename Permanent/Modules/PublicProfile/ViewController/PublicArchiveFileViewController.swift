@@ -173,7 +173,7 @@ class PublicArchiveFileViewController: BaseViewController<PublicArchiveViewModel
         return false
     }
     
-    func presentFileDetails(file: FileViewModel) {
+    func presentFileDetails(file: FileModel) {
         let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
         listPreviewVC.modalPresentationStyle = .fullScreen
         listPreviewVC.viewModel = viewModel
@@ -301,7 +301,7 @@ extension PublicArchiveFileViewController: UICollectionViewDelegateFlowLayout, U
 extension PublicArchiveFileViewController {
     private func cellRightButtonAction(atPosition position: Int) { }
     
-    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
             showFileActionSheet(file: file, atIndexPath: indexPath)
@@ -316,7 +316,7 @@ extension PublicArchiveFileViewController {
         }
     }
     
-    private func download(_ file: FileViewModel) {
+    private func download(_ file: FileModel) {
         viewModel?.download(
             file,
             
@@ -368,7 +368,7 @@ extension PublicArchiveFileViewController {
 }
 
 extension PublicArchiveFileViewController {
-    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
         var actions: [PRMNTAction] = []
         
         if file.type.isFolder == false {
@@ -391,7 +391,7 @@ extension PublicArchiveFileViewController {
         present(actionSheet, animated: true, completion: nil)
     }
     
-    func shareWithOtherApps(file: FileViewModel) {
+    func shareWithOtherApps(file: FileModel) {
         if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
             share(url: localURL)
         } else {
@@ -426,7 +426,7 @@ extension PublicArchiveFileViewController {
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
     
-    func downloadAction(file: FileViewModel) {
+    func downloadAction(file: FileModel) {
         download(file)
     }
 }

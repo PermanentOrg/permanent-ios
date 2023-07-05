@@ -8,23 +8,51 @@ import SwiftUI
 import Foundation
 
 protocol GenericViewModelProtocol: ObservableObject {
-    var selectedFiles: [FileViewModel] { get set }
+    var selectedFiles: [FileModel] { get set }
 }
 
 class FilesMetadataViewModel: GenericViewModelProtocol {
-    @Published var selectedFiles: [FileViewModel] = []
-    @Published var inputText: String = ""
+    @Published var selectedFiles: [FileModel] = []
+    @Published var inputText: String = .enterTextHere
     @Published var didSaved: Bool = false {
         didSet {
-            saveDescription("")
+            updateDescription(inputText)
         }
     }
+    @Published var showAlert: Bool = false
     
-    init(files: [FileViewModel]) {
+    init(files: [FileModel]) {
         self.selectedFiles = files
     }
 
-    func saveDescription(_ text: String) {
-        ///To do:  add  new description text
+    func updateDescription(_ text: String) {
+        update(description: text) { status in
+            self.showAlert = status
+        }
+    }
+    
+    func update(description: String, completion: @escaping ((Bool) -> Void)) {
+        guard let selectedArchive = AuthenticationManager.shared.session?.selectedArchive else {
+            completion(false)
+            return
+        }
+        
+        let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
+        let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .json( _, _):
+                    completion(true)
+                    
+                case .error(_, _):
+                    completion(false)
+                    
+                default:
+                    completion(false)
+                }
+            }
+        }
     }
 }

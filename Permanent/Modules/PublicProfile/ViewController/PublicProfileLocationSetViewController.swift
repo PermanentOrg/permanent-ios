@@ -15,7 +15,7 @@ protocol PublicProfileLocationSetViewControllerDelegate: AnyObject {
 }
 
 class PublicProfileLocationSetViewController: BaseViewController<PublicProfilePageViewModel> {
-    var file: FileViewModel!
+    var file: FileModel!
     var locnVO: LocnVO?
     
     weak var delegate: PublicProfileLocationSetViewControllerDelegate?

@@ -27,7 +27,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         let action: (() -> Void)?
     }
     
-    var fileViewModel: FileViewModel!
+    var fileViewModel: FileModel!
     
     let scrollView: UIScrollView = UIScrollView()
     let stackView: UIStackView = UIStackView()
@@ -600,7 +600,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
     }
     
     func setupMenuView() {
-        let file: FileViewModel! = fileViewModel
+        let file: FileModel! = fileViewModel
         
         if file.permissions.contains(.read) && file.type.isFolder == false, let menuIndex = menuItems.firstIndex(where: { $0.type == .download }) {
             stackView.addArrangedSubview(menuItem(withName: "Download to device".localized(), iconName: "Download-1", tag: menuIndex + 1))

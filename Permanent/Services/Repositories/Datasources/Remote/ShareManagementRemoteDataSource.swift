@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ShareManagementRemoteDataSourceInterface {
-    func getShareLink(file: FileViewModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
+    func getShareLink(file: FileModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse)
     func revokeLink(shareVO: SharebyURLVOData?, then handler: @escaping ServerResponse)
     func updateLink(model: ManageLinkData, shareVO: SharebyURLVOData?, then handler: @escaping ShareLinkResponse)
     func approveButtonAction(minArchiveVO: MinArchiveVO, accessRole: AccessRole, then handler: @escaping (RequestStatus, ShareVOData?) -> Void)
@@ -18,7 +18,7 @@ protocol ShareManagementRemoteDataSourceInterface {
 }
 
 class ShareManagementRemoteDataSource: ShareManagementRemoteDataSourceInterface {
-    func getShareLink(file: FileViewModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
+    func getShareLink(file: FileModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         let endpoint = option.endpoint(for: file)
         let apiOperation = APIOperation(endpoint)
         
@@ -277,7 +277,7 @@ class ShareManagementMockRemoteDataSource: ShareManagementRemoteDataSourceInterf
         return nil
     }
 
-    func getShareLink(file: FileViewModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
+    func getShareLink(file: FileModel, option: ShareLinkOption, then handler: @escaping ShareLinkResponse) {
         handler(sharebyURLVODataMock, nil)
     }
 

@@ -1,5 +1,5 @@
 //
-//  FileViewModel.swift
+//  FileModel.swift
 //  Permanent
 //
 //  Created by Adrian Creteanu on 14/10/2020.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct FileViewModel: Equatable, Codable {
+struct FileModel: Equatable, Codable {
     let thumbnailURL: String?
     let thumbnailURL500: String?
     let thumbnailURL1000: String?

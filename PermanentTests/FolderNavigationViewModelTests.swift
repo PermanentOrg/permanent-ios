@@ -30,7 +30,7 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
         
         XCTAssertEqual(sut.displayName, childFolder.name)
@@ -47,7 +47,7 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
         
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
         
         XCTAssertTrue(sut.hasBackButton)
@@ -57,7 +57,7 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
             XCTAssertEqual(self.sut.folderStack, [childFolder])
@@ -73,7 +73,7 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
         
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
@@ -90,11 +90,11 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
-        let childFolder1 = FileViewModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: [])
+        let childFolder1 = FileModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder1)
-        let childFolder2 = FileViewModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
+        let childFolder2 = FileModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder2)
         
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in
@@ -111,7 +111,7 @@ class FolderNavigationViewModelTests: XCTestCase {
         let workspaceName = "Private Files"
         sut = FolderNavigationViewModel(workspaceName: workspaceName, workspace: .privateFiles)
 
-        let childFolder = FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
+        let childFolder = FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: [])
         sut.pushFolder(childFolder)
         
         expectation(forNotification: FolderNavigationViewModel.didUpdateFolderStackNotification, object: sut) { notification in

@@ -20,7 +20,7 @@ struct SortedTagVO {
 
 class TagDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
-    var file: FileViewModel!
+    var file: FileModel!
     let maximumNumberOfCharactersForTagName: Int = 16
 
     weak var delegate: TagDetailsViewControllerDelegate?

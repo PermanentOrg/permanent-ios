@@ -31,11 +31,11 @@ enum CheckboxState {
 }
 
 class FilesViewModel: NSObject, ViewModelInterface {
-    var viewModels: [FileViewModel] = []
-    var navigationStack: [FileViewModel] = []
+    var viewModels: [FileModel] = []
+    var navigationStack: [FileModel] = []
     var uploadQueue: [FileInfo] = []
 
-    var downloadQueue: [FileViewModel] = []
+    var downloadQueue: [FileModel] = []
     var activeSortOption: SortOption = .nameAscending
     var uploadInProgress: Bool = false
     var downloadInProgress: Bool {
@@ -44,13 +44,13 @@ class FilesViewModel: NSObject, ViewModelInterface {
     var uploadFolder: FolderInfo?
     var fileAction: FileAction = .none
     
-    var selectedFiles: [FileViewModel]? = []
-    var currentFolder: FileViewModel? { navigationStack.last }
+    var selectedFiles: [FileModel]? = []
+    var currentFolder: FileModel? { navigationStack.last }
     var isSelecting: Bool = false
     var isSelectingDestination: Bool = false
     var checkboxState: CheckboxState = .none
     
-    lazy var searchViewModels: [FileViewModel] = { [] }()
+    lazy var searchViewModels: [FileModel] = { [] }()
     private var downloader: DownloadManagerGCD?
 
     var currentArchive: ArchiveVOData? { return AuthenticationManager.shared.session?.selectedArchive }
@@ -78,7 +78,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
     
     var currentFolderIsRoot: Bool { true }
     
-    func removeCurrentFolderFromHierarchy() -> FileViewModel? {
+    func removeCurrentFolderFromHierarchy() -> FileModel? {
         navigationStack.popLast()
     }
     
@@ -112,7 +112,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         uploadQueue.filter { $0.folder.folderId == navigationStack.last?.folderId }
     }
     
-    var syncedViewModels: [FileViewModel] {
+    var syncedViewModels: [FileModel] {
         return viewModels
     }
 
@@ -125,14 +125,14 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
+    func fileForRowAt(indexPath: IndexPath) -> FileModel {
         switch indexPath.section {
         case FileListType.downloading.rawValue:
             return downloadQueue[indexPath.row]
 
         case FileListType.uploading.rawValue:
             let fileInfo = queueItemsForCurrentFolder[indexPath.row]
-            var fileViewModel = FileViewModel(model: fileInfo, permissions: archivePermissions)
+            var fileViewModel = FileModel(model: fileInfo, permissions: archivePermissions)
             
             // If the first item in queue, set the `uploading` status.
             let currentFileUpload = UploadManager.shared.inProgressUpload()
@@ -169,7 +169,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         return false
     }
     
-    func removeSyncedFiles(_ files: [FileViewModel]?) {
+    func removeSyncedFiles(_ files: [FileModel]?) {
         guard let files = files else {
             return
         }
@@ -197,7 +197,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func relocate(files: [FileViewModel]?, to destination: FileViewModel, then handler: @escaping ServerResponse) {
+    func relocate(files: [FileModel]?, to destination: FileModel, then handler: @escaping ServerResponse) {
         guard let files = files else {
             handler(.error(message: "No files selected".localized()))
             return
@@ -271,7 +271,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
 
-    func publish(files: [FileViewModel], then handler: @escaping ServerResponse) {
+    func publish(files: [FileModel], then handler: @escaping ServerResponse) {
         fileAction = .copy
         guard let archiveNbr = currentArchive?.archiveNbr else { return }
         
@@ -279,7 +279,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             switch status {
             case .success(let folder):
                 if let rootFolder = folder {
-                    let publicRoot = FileViewModel(model: rootFolder)
+                    let publicRoot = FileModel(model: rootFolder)
                     self.relocate(files: files, to: publicRoot, then: handler)
                 } else {
                     handler(.error(message: .errorMessage))
@@ -298,7 +298,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         downloader = nil
     }
     
-    func download(_ file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse, progressHandler: ProgressHandler?) {
+    func download(_ file: FileModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse, progressHandler: ProgressHandler?) {
         var downloadFile = file
         downloadFile.fileStatus = .downloading
         downloadQueue.append(downloadFile)
@@ -321,7 +321,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
         )}
 
-    func download(file: FileViewModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
+    func download(file: FileModel, onDownloadStart: @escaping VoidAction, onFileDownloaded: @escaping DownloadResponse) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
@@ -340,7 +340,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
             }
         )}
 
-    func delete(_ files: [FileViewModel]?, then handler: @escaping ServerResponse) {
+    func delete(_ files: [FileModel]?, then handler: @escaping ServerResponse) {
         guard let files = files else {
             handler(.error(message: .errorMessage))
             return
@@ -418,7 +418,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
+                let folder = FileModel(model: folderVO, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
                 self.viewModels.insert(folder, at: 0)
                 handler(.success)
 
@@ -533,7 +533,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         viewModels.removeAll()
         
         childItems.forEach {
-            let file = FileViewModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
+            let file = FileModel(model: $0, permissions: self.archivePermissions, accessRole: self.archiveAccessRole)
             self.viewModels.append(file)
         }
         
@@ -554,7 +554,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         let folderLinkIds: [Int] = childItems.compactMap { $0.folderLinkID }
         
         if !backNavigation {
-            let file = FileViewModel(model: folderVO, permissions: archivePermissions, accessRole: archiveAccessRole)
+            let file = FileModel(model: folderVO, permissions: archivePermissions, accessRole: archiveAccessRole)
             navigationStack.append(file)
         }
         
@@ -595,7 +595,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
         }
     }
     
-    func rename(file: FileViewModel, name: String?, then handler: @escaping ServerResponse) {
+    func rename(file: FileModel, name: String?, then handler: @escaping ServerResponse) {
         var params: UpdateRecordParams
         var apiOperation: APIOperation
         

@@ -13,10 +13,10 @@ protocol ContextAction {
 }
 
 class FileActionManager: ContextAction {
-    let file: FileViewModel
+    let file: FileModel
     let action: FileAction
     
-    init(file: FileViewModel, action: FileAction) {
+    init(file: FileModel, action: FileAction) {
         self.file = file
         self.action = action
     }

@@ -14,7 +14,7 @@ class ShareManagementRepository {
         self.remoteDataSource = remoteDataSource
     }
     
-    func getShareLink(file: FileViewModel, option: ShareLinkOption, then completion: @escaping ShareLinkResponse) {
+    func getShareLink(file: FileModel, option: ShareLinkOption, then completion: @escaping ShareLinkResponse) {
         remoteDataSource.getShareLink(file: file, option: option) { result, error in
             completion(result,error)
         }

@@ -20,7 +20,7 @@ class ShareManagementTests: XCTestCase {
         let shareManagementRepository = ShareManagementRepository(remoteDataSource: shareManagementMockDataSource)
         let info = FolderInfo(folderId: 1, folderLinkId: 1)
         let url = URL(string: "https://google.com")!
-        let model = FileViewModel(model: FileInfo(withURL: url, named: "Test", folder: info), permissions: [])
+        let model = FileModel(model: FileInfo(withURL: url, named: "Test", folder: info), permissions: [])
         sut = ShareLinkViewModel(fileViewModel: model, shareManagementRepository: shareManagementRepository, downloader: downloadManagerMock)
     }
 
@@ -136,7 +136,7 @@ class ShareManagementTests: XCTestCase {
         sut.getRecord { record in
             XCTAssertNotNil(record)
 
-            self.sut.fileViewModel = FileViewModel(model: record!.recordVO!, permissions: [], accessRole: .owner)
+            self.sut.fileViewModel = FileModel(model: record!.recordVO!, permissions: [], accessRole: .owner)
 
             XCTAssert(self.sut.shareVOS?.count == 2)
             XCTAssert(self.sut.acceptedShareVOs.count == 1)

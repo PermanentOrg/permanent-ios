@@ -20,12 +20,12 @@ class FolderContentViewModelTests: XCTestCase {
     }
     
     func testLoadFolderData() {
-        let rootFolder = FileViewModel(name: "Root", recordId: 123, folderLinkId: 111, archiveNbr: "ooo-012", type: "type.folder.private", permissions: [])
+        let rootFolder = FileModel(name: "Root", recordId: 123, folderLinkId: 111, archiveNbr: "ooo-012", type: "type.folder.private", permissions: [])
         
         let folderContent = [
-            FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: []),
-            FileViewModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: []),
-            FileViewModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
+            FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: []),
+            FileModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: []),
+            FileModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
         ]
         let remoteDataSource = FilesRemoteMockDataSource()
         remoteDataSource.folderContentMockFiles = folderContent
@@ -36,12 +36,12 @@ class FolderContentViewModelTests: XCTestCase {
     }
     
     func testRefreshFolderData() {
-        let rootFolder = FileViewModel(name: "Root", recordId: 123, folderLinkId: 111, archiveNbr: "ooo-012", type: "type.folder.private", permissions: [])
+        let rootFolder = FileModel(name: "Root", recordId: 123, folderLinkId: 111, archiveNbr: "ooo-012", type: "type.folder.private", permissions: [])
         
         var folderContent = [
-            FileViewModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: []),
-            FileViewModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: []),
-            FileViewModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
+            FileModel(name: "Test1", recordId: 222, folderLinkId: 112, archiveNbr: "ooo-013", type: "type.folder.private", permissions: []),
+            FileModel(name: "Test2", recordId: 333, folderLinkId: 113, archiveNbr: "ooo-014", type: "type.folder.private", permissions: []),
+            FileModel(name: "Test3", recordId: 444, folderLinkId: 114, archiveNbr: "ooo-015", type: "type.folder.private", permissions: [])
         ]
         let remoteDataSource = FilesRemoteMockDataSource()
         remoteDataSource.folderContentMockFiles = folderContent
@@ -55,7 +55,7 @@ class FolderContentViewModelTests: XCTestCase {
             return true
         }
         
-        folderContent.append(FileViewModel(name: "Test4", recordId: 555, folderLinkId: 115, archiveNbr: "ooo-016", type: "type.folder.private", permissions: []))
+        folderContent.append(FileModel(name: "Test4", recordId: 555, folderLinkId: 115, archiveNbr: "ooo-016", type: "type.folder.private", permissions: []))
         remoteDataSource.folderContentMockFiles = folderContent
         sut.refreshFolder()
         

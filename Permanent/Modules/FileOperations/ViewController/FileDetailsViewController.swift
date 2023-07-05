@@ -32,7 +32,7 @@ class FileDetailsViewController: BaseViewController<FilePreviewViewModel> {
     
     weak var delegate: FilePreviewNavigationControllerDelegate?
     
-    var file: FileViewModel!
+    var file: FileModel!
     let fileHelper = FileHelper()
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO

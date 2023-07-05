@@ -9,9 +9,9 @@ import Foundation
 
 enum ShareEndpoint {
     
-    case getLink(file: FileViewModel)
+    case getLink(file: FileModel)
     
-    case generateShareLink(file: FileViewModel) // TODO: Create typealias
+    case generateShareLink(file: FileModel) // TODO: Create typealias
     
     case revokeLink(link: SharebyURLVOData)
     

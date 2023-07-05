@@ -33,7 +33,7 @@ class PublicArchiveViewModel: FilesViewModel {
         0
     }
     
-    override func fileForRowAt(indexPath: IndexPath) -> FileViewModel {
+    override func fileForRowAt(indexPath: IndexPath) -> FileModel {
         switch indexPath.section {
         case 0:
             return syncedViewModels[indexPath.row]
@@ -83,7 +83,7 @@ class PublicArchiveViewModel: FilesViewModel {
         navigateMin(params: params, backNavigation: false, then: handler)
     }
     
-    func publicURL(forFile file: FileViewModel) -> URL? {
+    func publicURL(forFile file: FileModel) -> URL? {
         guard let currentArchive = currentArchive, let currentFolder = currentFolder else { return nil }
         
         let baseURLString = APIEnvironment.defaultEnv.publicURL

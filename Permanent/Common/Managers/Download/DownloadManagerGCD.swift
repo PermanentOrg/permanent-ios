@@ -25,7 +25,7 @@ class DownloadManagerGCD: Downloader {
         }
     }
     
-    func download(_ file: FileViewModel,
+    func download(_ file: FileModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
                   progressHandler: ProgressHandler?,
@@ -185,7 +185,7 @@ class DownloadManagerGCD: Downloader {
 }
 
 class DownloadManagerMock: Downloader {
-    func download(_ file: FileViewModel,
+    func download(_ file: FileModel,
                   onDownloadStart: @escaping VoidAction,
                   onFileDownloaded: @escaping DownloadResponse,
                   progressHandler: ProgressHandler?,

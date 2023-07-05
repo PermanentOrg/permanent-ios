@@ -86,7 +86,7 @@ class PublicProfilePicturesViewModel: ViewModelInterface {
         }
     }
     
-    func updateProfilePicture(file: FileViewModel, then handler: @escaping ServerResponse) {
+    func updateProfilePicture(file: FileModel, then handler: @escaping ServerResponse) {
         let apiOperation = APIOperation(ArchivesEndpoint.update(archiveVO: archiveData, file: file))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

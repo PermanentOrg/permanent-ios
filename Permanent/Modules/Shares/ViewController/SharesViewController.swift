@@ -83,7 +83,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer), at: 0)
+                    self?.viewModel?.viewModels.insert(FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.currentFolder?.accessRole ?? .viewer), at: 0)
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -469,7 +469,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     func presentFileDetails(sharedFile: ShareNotificationPayload, sharedFileThumbnailURL: String? = nil) {
         let currentArchive: ArchiveVOData? = viewModel?.currentArchive
         let permissions = ArchiveVOData.permissions(forAccessRole: sharedFile.accessRole)
-        let fileVM = FileViewModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions, thumbnailURL2000: sharedFileThumbnailURL)
+        let fileVM = FileModel(name: sharedFile.name, recordId: sharedFile.recordId, folderLinkId: sharedFile.folderLinkId, archiveNbr: sharedFile.archiveNbr, type: sharedFile.type, permissions: permissions, thumbnailURL2000: sharedFileThumbnailURL)
         let filePreviewVC = UIViewController.create(withIdentifier: .filePreview, from: .main) as! FilePreviewViewController
         filePreviewVC.file = fileVM
         
@@ -674,7 +674,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
     
-    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
         var menuItems: [FileMenuViewController.MenuItem] = []
         
         if file.permissions.contains(.share) {
@@ -774,7 +774,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         present(vc, animated: true)
     }
     
-    func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.rename) \"%@\"", file.name)
         
         self.showActionDialog(
@@ -800,11 +800,11 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
     }
     
-    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func deleteAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
     }
     
-    func unshareAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func unshareAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         didTapUnshare(forFile: file, atIndexPath: indexPath)
     }
 
@@ -839,7 +839,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         })
     }
 
-    private func download(_ file: FileViewModel) {
+    private func download(_ file: FileModel) {
         viewModel?.download(file, onDownloadStart: {
             DispatchQueue.main.async {
                 self.refreshCollectionView()
@@ -872,7 +872,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         view.showNotificationBanner(height: Constants.Design.bannerHeight, title: "'\(name)' " + "download completed".localized(), animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
     }
     
-    func rename(_ file: FileViewModel, _ name: String, atIndexPath indexPath: IndexPath) {
+    func rename(_ file: FileModel, _ name: String, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.rename(file: file, name: name, then: { status in
             self.hideSpinner()
@@ -892,7 +892,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         })
     }
     
-    func relocate(files: [FileViewModel], to destination: FileViewModel) {
+    func relocate(files: [FileModel], to destination: FileModel) {
         let isInvalidDestination = destination.folderId == files.first?.parentFolderId
         if isInvalidDestination && viewModel?.fileAction == .move {
             showErrorAlert(message: "Please select a different destination folder.".localized())
@@ -925,7 +925,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
-    private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func didTapDelete(forFile file: FileModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
         
         self.showActionDialog(
@@ -941,7 +941,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
     }
     
-    private func didTapUnshare(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func didTapUnshare(forFile file: FileModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String("Unshare").localized()) \"%@\"?", file.name)
         
         self.showActionDialog(
@@ -957,7 +957,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         )
     }
     
-    func deleteFile(_ files: [FileViewModel]?) {
+    func deleteFile(_ files: [FileModel]?) {
         showSpinner()
         viewModel?.delete(files, then: { status in
             self.hideSpinner()
@@ -975,7 +975,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         })
     }
     
-    func unshareFile(_ file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func unshareFile(_ file: FileModel, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.unshare(file, then: { status in
             self.hideSpinner()
@@ -993,7 +993,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         })
     }
     
-    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
             if let isSelecting = viewModel?.isSelecting, isSelecting {
@@ -1026,7 +1026,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         }
     }
     
-    private func handleProgress(forFile file: FileViewModel, withValue value: Float) {
+    private func handleProgress(forFile file: FileModel, withValue value: Float) {
         guard let index = viewModel?.viewModels.firstIndex(where: { $0.recordId == file.recordId }),
             let downloadingCell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? FileCollectionViewCell
         else {
@@ -1243,11 +1243,11 @@ extension SharesViewController {
 
 // MARK: - SharedFileActionSheetDelegate
 extension SharesViewController: SharedFileActionSheetDelegate {
-    func downloadAction(file: FileViewModel) {
+    func downloadAction(file: FileModel) {
         download(file)
     }
     
-    func relocateAction(files: [FileViewModel]?, action: FileAction) {
+    func relocateAction(files: [FileModel]?, action: FileAction) {
         viewModel?.selectedFiles = files
         viewModel?.fileAction = action
 
@@ -1369,7 +1369,7 @@ extension SharesViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], loadInMemory: Bool = false) {
+    private func processUpload(toFolder folder: FileModel, forURLS urls: [URL], loadInMemory: Bool = false) {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
