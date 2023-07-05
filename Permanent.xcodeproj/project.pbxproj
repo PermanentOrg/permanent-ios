@@ -2136,7 +2136,6 @@
 				5E4739CB2A41094700A20D85 /* FileOperations */,
 				5E991EDC2A48E018006229C0 /* EditMetadata */,
 				5E4739AB2A40F9DB00A20D85 /* Shares */,
-				924F162C2A45951600B75D4E /* EditMetadata */,
 				5E4739B02A40FC0300A20D85 /* ManageTags */,
 				5E4739B12A40FC5400A20D85 /* ManageMembers */,
 				5ED3B3AA29F7D71E000CFF48 /* LegacyPlanning */,
@@ -2610,6 +2609,7 @@
 			isa = PBXGroup;
 			children = (
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
+				924F162E2A45954A00B75D4E /* TagsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2733,22 +2733,6 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
-			sourceTree = "<group>";
-		};
-		924F162C2A45951600B75D4E /* EditMetadata */ = {
-			isa = PBXGroup;
-			children = (
-				924F162D2A45952800B75D4E /* Views */,
-			);
-			path = EditMetadata;
-			sourceTree = "<group>";
-		};
-		924F162D2A45952800B75D4E /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				924F162E2A45954A00B75D4E /* TagsView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		924F16382A45D25100B75D4E /* ViewModifiers */ = {

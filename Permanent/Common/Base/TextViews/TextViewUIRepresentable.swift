@@ -39,7 +39,7 @@ struct TextView: UIViewRepresentable {
         }
         
         func textViewDidBeginEditing(_ textView: UITextView) {
-            if textView.text == "Enter your text here" {
+            if textView.text == .enterTextHere {
                 textView.text = ""
             }
         }
@@ -50,9 +50,9 @@ struct TextView: UIViewRepresentable {
         
         func textViewDidEndEditing(_ textView: UITextView) {
             if textView.text.isEmpty {
-                textView.text = "Enter your text here"
+                textView.text = .enterTextHere
             } else {
-                if textView.text != "Enter your text here" {
+                if textView.text != .enterTextHere {
                     parent.didSaved = true
                 }
             }

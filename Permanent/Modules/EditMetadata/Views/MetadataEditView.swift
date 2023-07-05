@@ -52,15 +52,18 @@ struct MetadataEditView: View {
                         .foregroundColor(.clear)
                     }
                 }
-                SectionView(
-                    assetName: "metadataTags",
-                    title: "Tags",
-                    rightButtonView: RightButtonView(
-                        text: "Manage Tags",
-                        action: { print("Manage Tags tapped") }
-                    ),
-                    divider: Divider.init()
-                )
+                Group {
+                    SectionView(
+                        assetName: "metadataTags",
+                        title: "Tags",
+                        rightButtonView: RightButtonView(
+                            text: "Manage Tags",
+                            action: { print("Manage Tags tapped") }
+                        )
+                    )
+                    TagsView()
+                    Divider()
+                }
                 SectionView(
                     assetName: "metadataFileNames",
                     title: "File names",

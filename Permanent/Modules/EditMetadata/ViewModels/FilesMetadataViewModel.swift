@@ -13,7 +13,7 @@ protocol GenericViewModelProtocol: ObservableObject {
 
 class FilesMetadataViewModel: GenericViewModelProtocol {
     @Published var selectedFiles: [FileModel] = []
-    @Published var inputText: String = "Enter your text here"
+    @Published var inputText: String = .enterTextHere
     @Published var didSaved: Bool = false {
         didSet {
             updateDescription(inputText)
