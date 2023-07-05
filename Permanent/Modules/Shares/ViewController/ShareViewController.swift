@@ -19,7 +19,7 @@ class ShareViewController: BaseViewController<ShareLinkViewModel> {
     
     private let overlayView = UIView()
     
-    var sharedFile: FileViewModel!
+    var sharedFile: FileModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()

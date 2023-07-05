@@ -10,7 +10,7 @@ import WebKit
 import AVKit
 
 class FilePreviewViewModel: ViewModelInterface {
-    let file: FileViewModel
+    let file: FileModel
     var name: String
     var publicURL: URL?
     
@@ -25,13 +25,13 @@ class FilePreviewViewModel: ViewModelInterface {
     
     let tagsRepository: TagsRepository
     
-    init(file: FileViewModel, tagsRepository: TagsRepository = TagsRepository()) {
+    init(file: FileModel, tagsRepository: TagsRepository = TagsRepository()) {
         self.tagsRepository = tagsRepository
         self.file = file
         name = file.name
     }
     
-    func getRecord(file: FileViewModel, then handler: @escaping (RecordVO?) -> Void) {
+    func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
         let downloadInfo = FileDownloadInfoVM(
             fileType: file.type,
             folderLinkId: file.folderLinkId,
@@ -44,7 +44,7 @@ class FilePreviewViewModel: ViewModelInterface {
         }
     }
     
-    func onRecordCallback(file: FileViewModel, record: RecordVO?, error: Error?, then handler: @escaping (RecordVO?) -> Void) {
+    func onRecordCallback(file: FileModel, record: RecordVO?, error: Error?, then handler: @escaping (RecordVO?) -> Void) {
         if record != nil && error == nil {
             recordVO = record
             
@@ -113,7 +113,7 @@ class FilePreviewViewModel: ViewModelInterface {
         return fileName
     } 
     
-    func update(file: FileViewModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
+    func update(file: FileModel, name: String?, description: String?, date: Date?, location: LocnVO?, completion: @escaping ((Bool) -> Void)) {
         let params: UpdateRecordParams = (name, description, date, location, file.recordId, file.folderLinkId, file.archiveNo)
         let apiOperation = APIOperation(FilesEndpoint.update(params: params))
         

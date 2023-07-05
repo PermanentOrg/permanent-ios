@@ -16,7 +16,7 @@ protocol LocationSetViewControllerDelegate: AnyObject {
 
 class LocationSetViewController: BaseViewController<FilePreviewViewModel> {
     
-    var file: FileViewModel!
+    var file: FileModel!
     var recordVO: RecordVOData? {
         return viewModel?.recordVO?.recordVO
     }

@@ -16,7 +16,7 @@ enum ArchivesEndpoint {
     case delete(archiveId: Int, archiveNbr: String)
     case accept(archiveVO: ArchiveVOData)
     case decline(archiveVO: ArchiveVOData)
-    case update(archiveVO: ArchiveVOData, file: FileViewModel)
+    case update(archiveVO: ArchiveVOData, file: FileModel)
     case transferOwnership(archiveNbr: String, primaryEmail: String)
     case getArchivesByArchivesNbr(archivesNbr: [String])
     case searchArchive(searchAfter: String)
@@ -241,7 +241,7 @@ extension ArchivesEndpoint {
         ]
     }
     
-    func updateArchiveThumbPayload(archiveVO: ArchiveVOData, file: FileViewModel) -> RequestParameters {
+    func updateArchiveThumbPayload(archiveVO: ArchiveVOData, file: FileModel) -> RequestParameters {
         return [
             "RequestVO":
                 [

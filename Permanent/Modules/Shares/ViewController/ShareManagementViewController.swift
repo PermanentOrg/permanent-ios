@@ -38,7 +38,7 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
     @IBOutlet weak var collectionView: UICollectionView!
     private let overlayView = UIView()
     
-    var sharedFile: FileViewModel!
+    var sharedFile: FileModel!
     var shareLink: String?
     var shareManagementViewData: [ShareManagementSectionType: [ShareManagementCellType]] = [:]
     

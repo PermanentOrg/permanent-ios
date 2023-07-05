@@ -52,7 +52,7 @@ class PublicFilesViewModel: MyFilesViewModel {
         navigateMin(params: params, backNavigation: false, then: handler)
     }
     
-    func publicURL(forFile file: FileViewModel) -> URL? {
+    func publicURL(forFile file: FileModel) -> URL? {
         guard let currentArchive = currentArchive, let currentFolder = currentFolder else { return nil }
         
         let baseURLString = APIEnvironment.defaultEnv.publicURL

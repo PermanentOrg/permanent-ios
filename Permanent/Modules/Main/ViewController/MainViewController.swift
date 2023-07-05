@@ -73,7 +73,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             if self?.viewModel?.currentFolder?.folderLinkId == operation.file.folder.folderLinkId {
                 if (notif.userInfo?["error"] == nil), let uploadedFile = operation.uploadedFile {
                     self?.viewModel?.uploadQueue.removeAll(where: { $0 == operation.file })
-                    self?.viewModel?.viewModels.insert(FileViewModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.archiveAccessRole ?? .viewer), at: 0)
+                    self?.viewModel?.viewModels.insert(FileModel(model: uploadedFile, archiveThumbnailURL: "", permissions: [], accessRole: self?.viewModel?.archiveAccessRole ?? .viewer), at: 0)
                     self?.refreshCollectionView()
                     
                     if let queueUploadCount = self?.viewModel?.queueItemsForCurrentFolder.count,
@@ -619,7 +619,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.requestLinkAccess)
         
         func _presentShare() {
-            let file = FileViewModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
+            let file = FileModel(name: sharedFilePayload.name, recordId: 0, folderLinkId: sharedFilePayload.folderLinkId, archiveNbr: "0", type: FileType.miscellaneous.rawValue, permissions: viewModel!.archivePermissions)
             
             showFileActionSheet(file: file, atIndexPath: [0, 0])
         }
@@ -680,7 +680,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func deleteFile(_ files: [FileViewModel]?) {
+    func deleteFile(_ files: [FileModel]?) {
         showSpinner()
         viewModel?.delete(files, then: { status in
             self.hideSpinner()
@@ -698,7 +698,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func rename(_ file: FileViewModel, _ name: String, atIndexPath indexPath: IndexPath) {
+    func rename(_ file: FileModel, _ name: String, atIndexPath indexPath: IndexPath) {
         showSpinner()
         viewModel?.rename(file: file, name: name, then: { status in
             self.hideSpinner()
@@ -718,7 +718,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    func relocate(files: [FileViewModel], to destination: FileViewModel) {
+    func relocate(files: [FileModel], to destination: FileModel) {
         let isInvalidDestination = destination.folderId == files.first?.parentFolderId
         if isInvalidDestination && viewModel?.fileAction == .move {
             showErrorAlert(message: "Please select a different destination folder.".localized())
@@ -751,7 +751,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
     }
     
-    func publish(file: FileViewModel) {
+    func publish(file: FileModel) {
         showSpinner()
         viewModel?.publish(files: [file], then: { status in
             self.hideSpinner()
@@ -863,13 +863,13 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         }
     }
     
-    func handleImagePickerSelection(file: FileViewModel) {
+    func handleImagePickerSelection(file: FileModel) {
         guard let viewModel = viewModel else { return }
         
         viewModel.pickerDelegate?.myFilesVMDidPickFile(viewModel: viewModel, file: file)
     }
     
-    func handlePreviewSelection(file: FileViewModel) {
+    func handlePreviewSelection(file: FileModel) {
         let listPreviewVC = FilePreviewListViewController(nibName: nil, bundle: nil)
         listPreviewVC.modalPresentationStyle = .fullScreen
         listPreviewVC.viewModel = viewModel
@@ -930,7 +930,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
 // MARK: - Table View Delegates
 
 extension MainViewController {
-    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
         switch file.fileStatus {
         case .synced:
             if let isSelecting = viewModel?.isSelecting, isSelecting {
@@ -958,7 +958,7 @@ extension MainViewController {
         }
     }
     
-    private func didTapDelete(forFile file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func didTapDelete(forFile file: FileModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.delete) \"%@\"?", file.name)
     
             self.showActionDialog(
@@ -974,7 +974,7 @@ extension MainViewController {
             )
         }
     
-    private func didTapPublish(source: FileViewModel) {
+    private func didTapPublish(source: FileModel) {
         let title = String(format: "\(String.publish) \"%@\"?", source.name)
         self.showActionDialog(
             styled: .simpleWithDescription,
@@ -989,7 +989,7 @@ extension MainViewController {
         )
     }
     
-    private func download(_ file: FileViewModel) {
+    private func download(_ file: FileModel) {
         viewModel?.download(
             file,
             
@@ -1115,7 +1115,7 @@ extension MainViewController: FABActionSheetDelegate {
         view.presentPopup(sortActionSheet, overlayView: overlayView)
     }
 
-    func showFileActionSheet(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func showFileActionSheet(file: FileModel, atIndexPath indexPath: IndexPath) {
         var menuItems: [FileMenuViewController.MenuItem] = []
         if file.permissions.contains(.share) {
             if file.type.isFolder == false {
@@ -1320,7 +1320,7 @@ extension MainViewController: FABActionSheetDelegate {
         present(docPicker, animated: true, completion: nil)
     }
     
-    private func processUpload(toFolder folder: FileViewModel, forURLS urls: [URL], loadInMemory: Bool = false) {
+    private func processUpload(toFolder folder: FileModel, forURLS urls: [URL], loadInMemory: Bool = false) {
         let folderInfo = FolderInfo(folderId: folder.folderId, folderLinkId: folder.folderLinkId)
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
@@ -1371,7 +1371,7 @@ extension MainViewController: MediaRecorderDelegate {
 
 // MARK: - FileActionSheetDelegate
 extension MainViewController {
-    func shareWithOtherApps(file: FileViewModel) {
+    func shareWithOtherApps(file: FileModel) {
         if let localURL = fileHelper.url(forFileNamed: file.uploadFileName) {
             share(url: localURL)
         } else {
@@ -1403,7 +1403,7 @@ extension MainViewController {
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
     }
     
-    func renameAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         let title = String(format: "\(String.rename) \"%@\"", file.name)
         
         self.showActionDialog(
@@ -1429,22 +1429,22 @@ extension MainViewController {
         )
     }
     
-    func deleteAction(file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    func deleteAction(file: FileModel, atIndexPath indexPath: IndexPath) {
         didTapDelete(forFile: file, atIndexPath: indexPath)
     }
     
-    func downloadAction(file: FileViewModel) {
+    func downloadAction(file: FileModel) {
         download(file)
     }
     
-    func relocateAction(files: [FileViewModel]?, action: FileAction) {
+    func relocateAction(files: [FileModel]?, action: FileAction) {
         viewModel?.selectedFiles = files
         viewModel?.fileAction = action
 
         setupBottomActionSheet()
     }
     
-    func publishAction(file: FileViewModel) {
+    func publishAction(file: FileModel) {
         didTapPublish(source: file)
     }
 }

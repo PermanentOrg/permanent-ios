@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MyFilesViewModelPickerDelegate: AnyObject {
-    func myFilesVMDidPickFile(viewModel: MyFilesViewModel, file: FileViewModel)
+    func myFilesVMDidPickFile(viewModel: MyFilesViewModel, file: FileModel)
 }
 
 class MyFilesViewModel: FilesViewModel {
@@ -18,7 +18,7 @@ class MyFilesViewModel: FilesViewModel {
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
     
-    override var selectedFiles: [FileViewModel]? {
+    override var selectedFiles: [FileModel]? {
         get {
             return AuthenticationManager.shared.session?.selectedFiles
         }

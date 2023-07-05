@@ -15,7 +15,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     static let didCreateShareLinkNotifName = NSNotification.Name("ShareLinkViewModel.didCreateShareLinkNotifName")
     static let didUpdateShareLinkRoleNotifName = NSNotification.Name("ShareLinkViewModel.didUpdateShareLinkRoleNotifName")
     
-    var fileViewModel: FileViewModel!
+    var fileViewModel: FileModel!
     var shareVO: SharebyURLVOData?
     
     var recordVO: RecordVOData?
@@ -44,7 +44,7 @@ class ShareLinkViewModel: NSObject, ViewModelInterface {
     
     let shareManagementRepository: ShareManagementRepository
     
-    init(fileViewModel: FileViewModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository(), downloader: Downloader? = DownloadManagerGCD()) {
+    init(fileViewModel: FileModel!, shareManagementRepository: ShareManagementRepository = ShareManagementRepository(), downloader: Downloader? = DownloadManagerGCD()) {
         self.fileViewModel = fileViewModel
         self.shareManagementRepository = shareManagementRepository
         self.downloader = downloader

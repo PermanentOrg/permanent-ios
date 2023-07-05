@@ -317,7 +317,7 @@ extension SearchViewController {
         
     }
     
-    private func handleCellRightButtonAction(for file: FileViewModel, atIndexPath indexPath: IndexPath) {
+    private func handleCellRightButtonAction(for file: FileModel, atIndexPath indexPath: IndexPath) {
 
     }
 }

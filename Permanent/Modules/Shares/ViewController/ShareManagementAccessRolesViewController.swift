@@ -85,7 +85,7 @@ class ShareManagementAccessRolesViewController: BaseViewController<ShareLinkView
     
     private let overlayView = UIView()
     var shareManagementCellType: ShareManagementCellType!
-    var sharedFile: FileViewModel!
+    var sharedFile: FileModel!
     var shareVO: MinArchiveVO!
     var accessRolesViewData: [ShareManagementAccessRoleCellType] = []
     var isSharedArchive: Bool!

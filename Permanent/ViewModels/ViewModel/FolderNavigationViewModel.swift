@@ -13,7 +13,7 @@ class FolderNavigationViewModel: ViewModelInterface {
     static let didChangeSegmentedControlValueNotification = Notification.Name("FolderNavigationViewModel.didChangeSegmentedControlValueNotification")
     
     var workspaceName: String
-    var folderStack: [FileViewModel] = [] {
+    var folderStack: [FileModel] = [] {
         didSet {
             NotificationCenter.default.post(name: Self.didUpdateFolderStackNotification, object: self, userInfo: nil)
         }
@@ -38,7 +38,7 @@ class FolderNavigationViewModel: ViewModelInterface {
         folderStack.isEmpty == false
     }
     
-    func pushFolder(_ folder: FileViewModel) {
+    func pushFolder(_ folder: FileModel) {
         folderStack.append(folder)
     }
     
@@ -50,7 +50,7 @@ class FolderNavigationViewModel: ViewModelInterface {
         NotificationCenter.default.post(name: Self.didPopFolderNotification, object: self, userInfo: nil)
     }
     
-    func popToFolder(_ folder: FileViewModel) {
+    func popToFolder(_ folder: FileModel) {
         var newStack = folderStack
         
         while newStack.last != folder {

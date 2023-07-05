@@ -12,11 +12,11 @@ class FolderContentViewModel: ViewModelInterface {
     static let didSelectFileNotification = Notification.Name("FolderContentViewModel.didSelectFileNotification")
     
     let session: PermSession!
-    let folder: FileViewModel
+    let folder: FileModel
     let filesRepository: FilesRepository
     var byMe: Bool = false
     
-    var files: [FileViewModel] = [] {
+    var files: [FileModel] = [] {
         didSet {
             NotificationCenter.default.post(name: Self.didUpdateFilesNotification, object: self, userInfo: nil)
         }
@@ -29,7 +29,7 @@ class FolderContentViewModel: ViewModelInterface {
         }
     }
     
-    init(folder: FileViewModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession, byMe: Bool = false) {
+    init(folder: FileModel, filesRepository: FilesRepository = FilesRepository(), session: PermSession? = PermSession.currentSession, byMe: Bool = false) {
         self.folder = folder
         self.filesRepository = filesRepository
         self.session = session
@@ -45,7 +45,7 @@ class FolderContentViewModel: ViewModelInterface {
         }
     }
     
-    func insertFile(_ file: FileViewModel) {
+    func insertFile(_ file: FileModel) {
         files.insert(file, at: 0)
     }
     
@@ -57,11 +57,11 @@ class FolderContentViewModel: ViewModelInterface {
         return files.count
     }
     
-    func fileForRow(atIndexPath indexPath: IndexPath) -> FileViewModel {
+    func fileForRow(atIndexPath indexPath: IndexPath) -> FileModel {
         return files[indexPath.row]
     }
     
-    func didSelectFile(_ file: FileViewModel) {
+    func didSelectFile(_ file: FileModel) {
         NotificationCenter.default.post(name: Self.didSelectFileNotification, object: self, userInfo: ["file": file])
     }
 }

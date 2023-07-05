@@ -86,7 +86,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
     }
     
-    func updateCell(model: FileViewModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
+    func updateCell(model: FileModel, fileAction: FileAction, isGridCell: Bool, isSearchCell: Bool, sharedFile: Bool = false, isSelecting: Bool = false, isFileSelected: Bool = false) {
         self.isGridCell = isGridCell
         self.isSearchCell = isSearchCell
         self.fileAction = fileAction
@@ -149,7 +149,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    fileprivate func toggleInteraction(forModel model: FileViewModel, action: FileAction) {
+    fileprivate func toggleInteraction(forModel model: FileModel, action: FileAction) {
         var hasRightButton = true
         if model.fileStatus == .synced {
             let fileURL = URL(string: model.thumbnailURL)
@@ -186,7 +186,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    fileprivate func setFileImage(forModel model: FileViewModel) {
+    fileprivate func setFileImage(forModel model: FileModel) {
         if model.type.isFolder {
             fileImageView.contentMode = .scaleAspectFit
             fileImageView.image = UIImage.folder.templated
@@ -260,7 +260,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         progressView.setProgress(value, animated: true)
     }
     
-    func updateSharingInfo(withModel model: FileViewModel) {
+    func updateSharingInfo(withModel model: FileModel) {
         if model.sharedByArchive != nil {
             guard let archive = model.sharedByArchive else { return }
             

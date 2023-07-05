@@ -18,8 +18,8 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
-    var sharedByMeViewModels: [FileViewModel] = []
-    var sharedWithMeViewModels: [FileViewModel] = []
+    var sharedByMeViewModels: [FileModel] = []
+    var sharedWithMeViewModels: [FileModel] = []
     
     override func shouldPerformAction(forSection section: Int) -> Bool {
         return section == FileListType.synced.rawValue && !currentFolderIsRoot
@@ -34,7 +34,7 @@ class SharedFilesViewModel: FilesViewModel {
         }
     }
     
-    override var selectedFiles: [FileViewModel]? {
+    override var selectedFiles: [FileModel]? {
         get {
             return super.selectedFiles
         }
@@ -81,7 +81,7 @@ class SharedFilesViewModel: FilesViewModel {
                             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
                             
                             let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
-                            let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
+                            let sharedFileVM = FileModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
                             
                             if $0.archiveID == currentArchiveId {
                                 self.sharedByMeViewModels.append(sharedFileVM)
@@ -124,7 +124,7 @@ class SharedFilesViewModel: FilesViewModel {
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: folderVO.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileViewModel(model: folderVO, permissions: permissionsIntersection, accessRole: accessRole)
+            let file = FileModel(model: folderVO, permissions: permissionsIntersection, accessRole: accessRole)
             navigationStack.append(file)
         }
         
@@ -149,14 +149,14 @@ class SharedFilesViewModel: FilesViewModel {
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileViewModel(model: $0, permissions: permissionsIntersection, accessRole: accessRole)
+            let file = FileModel(model: $0, permissions: permissionsIntersection, accessRole: accessRole)
             self.viewModels.append(file)
         }
         
         handler(.success)
     }
     
-    func unshare(_ file: FileViewModel, then handler: @escaping ServerResponse) {
+    func unshare(_ file: FileModel, then handler: @escaping ServerResponse) {
         guard let archiveId = self.currentArchive?.archiveID else {
             handler(.error(message: .errorMessage))
             return

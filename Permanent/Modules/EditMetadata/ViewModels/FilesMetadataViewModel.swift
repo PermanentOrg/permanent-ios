@@ -8,11 +8,11 @@ import SwiftUI
 import Foundation
 
 protocol GenericViewModelProtocol: ObservableObject {
-    var selectedFiles: [FileViewModel] { get set }
+    var selectedFiles: [FileModel] { get set }
 }
 
 class FilesMetadataViewModel: GenericViewModelProtocol {
-    @Published var selectedFiles: [FileViewModel] = []
+    @Published var selectedFiles: [FileModel] = []
     @Published var inputText: String = "Enter your text here"
     @Published var didSaved: Bool = false {
         didSet {
@@ -21,7 +21,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
     }
     @Published var showAlert: Bool = false
     
-    init(files: [FileViewModel]) {
+    init(files: [FileModel]) {
         self.selectedFiles = files
     }
 
@@ -32,13 +32,12 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
     }
     
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
-        guard let selectedArchive = AuthenticationManager.shared.session?.selectedArchive,
-              let archiveNrb = selectedArchive.archiveNbr else {
+        guard let selectedArchive = AuthenticationManager.shared.session?.selectedArchive else {
             completion(false)
             return
         }
         
-        let params: UpdateMultipleRecordsParams = (files: selectedFiles, archiveNbr: archiveNrb, description: description)
+        let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in

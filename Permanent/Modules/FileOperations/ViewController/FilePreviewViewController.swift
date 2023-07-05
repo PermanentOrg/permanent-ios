@@ -22,7 +22,7 @@ class FilePreviewViewController: BaseViewController<FilePreviewViewModel> {
     
     let fileHelper = FileHelper()
     
-    var file: FileViewModel!
+    var file: FileModel!
     
     var playerItem: AVPlayerItem?
     var videoPlayer: AVPlayerViewController?

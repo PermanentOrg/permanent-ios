@@ -12,14 +12,14 @@ class FilePreviewListViewController: BaseViewController<FilesViewModel> {
 
     let controllersCache: NSCache<NSNumber, FilePreviewViewController> = NSCache<NSNumber, FilePreviewViewController>()
     
-    var filteredFiles: [FileViewModel] {
+    var filteredFiles: [FileModel] {
         viewModel?.viewModels.filter({ $0.type.isFolder == false }) ?? []
     }
 
-    var currentFile: FileViewModel!
+    var currentFile: FileModel!
     
     // Transition Variables
-    var nextFile: FileViewModel?
+    var nextFile: FileModel?
     var nextTitle: String?
     var hasChanges: Bool = false
         

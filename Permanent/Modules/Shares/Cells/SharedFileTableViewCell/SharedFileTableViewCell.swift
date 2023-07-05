@@ -42,7 +42,7 @@ class SharedFileTableViewCell: UITableViewCell {
         archiveImageView.clipsToBounds = true
     }
     
-    func updateCell(model: FileViewModel) {
+    func updateCell(model: FileModel) {
         fileNameLabel.text = model.name
         fileDateLabel.text = model.date
         sharesImageView.isHidden = false
@@ -84,7 +84,7 @@ class SharedFileTableViewCell: UITableViewCell {
         }
     }
     
-    fileprivate func setFileImage(forModel model: FileViewModel) {
+    fileprivate func setFileImage(forModel model: FileModel) {
         if model.type.isFolder {
             fileImageView.image = UIImage.folder.templated
             fileImageView.tintColor = .mainPurple

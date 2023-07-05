@@ -31,7 +31,7 @@ class FileBrowserViewModel: ViewModelInterface {
         loadRootFolder()
         
         NotificationCenter.default.addObserver(forName: FolderContentViewModel.didSelectFileNotification, object: nil, queue: nil) { [weak self] notif in
-            guard let file = notif.userInfo?["file"] as? FileViewModel else { return }
+            guard let file = notif.userInfo?["file"] as? FileModel else { return }
             
             if file.type.isFolder {
                 self?.navigateToFolder(file)
@@ -47,7 +47,7 @@ class FileBrowserViewModel: ViewModelInterface {
         fatalError("loadRootFolder() must be implemented in subclasses")
     }
     
-    func navigateToFolder(_ folder: FileViewModel) {
+    func navigateToFolder(_ folder: FileModel) {
         navigationViewModel.pushFolder(folder)
         contentViewModels.append(FolderContentViewModel(folder: folder, session: session))
     }
@@ -65,11 +65,11 @@ class FileBrowserViewModel: ViewModelInterface {
         }
     }
     
-    func uploadFiles(_ files: [FileViewModel]) {
+    func uploadFiles(_ files: [FileModel]) {
         
     }
     
-    func downloadFile(_ file: FileViewModel) {
+    func downloadFile(_ file: FileModel) {
         
     }
     

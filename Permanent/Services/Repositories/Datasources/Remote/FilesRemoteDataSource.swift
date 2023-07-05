@@ -11,11 +11,11 @@ protocol FilesRemoteDataSourceInterface {
     var currentArchive: ArchiveVOData? { get }
     var archivePermissions: [Permission] { get }
     
-    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool, completion: @escaping (([FileViewModel], Error?) -> Void))
-    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void))
-    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
-    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
-    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void))
+    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool, completion: @escaping (([FileModel], Error?) -> Void))
+    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileModel?, Error?) -> Void))
+    func getPrivateRoot(completion: @escaping ((FileModel?, Error?) -> Void))
+    func getPublicRoot(completion: @escaping ((FileModel?, Error?) -> Void))
+    func getSharedRoot(completion: @escaping ((FileModel?, Error?) -> Void))
 }
 
 class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
@@ -26,7 +26,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         return currentArchive?.permissions() ?? [.read]
     }
     
-    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool = false, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool = false, completion: @escaping (([FileModel], Error?) -> Void)) {
         if archiveNo == "archiveNo.Shared.Files" {
             getSharedRootContent(byMe: byMe, completion: completion)
         } else {
@@ -36,7 +36,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileModel?, Error?) -> Void)) {
         let newFolderParams = NewFolderParams(name, folderLinkId)
         let apiOperation = APIOperation(FilesEndpoint.newFolder(params: newFolderParams))
 
@@ -51,7 +51,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
                     return
                 }
 
-                let folder = FileViewModel(model: folderVO, permissions: [], accessRole: .viewer)
+                let folder = FileModel(model: folderVO, permissions: [], accessRole: .viewer)
                 completion(folder, nil)
 
             case .error(let error, _):
@@ -63,7 +63,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func getPrivateRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.getRoot)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -89,22 +89,22 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
-        let folder = FileViewModel(name: "Shared Files", recordId: 0, folderLinkId: 0, archiveNbr: "archiveNo.Shared.Files", type: "", permissions: [])
+    func getSharedRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
+        let folder = FileModel(name: "Shared Files", recordId: 0, folderLinkId: 0, archiveNbr: "archiveNo.Shared.Files", type: "", permissions: [])
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
             completion(folder, nil)
         })
     }
     
-    func getSharedByMeRootContent(completion: @escaping (([FileViewModel], Error?) -> Void)) {
+    func getSharedByMeRootContent(completion: @escaping (([FileModel], Error?) -> Void)) {
         getSharedRootContent(byMe: true, completion: completion)
     }
     
-    func getSharedWithMeRootContent(completion: @escaping (([FileViewModel], Error?) -> Void)) {
+    func getSharedWithMeRootContent(completion: @escaping (([FileModel], Error?) -> Void)) {
         getSharedRootContent(byMe: false, completion: completion)
     }
     
-    private func getSharedRootContent(byMe: Bool, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func getSharedRootContent(byMe: Bool, completion: @escaping (([FileModel], Error?) -> Void)) {
         let apiOperation = APIOperation(ShareEndpoint.getShares)
 
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -115,7 +115,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
                     return completion([], nil)
                 }
 
-                var fileViewModels: [FileViewModel] = []
+                var fileViewModels: [FileModel] = []
 
                 let currentArchiveId: Int? = self.currentArchive?.archiveID
 
@@ -130,7 +130,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
                         let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
 
                         let sharedByArchive = $0.archiveID == currentArchiveId ? nil : archive.archiveVO
-                        let sharedFileVM = FileViewModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
+                        let sharedFileVM = FileModel(model: $0, archiveThumbnailURL: archive.archiveVO?.thumbURL200, sharedByArchive: sharedByArchive, permissions: permissionsIntersection, accessRole: accessRole)
                         let append: Bool = byMe ? $0.archiveID == currentArchiveId : $0.archiveID != currentArchiveId
                         if append {
                             fileViewModels.append(sharedFileVM)
@@ -149,7 +149,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func getPublicRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.getRoot)
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -176,7 +176,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
     }
     
     // MARK: - Private
-    private func navigateMin(params: NavigateMinParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func navigateMin(params: NavigateMinParams, then handler: @escaping (([FileModel], Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.navigateMin(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -198,7 +198,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    private func onNavigateMinSuccess(_ model: NavigateMinResponse, sortOption: SortOption = .nameAscending, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func onNavigateMinSuccess(_ model: NavigateMinResponse, sortOption: SortOption = .nameAscending, _ handler: @escaping (([FileModel], Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS,
@@ -215,7 +215,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         getLeanItems(params: params, then: handler)
     }
     
-    private func getLeanItems(params: GetLeanItemsParams, then handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func getLeanItems(params: GetLeanItemsParams, then handler: @escaping (([FileModel], Error?) -> Void)) {
         let apiOperation = APIOperation(FilesEndpoint.getLeanItems(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -241,7 +241,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         }
     }
     
-    private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping (([FileViewModel], Error?) -> Void)) {
+    private func onGetLeanItemsSuccess(_ model: NavigateMinResponse, _ handler: @escaping (([FileModel], Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let childItems = folderVO.childItemVOS
@@ -252,20 +252,20 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
         
         let archivePermissionsSet = Set(self.archivePermissions)
             
-        var viewModels: [FileViewModel] = []
+        var viewModels: [FileModel] = []
         childItems.forEach {
             let accessRole = AccessRole.roleForValue($0.accessRole)
             let itemPermissionsSet = Set(ArchiveVOData.permissions(forAccessRole: $0.accessRole ?? ""))
             let permissionsIntersection = Array(archivePermissionsSet.intersection(itemPermissionsSet))
             
-            let file = FileViewModel(model: $0, permissions: permissionsIntersection, accessRole: .viewer)
+            let file = FileModel(model: $0, permissions: permissionsIntersection, accessRole: .viewer)
             viewModels.append(file)
         }
         
         handler(viewModels, nil)
     }
     
-    private func onGetPrivateRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
+    private func onGetPrivateRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileModel?, Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.type == Constants.API.FileType.typeFolderRootPrivate })
@@ -274,11 +274,11 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
             return
         }
         
-        let folder = FileViewModel(model: myFilesFolder)
+        let folder = FileModel(model: myFilesFolder)
         handler(folder, nil)
     }
     
-    private func onGetPublicRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileViewModel?, Error?) -> Void)) {
+    private func onGetPublicRootSuccess(_ model: GetRootResponse, _ handler: @escaping ((FileModel?, Error?) -> Void)) {
         guard
             let folderVO = model.results?.first?.data?.first?.folderVO,
             let myFilesFolder = folderVO.childItemVOS?.first(where: { $0.type == Constants.API.FileType.typeFolderRootPublic })
@@ -287,7 +287,7 @@ class FilesRemoteDataSource: FilesRemoteDataSourceInterface {
             return
         }
         
-        let folder = FileViewModel(model: myFilesFolder)
+        let folder = FileModel(model: myFilesFolder)
         handler(folder, nil)
     }
 }
@@ -298,27 +298,27 @@ class FilesRemoteMockDataSource: FilesRemoteDataSourceInterface {
         return currentArchive?.permissions() ?? [.read]
     }
     
-    var folderContentMockFiles: [FileViewModel] = []
-    var newFolderMock: FileViewModel?
-    var privateRootMock: FileViewModel?
+    var folderContentMockFiles: [FileModel] = []
+    var newFolderMock: FileModel?
+    var privateRootMock: FileModel?
     
-    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool, completion: @escaping (([FileViewModel], Error?) -> Void)) {
+    func folderContent(archiveNo: String, folderLinkId: Int, byMe: Bool, completion: @escaping (([FileModel], Error?) -> Void)) {
         completion(folderContentMockFiles, nil)
     }
     
-    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func createNewFolder(name: String, folderLinkId: Int, completion: @escaping ((FileModel?, Error?) -> Void)) {
         completion(newFolderMock, nil)
     }
     
-    func getPrivateRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func getPrivateRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         completion(privateRootMock, nil)
     }
     
-    func getPublicRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func getPublicRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         completion(privateRootMock, nil)
     }
     
-    func getSharedRoot(completion: @escaping ((FileViewModel?, Error?) -> Void)) {
+    func getSharedRoot(completion: @escaping ((FileModel?, Error?) -> Void)) {
         completion(privateRootMock, nil)
     }
 }

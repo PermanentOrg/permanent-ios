@@ -30,7 +30,7 @@ class PermSession: Codable {
     
     var selectedArchive: ArchiveVOData?
     
-    var selectedFiles: [FileViewModel]?
+    var selectedFiles: [FileModel]?
     var fileAction: FileAction?
     
     var isGridView: Bool = false
@@ -47,7 +47,7 @@ class PermSession: Codable {
         account = try container.decode(AccountVOData.self, forKey: .account)
         selectedArchive = try container.decode(ArchiveVOData.self, forKey: .selectedArchive)
         
-        selectedFiles = try container.decodeIfPresent([FileViewModel].self, forKey: .selectedFiles)
+        selectedFiles = try container.decodeIfPresent([FileModel].self, forKey: .selectedFiles)
         fileAction = try container.decodeIfPresent(FileAction.self, forKey: .fileAction)
         
         isGridView = try container.decode(Bool.self, forKey: .isGridView)
