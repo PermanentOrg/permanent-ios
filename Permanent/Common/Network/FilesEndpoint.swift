@@ -19,6 +19,7 @@ typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias ItemPair = (files: [FileViewModel], destination: FileViewModel)
 
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
+typealias UpdateMultipleRecordsParams = (files: [FileViewModel], archiveNbr: String, description: String?)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
 
 enum FilesEndpoint {
@@ -34,6 +35,7 @@ enum FilesEndpoint {
     case delete(params: ([FileViewModel]))
     case relocate(params: RelocateParams)
     case update(params: UpdateRecordParams)
+    case multipleUpdate(params: UpdateMultipleRecordsParams)
     
     // UPLOAD
     case getPresignedUrl(params: GetPresignedUrlParams)
@@ -88,7 +90,7 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
-        case .update:
+        case .update, .multipleUpdate:
             return "/record/update"
         case .renameFolder:
             return "/folder/update"
@@ -133,6 +135,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .update(let params):
             return FilesEndpointPayloads.updateRecordRequest(params: params)
+            
+        case .multipleUpdate(let params):
+            return FilesEndpointPayloads.updateMultipleRecordsRequest(params: params)
             
         case .renameFolder(let params):
             return FilesEndpointPayloads.renameFolderRequest(params: params)
@@ -418,6 +423,48 @@ class FilesEndpointPayloads {
                     ]
                 ]
         ]
+    }
+    
+    static func updateMultipleRecordsRequest(params: UpdateMultipleRecordsParams) -> RequestParameters {
+        var recordVOs: [[String: Any]] = []
+        
+        for file in params.files {
+            recordVOs.append([
+                "recordId": file.recordId,
+                "archiveNbr": params.archiveNbr,
+                "folder_linkId": file.folderLinkId
+            ])
+        }
+        
+        if let description = params.description {
+            for index in recordVOs.indices {
+                recordVOs[index]["description"] = description
+            }
+        }
+        
+        if recordVOs.count > 1 {
+            return [
+                "RequestVO":
+                    [
+                        "data": [
+                            [
+                                "RecordVO": recordVOs
+                            ]
+                        ]
+                    ]
+            ]
+        } else {
+            return [
+                "RequestVO":
+                    [
+                        "data": [
+                            [
+                                "RecordVO": recordVOs.first
+                            ]
+                        ]
+                    ]
+            ]
+        }
     }
     
     static func renameFolderRequest(params: UpdateRecordParams) -> RequestParameters {

@@ -37,14 +37,25 @@ struct TextView: UIViewRepresentable {
         init(_ parent: TextView) {
             self.parent = parent
         }
+        
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            if textView.text == "Enter your text here" {
+                textView.text = ""
+            }
+        }
 
         func textViewDidChange(_ textView: UITextView) {
             self.parent.text = textView.text
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
-            parent.viewModel.saveDescription(textView.text)
-            parent.didSaved = true
+            if textView.text.isEmpty {
+                textView.text = "Enter your text here"
+            } else {
+                if textView.text != "Enter your text here" {
+                    parent.didSaved = true
+                }
+            }
         }
     }
 }

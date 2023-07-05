@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MetadataEditView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
+    @State private var showAlert = false
     
     init(viewModel: FilesMetadataViewModel) {
         self.viewModel = viewModel
@@ -95,6 +96,11 @@ struct MetadataEditView: View {
             .background(Color.whiteGray)
             .onTapGesture {
                 dismissKeyboard()
+            }
+            .alert(isPresented: $viewModel.showAlert) {
+                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text("Got it!")) {
+                    viewModel.showAlert = false
+                })
             }
         }
     }
