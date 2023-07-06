@@ -14,14 +14,14 @@ struct MetadataEditView: View {
     init(viewModel: FilesMetadataViewModel) {
         self.viewModel = viewModel
     }
-
+    
     var body: some View {
         CustomNavigationView {
             ZStack {
                 Color.whiteGray
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     LazyVStack {
                         Group {
                             SectionHeaderView(viewModel: viewModel)
@@ -95,7 +95,7 @@ struct MetadataEditView: View {
                                 action: { print("Add Location tapped") }
                             )
                         )
-                        Spacer()
+                        Spacer(minLength: 60)
                     }
                     .padding(.horizontal, 24)
                     .navigationBarTitle("Edit Files Metadata", displayMode: .inline)

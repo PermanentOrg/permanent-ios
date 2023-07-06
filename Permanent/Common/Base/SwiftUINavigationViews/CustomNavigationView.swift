@@ -15,6 +15,7 @@ struct CustomNavigationView<Content: View>: View {
         UINavigationBar.appearance().backgroundColor = .darkBlue
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
         UINavigationBar.appearance().isTranslucent = false
+        UIScrollView.appearance().bounces = false
     }
     
     var body: some View {
