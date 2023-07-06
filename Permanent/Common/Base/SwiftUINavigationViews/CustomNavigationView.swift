@@ -26,10 +26,11 @@ struct CustomNavigationView<Content: View>: View {
                     GeometryReader { geometry in
                         content
                             .padding(.bottom, -geometry.safeAreaInsets.bottom)
+                            //.navigationBarTitleDisplayMode(.inline)
                     }
                 }
                 .padding(.horizontal, 0)
-                .navigationBarTitle("", displayMode: .inline)
+                //.navigationBarTitle("", displayMode: .inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -44,6 +45,7 @@ struct CustomNavigationView<Content: View>: View {
                     }
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
             .navigationViewStyle(StackNavigationViewStyle())
         }
         .edgesIgnoringSafeArea(.all)
@@ -55,12 +57,14 @@ struct CustomNavigationView_Previews: PreviewProvider {
         CustomNavigationView {
             HStack {
                 Spacer()
-                VStack {
-                    Spacer()
-                    Text("Hello world")
+                List {
+                    VStack {
+                        Spacer()
+                        Text("Hello world")
+                        Spacer()
+                    }
                     Spacer()
                 }
-                Spacer()
             }
         }
     }
