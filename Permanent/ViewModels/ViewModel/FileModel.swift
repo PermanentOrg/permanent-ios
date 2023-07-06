@@ -23,6 +23,7 @@ struct FileModel: Equatable, Codable {
     let archiveId: Int
     let archiveNo: String
     let recordId: Int
+    let tagVOS: [TagVOData]?
     
     let folderId: Int
     let parentFolderId: Int
@@ -60,6 +61,7 @@ struct FileModel: Equatable, Codable {
         self.folderLinkId = model.folder.folderLinkId
         self.fileStatus = .uploading
         self.fileInfoId = model.id
+        self.tagVOS = nil
         
         self.permissions = permissions
     }
@@ -83,6 +85,7 @@ struct FileModel: Equatable, Codable {
         self.parentFolderId = -1
         self.parentFolderLinkId = -1
         self.folderLinkId = folderLinkId
+        self.tagVOS = nil
         
         self.permissions = permissions
     }
@@ -114,6 +117,7 @@ struct FileModel: Equatable, Codable {
         
         self.permissions = permissions
         self.accessRole = accessRole
+        self.tagVOS = model.tagVOS
         
         if let fullName = sharedByArchive?.fullName,
            let thumbnailURL = sharedByArchive?.thumbURL200,
@@ -161,6 +165,7 @@ struct FileModel: Equatable, Codable {
         
         self.permissions = permissions
         self.accessRole = accessRole
+        self.tagVOS = model.tagVOS
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
@@ -200,6 +205,7 @@ struct FileModel: Equatable, Codable {
         
         self.permissions = permissions
         self.accessRole = accessRole
+        self.tagVOS = model.tagVOS
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
@@ -236,6 +242,7 @@ struct FileModel: Equatable, Codable {
         self.parentFolderId = model.parentFolderID ?? -1
         self.parentFolderLinkId = model.parentFolderLinkID ?? -1
         self.folderLinkId = model.folderLinkID ?? -1
+        self.tagVOS = nil
         
         self.permissions = []
     }

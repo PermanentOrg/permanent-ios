@@ -61,7 +61,7 @@ struct MetadataEditView: View {
                             action: { print("Manage Tags tapped") }
                         )
                     )
-                    TagsView()
+                    TagsView(allTags: $viewModel.allTags)
                     Divider()
                 }
                 SectionView(

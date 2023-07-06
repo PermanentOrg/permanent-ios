@@ -7,14 +7,12 @@
 import SwiftUI
 
 struct TagsView: View {
-    @State var words = [
-        "Family","Kids","Grill","Outdoor","Mountains","Cabin", "NewTag"
-    ]
+    @Binding var allTags: [TagVOData]
     
     var body: some View {
         ScrollView {
             FlowGrid(
-                data: words,
+                data: allTags.map {$0.name ?? ""},
                 spacing: 8,
                 alignment: .leading) { item in
                 VStack {
@@ -26,6 +24,7 @@ struct TagsView: View {
                 }
             }
         }
+        .frame(maxHeight: .infinity)
     }
     
     func tagView(text: String) -> some View {
@@ -34,7 +33,7 @@ struct TagsView: View {
                 Text(text)
                     .textStyle(SmallXXRegularTextStyle())
                 Button {
-                    words.removeAll { $0 == text }
+                    allTags.removeAll { $0.name == text }
                 } label: {
                     Image("xMarkToolbarIcon")
                 }
@@ -51,7 +50,7 @@ struct TagsView: View {
         VStack {
             HStack {
                 Button {
-                    words.insert("Item", at: words.count - 1)
+                    allTags.insert(TagVOData(status: "Item", tagId: nil, type: nil, createdDT: nil, updatedDT: nil), at:  allTags.count - 1)
                 } label: {
                     HStack {
                         Image(systemName: "plus")
@@ -70,7 +69,9 @@ struct TagsView: View {
 }
 
 struct TagsView_Previews: PreviewProvider {
+    @State static var tags: [TagVOData] = []
+    
     static var previews: some View {
-        TagsView()
+        TagsView(allTags: $tags)
     }
 }

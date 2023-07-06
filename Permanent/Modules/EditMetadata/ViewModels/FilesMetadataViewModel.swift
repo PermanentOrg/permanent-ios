@@ -12,7 +12,11 @@ protocol GenericViewModelProtocol: ObservableObject {
 }
 
 class FilesMetadataViewModel: GenericViewModelProtocol {
-    @Published var selectedFiles: [FileModel] = []
+    @Published var selectedFiles: [FileModel] = [] {
+        didSet {
+            allTags = selectedFiles.flatMap { $0.tagVOS ?? [] }
+        }
+    }
     @Published var inputText: String = .enterTextHere
     @Published var didSaved: Bool = false {
         didSet {
@@ -20,9 +24,17 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         }
     }
     @Published var showAlert: Bool = false
+    @Published var allTags: [TagVOData] = []
+    var downloader: DownloadManagerGCD? = nil
     
     init(files: [FileModel]) {
-        self.selectedFiles = files
+        for file in files {
+            getRecord(file: file) { [weak self] record in
+                if let record = record?.recordVO {
+                    self?.selectedFiles.append(FileModel(model: record, permissions: file.permissions, accessRole: file.accessRole))
+                }
+            }
+        }
     }
 
     func updateDescription(_ text: String) {
@@ -31,6 +43,19 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         }
     }
     
+    func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
+        let downloadInfo = FileDownloadInfoVM(
+            fileType: file.type,
+            folderLinkId: file.folderLinkId,
+            parentFolderLinkId: file.parentFolderLinkId
+        )
+        
+        downloader = DownloadManagerGCD()
+        downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
+           handler(record)
+        }
+    }
+
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
         guard let selectedArchive = AuthenticationManager.shared.session?.selectedArchive else {
             completion(false)
