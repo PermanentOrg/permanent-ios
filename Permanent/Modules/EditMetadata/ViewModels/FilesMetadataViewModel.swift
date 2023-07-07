@@ -39,7 +39,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
 
     func updateDescription(_ text: String) {
         update(description: text) { status in
-            self.showAlert = status
+            self.showAlert = true
         }
     }
     
@@ -57,11 +57,6 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
     }
 
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
-        guard let selectedArchive = AuthenticationManager.shared.session?.selectedArchive else {
-            completion(false)
-            return
-        }
-        
         let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
         

@@ -16,6 +16,24 @@ struct CustomNavigationView<Content: View>: View {
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
         UINavigationBar.appearance().isTranslucent = false
         UIScrollView.appearance().bounces = false
+        
+        if #available(iOS 15, *) {
+            let navigationBarAppearance = UINavigationBarAppearance()
+            navigationBarAppearance.configureWithOpaqueBackground()
+            navigationBarAppearance.titleTextAttributes = [
+                NSAttributedString.Key.foregroundColor : UIColor.white
+            ]
+            navigationBarAppearance.backgroundColor = UIColor.darkBlue
+            UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+            UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+            UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+            
+            let tabBarApperance = UITabBarAppearance()
+            tabBarApperance.configureWithOpaqueBackground()
+            tabBarApperance.backgroundColor = UIColor.darkBlue
+            UITabBar.appearance().scrollEdgeAppearance = tabBarApperance
+            UITabBar.appearance().standardAppearance = tabBarApperance
+        }
     }
     
     var body: some View {
@@ -27,11 +45,9 @@ struct CustomNavigationView<Content: View>: View {
                     GeometryReader { geometry in
                         content
                             .padding(.bottom, -geometry.safeAreaInsets.bottom)
-                            //.navigationBarTitleDisplayMode(.inline)
                     }
                 }
                 .padding(.horizontal, 0)
-                //.navigationBarTitle("", displayMode: .inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {

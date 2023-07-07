@@ -19,6 +19,7 @@ struct TextView: UIViewRepresentable {
         textView.font = textStyle.font
         textView.textColor = textColor
         textView.delegate = context.coordinator
+        textView.autocorrectionType = .no
         return textView
     }
 

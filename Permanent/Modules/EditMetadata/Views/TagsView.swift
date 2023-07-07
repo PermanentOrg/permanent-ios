@@ -12,7 +12,7 @@ struct TagsView: View {
     var body: some View {
         ScrollView {
             FlowGrid(
-                data: allTags.map {$0.name ?? ""},
+                data: allTags.map {$0.name ?? ""} + ["NewTag"],
                 spacing: 8,
                 alignment: .leading) { item in
                 VStack {
@@ -50,7 +50,7 @@ struct TagsView: View {
         VStack {
             HStack {
                 Button {
-                    allTags.insert(TagVOData(status: "Item", tagId: nil, type: nil, createdDT: nil, updatedDT: nil), at:  allTags.count - 1)
+                    allTags.insert(TagVOData(name: "Item", status: nil, tagId: nil, type: nil, createdDT: nil, updatedDT: nil), at:  allTags.count)
                 } label: {
                     HStack {
                         Image(systemName: "plus")
