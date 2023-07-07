@@ -39,7 +39,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
 
     func updateDescription(_ text: String) {
         update(description: text) { status in
-            self.showAlert = true
+            self.showAlert = !status
         }
     }
     
