@@ -45,7 +45,8 @@ struct MinFolderVO: Codable {
     let locnVO: LocnVO?
     let timezoneVO: TimezoneVO?
     let directiveVOS: JSONAny?
-    let tagVOS, sharedArchiveVOS: [JSONAny]?
+    let tagVOS: [TagVOData]?
+    let sharedArchiveVOS: [JSONAny]?
     let folderSizeVO: FolderSizeVO?
     let attachmentRecordVOS: [AttachmentRecordVO]?
     let hasAttachments: Bool?

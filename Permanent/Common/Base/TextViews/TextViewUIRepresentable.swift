@@ -10,7 +10,6 @@ import UIKit
 struct TextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var didSaved: Bool
-    var viewModel: FilesMetadataViewModel
     var textStyle: TextStyle = TextFontStyle.style
     var textColor: UIColor = .black
     
@@ -19,6 +18,7 @@ struct TextView: UIViewRepresentable {
         textView.font = textStyle.font
         textView.textColor = textColor
         textView.delegate = context.coordinator
+        textView.autocorrectionType = .no
         return textView
     }
 
