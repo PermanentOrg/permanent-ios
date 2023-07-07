@@ -48,7 +48,10 @@ struct MetadataEditView: View {
                                                 .inset(by: 0.5)
                                                 .stroke(Color.galleryGray, lineWidth: 1)
                                         )
-                                    TextView(text: $viewModel.inputText, didSaved: $viewModel.didSaved, viewModel: viewModel, textStyle: TextFontStyle.style39, textColor: .middleGray)
+                                    TextView(text: $viewModel.inputText,
+                                             didSaved: $viewModel.didSaved,
+                                             textStyle: TextFontStyle.style39,
+                                             textColor: .middleGray)
                                         .padding(.all, 5)
                                         .frame(maxHeight: 72)
                                 }
