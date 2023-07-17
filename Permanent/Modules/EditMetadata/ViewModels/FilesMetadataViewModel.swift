@@ -14,7 +14,7 @@ protocol GenericViewModelProtocol: ObservableObject {
 class FilesMetadataViewModel: GenericViewModelProtocol {
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            allTags = selectedFiles.flatMap { $0.tagVOS ?? [] }
+            allTags = selectedFiles.flatMap { $0.tagVOS ?? [] }.map { TagVO(tagVO: $0)}
         }
     }
     @Published var inputText: String = .enterTextHere
@@ -24,7 +24,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         }
     }
     @Published var showAlert: Bool = false
-    @Published var allTags: [TagVOData] = []
+    @Published var allTags: [TagVO] = []
     var downloader: DownloadManagerGCD? = nil
     
     init(files: [FileModel]) {
