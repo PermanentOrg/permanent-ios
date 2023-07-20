@@ -6,14 +6,14 @@
 
 import SwiftUI
 
-struct TagsView: View {
-    @Binding var allTags: [TagVO]
+struct TagsView<ViewModel: GenericViewModelProtocol>: View {
     @Binding var showAddNewTagView: Bool
+    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         ScrollView {
             FlowGrid(
-                data: allTags.map {$0.tagVO.name ?? ""} + ["NewTag"],
+                data: viewModel.allTags.map {$0.tagVO.name ?? ""} + ["NewTag"],
                 spacing: 8,
                 alignment: .leading) { item in
                     VStack {
@@ -29,14 +29,23 @@ struct TagsView: View {
     }
     
     func tagView(text: String) -> some View {
-        VStack {
+        @State var unassignWasTapped: Bool = false
+        return VStack {
             HStack {
                 Text(text)
                     .textStyle(SmallXXRegularTextStyle())
                 Button {
-                    allTags.removeAll { $0.tagVO.name == text }
+                    unassignWasTapped = true
+                    viewModel.unassignTag(tagName: text, completion: { _ in
+                        unassignWasTapped = false
+                    })
                 } label: {
-                    Image("xMarkToolbarIcon")
+                    if unassignWasTapped {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    } else {
+                        Image("xMarkToolbarIcon")
+                    }
                 }
             }
             .padding(.horizontal, 12)
@@ -75,8 +84,10 @@ struct TagsView_Previews: PreviewProvider {
         TagVO(tagVO: TagVOData(name: "Cinematic",status: "", tagId: 222, type: nil, createdDT: nil, updatedDT: nil))
     ]
     @State static var showAddNewTagView: Bool = false
+    @State static var removeTagName: String? = nil
+    @State static var viewModel = FilesMetadataViewModel(files: [])
     
     static var previews: some View {
-        TagsView(allTags: $tags, showAddNewTagView: $showAddNewTagView)
+        TagsView(showAddNewTagView: $showAddNewTagView, viewModel: viewModel)
     }
 }

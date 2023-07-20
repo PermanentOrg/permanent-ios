@@ -9,6 +9,8 @@ import Foundation
 
 protocol GenericViewModelProtocol: ObservableObject {
     var selectedFiles: [FileModel] { get set }
+    var allTags: [TagVO] { get set }
+    func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void))
 }
 
 class FilesMetadataViewModel: GenericViewModelProtocol {
@@ -27,7 +29,17 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
     @Published var allTags: [TagVO] = []
     var downloader: DownloadManagerGCD? = nil
     
-    init(files: [FileModel]) {
+    let tagsRepository: TagsRepository
+    
+    init(tagsRepository: TagsRepository = TagsRepository(), files: [FileModel]) {
+        self.tagsRepository = tagsRepository
+        self.selectedFiles = files
+        refreshFiles()
+    }
+    
+    func refreshFiles() {
+        let files = selectedFiles
+        selectedFiles = []
         for file in files {
             getRecord(file: file) { [weak self] record in
                 if let record = record?.recordVO {
@@ -36,7 +48,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
             }
         }
     }
-
+    
     func updateDescription(_ text: String) {
         update(description: text) { status in
             self.showAlert = !status
@@ -52,10 +64,10 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         
         downloader = DownloadManagerGCD()
         downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
-           handler(record)
+            handler(record)
         }
     }
-
+    
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
         let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
@@ -71,6 +83,24 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
                     
                 default:
                     completion(false)
+                }
+            }
+        }
+    }
+    
+    func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void)) {
+        guard let unAssignTag: TagVO = allTags.filter({ $0.tagVO.name == tagName }).first else { return }
+        for file in selectedFiles {
+            if ((file.tagVOS?.contains(unAssignTag.tagVO)) != nil) {
+                tagsRepository.unassignTag(tagVO: [unAssignTag], recordId: file.recordId) { [weak self] error in
+                    if error == nil {
+                        self?.allTags.removeAll(where: { $0.tagVO.name == tagName })
+                        //self?.refreshFiles()
+                        completion(true)
+                    } else {
+                        self?.showAlert = true
+                        completion(false)
+                    }
                 }
             }
         }

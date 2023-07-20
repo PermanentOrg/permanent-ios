@@ -9,6 +9,7 @@ import SwiftUI
 struct AddNewTagView: View {
     @ObservedObject var viewModel: AddNewTagViewModel
     @State private var newTag = ""
+    var showAddNewTag: Binding<Bool>?
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     init(viewModel: AddNewTagViewModel) {
@@ -44,9 +45,15 @@ struct AddNewTagView: View {
                                     .padding(.leading, 16)
                                     .foregroundColor(Color.darkBlue)
                                     .frame(height: 18)
+                                    .autocorrectionDisabled(true)
+                                    .autocapitalization(.none)
                                 Spacer(minLength: 0)
                                 Button {
-                                    
+                                    viewModel.addSingleTag(tagNames: [newTag], completion: { status in
+                                        if status {
+                                            newTag = ""
+                                        }
+                                    })
                                 } label: {
                                     Image("PlusSign")
                                         .frame(width: 40, height: 40)
@@ -57,17 +64,13 @@ struct AddNewTagView: View {
                         Spacer(minLength: 22)
                         HStack {
                             
-                            Text("Recent Tags - <COUNT> selected".replacingOccurrences(of: "<COUNT>", with: "\(viewModel.allTags.count)").uppercased())
+                            Text("Recent Tags - <COUNT> selected".replacingOccurrences(of: "<COUNT>", with: "\(viewModel.addedTags.count)").uppercased())
                                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                                 .foregroundColor(Color.middleGray)
                             Spacer()
                         }
                         Spacer(minLength: 13)
-                        if viewModel.isLoading {
-                            ProgressView()
-                        } else {
-                            AddTagsView(allTags: $viewModel.allTags)
-                        }
+                        AddTagsView(allTags: $viewModel.uncommonTags, addedTags: $viewModel.addedTags)
                     }
 
                     .padding()
@@ -78,6 +81,7 @@ struct AddNewTagView: View {
                         .frame(width: 24, height: 24))
                 }
             }
+            .padding(.bottom, 85)
             VStack {
                 Spacer()
                 HStack {
@@ -97,17 +101,29 @@ struct AddNewTagView: View {
                     }
                     Spacer(minLength: 15)
                     Button {
-                        
+                        viewModel.addButtonPressed(completion: { status in
+                            if status {
+                                self.showAddNewTag?.wrappedValue = false
+                                self.presentationMode.wrappedValue.dismiss()
+                            }
+                        })
                     } label: {
                         ZStack {
                             Rectangle()
                                 .foregroundColor(.clear)
                                 .frame(height: 48)
                                 .background(Color(red: 0.07, green: 0.11, blue: 0.29))
-                            Text("Add")
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.white)
-                                .frame(width: 146, alignment: .top)
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .frame(height: 48)
+                                    .foregroundColor(.clear)
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Text(addButtonText())
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.white)
+                                    .frame(width: 146, alignment: .top)
+                            }
                         }
                     }
                 }
@@ -119,13 +135,23 @@ struct AddNewTagView: View {
         }
         .onAppear {
             viewModel.refreshTags()
-            //viewModel.selectionTags = filesTags
-            
         }
     }
     
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    private func addButtonText() -> String {
+        var addButtonText: String
+        if viewModel.addedTags.count == .zero {
+            addButtonText = "Add"
+        } else if viewModel.addedTags.count == 1 {
+            addButtonText = "Add 1 tag"
+        } else {
+            addButtonText = "Add \(viewModel.addedTags.count) tags"
+        }
+        return addButtonText
     }
 }
 
@@ -137,6 +163,6 @@ struct AddNewTagView_Previews: PreviewProvider {
     ]
     
     static var previews: some View {
-        AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: tags))
+        AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: tags, selectedFiles: []))
     }
 }

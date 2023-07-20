@@ -10,6 +10,8 @@ import SwiftUI
 struct MetadataEditView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
     @State var showAddNewTag: Bool = false
+    @State var removeTagName: String? = nil
+    @State var reloadFiles: Bool = false
     
     init(viewModel: FilesMetadataViewModel) {
         self.viewModel = viewModel
@@ -67,9 +69,10 @@ struct MetadataEditView: View {
                                 rightButtonView: RightButtonView(
                                     text: "Manage Tags",
                                     action: { print("Manage Tags tapped") }
-                                )
+                                ),
+                                haveRightSection: false
                             )
-                            TagsView(allTags: $viewModel.allTags, showAddNewTagView: $showAddNewTag)
+                            TagsView(showAddNewTagView: $showAddNewTag, viewModel: viewModel)
                             Divider()
                         }
                         SectionView(
@@ -116,7 +119,16 @@ struct MetadataEditView: View {
                 }
             }
             .sheet(isPresented: $showAddNewTag) {
-                AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: viewModel.allTags))
+                AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: viewModel.allTags, selectedFiles: viewModel.selectedFiles))
+            }
+            .onAppear {
+                viewModel.refreshFiles()
+            }
+            .onChange(of: showAddNewTag) { newValue in
+                if newValue == false {
+                    self.reloadFiles = false
+                    viewModel.refreshFiles()
+                }
             }
         }
     }
