@@ -7,16 +7,10 @@
 import SwiftUI
 import Foundation
 
-protocol GenericViewModelProtocol: ObservableObject {
-    var selectedFiles: [FileModel] { get set }
-    var allTags: [TagVO] { get set }
-    func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void))
-}
-
-class FilesMetadataViewModel: GenericViewModelProtocol {
+class FilesMetadataViewModel: ObservableObject {
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            allTags = selectedFiles.flatMap { $0.tagVOS ?? [] }.map { TagVO(tagVO: $0)}
+            allTags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
         }
     }
     @Published var inputText: String = .enterTextHere
@@ -63,7 +57,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
+        downloader?.getRecord(downloadInfo) { (record, error) in
             handler(record)
         }
     }
@@ -89,18 +83,35 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
     }
     
     func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void)) {
-        guard let unAssignTag: TagVO = allTags.filter({ $0.tagVO.name == tagName }).first else { return }
-        for file in selectedFiles {
-            if ((file.tagVOS?.contains(unAssignTag.tagVO)) != nil) {
-                tagsRepository.unassignTag(tagVO: [unAssignTag], recordId: file.recordId) { [weak self] error in
-                    if error == nil {
-                        self?.allTags.removeAll(where: { $0.tagVO.name == tagName })
-                        //self?.refreshFiles()
-                        completion(true)
-                    } else {
-                        self?.showAlert = true
-                        completion(false)
-                    }
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            guard let unAssignTag: TagVO = strongSelf.allTags.filter({ $0.tagVO.name == tagName }).first else { return }
+            
+            do {
+                let files = strongSelf.selectedFiles.filter({ $0.tagVOS?.contains(unAssignTag.tagVO) ?? false })
+                let _ = try await files.asyncMap({ file in
+                    try await strongSelf.runUnassignTag(unassignTag: unAssignTag, recordId: file.recordId)
+                })
+                
+                await MainActor.run {
+                    strongSelf.allTags.removeAll(where: { $0.tagVO.name == tagName })
+                }
+            }
+            catch {
+                await MainActor.run {
+                    strongSelf.showAlert = true
+                }
+            }
+        }
+    }
+    
+    func runUnassignTag(unassignTag: TagVO, recordId: Int) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            tagsRepository.unassignTag(tagVO: [unassignTag], recordId: recordId) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
                 }
             }
         }

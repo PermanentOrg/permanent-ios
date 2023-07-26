@@ -26,7 +26,7 @@ struct MetadataEditView: View {
                 ScrollView(showsIndicators: false) {
                     LazyVStack {
                         Group {
-                            SectionHeaderView(viewModel: viewModel)
+                            SectionHeaderView(selectedFiles: $viewModel.selectedFiles)
                             Divider()
                                 .padding(.horizontal, 0)
                                 .padding(.top, 24)
@@ -72,7 +72,7 @@ struct MetadataEditView: View {
                                 ),
                                 haveRightSection: false
                             )
-                            TagsView(showAddNewTagView: $showAddNewTag, viewModel: viewModel)
+                            TagsView(viewModel: viewModel, showAddNewTagView: $showAddNewTag)
                             Divider()
                         }
                         SectionView(

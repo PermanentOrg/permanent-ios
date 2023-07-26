@@ -6,9 +6,9 @@
 
 import SwiftUI
 
-struct TagsView<ViewModel: GenericViewModelProtocol>: View {
+struct TagsView: View {
+    @ObservedObject var viewModel: FilesMetadataViewModel
     @Binding var showAddNewTagView: Bool
-    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         ScrollView {
@@ -85,9 +85,9 @@ struct TagsView_Previews: PreviewProvider {
     ]
     @State static var showAddNewTagView: Bool = false
     @State static var removeTagName: String? = nil
-    @State static var viewModel = FilesMetadataViewModel(files: [])
+    @ObservedObject static var viewModel = FilesMetadataViewModel(files: [])
     
     static var previews: some View {
-        TagsView(showAddNewTagView: $showAddNewTagView, viewModel: viewModel)
+        TagsView(viewModel: viewModel, showAddNewTagView: $showAddNewTagView)
     }
 }

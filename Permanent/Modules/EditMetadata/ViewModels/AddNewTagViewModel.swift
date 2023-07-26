@@ -20,13 +20,12 @@ class AddNewTagViewModel: ObservableObject {
     init(tagsRepository: TagsRepository = TagsRepository(), selectionTags: [TagVO], selectedFiles: [FileModel]) {
         self.tagsRepository = tagsRepository
         self.selectionTags = selectionTags
-        self.uncommonTags = []
         self.selectedFiles = selectedFiles
     }
     
     func refreshTags(selectionTags: String? = nil) {
-        isLoading = true
         guard let archiveId = AuthenticationManager.shared.session?.selectedArchive?.archiveID else { return }
+        isLoading = true
         allTags = tagsRepository.getTagsByArchive(archiveId: archiveId) { [weak self] tags, error in
             self?.isLoading = false
             self?.allTags = tags ?? []
@@ -37,16 +36,14 @@ class AddNewTagViewModel: ObservableObject {
 
     func calculateUncommonTags() {
         let selectionTagNames = selectionTags.map { $0.tagVO.name }
-        uncommonTags = allTags.filter { tag in
-            !selectionTagNames.contains(tag.tagVO.name)
-        }
+        uncommonTags = allTags.filter({ tag in !selectionTags.contains(tag) })
     }
     
     func addButtonPressed(completion: @escaping ((Bool) -> Void)) {
         isLoading = true
         selectionTags.append(contentsOf: addedTags)
-        
         guard let file = selectedFiles.first else { return }
+        
         tagsRepository.assignTag(tagNames: selectionTags.map({$0.tagVO.name ?? ""}), recordId: file.recordId) { [weak self] tags, error in
             self?.isLoading = false
             if let tags = tags {
