@@ -20,7 +20,33 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     @Published var showAlert: Bool = false
-    @Published var allTags: [TagVO] = []
+    @Published var allTags: [TagVO] = [] {
+        didSet {
+            filteredAllTags = allTags.filter { tag in
+                selectedFiles.allSatisfy { file in
+                    file.tagVOS?.contains(where: { $0.name == tag.tagVO.name }) == true
+                }
+            }
+            
+            //with debug
+//            print("allTags: \(allTags.map({ $0.tagVO.name }))") // Debug print
+//            filteredAllTags = allTags.filter { tag in
+//                let tagExistsInAllFiles = selectedFiles.allSatisfy { file in
+//                    let tagExistsInThisFile = file.tagVOS?.contains(where: { $0.name == tag.tagVO.name }) == true
+//                    if !tagExistsInThisFile {
+//                        print("Tag '\(String(describing: tag.tagVO.name))' does not exist in file '\(file.name)'.") // Debug print
+//                    }
+//                    return tagExistsInThisFile
+//                }
+//                if tagExistsInAllFiles {
+//                    print("Tag '\(String(describing: tag.tagVO.name))' exists in all selected files.") // Debug print
+//                }
+//                return tagExistsInAllFiles
+//            }
+//            print("filteredAllTags: \(filteredAllTags)") // Debug print
+        }
+    }
+    @Published var filteredAllTags: [TagVO] = []
     var downloader: DownloadManagerGCD? = nil
     
     let tagsRepository: TagsRepository

@@ -9,7 +9,7 @@ import SwiftUI
 struct TagsView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
     @Binding var showAddNewTagView: Bool
-    
+
     var body: some View {
         ScrollView {
             FlowGrid(
@@ -20,17 +20,50 @@ struct TagsView: View {
                         if item == "NewTag" {
                             addtagView()
                         } else {
-                            tagView(text: item)
+                            TagView(text: item, viewModel: viewModel)
                         }
                     }
                 }
         }
         .frame(maxHeight: .infinity)
     }
-    
-    func tagView(text: String) -> some View {
-        @State var unassignWasTapped: Bool = false
-        return VStack {
+
+    func addtagView() -> some View {
+        VStack {
+            HStack {
+                Button {
+                    showAddNewTagView = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus")
+                        Text("New tag")
+                            .textStyle(SmallXXRegularTextStyle())
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 11)
+        }
+        .background(RoundedRectangle(cornerRadius: 12)
+            .stroke(Color.darkBlue.opacity(0.1), lineWidth: 1))
+        .foregroundColor(Color.darkBlue)
+    }
+}
+
+struct TagView: View {
+    let text: String
+    @ObservedObject var viewModel: FilesMetadataViewModel
+    @State var unassignWasTapped: Bool = false
+    @State var tagColor: Color = Color.paleOrange.opacity(0.2)
+    @State var showLineBorder: Bool = true
+
+    init(text: String, viewModel: FilesMetadataViewModel) {
+        self.text = text
+        self.viewModel = viewModel
+    }
+
+    var body: some View {
+        VStack {
             HStack {
                 Text(text)
                     .textStyle(SmallXXRegularTextStyle())
@@ -52,31 +85,24 @@ struct TagsView: View {
             .padding(.vertical, 11)
         }
         .background(RoundedRectangle(cornerRadius: 12)
-            .fill(Color.indianSaffron.opacity(0.2)))
+            .fill(tagColor))
         .foregroundColor(Color.darkBlue)
-    }
-    
-    func addtagView() -> some View {
-            VStack {
-                HStack {
-                    Button {
-                        showAddNewTagView = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus")
-                            Text("New tag")
-                                .textStyle(SmallXXRegularTextStyle())
-                        }
-                    }
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 11)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .inset(by: 0.5)
+                .stroke(Color(red: 1, green: 0.9, blue: 0.8), lineWidth: showLineBorder ? 1 : 0)
+        )
+        .onAppear {
+            if viewModel.filteredAllTags.contains(where: { $0.tagVO.name == text }) {
+                tagColor = Color.indianSaffron.opacity(0.2)
+                showLineBorder = false
             }
-            .background(RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.darkBlue.opacity(0.1), lineWidth: 1))
-            .foregroundColor(Color.darkBlue)
+        }
+        .onTapGesture {
+            print("tapped \(text) tag")
         }
     }
+}
 
 struct TagsView_Previews: PreviewProvider {
     @State static var tags: [TagVO] = [
