@@ -20,7 +20,16 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     @Published var showAlert: Bool = false
-    @Published var allTags: [TagVO] = []
+    @Published var allTags: [TagVO] = [] {
+        didSet {
+            filteredAllTags = allTags.filter { tag in
+                selectedFiles.allSatisfy { file in
+                    file.tagVOS?.contains(where: { $0.name == tag.tagVO.name }) == true
+                }
+            }
+        }
+    }
+    @Published var filteredAllTags: [TagVO] = []
     var downloader: DownloadManagerGCD? = nil
     
     let tagsRepository: TagsRepository

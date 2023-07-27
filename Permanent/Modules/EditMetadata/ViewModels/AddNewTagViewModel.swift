@@ -11,6 +11,7 @@ class AddNewTagViewModel: ObservableObject {
     @Published var allTags: [TagVO] = []
     @Published var selectionTags: [TagVO] = []
     @Published var uncommonTags: [TagVO] = []
+    @Published var filteredUncommonTags: [TagVO] = []
     @Published var addedTags: [TagVO] = []
     @Published var showAddSingleTagAlert: Bool = false
     var selectedFiles: [FileModel]
@@ -37,6 +38,15 @@ class AddNewTagViewModel: ObservableObject {
     func calculateUncommonTags() {
         let selectionTagNames = selectionTags.map { $0.tagVO.name }
         uncommonTags = allTags.filter({ tag in !selectionTags.contains(tag) })
+        filteredUncommonTags = uncommonTags
+    }
+    
+    func calculateFilteredUncommonTags(text: String) {
+        if text.isNotEmpty {
+            filteredUncommonTags = uncommonTags.filter({ $0.tagVO.name?.contains(text) == true })
+        } else {
+            filteredUncommonTags = uncommonTags
+        }
     }
     
     func addButtonPressed(completion: @escaping ((Bool) -> Void)) {
@@ -57,6 +67,12 @@ class AddNewTagViewModel: ObservableObject {
     }
     
     func addSingleTag(tagNames: [String], completion: @escaping ((Bool) -> Void)) {
+        if !tagNames.allSatisfy({ $0.isNotEmpty }) {
+            completion(false)
+            showAddSingleTagAlert = true
+            return
+        }
+        
         isLoading = true
         
         tagsRepository.assignTagToArchive(tagNames: tagNames) { [weak self] tagVOs, error in

@@ -26,7 +26,7 @@ struct AddNewTagView: View {
                         Spacer(minLength: 22)
                         recentTags
                         Spacer(minLength: 13)
-                        AddTagsView(allTags: $viewModel.uncommonTags, addedTags: $viewModel.addedTags)
+                        AddTagsView(allTags: $viewModel.filteredUncommonTags, addedTags: $viewModel.addedTags)
                     }
                     .padding()
                     .navigationBarTitle("New Tag", displayMode: .inline)
@@ -48,6 +48,11 @@ struct AddNewTagView: View {
         }
         .onAppear {
             viewModel.refreshTags()
+        }
+        .alert(isPresented: $viewModel.showAddSingleTagAlert) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.showAddSingleTagAlert = false
+            })
         }
     }
     
@@ -83,6 +88,9 @@ struct AddNewTagView: View {
                         .frame(height: 18)
                         .autocorrectionDisabled(true)
                         .autocapitalization(.none)
+                        .onChange(of: newTag) { newValue in
+                            viewModel.calculateFilteredUncommonTags(text: newValue)
+                        }
                     Spacer(minLength: 0)
                     Button {
                         viewModel.addSingleTag(tagNames: [newTag], completion: { status in
