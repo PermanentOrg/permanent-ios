@@ -13,6 +13,8 @@ fileprivate enum FontName: String {
 }
 
 fileprivate enum FontSize: CGFloat {
+    case xxxxxSmall = 10.0
+    case xxxxSmall = 11.0
     case xxxSmall = 12.0
     case xxSmall = 13.0
     case xSmall = 14.0
@@ -20,6 +22,14 @@ fileprivate enum FontSize: CGFloat {
     case regular = 16.0
     case medium = 18.0
     case large = 20.0
+}
+
+struct SmallXXXXXSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
 }
 
 struct SmallXXRegularTextStyle: ViewModifier {

@@ -7,11 +7,19 @@
 
 import Foundation
 
-struct TagVO: Model, Equatable {
+struct TagVO: Model, Equatable, Hashable {
     var tagVO: TagVOData
     
     enum CodingKeys: String, CodingKey {
         case tagVO = "TagVO"
+    }
+    
+    static func == (lhs: TagVO, rhs: TagVO) -> Bool {
+        return lhs.tagVO.name == rhs.tagVO.name
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(tagVO.name)
     }
 }
 

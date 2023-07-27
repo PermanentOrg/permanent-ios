@@ -7,14 +7,10 @@
 import SwiftUI
 import Foundation
 
-protocol GenericViewModelProtocol: ObservableObject {
-    var selectedFiles: [FileModel] { get set }
-}
-
-class FilesMetadataViewModel: GenericViewModelProtocol {
+class FilesMetadataViewModel: ObservableObject {
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            allTags = selectedFiles.flatMap { $0.tagVOS ?? [] }
+            allTags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
         }
     }
     @Published var inputText: String = .enterTextHere
@@ -24,10 +20,20 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         }
     }
     @Published var showAlert: Bool = false
-    @Published var allTags: [TagVOData] = []
+    @Published var allTags: [TagVO] = []
     var downloader: DownloadManagerGCD? = nil
     
-    init(files: [FileModel]) {
+    let tagsRepository: TagsRepository
+    
+    init(tagsRepository: TagsRepository = TagsRepository(), files: [FileModel]) {
+        self.tagsRepository = tagsRepository
+        self.selectedFiles = files
+        refreshFiles()
+    }
+    
+    func refreshFiles() {
+        let files = selectedFiles
+        selectedFiles = []
         for file in files {
             getRecord(file: file) { [weak self] record in
                 if let record = record?.recordVO {
@@ -36,7 +42,7 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
             }
         }
     }
-
+    
     func updateDescription(_ text: String) {
         update(description: text) { status in
             self.showAlert = !status
@@ -51,11 +57,11 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
         )
         
         downloader = DownloadManagerGCD()
-        downloader?.getRecord(downloadInfo) { [weak self] (record, error) in
-           handler(record)
+        downloader?.getRecord(downloadInfo) { (record, error) in
+            handler(record)
         }
     }
-
+    
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
         let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
@@ -71,6 +77,41 @@ class FilesMetadataViewModel: GenericViewModelProtocol {
                     
                 default:
                     completion(false)
+                }
+            }
+        }
+    }
+    
+    func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void)) {
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            guard let unAssignTag: TagVO = strongSelf.allTags.filter({ $0.tagVO.name == tagName }).first else { return }
+            
+            do {
+                let files = strongSelf.selectedFiles.filter({ $0.tagVOS?.contains(unAssignTag.tagVO) ?? false })
+                let _ = try await files.asyncMap({ file in
+                    try await strongSelf.runUnassignTag(unassignTag: unAssignTag, recordId: file.recordId)
+                })
+                
+                await MainActor.run {
+                    strongSelf.allTags.removeAll(where: { $0.tagVO.name == tagName })
+                }
+            }
+            catch {
+                await MainActor.run {
+                    strongSelf.showAlert = true
+                }
+            }
+        }
+    }
+    
+    func runUnassignTag(unassignTag: TagVO, recordId: Int) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            tagsRepository.unassignTag(tagVO: [unassignTag], recordId: recordId) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
                 }
             }
         }

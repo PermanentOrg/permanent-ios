@@ -175,6 +175,9 @@
 		5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */; };
 		5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */; };
 		5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */; };
+		5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */; };
+		5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB60E2A6494170030BF61 /* AddTagsView.swift */; };
+		5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */; };
 		5E5DCAF9286DDC4300894D47 /* FileDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEC8E12286DCE3E00603FC4 /* FileDetailsTableViewCell.swift */; };
 		5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5DFA6A27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift */; };
 		5E5DFA6D27463602000D9924 /* ProfilePageHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E5DFA6B27463602000D9924 /* ProfilePageHeaderCollectionViewCell.xib */; };
@@ -251,6 +254,7 @@
 		5E9D279C9F0F42FE4332DB20 /* Pods_PermanentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 172DB305530ACE9AC3A55708 /* Pods_PermanentTests.framework */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
+		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
 		5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */; };
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
@@ -953,6 +957,9 @@
 		5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageOnlinePresenceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMilestonesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageMilestonesCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagView.swift; sourceTree = "<group>"; };
+		5E5AB60E2A6494170030BF61 /* AddTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTagsView.swift; sourceTree = "<group>"; };
+		5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagViewModel.swift; sourceTree = "<group>"; };
 		5E5DFA6A27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E5DFA6B27463602000D9924 /* ProfilePageHeaderCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageHeaderCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E5DFA6E2746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageFooterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1021,6 +1028,7 @@
 		5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureDeviceExtension.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
+		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -2609,7 +2617,10 @@
 			isa = PBXGroup;
 			children = (
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
+				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
 				924F162E2A45954A00B75D4E /* TagsView.swift */,
+				5E5AB60E2A6494170030BF61 /* AddTagsView.swift */,
+				5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2636,6 +2647,7 @@
 			isa = PBXGroup;
 			children = (
 				5E991EEB2A4D7D0C006229C0 /* FilesMetadataViewModel.swift */,
+				5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3976,8 +3988,10 @@
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
+				5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
 				927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */,
+				5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */,
 				BCD948DA258CAF6400089F86 /* ShareListType.swift in Sources */,
 				BCEECD8025ADC87500A4520E /* SharebyURLVOTokenPayload.swift in Sources */,
 				5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */,
@@ -4104,6 +4118,7 @@
 				5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */,
 				5E187FA22A0CE3A800DCD52F /* LegacyPlanningSteward.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
+				5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
 				F540A676267B618A00962B2D /* AccountDeleteViewController.swift in Sources */,
@@ -4125,6 +4140,7 @@
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5E3E121F2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */,
+				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
 				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,

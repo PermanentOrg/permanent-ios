@@ -7,14 +7,13 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct SectionHeaderView<ViewModel: GenericViewModelProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+struct SectionHeaderView: View {
+    @Binding var selectedFiles: [FileModel]
     
     var body: some View {
         VStack {
             HStack {
-                if let viewModel = viewModel as? FilesMetadataViewModel {
-                    let files = viewModel.selectedFiles
+                let files = selectedFiles
                     if !files.isEmpty, let url = URL(string: files.first?.thumbnailURL500) {
                         WebImage(url: url)
                             .resizable()
@@ -23,7 +22,6 @@ struct SectionHeaderView<ViewModel: GenericViewModelProtocol>: View {
                     }
                     Text("Editing \(Int(files.count)) items")
                         .textStyle(SmallBoldTextStyle())
-                }
                 Spacer()
             }
         }
@@ -32,7 +30,9 @@ struct SectionHeaderView<ViewModel: GenericViewModelProtocol>: View {
 }
 
 struct SectionHeaderView_Previews: PreviewProvider {
+    @State static var files: [FileModel] = []
+    
     static var previews: some View {
-        SectionHeaderView(viewModel: FilesMetadataViewModel(files: []))
+        SectionHeaderView(selectedFiles: $files)
     }
 }
