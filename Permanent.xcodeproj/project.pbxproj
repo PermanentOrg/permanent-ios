@@ -2193,6 +2193,7 @@
 				BCEECD5725ADA5F800A4520E /* Scenes */,
 				BC6E70EC252C6F0100113D5F /* Security */,
 				5EE17FFF24EEC44700496AF7 /* Services */,
+				9229A3A92A792DD0004DE31D /* Styles */,
 				5E4739D22A4180FE00A20D85 /* Utility */,
 				924F16382A45D25100B75D4E /* ViewModifiers */,
 			);
@@ -2631,7 +2632,6 @@
 				5E5AB60E2A6494170030BF61 /* AddTagsView.swift */,
 				5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */,
 				5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */,
-				5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2757,6 +2757,14 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		9229A3A92A792DD0004DE31D /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */,
+			);
+			path = Styles;
 			sourceTree = "<group>";
 		};
 		924F16382A45D25100B75D4E /* ViewModifiers */ = {

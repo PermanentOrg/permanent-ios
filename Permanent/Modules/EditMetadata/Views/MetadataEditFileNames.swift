@@ -99,14 +99,19 @@ struct MetadataEditFileNames: View {
             } label: {
                 Text("Cancel")
             }
-            .buttonStyle(CustomButtonStyle(isLoading: false, backgroundColor: .galleryGray, foregroundColor: .darkBlue, text: "Cancel"))
+            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
             Spacer(minLength: 15)
             Button {
                 ///To do add Apply changes button action
             } label: {
-                Text("Apply changes")
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Apply changes")
+                }
             }
-            .buttonStyle(CustomButtonStyle(isLoading: viewModel.isLoading, backgroundColor: .darkBlue, foregroundColor: .white, text: "Apply changes"))
+            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
         }
         .padding()
     }
