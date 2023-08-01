@@ -208,6 +208,7 @@
 		5E66240B27A9740600D533CA /* PublicProfileMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */; };
 		5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */; };
 		5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */; };
+		5E66730D2A7927E3001C49CC /* CustomButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */; };
 		5E68830828902DBF0006F434 /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68830728902DBF0006F434 /* LoginUITests.swift */; };
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
@@ -990,6 +991,7 @@
 		5E66240A27A9740600D533CA /* PublicProfileMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileMilestonesViewController.swift; sourceTree = "<group>"; };
 		5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddMilestonesViewController.swift; sourceTree = "<group>"; };
 		5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneProfileItem.swift; sourceTree = "<group>"; };
+		5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonStyle.swift; sourceTree = "<group>"; };
 		5E68830528902DBF0006F434 /* PermanentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E68830728902DBF0006F434 /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2629,6 +2631,7 @@
 				5E5AB60E2A6494170030BF61 /* AddTagsView.swift */,
 				5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */,
 				5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */,
+				5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4053,6 +4056,7 @@
 				5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */,
 				5E980AB72657D3D400ED5764 /* BundleExtension.swift in Sources */,
 				5EBDBD4C26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
+				5E66730D2A7927E3001C49CC /* CustomButtonStyle.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,

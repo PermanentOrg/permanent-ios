@@ -97,39 +97,16 @@ struct MetadataEditFileNames: View {
             Button {
                 presentationMode.wrappedValue.dismiss()
             } label: {
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 48)
-                        .background(Color(red: 0.96, green: 0.96, blue: 0.99))
-                    Text("Cancel")
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
-                        .frame(width: 118.11428, alignment: .top)
-                }
+                Text("Cancel")
             }
+            .buttonStyle(CustomButtonStyle(isLoading: false, backgroundColor: .galleryGray, foregroundColor: .darkBlue, text: "Cancel"))
             Spacer(minLength: 15)
             Button {
                 ///To do add Apply changes button action
             } label: {
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 48)
-                        .background(Color(red: 0.07, green: 0.11, blue: 0.29))
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .frame(height: 48)
-                            .foregroundColor(.clear)
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else {
-                        Text("Apply changes")
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.white)
-                            .frame(width: 146, alignment: .top)
-                    }
-                }
+                Text("Apply changes")
             }
+            .buttonStyle(CustomButtonStyle(isLoading: viewModel.isLoading, backgroundColor: .darkBlue, foregroundColor: .white, text: "Apply changes"))
         }
         .padding()
     }
