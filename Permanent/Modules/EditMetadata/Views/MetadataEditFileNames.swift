@@ -33,6 +33,14 @@ struct MetadataEditFileNames: View {
             NavigationView {
                 VStack {
                     CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
+
+                    if selectedItem?.name == "Replace" {
+                        ReplaceFilenameView(viewModel: ReplaceFilenameViewModel())
+                    }else if selectedItem?.name == "Append" {
+                        AppendFilenameView(viewModel: AppendFilenameViewModel())
+                    }else if selectedItem?.name == "Sequence" {
+                        SequenceFilenameView(viewModel: SequenceFilenameViewModel())
+                    }
                     Spacer()
                 }
                 .padding(.top, 20)

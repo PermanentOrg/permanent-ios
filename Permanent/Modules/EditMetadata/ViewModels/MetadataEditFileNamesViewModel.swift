@@ -25,3 +25,10 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         }
     }
 }
+
+enum FilenameAction {
+    case replace
+    case append
+    case sequence
+    case none
+}
