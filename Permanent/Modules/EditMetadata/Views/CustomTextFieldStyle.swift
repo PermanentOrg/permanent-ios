@@ -9,7 +9,7 @@ import SwiftUI
 struct CustomTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         ZStack {
-            Rectangle()
+            RoundedRectangle(cornerRadius: 2)
                 .foregroundColor(.clear)
                 .frame(height: 48)
                 .background(Color(red: 0.96, green: 0.96, blue: 0.99).opacity(0.5))
