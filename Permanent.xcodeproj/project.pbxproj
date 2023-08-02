@@ -209,6 +209,13 @@
 		5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */; };
 		5E66240F27A97F4500D533CA /* MilestoneProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */; };
 		5E66730D2A7927E3001C49CC /* CustomButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */; };
+		5E66730F2A793D9B001C49CC /* ReplaceFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66730E2A793D9B001C49CC /* ReplaceFilenameView.swift */; };
+		5E6673112A79439B001C49CC /* ReplaceFilenameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6673102A79439B001C49CC /* ReplaceFilenameViewModel.swift */; };
+		5E6673132A79B4E3001C49CC /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6673122A79B4E3001C49CC /* CustomTextFieldStyle.swift */; };
+		5E6673152A7A3A50001C49CC /* AppendFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6673142A7A3A50001C49CC /* AppendFilenameView.swift */; };
+		5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6673162A7A3A78001C49CC /* AppendFilenameViewModel.swift */; };
+		5E6673192A7A41D6001C49CC /* SequenceFilenameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6673182A7A41D6001C49CC /* SequenceFilenameViewModel.swift */; };
+		5E66731B2A7A4224001C49CC /* SequenceFilenameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E66731A2A7A4224001C49CC /* SequenceFilenameView.swift */; };
 		5E68830828902DBF0006F434 /* LoginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68830728902DBF0006F434 /* LoginUITests.swift */; };
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
@@ -992,6 +999,13 @@
 		5E66240C27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileAddMilestonesViewController.swift; sourceTree = "<group>"; };
 		5E66240E27A97F4500D533CA /* MilestoneProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneProfileItem.swift; sourceTree = "<group>"; };
 		5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonStyle.swift; sourceTree = "<group>"; };
+		5E66730E2A793D9B001C49CC /* ReplaceFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceFilenameView.swift; sourceTree = "<group>"; };
+		5E6673102A79439B001C49CC /* ReplaceFilenameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaceFilenameViewModel.swift; sourceTree = "<group>"; };
+		5E6673122A79B4E3001C49CC /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
+		5E6673142A7A3A50001C49CC /* AppendFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendFilenameView.swift; sourceTree = "<group>"; };
+		5E6673162A7A3A78001C49CC /* AppendFilenameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppendFilenameViewModel.swift; sourceTree = "<group>"; };
+		5E6673182A7A41D6001C49CC /* SequenceFilenameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceFilenameViewModel.swift; sourceTree = "<group>"; };
+		5E66731A2A7A4224001C49CC /* SequenceFilenameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceFilenameView.swift; sourceTree = "<group>"; };
 		5E68830528902DBF0006F434 /* PermanentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E68830728902DBF0006F434 /* LoginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginUITests.swift; sourceTree = "<group>"; };
 		5E68F2CC26A74FCD00CC936E /* PermanentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PermanentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2628,10 +2642,14 @@
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
 				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
 				5E6FB7572A73E15800984B84 /* MetadataEditFileNames.swift */,
-				924F162E2A45954A00B75D4E /* TagsView.swift */,
 				5E5AB60E2A6494170030BF61 /* AddTagsView.swift */,
+				5E66730E2A793D9B001C49CC /* ReplaceFilenameView.swift */,
+				5E6673142A7A3A50001C49CC /* AppendFilenameView.swift */,
+				5E66731A2A7A4224001C49CC /* SequenceFilenameView.swift */,
+				924F162E2A45954A00B75D4E /* TagsView.swift */,
 				5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */,
 				5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */,
+				5E6673122A79B4E3001C49CC /* CustomTextFieldStyle.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2660,6 +2678,9 @@
 				5E991EEB2A4D7D0C006229C0 /* FilesMetadataViewModel.swift */,
 				5E5AB6102A6585110030BF61 /* AddNewTagViewModel.swift */,
 				5E6FB7592A73E18200984B84 /* MetadataEditFileNamesViewModel.swift */,
+				5E6673102A79439B001C49CC /* ReplaceFilenameViewModel.swift */,
+				5E6673162A7A3A78001C49CC /* AppendFilenameViewModel.swift */,
+				5E6673182A7A41D6001C49CC /* SequenceFilenameViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3971,9 +3992,11 @@
 				5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */,
 				5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */,
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
+				5E6673152A7A3A50001C49CC /* AppendFilenameView.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
+				5E66730F2A793D9B001C49CC /* ReplaceFilenameView.swift in Sources */,
 				92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
 				5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */,
@@ -3997,6 +4020,7 @@
 				5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */,
 				5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */,
 				5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */,
+				5E6673132A79B4E3001C49CC /* CustomTextFieldStyle.swift in Sources */,
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				F5EEB4D42821537600D584AD /* AccountOnboardingViewController.swift in Sources */,
@@ -4102,6 +4126,7 @@
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
+				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
@@ -4155,6 +4180,7 @@
 				5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
 				5E048FCF292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.swift in Sources */,
 				BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */,
+				5E6673192A7A41D6001C49CC /* SequenceFilenameViewModel.swift in Sources */,
 				BC120C5F253EF8F500C41243 /* FABActionSheet.swift in Sources */,
 				F509D6FC2742E265007E4594 /* SearchViewController.swift in Sources */,
 				5E647334263C22F900E6566D /* NotificationName.swift in Sources */,
@@ -4191,6 +4217,7 @@
 				5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
+				5E6673112A79439B001C49CC /* ReplaceFilenameViewModel.swift in Sources */,
 				5E991EE42A4ADDE4006229C0 /* SectionView.swift in Sources */,
 				F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */,
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
@@ -4236,6 +4263,7 @@
 				5E56FDCB274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.swift in Sources */,
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
+				5E66731B2A7A4224001C49CC /* SequenceFilenameView.swift in Sources */,
 				BC59BAB725C2B7D6005A45D3 /* File.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
 				5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */,

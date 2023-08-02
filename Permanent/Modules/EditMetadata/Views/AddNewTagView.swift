@@ -61,7 +61,7 @@ struct AddNewTagView: View {
     }
     
     var createNewTag: some View {
-        VStack{
+        VStack {
             HStack {
                 Text("Create New Tag".uppercased())
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
