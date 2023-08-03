@@ -8,10 +8,29 @@
 import Foundation
 
 struct FileViewModel: Equatable, Codable {
+    enum ThumbStatus: String, Codable {
+        case ok = "status.generic.ok"
+        case noThumb = "status.folder.empty"
+        case genThumb = "status.folder.genthumb"
+        case copying = "status.folder.copying"
+        case moving = "status.folder.moving"
+        case nested = "status.folder.nested"
+        case new = "status.folder.new"
+        case brokenThumb = "status.folder.broken_thumbnail"
+        case noThumbCandidates = "status.folder.no_thumbnail_candidates"
+        case unknown = "N/A"
+        
+        public init(from decoder: Decoder) throws {
+            self = try ThumbStatus(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+        }
+    }
+    
     let thumbnailURL: String?
     let thumbnailURL500: String?
     let thumbnailURL1000: String?
     let thumbnailURL2000: String?
+    let thumbStatus: ThumbStatus?
+    
     let name: String
     let date: String
     let type: FileType
@@ -49,6 +68,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL = nil
         self.thumbnailURL500 = nil
         self.thumbnailURL1000 = nil
+        self.thumbStatus = nil
         self.thumbnailURL2000 = thumbnailURL2000
         self.type = .image // TODO:
         self.archiveId = -1
@@ -75,6 +95,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL500 = nil
         self.thumbnailURL1000 = nil
         self.thumbnailURL2000 = thumbnailURL2000
+        self.thumbStatus = nil
         self.type = FileType(rawValue: type) ?? .miscellaneous
         self.archiveId = -1
         self.archiveNo = archiveNbr
@@ -95,6 +116,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL500 = model.thumbURL500
         self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.description = model.itemVODescription ?? ""
         self.size = model.size ?? -1
         self.uploadFileName = model.uploadFileName ?? ""
@@ -116,19 +138,17 @@ struct FileViewModel: Equatable, Codable {
         self.accessRole = accessRole
         
         if let fullName = sharedByArchive?.fullName,
-           let thumbnailURL = sharedByArchive?.thumbURL200,
            let archiveIdURL = sharedByArchive?.archiveID {
-            let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: "", shareId: 0, archiveID: archiveIdURL, folderLinkID: nil, accessRole: sharedByArchive?.accessRole)
+            let minArchive = MinArchiveVO(name: fullName, thumbnail: sharedByArchive?.thumbURL200, shareStatus: "", shareId: 0, archiveID: archiveIdURL, folderLinkID: nil, accessRole: sharedByArchive?.accessRole)
             self.sharedByArchive = minArchive
         }
         
         model.shareVOS?.forEach {
             if let fullName = $0.archiveVO?.fullName,
-               let thumbnailURL = $0.archiveVO?.thumbURL200,
                let shareStatusURL = $0.status,
                let shareIdURL = $0.shareID,
                let archiveIdURL = $0.archiveVO?.archiveID {
-                let minArchive = MinArchiveVO(name: fullName, thumbnail: thumbnailURL, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL, folderLinkID: $0.folderLinkID, accessRole: $0.accessRole)
+                let minArchive = MinArchiveVO(name: fullName, thumbnail: $0.archiveVO?.thumbURL200, shareStatus: shareStatusURL, shareId: shareIdURL, archiveID: archiveIdURL, folderLinkID: $0.folderLinkID, accessRole: $0.accessRole)
                 self.minArchiveVOS.append(minArchive)
             }
         }
@@ -142,6 +162,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL500 = model.thumbURL500
         self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.description = model.recordVODescription ?? ""
         self.size = Int64(model.size ?? -1)
         self.uploadFileName = model.uploadFileName ?? ""
@@ -182,6 +203,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL500 = model.thumbURL500
         self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.type = FileType(rawValue: model.type ?? "") ?? FileType.miscellaneous
         self.description = model.childFolderVOS?.description ?? ""
         self.size = -1
@@ -221,6 +243,7 @@ struct FileViewModel: Equatable, Codable {
         self.thumbnailURL500 = model.thumbURL500
         self.thumbnailURL1000 = model.thumbURL1000
         self.thumbnailURL2000 = model.thumbURL2000
+        self.thumbStatus = model.thumbStatus != nil ? ThumbStatus(rawValue: model.thumbStatus!) : nil
         self.type = FileType.publicRootFolder
         self.description = model.childFolderVOS?.description ?? ""
         self.size = -1
@@ -238,5 +261,9 @@ struct FileViewModel: Equatable, Codable {
         self.folderLinkId = model.folderLinkID ?? -1
         
         self.permissions = []
+    }
+    
+    var canBeAccessed: Bool {
+        return thumbStatus != .copying && thumbStatus != .moving
     }
 }
