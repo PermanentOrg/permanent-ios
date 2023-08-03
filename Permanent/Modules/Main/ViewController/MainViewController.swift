@@ -832,7 +832,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
+        guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
         
         if viewModel.isSelecting {
             if let index = viewModel.selectedFiles?.firstIndex(of: file) {
