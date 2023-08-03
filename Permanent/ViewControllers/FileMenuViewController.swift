@@ -453,7 +453,7 @@ class FileMenuViewController: BaseViewController<ShareLinkViewModel> {
         for (idx, archive) in fileViewModel.minArchiveVOS[0 ..< maxArchivesShown].enumerated() {
             let accessRole = ShareStatus.status(forValue: archive.shareStatus) == .pending  ? "Pending...".localized() : AccessRole.roleForValue(archive.accessRole).groupName
             
-            let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", role: accessRole, imagePath: archive.thumbnail, tag: idx + 1)
+            let archiveStackView = archiveStackView(withArchiveName: "The \(archive.name) Archive", role: accessRole, imagePath: archive.thumbnail ?? "", tag: idx + 1)
             subviews.append(archiveStackView)
         }
         

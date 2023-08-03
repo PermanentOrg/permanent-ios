@@ -182,7 +182,7 @@ extension FolderContentView: UICollectionViewDelegateFlowLayout, SkeletonCollect
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let file = viewModel?.fileForRow(atIndexPath: indexPath), file.fileStatus == .synced && file.thumbnailURL != nil else { return }
+        guard let file = viewModel?.fileForRow(atIndexPath: indexPath), file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
         
         viewModel?.didSelectFile(file)
     }

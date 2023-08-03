@@ -153,7 +153,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         var hasRightButton = true
         if model.fileStatus == .synced {
             let fileURL = URL(string: model.thumbnailURL)
-            hasRightButton = hasRightButton && fileURL != nil && !isSearchCell
+            hasRightButton = hasRightButton && (fileURL != nil || model.canBeAccessed) && !isSearchCell
         }
         
         if model.type.isFolder {
