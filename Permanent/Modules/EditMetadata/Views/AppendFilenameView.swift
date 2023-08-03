@@ -27,7 +27,11 @@ struct AppendFilenameView: View {
             Text("Where".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(Color.middleGray)
-            Spacer()
+            
+            PullDownButton(items: [
+                PullDownItem(id: 1, title: "Before name", onSelect: {}),
+                PullDownItem(id: 2, title: "After Name", onSelect: {})
+            ])
         }
         .padding(.top, 15)
     }

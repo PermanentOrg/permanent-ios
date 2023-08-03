@@ -36,9 +36,9 @@ struct MetadataEditFileNames: View {
 
                     if selectedItem?.name == "Replace" {
                         ReplaceFilenameView(viewModel: ReplaceFilenameViewModel())
-                    }else if selectedItem?.name == "Append" {
+                    } else if selectedItem?.name == "Append" {
                         AppendFilenameView(viewModel: AppendFilenameViewModel())
-                    }else if selectedItem?.name == "Sequence" {
+                    } else if selectedItem?.name == "Sequence" {
                         SequenceFilenameView(viewModel: SequenceFilenameViewModel())
                     }
                     Spacer()
