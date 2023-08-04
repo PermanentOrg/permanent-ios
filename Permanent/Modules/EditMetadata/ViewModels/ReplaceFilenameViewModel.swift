@@ -6,7 +6,13 @@
 
 import Foundation
 
-class ReplaceFilenameViewModel: ObservableObject {
+class ReplaceFilenameViewModel: ObservableObject, MyProtocol {
     @Published var findText: String = ""
     @Published var replaceText: String = ""
+    
+    var selectedFiles: [FileModel]
+    
+    init(selectedFiles: [FileModel]) {
+        self.selectedFiles = selectedFiles
+    }
 }

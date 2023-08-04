@@ -6,6 +6,6 @@
 
 import Foundation
 
-class SequenceFilenameViewModel: ObservableObject {
+class SequenceFilenameViewModel: ObservableObject, MyProtocol {
     var baseText: String = ""
 }

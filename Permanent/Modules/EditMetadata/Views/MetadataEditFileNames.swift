@@ -35,11 +35,14 @@ struct MetadataEditFileNames: View {
                     CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
 
                     if selectedItem?.name == "Replace" {
-                        ReplaceFilenameView(viewModel: ReplaceFilenameViewModel())
+                        ReplaceFilenameView(viewModel: ReplaceFilenameViewModel(selectedFiles: viewModel.selectedFiles))
                     } else if selectedItem?.name == "Append" {
-                        AppendFilenameView(viewModel: AppendFilenameViewModel())
+                        let appendViewModel = AppendFilenameViewModel(fileNamePreview: $viewModel.fileNamePreview)
+                        let _ = setCurrentViewModel(editViewModel: appendViewModel)
+                        AppendFilenameView(viewModel: appendViewModel)
                     } else if selectedItem?.name == "Sequence" {
-                        SequenceFilenameView(viewModel: SequenceFilenameViewModel())
+                        let appendViewModel = SequenceFilenameViewModel()
+                        SequenceFilenameView(viewModel: appendViewModel)
                     }
                     Spacer()
                 }
@@ -60,6 +63,10 @@ struct MetadataEditFileNames: View {
                     .padding(.horizontal, 10)
             }
         }
+    }
+    
+    func setCurrentViewModel(editViewModel: MyProtocol) {
+        viewModel.currentViewModel = editViewModel
     }
     
     var previewSection: some View {
