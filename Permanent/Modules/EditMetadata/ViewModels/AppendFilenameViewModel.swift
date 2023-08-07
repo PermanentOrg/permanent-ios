@@ -14,28 +14,21 @@ class AppendFilenameViewModel: ObservableObject, MyProtocol {
     @Published var positionForText: String = ""
 
     var selectedFiles: [FileModel]
+    var whereOptions = [
+        PullDownItem(title: "Before name"),
+        PullDownItem(title: "After Name")
+    ]
+    
+    @Published var selectedOption: PullDownItem?
     
     init(selectedFiles: [FileModel], fileNamePreview: Binding<String?>) {
         self.selectedFiles = selectedFiles
         self.fileNamePreview = fileNamePreview
+        self.selectedOption = whereOptions.first
     }
     
     func getSelectedFiles() -> [FileModel] {
         return []
-    }
-
-    enum WhereToAppendText: String {
-        case beforeFilename
-        case afterFilename
-        
-        var position: String {
-            switch self {
-            case .beforeFilename:
-                return "Before filename"
-            case .afterFilename:
-                return "After filename"
-            }
-        }
     }
     
     func updateAppendPreview() {

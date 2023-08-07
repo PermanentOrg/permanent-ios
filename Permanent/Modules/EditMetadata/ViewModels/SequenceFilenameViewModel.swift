@@ -8,4 +8,5 @@ import Foundation
 
 class SequenceFilenameViewModel: ObservableObject {
     var baseText: String = ""
+    @Published var selectedOption: PullDownItem?
 }

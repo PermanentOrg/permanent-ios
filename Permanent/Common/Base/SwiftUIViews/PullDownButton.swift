@@ -14,7 +14,7 @@ struct Option: Identifiable, Hashable {
 struct PullDownButton: View {
     
     @State var isSelecting = false
-    @State var selectedItem: PullDownItem?
+    @Binding var selectedItem: PullDownItem?
     let items: [PullDownItem]
     
     var body: some View {
@@ -107,8 +107,10 @@ struct CustomDropdownMenu_Previews: PreviewProvider {
         PullDownItem(title: "Trash")
     ]
     
+    @State static var selectedOption: PullDownItem?
+    
     static var previews: some View {
-        PullDownButton(selectedItem: items.first, items: items)
+        PullDownButton(selectedItem: $selectedOption, items: items)
         .padding()
     }
 }

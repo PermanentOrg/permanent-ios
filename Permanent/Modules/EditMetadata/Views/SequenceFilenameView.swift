@@ -7,12 +7,8 @@
 import SwiftUI
 
 struct SequenceFilenameView: View {
-    @ObservedObject var viewModel: SequenceFilenameViewModel
-    
-    init(viewModel: SequenceFilenameViewModel) {
-        self.viewModel = viewModel
-    }
-    
+    @StateObject var viewModel: SequenceFilenameViewModel
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.clear
@@ -32,11 +28,12 @@ struct SequenceFilenameView: View {
             
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Base".uppercased())
+                    Text("Format".uppercased())
                         .textStyle(SmallXXXXXSemiBoldTextStyle())
                         .foregroundColor(Color.middleGray)
                     
-                    PullDownButton(items: [
+                    PullDownButton(selectedItem: $viewModel.selectedOption,
+                                   items: [
                         PullDownItem(title: "Title & Date"),
                         PullDownItem(title: "Numbers")
                     ])
@@ -44,34 +41,36 @@ struct SequenceFilenameView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Base".uppercased())
+                    Text("Where".uppercased())
                         .textStyle(SmallXXXXXSemiBoldTextStyle())
                         .foregroundColor(Color.middleGray)
                     
-                    PullDownButton(items: [
+                    PullDownButton(selectedItem: $viewModel.selectedOption,
+                                   items: [
                         PullDownItem(title: "Before"),
                         PullDownItem(title: "After")
                     ])
                     .padding(-5)
                 }
             }
-            .offset(y: 100)
+            .offset(y: 90)
             .zIndex(2)
             
             VStack(alignment: .leading, spacing: 15) {
-                Text("Base".uppercased())
+                Text("Date Value".uppercased())
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
                     .foregroundColor(Color.middleGray)
                 
-                PullDownButton(items: [
+                PullDownButton(selectedItem: $viewModel.selectedOption,
+                               items: [
                     PullDownItem(title: "Created"),
                     PullDownItem(title: "1")
                 ])
                 .padding(-5)
             }
-            .offset(y: 200)
+            .offset(y: 180)
             .zIndex(1)
         }
-        .padding()
+        .padding(.top, 15)
     }
 }

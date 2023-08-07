@@ -29,9 +29,11 @@ struct AppendFilenameView: View {
             }
             
             VStack {
-                PullDownButton(items: [
-                    PullDownItem(title: "Before name"),
-                    PullDownItem(title: "After Name")
+                PullDownButton(
+                    selectedItem: $viewModel.selectedOption,
+                    items: [
+                        PullDownItem(title: "Before name"),
+                        PullDownItem(title: "After Name")
                 ])
                 .padding(-5)
             }
