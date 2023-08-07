@@ -14,12 +14,11 @@ struct Option: Identifiable, Hashable {
 struct PullDownButton: View {
     
     @State var isSelecting = false
-    @State var selectionTitle = ""
-    @State var selectedRowId = 0
+    @State var selectedItem: PullDownItem?
     let items: [PullDownItem]
     
     var body: some View {
-        GeometryReader { _ in
+        VStack {
             VStack(spacing: 0) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 2)
@@ -33,7 +32,7 @@ struct PullDownButton: View {
                                 .stroke(Color(red: 0.96, green: 0.96, blue: 0.99), lineWidth: 1)
                         )
                     HStack {
-                        Text(selectionTitle)
+                        Text(selectedItem?.title ?? "Select Item")
                             .textStyle(SmallXXRegularTextStyle())
                             .animation(.none)
                         Spacer()
@@ -50,51 +49,45 @@ struct PullDownButton: View {
                     }
                     .background(Rectangle()
                         .fill(Color.white)
-                        .shadow(color: .black.opacity(0.1), radius: 5, x: -3, y: 2))
+                        .shadow(color: .black.opacity(0.05), radius: 5, x: -2, y: 5))
                 }
             }
-            .foregroundColor(Color.darkBlue)
-            .frame(maxWidth: .infinity)
-            .cornerRadius(5)
-            .onTapGesture {
-                isSelecting.toggle()
-            }
-            .onAppear {
-                selectedRowId = items[0].id
-                selectionTitle = items[0].title
-            }
-            .animation(.easeInOut(duration: 0.3))
+            .padding(5)
         }
+        .foregroundColor(Color.darkBlue)
+        .frame(maxWidth: .infinity)
+        .cornerRadius(5)
+        .onTapGesture {
+            isSelecting.toggle()
+        }
+        .onAppear {
+            selectedItem = items.first
+        }
+        .animation(.easeInOut(duration: 0.3))
     }
     
     private func dropDownItemsList() -> some View {
         ForEach(items) { item in
-            PullDownItemView(isSelecting: $isSelecting, selectionId: $selectedRowId, selectiontitle: $selectionTitle, item: item)
+            PullDownItemView(isSelecting: $isSelecting, selectedItem: $selectedItem, item: item)
         }
     }
 }
 
 struct PullDownItem: Identifiable {
-    let id: Int
+    let id: UUID = UUID()
     let title: String
-    let onSelect: (() -> Void)?
 }
 
 struct PullDownItemView: View {
     @Binding var isSelecting: Bool
-    @Binding var selectionId: Int
-    @Binding var selectiontitle: String
+    @Binding var selectedItem: PullDownItem?
     
     let item: PullDownItem
     
     var body: some View {
         Button(action: {
             isSelecting = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                selectionId = item.id
-            }
-            selectiontitle = item.title
-            item.onSelect?()
+            selectedItem = item
         }) {
             HStack {
                 Text(item.title)
@@ -108,12 +101,14 @@ struct PullDownItemView: View {
 }
 
 struct CustomDropdownMenu_Previews: PreviewProvider {
+    static var items = [
+        PullDownItem(title: "Messages"),
+        PullDownItem(title: "Archived"),
+        PullDownItem(title: "Trash")
+    ]
+    
     static var previews: some View {
-        PullDownButton(items: [
-            PullDownItem(id: 1, title: "Messages", onSelect: {}),
-            PullDownItem(id: 2, title: "Archived", onSelect: {}),
-            PullDownItem(id: 3, title: "Trash", onSelect: {})
-        ])
+        PullDownButton(selectedItem: items.first, items: items)
         .padding()
     }
 }
