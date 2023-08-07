@@ -8,6 +8,7 @@ import SwiftUI
 
 struct AppendFilenameView: View {
     @StateObject var viewModel: AppendFilenameViewModel
+    @State var isSelectingOption: Bool = false
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -34,20 +35,26 @@ struct AppendFilenameView: View {
                     items: [
                         PullDownItem(title: "Before name"),
                         PullDownItem(title: "After Name")
-                ])
+                    ],
+                    isSelecting: $isSelectingOption)
                 .padding(-5)
             }
             .offset(y: 120)
         }
-        .simultaneousGesture(
-            TapGesture()
-                .onEnded {
-                    
-                }
-        )
         .padding(.top, 15)
         .onDisappear {
             viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
         }
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded {
+                    isSelectingOption = false
+                    dismissKeyboard()
+                }
+        )
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
