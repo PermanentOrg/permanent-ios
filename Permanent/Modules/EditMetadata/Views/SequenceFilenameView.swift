@@ -75,9 +75,3 @@ struct SequenceFilenameView: View {
         .padding()
     }
 }
-
-struct SequenceFilenameView_Previews: PreviewProvider {
-    static var previews: some View {
-        SequenceFilenameView(viewModel: SequenceFilenameViewModel())
-    }
-}

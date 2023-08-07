@@ -7,11 +7,7 @@
 import SwiftUI
 
 struct ReplaceFilenameView: View {
-    @ObservedObject var viewModel: ReplaceFilenameViewModel
-    
-    init(viewModel: ReplaceFilenameViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: ReplaceFilenameViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -22,7 +18,6 @@ struct ReplaceFilenameView: View {
                 .modifier(SmallXXRegularTextStyle())
                 .textFieldStyle(CustomTextFieldStyle())
                 .onChange(of: viewModel.findText) { newValue in
-                    print(newValue)
                 }
             Text("Replace".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
@@ -31,18 +26,19 @@ struct ReplaceFilenameView: View {
                 .modifier(SmallXXRegularTextStyle())
                 .textFieldStyle(CustomTextFieldStyle())
                 .onChange(of: viewModel.replaceText) { newValue in
-                    print(newValue)
+                    viewModel.updateReplacePreview()
                 }
             Spacer()
         }
         .padding(.top, 15)
+        .onTapGesture {
+            dismissKeyboard()
+        }.onDisappear {
+            viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
+        }
     }
-}
-
-struct ReplaceFilenameView_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var newTag: String = ""
-        
-        ReplaceFilenameView(viewModel: ReplaceFilenameViewModel())
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

@@ -35,10 +35,16 @@ struct MetadataEditFileNames: View {
                     CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
 
                     if selectedItem?.name == "Replace" {
-                        ReplaceFilenameView(viewModel: ReplaceFilenameViewModel())
-                    } else if selectedItem?.name == "Append" {
-                        AppendFilenameView(viewModel: AppendFilenameViewModel())
-                    } else if selectedItem?.name == "Sequence" {
+                        let replaceViewModel = ReplaceFilenameViewModel(selectedFiles: viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
+                        let _ = setCurrentViewModel(editViewModel: replaceViewModel)
+                        ReplaceFilenameView(viewModel: replaceViewModel)
+                    }
+                    if selectedItem?.name == "Append" {
+                        let appendViewModel = AppendFilenameViewModel(selectedFiles: viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
+                        let _ = setCurrentViewModel(editViewModel: appendViewModel)
+                        AppendFilenameView(viewModel: appendViewModel)
+                    }
+                    if selectedItem?.name == "Sequence" {
                         SequenceFilenameView(viewModel: SequenceFilenameViewModel())
                     }
                     Spacer()
@@ -60,6 +66,10 @@ struct MetadataEditFileNames: View {
                     .padding(.horizontal, 10)
             }
         }
+    }
+    
+    func setCurrentViewModel(editViewModel: MyProtocol) {
+        viewModel.currentViewModel = editViewModel
     }
     
     var previewSection: some View {
@@ -110,6 +120,7 @@ struct MetadataEditFileNames: View {
             .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
             Spacer(minLength: 15)
             Button {
+                viewModel.applyChanges()
                 ///To do add Apply changes button action
             } label: {
                 if viewModel.isLoading {

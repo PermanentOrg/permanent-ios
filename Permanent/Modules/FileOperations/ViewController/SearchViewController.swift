@@ -258,7 +258,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout, UICollection
 
         let file = viewModel.fileForRowAt(indexPath: indexPath)
         
-        guard file.fileStatus == .synced && file.thumbnailURL != nil else { return }
+        guard file.fileStatus == .synced && (file.thumbnailURL != nil || file.canBeAccessed) else { return }
         
         if file.type.isFolder {
             let navigateParams: NavigateMinParams = (file.archiveNo, file.folderLinkId, nil)
