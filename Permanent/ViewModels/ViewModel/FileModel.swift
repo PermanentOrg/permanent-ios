@@ -31,7 +31,7 @@ struct FileModel: Equatable, Codable {
     let thumbnailURL2000: String?
     let thumbStatus: ThumbStatus?
     
-    let name: String
+    var name: String
     let date: String
     let type: FileType
     let description: String

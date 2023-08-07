@@ -7,11 +7,7 @@
 import SwiftUI
 
 struct AppendFilenameView: View {
-    @ObservedObject var viewModel: AppendFilenameViewModel
-    
-    init(viewModel: AppendFilenameViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: AppendFilenameViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -22,7 +18,7 @@ struct AppendFilenameView: View {
                 .modifier(SmallXXRegularTextStyle())
                 .textFieldStyle(CustomTextFieldStyle())
                 .onChange(of: viewModel.textToAppend) { newValue in
-                    print(newValue)
+                    viewModel.updateAppendPreview()
                 }
             Text("Where".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
@@ -30,11 +26,8 @@ struct AppendFilenameView: View {
             Spacer()
         }
         .padding(.top, 15)
-    }
-}
-
-struct AppendFilenameView_Previews: PreviewProvider {
-    static var previews: some View {
-        AppendFilenameView(viewModel: AppendFilenameViewModel())
+        .onDisappear {
+            viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
+        }
     }
 }
