@@ -13,9 +13,17 @@ struct Option: Identifiable, Hashable {
 
 struct PullDownButton: View {
     
-    @State var isSelecting = false
+    @Binding var isSelecting: Bool
     @Binding var selectedItem: PullDownItem?
     let items: [PullDownItem]
+    
+    init(selectedItem: Binding<PullDownItem?>,
+         items: [PullDownItem],
+         isSelecting: Binding<Bool> = .constant(true)) {
+        _selectedItem = selectedItem
+        self.items = items
+        _isSelecting = isSelecting
+    }
     
     var body: some View {
         VStack {

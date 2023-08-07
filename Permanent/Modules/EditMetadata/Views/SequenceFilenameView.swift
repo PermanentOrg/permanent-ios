@@ -8,7 +8,10 @@ import SwiftUI
 
 struct SequenceFilenameView: View {
     @StateObject var viewModel: SequenceFilenameViewModel
-
+    @State var isSelectingFormat: Bool = false
+    @State var isSelectingWhere: Bool = false
+    @State var isSelectingDate: Bool = false
+    
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.clear
@@ -34,9 +37,10 @@ struct SequenceFilenameView: View {
                     
                     PullDownButton(selectedItem: $viewModel.selectedOption,
                                    items: [
-                        PullDownItem(title: "Title & Date"),
-                        PullDownItem(title: "Numbers")
-                    ])
+                                    PullDownItem(title: "Title & Date"),
+                                    PullDownItem(title: "Numbers")
+                                   ],
+                                   isSelecting: $isSelectingFormat)
                     .padding(-5)
                 }
                 
@@ -47,9 +51,10 @@ struct SequenceFilenameView: View {
                     
                     PullDownButton(selectedItem: $viewModel.selectedOption,
                                    items: [
-                        PullDownItem(title: "Before"),
-                        PullDownItem(title: "After")
-                    ])
+                                    PullDownItem(title: "Before"),
+                                    PullDownItem(title: "After")
+                                   ],
+                                   isSelecting: $isSelectingWhere)
                     .padding(-5)
                 }
             }
@@ -63,14 +68,28 @@ struct SequenceFilenameView: View {
                 
                 PullDownButton(selectedItem: $viewModel.selectedOption,
                                items: [
-                    PullDownItem(title: "Created"),
-                    PullDownItem(title: "1")
-                ])
+                                PullDownItem(title: "Created"),
+                                PullDownItem(title: "1")
+                               ],
+                               isSelecting: $isSelectingDate)
                 .padding(-5)
             }
             .offset(y: 180)
             .zIndex(1)
         }
         .padding(.top, 15)
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded {
+                    isSelectingFormat = false
+                    isSelectingDate = false
+                    isSelectingWhere = false
+                    dismissKeyboard()
+                }
+        )
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
