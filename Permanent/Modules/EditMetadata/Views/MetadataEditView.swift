@@ -126,7 +126,7 @@ struct MetadataEditView: View {
                 AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: viewModel.allTags, selectedFiles: viewModel.selectedFiles))
             }
             .sheet(isPresented: $showEditFilenames) {
-                MetadataEditFileNames(viewModel: MetadataEditFileNamesViewModel( selectedFiles: viewModel.selectedFiles))
+                MetadataEditFileNames(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles))
             }
             .onAppear {
                 viewModel.refreshFiles()

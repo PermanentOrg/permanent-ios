@@ -16,6 +16,10 @@ struct MetadataEditFileNames: View {
     @ObservedObject var viewModel: MetadataEditFileNamesViewModel
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var showEditFilenames: Binding<Bool>?
+    
+    var replaceViewModel: ReplaceFilenameViewModel!
+    var appendViewModel: AppendFilenameViewModel!
+    var sequenceViewModel: SequenceFilenameViewModel!
 
     @State private var selectedItem: MenuItem? = MenuItem(name: "Replace", image: UIImage(named: "metadataReplace")!)
     private var menuItems: [MenuItem] = [
@@ -26,6 +30,10 @@ struct MetadataEditFileNames: View {
 
     init(viewModel: MetadataEditFileNamesViewModel) {
         self.viewModel = viewModel
+        
+        self.replaceViewModel = ReplaceFilenameViewModel(selectedFiles: self.viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
+        self.appendViewModel = AppendFilenameViewModel(selectedFiles: self.viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
+        self.sequenceViewModel = SequenceFilenameViewModel(selectedFiles: self.viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
     }
     
     var body: some View {
@@ -33,19 +41,29 @@ struct MetadataEditFileNames: View {
             NavigationView {
                 VStack {
                     CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
-
+                        .onAppear {
+                            setCurrentViewModel(editViewModel: replaceViewModel)
+                        }
+                        .onChange(of: selectedItem) { newValue in
+                            switch newValue?.name {
+                            case "Replace":
+                                setCurrentViewModel(editViewModel: replaceViewModel)
+                            case "Append":
+                                setCurrentViewModel(editViewModel: appendViewModel)
+                            case "Sequence":
+                                setCurrentViewModel(editViewModel: sequenceViewModel)
+                            default:
+                                break
+                            }
+                        }
                     if selectedItem?.name == "Replace" {
-                        let replaceViewModel = ReplaceFilenameViewModel(selectedFiles: viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
-                        let _ = setCurrentViewModel(editViewModel: replaceViewModel)
                         ReplaceFilenameView(viewModel: replaceViewModel)
                     }
                     if selectedItem?.name == "Append" {
-                        let appendViewModel = AppendFilenameViewModel(selectedFiles: viewModel.selectedFiles, fileNamePreview: $viewModel.fileNamePreview)
-                        let _ = setCurrentViewModel(editViewModel: appendViewModel)
                         AppendFilenameView(viewModel: appendViewModel)
                     }
                     if selectedItem?.name == "Sequence" {
-                        SequenceFilenameView(viewModel: SequenceFilenameViewModel())
+                        SequenceFilenameView(viewModel: sequenceViewModel)
                     }
                     Spacer()
                 }
@@ -121,7 +139,6 @@ struct MetadataEditFileNames: View {
             Spacer(minLength: 15)
             Button {
                 viewModel.applyChanges()
-                ///To do add Apply changes button action
             } label: {
                 if viewModel.isLoading {
                     ProgressView()

@@ -19,7 +19,11 @@ class AppendFilenameViewModel: ObservableObject, MyProtocol {
         PullDownItem(title: "After Name")
     ]
     
-    @Published var selectedOption: PullDownItem?
+    @Published var selectedOption: PullDownItem? {
+        didSet {
+            updateAppendPreview()
+        }
+    }
     
     init(selectedFiles: [FileModel], fileNamePreview: Binding<String?>) {
         self.selectedFiles = selectedFiles
@@ -28,13 +32,30 @@ class AppendFilenameViewModel: ObservableObject, MyProtocol {
     }
     
     func getSelectedFiles() -> [FileModel] {
-        return []
+        let filteredFiles = selectedFiles.map { file in
+            var newFile = file
+            let name = newFile.name
+            if selectedOption?.title == "Before name" {
+                newFile.name = String("\(textToAppend)\(name)")
+            } else {
+                newFile.name = String("\(name)\(textToAppend)")
+            }
+            return newFile
+        }
+        return filteredFiles
     }
     
     func updateAppendPreview() {
-        let fileName = selectedFiles.first?.name
-        let result = fileName?.appending(textToAppend)
-        fileNamePreview.wrappedValue = result
+        var fileName = selectedFiles.first?.name ?? ""
+        
+        if selectedOption?.title == "Before name" {
+            fileName = String("\(textToAppend)\(fileName)")
+        } else {
+            fileName = String("\(fileName)\(textToAppend)")
+        }
+        
+
+        fileNamePreview.wrappedValue = fileName
     }
 }
 

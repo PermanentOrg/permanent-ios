@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ReplaceFilenameView: View {
-    @StateObject var viewModel: ReplaceFilenameViewModel
+   @StateObject var viewModel: ReplaceFilenameViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -26,7 +26,7 @@ struct ReplaceFilenameView: View {
                 .modifier(SmallXXRegularTextStyle())
                 .textFieldStyle(CustomTextFieldStyle())
                 .onChange(of: viewModel.replaceText) { newValue in
-                    viewModel.updateReplacePreview()
+                   viewModel.updateReplacePreview()
                 }
             Spacer()
         }
@@ -34,6 +34,8 @@ struct ReplaceFilenameView: View {
         .onTapGesture {
             dismissKeyboard()
         }.onDisappear {
+            viewModel.findText = ""
+            viewModel.replaceText = ""
             viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
         }
     }

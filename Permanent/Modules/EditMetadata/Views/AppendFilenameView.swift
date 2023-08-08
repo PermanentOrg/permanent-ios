@@ -52,6 +52,10 @@ struct AppendFilenameView: View {
                     dismissKeyboard()
                 }
         )
+        .onDisappear {
+            viewModel.textToAppend = ""
+            viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
+        }
     }
     
     private func dismissKeyboard() {

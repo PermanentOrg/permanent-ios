@@ -14,7 +14,6 @@ class ReplaceFilenameViewModel: ObservableObject, MyProtocol {
     @Published var replaceText: String = ""
 
     var selectedFiles: [FileModel]
-    var filteredFiles: [FileModel] = []
     
     init(selectedFiles: [FileModel], fileNamePreview: Binding<String?>) {
         self.selectedFiles = selectedFiles
@@ -22,15 +21,16 @@ class ReplaceFilenameViewModel: ObservableObject, MyProtocol {
     }
 
     func getSelectedFiles() -> [FileModel] {
-        filteredFiles = selectedFiles.map { file in
+        let filteredFiles = selectedFiles.map { file in
             var newFile = file
             let name = newFile.name
             newFile.name = name.replacingOccurrences(of: findText, with: replaceText)
             return newFile
         }
+        
         return filteredFiles
     }
-    
+
     func updateReplacePreview() {
         let fileName = selectedFiles.first?.name
         fileNamePreview.wrappedValue = fileName?.replacingOccurrences(of: findText, with: replaceText)

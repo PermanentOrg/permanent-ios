@@ -8,8 +8,8 @@ import Foundation
 import SwiftUI
 
 protocol MyProtocol: AnyObject {
-    func getSelectedFiles() -> [FileModel]
     var fileNamePreview: Binding<String?> {get set}
+    func getSelectedFiles() -> [FileModel]
 }
 
 class MetadataEditFileNamesViewModel: ObservableObject {
@@ -20,11 +20,14 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     @Published var fileSizePreview: String?
     @Published var fileNamePreview: String?
     
-    weak var currentViewModel: (any MyProtocol)?
+    @Published var modifiedFiles: [FileModel]
+    
+    var currentViewModel: (any MyProtocol)?
     
     init(tagsRepository: TagsRepository = TagsRepository(), selectedFiles: [FileModel]) {
         self.tagsRepository = tagsRepository
         self.selectedFiles = selectedFiles
+        self.modifiedFiles = selectedFiles
         
         imagePreviewURL = selectedFiles.first?.thumbnailURL500
         fileNamePreview = selectedFiles.first?.name
@@ -33,12 +36,7 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         }
     }
     
-    func update() {
-        let myFiles = currentViewModel?.getSelectedFiles()
-    }
-    
     func applyChanges() {
         let updatedFiles = currentViewModel?.getSelectedFiles()
-        print(updatedFiles?.first?.name)
     }
 }

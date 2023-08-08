@@ -87,6 +87,9 @@ struct SequenceFilenameView: View {
                     dismissKeyboard()
                 }
         )
+        .onDisappear {
+            viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
+        }
     }
     
     private func dismissKeyboard() {
