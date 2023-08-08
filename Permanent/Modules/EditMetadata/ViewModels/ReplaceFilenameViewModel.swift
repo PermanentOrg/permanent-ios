@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class ReplaceFilenameViewModel: ObservableObject, MyProtocol {
+class ReplaceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     var fileNamePreview: Binding<String?>
     
     @Published var findText: String = ""

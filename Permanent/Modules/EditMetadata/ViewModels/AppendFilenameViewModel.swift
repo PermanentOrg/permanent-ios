@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class AppendFilenameViewModel: ObservableObject, MyProtocol {
+class AppendFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     var fileNamePreview: Binding<String?>
     
     @Published var textToAppend: String = ""

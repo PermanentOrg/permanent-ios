@@ -220,7 +220,7 @@
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
 		5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */; };
-		5E6FB7582A73E15800984B84 /* MetadataEditFileNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FB7572A73E15800984B84 /* MetadataEditFileNames.swift */; };
+		5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */; };
 		5E6FB75A2A73E18200984B84 /* MetadataEditFileNamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FB7592A73E18200984B84 /* MetadataEditFileNamesViewModel.swift */; };
 		5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9027E36EAA00A47D27 /* RCValues.swift */; };
 		5E744F9327E38DB900A47D27 /* LoadingScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */; };
@@ -1014,7 +1014,7 @@
 		5E68F2D826A9A2CD00CC936E /* TestURLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestURLs.swift; sourceTree = "<group>"; };
 		5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseURLProtocol.swift; sourceTree = "<group>"; };
 		5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPage.swift; sourceTree = "<group>"; };
-		5E6FB7572A73E15800984B84 /* MetadataEditFileNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditFileNames.swift; sourceTree = "<group>"; };
+		5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditFileNamesView.swift; sourceTree = "<group>"; };
 		5E6FB7592A73E18200984B84 /* MetadataEditFileNamesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditFileNamesViewModel.swift; sourceTree = "<group>"; };
 		5E744F9027E36EAA00A47D27 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
 		5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenViewController.swift; sourceTree = "<group>"; };
@@ -2643,7 +2643,7 @@
 			children = (
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
 				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
-				5E6FB7572A73E15800984B84 /* MetadataEditFileNames.swift */,
+				5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */,
 				5E5AB60E2A6494170030BF61 /* AddTagsView.swift */,
 				5E66730E2A793D9B001C49CC /* ReplaceFilenameView.swift */,
 				5E6673142A7A3A50001C49CC /* AppendFilenameView.swift */,
@@ -4366,7 +4366,7 @@
 				BC59BAB525C2B7D6005A45D3 /* SharePreviewViewModel.swift in Sources */,
 				F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */,
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
-				5E6FB7582A73E15800984B84 /* MetadataEditFileNames.swift in Sources */,
+				5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,

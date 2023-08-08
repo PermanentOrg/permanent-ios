@@ -49,6 +49,6 @@ struct CustomSegmentedControl: View {
 
 struct CustomSegmentedControl_Previews: PreviewProvider {
     static var previews: some View {
-        MetadataEditFileNames(viewModel: MetadataEditFileNamesViewModel(selectedFiles: []))
+        MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: []))
     }
 }

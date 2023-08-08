@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-protocol MyProtocol: AnyObject {
+protocol MetadataEditFilenamesProtocol: AnyObject {
     var fileNamePreview: Binding<String?> {get set}
     func getSelectedFiles() -> [FileModel]
 }
@@ -20,14 +20,11 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     @Published var fileSizePreview: String?
     @Published var fileNamePreview: String?
     
-    @Published var modifiedFiles: [FileModel]
-    
-    var currentViewModel: (any MyProtocol)?
+    var currentViewModel: (any MetadataEditFilenamesProtocol)?
     
     init(tagsRepository: TagsRepository = TagsRepository(), selectedFiles: [FileModel]) {
         self.tagsRepository = tagsRepository
         self.selectedFiles = selectedFiles
-        self.modifiedFiles = selectedFiles
         
         imagePreviewURL = selectedFiles.first?.thumbnailURL500
         fileNamePreview = selectedFiles.first?.name

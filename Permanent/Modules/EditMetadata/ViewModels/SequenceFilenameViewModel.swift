@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class SequenceFilenameViewModel: ObservableObject, MyProtocol {
+class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     var fileNamePreview: Binding<String?>
     
     func getSelectedFiles() -> [FileModel] {

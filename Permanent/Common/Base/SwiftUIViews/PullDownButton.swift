@@ -6,11 +6,6 @@
 
 import SwiftUI
 
-struct Option: Identifiable, Hashable {
-    let id = UUID()
-    let title: String
-}
-
 struct PullDownButton: View {
     
     @Binding var isSelecting: Bool
