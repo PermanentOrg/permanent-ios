@@ -36,6 +36,7 @@ enum FilesEndpoint {
     case relocate(params: RelocateParams)
     case update(params: UpdateRecordParams)
     case multipleUpdate(params: UpdateMultipleRecordsParams)
+    case multipleFilesUpdate(files: [FileModel])
     
     // UPLOAD
     case getPresignedUrl(params: GetPresignedUrlParams)
@@ -90,7 +91,7 @@ extension FilesEndpoint: RequestProtocol {
             } else {
                 return "/record/\(parameters.action.endpointValue)"
             }
-        case .update, .multipleUpdate:
+        case .update, .multipleUpdate, .multipleFilesUpdate:
             return "/record/update"
         case .renameFolder:
             return "/folder/update"
@@ -138,6 +139,9 @@ extension FilesEndpoint: RequestProtocol {
             
         case .multipleUpdate(let params):
             return FilesEndpointPayloads.updateMultipleRecordsRequest(params: params)
+            
+        case .multipleFilesUpdate(let files):
+            return FilesEndpointPayloads.multipleFilesUpdate(files: files)
             
         case .renameFolder(let params):
             return FilesEndpointPayloads.renameFolderRequest(params: params)
@@ -433,6 +437,27 @@ class FilesEndpointPayloads {
                     "archiveNbr": $0.archiveNo,
                     "folder_linkId": $0.folderLinkId,
                     "description": params.description
+                ] as [String : Any]
+            ]
+        }
+
+        return [
+            "RequestVO":
+                [
+                    "data": data
+                ]
+        ]
+    }
+    
+    static func multipleFilesUpdate(files: [FileModel]) -> RequestParameters {
+        let data = files.map {
+            [
+                "RecordVO": [
+                    "recordId": $0.recordId,
+                    "archiveNbr": $0.archiveNo,
+                    "folder_linkId": $0.folderLinkId,
+                    "description": $0.description,
+                    "displayName": $0.name
                 ] as [String : Any]
             ]
         }

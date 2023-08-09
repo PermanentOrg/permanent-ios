@@ -84,6 +84,17 @@ struct MetadataEditFileNamesView: View {
                     break
                 }
             }
+            .onChange(of: viewModel.changesWereSaved, perform: { newValue in
+                if newValue {
+                    viewModel.changesWereSaved = false
+                    presentationMode.wrappedValue.dismiss()
+                }
+            })
+            .alert(isPresented: $viewModel.showAlert) {
+                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                    viewModel.showAlert = false
+                })
+            }
         }
     }
     

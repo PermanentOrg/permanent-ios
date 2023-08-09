@@ -14,6 +14,9 @@ protocol MetadataEditFilenamesProtocol: AnyObject {
 
 class MetadataEditFileNamesViewModel: ObservableObject {
     @Published var isLoading: Bool = false
+    @Published var showAlert: Bool = false
+    @Published var changesWereSaved: Bool = false
+    
     var selectedFiles: [FileModel]
     let tagsRepository: TagsRepository
     @Published var imagePreviewURL: String?
@@ -34,6 +37,24 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     }
     
     func applyChanges() {
-        let updatedFiles = currentViewModel?.getSelectedFiles()
+        guard let updatedFiles = currentViewModel?.getSelectedFiles() else {
+            return
+        }
+        isLoading = true
+        let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) { result in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .json( _, _):
+                    self.changesWereSaved = true
+                case .error(_, _):
+                    self.showAlert = true
+                default:
+                    self.showAlert = true
+                }
+            }
+        }
     }
 }
