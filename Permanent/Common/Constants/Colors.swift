@@ -66,4 +66,5 @@ extension Color {
     static var middleGray = Color("MiddleGray")
     static var paleOrange = Color("PaleOrange")
     static var lightGray = Color("LightGray")
+    static var lightRed = Color("LightRed")
 }

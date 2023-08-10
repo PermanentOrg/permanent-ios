@@ -76,8 +76,10 @@ struct TagView: View {
                     if unassignWasTapped {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
+                            .frame(width: 10, height: 10)
                     } else {
                         Image("xMarkToolbarIcon")
+                            .frame(width: 10, height: 10)
                     }
                 }
             }

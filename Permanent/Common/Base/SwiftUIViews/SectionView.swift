@@ -10,7 +10,7 @@ import SDWebImageSwiftUI
 struct SectionView: View {
     var assetName: String = ""
     let title: String
-    let rightButtonView: RightButtonView?
+    var rightButtonView: RightButtonView?
     var haveRightSection: Bool = true
     var divider: Divider? = nil
     

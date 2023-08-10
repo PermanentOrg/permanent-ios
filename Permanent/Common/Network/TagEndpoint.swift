@@ -45,7 +45,6 @@ extension TagEndpoint: RequestProtocol {
     }
     
     var responseType: ResponseType {
-
         return .json
     }
     
