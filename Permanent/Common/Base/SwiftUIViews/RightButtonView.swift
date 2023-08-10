@@ -9,14 +9,23 @@ import SwiftUI
 
 struct RightButtonView: View {
     let text: String
+    var showChevron: Bool
     let action: () -> Void
+    
+    init(text: String, showChevron: Bool = true, action: @escaping () -> Void) {
+        self.text = text
+        self.showChevron = showChevron
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
                 Text(text)
                     .textStyle(SmallSemiBoldTextStyle())
-                Image(systemName: "chevron.right")
+                if showChevron {
+                    Image(systemName: "chevron.right")
+                }
             }
             .foregroundColor(.darkBlue)
         }

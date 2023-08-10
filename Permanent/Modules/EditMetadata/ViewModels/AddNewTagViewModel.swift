@@ -63,7 +63,6 @@ class AddNewTagViewModel: ObservableObject {
                 self?.showAddSingleTagAlert = true
             }
         }
-        
     }
     
     func addSingleTag(tagNames: [String], completion: @escaping ((Bool) -> Void)) {

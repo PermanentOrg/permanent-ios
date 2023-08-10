@@ -33,7 +33,7 @@ struct MetadataEditView: View {
                                 .padding(.top, 24)
                         }
                         Group {
-                            VStack {
+                            VStack(alignment: .leading) {
                                 SectionView(
                                     assetName: "metadataDescription",
                                     title: "Description",
@@ -56,11 +56,19 @@ struct MetadataEditView: View {
                                              didSaved: $viewModel.didSaved,
                                              textStyle: TextFontStyle.style39,
                                              textColor: .middleGray)
-                                        .padding(.all, 5)
-                                        .frame(maxHeight: 72)
+                                    .padding(.all, 5)
+                                    .frame(maxHeight: 72)
                                 }
                                 .frame(height: 72)
                                 .foregroundColor(.clear)
+                                if viewModel.haveDiffDescription {
+                                    Text("Some files already have description!")
+                                        .textStyle(SmallXXRegularTextStyle())
+                                        .foregroundColor(.lightRed)
+                                        .padding(.top, 5)
+                                    Divider()
+                                        .padding(.top, 0)
+                                }
                             }
                         }
                         Group {
@@ -68,11 +76,13 @@ struct MetadataEditView: View {
                                 assetName: "metadataTags",
                                 title: "Tags",
                                 rightButtonView: RightButtonView(
-                                    text: "Manage Tags",
+                                    text: "Apply all to selection",
+                                    showChevron: false,
                                     action: { print("Manage Tags tapped") }
                                 ),
-                                haveRightSection: false
+                                haveRightSection: viewModel.havePartialTags
                             )
+                            .padding(.top, -10)
                             TagsView(viewModel: viewModel, showAddNewTagView: $showAddNewTag)
                             Spacer(minLength: 24)
                             Divider()

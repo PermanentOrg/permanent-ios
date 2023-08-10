@@ -11,6 +11,9 @@ class FilesMetadataViewModel: ObservableObject {
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
             allTags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
+            if selectedFiles.count > 1, !descriptionWasSaved {
+                haveDiffDescription = selectedFiles.allSatisfy({ $0.description.isNotEmpty })
+            }
         }
     }
     @Published var inputText: String = .enterTextHere
@@ -29,7 +32,16 @@ class FilesMetadataViewModel: ObservableObject {
             }
         }
     }
-    @Published var filteredAllTags: [TagVO] = []
+    @Published var filteredAllTags: [TagVO] = [] {
+        didSet {
+            if selectedFiles.count > 1 {
+                havePartialTags = allTags != filteredAllTags
+            }
+        }
+    }
+    @Published var haveDiffDescription: Bool = false
+    @Published var havePartialTags: Bool = false
+    var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
     
     let tagsRepository: TagsRepository
@@ -54,6 +66,11 @@ class FilesMetadataViewModel: ObservableObject {
     
     func updateDescription(_ text: String) {
         update(description: text) { status in
+            if status {
+                self.descriptionWasSaved = true
+                self.haveDiffDescription = false
+                self.refreshFiles()
+            }
             self.showAlert = !status
         }
     }
