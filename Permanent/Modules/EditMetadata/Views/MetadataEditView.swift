@@ -147,6 +147,12 @@ struct MetadataEditView: View {
                     viewModel.refreshFiles()
                 }
             }
+            .onChange(of: showEditFilenames) { newValue in
+                if newValue == false {
+                    self.reloadFiles = false
+                    viewModel.refreshFiles()
+                }
+            }
         }
     }
     
