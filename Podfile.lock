@@ -101,6 +101,9 @@ PODS:
   - GoogleUtilities/UserDefaults (6.7.2):
     - GoogleUtilities/Logger
   - KeychainSwift (20.0.0)
+  - Mixpanel-swift (4.1.4):
+    - Mixpanel-swift/Complete (= 4.1.4)
+  - Mixpanel-swift/Complete (4.1.4)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
     - nanopb/encode (= 1.30906.0)
@@ -127,6 +130,7 @@ DEPENDENCIES:
   - GoogleMaps (= 6.1.1.0)
   - GooglePlaces (= 6.1.1.0)
   - KeychainSwift (= 20.0)
+  - Mixpanel-swift
   - ObjectMapper (= 4.2.0)
   - Protobuf (= 3.22.3)
   - SDWebImage (= 5.10.0)
@@ -152,6 +156,7 @@ SPEC REPOS:
     - GooglePlaces
     - GoogleUtilities
     - KeychainSwift
+    - Mixpanel-swift
     - nanopb
     - ObjectMapper
     - PromisesObjC
@@ -179,6 +184,7 @@ SPEC CHECKSUMS:
   GooglePlaces: 9c1f3baa75191b94dfc12b80a801292e03977f73
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
+  Mixpanel-swift: 4991762c97c3535ce4e67c395a93e40ab7b666f7
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
@@ -189,6 +195,6 @@ SPEC CHECKSUMS:
   StripeApplePay: 858c1dadc39b658d317661dea8cc2b7158533a17
   StripeCore: 52e0aba2fad604455692db593bf5edc04758b760
 
-PODFILE CHECKSUM: d9fb7c3916b1de417fe89817bbc624b7ea232ef6
+PODFILE CHECKSUM: 51c78e4d4cd83757985af9abbfdd5f4f33936e67
 
 COCOAPODS: 1.12.1

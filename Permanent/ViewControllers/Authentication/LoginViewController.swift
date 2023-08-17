@@ -81,8 +81,8 @@ class LoginViewController: BaseViewController<AuthViewModel> {
         closeKeyboard()
         showSpinner()
         
-        viewModel?.login(withUsername: emailField.text, password: passwordField.text, then: { loginStatus in
-            self.hideSpinner()
+        viewModel?.login(withUsername: emailField.text, password: passwordField.text, then: {[weak self] loginStatus in
+            self?.hideSpinner()
             
             switch loginStatus {
             case .success:
@@ -91,15 +91,21 @@ class LoginViewController: BaseViewController<AuthViewModel> {
                 } else {
                     AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
                 }
-                
+                self?.trackEvents()
             case .mfaToken:
                 let verificationCodeVC = UIViewController.create(withIdentifier: .verificationCode, from: .authentication) as! CodeVerificationController
-                self.present(verificationCodeVC, animated: true)
-                
+                self?.present(verificationCodeVC, animated: true)
+                self?.trackEvents()
             case .error(message: let message):
-                self.showAlert(title: .error, message: message)
+                self?.showAlert(title: .error, message: message)
             }
         })
+    }
+    
+    func trackEvents() {
+        EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
+                                     email: AuthenticationManager.shared.session?.account.primaryEmail)
+        EventsManager.trackEvent(event: .SignIn)
     }
     
     @IBAction

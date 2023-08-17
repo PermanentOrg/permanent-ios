@@ -77,7 +77,6 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 DispatchQueue.main.async {
                     self.navigationController?.display(.signUp, from: .authentication)
                 }
-                    
             case .error(let message):
                 DispatchQueue.main.async {
                     self.showAlert(title: .error, message: message)

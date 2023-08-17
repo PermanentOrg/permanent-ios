@@ -87,6 +87,7 @@ class RootViewController: UIViewController {
                     
                     if skipOnboarding {
                         AuthenticationManager.shared.logout()
+                        EventsManager.resetUser()
                     }
                     
                     let navController = NavigationController()
