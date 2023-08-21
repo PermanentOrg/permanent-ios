@@ -7,6 +7,6 @@
 import Foundation
 
 enum EventType: String {
-    case SignUp
-    case SignIn
+    case SignUp = "Sign up"
+    case SignIn = "Sign in"
 }
