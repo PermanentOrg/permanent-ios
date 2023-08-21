@@ -16,6 +16,7 @@ target 'Permanent' do
   pod 'KeychainSwift', '20.0'
   pod 'StripeApplePay', '22.8.1'
   pod 'SkeletonView', '1.30.4'
+  pod 'Mixpanel-swift'
 
   target 'PermanentTests' do
         inherit! :search_paths

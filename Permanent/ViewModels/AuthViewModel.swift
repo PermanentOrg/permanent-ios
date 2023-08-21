@@ -141,6 +141,7 @@ class AuthViewModel: ViewModelInterface {
 
                 if model.isSuccessful == true {
                     handler(.success)
+                    EventsManager.resetUser()
                 } else {
                     handler(.error(message: .errorMessage))
                 }

@@ -132,6 +132,9 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
                 AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
             }
             
+            EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
+                                         email: AuthenticationManager.shared.session?.account.primaryEmail)
+            EventsManager.trackEvent(event: .SignUp)
         case .error(let message):
             showAlert(title: .error, message: message)
         }
