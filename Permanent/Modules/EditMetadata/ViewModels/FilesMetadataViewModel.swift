@@ -8,14 +8,17 @@ import SwiftUI
 import Foundation
 
 class FilesMetadataViewModel: ObservableObject {
+    
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
-            allTags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
+            let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
+            allTags = tags.sorted()
             if selectedFiles.count > 1, !descriptionWasSaved {
                 haveDiffDescription = selectedFiles.allSatisfy({ $0.description.isNotEmpty })
             }
         }
     }
+    
     @Published var inputText: String = .enterTextHere
     @Published var didSaved: Bool = false {
         didSet {
@@ -52,13 +55,20 @@ class FilesMetadataViewModel: ObservableObject {
         refreshFiles()
     }
     
+    func isTagInAllFiles(_ text: String) -> Bool {
+        return filteredAllTags.contains(where: { $0.tagVO.name == text })
+    }
+    
     func refreshFiles() {
-        let files = selectedFiles
-        selectedFiles = []
-        for file in files {
-            getRecord(file: file) { [weak self] record in
-                if let record = record?.recordVO {
-                    self?.selectedFiles.append(FileModel(model: record, permissions: file.permissions, accessRole: file.accessRole))
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
+            await MainActor.run {
+                strongSelf.selectedFiles = records.compactMap { record in
+                    if let recordVO = record?.recordVO {
+                        return FileModel(model: recordVO, permissions: [], accessRole: AccessRole.viewer)
+                    }
+                    return nil
                 }
             }
         }
@@ -75,16 +85,22 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    func getRecord(file: FileModel, then handler: @escaping (RecordVO?) -> Void) {
-        let downloadInfo = FileDownloadInfoVM(
-            fileType: file.type,
-            folderLinkId: file.folderLinkId,
-            parentFolderLinkId: file.parentFolderLinkId
-        )
-        
-        downloader = DownloadManagerGCD()
-        downloader?.getRecord(downloadInfo) { (record, error) in
-            handler(record)
+    func getRecord(file: FileModel) async throws -> RecordVO? {
+        return try await withCheckedThrowingContinuation {[weak self] continuation in
+            let downloadInfo = FileDownloadInfoVM(
+                fileType: file.type,
+                folderLinkId: file.folderLinkId,
+                parentFolderLinkId: file.parentFolderLinkId
+            )
+            
+            self?.downloader = DownloadManagerGCD()
+            self?.downloader?.getRecord(downloadInfo) { (record, error) in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: record)
+                }
+            }
         }
     }
     
@@ -107,6 +123,8 @@ class FilesMetadataViewModel: ObservableObject {
             }
         }
     }
+    
+    //MARK: Delete Tag
     
     func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void)) {
         Task {[weak self] in
@@ -134,6 +152,62 @@ class FilesMetadataViewModel: ObservableObject {
     func runUnassignTag(unassignTag: TagVO, recordId: Int) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             tagsRepository.unassignTag(tagVO: [unassignTag], recordId: recordId) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+    }
+    
+    //MARK: Assign Tags
+    
+    func assignAllTagsToAll() {
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            do {
+                let _ = try await strongSelf.selectedFiles.compactMap { file in
+                    return (strongSelf.allTags, file.recordId)
+                }.asyncMap(strongSelf.runAssignTag)
+                
+                await MainActor.run {
+                    strongSelf.refreshFiles()
+                }
+            }
+            catch {
+                await MainActor.run {
+                    strongSelf.showAlert = true
+                }
+            }
+        }
+    }
+    
+    func assignTagToAll(tagName: String) {
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            guard let tag: TagVO = strongSelf.allTags.filter({ $0.tagVO.name == tagName }).first else { return }
+            do {
+                let _ = try await strongSelf.selectedFiles.compactMap { file in
+                    return ([tag], file.recordId)
+                }.asyncMap(strongSelf.runAssignTag)
+                
+                await MainActor.run {
+                    strongSelf.refreshFiles()
+                }
+            }
+            catch {
+                await MainActor.run {
+                    strongSelf.showAlert = true
+                }
+            }
+        }
+    }
+    
+    func runAssignTag(tags: [TagVO], recordId: Int) async throws {
+        let tagNames = tags.compactMap { $0.tagVO.name }
+        return try await withCheckedThrowingContinuation { continuation in
+            tagsRepository.assignTag(tagNames: tagNames, recordId: recordId) { result, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else {
