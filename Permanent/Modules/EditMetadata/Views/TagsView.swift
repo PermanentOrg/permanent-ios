@@ -53,7 +53,7 @@ struct TagsView: View {
 struct TagView: View {
     let text: String
     @ObservedObject var viewModel: FilesMetadataViewModel
-    @State var unassignWasTapped: Bool = false
+    @State var isLoading: Bool = false
     var tagColor = Color.paleOrange.opacity(0.2)
     var fullTagColor = Color.indianSaffron.opacity(0.2)
     @State var showLineBorder: Bool = true
@@ -69,12 +69,9 @@ struct TagView: View {
                 Text(text)
                     .textStyle(SmallXXRegularTextStyle())
                 Button {
-                    unassignWasTapped = true
-                    viewModel.unassignTag(tagName: text, completion: { _ in
-                        unassignWasTapped = false
-                    })
+                    viewModel.unassignTag(tagName: text, isLoading: $isLoading)
                 } label: {
-                    if unassignWasTapped {
+                    if isLoading {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
                             .frame(width: 10, height: 10)
@@ -96,7 +93,7 @@ struct TagView: View {
                 .stroke(Color(red: 1, green: 0.9, blue: 0.8), lineWidth: viewModel.isTagInAllFiles(text) ? 0 : 1)
         )
         .onTapGesture {
-            viewModel.assignTagToAll(tagName: text)
+            viewModel.assignTagToAll(tagName: text, isLoading: $isLoading)
         }
     }
 }

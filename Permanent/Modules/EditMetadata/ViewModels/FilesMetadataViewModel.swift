@@ -126,7 +126,8 @@ class FilesMetadataViewModel: ObservableObject {
     
     //MARK: Delete Tag
     
-    func unassignTag(tagName: String, completion: @escaping ((Bool) -> Void)) {
+    func unassignTag(tagName: String, isLoading: Binding<Bool>) {
+        isLoading.wrappedValue = true
         Task {[weak self] in
             guard let strongSelf = self else { return }
             guard let unAssignTag: TagVO = strongSelf.allTags.filter({ $0.tagVO.name == tagName }).first else { return }
@@ -138,11 +139,13 @@ class FilesMetadataViewModel: ObservableObject {
                 })
                 
                 await MainActor.run {
+                    isLoading.wrappedValue = false
                     strongSelf.allTags.removeAll(where: { $0.tagVO.name == tagName })
                 }
             }
             catch {
                 await MainActor.run {
+                    isLoading.wrappedValue = false
                     strongSelf.showAlert = true
                 }
             }
@@ -183,7 +186,8 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     
-    func assignTagToAll(tagName: String) {
+    func assignTagToAll(tagName: String, isLoading: Binding<Bool>) {
+        isLoading.wrappedValue = true
         Task {[weak self] in
             guard let strongSelf = self else { return }
             guard let tag: TagVO = strongSelf.allTags.filter({ $0.tagVO.name == tagName }).first else { return }
@@ -193,11 +197,13 @@ class FilesMetadataViewModel: ObservableObject {
                 }.asyncMap(strongSelf.runAssignTag)
                 
                 await MainActor.run {
+                    isLoading.wrappedValue = false
                     strongSelf.refreshFiles()
                 }
             }
             catch {
                 await MainActor.run {
+                    isLoading.wrappedValue = false
                     strongSelf.showAlert = true
                 }
             }
