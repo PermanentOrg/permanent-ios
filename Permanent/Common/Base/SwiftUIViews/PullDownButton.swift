@@ -34,19 +34,29 @@ struct PullDownButton: View {
                                 .inset(by: 0.5)
                                 .stroke(Color(red: 0.96, green: 0.96, blue: 0.99), lineWidth: 1)
                         )
-                    HStack {
-                        Text(selectedItem?.title ?? "Select Item")
-                            .textStyle(SmallXXRegularTextStyle())
-                            .animation(.none)
-                        Spacer()
-                        Image(systemName: "chevron.down")
-                            .rotationEffect(.degrees( isSelecting ? -180 : 0))
-                        
+                    Button(action: {
+                        isSelecting = !isSelecting
+                    }) {
+                        HStack {
+                            Text(selectedItem?.title ?? "Select Item")
+                                .textStyle(SmallXXRegularTextStyle())
+                                .animation(.none)
+                            Spacer()
+                            if items.count > 1 {
+                                Image(systemName: "chevron.down")
+                                    .rotationEffect(.degrees( isSelecting ? -180 : 0))
+                            }
+                            
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .disabled(items.count < 2)
+                    .onTapGesture {
+                        isSelecting.toggle()
+                    }
                 }
                 
-                if isSelecting {
+                if isSelecting && items.count > 1 {
                     VStack(spacing: 0) {
                         dropDownItemsList()
                     }
@@ -60,9 +70,6 @@ struct PullDownButton: View {
         .foregroundColor(Color.darkBlue)
         .frame(maxWidth: .infinity)
         .cornerRadius(5)
-        .onTapGesture {
-            isSelecting.toggle()
-        }
         .onAppear {
             selectedItem = items.first
         }
@@ -76,7 +83,7 @@ struct PullDownButton: View {
     }
 }
 
-struct PullDownItem: Identifiable {
+struct PullDownItem: Identifiable, Equatable {
     let id: UUID = UUID()
     let title: String
 }
@@ -89,8 +96,12 @@ struct PullDownItemView: View {
     
     var body: some View {
         Button(action: {
-            isSelecting = false
-            selectedItem = item
+            if selectedItem?.title == item.title {
+                isSelecting.toggle()
+            } else {
+                selectedItem = item
+                isSelecting = false
+            }
         }) {
             HStack {
                 Text(item.title)

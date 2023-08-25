@@ -8,9 +8,6 @@ import SwiftUI
 
 struct SequenceFilenameView: View {
     @StateObject var viewModel: SequenceFilenameViewModel
-    @State var isSelectingFormat: Bool = false
-    @State var isSelectingWhere: Bool = false
-    @State var isSelectingDate: Bool = false
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -23,7 +20,7 @@ struct SequenceFilenameView: View {
                     .modifier(SmallXXRegularTextStyle())
                     .textFieldStyle(CustomTextFieldStyle())
                     .onChange(of: viewModel.baseText) { newValue in
-                        print(newValue)
+                        viewModel.updatePreview()
                     }
                 Spacer()
             }
@@ -35,13 +32,16 @@ struct SequenceFilenameView: View {
                         .textStyle(SmallXXXXXSemiBoldTextStyle())
                         .foregroundColor(Color.middleGray)
                     
-                    PullDownButton(selectedItem: $viewModel.selectedOption,
-                                   items: [
-                                    PullDownItem(title: "Title & Date"),
-                                    PullDownItem(title: "Numbers")
-                                   ],
-                                   isSelecting: $isSelectingFormat)
+                    PullDownButton(selectedItem: $viewModel.selectedFormatOptions,
+                                   items: viewModel.formatOptions,
+                                   isSelecting: $viewModel.isSelectingFormat)
                     .padding(-5)
+                    .onChange(of: viewModel.isSelectingFormat) { newValue in
+                        if newValue {
+                            viewModel.isSelectingWhere = false
+                            viewModel.isSelectingAdditionalData = false
+                        }
+                    }
                 }
                 
                 VStack(alignment: .leading, spacing: 15) {
@@ -49,13 +49,16 @@ struct SequenceFilenameView: View {
                         .textStyle(SmallXXXXXSemiBoldTextStyle())
                         .foregroundColor(Color.middleGray)
                     
-                    PullDownButton(selectedItem: $viewModel.selectedOption,
-                                   items: [
-                                    PullDownItem(title: "Before"),
-                                    PullDownItem(title: "After")
-                                   ],
-                                   isSelecting: $isSelectingWhere)
+                    PullDownButton(selectedItem: $viewModel.selectedWhereOptions,
+                                   items: viewModel.whereOptions,
+                                   isSelecting: $viewModel.isSelectingWhere)
                     .padding(-5)
+                    .onChange(of: viewModel.isSelectingWhere) { newValue in
+                        if newValue {
+                            viewModel.isSelectingFormat = false
+                            viewModel.isSelectingAdditionalData = false
+                        }
+                    }
                 }
             }
             .offset(y: 90)
@@ -66,13 +69,16 @@ struct SequenceFilenameView: View {
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
                     .foregroundColor(Color.middleGray)
                 
-                PullDownButton(selectedItem: $viewModel.selectedOption,
-                               items: [
-                                PullDownItem(title: "Created"),
-                                PullDownItem(title: "1")
-                               ],
-                               isSelecting: $isSelectingDate)
+                PullDownButton(selectedItem: $viewModel.selectedAdditionalOption,
+                               items: viewModel.additionalOptions,
+                               isSelecting: $viewModel.isSelectingAdditionalData)
                 .padding(-5)
+                .onChange(of: viewModel.isSelectingAdditionalData) { newValue in
+                    if newValue {
+                        viewModel.isSelectingWhere = false
+                        viewModel.isSelectingFormat = false
+                    }
+                }
             }
             .offset(y: 180)
             .zIndex(1)
@@ -81,13 +87,12 @@ struct SequenceFilenameView: View {
         .simultaneousGesture(
             TapGesture()
                 .onEnded {
-                    isSelectingFormat = false
-                    isSelectingDate = false
-                    isSelectingWhere = false
+                    viewModel.updatePreview()
                     dismissKeyboard()
                 }
         )
         .onDisappear {
+            viewModel.baseText = ""
             viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
         }
     }

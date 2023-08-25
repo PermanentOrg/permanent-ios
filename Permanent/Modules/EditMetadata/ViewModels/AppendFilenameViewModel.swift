@@ -12,6 +12,7 @@ class AppendFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     
     @Published var textToAppend: String = ""
     @Published var positionForText: String = ""
+    @Published var closeAllSelections:Bool = false
 
     var selectedFiles: [FileModel]
     var whereOptions = [
