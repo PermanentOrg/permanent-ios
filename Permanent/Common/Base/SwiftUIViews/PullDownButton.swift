@@ -48,8 +48,12 @@ struct PullDownButton: View {
                             }
                             
                         }
+                        .onTapGesture {
+                            isSelecting.toggle()
+                        }
                         .padding(.horizontal)
                     }
+                    .buttonStyle(NoHighlightButtonStyle())
                     .disabled(items.count < 2)
                     .onTapGesture {
                         isSelecting.toggle()
@@ -126,5 +130,16 @@ struct CustomDropdownMenu_Previews: PreviewProvider {
     static var previews: some View {
         PullDownButton(selectedItem: $selectedOption, items: items)
         .padding()
+    }
+}
+
+struct NoHighlightButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        // handle button role if necessary
+        // if configuration.role == .destructive {
+        //     configuration.label.foregroundColor(.red)
+        // } else {
+            configuration.label.foregroundColor(.black)
+        // }
     }
 }
