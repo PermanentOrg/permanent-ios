@@ -13,7 +13,7 @@ class AddNewTagViewModel: ObservableObject {
     @Published var uncommonTags: [TagVO] = []
     @Published var filteredUncommonTags: [TagVO] = []
     @Published var addedTags: [TagVO] = []
-    @Published var showAddSingleTagAlert: Bool = false
+    @Published var showAlert: Bool = false
     var selectedFiles: [FileModel]
     
     let tagsRepository: TagsRepository
@@ -49,39 +49,62 @@ class AddNewTagViewModel: ObservableObject {
         }
     }
     
-    func addButtonPressed(completion: @escaping ((Bool) -> Void)) {
-        isLoading = true
-        selectionTags.append(contentsOf: addedTags)
-        guard let file = selectedFiles.first else { return }
-        
-        tagsRepository.assignTag(tagNames: selectionTags.map({$0.tagVO.name ?? ""}), recordId: file.recordId) { [weak self] tags, error in
-            self?.isLoading = false
-            if let tags = tags {
-                completion(true)
-            } else {
-                completion(false)
-                self?.showAddSingleTagAlert = true
-            }
-        }
-    }
-    
-    func addSingleTag(tagNames: [String], completion: @escaping ((Bool) -> Void)) {
+    func assignTagToArchive(tagNames: [String], completion: @escaping ((Bool) -> Void)) {
         if !tagNames.allSatisfy({ $0.isNotEmpty }) {
             completion(false)
-            showAddSingleTagAlert = true
+            showAlert = true
             return
         }
-        
+
         isLoading = true
-        
+
         tagsRepository.assignTagToArchive(tagNames: tagNames) { [weak self] tagVOs, error in
             self?.isLoading = false
-            if let tags = tagVOs {
+            if let _ = tagVOs {
                 self?.refreshTags(selectionTags: tagNames.first)
                 completion(true)
             } else {
                 completion(false)
-                self?.showAddSingleTagAlert = true
+                self?.showAlert = true
+            }
+        }
+    }
+    
+    //MARK: Assign Tags
+    
+    func addButtonPressed(completion: @escaping ((Bool) -> Void)) {
+        isLoading = true
+        selectionTags.append(contentsOf: addedTags)
+        
+        Task {[weak self] in
+            guard let strongSelf = self else { return }
+            do {
+                let _ = try await strongSelf.selectedFiles.compactMap { file in
+                    return (strongSelf.selectionTags, file.recordId)
+                }.asyncMap(strongSelf.runAssignTag)
+                
+                await MainActor.run {
+                    completion(true)
+                }
+            }
+            catch {
+                await MainActor.run {
+                    completion(false)
+                    strongSelf.showAlert = true
+                }
+            }
+        }
+    }
+    
+    func runAssignTag(tags: [TagVO], recordId: Int) async throws {
+        let tagNames = tags.compactMap { $0.tagVO.name }
+        return try await withCheckedThrowingContinuation { continuation in
+            tagsRepository.assignTag(tagNames: tagNames, recordId: recordId) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
             }
         }
     }

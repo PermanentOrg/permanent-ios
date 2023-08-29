@@ -49,9 +49,9 @@ struct AddNewTagView: View {
         .onAppear {
             viewModel.refreshTags()
         }
-        .alert(isPresented: $viewModel.showAddSingleTagAlert) {
+        .alert(isPresented: $viewModel.showAlert) {
             Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                viewModel.showAddSingleTagAlert = false
+                viewModel.showAlert = false
             })
         }
     }
@@ -93,7 +93,7 @@ struct AddNewTagView: View {
                         }
                     Spacer(minLength: 0)
                     Button {
-                        viewModel.addSingleTag(tagNames: [newTag], completion: { status in
+                        viewModel.assignTagToArchive(tagNames: [newTag], completion: { status in
                             if status {
                                 newTag = ""
                             }
