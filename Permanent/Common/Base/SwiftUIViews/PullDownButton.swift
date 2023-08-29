@@ -135,11 +135,6 @@ struct CustomDropdownMenu_Previews: PreviewProvider {
 
 struct NoHighlightButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        // handle button role if necessary
-        // if configuration.role == .destructive {
-        //     configuration.label.foregroundColor(.red)
-        // } else {
             configuration.label.foregroundColor(.black)
-        // }
     }
 }
