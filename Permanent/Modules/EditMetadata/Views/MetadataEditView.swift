@@ -8,17 +8,14 @@
 import SwiftUI
 
 struct MetadataEditView: View {
-    @ObservedObject var viewModel: FilesMetadataViewModel
     @Environment(\.presentationMode) var presentationMode
+    @StateObject var viewModel: FilesMetadataViewModel
+
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
     var dismissAction: ((Bool) -> Void)?
-    
-    init(viewModel: FilesMetadataViewModel) {
-        self.viewModel = viewModel
-    }
     
     var body: some View {
         CustomNavigationView(content: {
@@ -80,7 +77,9 @@ struct MetadataEditView: View {
                                 rightButtonView: RightButtonView(
                                     text: "Apply all to selection",
                                     showChevron: false,
-                                    action: { print("Manage Tags tapped") }
+                                    action: {
+                                        viewModel.assignAllTagsToAll()
+                                    }
                                 ),
                                 haveRightSection: viewModel.havePartialTags
                             )

@@ -53,8 +53,9 @@ struct TagsView: View {
 struct TagView: View {
     let text: String
     @ObservedObject var viewModel: FilesMetadataViewModel
-    @State var unassignWasTapped: Bool = false
-    @State var tagColor: Color = Color.paleOrange.opacity(0.2)
+    @State var isLoading: Bool = false
+    var tagColor = Color.paleOrange.opacity(0.2)
+    var fullTagColor = Color.indianSaffron.opacity(0.2)
     @State var showLineBorder: Bool = true
 
     init(text: String, viewModel: FilesMetadataViewModel) {
@@ -68,12 +69,9 @@ struct TagView: View {
                 Text(text)
                     .textStyle(SmallXXRegularTextStyle())
                 Button {
-                    unassignWasTapped = true
-                    viewModel.unassignTag(tagName: text, completion: { _ in
-                        unassignWasTapped = false
-                    })
+                    viewModel.unassignTag(tagName: text, isLoading: $isLoading)
                 } label: {
-                    if unassignWasTapped {
+                    if isLoading {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
                             .frame(width: 10, height: 10)
@@ -87,21 +85,15 @@ struct TagView: View {
             .padding(.vertical, 11)
         }
         .background(RoundedRectangle(cornerRadius: 12)
-            .fill(tagColor))
+            .fill(viewModel.isTagInAllFiles(text) ? fullTagColor : tagColor))
         .foregroundColor(Color.darkBlue)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .inset(by: 0.5)
-                .stroke(Color(red: 1, green: 0.9, blue: 0.8), lineWidth: showLineBorder ? 1 : 0)
+                .stroke(Color(red: 1, green: 0.9, blue: 0.8), lineWidth: viewModel.isTagInAllFiles(text) ? 0 : 1)
         )
-        .onAppear {
-            if viewModel.filteredAllTags.contains(where: { $0.tagVO.name == text }) {
-                tagColor = Color.indianSaffron.opacity(0.2)
-                showLineBorder = false
-            }
-        }
         .onTapGesture {
-            print("tapped \(text) tag")
+            viewModel.assignTagToAll(tagName: text, isLoading: $isLoading)
         }
     }
 }
