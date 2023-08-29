@@ -1203,16 +1203,12 @@ extension MainViewController: FABActionSheetDelegate {
         }
         
         if file.permissions.contains(.edit) {
-            guard let selectedFiles = self.viewModel?.selectedFiles else { return }
             menuItems.append(FileMenuViewController.MenuItem(type: .editMetadata, action: { [weak self] in
-                let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
-                
-                hostingController.modalPresentationStyle = .fullScreen
-                self?.present(hostingController, animated: true)
-                
-                self?.dismissFloatingActionIsland()
-                self?.fabView.isHidden = false
-                self?.clearButtonWasPressed(UIButton())
+                self?.presentMetadataEditView { hasUpdates in
+                    if hasUpdates {
+                        self?.refreshCurrentFolder()
+                    }
+                }
             }))
         }
         
@@ -1337,6 +1333,26 @@ extension MainViewController: FABActionSheetDelegate {
 
         actionDialog?.dismiss()
         createNewFolder(named: folderName)
+    }
+    
+    func presentMetadataEditView(completion: @escaping (Bool) -> Void) {
+        guard let selectedFiles = self.viewModel?.selectedFiles else { return }
+        
+        let hostingController = UIHostingController(rootView: MetadataEditView(viewModel: FilesMetadataViewModel(files: selectedFiles)))
+        hostingController.modalPresentationStyle = .fullScreen
+        
+        self.present(hostingController, animated: true, completion: nil)
+        
+        self.dismissFloatingActionIsland()
+        self.fabView.isHidden = false
+        self.clearButtonWasPressed(UIButton())
+        
+        // Add a way to call the completion block when the view is dismissed.
+        hostingController.rootView.dismissAction = { hasUpdates in
+            hostingController.dismiss(animated: true, completion: {
+                completion(hasUpdates)
+            })
+        }
     }
 }
 

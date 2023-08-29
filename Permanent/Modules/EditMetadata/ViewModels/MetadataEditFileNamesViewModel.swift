@@ -22,12 +22,14 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     @Published var imagePreviewURL: String?
     @Published var fileSizePreview: String?
     @Published var fileNamePreview: String?
+    var hasUpdates: Binding<Bool>
     
     var currentViewModel: (any MetadataEditFilenamesProtocol)?
     
-    init(tagsRepository: TagsRepository = TagsRepository(), selectedFiles: [FileModel]) {
+    init(tagsRepository: TagsRepository = TagsRepository(), selectedFiles: [FileModel], hasUpdates: Binding<Bool>) {
         self.tagsRepository = tagsRepository
         self.selectedFiles = selectedFiles
+        self.hasUpdates = hasUpdates
         
         imagePreviewURL = selectedFiles.first?.thumbnailURL500
         fileNamePreview = selectedFiles.first?.name
@@ -43,16 +45,17 @@ class MetadataEditFileNamesViewModel: ObservableObject {
         isLoading = true
         let apiOperation = APIOperation(FilesEndpoint.multipleFilesUpdate(files: updatedFiles))
         
-        apiOperation.execute(in: APIRequestDispatcher()) { result in
+        apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {
-                self.isLoading = false
+                self?.isLoading = false
                 switch result {
                 case .json( _, _):
-                    self.changesWereSaved = true
+                    self?.hasUpdates.wrappedValue = true
+                    self?.changesWereSaved = true
                 case .error(_, _):
-                    self.showAlert = true
+                    self?.showAlert = true
                 default:
-                    self.showAlert = true
+                    self?.showAlert = true
                 }
             }
         }
