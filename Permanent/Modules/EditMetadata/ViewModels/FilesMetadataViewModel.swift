@@ -41,6 +41,8 @@ class FilesMetadataViewModel: ObservableObject {
     }
     @Published var haveDiffDescription: Bool = false
     @Published var havePartialTags: Bool = false
+    @Published var hasUpdates: Bool = false
+    
     var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
     
@@ -96,6 +98,7 @@ class FilesMetadataViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .json( _, _):
+                    self.hasUpdates = true
                     completion(true)
                     
                 case .error(_, _):
@@ -128,6 +131,7 @@ class FilesMetadataViewModel: ObservableObject {
                     strongSelf.showAlert = true
                 }
             }
+            self?.hasUpdates = true
         }
     }
     

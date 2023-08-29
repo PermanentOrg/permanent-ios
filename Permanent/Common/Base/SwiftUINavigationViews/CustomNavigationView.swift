@@ -6,12 +6,15 @@
 
 import SwiftUI
 
-struct CustomNavigationView<Content: View>: View {
+struct CustomNavigationView<Content: View, LeftButton: View>: View {
     @Environment(\.presentationMode) var presentationMode
     var content: Content
+    var leftButtons: LeftButton?
     
-    init(@ViewBuilder content: () -> Content) {
+    init(@ViewBuilder content: () -> Content, @ViewBuilder leftButton: () -> LeftButton? = {nil}) {
         self.content = content()
+        self.leftButtons = leftButton()
+        
         UINavigationBar.appearance().backgroundColor = .darkBlue
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
         UINavigationBar.appearance().isTranslucent = false
@@ -51,13 +54,18 @@ struct CustomNavigationView<Content: View>: View {
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }) {
-                            HStack {
-                                Image(systemName: "chevron.left")
-                                    .foregroundColor(.white)
+                        if (leftButtons is EmptyView) {
+                            Button(action: {
+                                self.presentationMode.wrappedValue.dismiss()
+                            }) {
+                                HStack {
+                                    Image(systemName: "chevron.left")
+                                        .foregroundColor(.white)
+                                }
                             }
+                        } else {
+                            leftButtons
+                            
                         }
                     }
                 }
@@ -66,6 +74,14 @@ struct CustomNavigationView<Content: View>: View {
             .navigationViewStyle(StackNavigationViewStyle())
         }
         .edgesIgnoringSafeArea(.all)
+    }
+}
+
+extension CustomNavigationView where LeftButton == EmptyView {
+    init(@ViewBuilder content: () -> Content) {
+        self.init(content: content, leftButton: {
+            EmptyView()
+        })
     }
 }
 

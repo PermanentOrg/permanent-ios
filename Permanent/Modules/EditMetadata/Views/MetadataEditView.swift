@@ -9,17 +9,19 @@ import SwiftUI
 
 struct MetadataEditView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
+    @Environment(\.presentationMode) var presentationMode
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
+    var dismissAction: ((Bool) -> Void)?
     
     init(viewModel: FilesMetadataViewModel) {
         self.viewModel = viewModel
     }
     
     var body: some View {
-        CustomNavigationView {
+        CustomNavigationView(content: {
             ZStack {
                 Color.whiteGray
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -136,7 +138,7 @@ struct MetadataEditView: View {
                 AddNewTagView(viewModel: AddNewTagViewModel(selectionTags: viewModel.allTags, selectedFiles: viewModel.selectedFiles))
             }
             .sheet(isPresented: $showEditFilenames) {
-                MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles))
+                MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
             .onAppear {
                 viewModel.refreshFiles()
@@ -153,7 +155,17 @@ struct MetadataEditView: View {
                     viewModel.refreshFiles()
                 }
             }
-        }
+        }, leftButton: {
+            Button(action: {
+                dismissAction?(viewModel.hasUpdates)
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                }
+            }
+        })
     }
     
     private func dismissKeyboard() {
