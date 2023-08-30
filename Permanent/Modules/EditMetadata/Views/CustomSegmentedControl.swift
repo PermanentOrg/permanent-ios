@@ -48,7 +48,9 @@ struct CustomSegmentedControl: View {
 }
 
 struct CustomSegmentedControl_Previews: PreviewProvider {
+    @State static var hasUpdates: Bool = true
+    
     static var previews: some View {
-        MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: []))
+        MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: [], hasUpdates: $hasUpdates))
     }
 }

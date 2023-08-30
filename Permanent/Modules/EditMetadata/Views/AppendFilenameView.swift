@@ -42,13 +42,9 @@ struct AppendFilenameView: View {
             .offset(y: 120)
         }
         .padding(.top, 15)
-        .onDisappear {
-            viewModel.fileNamePreview.wrappedValue = viewModel.selectedFiles.first?.name
-        }
         .simultaneousGesture(
             TapGesture()
                 .onEnded {
-                    isSelectingOption = false
                     dismissKeyboard()
                 }
         )

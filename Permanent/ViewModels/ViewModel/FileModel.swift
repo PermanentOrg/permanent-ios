@@ -38,6 +38,10 @@ struct FileModel: Equatable, Codable {
     let size: Int64
     let uploadFileName: String
     
+    let createdDT: String?
+    let modifiedDT: String?
+    let uploadedDT: String?
+    
     let archiveThumbnailURL: String?
     let archiveId: Int
     let archiveNo: String
@@ -62,6 +66,9 @@ struct FileModel: Equatable, Codable {
     init(model: FileInfo, archiveThumbnailURL: String? = nil, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = model.name
         self.date = DateUtils.currentDate
+        self.createdDT = nil
+        self.uploadedDT = nil
+        self.modifiedDT = nil
         self.description = ""
         self.size = -1
         self.uploadFileName = ""
@@ -89,6 +96,9 @@ struct FileModel: Equatable, Codable {
     init(name: String, recordId: Int, folderLinkId: Int, archiveNbr: String, type: String, permissions: [Permission], thumbnailURL2000: String? = nil) {
         self.name = name
         self.date = DateUtils.currentDate
+        self.createdDT = nil
+        self.uploadedDT = nil
+        self.modifiedDT = nil
         self.description = ""
         self.size = -1
         self.uploadFileName = ""
@@ -114,6 +124,9 @@ struct FileModel: Equatable, Codable {
     init(model: ItemVO, archiveThumbnailURL: String? = nil, sharedByArchive: ArchiveVOData? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.createdDT = model.displayDT
+        self.uploadedDT = model.createdDT
+        self.modifiedDT = model.updatedDT
             
         self.thumbnailURL = model.thumbURL200
         self.thumbnailURL500 = model.thumbURL500
@@ -161,6 +174,9 @@ struct FileModel: Equatable, Codable {
     init(model: RecordVOData, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.createdDT = model.displayDT
+        self.uploadedDT = model.createdDT
+        self.modifiedDT = model.updatedDT
             
         self.thumbnailURL = model.thumbURL200
         self.thumbnailURL500 = model.thumbURL500
@@ -203,6 +219,9 @@ struct FileModel: Equatable, Codable {
     init(model: MinFolderVO, archiveThumbnailURL: String? = nil, permissions: [Permission], accessRole: AccessRole) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.createdDT = model.displayDT
+        self.uploadedDT = model.createdDT
+        self.modifiedDT = model.updatedDT
             
         self.thumbnailURL = model.thumbURL200
         self.thumbnailURL500 = model.thumbURL500
@@ -244,6 +263,9 @@ struct FileModel: Equatable, Codable {
     init(model: FolderVOData) {
         self.name = model.displayName ?? "-"
         self.date = model.displayDT != nil ? model.displayDT!.dateOnly : "-"
+        self.createdDT = model.displayDT
+        self.uploadedDT = model.createdDT
+        self.modifiedDT = model.updatedDT
             
         self.thumbnailURL = model.thumbURL200
         self.thumbnailURL500 = model.thumbURL500
