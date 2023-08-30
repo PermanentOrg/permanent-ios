@@ -13,9 +13,11 @@ struct MetadataEditView: View {
 
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
+    @State var showEditDataTime: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
     var dismissAction: ((Bool) -> Void)?
+    let dataAndTimeSheetHeight: CGFloat = 547
     
     var body: some View {
         CustomNavigationView(content: {
@@ -104,7 +106,9 @@ struct MetadataEditView: View {
                             title: "Date and time",
                             rightButtonView: RightButtonView(
                                 text: "Add",
-                                action: { print("Add Date and Time tapped") }
+                                action: {
+                                    showEditDataTime.toggle()
+                                }
                             ),
                             divider: Divider.init()
                         )
@@ -139,6 +143,14 @@ struct MetadataEditView: View {
             .sheet(isPresented: $showEditFilenames) {
                 MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
+            .sheet(isPresented: $showEditDataTime, content: {
+                if #available(iOS 16.0, *) {
+                    EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
+                        .presentationDetents([.height(dataAndTimeSheetHeight)])
+                } else {
+                    EditDateAndTimeView()
+                }
+            })
             .onAppear {
                 viewModel.refreshFiles()
             }
