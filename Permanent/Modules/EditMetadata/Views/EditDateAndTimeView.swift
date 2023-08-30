@@ -9,7 +9,6 @@ import SwiftUI
 struct EditDateAndTimeView: View {
     @StateObject var viewModel: EditDateAndTimeViewModel
     @Environment(\.presentationMode) var presentationMode
-    @State private var selectedDate = Date()
     
     var body: some View {
         ZStack {
@@ -26,13 +25,13 @@ struct EditDateAndTimeView: View {
             }
             VStack {
                 if #available(iOS 16.0, *) {
-                DatePicker("Select a date", selection: $selectedDate)
+                    DatePicker("Select a date", selection: $viewModel.selectedDate)
                     .datePickerStyle(GraphicalDatePickerStyle())
                     .labelsHidden()
                     .padding()
                     .tint(.darkBlue)
                 } else {
-                    DatePicker("Select a date", selection: $selectedDate)
+                    DatePicker("Select a date", selection: $viewModel.selectedDate)
                         .datePickerStyle(GraphicalDatePickerStyle())
                         .labelsHidden()
                         .padding()

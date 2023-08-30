@@ -148,7 +148,7 @@ struct MetadataEditView: View {
                     EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
                         .presentationDetents([.height(dataAndTimeSheetHeight)])
                 } else {
-                    EditDateAndTimeView()
+                    EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
                 }
             })
             .onAppear {

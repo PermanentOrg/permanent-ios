@@ -11,6 +11,7 @@ class EditDateAndTimeViewModel: ObservableObject {
     var hasUpdates: Binding<Bool>
     
     @Published var isLoading: Bool = false
+    @Published var selectedDate = Date()
     
     init(selectedFiles: [FileModel], hasUpdates: Binding<Bool>) {
         self.selectedFiles = selectedFiles
