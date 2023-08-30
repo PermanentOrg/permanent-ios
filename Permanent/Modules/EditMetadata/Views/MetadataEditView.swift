@@ -11,6 +11,7 @@ struct MetadataEditView: View {
     @ObservedObject var viewModel: FilesMetadataViewModel
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
+    @State var showSetLocation: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
     
@@ -103,7 +104,9 @@ struct MetadataEditView: View {
                             title: "Date and time",
                             rightButtonView: RightButtonView(
                                 text: "Add",
-                                action: { print("Add Date and Time tapped") }
+                                action: {
+                                    showSetLocation.toggle()
+                                }
                             ),
                             divider: Divider.init()
                         )
@@ -137,6 +140,9 @@ struct MetadataEditView: View {
             }
             .sheet(isPresented: $showEditFilenames) {
                 MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles))
+            }
+            .sheet(isPresented: $showSetLocation) {
+                AddLocationView()
             }
             .onAppear {
                 viewModel.refreshFiles()

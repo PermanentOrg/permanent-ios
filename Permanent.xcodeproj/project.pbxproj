@@ -399,6 +399,9 @@
 		927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 927AE0C82A262EA100BDF26A /* BannerView.xib */; };
 		927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CA2A2634CA00BDF26A /* GradientView.swift */; };
 		927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CC2A2F290E00BDF26A /* BannerView.swift */; };
+		9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */; };
+		92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886A2A9782AC0040941E /* AddLocationView.swift */; };
+		92B9886E2A9783F30040941E /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886D2A9783F30040941E /* MapView.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
@@ -1155,6 +1158,9 @@
 		927AE0C82A262EA100BDF26A /* BannerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerView.xib; sourceTree = "<group>"; };
 		927AE0CA2A2634CA00BDF26A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		927AE0CC2A2F290E00BDF26A /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
+		9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationViewModel.swift; sourceTree = "<group>"; };
+		92B9886A2A9782AC0040941E /* AddLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationView.swift; sourceTree = "<group>"; };
+		92B9886D2A9783F30040941E /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
 		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
@@ -2641,6 +2647,7 @@
 		5E991EDD2A48E032006229C0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				92B9886C2A9783D30040941E /* SetLocation */,
 				5E991EDE2A48E05C006229C0 /* MetadataEditView.swift */,
 				5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */,
 				5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */,
@@ -2684,6 +2691,7 @@
 				5E6673102A79439B001C49CC /* ReplaceFilenameViewModel.swift */,
 				5E6673162A7A3A78001C49CC /* AppendFilenameViewModel.swift */,
 				5E6673182A7A41D6001C49CC /* SequenceFilenameViewModel.swift */,
+				9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2807,6 +2815,15 @@
 				927AE0C82A262EA100BDF26A /* BannerView.xib */,
 			);
 			path = Banner;
+			sourceTree = "<group>";
+		};
+		92B9886C2A9783D30040941E /* SetLocation */ = {
+			isa = PBXGroup;
+			children = (
+				92B9886A2A9782AC0040941E /* AddLocationView.swift */,
+				92B9886D2A9783F30040941E /* MapView.swift */,
+			);
+			path = SetLocation;
 			sourceTree = "<group>";
 		};
 		92E3FB602A176BD700E9E5A6 /* ViewController */ = {
@@ -4180,6 +4197,7 @@
 				5E1C546129B8CA0C00A04B99 /* FileCollectionViewHeaderCell.swift in Sources */,
 				5E56FDBF2744247C00BC3BE0 /* ProfilePageArchiveCollectionViewCell.swift in Sources */,
 				5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */,
+				92B9886E2A9783F30040941E /* MapView.swift in Sources */,
 				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
 				5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
 				5E048FCF292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.swift in Sources */,
@@ -4215,6 +4233,7 @@
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */,
+				92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */,
 				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
@@ -4405,6 +4424,7 @@
 				5ED3B3AE29F7E017000CFF48 /* LegacyPlanningIntroViewController.swift in Sources */,
 				5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */,
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
+				9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */,
 				5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */,
 				92C73E462A14D530000EF633 /* RoundedView.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,

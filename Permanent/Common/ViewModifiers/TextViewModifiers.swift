@@ -40,6 +40,14 @@ struct SmallXXXXXRegularTextStyle: ViewModifier {
     }
 }
 
+struct SmallXXXXRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct SmallXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,

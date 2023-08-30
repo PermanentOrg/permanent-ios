@@ -7,6 +7,9 @@
 import SwiftUI
 
 struct CustomTextFieldStyle: TextFieldStyle {
+    var leftView: AnyView? = nil
+    var rightView: AnyView? = nil
+    
     func _body(configuration: TextField<Self._Label>) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 2)
@@ -20,6 +23,9 @@ struct CustomTextFieldStyle: TextFieldStyle {
                         .stroke(Color(red: 0.96, green: 0.96, blue: 0.99), lineWidth: 1)
                 )
             HStack {
+                leftView?
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color(red: 0.71, green: 0.71, blue: 0.71))
                 configuration
                     .padding(.leading, 16)
                     .foregroundColor(Color.darkBlue)
@@ -27,7 +33,11 @@ struct CustomTextFieldStyle: TextFieldStyle {
                     .autocorrectionDisabled(true)
                     .autocapitalization(.none)
                 Spacer(minLength: 0)
+                rightView?
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color(red: 0.71, green: 0.71, blue: 0.71))
             }
+            .padding(.horizontal, 16)
         }
     }
 }
