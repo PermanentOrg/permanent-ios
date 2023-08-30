@@ -20,7 +20,7 @@ struct City: Identifiable, Hashable {
     let id: String
     let title: String
     let subtitle: String
-    let distance: String = "0"
+    let distance: String?
     var coordinate: CLLocationCoordinate2D?
 }
 
@@ -80,9 +80,15 @@ struct AddLocationView: View {
                             Text(item.title)
                                 .foregroundColor(.middleGray)
                                 .textStyle(SmallRegularTextStyle())
-                            Text(item.subtitle)
-                                .foregroundColor(.lightGray)
-                                .textStyle(SmallXXXXRegularTextStyle())
+                            if let distance = item.distance {
+                                Text("\(distance) . \(item.subtitle)")
+                                    .foregroundColor(.lightGray)
+                                    .textStyle(SmallXXXXRegularTextStyle())
+                            } else {
+                                Text("\(item.subtitle)")
+                                    .foregroundColor(.lightGray)
+                                    .textStyle(SmallXXXXRegularTextStyle())
+                            }
                         })
                     }
                     .onTapGesture {

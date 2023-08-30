@@ -55,6 +55,7 @@ class AddLocationViewModel: ObservableObject {
                     return City(id: item.placeID,
                                 title: item.attributedPrimaryText.string,
                                 subtitle: item.attributedSecondaryText?.string ?? "",
+                                distance: self.getDistance(from: item.distanceMeters),
                                 coordinate: nil)
                 }
             }
@@ -70,5 +71,10 @@ class AddLocationViewModel: ObservableObject {
             self.selectedCoordinates = place?.coordinate
             self.token = GMSAutocompleteSessionToken.init()
         }
+    }
+    
+    func getDistance(from distance: NSNumber?) -> String? {
+        guard let distance = distance else { return nil }
+        return MKDistanceFormatter().string(fromDistance: distance.doubleValue)
     }
 }
