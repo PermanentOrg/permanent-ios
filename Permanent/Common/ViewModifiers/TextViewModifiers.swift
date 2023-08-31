@@ -79,3 +79,19 @@ struct SmallRegularTextStyle: ViewModifier {
                              relativeTo: .largeTitle))
     }
 }
+
+struct RegularBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansBold.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallXRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}

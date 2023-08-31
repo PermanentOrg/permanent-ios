@@ -11,7 +11,12 @@ class EditDateAndTimeViewModel: ObservableObject {
     var hasUpdates: Binding<Bool>
     
     @Published var isLoading: Bool = false
+    @Published var changesConfirmed: Bool = false
     @Published var selectedDate = Date()
+    @Published var showConfirmation:Bool = false
+    
+    let startingDate: Date = Calendar.current.date(from: DateComponents(year: 1900)) ?? Date()
+    let endingDate: Date = Date()
     
     init(selectedFiles: [FileModel], hasUpdates: Binding<Bool>) {
         self.selectedFiles = selectedFiles

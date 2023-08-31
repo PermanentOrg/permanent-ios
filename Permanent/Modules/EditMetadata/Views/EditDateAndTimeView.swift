@@ -25,13 +25,13 @@ struct EditDateAndTimeView: View {
             }
             VStack {
                 if #available(iOS 16.0, *) {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate)
+                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
                     .datePickerStyle(GraphicalDatePickerStyle())
                     .labelsHidden()
                     .padding()
                     .tint(.darkBlue)
                 } else {
-                    DatePicker("Select a date", selection: $viewModel.selectedDate)
+                    DatePicker("Select a date", selection: $viewModel.selectedDate, in: viewModel.startingDate...viewModel.endingDate)
                         .datePickerStyle(GraphicalDatePickerStyle())
                         .labelsHidden()
                         .padding()
@@ -41,6 +41,16 @@ struct EditDateAndTimeView: View {
                 bottomButtons
             }
             .padding(.top, 50)
+            .onChange(of: viewModel.changesConfirmed) { newValue in
+                if newValue {
+                    viewModel.applyChanges()
+                }
+            }
+            .sheet(isPresented: $viewModel.showConfirmation) {
+                CustomAlertView(confirmed: $viewModel.changesConfirmed, title: "New Date & Time", context: "Are you sure you want set a new date & time for selected items?", confirmButtonText: "Set date and time")
+                    .frame(width: 294)
+                    .clearModalBackground()
+            }
         }
     }
     
@@ -54,7 +64,7 @@ struct EditDateAndTimeView: View {
             .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
             Spacer(minLength: 15)
             Button {
-                viewModel.applyChanges()
+                viewModel.showConfirmation = true
             } label: {
                 if viewModel.isLoading {
                     ProgressView()
