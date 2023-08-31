@@ -8,22 +8,6 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
-struct City: Identifiable, Hashable {
-    static func == (lhs: City, rhs: City) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        return hasher.combine(id)
-    }
-    
-    let id: String
-    let title: String
-    let subtitle: String
-    let distance: String?
-    var coordinate: CLLocationCoordinate2D?
-}
-
 struct AddLocationView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
@@ -92,18 +76,14 @@ struct AddLocationView: View {
                         .background(Color(red: 0.96, green: 0.96, blue: 0.99))
                         .frame(width: 32, height: 32)
                         VStack(alignment: .leading, content: {
-                            Text(item.title)
+                            Text(item.attributedPrimaryText.string)
                                 .foregroundColor(.middleGray)
                                 .textStyle(SmallRegularTextStyle())
-                            if let distance = item.distance {
-                                Text("\(distance) . \(item.subtitle)")
-                                    .foregroundColor(.lightGray)
-                                    .textStyle(SmallXXXXRegularTextStyle())
-                            } else {
-                                Text("\(item.subtitle)")
-                                    .foregroundColor(.lightGray)
-                                    .textStyle(SmallXXXXRegularTextStyle())
-                            }
+         
+                            Text("\(item.attributedSecondaryText?.string ?? "")")
+                                .foregroundColor(.lightGray)
+                                .textStyle(SmallXXXXRegularTextStyle())
+                            
                         })
                     }
                     .onTapGesture {

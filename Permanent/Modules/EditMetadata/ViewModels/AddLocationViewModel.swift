@@ -13,16 +13,17 @@ class AddLocationViewModel: ObservableObject {
     
     @Published var isLoading: Bool = false
     
-    @Published var selectedPlace: City? {
+    @Published var selectedPlace: GMSAutocompletePrediction?
+    
+    @Published var selectedCoordinates: CLLocationCoordinate2D? {
         didSet {
-            if let selectedPlace = selectedPlace {
-                searchText = selectedPlace.title
+            if let selectedCoordinates = selectedCoordinates {
+                validateLocation(lat: selectedCoordinates.latitude, long: selectedCoordinates.longitude)
             }
         }
     }
     
-    @Published var selectedCoordinates: CLLocationCoordinate2D?
-    @Published var searchedLocations: [City] = [City]()
+    @Published var searchedLocations: [GMSAutocompletePrediction] = [GMSAutocompletePrediction]()
     
     private var placesClient = GMSPlacesClient()
     
@@ -35,7 +36,11 @@ class AddLocationViewModel: ObservableObject {
     @Published var searchText = ""
     private var subscriptions = Set<AnyCancellable>()
     
-    @Published var locnVO: LocnVO?
+    @Published var locnVO: LocnVO? {
+        didSet {
+            searchText = getAddressString()
+        }
+    }
     
     var token = GMSAutocompleteSessionToken.init()
     
@@ -44,9 +49,9 @@ class AddLocationViewModel: ObservableObject {
     init(selectedFiles: [FileModel]) {
         self.selectedFiles = selectedFiles
         $searchText
-            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
+            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
                     .sink(receiveValue: { [weak self] t in
-                        if self?.debouncedText != t && t != self?.selectedPlace?.title {
+                        if self?.debouncedText != t && t != self?.getAddressString() {
                             self?.debouncedText = t
                         }
                     } )
@@ -66,26 +71,18 @@ class AddLocationViewModel: ObservableObject {
               return
             }
             if let results = results {
-                self.searchedLocations = results.compactMap { item in
-                    return City(id: item.placeID,
-                                title: item.attributedPrimaryText.string,
-                                subtitle: item.attributedSecondaryText?.string ?? "",
-                                distance: self.getDistance(from: item.distanceMeters),
-                                coordinate: nil)
-                }
+                self.searchedLocations = results
             }
         })
     }
     
     func fetchPlace() {
         guard var selectedPlace = selectedPlace else { return }
-        placesClient.fetchPlace(fromPlaceID: selectedPlace.id,
+        placesClient.fetchPlace(fromPlaceID: selectedPlace.placeID,
                                 placeFields: [.coordinate],
                                 sessionToken: token) { place, error in
             if let place = place {
-                selectedPlace.coordinate = place.coordinate
                 self.selectedCoordinates = place.coordinate
-                self.validateLocation(lat: place.coordinate.latitude, long: place.coordinate.longitude)
                 
                 self.token = GMSAutocompleteSessionToken.init()
             }
@@ -132,5 +129,11 @@ class AddLocationViewModel: ObservableObject {
     func getDistance(from distance: NSNumber?) -> String? {
         guard let distance = distance else { return nil }
         return MKDistanceFormatter().string(fromDistance: distance.doubleValue)
+    }
+    
+    func getAddressString() -> String {
+        let items = [locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country]
+        let address = items.compactMap { $0 }.joined(separator: ", ")
+        return address
     }
 }
