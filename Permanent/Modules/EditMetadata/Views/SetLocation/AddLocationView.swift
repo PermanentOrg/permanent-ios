@@ -117,7 +117,9 @@ struct AddLocationView: View {
                     Text("Set location")
                 }
             }
-            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+            .buttonStyle(CustomButtonStyle(
+                backgroundColor: viewModel.locnVO == nil ? Color(red: 0.77, green: 0.77, blue: 0.82) : .darkBlue,
+                foregroundColor: .white))
             .disabled(viewModel.locnVO == nil)
         }
     }
