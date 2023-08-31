@@ -19,7 +19,7 @@ typealias RelocateParams = (items: ItemPair, action: FileAction)
 typealias ItemPair = (files: [FileModel], destination: FileModel)
 
 typealias UpdateRecordParams = (name: String?, description: String?, date: Date?, location: LocnVO?, recordId: Int, folderLinkId: Int, archiveNbr: String)
-typealias UpdateMultipleRecordsParams = (files: [FileModel], description: String?)
+typealias UpdateMultipleRecordsParams = (files: [FileModel], description: String?, location: LocnVO?)
 typealias UpdateRootColumnsParams = (thumbArchiveNbr: String, folderId: Int, folderArchiveNbr: String, folderLinkId: Int)
 
 enum FilesEndpoint {
@@ -431,13 +431,24 @@ class FilesEndpointPayloads {
     
     static func updateMultipleRecordsRequest(params: UpdateMultipleRecordsParams) -> RequestParameters {
         let data = params.files.map {
-            [
-                "RecordVO": [
-                    "recordId": $0.recordId,
-                    "archiveNbr": $0.archiveNo,
-                    "folder_linkId": $0.folderLinkId,
-                    "description": params.description
-                ] as [String : Any]
+            var recordVO: [String: Any] = [
+                "recordId": $0.recordId,
+                "archiveNbr": $0.archiveNo,
+                "folder_linkId": $0.folderLinkId
+            ]
+            
+            if let location = params.location,
+                let locationJson = try? JSONEncoder().encode(location),
+                let locationDict = try? JSONSerialization.jsonObject(with: locationJson, options: []) {
+                recordVO["locnVO"] = locationDict
+            }
+            
+            if let description = params.description {
+                recordVO["description"] = description
+            }
+            
+            return [
+                "RecordVO": recordVO as [String : Any]
             ]
         }
 

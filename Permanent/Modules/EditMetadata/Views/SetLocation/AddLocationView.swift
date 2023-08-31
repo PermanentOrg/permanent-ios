@@ -25,43 +25,58 @@ struct City: Identifiable, Hashable {
 }
 
 struct AddLocationView: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     @State var text: String = ""
     @State var isPresented: Bool = false
     @State var showMap: Bool = true
     
-    @ObservedObject var viewModel = AddLocationViewModel()
+    @ObservedObject var viewModel: AddLocationViewModel
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if showMap {
-                MapView(coordinates: $viewModel.selectedCoordinates)
-                .edgesIgnoringSafeArea(.all)
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-            }
-
-            VStack(spacing: 20) {
-                let rightView = AnyView(Image(systemName: "xmark")
-                    .onTapGesture {
-                        viewModel.searchText = ""
-                    })
-                TextField("Search..", text: $viewModel.searchText, onEditingChanged: { isEditing in
-                    withAnimation {
-                        showMap = !isEditing
-                    }
-                })
-                .modifier(SmallXXRegularTextStyle())
-                .textFieldStyle(CustomTextFieldStyle(
-                    leftView: AnyView(Image(systemName: "magnifyingglass")),
-                    rightView: rightView))
-                
-                if !showMap {
-                    locationsList
-                        .padding(5)
-                    Spacer()
+        NavigationView {
+            ZStack(alignment: .topLeading) {
+                if showMap {
+                    MapView(coordinates: $viewModel.selectedCoordinates)
+                        .edgesIgnoringSafeArea(.all)
+                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 }
+                
+                VStack(spacing: 20) {
+                    VStack {
+                        let rightView = AnyView(Image(systemName: "xmark")
+                            .onTapGesture {
+                                viewModel.searchText = ""
+                            })
+                        TextField("Search..", text: $viewModel.searchText, onEditingChanged: { isEditing in
+                            withAnimation {
+                                showMap = !isEditing
+                            }
+                        })
+                        .modifier(SmallXXRegularTextStyle())
+                        .textFieldStyle(CustomTextFieldStyle(
+                            leftView: AnyView(Image(systemName: "magnifyingglass")),
+                            rightView: rightView))
+                    }
+                    .background(Color.white)
+                    .shadow(color: .black.opacity(0.16), radius: 8, x: 0, y: 8)
+                    
+                    if !showMap {
+                        locationsList
+                            .padding(5)
+                    }
+                    Spacer()
+                    
+                    bottomButtons
+                }
+                .background(Color.clear)
+                .padding()
             }
-            .background(Color.white)
-            .padding()
+            .navigationBarTitle("Add location", displayMode: .inline)
+            .navigationBarItems(leading: Image("metadataLocations")
+                .renderingMode(.template)
+                .foregroundColor(.white)
+                .frame(width: 24, height: 24))
         }
     }
     
@@ -101,6 +116,32 @@ struct AddLocationView: View {
         }
     }
     
+    var bottomButtons: some View {
+        HStack {
+            Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Text("Cancel")
+            }
+            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
+            Spacer(minLength: 15)
+            Button {
+                viewModel.update { success in
+                    presentationMode.wrappedValue.dismiss()
+                }
+            } label: {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Set location")
+                }
+            }
+            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+            .disabled(viewModel.locnVO == nil)
+        }
+    }
+    
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
@@ -108,6 +149,6 @@ struct AddLocationView: View {
 
 struct AddLocationView_Previews: PreviewProvider {
     static var previews: some View {
-        AddLocationView()
+        AddLocationView(viewModel: AddLocationViewModel(selectedFiles: []))
     }
 }

@@ -106,17 +106,19 @@ struct MetadataEditView: View {
                             rightButtonView: RightButtonView(
                                 text: "Add",
                                 action: {
-                                    showSetLocation.toggle()
+                                    
                                 }
                             ),
                             divider: Divider.init()
                         )
                         SectionView(
                             assetName: "metadataLocations",
-                            title: "Locations",
+                            title: viewModel.locationSectionText,
                             rightButtonView: RightButtonView(
                                 text: "Add",
-                                action: { print("Add Location tapped") }
+                                action: {
+                                    showSetLocation.toggle()
+                                }
                             )
                         )
                         Spacer(minLength: 50)
@@ -143,7 +145,7 @@ struct MetadataEditView: View {
                 MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
             .sheet(isPresented: $showSetLocation) {
-                AddLocationView()
+                AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles))
             }
             .onAppear {
                 viewModel.refreshFiles()
@@ -155,6 +157,12 @@ struct MetadataEditView: View {
                 }
             }
             .onChange(of: showEditFilenames) { newValue in
+                if newValue == false {
+                    self.reloadFiles = false
+                    viewModel.refreshFiles()
+                }
+            }
+            .onChange(of: showSetLocation) { newValue in
                 if newValue == false {
                     self.reloadFiles = false
                     viewModel.refreshFiles()

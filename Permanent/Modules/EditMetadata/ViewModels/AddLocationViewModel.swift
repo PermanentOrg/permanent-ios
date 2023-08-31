@@ -11,27 +11,42 @@ import Combine
 
 class AddLocationViewModel: ObservableObject {
     
-    @Published var selectedPlace: City?
+    @Published var isLoading: Bool = false
+    
+    @Published var selectedPlace: City? {
+        didSet {
+            if let selectedPlace = selectedPlace {
+                searchText = selectedPlace.title
+            }
+        }
+    }
+    
     @Published var selectedCoordinates: CLLocationCoordinate2D?
     @Published var searchedLocations: [City] = [City]()
+    
     private var placesClient = GMSPlacesClient()
     
     @Published var debouncedText = "" {
         didSet {
-//            googleSearchLocation()
+            googleSearchLocation()
         }
     }
     
     @Published var searchText = ""
     private var subscriptions = Set<AnyCancellable>()
     
+    @Published var locnVO: LocnVO?
+    
     var token = GMSAutocompleteSessionToken.init()
     
-    init() {
+    var selectedFiles: [FileModel]
+    
+    init(selectedFiles: [FileModel]) {
+        self.selectedFiles = selectedFiles
         $searchText
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
                     .sink(receiveValue: { [weak self] t in
-                        if self?.debouncedText != t {
+                        if self?.debouncedText != t && t != self?.selectedPlace?.title {
                             self?.debouncedText = t
                         }
                     } )
@@ -67,9 +82,50 @@ class AddLocationViewModel: ObservableObject {
         placesClient.fetchPlace(fromPlaceID: selectedPlace.id,
                                 placeFields: [.coordinate],
                                 sessionToken: token) { place, error in
-            selectedPlace.coordinate = place?.coordinate
-            self.selectedCoordinates = place?.coordinate
-            self.token = GMSAutocompleteSessionToken.init()
+            if let place = place {
+                selectedPlace.coordinate = place.coordinate
+                self.selectedCoordinates = place.coordinate
+                self.validateLocation(lat: place.coordinate.latitude, long: place.coordinate.longitude)
+                
+                self.token = GMSAutocompleteSessionToken.init()
+            }
+        }
+    }
+    
+    func validateLocation(lat: Double, long: Double) {
+        let params: GeomapLatLongParams = (lat, long)
+        let apiOperation = APIOperation(LocationEndpoint.geomapLatLong(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
+            switch result {
+            case .json(let json, _):
+                guard let model: APIResults<LocnVOData> = JSONHelper.decoding(from: json, with: APIResults<LocnVOData>.decoder), model.isSuccessful else {
+                    self?.locnVO = nil
+                    return
+                }
+                let locnVO = model.results.first?.data?.first?.locnVO
+                self?.locnVO = locnVO
+            default:
+                self?.locnVO = nil
+            }
+        }
+    }
+    
+    func update(completion: @escaping ((Bool) -> Void)) {
+        isLoading = true
+        let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: nil, location: locnVO)
+        let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
+        
+        apiOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .json( _, _):
+                    completion(true)
+                default:
+                    completion(false)
+                }
+                self?.isLoading = false
+            }
         }
     }
     
