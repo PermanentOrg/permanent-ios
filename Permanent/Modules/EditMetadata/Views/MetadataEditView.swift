@@ -13,6 +13,7 @@ struct MetadataEditView: View {
 
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
+    @State var showSetLocation: Bool = false
     @State var showEditDataTime: Bool = false
     @State var removeTagName: String? = nil
     @State var reloadFiles: Bool = false
@@ -114,10 +115,12 @@ struct MetadataEditView: View {
                         )
                         SectionView(
                             assetName: "metadataLocations",
-                            title: "Locations",
+                            title: viewModel.locationSectionText,
                             rightButtonView: RightButtonView(
                                 text: "Add",
-                                action: { print("Add Location tapped") }
+                                action: {
+                                    showSetLocation.toggle()
+                                }
                             )
                         )
                         Spacer(minLength: 50)
@@ -143,6 +146,9 @@ struct MetadataEditView: View {
             .sheet(isPresented: $showEditFilenames) {
                 MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
+            .sheet(isPresented: $showSetLocation) {
+                AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles))
+            }
             .sheet(isPresented: $showEditDataTime, content: {
                 if #available(iOS 16.0, *) {
                     EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
@@ -161,6 +167,12 @@ struct MetadataEditView: View {
                 }
             }
             .onChange(of: showEditFilenames) { newValue in
+                if newValue == false {
+                    self.reloadFiles = false
+                    viewModel.refreshFiles()
+                }
+            }
+            .onChange(of: showSetLocation) { newValue in
                 if newValue == false {
                     self.reloadFiles = false
                     viewModel.refreshFiles()
