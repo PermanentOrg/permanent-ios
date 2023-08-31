@@ -46,6 +46,8 @@ class FilesMetadataViewModel: ObservableObject {
     @Published var havePartialTags: Bool = false
     @Published var hasUpdates: Bool = false
     
+    @Published var locationSectionText: String = "Locations"
+    
     var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
     
@@ -66,12 +68,15 @@ class FilesMetadataViewModel: ObservableObject {
             guard let strongSelf = self else { return }
             let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
             await MainActor.run {
+                strongSelf.setLocationsSectionText(records: records.compactMap{$0})
+                
                 strongSelf.selectedFiles = records.compactMap { record in
                     if let recordVO = record?.recordVO {
                         return FileModel(model: recordVO, permissions: [], accessRole: AccessRole.viewer)
                     }
                     return nil
                 }
+               
             }
         }
     }
@@ -107,7 +112,7 @@ class FilesMetadataViewModel: ObservableObject {
     }
     
     func update(description: String, completion: @escaping ((Bool) -> Void)) {
-        let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description)
+        let params: UpdateMultipleRecordsParams = (files: selectedFiles, description: description, location: nil)
         let apiOperation = APIOperation(FilesEndpoint.multipleUpdate(params: params))
         
         apiOperation.execute(in: APIRequestDispatcher()) { result in
@@ -125,6 +130,32 @@ class FilesMetadataViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    //MARK: Sections
+    
+    private func setLocationsSectionText(records: [RecordVO]) {
+        guard records.filter({ $0.recordVO?.locnVO != nil}).count > 0 else {
+            locationSectionText = "Locations"
+            return
+        }
+        let sameLocation = Set(records.compactMap { record in
+            let locnVO = record.recordVO?.locnVO
+            return getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+        }).count == 1
+        
+        if sameLocation {
+            let locnVO = records.first?.recordVO?.locnVO
+            let address = getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
+            locationSectionText = address
+        } else {
+            locationSectionText = "Various locations"
+        }
+    }
+    
+    func getAddressString(_ items: [String?]) -> String {
+        let address = items.compactMap { $0 }.joined(separator: ", ")
+        return address
     }
     
     //MARK: Delete Tag
