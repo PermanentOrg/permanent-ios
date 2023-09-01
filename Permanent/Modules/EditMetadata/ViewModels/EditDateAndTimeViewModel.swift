@@ -29,6 +29,8 @@ class EditDateAndTimeViewModel: ObservableObject {
         isLoading = true
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
         let date = dateFormatter.string(from: selectedDate)
         
         let updatedFiles = selectedFiles.map { file in
