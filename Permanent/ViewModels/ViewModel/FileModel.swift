@@ -32,7 +32,7 @@ struct FileModel: Equatable, Codable {
     let thumbStatus: ThumbStatus?
     
     var name: String
-    let date: String
+    var date: String
     let type: FileType
     let description: String
     let size: Int64

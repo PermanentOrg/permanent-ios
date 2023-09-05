@@ -468,7 +468,8 @@ class FilesEndpointPayloads {
                     "archiveNbr": $0.archiveNo,
                     "folder_linkId": $0.folderLinkId,
                     "description": $0.description,
-                    "displayName": $0.name
+                    "displayName": $0.name,
+                    "displayDT": $0.date
                 ] as [String : Any]
             ]
         }

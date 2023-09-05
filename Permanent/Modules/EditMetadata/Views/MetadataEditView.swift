@@ -104,9 +104,9 @@ struct MetadataEditView: View {
                         )
                         SectionView(
                             assetName: "metadataDateAndTime",
-                            title: "Date and time",
+                            title: viewModel.haveDiffDate ? "Various dates and times" : "Same dates and times",
                             rightButtonView: RightButtonView(
-                                text: "Add",
+                                text: "Edit",
                                 action: {
                                     showEditDataTime.toggle()
                                 }
@@ -167,6 +167,12 @@ struct MetadataEditView: View {
                 }
             }
             .onChange(of: showEditFilenames) { newValue in
+                if newValue == false {
+                    self.reloadFiles = false
+                    viewModel.refreshFiles()
+                }
+            }
+            .onChange(of: showEditDataTime) { newValue in
                 if newValue == false {
                     self.reloadFiles = false
                     viewModel.refreshFiles()

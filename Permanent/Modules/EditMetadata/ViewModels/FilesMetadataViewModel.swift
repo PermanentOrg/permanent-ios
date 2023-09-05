@@ -13,8 +13,11 @@ class FilesMetadataViewModel: ObservableObject {
         didSet {
             let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
             allTags = tags.sorted()
-            if selectedFiles.count > 1, !descriptionWasSaved {
-                haveDiffDescription = selectedFiles.allSatisfy({ $0.description.isNotEmpty })
+            if selectedFiles.count > 1 {
+                if !descriptionWasSaved {
+                    haveDiffDescription = selectedFiles.allSatisfy({ $0.description.isNotEmpty })
+                }
+                haveDiffDate = !selectedFiles.allSatisfy({$0.createdDT == selectedFiles.first?.createdDT})
             }
         }
     }
@@ -43,6 +46,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     @Published var haveDiffDescription: Bool = false
+    @Published var haveDiffDate: Bool = false
     @Published var havePartialTags: Bool = false
     @Published var hasUpdates: Bool = false
     

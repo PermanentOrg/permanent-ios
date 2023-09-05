@@ -41,6 +41,12 @@ struct EditDateAndTimeView: View {
                 bottomButtons
             }
             .padding(.top, 50)
+            .onChange(of: viewModel.changesWereSaved, perform: { newValue in
+                if newValue {
+                    viewModel.changesWereSaved = false
+                    presentationMode.wrappedValue.dismiss()
+                }
+            })
             .onChange(of: viewModel.changesConfirmed) { newValue in
                 if newValue {
                     viewModel.applyChanges()
@@ -50,6 +56,11 @@ struct EditDateAndTimeView: View {
                 CustomAlertView(confirmed: $viewModel.changesConfirmed, title: "New Date & Time", context: "Are you sure you want set a new date & time for selected items?", confirmButtonText: "Set date and time")
                     .frame(width: 294)
                     .clearModalBackground()
+            }
+            .alert(isPresented: $viewModel.showAlert) {
+                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                    viewModel.showAlert = false
+                })
             }
         }
     }
