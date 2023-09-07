@@ -18,49 +18,58 @@ struct AddLocationView: View {
     @ObservedObject var viewModel: AddLocationViewModel
     
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .topLeading) {
-                if showMap {
-                    MapView(coordinates: $viewModel.selectedCoordinates)
-                        .edgesIgnoringSafeArea(.all)
-                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                }
-                
-                VStack(spacing: 20) {
-                    VStack {
-                        let rightView = AnyView(Image(systemName: "xmark")
-                            .onTapGesture {
-                                viewModel.searchText = ""
+        ZStack {
+            NavigationView {
+                ZStack(alignment: .topLeading) {
+                    if showMap {
+                        MapView(coordinates: $viewModel.selectedCoordinates)
+                            .edgesIgnoringSafeArea(.all)
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                    }
+                    
+                    VStack(spacing: 20) {
+                        VStack {
+                            let rightView = AnyView(Image(systemName: "xmark")
+                                .onTapGesture {
+                                    viewModel.searchText = ""
+                                })
+                            TextField("Search..", text: $viewModel.searchText, onEditingChanged: { isEditing in
+                                withAnimation {
+                                    showMap = !isEditing
+                                }
                             })
-                        TextField("Search..", text: $viewModel.searchText, onEditingChanged: { isEditing in
-                            withAnimation {
-                                showMap = !isEditing
-                            }
-                        })
-                        .modifier(SmallXXRegularTextStyle())
-                        .textFieldStyle(CustomTextFieldStyle(
-                            leftView: AnyView(Image(systemName: "magnifyingglass")),
-                            rightView: rightView))
+                            .modifier(SmallXXRegularTextStyle())
+                            .textFieldStyle(CustomTextFieldStyle(
+                                leftView: AnyView(Image(systemName: "magnifyingglass")),
+                                rightView: rightView))
+                        }
+                        .background(Color.white)
+                        .shadow(color: .black.opacity(0.16), radius: 8, x: 0, y: 8)
+                        
+                        if !showMap {
+                            locationsList
+                                .padding(5)
+                        }
+                        Spacer()
+                        
+                        bottomButtons
                     }
-                    .background(Color.white)
-                    .shadow(color: .black.opacity(0.16), radius: 8, x: 0, y: 8)
-                    
-                    if !showMap {
-                        locationsList
-                            .padding(5)
-                    }
-                    Spacer()
-                    
-                    bottomButtons
+                    .background(Color.clear)
+                    .padding()
                 }
-                .background(Color.clear)
-                .padding()
+                .navigationBarTitle("Add location", displayMode: .inline)
+                .navigationBarItems(leading: Image("metadataLocations")
+                    .renderingMode(.template)
+                    .foregroundColor(.white)
+                    .frame(width: 24, height: 24))
             }
-            .navigationBarTitle("Add location", displayMode: .inline)
-            .navigationBarItems(leading: Image("metadataLocations")
-                .renderingMode(.template)
-                .foregroundColor(.white)
-                .frame(width: 24, height: 24))
+            if viewModel.showConfirmation {
+                CustomDialogView(isActive: $viewModel.showConfirmation, title: "New location", message: "Are you sure you want set a new location for selected items?", buttonTitle: "Set location") {
+                    viewModel.update { success in
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
         }
     }
     
@@ -106,9 +115,7 @@ struct AddLocationView: View {
             .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
             Spacer(minLength: 15)
             Button {
-                viewModel.update { success in
-                    presentationMode.wrappedValue.dismiss()
-                }
+                viewModel.showConfirmation = true
             } label: {
                 if viewModel.isLoading {
                     ProgressView()

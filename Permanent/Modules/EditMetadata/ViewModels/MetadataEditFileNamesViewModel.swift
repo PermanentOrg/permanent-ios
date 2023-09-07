@@ -22,6 +22,8 @@ class MetadataEditFileNamesViewModel: ObservableObject {
     @Published var imagePreviewURL: String?
     @Published var fileSizePreview: String?
     @Published var fileNamePreview: String?
+    @Published var showConfirmation: Bool = false
+    @Published var changesConfirmed: Bool = false
     var hasUpdates: Binding<Bool>
     
     var currentViewModel: (any MetadataEditFilenamesProtocol)?

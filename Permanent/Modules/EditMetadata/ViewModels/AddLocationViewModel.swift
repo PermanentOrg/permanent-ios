@@ -44,6 +44,10 @@ class AddLocationViewModel: ObservableObject {
     
     var token = GMSAutocompleteSessionToken.init()
     
+    @Published var showConfirmation: Bool = false
+    
+    @Published var changesConfirmed: Bool = false
+    
     var selectedFiles: [FileModel]
     
     init(selectedFiles: [FileModel]) {
