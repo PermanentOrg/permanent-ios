@@ -103,6 +103,7 @@ struct MetadataEditFileNamesView: View {
                 }
             }
         }
+        .ignoresSafeArea(.keyboard)
     }
     
     func setCurrentViewModel(editViewModel: MetadataEditFilenamesProtocol) {
