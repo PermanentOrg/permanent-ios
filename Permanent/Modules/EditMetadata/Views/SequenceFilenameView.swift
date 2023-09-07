@@ -14,7 +14,7 @@ struct SequenceFilenameView: View {
         ZStack(alignment: .topLeading) {
             Color.clear
             VStack(alignment: .leading, spacing: 15) {
-                Text("Base".uppercased())
+                Text("Base Title".uppercased())
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
                     .foregroundColor(Color.middleGray)
                 TextField("Enter base text ", text: $viewModel.baseText)
@@ -65,7 +65,7 @@ struct SequenceFilenameView: View {
             .offset(y: 90)
             .zIndex(2)
             
-            let textTitle = viewModel.selectedFormatOptions?.title == "Numbers" ? "Start with" : "Date Value"
+            let textTitle = viewModel.selectedFormatOptions?.title == "Count" ? "Start count at" : "Date Value"
             let textLimit = 3
             
             VStack(alignment: .leading, spacing: 15) {
@@ -73,7 +73,7 @@ struct SequenceFilenameView: View {
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
                     .foregroundColor(Color.middleGray)
                 
-                if viewModel.selectedFormatOptions?.title == "Numbers" {
+                if viewModel.selectedFormatOptions?.title == "Count" {
                     TextField("1", text: $viewModel.startNumberText)
                         .keyboardType(.numberPad)
                         .modifier(SmallXXRegularTextStyle())

@@ -41,8 +41,8 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         PullDownItem(title: "After name")
     ]
     var formatOptions = [
-        PullDownItem(title: "Title & Date"),
-        PullDownItem(title: "Numbers")
+        PullDownItem(title: "Date & Time"),
+        PullDownItem(title: "Count")
     ]
     var additionalOptions: [PullDownItem] = [
         PullDownItem(title: "Created"),
@@ -72,12 +72,11 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         var fileNumber = 0
         let filteredFiles = selectedFiles.map { file in
             var newFile = file
-            let name = newFile.name
-            if selectedFormatOptions?.title == "Numbers" {
+            if selectedFormatOptions?.title == "Count" {
                 if selectedWhereOptions?.title == "Before name" {
-                    newFile.name = String("\(baseText)_\(calculateZeros(currentFile: fileNumber + 1))\(fileNumber + (Int(startNumberText) ?? 0))_\(name)")
+                    newFile.name = String("\(calculateZeros(currentFile: fileNumber + 1))\(fileNumber + (Int(startNumberText) ?? 0))\(baseText)")
                 } else {
-                    newFile.name = String("\(name)_\(baseText)_\(calculateZeros(currentFile: fileNumber + 1))\(fileNumber + (Int(startNumberText) ?? 0))")
+                    newFile.name = String("\(baseText)\(calculateZeros(currentFile: fileNumber + 1))\(fileNumber + (Int(startNumberText) ?? 0))")
                 }
                 fileNumber += 1
             } else {
@@ -89,9 +88,9 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
                 }
                 
                 if selectedWhereOptions?.title == "Before name" {
-                    newFile.name = String("\(baseText)_\(formattedDate)_\(name)")
+                    newFile.name = String("\(formattedDate)\(baseText)")
                 } else {
-                    newFile.name = String("\(name)_\(baseText)_\(formattedDate)")
+                    newFile.name = String("\(baseText)\(formattedDate)")
                 }
             }
             return newFile
@@ -106,12 +105,12 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
             return
         }
         
-        if selectedFormatOptions?.title == "Numbers" {
+        if selectedFormatOptions?.title == "Count" {
             
             if selectedWhereOptions?.title == "Before name" {
-                fileName = String("\(baseText)_\(calculateZeros(currentFile: 1))\(startNumberText)_\(fileName)")
+                fileName = String("\(calculateZeros(currentFile: 1))\(startNumberText)\(baseText)")
             } else {
-                fileName = String("\(fileName)_\(baseText)_\(calculateZeros(currentFile: 1))\(startNumberText)")
+                fileName = String("\(baseText)\(calculateZeros(currentFile: 1))\(startNumberText)")
             }
         } else {
             var file = selectedFiles.first
@@ -122,9 +121,9 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
             }
             
             if selectedWhereOptions?.title == "Before name" {
-                fileName = String("\(baseText)_\(formattedDate)_\(fileName)")
+                fileName = String("\(baseText)\(formattedDate)")
             } else {
-                fileName = String("\(fileName)_\(baseText)_\(formattedDate)")
+                fileName = String("\(formattedDate)\(baseText)")
             }
         }
         fileNamePreview.wrappedValue = fileName
