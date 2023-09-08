@@ -69,6 +69,7 @@ struct AddLocationView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
+                .frame(width: 294)
             }
         }
     }

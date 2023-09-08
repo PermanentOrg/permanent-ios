@@ -52,15 +52,16 @@ struct EditDateAndTimeView: View {
                     viewModel.applyChanges()
                 }
             }
-            .sheet(isPresented: $viewModel.showConfirmation) {
-                CustomAlertView(confirmed: $viewModel.changesConfirmed, title: "New Date & Time", context: "Are you sure you want set a new date & time for selected items?", confirmButtonText: "Set date and time")
-                    .frame(width: 294)
-                    .clearModalBackground()
-            }
             .alert(isPresented: $viewModel.showAlert) {
                 Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
                     viewModel.showAlert = false
                 })
+            }
+            if viewModel.showConfirmation {
+                CustomDialogView(isActive: $viewModel.showConfirmation, title: "Modify file \(viewModel.selectedFiles.count > 1 ? "names" : "name")", message: "Are you sure you want to find and replace these \(viewModel.selectedFiles.count) file \(viewModel.selectedFiles.count > 1 ? "names" : "name")?", buttonTitle: "Modify") {
+                    viewModel.applyChanges()
+                }
+                .frame(width: 294)
             }
         }
     }

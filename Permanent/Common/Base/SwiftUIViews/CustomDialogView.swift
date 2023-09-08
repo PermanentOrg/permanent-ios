@@ -6,6 +6,13 @@
 
 import SwiftUI
 
+/// Displays a simple two options alert with title and context
+///  - Parameters:
+///     - title: This is the tile of the alert
+///     - message: The body of the alert
+///     - buttonTitle: The text of the confirm button
+///     - action: a closure to run when is confirmed.
+///  - Returns: Returns a view of a simple alert with two options as a View
 struct CustomDialogView: View {
     @Binding var isActive: Bool
     let title: String
@@ -13,7 +20,7 @@ struct CustomDialogView: View {
     let buttonTitle: String
     let action: () -> ()
     @State private var offset: CGFloat = 1000
-
+    
     var body: some View {
         if #available(iOS 15.0, *) {
             ZStack {
@@ -22,53 +29,56 @@ struct CustomDialogView: View {
                     .onTapGesture {
                         close()
                     }
-                VStack(spacing: 32) {
-                    VStack(spacing: 16) {
-                        Text(title)
-                            .textStyle(RegularBoldTextStyle())
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.darkBlue)
-                            .padding()
-                        Text(message)
-                            .textStyle(SmallXRegularTextStyle())
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.darkBlue)
-                            .frame(width: 216)
-                            .padding(.horizontal)
+                ZStack {
+                    VStack(spacing: 32) {
+                        VStack(spacing: 16) {
+                            Text(title)
+                                .textStyle(RegularBoldTextStyle())
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.darkBlue)
+                                .padding()
+                            Text(message)
+                                .textStyle(SmallXRegularTextStyle())
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.darkBlue)
+                                .frame(width: 216)
+                                .padding(.horizontal)
+                        }
+                        VStack(spacing: 8) {
+                            Button {
+                                action()
+                                close()
+                            } label: {
+                                Text(buttonTitle)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+                            Button {
+                                close()
+                            } label: {
+                                Text("Cancel")
+                                    .multilineTextAlignment(.center)
+                            }
+                            .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
+                        }
                     }
-                    VStack(spacing: 8) {
-                        Button {
-                            action()
-                            close()
-                        } label: {
-                            Text(buttonTitle)
-                                .multilineTextAlignment(.center)
+                    .padding(.top, 32)
+                    .padding(.bottom, 24)
+                    .padding(.horizontal, 24)
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .shadow(radius: 20)
+                    .padding(30)
+                    .offset(x: 0, y: offset)
+                    .onAppear {
+                        withAnimation(.spring()) {
+                            offset = 0
                         }
-                        .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
-                        Button {
-                            close()
-                        } label: {
-                            Text("Cancel")
-                                .multilineTextAlignment(.center)
-                        }
-                        .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
                     }
                 }
-                .padding(.top, 32)
-                .padding(.bottom, 24)
-                .padding(.horizontal, 24)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .shadow(radius: 20)
-                .padding(30)
-                .offset(x: 0, y: offset)
-                .onAppear {
-                    withAnimation(.spring()) {
-                        offset = 0
-                    }
-                }
+                .padding(.horizontal, 48)
             }
-            . ignoresSafeArea()
+            .ignoresSafeArea()
         } else {
             VStack {
                 Text(title)

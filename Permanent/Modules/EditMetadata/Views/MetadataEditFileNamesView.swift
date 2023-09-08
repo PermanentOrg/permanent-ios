@@ -85,6 +85,11 @@ struct MetadataEditFileNamesView: View {
                         break
                     }
                 }
+                .onChange(of: viewModel.changesConfirmed) { newValue in
+                    if newValue {
+                        viewModel.applyChanges()
+                    }
+                }
                 .onChange(of: viewModel.changesWereSaved, perform: { newValue in
                     if newValue {
                         viewModel.changesWereSaved = false
@@ -99,8 +104,9 @@ struct MetadataEditFileNamesView: View {
             }
             if viewModel.showConfirmation {
                 CustomDialogView(isActive: $viewModel.showConfirmation, title: "Modify file \(viewModel.selectedFiles.count > 1 ? "names" : "name")", message: "Are you sure you want to find and replace these \(viewModel.selectedFiles.count) file \(viewModel.selectedFiles.count > 1 ? "names" : "name")?", buttonTitle: "Modify") {
-                    viewModel.applyChanges()
+                    viewModel.changesConfirmed = true
                 }
+                .frame(width: 294)
             }
         }
         .ignoresSafeArea(.keyboard)
@@ -118,9 +124,10 @@ struct MetadataEditFileNamesView: View {
                     .foregroundColor(.lightGray)
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(width: 286, height: 1)
+                    .frame(height: 1)
                     .background(Color.lightGray)
             }
+            .padding(.horizontal)
             HStack(spacing: 16) {
                 Rectangle()
                 .foregroundColor(.clear)
@@ -159,7 +166,6 @@ struct MetadataEditFileNamesView: View {
             Spacer(minLength: 15)
             Button {
                 viewModel.showConfirmation = true
-                //viewModel.applyChanges()
             } label: {
                 if viewModel.isLoading {
                     ProgressView()

@@ -72,9 +72,15 @@ struct CustomNavigationView<Content: View, LeftButton: View>: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationViewStyle(StackNavigationViewStyle())
+        }.onAppear {
+            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            AppDelegate.orientationLock = .portrait
+        }.onDisappear {
+            AppDelegate.orientationLock = .all
         }
         .edgesIgnoringSafeArea(.all)
     }
+    
 }
 
 extension CustomNavigationView where LeftButton == EmptyView {
