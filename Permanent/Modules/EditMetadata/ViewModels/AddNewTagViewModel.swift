@@ -80,7 +80,7 @@ class AddNewTagViewModel: ObservableObject {
             guard let strongSelf = self else { return }
             do {
                 let _ = try await strongSelf.selectedFiles.compactMap { file in
-                    return (strongSelf.selectionTags, file.recordId)
+                    return (strongSelf.addedTags, file.recordId)
                 }.asyncMap(strongSelf.runAssignTag)
                 
                 await MainActor.run {
