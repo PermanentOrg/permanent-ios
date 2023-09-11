@@ -98,6 +98,7 @@
 		5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */; };
 		5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */; };
 		5E334DA426BD5B110072E770 /* RightSideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */; };
+		5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E3A060029E44D7900A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
 		5E3A060129E44D8600A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
@@ -361,9 +362,7 @@
 		5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
 		5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B3726143ED5002F9861 /* TagLinkVO.swift */; };
 		5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */; };
-		5EDDAE5C2A9E669D00415D9A /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE5B2A9E669D00415D9A /* ViewExtension.swift */; };
 		5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */; };
-		5EDDAE602A9FD65D00415D9A /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE5F2A9FD65D00415D9A /* CustomAlertView.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
 		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
 		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
@@ -939,6 +938,7 @@
 		5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
 		5E334DA326BD5B110072E770 /* RightSideMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuViewController.swift; sourceTree = "<group>"; };
+		5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogView.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E3A05FF29E44D7900A6C531 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
 		5E3A060229E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSegmentedControlView.swift; sourceTree = "<group>"; };
@@ -1125,9 +1125,7 @@
 		5ED73B242613C30E002F9861 /* TagEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEndpoint.swift; sourceTree = "<group>"; };
 		5ED73B3726143ED5002F9861 /* TagLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLinkVO.swift; sourceTree = "<group>"; };
 		5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeView.swift; sourceTree = "<group>"; };
-		5EDDAE5B2A9E669D00415D9A /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeViewModel.swift; sourceTree = "<group>"; };
-		5EDDAE5F2A9FD65D00415D9A /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
 		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
@@ -1590,7 +1588,6 @@
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
-				5EDDAE5B2A9E669D00415D9A /* ViewExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2680,7 +2677,7 @@
 				5E991EE32A4ADDE3006229C0 /* SectionView.swift */,
 				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
 				9229A3AA2A7A7773004DE31D /* PullDownButton.swift */,
-				5EDDAE5F2A9FD65D00415D9A /* CustomAlertView.swift */,
+				5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */,
 			);
 			path = SwiftUIViews;
 			sourceTree = "<group>";
@@ -4129,7 +4126,6 @@
 				5ED428832A12432E001F88FB /* LegacyPlanningEndpoint.swift in Sources */,
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
-				5EDDAE602A9FD65D00415D9A /* CustomAlertView.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				5EC9C695290B323000AD2E37 /* TwoStepVerificationViewController.swift in Sources */,
 				F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */,
@@ -4268,7 +4264,6 @@
 				BCF90655258770B700DF1B64 /* SharesViewController.swift in Sources */,
 				5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */,
 				F5B3A253267A3D19009EBC7B /* SerialInputStream.swift in Sources */,
-				5EDDAE5C2A9E669D00415D9A /* ViewExtension.swift in Sources */,
 				5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */,
 				5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
@@ -4442,6 +4437,7 @@
 				BC6358A12536D80100EEC48C /* FilesEndpoint.swift in Sources */,
 				9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */,
 				5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */,
+				5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */,
 				92C73E462A14D530000EF633 /* RoundedView.swift in Sources */,
 				F502C48926D6132F00657D37 /* AlbumCollectionViewCell.swift in Sources */,
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,

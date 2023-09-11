@@ -38,62 +38,75 @@ struct MetadataEditFileNamesView: View {
     
     var body: some View {
         ZStack {
-            NavigationView {
+            ZStack {
+                NavigationView {
+                    VStack {
+                        CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
+                        
+                        if selectedItem?.name == "Replace" {
+                            ReplaceFilenameView(viewModel: replaceViewModel)
+                        }
+                        if selectedItem?.name == "Append" {
+                            AppendFilenameView(viewModel: appendViewModel)
+                        }
+                        if selectedItem?.name == "Sequence" {
+                            SequenceFilenameView(viewModel: sequenceViewModel)
+                        }
+                        Spacer()
+                    }
+                    .padding(.top, 20)
+                    .padding(.horizontal, 24)
+                    .navigationBarTitle("Edit file names", displayMode: .inline)
+                    .navigationBarItems(leading: Image("editFilenames")
+                        .renderingMode(.template)
+                        .foregroundColor(.white)
+                        .frame(width: 24, height: 24))
+                }
+                .padding(.bottom, 85)
                 VStack {
-                    CustomSegmentedControl(selectedItem: $selectedItem, items: menuItems)
-
-                    if selectedItem?.name == "Replace" {
-                        ReplaceFilenameView(viewModel: replaceViewModel)
-                    }
-                    if selectedItem?.name == "Append" {
-                        AppendFilenameView(viewModel: appendViewModel)
-                    }
-                    if selectedItem?.name == "Sequence" {
-                        SequenceFilenameView(viewModel: sequenceViewModel)
-                    }
                     Spacer()
+                    previewSection
+                        .padding(.horizontal, 10)
+                    bottomButtons
+                        .padding(.horizontal, 10)
                 }
-                .padding(.top, 20)
-                .padding(.horizontal, 24)
-                .navigationBarTitle("Edit file names", displayMode: .inline)
-                .navigationBarItems(leading: Image("editFilenames")
-                    .renderingMode(.template)
-                    .foregroundColor(.white)
-                    .frame(width: 24, height: 24))
-            }
-            .padding(.bottom, 85)
-            VStack {
-                Spacer()
-                previewSection
-                    .padding(.horizontal, 10)
-                bottomButtons
-                    .padding(.horizontal, 10)
-            }
-            .onAppear {
-                setCurrentViewModel(editViewModel: replaceViewModel)
-            }
-            .onChange(of: selectedItem) { newValue in
-                switch newValue?.name {
-                case "Replace":
+                .onAppear {
                     setCurrentViewModel(editViewModel: replaceViewModel)
-                case "Append":
-                    setCurrentViewModel(editViewModel: appendViewModel)
-                case "Sequence":
-                    setCurrentViewModel(editViewModel: sequenceViewModel)
-                default:
-                    break
+                }
+                .onChange(of: selectedItem) { newValue in
+                    switch newValue?.name {
+                    case "Replace":
+                        setCurrentViewModel(editViewModel: replaceViewModel)
+                    case "Append":
+                        setCurrentViewModel(editViewModel: appendViewModel)
+                    case "Sequence":
+                        setCurrentViewModel(editViewModel: sequenceViewModel)
+                    default:
+                        break
+                    }
+                }
+                .onChange(of: viewModel.changesConfirmed) { newValue in
+                    if newValue {
+                        viewModel.applyChanges()
+                    }
+                }
+                .onChange(of: viewModel.changesWereSaved, perform: { newValue in
+                    if newValue {
+                        viewModel.changesWereSaved = false
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                })
+                .alert(isPresented: $viewModel.showAlert) {
+                    Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                        viewModel.showAlert = false
+                    })
                 }
             }
-            .onChange(of: viewModel.changesWereSaved, perform: { newValue in
-                if newValue {
-                    viewModel.changesWereSaved = false
-                    presentationMode.wrappedValue.dismiss()
+            if viewModel.showConfirmation {
+                CustomDialogView(isActive: $viewModel.showConfirmation, title: "Modify file \(viewModel.selectedFiles.count > 1 ? "names" : "name")", message: "Are you sure you want to find and replace these \(viewModel.selectedFiles.count) file \(viewModel.selectedFiles.count > 1 ? "names" : "name")?", buttonTitle: "Modify") {
+                    viewModel.changesConfirmed = true
                 }
-            })
-            .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                    viewModel.showAlert = false
-                })
+                .frame(width: 294)
             }
         }
         .ignoresSafeArea(.keyboard)
@@ -111,9 +124,10 @@ struct MetadataEditFileNamesView: View {
                     .foregroundColor(.lightGray)
                 Rectangle()
                     .foregroundColor(.clear)
-                    .frame(width: 286, height: 1)
+                    .frame(height: 1)
                     .background(Color.lightGray)
             }
+            .padding(.horizontal)
             HStack(spacing: 16) {
                 Rectangle()
                 .foregroundColor(.clear)
@@ -151,7 +165,7 @@ struct MetadataEditFileNamesView: View {
             .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
             Spacer(minLength: 15)
             Button {
-                viewModel.applyChanges()
+                viewModel.showConfirmation = true
             } label: {
                 if viewModel.isLoading {
                     ProgressView()
