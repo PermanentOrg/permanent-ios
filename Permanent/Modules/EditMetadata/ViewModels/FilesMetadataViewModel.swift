@@ -13,19 +13,25 @@ class FilesMetadataViewModel: ObservableObject {
         didSet {
             let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
             allTags = tags.sorted()
-            if selectedFiles.count > 1 {
-                if !descriptionWasSaved {
-                    haveDiffDescription = selectedFiles.allSatisfy({ $0.description.isNotEmpty })
+            if !descriptionWasSaved {
+                haveDiffDescription = !selectedFiles.allSatisfy({$0.description == selectedFiles.first?.description})
+            }
+            haveDiffDate = !selectedFiles.allSatisfy({$0.createdDT == selectedFiles.first?.createdDT})
+            if haveDiffDescription {
+                inputText = .enterTextHere
+            } else {
+                if let initialDesc = selectedFiles.first?.description, initialDesc.isNotEmpty {
+                    inputText = initialDesc
+                } else {
+                    inputText = .enterTextHere
                 }
-                haveDiffDate = !selectedFiles.allSatisfy({$0.createdDT == selectedFiles.first?.createdDT})
             }
         }
     }
-    
-    @Published var inputText: String = .enterTextHere
+    @Published var inputText: String?
     @Published var didSaved: Bool = false {
         didSet {
-            updateDescription(inputText)
+            updateDescription(inputText ?? "")
         }
     }
     @Published var showAlert: Bool = false

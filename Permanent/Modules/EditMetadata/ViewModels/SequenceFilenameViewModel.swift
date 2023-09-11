@@ -121,9 +121,9 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
             }
             
             if selectedWhereOptions?.title == "Before name" {
-                fileName = String("\(baseText)\(formattedDate)")
-            } else {
                 fileName = String("\(formattedDate)\(baseText)")
+            } else {
+                fileName = String("\(baseText)\(formattedDate)")
             }
         }
         fileNamePreview.wrappedValue = fileName

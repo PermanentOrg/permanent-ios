@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 struct TextView: UIViewRepresentable {
-    @Binding var text: String
+    @Binding var text: String?
     @Binding var didSaved: Bool
     var textStyle: TextStyle = TextFontStyle.style
     var textColor: UIColor = .black
