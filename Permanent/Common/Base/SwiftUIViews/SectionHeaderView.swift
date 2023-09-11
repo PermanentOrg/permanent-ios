@@ -17,6 +17,11 @@ struct SectionHeaderView: View {
                     if !files.isEmpty, let url = URL(string: files.first?.thumbnailURL500) {
                         WebImage(url: url)
                             .resizable()
+                            .placeholder(content: {
+                                VStack {
+                                    Image("questionMark")
+                                }
+                            })
                             .frame(width: 24, height: 24)
                             .aspectRatio(contentMode: .fill)
                     }

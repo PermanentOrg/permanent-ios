@@ -41,7 +41,7 @@ struct MetadataEditView: View {
                                     title: "Description",
                                     rightButtonView: RightButtonView(
                                         text: "Enter Description",
-                                        action: { print("Description tapped") }
+                                        action: { }
                                     ),
                                     haveRightSection: false
                                 )
@@ -104,7 +104,7 @@ struct MetadataEditView: View {
                         )
                         SectionView(
                             assetName: "metadataDateAndTime",
-                            title: viewModel.haveDiffDate ? "Various dates and times" : "Same dates and times",
+                            title: viewModel.haveDiffDate ? "Various dates and times" : viewModel.getCommonDate(),
                             rightButtonView: RightButtonView(
                                 text: "Edit",
                                 action: {

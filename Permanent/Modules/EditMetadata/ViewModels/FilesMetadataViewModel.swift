@@ -52,7 +52,7 @@ class FilesMetadataViewModel: ObservableObject {
         }
     }
     @Published var haveDiffDescription: Bool = false
-    @Published var haveDiffDate: Bool = false
+    @Published var haveDiffDate: Bool = false 
     @Published var havePartialTags: Bool = false
     @Published var hasUpdates: Bool = false
     
@@ -266,5 +266,20 @@ class FilesMetadataViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func getCommonDate() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        let date = dateFormatter.date(from: selectedFiles.first?.createdDT ?? "") ?? Date()
+        
+        let dateFormatterChanged = DateFormatter()
+        dateFormatterChanged.dateFormat = "yyyy-dd-MM hh:mm a"
+
+        let commonDate = dateFormatterChanged.string(from: date)
+        
+        return commonDate
     }
 }
