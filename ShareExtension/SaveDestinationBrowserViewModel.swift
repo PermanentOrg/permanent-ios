@@ -80,7 +80,7 @@ class SaveDestinationBrowserViewModel: FileBrowserViewModel {
         }
     }
     
-    func selectedFolder() -> FileViewModel? {
+    func selectedFolder() -> FileModel? {
         return contentViewModels.last?.folder
     }
     
