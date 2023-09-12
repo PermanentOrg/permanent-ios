@@ -47,11 +47,22 @@ class AddLocationViewModel: ObservableObject {
     @Published var showConfirmation: Bool = false
     
     @Published var changesConfirmed: Bool = false
+
+    @Published var commonLocation: LocnVO? {
+        didSet {
+            if let commonLocation = commonLocation,
+               let latitude = commonLocation.latitude,
+               let longitude = commonLocation.longitude {
+                selectedCoordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            } 
+        }
+    }
     
     var selectedFiles: [FileModel]
     
-    init(selectedFiles: [FileModel]) {
+    init(selectedFiles: [FileModel], commonLocation: LocnVO?) {
         self.selectedFiles = selectedFiles
+        self.commonLocation = commonLocation
         $searchText
             .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
                     .sink(receiveValue: { [weak self] t in

@@ -57,6 +57,7 @@ class FilesMetadataViewModel: ObservableObject {
     @Published var hasUpdates: Bool = false
     
     @Published var locationSectionText: String = "Locations"
+    @Published var commonLocation: LocnVO?
     
     var descriptionWasSaved: Bool = false
     var downloader: DownloadManagerGCD? = nil
@@ -156,11 +157,16 @@ class FilesMetadataViewModel: ObservableObject {
         
         if sameLocation {
             let locnVO = records.first?.recordVO?.locnVO
+            updateLocation(locnVO)
             let address = getAddressString([locnVO?.streetNumber, locnVO?.streetName, locnVO?.locality, locnVO?.country])
             locationSectionText = address
         } else {
             locationSectionText = "Various locations"
         }
+    }
+
+    func updateLocation(_ location: LocnVO?) {
+        commonLocation = location
     }
     
     func getAddressString(_ items: [String?]) -> String {
