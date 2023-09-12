@@ -139,6 +139,6 @@ struct AddLocationView: View {
 
 struct AddLocationView_Previews: PreviewProvider {
     static var previews: some View {
-        AddLocationView(viewModel: AddLocationViewModel(selectedFiles: []))
+        AddLocationView(viewModel: AddLocationViewModel(selectedFiles: [], commonLocation: nil))
     }
 }

@@ -147,7 +147,7 @@ struct MetadataEditView: View {
                 MetadataEditFileNamesView(viewModel: MetadataEditFileNamesViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
             .sheet(isPresented: $showSetLocation) {
-                AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles))
+                AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles, commonLocation: viewModel.commonLocation))
             }
             .sheet(isPresented: $showEditDataTime) {
                     EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))

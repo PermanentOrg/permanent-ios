@@ -23,6 +23,31 @@ class EditDateAndTimeViewModel: ObservableObject {
     init(selectedFiles: [FileModel], hasUpdates: Binding<Bool>) {
         self.selectedFiles = selectedFiles
         self.hasUpdates = hasUpdates
+        
+        selectedDate = getCommonDate()
+    }
+    
+    func getCommonDate() -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        var dates = [Date]()
+        for file in selectedFiles {
+            if let date = dateFormatter.date(from: file.createdDT ?? "") {
+                dates.append(date)
+            }
+        }
+        
+        // Check if all dates are the same
+        let uniqueDates = Set(dates)
+        if uniqueDates.count == 1 {
+            // If all dates are the same, return the common date
+            return uniqueDates.first ?? Date()
+        } else {
+            // If dates are different, return the current date
+            return Date()
+        }
     }
     
     func applyChanges() {
