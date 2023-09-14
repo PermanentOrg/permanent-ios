@@ -212,7 +212,7 @@ extension DonateViewController: UITextFieldDelegate {
             return false
         }
         
-        let selectedAmount = Double(textAfterReplacing)
+        let selectedAmount = Double(textAfterReplacing) ?? 0
         
         let storageSize = viewModel!.storageSizeForAmount(selectedAmount)
         endowmentLabel.text = "Endow \(storageSize) GB".localized()
