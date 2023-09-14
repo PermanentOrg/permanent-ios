@@ -10,16 +10,16 @@ import StripeApplePay
 import PassKit
 
 class DonateViewController: BaseViewController<DonateViewModel> {
-    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var vfxView: UIVisualEffectView!
-    @IBOutlet weak var donateStackBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var amountContainerView: UIView!
     @IBOutlet weak var donateTextField: UITextField!
     @IBOutlet weak var endowmentLabel: UILabel!
     @IBOutlet weak var paymentView: UIView!
     @IBOutlet weak var anonymousSwitch: UISwitch!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var contextLabel: UILabel!
     
-    let applePayButton: PKPaymentButton = PKPaymentButton(paymentButtonType: .donate, paymentButtonStyle: .black)
+    let applePayButton: UIButton = UIButton(type: .roundedRect)
     
     static var invalidCharacterSet: CharacterSet = {
         var characterSet = CharacterSet.decimalDigits
@@ -33,15 +33,12 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         viewModel = DonateViewModel()
 
         title = "Storage".localized()
+        setTextContent()
         
         amountContainerView.layer.borderColor = UIColor.systemOrange.cgColor
         amountContainerView.layer.borderWidth = 1
         amountContainerView.layer.cornerRadius = 5
         amountContainerView.clipsToBounds = true
-        
-        applePayButton.translatesAutoresizingMaskIntoConstraints = false
-        applePayButton.addTarget(self, action: #selector(applePayButtonPressed(_:)), for: .touchUpInside)
-        paymentView.addSubview(applePayButton)
         
         let currencyLabel = UILabel(frame: CGRect.zero)
         currencyLabel.text = "  $ "
@@ -54,10 +51,18 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         donateTextField.clipsToBounds = true
         donateTextField.delegate = self
         
+        applePayButton.setTitle("Endow with Apple Pay®", for: .normal)
+        applePayButton.backgroundColor = .black
+        applePayButton.setTitleColor(.white, for: .normal)
+        applePayButton.layer.cornerRadius = 5
+        applePayButton.translatesAutoresizingMaskIntoConstraints = false
+        applePayButton.addTarget(self, action: #selector(applePayButtonPressed(_:)), for: .touchUpInside)
+        paymentView.addSubview(applePayButton)
+        
         NSLayoutConstraint.activate([
-            applePayButton.topAnchor.constraint(equalTo: paymentView.topAnchor, constant: 0),
+            applePayButton.topAnchor.constraint(equalTo: paymentView.topAnchor, constant: 5),
             applePayButton.leadingAnchor.constraint(equalTo: paymentView.leadingAnchor, constant: 0),
-            applePayButton.trailingAnchor.constraint(equalTo: paymentView.trailingAnchor, constant: -0),
+            applePayButton.trailingAnchor.constraint(equalTo: paymentView.trailingAnchor, constant: 0),
             applePayButton.heightAnchor.constraint(equalToConstant: 45)
         ])
         
@@ -67,8 +72,20 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: vfxView.frame.height - 50, right: 0)
+    }
+    
+    func setTextContent() {
+        titleLabel.text = "NEED MORE STORAGE?".localized()
+        titleLabel.font = TextFontStyle.style31.font
+        titleLabel.textColor = .dustyGray
+        titleLabel.textAlignment = .left
+
+        contextLabel.text = "Purchase as little or as much at a time, anytime you'd like.".localized()
+        contextLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        contextLabel.font = TextFontStyle.style3.font
+        contextLabel.textColor = .darkBlue
+        contextLabel.textAlignment = .left
+        contextLabel.numberOfLines = 0
     }
     
     func amountView(atIndex index: Int) -> UIView {
@@ -146,9 +163,7 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         guard let keyBoardInfo = notification.userInfo,
             let endFrame = keyBoardInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         else { return }
-        
-        donateStackBottomConstraint.constant = endFrame.cgRectValue.height
-        
+
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
         UIView.setAnimationCurve(UIView.AnimationCurve(rawValue: (keyBoardInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int))!)
@@ -158,8 +173,6 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     
     @objc func keyboardWillHide(_ notification: Notification) {
         let keyBoardInfo = notification.userInfo!
-        
-        donateStackBottomConstraint.constant = 0
         
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration((keyBoardInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double))
@@ -194,7 +207,13 @@ extension DonateViewController: UITextFieldDelegate {
             return false
         }
         
-        let selectedAmount = Double(textAfterReplacing)
+        // Do not allow more than 10000$
+        if let selectedAmount = Double(textAfterReplacing), selectedAmount > 10000 {
+            return false
+        }
+        
+        let selectedAmount = Double(textAfterReplacing) ?? 0
+        
         let storageSize = viewModel!.storageSizeForAmount(selectedAmount)
         endowmentLabel.text = "Endow \(storageSize) GB".localized()
         
@@ -252,94 +271,5 @@ extension DonateViewController: ApplePayContextDelegate {
         case .userCancellation:
             break
         }
-    }
-}
-
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension DonateViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 5
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 0 : 1
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "donateInfoCell", for: indexPath)
-        
-        switch indexPath.section {
-        case 1:
-            cell.textLabel?.text = "Permanence means no subscriptions; a one-time payment for dedicated storage that preserves your most precious memories and an institution that will be there to protect the digital legacy of all people for all time.".localized()
-            
-        case 2:
-            cell.textLabel?.text = "We are leveraging the same funding models used by museums, libraries, and universities for centuries. As a public charity, we can pool all our one-time storage fees into an endowment. We use income generated from this tax-exempt investment fund to pay our ongoing operations and storage costs, in perpetuity.".localized()
-            
-        case 3:
-            cell.textLabel?.text = "Today, our daily operations are supported by our founder and board chair, Mr. Dean Drako. As we grow our endowment through donations and storage contributions, the returns on that investment will gradually replace his contributions until we are fully independent.".localized()
-            
-        case 4:
-            cell.textLabel?.text = "No matter how you found us, we welcome all people to join our movement to democratize permanence and preserve the digital legacy of all people. Choosing Permanent.org isn’t only good for you, it’s a vote for better consumer technology options. Every storage fee donation is also a gift to the nonprofit organizations we through in our byte for byte program.".localized()
-            
-        default: break
-        }
-        cell.textLabel?.font = TextFontStyle.style8.font
-        cell.textLabel?.numberOfLines = 0
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 30))
-        let label = UILabel(frame: CGRect(x: 16, y: 8, width: view.frame.width - 32, height: 22))
-        label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        label.font = TextFontStyle.style3.font
-        label.textColor = .primary
-        
-        view.addSubview(label)
-        
-        switch section {
-        case 0:
-            label.frame = CGRect(x: 16, y: 16, width: view.frame.width - 32, height: 23)
-            label.font = TextFontStyle.style33.font
-            label.textAlignment = .center
-            label.adjustsFontSizeToFitWidth = true
-            label.minimumScaleFactor = 0.5
-            label.text = "Become a Founding Supporter".localized()
-            
-            let secondaryLabel = UILabel(frame: CGRect(x: 16, y: label.frame.maxY, width: view.frame.width - 32, height: 22))
-            secondaryLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            secondaryLabel.font = TextFontStyle.style4.font
-            secondaryLabel.textColor = .primary
-            secondaryLabel.textAlignment = .center
-            secondaryLabel.adjustsFontSizeToFitWidth = true
-            secondaryLabel.minimumScaleFactor = 0.5
-            secondaryLabel.text = "Back the new paradigm for cloud storage".localized()
-            view.addSubview(secondaryLabel)
-            
-        case 1:
-            label.text = "Our goal is permanence.".localized()
-            
-        case 2:
-            label.text = "How is that possible?".localized()
-            
-        case 3:
-            label.text = "So how does Permanent work now?".localized()
-            
-        case 4:
-            label.text = "It's a win-win for our digital future.".localized()
-            
-        default: break
-        }
-        
-        return view
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == 0 ? 80 : 30
-    }
-    
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
     }
 }
