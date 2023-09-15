@@ -64,7 +64,7 @@ struct MetadataEditView: View {
                                 .frame(height: 72)
                                 .foregroundColor(.clear)
                                 if viewModel.haveDiffDescription {
-                                    Text("Some files already have description!")
+                                    Text("Some files already have descriptions.")
                                         .textStyle(SmallXXRegularTextStyle())
                                         .foregroundColor(.lightRed)
                                         .padding(.top, 5)

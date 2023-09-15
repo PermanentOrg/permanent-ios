@@ -53,6 +53,7 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         
         applePayButton.setTitle("Endow with Apple Pay®", for: .normal)
         applePayButton.backgroundColor = .black
+        applePayButton.setFont(TextFontStyle.style35.font)
         applePayButton.setTitleColor(.white, for: .normal)
         applePayButton.layer.cornerRadius = 5
         applePayButton.translatesAutoresizingMaskIntoConstraints = false
