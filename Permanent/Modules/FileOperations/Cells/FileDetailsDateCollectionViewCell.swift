@@ -82,7 +82,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
     
     func detailsDate() -> Date? {
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.timeZone = TimeZone.current
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         let date: Date?
@@ -118,8 +118,9 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         if let date = date {
             let dateFormatter = DateFormatter()
+            dateFormatter.timeZone = TimeZone.current
             
-            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
+            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a zzz"
             detailsTextField.text = dateFormatter.string(from: date)
         }
     }
