@@ -912,8 +912,8 @@
 		5E1C546029B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewHeaderCell.xib; sourceTree = "<group>"; };
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
-		5E1CE43F2AAF32BD00EEE52E /* EventsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventsManager.swift; path = Permanent/Helpers/Events/EventsManager.swift; sourceTree = SOURCE_ROOT; };
-		5E1CE4402AAF32BD00EEE52E /* EventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventType.swift; path = Permanent/Helpers/Events/EventType.swift; sourceTree = SOURCE_ROOT; };
+		5E1CE43F2AAF32BD00EEE52E /* EventsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventsManager.swift; path = Permanent/Common/Helpers/Events/EventsManager.swift; sourceTree = SOURCE_ROOT; };
+		5E1CE4402AAF32BD00EEE52E /* EventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventType.swift; path = Permanent/Common/Helpers/Events/EventType.swift; sourceTree = SOURCE_ROOT; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
 		5E1E4FA82988897F0062984C /* ManageTagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsTests.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1688,21 +1688,21 @@
 			path = Pages;
 			sourceTree = "<group>";
 		};
-		5E1C3C4928ECA732007C1A63 /* Local */ = {
-			isa = PBXGroup;
-			children = (
-				5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */,
-			);
-			path = Local;
-			sourceTree = "<group>";
-		};
-		5E1CE43E2AAF32A600EEE52E /* Events */ = {
+		5E102FA42AB7AD6800B49AE1 /* Events */ = {
 			isa = PBXGroup;
 			children = (
 				5E1CE43F2AAF32BD00EEE52E /* EventsManager.swift */,
 				5E1CE4402AAF32BD00EEE52E /* EventType.swift */,
 			);
 			path = Events;
+			sourceTree = "<group>";
+		};
+		5E1C3C4928ECA732007C1A63 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */,
+			);
+			path = Local;
 			sourceTree = "<group>";
 		};
 		5E202E032981FCEF0063DDED /* ArchiveSettings */ = {
@@ -3099,7 +3099,7 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				5E1CE43E2AAF32A600EEE52E /* Events */,
+				5E102FA42AB7AD6800B49AE1 /* Events */,
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
 				BC581A4D255A98DB00171D7A /* MediaRecorder.swift */,
