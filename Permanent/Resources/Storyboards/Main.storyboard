@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="3PZ-n9-y83">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -304,17 +304,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="omS-9f-CUF" userLabel="Sheet View">
-                                <rect key="frame" x="0.0" y="740" width="414" height="122"/>
+                                <rect key="frame" x="132" y="640" width="150" height="122"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-8Z-8AG">
-                                        <rect key="frame" x="20" y="26" width="374" height="70"/>
+                                        <rect key="frame" x="20" y="26" width="110" height="70"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qjy-La-xkC" userLabel="Upload Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="110" height="30"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="POQ-5N-4NZ" userLabel="New Folder Button" customClass="RoundedButton" customModule="Permanent" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="40" width="374" height="30"/>
+                                                <rect key="frame" x="0.0" y="40" width="110" height="30"/>
                                                 <state key="normal" title="Button"/>
                                             </button>
                                         </subviews>
@@ -324,6 +324,7 @@
                                 <constraints>
                                     <constraint firstItem="DRf-8Z-8AG" firstAttribute="top" secondItem="omS-9f-CUF" secondAttribute="top" constant="26" id="FPf-Gm-Uen"/>
                                     <constraint firstAttribute="bottom" secondItem="DRf-8Z-8AG" secondAttribute="bottom" constant="26" id="gZp-uw-W1I"/>
+                                    <constraint firstAttribute="width" constant="150" id="gku-EG-W88"/>
                                     <constraint firstAttribute="trailing" secondItem="DRf-8Z-8AG" secondAttribute="trailing" constant="20" id="jQW-bS-GTE"/>
                                     <constraint firstItem="DRf-8Z-8AG" firstAttribute="leading" secondItem="omS-9f-CUF" secondAttribute="leading" constant="20" id="lYi-3F-IBT"/>
                                 </constraints>
@@ -332,9 +333,8 @@
                         <viewLayoutGuide key="safeArea" id="nIp-Oj-XyP"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="nIp-Oj-XyP" firstAttribute="trailing" secondItem="omS-9f-CUF" secondAttribute="trailing" id="PRn-D2-IJn"/>
-                            <constraint firstItem="omS-9f-CUF" firstAttribute="leading" secondItem="nIp-Oj-XyP" secondAttribute="leading" id="PtD-w9-Zt7"/>
-                            <constraint firstItem="nIp-Oj-XyP" firstAttribute="bottom" secondItem="omS-9f-CUF" secondAttribute="bottom" id="a0y-B4-BU1"/>
+                            <constraint firstItem="nIp-Oj-XyP" firstAttribute="bottom" secondItem="omS-9f-CUF" secondAttribute="bottom" constant="100" id="a0y-B4-BU1"/>
+                            <constraint firstItem="omS-9f-CUF" firstAttribute="centerX" secondItem="EIq-Qr-TAh" secondAttribute="centerX" id="sey-hG-jZZ"/>
                         </constraints>
                     </view>
                     <connections>
@@ -934,10 +934,10 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

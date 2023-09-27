@@ -108,6 +108,14 @@ class BaseViewController<T: ViewModelInterface>: UIViewController {
         view.addSubview(actionDialog!)
         view.presentPopup(actionDialog, overlayView: overlayView)
     }
+    
+    func showAddButtonMenu(overlayView: UIView?) {
+        let addButtonMenuView = AddButtonMenuView(frame: CGRect(origin: CGPoint(x: 0, y: view.bounds.height), size: view.bounds.size))
+        addButtonMenuView.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(addButtonMenuView)
+        view.presentPopup(addButtonMenuView, overlayView: overlayView)
+    }
 
     func showFloatingActionIsland(withLeftItems leftItems: [FloatingActionItem], rightItems: [FloatingActionItem]) {
         floatingActionIsland = FloatingActionIslandViewController()
