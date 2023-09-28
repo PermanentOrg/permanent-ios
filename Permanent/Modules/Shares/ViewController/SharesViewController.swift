@@ -139,6 +139,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismissFloatingActionIsland()
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: AddButtonMenuViewController.addButtonMenuDismissView, object: nil, queue: nil) { [weak self] notif in
+            guard let showMenu = notif.userInfo?["showMenu"] as? Bool else { return }
+            if !showMenu {
+                self?.closeMenuBtnTapped()
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -1278,16 +1285,39 @@ extension SharesViewController: SortActionSheetDelegate {
 // MARK: - FABViewDelegate
 extension SharesViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
+        fabView.isHidden = true
+        let vc = AddButtonMenuViewController()
 
-        actionSheet.delegate = self
-        navigationController?.display(viewController: actionSheet, modally: true)
+        vc.modalPresentationStyle = .overCurrentContext
+        present(vc, animated: false)
+        vc.createNewFolderBtn.addTarget(self, action: #selector(createNewFolderBtnTapped), for: .touchUpInside)
+        vc.takePhotoVideoBtn.addTarget(self, action: #selector(takePhotoOrVideoBtnTapped), for: .touchUpInside)
+        vc.uploadPhotosFromLibraryBtn.addTarget(self, action: #selector(uploadPhotosFromLibraryBtnTapped), for: .touchUpInside)
+        vc.browseFilesBtn.addTarget(self, action: #selector(browseFilesBtnTapped), for: .touchUpInside)
+    }
+    
+    @objc func closeMenuBtnTapped() {
+        fabView.isHidden = false
+    }
+    
+    @objc func createNewFolderBtnTapped() {
+        closeMenuBtnTapped()
+        didTapNewFolder()
+    }
+    
+    @objc func takePhotoOrVideoBtnTapped() {
+        closeMenuBtnTapped()
+        openCamera()
+    }
+    
+    @objc func uploadPhotosFromLibraryBtnTapped() {
+        closeMenuBtnTapped()
+        openPhotoLibrary()
+    }
+    
+    @objc func browseFilesBtnTapped() {
+        closeMenuBtnTapped()
+        openFileBrowser()
     }
 }
 

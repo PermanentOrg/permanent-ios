@@ -58,6 +58,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         datePicker.date = date ?? Date()
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
         datePicker.datePickerMode = .dateAndTime
+        datePicker.tintColor = .darkBlue
         datePicker.maximumDate = Date()
         if #available(iOS 13.4, *) {
             datePicker.preferredDatePickerStyle = .inline
@@ -69,7 +70,7 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         doneButton.autoresizingMask = [.flexibleLeftMargin]
         doneButton.setup()
         doneButton.setFont(UIFont.systemFont(ofSize: 17))
-        doneButton.configureActionButtonUI(title: "done", bgColor: .systemBlue)
+        doneButton.configureActionButtonUI(title: "done", bgColor: .darkBlue)
         doneButton.addTarget(self, action: #selector(datePickerDoneButtonPressed(_:)), for: .touchUpInside)
         doneContainerView.addSubview(doneButton)
         

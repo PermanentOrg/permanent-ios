@@ -80,6 +80,8 @@
 		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
+		5E222FFF2AC446F0001D8665 /* AddButtonMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */; };
+		5E2230002AC446F0001D8665 /* AddButtonMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */; };
 		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
 		5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
@@ -161,6 +163,8 @@
 		5E473A052A41883600A20D85 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
 		5E473A062A41886A00A20D85 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3242549A43F00B71866 /* ArrayExtension.swift */; };
 		5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
+		5E497EDC2ABD88C20058A948 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
+		5E497EDD2ABD895E0058A948 /* FABView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCE253EE52F00EF7941 /* FABView.swift */; };
 		5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */; };
 		5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */; };
 		5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */; };
@@ -925,6 +929,8 @@
 		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
+		5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButtonMenuViewController.swift; sourceTree = "<group>"; };
+		5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddButtonMenuViewController.xib; sourceTree = "<group>"; };
 		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageTwoWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
@@ -1876,6 +1882,7 @@
 		5E3E122C2A41DFCF00682DE5 /* UIKitViews */ = {
 			isa = PBXGroup;
 			children = (
+				5E497EDE2ABD89740058A948 /* AddButtonMenu */,
 				BC0D35AE2553FC0A00786E8C /* ActionDialogView */,
 				5E3E122D2A41E32800682DE5 /* BigLogo */,
 				BCE8DA7A2566733A00842ABD /* BottomActionSheet */,
@@ -2588,6 +2595,15 @@
 				F56FA7D22795C41700184175 /* PublicProfilePicturesViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		5E497EDE2ABD89740058A948 /* AddButtonMenu */ = {
+			isa = PBXGroup;
+			children = (
+				5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */,
+				5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */,
+			);
+			path = AddButtonMenu;
 			sourceTree = "<group>";
 		};
 		5E5EF854273B23A3004F7EBC /* ViewController */ = {
@@ -3827,6 +3843,7 @@
 				5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				5E2230002AC446F0001D8665 /* AddButtonMenuViewController.xib in Resources */,
 				5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */,
 				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
@@ -4528,6 +4545,7 @@
 				5E991EF22A4F10ED006229C0 /* TextViewUIRepresentable.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5E991EEC2A4D7D0C006229C0 /* FilesMetadataViewModel.swift in Sources */,
+				5E222FFF2AC446F0001D8665 /* AddButtonMenuViewController.swift in Sources */,
 				F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */,
 				924F16312A459C2E00B75D4E /* FlowGrid.swift in Sources */,
 				9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */,
@@ -4747,11 +4765,13 @@
 				F559F89E28FEEACC0015A522 /* FolderVOPayload.swift in Sources */,
 				92E3FB5E2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */,
+				5E497EDD2ABD895E0058A948 /* FABView.swift in Sources */,
 				5E4739E72A4186D900A20D85 /* ForgotPasswordResponse.swift in Sources */,
 				5E4739EC2A41872000A20D85 /* SignUpResponse.swift in Sources */,
 				5ED4B9D82876E0EF00CF044B /* FolderSizeVO.swift in Sources */,
 				5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */,
 				F559F89828FEEA020015A522 /* SortOption.swift in Sources */,
+				5E497EDC2ABD88C20058A948 /* FABActionSheet.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
 				5E4739F62A4187AB00A20D85 /* DescriptionProfileItem.swift in Sources */,
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
