@@ -80,7 +80,8 @@
 		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
-		5E2657192AC2A7D1004ACFFE /* AddButtonMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E2657182AC2A7D1004ACFFE /* AddButtonMenuView.xib */; };
+		5E222FFF2AC446F0001D8665 /* AddButtonMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */; };
+		5E2230002AC446F0001D8665 /* AddButtonMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */; };
 		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
 		5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
@@ -164,8 +165,6 @@
 		5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
 		5E497EDC2ABD88C20058A948 /* FABActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC120C5E253EF8F500C41243 /* FABActionSheet.swift */; };
 		5E497EDD2ABD895E0058A948 /* FABView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC752BCE253EE52F00EF7941 /* FABView.swift */; };
-		5E497EEC2ABDA4D80058A948 /* AddButtonMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E497EEB2ABDA4D80058A948 /* AddButtonMenuView.swift */; };
-		5E497EED2ABDA4D80058A948 /* AddButtonMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E497EEB2ABDA4D80058A948 /* AddButtonMenuView.swift */; };
 		5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */; };
 		5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */; };
 		5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */; };
@@ -930,7 +929,8 @@
 		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
-		5E2657182AC2A7D1004ACFFE /* AddButtonMenuView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddButtonMenuView.xib; sourceTree = "<group>"; };
+		5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButtonMenuViewController.swift; sourceTree = "<group>"; };
+		5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddButtonMenuViewController.xib; sourceTree = "<group>"; };
 		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageTwoWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
@@ -974,7 +974,6 @@
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
 		5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePersonalInfoViewController.swift; sourceTree = "<group>"; };
 		5E4739B42A40FDFA00A20D85 /* ShareManagementRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareManagementRepository.swift; sourceTree = "<group>"; };
-		5E497EEB2ABDA4D80058A948 /* AddButtonMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButtonMenuView.swift; sourceTree = "<group>"; };
 		5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingAcceptArchiveTableViewCell.swift; sourceTree = "<group>"; };
 		5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingAcceptArchiveTableViewCell.xib; sourceTree = "<group>"; };
 		5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingMakeDefaultArchiveTableViewCell.swift; sourceTree = "<group>"; };
@@ -2601,8 +2600,8 @@
 		5E497EDE2ABD89740058A948 /* AddButtonMenu */ = {
 			isa = PBXGroup;
 			children = (
-				5E497EEB2ABDA4D80058A948 /* AddButtonMenuView.swift */,
-				5E2657182AC2A7D1004ACFFE /* AddButtonMenuView.xib */,
+				5E222FFD2AC446F0001D8665 /* AddButtonMenuViewController.swift */,
+				5E222FFE2AC446F0001D8665 /* AddButtonMenuViewController.xib */,
 			);
 			path = AddButtonMenu;
 			sourceTree = "<group>";
@@ -3844,6 +3843,7 @@
 				5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
+				5E2230002AC446F0001D8665 /* AddButtonMenuViewController.xib in Resources */,
 				5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */,
 				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
@@ -3876,7 +3876,6 @@
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
-				5E2657192AC2A7D1004ACFFE /* AddButtonMenuView.xib in Resources */,
 				5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */,
 				5ED3B3A929F7D6D6000CFF48 /* LegacyPlanning.storyboard in Resources */,
 				5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */,
@@ -4531,7 +4530,6 @@
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
 				F5EAD0672822BBE900EC2584 /* AccountOnboardingPageThree.swift in Sources */,
-				5E497EEC2ABDA4D80058A948 /* AddButtonMenuView.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
@@ -4547,6 +4545,7 @@
 				5E991EF22A4F10ED006229C0 /* TextViewUIRepresentable.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5E991EEC2A4D7D0C006229C0 /* FilesMetadataViewModel.swift in Sources */,
+				5E222FFF2AC446F0001D8665 /* AddButtonMenuViewController.swift in Sources */,
 				F5A0CE1E2701D48D0005B9F0 /* PARequestNotificationPayload.swift in Sources */,
 				924F16312A459C2E00B75D4E /* FlowGrid.swift in Sources */,
 				9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */,
@@ -4704,7 +4703,6 @@
 				5E4739FB2A4187BF00A20D85 /* EstablishedInfoProfileItem.swift in Sources */,
 				F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */,
 				F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */,
-				5E497EED2ABDA4D80058A948 /* AddButtonMenuView.swift in Sources */,
 				5ED3B3B129F7E4FF000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
 				9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */,
 				5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */,

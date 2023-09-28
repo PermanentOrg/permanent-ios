@@ -18,7 +18,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var fabView: FABView!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
-    var addButtonMenuView: AddButtonMenuView!
     
     private var isGridView = false
     
@@ -120,7 +119,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }
         }
         
-        NotificationCenter.default.addObserver(forName: AddButtonMenuView.addButtonMenuDismissView, object: nil, queue: nil) { [weak self] notif in
+        NotificationCenter.default.addObserver(forName: AddButtonMenuViewController.addButtonMenuDismissView, object: nil, queue: nil) { [weak self] notif in
             guard let showMenu = notif.userInfo?["showMenu"] as? Bool else { return }
             if !showMenu {
                 self?.closeMenuBtnTapped()
@@ -1044,19 +1043,18 @@ extension MainViewController {
 extension MainViewController: FABViewDelegate {
     func didTap() {
         fabView.isHidden = true
-        self.navigationController?.navigationBar.alpha = 0.7
-        self.addButtonMenuView = AddButtonMenuView(frame: self.view.frame)
-        self.addButtonMenuView.createNewFolderBtn.addTarget(self, action: #selector(createNewFolderBtnTapped), for: .touchUpInside)
-        self.addButtonMenuView.takePhotoVideoBtn.addTarget(self, action: #selector(takePhotoOrVideoBtnTapped), for: .touchUpInside)
-        self.addButtonMenuView.uploadPhotosFromLibraryBtn.addTarget(self, action: #selector(uploadPhotosFromLibraryBtnTapped), for: .touchUpInside)
-        self.addButtonMenuView.browseFilesBtn.addTarget(self, action: #selector(browseFilesBtnTapped), for: .touchUpInside)
-        self.view.addSubview(addButtonMenuView)
+        let vc = AddButtonMenuViewController()
+
+        vc.modalPresentationStyle = .overCurrentContext
+        present(vc, animated: false)
+        vc.createNewFolderBtn.addTarget(self, action: #selector(createNewFolderBtnTapped), for: .touchUpInside)
+        vc.takePhotoVideoBtn.addTarget(self, action: #selector(takePhotoOrVideoBtnTapped), for: .touchUpInside)
+        vc.uploadPhotosFromLibraryBtn.addTarget(self, action: #selector(uploadPhotosFromLibraryBtnTapped), for: .touchUpInside)
+        vc.browseFilesBtn.addTarget(self, action: #selector(browseFilesBtnTapped), for: .touchUpInside)
     }
     
     @objc func closeMenuBtnTapped() {
         fabView.isHidden = false
-        self.navigationController?.navigationBar.alpha = 1
-        self.addButtonMenuView.removeFromSuperview()
     }
     
     @objc func createNewFolderBtnTapped() {
