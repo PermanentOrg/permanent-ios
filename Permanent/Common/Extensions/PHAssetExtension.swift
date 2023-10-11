@@ -6,10 +6,12 @@
 //
 
 import Photos
+import UIKit
 
-struct AssetDescriptor {
+struct AssetDescriptor: Hashable {
     let url: URL
     let name: String
+    var image: UIImage?
 }
 
 extension PHAsset {

@@ -46,6 +46,11 @@ class AlbumsViewController: UICollectionViewController, UICollectionViewDelegate
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        navigationController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addSelectedItems(_:)))
+    }
+    
+    @objc func addSelectedItems(_ sender: Any) {
+        
     }
     
     /// - Tag: UnregisterChangeObserver
