@@ -21,47 +21,48 @@ class UploadManagerViewModel: ObservableObject {
         self.currentArchive = currentArchive
     }
     
-    func getDescriptors() {
+    @MainActor func getDescriptors() {
         let imageManager = PHCachingImageManager()
         let requestOptions = PHImageRequestOptions()
         requestOptions.isSynchronous = true
         requestOptions.deliveryMode = .highQualityFormat
-
+        
         Task {
             do {
-                let descriptors = try await withThrowingTaskGroup(of: AssetDescriptor.self) { group in
-                    for asset in self.assets {
-                        group.addTask {
-                            return try await withCheckedThrowingContinuation { continuation in
-                                asset.getURL { descriptor in
-                                    if let descriptor = descriptor {
-                                        imageManager.requestImage(for: asset, targetSize: CGSize(width: 40, height: 40), contentMode: .aspectFill, options: requestOptions) { (image, _) in
-                                            var descriptorWithImage = descriptor
-                                            descriptorWithImage.image = image
-                                            continuation.resume(returning: descriptorWithImage)
-                                        }
-                                    } else {
-                                        continuation.resume(throwing: URLError(.badURL))
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    var descriptors: [AssetDescriptor] = []
-                    for try await descriptor in group {
-                        descriptors.append(descriptor)
-                    }
-
-                    return descriptors
-                }
-
-                DispatchQueue.main.async {
-                    self.assetURLs = descriptors
-                }
+                let descriptors = try await fetchAssetDescriptors(imageManager: imageManager, requestOptions: requestOptions)
+                self.assetURLs = descriptors
             } catch {
                 print("Failed to get URLs: \(error)")
             }
+        }
+    }
+    
+    private func fetchAssetDescriptors(imageManager: PHCachingImageManager, requestOptions: PHImageRequestOptions) async throws -> [AssetDescriptor] {
+        return try await withThrowingTaskGroup(of: AssetDescriptor.self) { group in
+            for asset in self.assets {
+                group.addTask {
+                    return try await withCheckedThrowingContinuation { continuation in
+                        asset.getURL { descriptor in
+                            if let descriptor = descriptor {
+                                imageManager.requestImage(for: asset, targetSize: CGSize(width: 40, height: 40), contentMode: .aspectFill, options: requestOptions) { (image, _) in
+                                    var descriptorWithImage = descriptor
+                                    descriptorWithImage.image = image
+                                    continuation.resume(returning: descriptorWithImage)
+                                }
+                            } else {
+                                continuation.resume(throwing: URLError(.badURL))
+                            }
+                        }
+                    }
+                }
+            }
+
+            var descriptors: [AssetDescriptor] = []
+            for try await descriptor in group {
+                descriptors.append(descriptor)
+            }
+
+            return descriptors
         }
     }
     
