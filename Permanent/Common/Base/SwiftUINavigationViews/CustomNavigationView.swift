@@ -6,14 +6,16 @@
 
 import SwiftUI
 
-struct CustomNavigationView<Content: View, LeftButton: View>: View {
+struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>: View {
     @Environment(\.presentationMode) var presentationMode
     var content: Content
     var leftButtons: LeftButton?
+    var rightButtons: RightButton?
     
-    init(@ViewBuilder content: () -> Content, @ViewBuilder leftButton: () -> LeftButton? = {nil}) {
+    init(@ViewBuilder content: () -> Content, @ViewBuilder leftButton: () -> LeftButton? = {nil}, @ViewBuilder rightButton: () -> RightButton? = {nil}) {
         self.content = content()
         self.leftButtons = leftButton()
+        self.rightButtons = rightButton()
         
         UINavigationBar.appearance().backgroundColor = .darkBlue
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
@@ -65,7 +67,12 @@ struct CustomNavigationView<Content: View, LeftButton: View>: View {
                             }
                         } else {
                             leftButtons
-                            
+                        }
+
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        if !(rightButtons is EmptyView) {
+                            rightButtons
                         }
                     }
                 }
@@ -74,18 +81,23 @@ struct CustomNavigationView<Content: View, LeftButton: View>: View {
             .navigationViewStyle(StackNavigationViewStyle())
         }.onAppear {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .portrait
+            #endif
         }.onDisappear {
+            #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
+            #endif
         }
         .edgesIgnoringSafeArea(.all)
     }
-    
 }
 
-extension CustomNavigationView where LeftButton == EmptyView {
+extension CustomNavigationView where LeftButton == EmptyView, RightButton == EmptyView {
     init(@ViewBuilder content: () -> Content) {
         self.init(content: content, leftButton: {
+            EmptyView()
+        }, rightButton: {
             EmptyView()
         })
     }

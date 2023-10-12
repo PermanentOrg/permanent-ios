@@ -19,7 +19,6 @@ class PhotoTabBarViewController: UITabBarController {
         super.viewDidLoad()
 
         tabBar.tintColor = .primary
-        
         var tabViewControllers: [UIViewController] = [
             UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "assets"),
             UIStoryboard(name: "PhotoPicker", bundle: nil).instantiateViewController(withIdentifier: "albums")

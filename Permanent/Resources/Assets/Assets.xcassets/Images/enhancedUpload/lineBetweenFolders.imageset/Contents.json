@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "lineBetweenFolders.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
