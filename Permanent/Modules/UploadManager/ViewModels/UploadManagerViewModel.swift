@@ -9,11 +9,23 @@ import Foundation
 import Photos
 
 class UploadManagerViewModel: ObservableObject {
-    var assets: [PHAsset] = []
+    @Published var assets: [PHAsset] = []
     let currentArchive: ArchiveVOData?
     let folderNavigationStack: [FileModel]?
     @Published var assetURLs: [AssetDescriptor] = []
     @Published var isLoading: Bool = false
+    @Published var numberOfFiles: String = ""
+    var numberOfAssets: String {
+        var filesNumber = "\(assets.count)"
+        if assets.count == 1 {
+            filesNumber += " FILE"
+        } else {
+            filesNumber += " FILES"
+        }
+        return filesNumber
+    }
+    
+    var completionHandler: (([PHAsset]) -> Void)?
     
     init(assets: [PHAsset], currentArchive: ArchiveVOData?, folderNavigationStack: [FileModel]?) {
         self.assets = assets
@@ -118,39 +130,10 @@ class UploadManagerViewModel: ObservableObject {
         return ""
     }
     
-//    To do - resolve upload mechanism
-//    func didChooseFromPhotoLibrary(_ assets: [PHAsset], completion: @escaping ([URL]) -> Void) {
-//        let dispatchGroup = DispatchGroup()
-//        var urls: [URL] = []
-//        
-//        assets.forEach { photo in
-//            dispatchGroup.enter()
-//      
-//            photo.getURL { descriptor in
-//                guard let fileDescriptor = descriptor else {
-//                    dispatchGroup.leave()
-//                    return
-//                }
-//      
-//                do {
-//                    let localURL = try FileHelper().copyFile(withURL: fileDescriptor.url, name: fileDescriptor.name)
-//                    urls.append(localURL)
-//                } catch {
-//                    print(error)
-//                }
-//      
-//                dispatchGroup.leave()
-//            }
-//        }
-//        
-//        dispatchGroup.notify(queue: .main, execute: {
-//            completion(urls)
-//        })
-//    }
-    
     func deleteAsset(at descriptor: AssetDescriptor) {
         if let index = assetURLs.firstIndex(where: { $0 == descriptor }) {
             assetURLs.remove(at: index)
+            assets.remove(at: index)
         }
     }
 }

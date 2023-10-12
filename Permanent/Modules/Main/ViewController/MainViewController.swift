@@ -1519,20 +1519,26 @@ extension MainViewController: PhotoPickerViewControllerDelegate {
     func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
         let selectedArchive = AuthenticationManager.shared.session?.selectedArchive
         let folderNavigationStack = viewModel?.navigationStack
-        let uploadManagerView = UploadManagerView(viewModel: UploadManagerViewModel(assets: assets, currentArchive: selectedArchive, folderNavigationStack: folderNavigationStack))
+        
+        let uploadManagerViewModel = UploadManagerViewModel(assets: assets, currentArchive: selectedArchive, folderNavigationStack: folderNavigationStack)
+        uploadManagerViewModel.completionHandler = { [weak self] assets in
+            guard let self = self else { return }
+            if !assets.isEmpty {
+                let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+                present(alert, animated: true)
+                viewModel?.didChooseFromPhotoLibrary(assets, completion: { [weak self] urls in
+                    self?.dismiss(animated: true) { [self] in
+                        guard let currentFolder = self?.viewModel?.currentFolder else {
+                            return self?.showErrorAlert(message: .cannotUpload) ?? ()
+                        }
+                        self?.processUpload(toFolder: currentFolder, forURLS: urls)
+                    }
+                })
+            }
+        }
+        
+        let uploadManagerView = UploadManagerView(viewModel: uploadManagerViewModel)
         let hostVC = UIHostingController(rootView: uploadManagerView)
         self.present(hostVC, animated: true, completion: nil)
-//      To do - resolve upload mechanism
-//        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-//        present(alert, animated: true)
-//        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-//            dismiss(animated: true) { [self] in
-//                guard let currentFolder = viewModel?.currentFolder else {
-//                    return showErrorAlert(message: .cannotUpload)
-//                }
-//                
-//                processUpload(toFolder: currentFolder, forURLS: urls)
-//            }
-//        })
     }
 }

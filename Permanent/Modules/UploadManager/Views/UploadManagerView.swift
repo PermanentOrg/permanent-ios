@@ -147,7 +147,7 @@ struct UploadManagerView: View {
                 .padding(.horizontal, -15)
             Spacer(minLength: 6)
             HStack {
-                Text("\(viewModel.getNumberOfAssets())".uppercased())
+                Text("\(viewModel.numberOfAssets)".uppercased())
                     .textStyle(SmallXXXRegularTextStyle())
                     .lineLimit(1)
                     .multilineTextAlignment(.trailing)
@@ -215,7 +215,7 @@ struct UploadManagerView: View {
     
     var backButton: some View {
         Button(action: {
-            self.presentationMode.wrappedValue.dismiss()
+            dismissView()
         }) {
             HStack {
                 Text("Back")
@@ -226,12 +226,22 @@ struct UploadManagerView: View {
     
     var uploadButton: some View {
         Button(action: {
+            dismissViewWithAssets()
         }) {
             HStack {
                 Text("Upload")
                     .foregroundColor(.white)
             }
         }
+    }
+
+    func dismissView() {
+        presentationMode.wrappedValue.dismiss()
+    }
+
+    func dismissViewWithAssets() {
+        viewModel.completionHandler?(viewModel.assets)
+        presentationMode.wrappedValue.dismiss()
     }
 }
 
