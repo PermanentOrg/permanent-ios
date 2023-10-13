@@ -8,6 +8,7 @@
 import UIKit
 import Photos
 import MobileCoreServices
+import SwiftUI
 
 class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -1451,16 +1452,28 @@ extension SharesViewController: UIDocumentPickerDelegate {
 // MARK: - PhotoPickerViewControllerDelegate
 extension SharesViewController: PhotoPickerViewControllerDelegate {
     func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            dismiss(animated: true) { [self] in
-                guard let currentFolder = viewModel?.currentFolder else {
-                    return showErrorAlert(message: .cannotUpload)
-                }
-                
-                processUpload(toFolder: currentFolder, forURLS: urls)
+        let selectedArchive = AuthenticationManager.shared.session?.selectedArchive
+        let folderNavigationStack = viewModel?.navigationStack
+        
+        let uploadManagerViewModel = UploadManagerViewModel(assets: assets, currentArchive: selectedArchive, folderNavigationStack: folderNavigationStack)
+        uploadManagerViewModel.completionHandler = { [weak self] assets in
+            guard let self = self else { return }
+            if !assets.isEmpty {
+                let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+                present(alert, animated: true)
+                viewModel?.didChooseFromPhotoLibrary(assets, completion: { [weak self] urls in
+                    self?.dismiss(animated: true) { [self] in
+                        guard let currentFolder = self?.viewModel?.currentFolder else {
+                            return self?.showErrorAlert(message: .cannotUpload) ?? ()
+                        }
+                        self?.processUpload(toFolder: currentFolder, forURLS: urls)
+                    }
+                })
             }
-        })
+        }
+        
+        let uploadManagerView = UploadManagerView(viewModel: uploadManagerViewModel)
+        let hostVC = UIHostingController(rootView: uploadManagerView)
+        self.present(hostVC, animated: true, completion: nil)
     }
 }
