@@ -93,20 +93,52 @@ class UploadManagerViewModel: ObservableObject {
     }
     
     func getCurrentFolderPath() -> String {
-        if let folderNavigationStack = folderNavigationStack {
-            var fullPathComponents = folderNavigationStack.map { $0.name }
-            _ = fullPathComponents.popLast()
-            var fullPath = fullPathComponents.joined(separator: " \\ ")
-            if folderNavigationStack.first?.type == FileType.privateRootFolder {
-                if getCurrentFolder() == "Private Files" {
-                    fullPath = "... \\ "
-                } else {
-                    fullPath = "... \\ \(fullPath) \\ "
-                }
-            }
-            return fullPath
+        guard let folderNavigationStack = folderNavigationStack else { return "" }
+        
+        var fullPathComponents = folderNavigationStack.map { $0.name }
+        _ = fullPathComponents.popLast()
+        var fullPath = fullPathComponents.joined(separator: " \\ ")
+        
+        switch folderNavigationStack.first?.type {
+        case .privateRootFolder:
+            fullPath = adjustPathForPrivateRootFolder(fullPath)
+        case .privateFolder:
+            fullPath = adjustPathForPrivateFolder(fullPath)
+        case .publicRootFolder:
+            fullPath = adjustPathForPublicRootFolder(fullPath)
+        default:
+            break
         }
-        return ""
+        
+        return fullPath
+    }
+    
+    private func adjustPathForPrivateRootFolder(_ path: String) -> String {
+        var newPath = path
+        if getCurrentFolder() == "Private Files" {
+            newPath = "... \\ "
+        } else {
+            newPath = "... \\ \(path) \\ "
+        }
+        return newPath.replacingOccurrences(of: "My Files", with: "Private Files")
+    }
+    
+    private func adjustPathForPrivateFolder(_ path: String) -> String {
+        var newPath = path
+        if !path.isEmpty {
+            newPath = "\(path) \\ "
+        }
+        return "... \\ Shared Files \\ \(newPath)"
+    }
+    
+    private func adjustPathForPublicRootFolder(_ path: String) -> String {
+        var newPath = path
+        if getCurrentFolder() == "Public" {
+            newPath = "... \\ "
+        } else {
+            newPath = "... \\ \(path) \\ "
+        }
+        return newPath.replacingOccurrences(of: "Public", with: "Public Files")
     }
     
     func getNumberOfAssets() -> String {
