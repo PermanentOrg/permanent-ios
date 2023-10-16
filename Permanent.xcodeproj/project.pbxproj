@@ -2692,25 +2692,25 @@
 		5E68F2CD26A74FCD00CC936E /* PermanentTests */ = {
 			isa = PBXGroup;
 			children = (
-				5EA88C3E2ABAF50900876251 /* EditBulkMetadataTests */,
-				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
 				5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */,
-				5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */,
-				5E9977AD284E8BFC003E0C46 /* DonateTests.swift */,
 				F5D209B9285B3DB3006DCF9F /* AccountOnboardingTests.swift */,
+				F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */,
+				5E9977AD284E8BFC003E0C46 /* DonateTests.swift */,
+				5EA88C3E2ABAF50900876251 /* EditBulkMetadataTests */,
 				F53DADDC28804FA80094B738 /* ExtensionUploadManagerTests.swift */,
-				5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */,
-				F54861F928912F4300500F6F /* SessionTests.swift */,
-				5E68F2D026A74FCD00CC936E /* Info.plist */,
-				5E68F2D826A9A2CD00CC936E /* TestURLs.swift */,
-				5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */,
 				F559F87C28F9AB070015A522 /* FolderContentViewModelTests.swift */,
+				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
 				F559F87E28F9C0640015A522 /* FolderSortViewModelTests.swift */,
 				F559F88028F9C1F10015A522 /* FolderViewSelectionViewModelTests.swift */,
-				F559F88228F9C32E0015A522 /* FolderNavigationViewModelTests.swift */,
-				374554B71E0322714462588A /* ShareManagementTests.swift */,
+				5E68F2D026A74FCD00CC936E /* Info.plist */,
 				5E1E4FA82988897F0062984C /* ManageTagsTests.swift */,
-				F59C3B7E29C3146000337E45 /* AuthenticationManagerTests.swift */,
+				5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */,
+				5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */,
+				F54861F928912F4300500F6F /* SessionTests.swift */,
+				5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */,
+				374554B71E0322714462588A /* ShareManagementTests.swift */,
+				5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */,
+				5E68F2D826A9A2CD00CC936E /* TestURLs.swift */,
 			);
 			path = PermanentTests;
 			sourceTree = "<group>";
