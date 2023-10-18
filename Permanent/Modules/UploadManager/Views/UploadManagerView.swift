@@ -10,6 +10,7 @@ import Photos
 struct UploadManagerView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: UploadManagerViewModel
+    @State private var showChangeFolderSheet = false
     
     var body: some View {
         CustomNavigationView(content: {
@@ -30,6 +31,9 @@ struct UploadManagerView: View {
         }, rightButton: {
             uploadButton
         })
+        .sheet(isPresented: $showChangeFolderSheet, content: {
+            ChangeDestinationUploadManagerView(viewModel: ChangeDestinationUploadManagerViewModel(currentArchive: viewModel.currentArchive))
+        })
     }
     
     var uploadToSection: some View {
@@ -47,7 +51,7 @@ struct UploadManagerView: View {
                 }
                 Spacer()
                 Button(action: {
-                    //add action
+                    showChangeFolderSheet.toggle()
                 }, label: {
                     HStack(spacing: 1) {
                         Image(.chooseFolderArrow)

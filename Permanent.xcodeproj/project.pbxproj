@@ -291,6 +291,11 @@
 		5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620242784871B001B9AFD /* EmailProfileItem.swift */; };
 		5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620262784B01D001B9AFD /* GenderProfileItem.swift */; };
 		5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */; };
+		5EB6411E2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6411D2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift */; };
+		5EB6411F2ADEC14400FD1A62 /* ChangeDestinationUploadManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6411D2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift */; };
+		5EB641202ADFD7E800FD1A62 /* PullDownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9229A3AA2A7A7773004DE31D /* PullDownButton.swift */; };
+		5EB641222AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB641212AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift */; };
+		5EB641232AE01DF900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB641212AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift */; };
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
 		5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */; };
@@ -1096,6 +1101,8 @@
 		5EB620242784871B001B9AFD /* EmailProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProfileItem.swift; sourceTree = "<group>"; };
 		5EB620262784B01D001B9AFD /* GenderProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderProfileItem.swift; sourceTree = "<group>"; };
 		5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthInfoProfileItem.swift; sourceTree = "<group>"; };
+		5EB6411D2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeDestinationUploadManagerView.swift; sourceTree = "<group>"; };
+		5EB641212AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeDestinationUploadManagerViewModel.swift; sourceTree = "<group>"; };
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningLoadingViewController.swift; sourceTree = "<group>"; };
@@ -1724,6 +1731,7 @@
 			isa = PBXGroup;
 			children = (
 				5E0B8EEB2ACC1F640077A862 /* UploadManagerViewModel.swift */,
+				5EB641212AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1732,6 +1740,7 @@
 			isa = PBXGroup;
 			children = (
 				5E0B8EE72ACC1F420077A862 /* UploadManagerView.swift */,
+				5EB6411D2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4311,6 +4320,7 @@
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
+				5EB6411E2ADEB1F500FD1A62 /* ChangeDestinationUploadManagerView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				F5C8D247273204CA00707301 /* SearchVO.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,
@@ -4579,6 +4589,7 @@
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
+				5EB641222AE01C0900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift in Sources */,
 				5E991EF22A4F10ED006229C0 /* TextViewUIRepresentable.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,
 				5E991EEC2A4D7D0C006229C0 /* FilesMetadataViewModel.swift in Sources */,
@@ -4694,6 +4705,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EB6411F2ADEC14400FD1A62 /* ChangeDestinationUploadManagerView.swift in Sources */,
 				5ED4B9C82876DFC200CF044B /* ItemVO.swift in Sources */,
 				5E1CCC21287F050E00913EEA /* UIColor.swift in Sources */,
 				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
@@ -4753,6 +4765,7 @@
 				5E4739E52A4186C700A20D85 /* LoginResponse.swift in Sources */,
 				5ED4B9CD2876E02200CF044B /* TimezoneVO.swift in Sources */,
 				F559F8A128FEEAED0015A522 /* RelocateRecordPayload.swift in Sources */,
+				5EB641232AE01DF900FD1A62 /* ChangeDestinationUploadManagerViewModel.swift in Sources */,
 				5E4739FC2A4187C200A20D85 /* SocialMediaProfileItem.swift in Sources */,
 				5EC99CE12AD42ED3008BE8BD /* TextViewModifiers.swift in Sources */,
 				F5ADBF37290ADB800007A516 /* ArchivesViewModel.swift in Sources */,
@@ -4797,6 +4810,7 @@
 				5ED3B3B229F7E503000CFF48 /* LegacyPlanningIntroViewController.swift in Sources */,
 				F559F88C28FEE9690015A522 /* FolderSortViewModel.swift in Sources */,
 				5E4739FD2A4187C700A20D85 /* MilestoneProfileItem.swift in Sources */,
+				5EB641202ADFD7E800FD1A62 /* PullDownButton.swift in Sources */,
 				9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */,
 				F51B3327288B0BD900EA15DA /* FileStatus.swift in Sources */,
 				F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */,
