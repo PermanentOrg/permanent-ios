@@ -257,7 +257,6 @@
 		5E84DB3C2AE832BE0030EAA6 /* ArchiveDropdownMenuList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84DB352AE832B70030EAA6 /* ArchiveDropdownMenuList.swift */; };
 		5E84DB3D2AE832C00030EAA6 /* ArchiveDropdownMenuListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84DB362AE832B70030EAA6 /* ArchiveDropdownMenuListRow.swift */; };
 		5E84DB3E2AE832C30030EAA6 /* ArchiveDropdownMenuOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84DB342AE832B70030EAA6 /* ArchiveDropdownMenuOption.swift */; };
-		5E84DB402AE922E20030EAA6 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84DB3F2AE922E20030EAA6 /* ColorExtension.swift */; };
 		5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */; };
 		5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */; };
 		5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */; };
@@ -1076,7 +1075,6 @@
 		5E84DB342AE832B70030EAA6 /* ArchiveDropdownMenuOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveDropdownMenuOption.swift; sourceTree = "<group>"; };
 		5E84DB352AE832B70030EAA6 /* ArchiveDropdownMenuList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveDropdownMenuList.swift; sourceTree = "<group>"; };
 		5E84DB362AE832B70030EAA6 /* ArchiveDropdownMenuListRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveDropdownMenuListRow.swift; sourceTree = "<group>"; };
-		5E84DB3F2AE922E20030EAA6 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordUpdateViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
@@ -1636,7 +1634,6 @@
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
-				5E84DB3F2AE922E20030EAA6 /* ColorExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4575,7 +4572,6 @@
 				5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */,
 				5E84DB382AE832B70030EAA6 /* ArchiveDropdownMenuOption.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
-				5E84DB402AE922E20030EAA6 /* ColorExtension.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
 				F50E135528F43359003DF4CC /* FilesRepository.swift in Sources */,

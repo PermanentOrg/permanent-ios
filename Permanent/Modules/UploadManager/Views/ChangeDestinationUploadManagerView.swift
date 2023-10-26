@@ -11,6 +11,8 @@ struct ChangeDestinationUploadManagerView: View {
     @StateObject var viewModel: ChangeDestinationUploadManagerViewModel
     @State private var isOptionsPresented: Bool = false
     
+    let haveChanges: (_ changedArchive: ArchiveVOData?) -> Void
+    
     var body: some View {
         CustomNavigationView {
             VStack(alignment: .leading, spacing: 24) {
@@ -43,7 +45,16 @@ struct ChangeDestinationUploadManagerView: View {
     
     var saveButton: some View {
         Button(action: {
-            presentationMode.wrappedValue.dismiss()
+            if let changedArchive = viewModel.changedArchive {
+                viewModel.changeArchive(changedArchive) { result, error in
+                    if error == nil {
+                        self.haveChanges(viewModel.currentArchive())
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            } else {
+                presentationMode.wrappedValue.dismiss()
+            }
         }) {
             HStack {
                 Text("Save")
@@ -53,21 +64,22 @@ struct ChangeDestinationUploadManagerView: View {
     }
     
     var dropDownList: some View {
-            VStack {
-                ArchiveDropdownMenu(
-                    isOptionsPresented: self.$isOptionsPresented,
-                    selectedOption: self.$viewModel.archiveSelected,
-                    placeholder: "Select an archive",
-                    options: viewModel.archivesList) { archive in
-                        viewModel.changeArchive(archive) { result, error in
-                            if error == nil {
-                                self.isOptionsPresented = false
-                            }
-                        }
-                        
-                    }
-            }
-            .foregroundColor(.clear)
+        VStack {
+            ArchiveDropdownMenu(
+                isOptionsPresented: self.$isOptionsPresented,
+                selectedOption: self.$viewModel.archiveSelected,
+                placeholder: "Select an archive",
+                options: viewModel.archivesList) { selectedArchive in
+                    handleArchiveSelection(selectedArchive)
+                }
+        }
+        .foregroundColor(.clear)
+    }
+    
+    private func handleArchiveSelection(_ archive: ArchiveDropdownMenuOption) {
+        viewModel.changedArchive = archive
+        viewModel.updateArchivesList()
+        self.isOptionsPresented = false
     }
     
     var privateFiles: some View {
@@ -120,5 +132,5 @@ struct ChangeDestinationUploadManagerView: View {
 }
 
 #Preview {
-    ChangeDestinationUploadManagerView(viewModel: ChangeDestinationUploadManagerViewModel(currentArchive: nil))
+    ChangeDestinationUploadManagerView(viewModel: ChangeDestinationUploadManagerViewModel(currentArchive: nil), haveChanges: { _ in })
 }

@@ -10,6 +10,7 @@ class ChangeDestinationUploadManagerViewModel: ObservableObject {
     @Published var archiveSelected: ArchiveDropdownMenuOption = ArchiveDropdownMenuOption(archiveName: "", archiveThumbnailAddress: "", archiveAccessRole: "", archiveNbr: "", isArchiveSelected: false)
     
     var accountArchives: [ArchiveVOData]?
+    var changedArchive: ArchiveDropdownMenuOption?
     var account: AccountVOData? {
         didSet {
             updateCurrentArchive()
@@ -159,7 +160,6 @@ class ChangeDestinationUploadManagerViewModel: ObservableObject {
         }
     }
     
-    
     func updateArchivesList() {
         getAccountInfo({ [self] account, error in
             if error == nil {
@@ -187,12 +187,16 @@ class ChangeDestinationUploadManagerViewModel: ObservableObject {
            let archiveRole: String = archiveGroup {
             archiveSelected = ArchiveDropdownMenuOption(archiveName: "The \(archiveName) Archive", archiveThumbnailAddress: archiveThumbURL, archiveAccessRole: archiveRole, archiveNbr: archiveNbr, isArchiveSelected: true)
             
+            if let changedArchive = changedArchive {
+                archiveSelected =  ArchiveDropdownMenuOption(archiveName: changedArchive.archiveName, archiveThumbnailAddress: changedArchive.archiveThumbnailAddress, archiveAccessRole: changedArchive.archiveAccessRole, archiveNbr: changedArchive.archiveNbr, isArchiveSelected: true)
+            }
+            
             archivesList = selectableArchives.map({ archive in
                 let archiveName = "The \(archive.fullName ?? "") Archive"
                 let archiveThumbnail = archive.thumbURL500 ?? ""
                 let archiveRole = AccessRole.roleForValue(archive.accessRole).groupName
                 var isArchiveSelected: Bool = false
-                if self.currentArchive()?.archiveNbr == archive.archiveNbr {
+                if archiveSelected.archiveNbr == archive.archiveNbr {
                     isArchiveSelected = true
                 }
                 return ArchiveDropdownMenuOption(archiveName: archiveName, archiveThumbnailAddress: archiveThumbnail, archiveAccessRole: archiveRole,archiveNbr: archive.archiveNbr ?? "", isArchiveSelected: isArchiveSelected)

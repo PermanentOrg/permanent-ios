@@ -32,7 +32,11 @@ struct UploadManagerView: View {
             uploadButton
         })
         .sheet(isPresented: $showChangeFolderSheet, content: {
-            ChangeDestinationUploadManagerView(viewModel: ChangeDestinationUploadManagerViewModel(currentArchive: viewModel.currentArchive))
+            ChangeDestinationUploadManagerView(viewModel: ChangeDestinationUploadManagerViewModel(currentArchive: viewModel.currentArchive)) { changedArchive in
+                if let changedArchive = changedArchive {
+                    viewModel.currentArchive = changedArchive
+                }
+            }
         })
     }
     
@@ -72,7 +76,7 @@ struct UploadManagerView: View {
         HStack {
             Image(.gradientFolder)
                 .frame(width: 40, height: 40)
-            Text("The \(viewModel.getCurrentArchiveName()) Archive")
+            Text("The \(viewModel.currentArchiveName) Archive")
                 .textStyle(SmallSemiBoldTextStyle())
                 .foregroundColor(Color.black)
                 .multilineTextAlignment(.leading)
@@ -86,7 +90,7 @@ struct UploadManagerView: View {
                     .background(Color(red: 0.91, green: 0.8, blue: 0.91))
                     .cornerRadius(4)
                 if #available(iOS 16, *) {
-                    Text("\(viewModel.getCurrentArchivePermission())".uppercased())
+                    Text("\(viewModel.currentArchivePermission)".uppercased())
                         .textStyle(SmallXXXXXXRegularTextStyle())
                         .multilineTextAlignment(.trailing)
                         .foregroundColor(.darkBlue)
@@ -94,7 +98,7 @@ struct UploadManagerView: View {
                         .kerning(0.8)
                         .padding(.bottom, 2)
                 } else {
-                    Text("\(viewModel.getCurrentArchivePermission())".uppercased())
+                    Text("\(viewModel.currentArchivePermission)".uppercased())
                         .textStyle(SmallXXXXXXRegularTextStyle())
                         .multilineTextAlignment(.trailing)
                         .foregroundColor(.darkBlue)
