@@ -10,7 +10,13 @@ import Photos
 
 class UploadManagerViewModel: ObservableObject {
     @Published var assets: [PHAsset] = []
-    let currentArchive: ArchiveVOData?
+    @Published var currentArchiveName: String = ""
+    @Published var currentArchivePermission : String = ""
+    var currentArchive: ArchiveVOData? {
+        didSet {
+            updateCurrentArchive()
+        }
+    }
     let folderNavigationStack: [FileModel]?
     @Published var assetURLs: [AssetDescriptor] = []
     @Published var isLoading: Bool = false
@@ -31,6 +37,7 @@ class UploadManagerViewModel: ObservableObject {
         self.assets = assets
         self.folderNavigationStack = folderNavigationStack
         self.currentArchive = currentArchive
+        updateCurrentArchive()
     }
     
     @MainActor func getDescriptors() {
@@ -78,18 +85,13 @@ class UploadManagerViewModel: ObservableObject {
         }
     }
     
-    func getCurrentArchiveName() -> String {
+    func updateCurrentArchive() {
         if let currentArchive = currentArchive {
-            return currentArchive.fullName ?? ""
+            currentArchiveName = currentArchive.fullName ?? ""
+            if let accessRole = currentArchive.accessRole {
+                currentArchivePermission = AccessRole.roleForValue(accessRole).groupName
+            }
         }
-        return ""
-    }
-    
-    func getCurrentArchivePermission() -> String {
-        if let currentArchive = currentArchive, let accessRole = currentArchive.accessRole {
-            return AccessRole.roleForValue(accessRole).groupName
-        }
-        return ""
     }
     
     func getCurrentFolderPath() -> String {
