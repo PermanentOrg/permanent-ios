@@ -18,6 +18,7 @@ enum DrawerOption {
     case manageArchives
     case publicGallery
     case addStorage
+    case giftStorage
     case accountInfo
     case security
     case activityFeed
@@ -36,6 +37,7 @@ enum DrawerOption {
         case .manageArchives: return UIImage(named: "manageArchivesIcon")!
         case .publicGallery: return UIImage(named: "publicGalleryIcon")!
         case .addStorage: return .storage
+        case .giftStorage: return nil
         case .security: return .security
         case .accountInfo: return .accountInfo
         case .invitations: return .mail
@@ -63,6 +65,7 @@ enum DrawerOption {
         case .invitations: return .invitations
         case .activityFeed: return .activityFeed
         case .addStorage: return String.addStorage
+        case .giftStorage: return "Gift Storage"
         case .accountInfo: return String.accountInfo
         case .security: return String.security
         case .logOut: return .logOut
