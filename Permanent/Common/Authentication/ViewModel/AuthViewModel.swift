@@ -18,6 +18,7 @@ class AuthViewModel: ViewModelInterface {
             NotificationCenter.default.post(name: Self.updateArchiveSettingsChevron, object: self, userInfo: nil)
         }
     }
+    var accountData: AccountVOData?
     
     func getAccountInfo(_ completionBlock: @escaping ((AccountVOData?, Error?) -> Void) ) {
         guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {

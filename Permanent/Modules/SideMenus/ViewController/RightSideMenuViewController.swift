@@ -5,6 +5,7 @@
 //  Created by Lucian Cerbu on 06.08.2021.
 //
 import UIKit
+import SwiftUI
 
 enum RightDrawerSection: Int {
     case rightSideMenu
@@ -24,6 +25,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     private let tableViewData: [RightDrawerSection: [DrawerOption]] = [
         RightDrawerSection.rightSideMenu: [
             DrawerOption.addStorage,
+            DrawerOption.giftStorage,
             DrawerOption.accountInfo,
             DrawerOption.legacyPlanning,
             DrawerOption.activityFeed,
@@ -85,6 +87,8 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         if isOpening {
             viewModel?.getAccountInfo { [self] accountData, error in
                 guard let accountData = accountData else { return }
+                
+                viewModel?.accountData = accountData
                 
                 let spaceTotal = (accountData.spaceTotal ?? 0)
                 let spaceLeft = (accountData.spaceLeft ?? 0)
@@ -239,6 +243,21 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             let newRootVC = UIViewController.create(withIdentifier: .donate, from: .donate)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
+        case .giftStorage:
+            let hostingController = UIHostingController(rootView: GiftStorageView(viewModel: GiftStorageViewModel(accountData: self.viewModel?.accountData)))
+                hostingController.modalPresentationStyle = .fullScreen
+                
+                self.present(hostingController, animated: true, completion: nil)
+                
+                // Add a way to call the completion block when the view is dismissed.
+                hostingController.rootView.dismissAction = { hasUpdates in
+                    hostingController.dismiss(animated: true, completion: {
+                        self.selectedMenuOption = .none
+                        self.setupTableView()
+                        self.adjustUIForAnimation(isOpening: false)
+                    })
+                }
+                
         case .activityFeed:
             let newRootVC = ActivityFeedViewController()
             newRootVC.viewModel = ActivityFeedViewModel()

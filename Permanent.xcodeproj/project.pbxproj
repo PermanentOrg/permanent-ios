@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -45,6 +45,9 @@
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
+		5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */; };
+		5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */; };
+		5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */; };
 		5E187FA22A0CE3A800DCD52F /* LegacyPlanningSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */; };
 		5E187FA32A0CE3CE00DCD52F /* LegacyPlanningSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */; };
 		5E1C3C4C28ECA77A007C1A63 /* TagsLocalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */; };
@@ -901,6 +904,9 @@
 		5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFilesUITests.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
+		5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageView.swift; sourceTree = "<group>"; };
+		5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftStorageViewModel.swift; sourceTree = "<group>"; };
+		5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressStyle.swift; sourceTree = "<group>"; };
 		5E187FA12A0CE3A800DCD52F /* LegacyPlanningSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningSteward.swift; sourceTree = "<group>"; };
 		5E1C3C4B28ECA77A007C1A63 /* TagsLocalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsLocalDataSource.swift; sourceTree = "<group>"; };
 		5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsRemoteDataSourceInterface.swift; sourceTree = "<group>"; };
@@ -1688,6 +1694,31 @@
 			path = Pages;
 			sourceTree = "<group>";
 		};
+		5E181B7C2AF0556F002DE69A /* GiftStorage */ = {
+			isa = PBXGroup;
+			children = (
+				5E181B7D2AF05590002DE69A /* Views */,
+				5E181B802AF100EC002DE69A /* ViewModels */,
+			);
+			path = GiftStorage;
+			sourceTree = "<group>";
+		};
+		5E181B7D2AF05590002DE69A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5E181B7E2AF0640E002DE69A /* GiftStorageView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5E181B802AF100EC002DE69A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		5E1C3C4928ECA732007C1A63 /* Local */ = {
 			isa = PBXGroup;
 			children = (
@@ -2198,6 +2229,7 @@
 				5ED3B3AA29F7D71E000CFF48 /* LegacyPlanning */,
 				5E4739B22A40FC5E00A20D85 /* PublicGallery */,
 				5E4739C32A41020A00A20D85 /* Storage */,
+				5E181B7C2AF0556F002DE69A /* GiftStorage */,
 				5E4739C72A41034200A20D85 /* AccountSettings */,
 				5E4739C52A41026100A20D85 /* ActivityFeed */,
 				5E4739C82A4103A500A20D85 /* Archives */,
@@ -2817,6 +2849,7 @@
 			isa = PBXGroup;
 			children = (
 				5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */,
+				5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
@@ -4029,6 +4062,7 @@
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
+				5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */,
 				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -4172,6 +4206,7 @@
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
+				5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
@@ -4388,6 +4423,7 @@
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
+				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
 				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
