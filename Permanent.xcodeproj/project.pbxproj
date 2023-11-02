@@ -398,6 +398,9 @@
 		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */; };
 		9229A3AB2A7A7773004DE31D /* PullDownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9229A3AA2A7A7773004DE31D /* PullDownButton.swift */; };
+		92430A5D2AF2A1F00098597D /* EmailChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5A2AF2A1F00098597D /* EmailChip.swift */; };
+		92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */; };
+		92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5C2AF2A1F00098597D /* EmailChipView.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
 		924F162F2A45954A00B75D4E /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924F162E2A45954A00B75D4E /* TagsView.swift */; };
 		924F16312A459C2E00B75D4E /* FlowGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924F16302A459C2E00B75D4E /* FlowGrid.swift */; };
@@ -1165,6 +1168,9 @@
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
 		9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		9229A3AA2A7A7773004DE31D /* PullDownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullDownButton.swift; sourceTree = "<group>"; };
+		92430A5A2AF2A1F00098597D /* EmailChip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChip.swift; sourceTree = "<group>"; };
+		92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipsTextField.swift; sourceTree = "<group>"; };
+		92430A5C2AF2A1F00098597D /* EmailChipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipView.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
 		924F162E2A45954A00B75D4E /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 		924F16302A459C2E00B75D4E /* FlowGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowGrid.swift; sourceTree = "<group>"; };
@@ -2718,6 +2724,7 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				92430A592AF2A1F00098597D /* ChipView */,
 				5E991EF52A53637E006229C0 /* SectionHeaderView.swift */,
 				5E991EE32A4ADDE3006229C0 /* SectionView.swift */,
 				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
@@ -2852,6 +2859,16 @@
 				5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */,
 			);
 			path = Styles;
+			sourceTree = "<group>";
+		};
+		92430A592AF2A1F00098597D /* ChipView */ = {
+			isa = PBXGroup;
+			children = (
+				92430A5A2AF2A1F00098597D /* EmailChip.swift */,
+				92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */,
+				92430A5C2AF2A1F00098597D /* EmailChipView.swift */,
+			);
+			path = ChipView;
 			sourceTree = "<group>";
 		};
 		924F16382A45D25100B75D4E /* ViewModifiers */ = {
@@ -4291,10 +4308,12 @@
 				5E1CE4422AAF32BE00EEE52E /* EventType.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
+				92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */,
 				5E624DC5294B27F7002D6ECB /* MFASession.swift in Sources */,
 				92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */,
+				92430A5D2AF2A1F00098597D /* EmailChip.swift in Sources */,
 				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
 				5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
@@ -4382,6 +4401,7 @@
 				F5C80BD929893C8400CC1939 /* PublicProfileDeeplinkPayload.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
+				92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */,
 				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,

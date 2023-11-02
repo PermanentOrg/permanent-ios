@@ -12,6 +12,8 @@ class GiftStorageViewModel: ObservableObject {
     var spaceTotalReadable: String = ""
     var spaceLeftReadable: String = ""
     
+    @Published var emails: [String] = []
+    
     init(accountData: AccountVOData?) {
         self.accountData = accountData
         

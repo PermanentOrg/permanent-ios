@@ -46,6 +46,7 @@ struct GiftStorageView: View {
         VStack(spacing: 32) {
             progressBarStorageView
             giftStorageInfoView
+            recipientEmailsView
             Spacer()
         }
         .padding(32)
@@ -84,6 +85,16 @@ struct GiftStorageView: View {
             Text("Send storage to both existing users and new sign-ups. They need to log in or create an account to get your gift.")
                 .textStyle(MediumSemiBoldTextStyle())
                 .foregroundColor(.darkBlue)
+        }
+        .padding(.horizontal, -1)
+    }
+    
+    var recipientEmailsView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Recipient emails".uppercased())
+                .textStyle(SmallXXXXXSemiBoldTextStyle())
+                .foregroundColor(.liniarBlue)
+            EmailChipView(chips: $viewModel.emails)
         }
         .padding(.horizontal, -1)
     }
