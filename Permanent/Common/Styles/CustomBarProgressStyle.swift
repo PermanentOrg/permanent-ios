@@ -42,7 +42,21 @@ struct CustomBarProgressStyle: ProgressViewStyle {
                                     }
                                 }
                         }
-                }
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(color.opacity(0.16))
+                            .frame(height: height)
+                            .frame(width: geometry.size.width)
+                        HStack {
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(color)
+                                .frame(height: height)
+                                .frame(width: width)
+                            Spacer()
+                        }
+                    }
+            }
             }
             .onAppear {
                 withAnimation(.linear(duration: 0.6)) {
