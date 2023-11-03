@@ -46,7 +46,7 @@ struct GiftStorageView: View {
             dismissView()
         }) {
             HStack {
-                Text("Back")
+                Image(.backArrowNewDesign)
                     .foregroundColor(.white)
             }
         }
@@ -191,7 +191,7 @@ struct GiftStorageView: View {
     func dismissViewWithAssets() {
         presentationMode.wrappedValue.dismiss()
     }
-    
+
     func feedback() {
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()

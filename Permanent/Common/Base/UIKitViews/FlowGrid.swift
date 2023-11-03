@@ -87,7 +87,7 @@ fileprivate struct FlowGridView<Data: Collection, Content: View>: View where Dat
     }
 }
 
-fileprivate extension View {
+extension View {
     func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background(
             GeometryReader { geometryProxy in
