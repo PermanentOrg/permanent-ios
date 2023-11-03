@@ -10,6 +10,7 @@ fileprivate enum FontName: String {
     case openSansRegular = "OpenSans-Regular"
     case openSansSemiBold = "OpenSans-SemiBold"
     case openSansBold = "OpenSans-Bold"
+    case openSansItalic = "OpenSans-Italic"
 }
 
 fileprivate enum FontSize: CGFloat {
@@ -35,6 +36,14 @@ struct SmallXXXXXSemiBoldTextStyle: ViewModifier {
 struct SmallXXXXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallXXXXXItalicTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansItalic.rawValue,
                              size: FontSize.xxxxxSmall.rawValue,
                              relativeTo: .largeTitle))
     }

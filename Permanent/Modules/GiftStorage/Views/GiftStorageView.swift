@@ -63,6 +63,7 @@ struct GiftStorageView: View {
             progressBarStorageView
             giftStorageInfoView
             addStorageAmountView
+            recipientEmailsView
             noteToRecipients
             sendGiftStorageButton
             Spacer()
@@ -170,6 +171,16 @@ struct GiftStorageView: View {
     
     func sendGiftStorage() {
         viewModel.showConfirmation = true
+    }
+    
+    var recipientEmailsView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Recipient emails".uppercased())
+                .textStyle(SmallXXXXXSemiBoldTextStyle())
+                .foregroundColor(.liniarBlue)
+            EmailChipView(chips: $viewModel.emails)
+        }
+        .padding(.horizontal, -1)
     }
     
     func dismissView() {

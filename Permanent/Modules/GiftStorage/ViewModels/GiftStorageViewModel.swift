@@ -27,6 +27,7 @@ class GiftStorageViewModel: ObservableObject {
     @Published var isSendButtonDisabled: Bool = true
     @Published var showConfirmation: Bool = false
     @Published var changesConfirmed: Bool = false
+    @Published var emails: [String] = []
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData
