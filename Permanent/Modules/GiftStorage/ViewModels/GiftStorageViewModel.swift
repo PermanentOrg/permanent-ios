@@ -12,6 +12,22 @@ class GiftStorageViewModel: ObservableObject {
     var spaceTotalReadable: String = ""
     var spaceLeftReadable: String = ""
     
+    @Published var giftAmountValue = 0 {
+        didSet {
+            if giftAmountValue > 0 {
+                isSendButtonDisabled = false
+            } else {
+                isSendButtonDisabled = true
+            }
+        }
+    }
+    @Published var noteText: String? = ""
+    @Published var didSavedNoteText: Bool = false
+    @Published var giftBorderColor: Color = .galleryGray
+    @Published var isSendButtonDisabled: Bool = true
+    @Published var showConfirmation: Bool = false
+    @Published var changesConfirmed: Bool = false
+    
     init(accountData: AccountVOData?) {
         self.accountData = accountData
         
@@ -29,5 +45,9 @@ class GiftStorageViewModel: ObservableObject {
         
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
         spaceLeftReadable = spaceLeft.bytesToReadableForm()
+    }
+    
+    func haveValidFields() {
+        
     }
 }

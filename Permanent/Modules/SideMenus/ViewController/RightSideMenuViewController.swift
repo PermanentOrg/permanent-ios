@@ -244,7 +244,8 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .giftStorage:
-            let hostingController = UIHostingController(rootView: GiftStorageView(viewModel: GiftStorageViewModel(accountData: self.viewModel?.accountData)))
+            
+            let hostingController = UIHostingController(rootView: GiftStorageView(viewModel: StateObject(wrappedValue: GiftStorageViewModel.init(accountData: self.viewModel?.accountData))))
                 hostingController.modalPresentationStyle = .fullScreen
                 
                 self.present(hostingController, animated: true, completion: nil)
