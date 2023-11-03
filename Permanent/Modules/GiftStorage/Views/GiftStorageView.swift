@@ -18,6 +18,9 @@ struct GiftStorageView: View {
                 backgroundView
                 contentView
             }
+            .onTapGesture {
+                dismissKeyboard()
+            }
         } leftButton: {
             backButton
         } rightButton: {
@@ -107,4 +110,9 @@ struct GiftStorageView: View {
     func dismissViewWithAssets() {
         presentationMode.wrappedValue.dismiss()
     }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
 }
