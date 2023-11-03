@@ -22,6 +22,7 @@ struct EmailChipsTextField: UIViewRepresentable {
         uiView.text = text
         uiView.textColor = .darkBlue
         uiView.font = TextFontStyle.style5.font
+        uiView.autocapitalizationType = .none
         
         // Manage focus state using coordinator
         if isFirstResponder && context.coordinator.didBecomeFirstResponder != true {
