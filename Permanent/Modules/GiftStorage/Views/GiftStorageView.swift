@@ -12,6 +12,7 @@ struct GiftStorageView: View {
     
     init(viewModel: StateObject<GiftStorageViewModel>) {
         self._viewModel = viewModel
+        //UIScrollView.appearance().backgroundColor = .whiteGray
     }
     
     var dismissAction: ((Bool) -> Void)?
@@ -19,10 +20,11 @@ struct GiftStorageView: View {
     var body: some View {
         ZStack {
             CustomNavigationView {
-                ZStack {
-                    backgroundView
-                    contentView
-                }
+                    ZStack {
+                        backgroundView
+                        contentView
+                    }
+                    .edgesIgnoringSafeArea(.all)
             } leftButton: {
                 backButton
             } rightButton: {
@@ -59,17 +61,21 @@ struct GiftStorageView: View {
     }
     
     var contentView: some View {
-        VStack(spacing: 32) {
-            progressBarStorageView
-            giftStorageInfoView
-            addStorageAmountView
-            recipientEmailsView
-            noteToRecipients
-            sendGiftStorageButton
-            Spacer()
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 32) {
+                progressBarStorageView
+                giftStorageInfoView
+                recipientEmailsView
+                addStorageAmountView
+                noteToRecipients
+                sendGiftStorageButton
+                Spacer()
+            }
+            .padding(32)
+            .navigationBarTitle("Gift Storage", displayMode: .inline)
         }
-        .padding(32)
-        .navigationBarTitle("Gift Storage", displayMode: .inline)
+        .padding(.top, -10)
+        .frame(maxHeight: .infinity)
     }
     
     var progressBarStorageView: some View {
@@ -114,6 +120,13 @@ struct GiftStorageView: View {
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(.liniarBlue)
             CustomStepper(value: $viewModel.giftAmountValue, textColor: .darkBlue, borderColor: $viewModel.giftBorderColor)
+            
+            if let amountText = viewModel.amountText {
+                Text("\(amountText)")
+                    .textStyle(SmallXXXXXItalicTextStyle())
+                    .foregroundColor(viewModel.notEnoughStorageSpace ? .lightRed : .darkBlue)
+            }
+
         }
     }
     
@@ -127,23 +140,23 @@ struct GiftStorageView: View {
                     .textStyle(SmallXXXXXSemiBoldTextStyle())
                     .foregroundColor(.lightGray)
             }
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .inset(by: 0.5)
-                                .stroke(Color.galleryGray, lineWidth: 1))
-                    TextView(text: $viewModel.noteText,
-                             didSaved: $viewModel.didSavedNoteText,
-                             textStyle: TextFontStyle.style39,
-                             textColor: .middleGray)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .frame(maxHeight: 80)
-                }
-                .frame(height: 88)
-                .foregroundColor(.clear)
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .inset(by: 0.5)
+                            .stroke(Color.galleryGray, lineWidth: 1))
+                TextView(text: $viewModel.noteText,
+                         didSaved: $viewModel.didSavedNoteText,
+                         textStyle: TextFontStyle.style39,
+                         textColor: .middleGray)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(maxHeight: 80)
+            }
+            .frame(height: 88)
+            .foregroundColor(.clear)
         }
     }
     
@@ -178,7 +191,7 @@ struct GiftStorageView: View {
             Text("Recipient emails".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(.liniarBlue)
-            EmailChipView(chips: $viewModel.emails)
+            EmailChipView(emails: $viewModel.emails)
         }
         .padding(.horizontal, -1)
     }

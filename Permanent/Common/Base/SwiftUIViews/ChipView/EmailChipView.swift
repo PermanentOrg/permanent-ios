@@ -7,12 +7,20 @@
 import SwiftUI
 
 struct EmailChipView: View {
-    @Binding var chips: [String]
+    @State private var chips: [String] = [] {
+        didSet {
+            var value = chips
+            value.removeAll(where: {$0 == EmailChipView.inputKey})
+            emails.wrappedValue.removeAll()
+            emails.wrappedValue.append(contentsOf: value)
+        }
+    }
     @State private var inputText = ""
     @State private var isFirstResponder = false
     @State private var errorText: String? = nil
     @State private var availableWidth: CGFloat = 10
-    
+    var emails: Binding<[String]>
+
     static let zwsp = "\u{200B}"
     
     private static let inputKey: String = UUID().uuidString
@@ -60,6 +68,7 @@ struct EmailChipView: View {
             }
         })
         .onAppear(perform: {
+            chips.append(contentsOf: emails.wrappedValue)
             chips.append(EmailChipView.inputKey)
         })
         .onTapGesture {

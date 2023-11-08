@@ -27,9 +27,9 @@ extension Int {
         
         if transformedSizeInBytes > 100 {
             unit = unitsOfMeasure[exp]
-            transformedSizeInBytes /= 1000
+            transformedSizeInBytes /= 1024
         }
-        
+
         return useDecimal ? String(format: "%.1f %@", transformedSizeInBytes, unit) : String(format: "%.0f %@", transformedSizeInBytes, unit)
     }
 }
@@ -54,7 +54,7 @@ extension Int64 {
         
         if transformedSizeInBytes > 800 {
             unit = unitsOfMeasure[exp]
-            transformedSizeInBytes /= 1000
+            transformedSizeInBytes /= 1024
         }
         
         return useDecimal ? String(format: "%.1f %@", transformedSizeInBytes, unit) : String(format: "%.0f %@", transformedSizeInBytes, unit)
