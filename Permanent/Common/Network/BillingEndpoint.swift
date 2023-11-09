@@ -9,6 +9,7 @@ import Foundation
 
 enum BillingEndpoint {
     case claimPledge
+    case giftStorage(gift: GiftingModel)
 }
 
 extension BillingEndpoint: RequestProtocol {
@@ -16,6 +17,8 @@ extension BillingEndpoint: RequestProtocol {
         switch self {
         case .claimPledge:
             return "/billing/claimpledge"
+        case .giftStorage:
+            return "/billing/giftStorage"
         }
     }
     
@@ -38,10 +41,7 @@ extension BillingEndpoint: RequestProtocol {
     }
     
     var parameters: RequestParameters? {
-        switch self {
-        case .claimPledge:
-            return nil
-        }
+        return nil
     }
     
     var progressHandler: ProgressHandler? {
@@ -52,10 +52,20 @@ extension BillingEndpoint: RequestProtocol {
     }
     
     var bodyData: Data? {
-        nil
+        switch self {
+        case .giftStorage(let gift):
+            return try? APIPayload<GiftingModel>.encoder.encode(gift)
+        default: return nil
+        }
     }
     
     var customURL: String? {
-        nil
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
+        switch self {
+        case .giftStorage(_):
+            
+            return "\(endpointPath)api/v2/billing/gift"
+        default : return nil
+        }
     }
 }

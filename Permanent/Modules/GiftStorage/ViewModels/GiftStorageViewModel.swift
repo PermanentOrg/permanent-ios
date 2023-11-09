@@ -29,12 +29,20 @@ class GiftStorageViewModel: ObservableObject {
     @Published var giftBorderColor: Color = .galleryGray
     @Published var isSendButtonDisabled: Bool = true
     @Published var showConfirmation: Bool = false
-    @Published var changesConfirmed: Bool = false
+    @Published var changesConfirmed: Bool = false {
+        didSet {
+            if changesConfirmed {
+                sendGiftStorage()
+            }
+        }
+    }
     @Published var emails: [String] = [] {
         didSet {
             updateGiftAmountText()
         }
     }
+    @Published var sentGiftDialogError: Bool = false
+    @Published var sentGiftDialogWasSuccessfull: Bool = false
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData
@@ -51,8 +59,8 @@ class GiftStorageViewModel: ObservableObject {
         
         spaceRatio = Double(spaceUsed) / Double(spaceTotal)
         
-        spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: true)
-        spaceLeftReadable = spaceLeft.bytesToReadableForm()
+        spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
+        spaceLeftReadable = spaceLeft.bytesToReadableForm(useDecimal: true)
     }
     
     func updateGiftAmountText() {
@@ -76,6 +84,37 @@ class GiftStorageViewModel: ObservableObject {
             giftBorderColor = .galleryGray
             isSendButtonDisabled = true
             amountText = nil
+        }
+    }
+
+    func sendGiftStorage() {
+        let gift = GiftingModel(storageAmount: giftAmountValue, recipientEmails: emails, note: noteText)
+        
+        let endpoint = BillingEndpoint.giftStorage(gift: gift)
+        let apiOperation = APIOperation(endpoint)
+        
+        Task {
+            apiOperation.execute(in: APIRequestDispatcher()) { result in
+                DispatchQueue.main.async {
+                    self.changesConfirmed = false
+                    switch result {
+                    case .json(let response, _):
+                        guard let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder) else {
+                            self.sentGiftDialogError = true
+                            return
+                        }
+                        self.sentGiftDialogWasSuccessfull = model.isSuccessful
+                        self.sentGiftDialogError = !model.isSuccessful
+                        // Handle success here
+                        
+                    case .error( _, _):
+                        // Handle error here
+                        self.sentGiftDialogError = true
+                    default:
+                        self.sentGiftDialogError = true
+                    }
+                }
+            }
         }
     }
 }

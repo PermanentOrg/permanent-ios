@@ -12,7 +12,6 @@ struct GiftStorageView: View {
     
     init(viewModel: StateObject<GiftStorageViewModel>) {
         self._viewModel = viewModel
-        //UIScrollView.appearance().backgroundColor = .whiteGray
     }
     
     var dismissAction: ((Bool) -> Void)?
@@ -41,6 +40,17 @@ struct GiftStorageView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
+        .onChange(of: viewModel.sentGiftDialogWasSuccessfull) { error in
+            Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
+                viewModel.sentGiftDialogWasSuccessfull = false
+                dismissView()
+            })
+        }
+        .alert(isPresented: $viewModel.sentGiftDialogError) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.sentGiftDialogError = false
+            })
+        }
     }
     
     var backButton: some View {
@@ -104,10 +114,10 @@ struct GiftStorageView: View {
     
     var giftStorageInfoView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Gift storage with others".uppercased())
+            Text("Gift storage to others".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(.liniarBlue)
-            Text("Send storage to both existing users and new sign-ups. They need to log in or create an account to get your gift.")
+            Text("Send storage to existing users or invite someone new with a gift. Recipients must create an account to claim a gift.")
                 .textStyle(MediumSemiBoldTextStyle())
                 .foregroundColor(.darkBlue)
         }
