@@ -25,7 +25,7 @@ struct GiftStorageView: View {
                     backgroundView
                     contentView
                         .onReceive(keyboardPublisher) { value in
-                            isKeyboardPresented = value
+                            isKeyboardPresented = value.isFirstResponder
                         }
                 }
                 .ignoresSafeArea(.all)

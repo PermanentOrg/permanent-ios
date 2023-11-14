@@ -78,9 +78,6 @@ struct EmailChipView: View {
                 isFirstResponder = true
             }
         }
-        .onReceive(keyboardPublisher) { value in
-            isKeyboardPresented = value
-        }
     }
     
     var inputField: some View {
@@ -120,6 +117,11 @@ struct EmailChipView: View {
                         }
                     }
                     isKeyboardPresented = value
+                }
+                .onReceive(keyboardPublisher) { value in
+                    if value.aView is EmailChipView {
+                        isKeyboardPresented = value.isFirstResponder
+                    }
                 }
         }
     }
