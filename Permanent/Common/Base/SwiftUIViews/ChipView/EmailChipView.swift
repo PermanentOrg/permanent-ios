@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct EmailChipView: View {
+    @Binding var isKeyboardPresented: Bool
     @State private var chips: [String] = [] {
         didSet {
             var value = chips
@@ -77,6 +78,9 @@ struct EmailChipView: View {
                 isFirstResponder = true
             }
         }
+        .onReceive(keyboardPublisher) { value in
+            isKeyboardPresented = value
+        }
     }
     
     var inputField: some View {
@@ -115,6 +119,7 @@ struct EmailChipView: View {
                             errorText = text
                         }
                     }
+                    isKeyboardPresented = value
                 }
         }
     }

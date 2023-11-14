@@ -81,6 +81,8 @@
 		5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E4FA82988897F0062984C /* ManageTagsTests.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
 		5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */; };
+		5E2114922B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
+		5E2114932B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
 		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
@@ -930,6 +932,7 @@
 		5E1E4FA82988897F0062984C /* ManageTagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsTests.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E202E052981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E2114912B026CB300944386 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
 		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
@@ -1608,6 +1611,7 @@
 				BCFFD292252B506B009485C1 /* UIViewControllerExtension.swift */,
 				BCA120C825627ADF00ECAD7B /* UIViewExtension.swift */,
 				BCCC76EA255E8BF800903D3C /* URLExtension.swift */,
+				5E2114912B026CB300944386 /* ViewExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4217,6 +4221,7 @@
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
+				5E2114922B026CB300944386 /* ViewExtension.swift in Sources */,
 				5E83CC47286C5F8D00A5775B /* ExtensionUploadManager.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
@@ -4757,6 +4762,7 @@
 				5E4739E92A4186FD00A20D85 /* AuthResponse.swift in Sources */,
 				F559F89928FEEA210015A522 /* RequestProtocol.swift in Sources */,
 				F559F8A428FEEC0B0015A522 /* APIRequestDispatcher.swift in Sources */,
+				5E2114932B026CB300944386 /* ViewExtension.swift in Sources */,
 				5E4739FA2A4187BB00A20D85 /* BirthInfoProfileItem.swift in Sources */,
 				5E1CCC26287F055100913EEA /* CustomTextField.swift in Sources */,
 				5E1CCC25287F054000913EEA /* DropdownView.swift in Sources */,
