@@ -9,10 +9,11 @@ import SwiftUI
 struct GiftStorageView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: GiftStorageViewModel
+    @State var isKeyboardPresented = false
+    @State var spacerMinLength: CGFloat = 0
     
     init(viewModel: StateObject<GiftStorageViewModel>) {
         self._viewModel = viewModel
-        //UIScrollView.appearance().backgroundColor = .whiteGray
     }
     
     var dismissAction: ((Bool) -> Void)?
@@ -20,11 +21,14 @@ struct GiftStorageView: View {
     var body: some View {
         ZStack {
             CustomNavigationView {
-                    ZStack {
-                        backgroundView
-                        contentView
-                    }
-                    .edgesIgnoringSafeArea(.all)
+                ZStack {
+                    backgroundView
+                    contentView
+                        .onReceive(keyboardPublisher) { value in
+                            isKeyboardPresented = value.isFirstResponder
+                        }
+                }
+                .ignoresSafeArea(.all)
             } leftButton: {
                 backButton
             } rightButton: {
@@ -40,7 +44,17 @@ struct GiftStorageView: View {
                 .frame(width: 294)
             }
         }
-        .ignoresSafeArea(.keyboard)
+        .onChange(of: viewModel.sentGiftDialogWasSuccessfull) { error in
+            Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
+                viewModel.sentGiftDialogWasSuccessfull = false
+                dismissView()
+            })
+        }
+        .alert(isPresented: $viewModel.sentGiftDialogError) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.sentGiftDialogError = false
+            })
+        }
     }
     
     var backButton: some View {
@@ -61,21 +75,41 @@ struct GiftStorageView: View {
     }
     
     var contentView: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 32) {
+        ScrollViewReader { value in
+            ScrollView(showsIndicators: false) {
                 progressBarStorageView
+                    .padding(.vertical, 8)
+                    .id(0)
                 giftStorageInfoView
+                    .padding(.vertical, 8)
                 recipientEmailsView
+                    .padding(.vertical, 8)
+                    .id(1)
                 addStorageAmountView
+                    .padding(.vertical, 8)
                 noteToRecipients
+                    .padding(.vertical, 8)
                 sendGiftStorageButton
-                Spacer()
+                    .padding(.vertical, 8)
+                Spacer(minLength: spacerMinLength)
             }
             .padding(32)
             .navigationBarTitle("Gift Storage", displayMode: .inline)
+            .padding(.top, -10)
+            .frame(maxHeight: .infinity)
+            .onChange(of: isKeyboardPresented) { newValue in
+                if newValue {
+                    spacerMinLength = 400
+                    withAnimation {
+                        value.scrollTo(1, anchor: .top)
+                    }
+                } else {
+                    withAnimation {
+                        value.scrollTo(0, anchor: .top)
+                    }
+                }
+            }
         }
-        .padding(.top, -10)
-        .frame(maxHeight: .infinity)
     }
     
     var progressBarStorageView: some View {
@@ -104,14 +138,13 @@ struct GiftStorageView: View {
     
     var giftStorageInfoView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Gift storage with others".uppercased())
+            Text("Gift storage to others".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(.liniarBlue)
-            Text("Send storage to both existing users and new sign-ups. They need to log in or create an account to get your gift.")
+            Text("Send storage to existing users or invite someone new with a gift. Recipients must create an account to claim a gift.")
                 .textStyle(MediumSemiBoldTextStyle())
                 .foregroundColor(.darkBlue)
         }
-        .padding(.horizontal, -1)
     }
     
     var addStorageAmountView: some View {
@@ -126,7 +159,6 @@ struct GiftStorageView: View {
                     .textStyle(SmallXXXXXItalicTextStyle())
                     .foregroundColor(viewModel.notEnoughStorageSpace ? .lightRed : .darkBlue)
             }
-
         }
     }
     
@@ -191,7 +223,7 @@ struct GiftStorageView: View {
             Text("Recipient emails".uppercased())
                 .textStyle(SmallXXXXXSemiBoldTextStyle())
                 .foregroundColor(.liniarBlue)
-            EmailChipView(emails: $viewModel.emails)
+            EmailChipView(isKeyboardPresented: $isKeyboardPresented, emails: $viewModel.emails)
         }
         .padding(.horizontal, -1)
     }
