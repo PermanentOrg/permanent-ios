@@ -44,12 +44,6 @@ struct GiftStorageView: View {
                 .frame(width: 294)
             }
         }
-        .alert(isPresented: $viewModel.sentGiftWasSuccessfull) {
-            Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
-                viewModel.sentGiftWasSuccessfull = false
-                self.dismissView()
-            })
-        }
         .alert(isPresented: $viewModel.sentGiftError) {
             Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
                 viewModel.sentGiftError = false
@@ -108,6 +102,12 @@ struct GiftStorageView: View {
                         value.scrollTo(0, anchor: .top)
                     }
                 }
+            }
+            .alert(isPresented: $viewModel.sentGiftWasSuccessfull) {
+                Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
+                    viewModel.sentGiftWasSuccessfull = false
+                    self.dismissView()
+                })
             }
         }
     }
