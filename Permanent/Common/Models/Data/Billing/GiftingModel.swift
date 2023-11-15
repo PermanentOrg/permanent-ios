@@ -6,10 +6,9 @@
 
 import Foundation
 
-// MARK: - GiftingModel
+/// MARK: - GiftingModel
 struct GiftingModel: Model {
     let storageAmount: Int
     let recipientEmails: [String]
     let note: String?
 }
-

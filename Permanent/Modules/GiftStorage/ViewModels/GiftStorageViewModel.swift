@@ -41,8 +41,8 @@ class GiftStorageViewModel: ObservableObject {
             updateGiftAmountText()
         }
     }
-    @Published var sentGiftDialogError: Bool = false
-    @Published var sentGiftDialogWasSuccessfull: Bool = false
+    @Published var sentGiftError: Bool = false
+    @Published var sentGiftWasSuccessfull: Bool = false
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData
@@ -89,7 +89,6 @@ class GiftStorageViewModel: ObservableObject {
 
     func sendGiftStorage() {
         let gift = GiftingModel(storageAmount: giftAmountValue, recipientEmails: emails, note: noteText)
-        
         let endpoint = BillingEndpoint.giftStorage(gift: gift)
         let apiOperation = APIOperation(endpoint)
         
@@ -99,19 +98,21 @@ class GiftStorageViewModel: ObservableObject {
                     self.changesConfirmed = false
                     switch result {
                     case .json(let response, _):
-                        guard let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder) else {
-                            self.sentGiftDialogError = true
+                        guard let model: ResponseGiftingModel<NoDataModel> = JSONHelper.decoding(from: response, with: ResponseGiftingModel<NoDataModel>.decoder) else {
+                            self.sentGiftError = true
                             return
                         }
-                        self.sentGiftDialogWasSuccessfull = model.isSuccessful
-                        self.sentGiftDialogError = !model.isSuccessful
-                        // Handle success here
-                        
+                        //Handle success here
+                        if model.storageGifted > 0 {
+                            self.sentGiftWasSuccessfull = true
+                        } else {
+                            self.sentGiftError = true
+                        }
                     case .error( _, _):
                         // Handle error here
-                        self.sentGiftDialogError = true
+                        self.sentGiftError = true
                     default:
-                        self.sentGiftDialogError = true
+                        self.sentGiftError = true
                     }
                 }
             }
