@@ -8,17 +8,17 @@ import SwiftUI
 import Combine
 
 extension View {
-  var keyboardPublisher: AnyPublisher<Bool, Never> {
+    var keyboardPublisher: AnyPublisher<(isFirstResponder: Bool, aView: any View), Never> {
     Publishers
       .Merge(
         NotificationCenter
           .default
           .publisher(for: UIResponder.keyboardWillShowNotification)
-          .map { _ in true },
+          .map { _ in (true, self) },
         NotificationCenter
           .default
           .publisher(for: UIResponder.keyboardWillHideNotification)
-          .map { _ in false })
+          .map { _ in (false, self) })
       .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
       .eraseToAnyPublisher()
   }

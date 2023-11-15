@@ -15,15 +15,14 @@ struct EmailChipsTextField: UIViewRepresentable {
     func makeUIView(context: UIViewRepresentableContext<EmailChipsTextField>) -> UITextField {
         let textField = UITextField(frame: .zero)
         textField.delegate = context.coordinator
+        textField.textColor = .darkBlue
+        textField.font = TextFontStyle.style5.font
+        textField.autocapitalizationType = .none
+        textField.text = text
         return textField
     }
     
     func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<EmailChipsTextField>) {
-        uiView.text = text
-        uiView.textColor = .darkBlue
-        uiView.font = TextFontStyle.style5.font
-        uiView.autocapitalizationType = .none
-        
         // Manage focus state using coordinator
         if isFirstResponder && context.coordinator.didBecomeFirstResponder != true {
             uiView.becomeFirstResponder()
@@ -68,7 +67,7 @@ extension EmailChipsTextField {
                 text = string
                 return false
             }
-            if let aText = textField.text, let textRange = Range(range, in: text), string != EmailChipView.zwsp {
+            if let aText = textField.text, let textRange = Range(range, in: aText), string != EmailChipView.zwsp {
                 text = aText.replacingCharacters(in: textRange, with: string)
             }
             
