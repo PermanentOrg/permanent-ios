@@ -12,7 +12,7 @@ class NetworkLogger {
     static var isEnabled = true
     
     static func log(request: URLRequest) {
-        if isEnabled || APIEnvironment.defaultEnv == .staging {
+        if isEnabled && APIEnvironment.defaultEnv == .staging {
             print("\n - - - - - - - - - - OUTGOING - - - - - - - - - - \n")
             defer { print("\n - - - - - - - - - -  END - - - - - - - - - - \n") }
             let urlAsString = request.url?.absoluteString ?? ""
@@ -37,7 +37,7 @@ class NetworkLogger {
     }
     
     static func log(response: HTTPURLResponse?, data: Data?, error: Error?) {
-        if isEnabled || APIEnvironment.defaultEnv == .staging {
+        if isEnabled && APIEnvironment.defaultEnv == .staging {
             print("\n - - - - - - - - - - INCOMMING - - - - - - - - - - \n")
             defer { print("\n - - - - - - - - - -  END - - - - - - - - - - \n") }
             let urlString = response?.url?.absoluteString

@@ -41,8 +41,8 @@ class GiftStorageViewModel: ObservableObject {
             updateGiftAmountText()
         }
     }
-    @Published var sentGiftDialogError: Bool = false
-    @Published var sentGiftDialogWasSuccessfull: Bool = false
+    @Published var sentGiftError: Bool = false
+    @Published var sentGiftWasSuccessfull: Bool = false
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData
@@ -99,20 +99,20 @@ class GiftStorageViewModel: ObservableObject {
                     switch result {
                     case .json(let response, _):
                         guard let model: ResponseGiftingModel<NoDataModel> = JSONHelper.decoding(from: response, with: ResponseGiftingModel<NoDataModel>.decoder) else {
-                            self.sentGiftDialogError = true
+                            self.sentGiftError = true
                             return
                         }
                         //Handle success here
                         if model.storageGifted > 0 {
-                            self.sentGiftDialogWasSuccessfull = true
+                            self.sentGiftWasSuccessfull = true
                         } else {
-                            self.sentGiftDialogError = true
+                            self.sentGiftError = true
                         }
                     case .error( _, _):
                         // Handle error here
-                        self.sentGiftDialogError = true
+                        self.sentGiftError = true
                     default:
-                        self.sentGiftDialogError = true
+                        self.sentGiftError = true
                     }
                 }
             }

@@ -44,15 +44,15 @@ struct GiftStorageView: View {
                 .frame(width: 294)
             }
         }
-        .alert(isPresented: $viewModel.sentGiftDialogWasSuccessfull) {
+        .alert(isPresented: $viewModel.sentGiftWasSuccessfull) {
             Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
-                viewModel.sentGiftDialogWasSuccessfull = false
+                viewModel.sentGiftWasSuccessfull = false
                 self.dismissView()
             })
         }
-        .alert(isPresented: $viewModel.sentGiftDialogError) {
+        .alert(isPresented: $viewModel.sentGiftError) {
             Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                viewModel.sentGiftDialogError = false
+                viewModel.sentGiftError = false
             })
         }
     }
@@ -225,7 +225,6 @@ struct GiftStorageView: View {
                 .foregroundColor(.liniarBlue)
             EmailChipView(isKeyboardPresented: $isKeyboardPresented, emails: $viewModel.emails)
         }
-        .padding(.horizontal, -1)
     }
     
     func dismissView() {
