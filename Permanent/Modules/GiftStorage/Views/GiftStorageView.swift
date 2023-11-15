@@ -44,10 +44,10 @@ struct GiftStorageView: View {
                 .frame(width: 294)
             }
         }
-        .onChange(of: viewModel.sentGiftDialogWasSuccessfull) { error in
+        .alert(isPresented: $viewModel.sentGiftDialogWasSuccessfull) {
             Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
                 viewModel.sentGiftDialogWasSuccessfull = false
-                dismissView()
+                self.dismissView()
             })
         }
         .alert(isPresented: $viewModel.sentGiftDialogError) {

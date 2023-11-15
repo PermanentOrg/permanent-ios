@@ -280,6 +280,7 @@
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
 		5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */; };
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
+		5EB3EDBF2B04D18600D76B83 /* ResonseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResonseGiftingModel.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */; };
 		5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */; };
@@ -1083,6 +1084,7 @@
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagsNamesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
+		5EB3EDBE2B04D18600D76B83 /* ResonseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResonseGiftingModel.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurbProfileItem.swift; sourceTree = "<group>"; };
 		5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionProfileItem.swift; sourceTree = "<group>"; };
@@ -2704,6 +2706,7 @@
 			isa = PBXGroup;
 			children = (
 				5E7141442AFD25D5003952CD /* GiftingModel.swift */,
+				5EB3EDBE2B04D18600D76B83 /* ResonseGiftingModel.swift */,
 			);
 			path = Billing;
 			sourceTree = "<group>";
@@ -4217,6 +4220,7 @@
 				5E991EE72A4AE144006229C0 /* CustomNavigationView.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
+				5EB3EDBF2B04D18600D76B83 /* ResonseGiftingModel.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
