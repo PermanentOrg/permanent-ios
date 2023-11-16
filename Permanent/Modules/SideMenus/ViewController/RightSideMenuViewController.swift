@@ -85,25 +85,29 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         }
         
         if isOpening {
-            viewModel?.getAccountInfo { [self] accountData, error in
-                guard let accountData = accountData else { return }
-                
-                viewModel?.accountData = accountData
-                
-                let spaceTotal = (accountData.spaceTotal ?? 0)
-                let spaceLeft = (accountData.spaceLeft ?? 0)
-                let spaceUsed = spaceTotal - spaceLeft
-                
-                let spaceTotalHumanReadableContent = spaceTotal.bytesToReadableForm(useDecimal: false)
-                let spaceUsedHumanReadableContent = spaceUsed.bytesToReadableForm()
-                
-                let storageLabelString = "<STORAGE_USED> of <STORAGE_TOTAL> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: spaceUsedHumanReadableContent).replacingOccurrences(of: "<STORAGE_TOTAL>", with: spaceTotalHumanReadableContent)
-                storageUsedLabel.text = storageLabelString
-                
-                storageProgressBar.setProgress(Float(spaceUsed) / Float(spaceTotal), animated: true)
-                
-                emailLabel.text = accountData.primaryEmail
-            }
+            updateAccountInfo()
+        }
+    }
+    
+    fileprivate func updateAccountInfo() {
+        viewModel?.getAccountInfo { [self] accountData, error in
+            guard let accountData = accountData else { return }
+            
+            viewModel?.accountData = accountData
+            
+            let spaceTotal = (accountData.spaceTotal ?? 0)
+            let spaceLeft = (accountData.spaceLeft ?? 0)
+            let spaceUsed = spaceTotal - spaceLeft
+            
+            let spaceTotalHumanReadableContent = spaceTotal.bytesToReadableForm(useDecimal: false)
+            let spaceUsedHumanReadableContent = spaceUsed.bytesToReadableForm()
+            
+            let storageLabelString = "<STORAGE_USED> of <STORAGE_TOTAL> used".localized().replacingOccurrences(of: "<STORAGE_USED>", with: spaceUsedHumanReadableContent).replacingOccurrences(of: "<STORAGE_TOTAL>", with: spaceTotalHumanReadableContent)
+            storageUsedLabel.text = storageLabelString
+            
+            storageProgressBar.setProgress(Float(spaceUsed) / Float(spaceTotal), animated: true)
+            
+            emailLabel.text = accountData.primaryEmail
         }
     }
     
@@ -252,6 +256,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             // Add a way to call the completion block when the view is dismissed.
             hostingController.rootView.dismissAction = { hasUpdates in
                 hostingController.dismiss(animated: true, completion: {
+                    self.updateAccountInfo()
                     self.selectedMenuOption = .none
                     self.setupTableView()
                     self.adjustUIForAnimation(isOpening: false)

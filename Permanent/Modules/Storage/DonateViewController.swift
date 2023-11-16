@@ -15,7 +15,6 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     @IBOutlet weak var donateTextField: UITextField!
     @IBOutlet weak var endowmentLabel: UILabel!
     @IBOutlet weak var paymentView: UIView!
-    @IBOutlet weak var anonymousSwitch: UISwitch!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var contextLabel: UILabel!
     
@@ -129,10 +128,6 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         setAmountSelected(atIndex: 2)
         donateTextField.text = "50"
         endowmentLabel.text = "Endow 5 GB".localized()
-    }
-    
-    @IBAction func anonymousSwitchValueChanged(_ sender: Any) {
-        viewModel?.isAnonymous = anonymousSwitch.isOn
     }
     
     @objc func applePayButtonPressed(_ sender: Any) {
