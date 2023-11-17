@@ -43,6 +43,7 @@ class GiftStorageViewModel: ObservableObject {
     }
     @Published var sentGiftError: Bool = false
     @Published var sentGiftWasSuccessfull: Bool = false
+    @Published var isLoading: Bool = false
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData
@@ -88,6 +89,7 @@ class GiftStorageViewModel: ObservableObject {
     }
 
     func sendGiftStorage() {
+        isLoading = true
         let gift = GiftingModel(storageAmount: giftAmountValue, recipientEmails: emails, note: noteText)
         let endpoint = BillingEndpoint.giftStorage(gift: gift)
         let apiOperation = APIOperation(endpoint)
@@ -95,6 +97,7 @@ class GiftStorageViewModel: ObservableObject {
         Task {
             apiOperation.execute(in: APIRequestDispatcher()) { result in
                 DispatchQueue.main.async {
+                    self.isLoading = false
                     self.changesConfirmed = false
                     switch result {
                     case .json(let response, _):
