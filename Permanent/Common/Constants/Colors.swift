@@ -13,7 +13,7 @@ extension UIColor {
     static var darkBlue = UIColor(named: "DarkBlue") ?? UIColor(red: 19 / 255, green: 27 / 255, blue: 74 / 255, alpha: 1)
     static var lightBlue = UIColor(named: "LightBlue") ?? UIColor(red: 29 / 255, green: 75 / 255, blue: 178 / 255, alpha: 1)
     static var blueGray = UIColor(named: "BlueGray") ?? UIColor(red: 70 / 255, green: 80 / 255, blue: 132 / 255, alpha: 1)
-    static var barneyPurple = UIColor(named: "BarneyPurple") ?? UIColor(red: 128 / 255, green: 0 / 255, blue: 128 / 255, alpha: 1)
+    static var barneyPurple = UIColor(named: "BarneyPurple") ?? UIColor(red: 141 / 255, green: 0 / 255, blue: 133 / 255, alpha: 1)
     static var lightPurple = UIColor(named: "LightPurple") ?? UIColor(red: 231 / 255, green: 212 / 255, blue: 231 / 255, alpha: 1)
     static var deepRed = UIColor(named: "DeepRed") ?? UIColor(red: 161 / 255, green: 0 / 255, blue: 0 / 255, alpha: 1)
     static var paleRed = UIColor(named: "PaleRed") ?? UIColor(red: 255 / 255, green: 61 / 255, blue: 61 / 255, alpha: 1)
@@ -59,18 +59,7 @@ extension UIColor {
 }
 
 extension Color {
-    static var indianSaffron = Color("IndianSaffron")
-    static var darkBlue = Color("DarkBlue")
-    static var whiteGray = Color("WhiteGray")
-    static var galleryGray = Color("GalleryGray")
-    static var middleGray = Color("MiddleGray")
-    static var paleOrange = Color("PaleOrange")
-    static var lightGray = Color("LightGray")
-    static var lightRed = Color("LightRed")
-    static var tangerine = Color(.tangerine)
-}
-
-extension Color {
+    
     init(hexCode: String) {
         let scanner = Scanner(string: hexCode)
         var rgbValue: UInt64 = 0
@@ -82,4 +71,17 @@ extension Color {
         
         self.init(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255)
     }
+    
+    static var indianSaffron = Color("IndianSaffron")
+    static var darkBlue = Color("DarkBlue")
+    static var whiteGray = Color("WhiteGray")
+    static var galleryGray = Color("GalleryGray")
+    static var middleGray = Color("MiddleGray")
+    static var paleOrange = Color("PaleOrange")
+    static var lightGray = Color("LightGray")
+    static var lightRed = Color("LightRed")
+    static var tangerine = Color(.tangerine)
+    static var error200 = Color("Error200")
+    static var barneyPurple = Color(.barneyPurple)
+    static var liniarBlue = Color(.liniarBlue)
 }

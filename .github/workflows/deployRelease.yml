@@ -3,7 +3,7 @@ name: Deploy TestFlight
 on:
   workflow_dispatch:
   push:
-    branches: [ "release/**" ]
+    branches: [ "Release-**" ]
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '14.3'
+          xcode-version: latest
       - name: Run Fastlane AppStore
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
