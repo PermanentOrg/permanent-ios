@@ -85,23 +85,30 @@ struct EmailChipView: View {
             EmailChipsTextField(text: $inputText, isFirstResponder: $isFirstResponder)
                 .onChange(of: inputText) { _ in
                     if inputText.hasSuffix(" ") || inputText.hasSuffix("\n") || inputText.hasSuffix(",") {
-                        let text = String(inputText[..<inputText.index(before: inputText.endIndex)])
+                        var text = String(inputText[..<inputText.index(before: inputText.endIndex)])
+                        if text.hasPrefix(EmailChipView.zwsp) {
+                            text.removeFirst()
+                        }
+                        
                         if text.isValidEmail {
                             chips.insert(String(inputText[..<inputText.index(before: inputText.endIndex)]), at: chips.count - 1)
                             inputText = EmailChipView.zwsp
                             errorText = nil
                         } else {
-                            inputText = text
                             errorText = text
                         }
                     } else if chips.count > 1 && inputText.isEmpty {
                         let last = chips.remove(at: chips.count - 2)
                         inputText = last
+                        errorText = nil
                     }
                 }
                 .onChange(of: isFirstResponder) { value in
                     if value == false {
-                        let text = inputText
+                        var text = inputText
+                        if text.hasPrefix(EmailChipView.zwsp) {
+                            text.removeFirst()
+                        }
                         if text.isValidEmail {
                             chips.insert(text, at: chips.count - 1)
                             inputText = EmailChipView.zwsp
@@ -112,7 +119,6 @@ struct EmailChipView: View {
                             errorText = nil
                             chips.removeLast()
                         } else {
-                            inputText = text
                             errorText = text
                         }
                     }
