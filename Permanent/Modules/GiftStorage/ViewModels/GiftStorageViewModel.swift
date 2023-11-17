@@ -21,6 +21,7 @@ class GiftStorageViewModel: ObservableObject {
         }
     }
     @Published var amountText: String? = nil
+    @Published var storageGifted: Int = 0
     @Published var notEnoughStorageSpace: Bool = false
     @Published var spaceNeeded: Int = 0
     @Published var spaceLeftAfterDonation: Int = 0
@@ -107,6 +108,7 @@ class GiftStorageViewModel: ObservableObject {
                         }
                         //Handle success here
                         if model.storageGifted > 0 {
+                            self.storageGifted = model.storageGifted
                             self.sentGiftWasSuccessfull = true
                         } else {
                             self.sentGiftError = true

@@ -104,7 +104,7 @@ struct GiftStorageView: View {
                 }
             }
             .alert(isPresented: $viewModel.sentGiftWasSuccessfull) {
-                Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.giftAmountValue) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
+                Alert(title: Text("Storage successfully gifted"), message: Text("Success! You sent \(viewModel.storageGifted) GB of Permanent storage"), dismissButton: .default(Text(String.ok)) {
                     viewModel.sentGiftWasSuccessfull = false
                     self.dismissView()
                 })
