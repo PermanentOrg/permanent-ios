@@ -18,11 +18,17 @@ struct EmailChipsTextField: UIViewRepresentable {
         textField.textColor = .darkBlue
         textField.font = TextFontStyle.style5.font
         textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
         textField.text = text
+        textField.addTarget(context.coordinator, action: #selector(context.coordinator.textChanged), for: .editingChanged)
+        
         return textField
     }
     
     func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<EmailChipsTextField>) {
+        if uiView.text != text {
+            uiView.text = text
+        }
         // Manage focus state using coordinator
         if isFirstResponder && context.coordinator.didBecomeFirstResponder != true {
             uiView.becomeFirstResponder()
@@ -45,6 +51,7 @@ extension EmailChipsTextField {
         var didBecomeFirstResponder: Bool? = nil
         var didResignFirstResponder: Bool? = nil
         
+        
         @Binding var text: String
         @Binding var isFirstResponder: Bool
         
@@ -61,17 +68,12 @@ extension EmailChipsTextField {
             isFirstResponder = false
         }
         
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        @objc
+        func textChanged(textField: UITextField) {
             if textField.text == EmailChipView.zwsp {
-                textField.text = string
-                text = string
-                return false
+                return
             }
-            if let aText = textField.text, let textRange = Range(range, in: aText), string != EmailChipView.zwsp {
-                text = aText.replacingCharacters(in: textRange, with: string)
-            }
-            
-            return true
+            text = textField.text ?? ""
         }
     }
 }
