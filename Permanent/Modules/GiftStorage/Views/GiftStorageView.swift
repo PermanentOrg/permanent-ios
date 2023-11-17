@@ -205,7 +205,12 @@ struct GiftStorageView: View {
                         .textStyle(SmallSemiBoldTextStyle())
                         .foregroundColor(.white)
                     Spacer()
-                    Image(.legacyPlanRightArrow)
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(.legacyPlanRightArrow)
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 16)
