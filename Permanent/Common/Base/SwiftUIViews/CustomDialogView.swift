@@ -16,8 +16,9 @@ import SwiftUI
 struct CustomDialogView: View {
     @Binding var isActive: Bool
     let title: String
-    let message: String
+    let message: String?
     let buttonTitle: String
+    var addCornerRadius: Bool = false
     let action: () -> ()
     @State private var offset: CGFloat = 1000
     
@@ -36,13 +37,16 @@ struct CustomDialogView: View {
                                 .textStyle(RegularBoldTextStyle())
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.darkBlue)
-                                .padding()
-                            Text(message)
-                                .textStyle(SmallXRegularTextStyle())
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.darkBlue)
                                 .frame(width: 216)
-                                .padding(.horizontal)
+                                .padding()
+                            if let message = message {
+                                Text(message)
+                                    .textStyle(SmallXRegularTextStyle())
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.darkBlue)
+                                    .frame(width: 216)
+                                    .padding(.horizontal)
+                            }
                         }
                         VStack(spacing: 8) {
                             Button {
@@ -53,6 +57,7 @@ struct CustomDialogView: View {
                                     .multilineTextAlignment(.center)
                             }
                             .buttonStyle(CustomButtonStyle(backgroundColor: .darkBlue, foregroundColor: .white))
+                            .cornerRadius(addCornerRadius ? 8 : 0)
                             Button {
                                 close()
                             } label: {
@@ -60,6 +65,7 @@ struct CustomDialogView: View {
                                     .multilineTextAlignment(.center)
                             }
                             .buttonStyle(CustomButtonStyle(backgroundColor: .galleryGray, foregroundColor: .darkBlue))
+                            .cornerRadius(addCornerRadius ? 8 : 0)
                         }
                     }
                     .padding(.top, 32)
@@ -85,9 +91,11 @@ struct CustomDialogView: View {
                     .font(.title2)
                     .bold()
                     .padding()
-                Text(message)
-                    .font(.body)
-                    .multilineTextAlignment(.center)
+                if let message = message {
+                    Text(message)
+                        .font(.body)
+                        .multilineTextAlignment(.center)
+                }
                 Button {
                     action ()
                 } label: {

@@ -189,6 +189,8 @@ struct MetadataEditView: View {
                         .foregroundColor(.white)
                 }
             }
+        }, rightButton: {
+            EmptyView()
         })
     }
     

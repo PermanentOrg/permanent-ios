@@ -10,6 +10,7 @@ fileprivate enum FontName: String {
     case openSansRegular = "OpenSans-Regular"
     case openSansSemiBold = "OpenSans-SemiBold"
     case openSansBold = "OpenSans-Bold"
+    case openSansItalic = "OpenSans-Italic"
 }
 
 fileprivate enum FontSize: CGFloat {
@@ -40,6 +41,14 @@ struct SmallXXXXXRegularTextStyle: ViewModifier {
     }
 }
 
+struct SmallXXXXXItalicTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansItalic.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct SmallXXXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
@@ -51,6 +60,14 @@ struct SmallXXXXRegularTextStyle: ViewModifier {
 struct SmallXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct SmallXXSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
                              size: FontSize.xxSmall.rawValue,
                              relativeTo: .largeTitle))
     }
@@ -100,6 +117,14 @@ struct SmallXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
                              size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct MediumSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.medium.rawValue,
                              relativeTo: .largeTitle))
     }
 }
