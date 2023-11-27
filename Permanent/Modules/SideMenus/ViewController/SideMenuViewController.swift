@@ -47,6 +47,12 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
         setupTableView()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        EventsManager.trackPageView(page: .ArchiveMenu)
+    }
+    
     fileprivate func initUI() {
         view.backgroundColor = .primary
         tableView.backgroundColor = .primary

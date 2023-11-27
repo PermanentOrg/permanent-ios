@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
         
-        EventsManager.startTracker()
+        EventsManager.startTracker(token: mixpanelServiceInfo.token)
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = RootViewController()
