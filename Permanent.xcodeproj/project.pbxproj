@@ -5023,7 +5023,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5052,7 +5052,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.9.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5457,7 +5457,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5540,7 +5540,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
