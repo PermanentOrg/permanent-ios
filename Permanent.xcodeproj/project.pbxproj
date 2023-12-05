@@ -75,8 +75,6 @@
 		5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
 		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
-		5E1CE4412AAF32BE00EEE52E /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CE43F2AAF32BD00EEE52E /* EventsManager.swift */; };
-		5E1CE4422AAF32BE00EEE52E /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CE4402AAF32BD00EEE52E /* EventType.swift */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E4FA82988897F0062984C /* ManageTagsTests.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
@@ -423,6 +421,15 @@
 		9220ACCD2A1CC1BB003797C9 /* AccountSteward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */; };
 		9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */; };
 		9229A3AB2A7A7773004DE31D /* PullDownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9229A3AA2A7A7773004DE31D /* PullDownButton.swift */; };
+		92430A5D2AF2A1F00098597D /* EmailChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5A2AF2A1F00098597D /* EmailChip.swift */; };
+		92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */; };
+		92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5C2AF2A1F00098597D /* EmailChipView.swift */; };
+		92430A902B10A55E0098597D /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8E2B10A55E0098597D /* EventType.swift */; };
+		92430A912B10A55E0098597D /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8F2B10A55E0098597D /* EventsManager.swift */; };
+		92430A932B10A5690098597D /* EventPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A922B10A5690098597D /* EventPage.swift */; };
+		92430A942B10D5680098597D /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8E2B10A55E0098597D /* EventType.swift */; };
+		92430A952B10D56B0098597D /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8F2B10A55E0098597D /* EventsManager.swift */; };
+		92430A962B10D56E0098597D /* EventPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A922B10A5690098597D /* EventPage.swift */; };
 		92430A722B078EEE0098597D /* GiftStorageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A6F2B078EED0098597D /* GiftStorageViewModel.swift */; };
 		92430A732B078EEE0098597D /* GiftStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A712B078EEE0098597D /* GiftStorageView.swift */; };
 		92430A772B0790430098597D /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A752B0790430098597D /* ResponseGiftingModel.swift */; };
@@ -1211,6 +1218,12 @@
 		9220ACCB2A1CBB4F003797C9 /* AccountSteward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSteward.swift; sourceTree = "<group>"; };
 		9220ACCE2A20E6CE003797C9 /* RoundedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedImageView.swift; sourceTree = "<group>"; };
 		9229A3AA2A7A7773004DE31D /* PullDownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullDownButton.swift; sourceTree = "<group>"; };
+		92430A5A2AF2A1F00098597D /* EmailChip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChip.swift; sourceTree = "<group>"; };
+		92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipsTextField.swift; sourceTree = "<group>"; };
+		92430A5C2AF2A1F00098597D /* EmailChipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipView.swift; sourceTree = "<group>"; };
+		92430A8E2B10A55E0098597D /* EventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
+		92430A8F2B10A55E0098597D /* EventsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
+		92430A922B10A5690098597D /* EventPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPage.swift; sourceTree = "<group>"; };
 		92430A6F2B078EED0098597D /* GiftStorageViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiftStorageViewModel.swift; sourceTree = "<group>"; };
 		92430A712B078EEE0098597D /* GiftStorageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiftStorageView.swift; sourceTree = "<group>"; };
 		92430A752B0790430098597D /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
@@ -3058,6 +3071,16 @@
 			path = ChipView;
 			sourceTree = "<group>";
 		};
+		92430A8D2B10A55E0098597D /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				92430A8E2B10A55E0098597D /* EventType.swift */,
+				92430A8F2B10A55E0098597D /* EventsManager.swift */,
+				92430A922B10A5690098597D /* EventPage.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
 		924F16382A45D25100B75D4E /* ViewModifiers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3337,7 +3360,7 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				5E102FA42AB7AD6800B49AE1 /* Events */,
+				92430A8D2B10A55E0098597D /* Events */,
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
 				BC581A4D255A98DB00171D7A /* MediaRecorder.swift */,
@@ -4236,7 +4259,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent/App --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET,authTenantId=$AUTH_TENANT_ID,stripePublishableKey=$STRIPE_PUB_KEY,uiTestUsername=$UI_TEST_USERNAME,uiTestPassword=$UI_TEST_PASSWORD,authFusionAuthorization=$AUTH_FUSION_AUTHORIZATION\n";
+			shellScript = "#check if env-vars.sh exists\nif [ -f ./$ENV_VARS_FILENAME ]\nthen\nsource ./$ENV_VARS_FILENAME\nfi\n#no `else` case needed if the CI works as expected\n./Pods/Sourcery/bin/sourcery --templates ./Permanent --sources . --output ./Permanent/App --args clientId=$CLIENT_ID,reversedClientId=$REVERSED_CLIENT_ID,apiKey=$API_KEY,gcmSenderId=$GCM_SENDER_ID,projectId=$PROJECT_ID,storageBucket=$STORAGE_BUCKET,googleAppId=$GOOGLE_APP_ID,authClientId=$AUTH_CLIENT_ID,authClientSecret=$AUTH_CLIENT_SECRET,authTenantId=$AUTH_TENANT_ID,stripePublishableKey=$STRIPE_PUB_KEY,uiTestUsername=$UI_TEST_USERNAME,uiTestPassword=$UI_TEST_PASSWORD,authFusionAuthorization=$AUTH_FUSION_AUTHORIZATION,mixpanelToken=$MIXPANEL_TOKEN\n";
 		};
 		F5A784992785D84A00738389 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4500,6 +4523,7 @@
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
+				5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */,
 				5E1CE4422AAF32BE00EEE52E /* EventType.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
@@ -4586,6 +4610,7 @@
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
+				92430A912B10A55E0098597D /* EventsManager.swift in Sources */,
 				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */,
@@ -4623,7 +4648,6 @@
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
 				BCD948D4258BA54600089F86 /* ItemVO.swift in Sources */,
 				BC6D3B432513664C00390927 /* AuthViewModel.swift in Sources */,
-				5E1CE4412AAF32BE00EEE52E /* EventsManager.swift in Sources */,
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				5E991EDF2A48E05C006229C0 /* MetadataEditView.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
@@ -4657,6 +4681,7 @@
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
 				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
+				92430A902B10A55E0098597D /* EventType.swift in Sources */,
 				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
@@ -4686,6 +4711,7 @@
 				F5EAD0672822BBE900EC2584 /* AccountOnboardingPageThree.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
+				92430A932B10A5690098597D /* EventPage.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
 				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
@@ -4837,6 +4863,7 @@
 				5ECBAF9E2A1B5EF500FACFDF /* ArchiveSteward.swift in Sources */,
 				5ECF68DB2ACC470400C06F5A /* UploadManagerViewModel.swift in Sources */,
 				5E4739E82A4186EB00A20D85 /* VerifyCodeResponse.swift in Sources */,
+				92430A942B10D5680098597D /* EventType.swift in Sources */,
 				F559F8AB28FF02A10015A522 /* FileListType.swift in Sources */,
 				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
@@ -4862,6 +4889,7 @@
 				F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */,
 				F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */,
 				5ED3B3B129F7E4FF000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
+				92430A952B10D56B0098597D /* EventsManager.swift in Sources */,
 				9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */,
 				5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
@@ -4987,6 +5015,7 @@
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
 				5E84DB3C2AE832BE0030EAA6 /* ArchiveDropdownMenuList.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
+				92430A962B10D56E0098597D /* EventPage.swift in Sources */,
 				5E3E12452A41F16500682DE5 /* EmptyFolderView.swift in Sources */,
 				F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */,
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
@@ -5207,7 +5236,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5236,7 +5265,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.9.3;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5641,7 +5670,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5724,7 +5753,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.1;
+				MARKETING_VERSION = 1.9.3;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";

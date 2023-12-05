@@ -9,8 +9,8 @@ import Mixpanel
 
 struct EventsManager {
     
-    static func startTracker() {
-        Mixpanel.initialize(token: mixpanelServiceInfo.token, trackAutomaticEvents: true)
+    static func startTracker(token: String) {
+        Mixpanel.initialize(token: token, trackAutomaticEvents: true)
     }
     
     static func trackEvent(event: EventType, properties: [String: any MixpanelType]? = nil) {
@@ -26,6 +26,11 @@ struct EventsManager {
             Mixpanel.mainInstance().people.set(properties: [ "$email": email])
         }
     }
+    
+    static func trackPageView(page: EventPage) {
+        Mixpanel.mainInstance().track(event: "Screen View", properties: ["page" : page.rawValue])
+    }
+    
     
     static func resetUser() {
         Mixpanel.mainInstance().reset()

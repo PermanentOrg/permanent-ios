@@ -50,6 +50,11 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
         setupTableView()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        EventsManager.trackPageView(page: .AccountMenu)
+    }
+    
     func initUI() {
         view.backgroundColor = .white
         tableView.backgroundColor = .white
