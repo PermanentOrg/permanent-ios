@@ -1254,8 +1254,11 @@ extension MainViewController: FABActionSheetDelegate {
         
         present(vc, animated: true)
     }
-        
+    
     func showActionSheet() {
+        EventsManager.trackEvent(event: .InitiateUpload,
+                                 properties: ["workspace": viewModel is PublicFilesViewModel ? "Public" : "Private"])
+        
         let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
         let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
@@ -1321,6 +1324,8 @@ extension MainViewController: FABActionSheetDelegate {
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
+        EventsManager.trackEvent(event: .FinalizeUpload,
+                                 properties: ["workspace": viewModel is PublicFilesViewModel ? "Public" : "Private"])
     }
     
     private func newFolderAction() {

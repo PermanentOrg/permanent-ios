@@ -66,7 +66,7 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
             switch result {
             case .success:
                 self.dismiss(animated: true)
-                
+                EventsManager.trackEvent(event: .SignIn)
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {

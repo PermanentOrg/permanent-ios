@@ -40,6 +40,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        EventsManager.trackPageView(page: .ArchiveProfile)
         
         viewModel = PublicProfilePicturesViewModel()
         
