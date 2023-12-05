@@ -22,7 +22,7 @@ struct SectionHeaderView: View {
                                     Image("questionMark")
                                 }
                             })
-                            .frame(width: 24, height: 24)
+                            .frame(width: 40, height: 40)
                             .aspectRatio(contentMode: .fill)
                     }
                     Text("Editing \(Int(files.count)) items")

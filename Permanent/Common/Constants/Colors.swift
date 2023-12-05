@@ -59,6 +59,19 @@ extension UIColor {
 }
 
 extension Color {
+    
+    init(hexCode: String) {
+        let scanner = Scanner(string: hexCode)
+        var rgbValue: UInt64 = 0
+        scanner.scanHexInt64(&rgbValue)
+
+        let r = (rgbValue & 0xff0000) >> 16
+        let g = (rgbValue & 0xff00) >> 8
+        let b = rgbValue & 0xff
+        
+        self.init(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255)
+    }
+    
     static var indianSaffron = Color("IndianSaffron")
     static var darkBlue = Color("DarkBlue")
     static var whiteGray = Color("WhiteGray")
@@ -67,6 +80,7 @@ extension Color {
     static var paleOrange = Color("PaleOrange")
     static var lightGray = Color("LightGray")
     static var lightRed = Color("LightRed")
+    static var tangerine = Color(.tangerine)
     static var error200 = Color("Error200")
     static var barneyPurple = Color(.barneyPurple)
     static var liniarBlue = Color(.liniarBlue)

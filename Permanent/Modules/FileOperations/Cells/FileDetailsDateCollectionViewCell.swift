@@ -58,30 +58,32 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         datePicker.date = date ?? Date()
         datePicker.addTarget(self, action: #selector(datePickerDidChange(_:)), for: .valueChanged)
         datePicker.datePickerMode = .dateAndTime
+        datePicker.tintColor = .darkBlue
+        datePicker.maximumDate = Date()
         if #available(iOS 13.4, *) {
-            datePicker.preferredDatePickerStyle = .wheels
+            datePicker.preferredDatePickerStyle = .inline
         }
         datePicker.sizeToFit()
         
-        let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 40))
-        let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 90, height: doneContainerView.frame.height))
+        let doneContainerView = UIView(frame: CGRect(x: 0, y: 0, width: datePicker.frame.width, height: 75))
+        let doneButton = RoundedButton(frame: CGRect(x: datePicker.frame.width - 92, y: 0, width: 80, height: 40))
         doneButton.autoresizingMask = [.flexibleLeftMargin]
         doneButton.setup()
         doneButton.setFont(UIFont.systemFont(ofSize: 17))
-        doneButton.configureActionButtonUI(title: "done", bgColor: .systemBlue)
+        doneButton.configureActionButtonUI(title: "done", bgColor: .darkBlue)
         doneButton.addTarget(self, action: #selector(datePickerDoneButtonPressed(_:)), for: .touchUpInside)
         doneContainerView.addSubview(doneButton)
         
         let stackView = UIStackView(arrangedSubviews: [datePicker, doneContainerView])
         stackView.axis = .vertical
-        stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 40)
+        stackView.frame = CGRect(x: 0, y: 0, width: datePicker.frame.width, height: datePicker.frame.height + doneContainerView.frame.height + 50)
         
         detailsTextField.inputView = stackView
     }
     
     func detailsDate() -> Date? {
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
+        dateFormatter.timeZone = TimeZone.current
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         let date: Date?
@@ -117,8 +119,9 @@ class FileDetailsDateCollectionViewCell: FileDetailsBaseCollectionViewCell {
         
         if let date = date {
             let dateFormatter = DateFormatter()
+            dateFormatter.timeZone = TimeZone.current
             
-            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a"
+            dateFormatter.dateFormat = "yyyy-MM-dd h:mm a zzz"
             detailsTextField.text = dateFormatter.string(from: date)
         }
     }

@@ -93,3 +93,7 @@ env-vars.sh
 
 .idea/
 *.DS_Store
+
+#Ignore overlay design
+DesignOverlaySliderView.swift
+DesignOverlayView.swift

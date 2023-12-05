@@ -12,7 +12,7 @@ extension URL {
     var typeIdentifier: String? {
         return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
     }
-
+    
     var localizedName: String? {
         return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
     }
@@ -30,5 +30,16 @@ extension URL {
     
     public init?(string: String?) {
         self.init(string: string ?? "")
+    }
+    
+    var fileSizeString: String {
+        do {
+            let resourceValues = try self.resourceValues(forKeys: [.fileSizeKey])
+            let fileSize = resourceValues.fileSize!
+            return ByteCountFormatter.string(fromByteCount: Int64(fileSize), countStyle: .file)
+        } catch {
+            print("Failed to retrieve file size: \(error)")
+            return "Unknown size"
+        }
     }
 }

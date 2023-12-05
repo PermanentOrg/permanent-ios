@@ -8,6 +8,7 @@
 import UIKit
 import Photos
 import MobileCoreServices
+import SwiftUI
 
 class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet var directoryLabel: UILabel!
@@ -137,6 +138,13 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.setupBottomActionSheetForMultipleFiles()
             } else {
                 self?.dismissFloatingActionIsland()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: AddButtonMenuViewController.addButtonMenuDismissView, object: nil, queue: nil) { [weak self] notif in
+            guard let showMenu = notif.userInfo?["showMenu"] as? Bool else { return }
+            if !showMenu {
+                self?.closeMenuBtnTapped()
             }
         }
     }
@@ -1278,16 +1286,39 @@ extension SharesViewController: SortActionSheetDelegate {
 // MARK: - FABViewDelegate
 extension SharesViewController: FABViewDelegate {
     func didTap() {
-        guard let actionSheet = UIViewController.create(
-            withIdentifier: .fabActionSheet,
-            from: .main
-        ) as? FABActionSheet else {
-            showAlert(title: .error, message: .errorMessage)
-            return
-        }
+        fabView.isHidden = true
+        let vc = AddButtonMenuViewController()
 
-        actionSheet.delegate = self
-        navigationController?.display(viewController: actionSheet, modally: true)
+        vc.modalPresentationStyle = .overCurrentContext
+        present(vc, animated: false)
+        vc.createNewFolderBtn.addTarget(self, action: #selector(createNewFolderBtnTapped), for: .touchUpInside)
+        vc.takePhotoVideoBtn.addTarget(self, action: #selector(takePhotoOrVideoBtnTapped), for: .touchUpInside)
+        vc.uploadPhotosFromLibraryBtn.addTarget(self, action: #selector(uploadPhotosFromLibraryBtnTapped), for: .touchUpInside)
+        vc.browseFilesBtn.addTarget(self, action: #selector(browseFilesBtnTapped), for: .touchUpInside)
+    }
+    
+    @objc func closeMenuBtnTapped() {
+        fabView.isHidden = false
+    }
+    
+    @objc func createNewFolderBtnTapped() {
+        closeMenuBtnTapped()
+        didTapNewFolder()
+    }
+    
+    @objc func takePhotoOrVideoBtnTapped() {
+        closeMenuBtnTapped()
+        openCamera()
+    }
+    
+    @objc func uploadPhotosFromLibraryBtnTapped() {
+        closeMenuBtnTapped()
+        openPhotoLibrary()
+    }
+    
+    @objc func browseFilesBtnTapped() {
+        closeMenuBtnTapped()
+        openFileBrowser()
     }
 }
 
@@ -1421,16 +1452,28 @@ extension SharesViewController: UIDocumentPickerDelegate {
 // MARK: - PhotoPickerViewControllerDelegate
 extension SharesViewController: PhotoPickerViewControllerDelegate {
     func photoTabBarViewControllerDidPickAssets(_ vc: PhotoTabBarViewController?, assets: [PHAsset]) {
-        let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
-        present(alert, animated: true)
-        viewModel?.didChooseFromPhotoLibrary(assets, completion: { [self] urls in
-            dismiss(animated: true) { [self] in
-                guard let currentFolder = viewModel?.currentFolder else {
-                    return showErrorAlert(message: .cannotUpload)
-                }
-                
-                processUpload(toFolder: currentFolder, forURLS: urls)
+        let selectedArchive = AuthenticationManager.shared.session?.selectedArchive
+        let folderNavigationStack = viewModel?.navigationStack
+        
+        let uploadManagerViewModel = UploadManagerViewModel(assets: assets, currentArchive: selectedArchive, folderNavigationStack: folderNavigationStack)
+        uploadManagerViewModel.completionHandler = { [weak self] assets in
+            guard let self = self else { return }
+            if !assets.isEmpty {
+                let alert = UIAlertController(title: "Preparing Files...".localized(), message: nil, preferredStyle: .alert)
+                present(alert, animated: true)
+                viewModel?.didChooseFromPhotoLibrary(assets, completion: { [weak self] urls in
+                    self?.dismiss(animated: true) { [self] in
+                        guard let currentFolder = self?.viewModel?.currentFolder else {
+                            return self?.showErrorAlert(message: .cannotUpload) ?? ()
+                        }
+                        self?.processUpload(toFolder: currentFolder, forURLS: urls)
+                    }
+                })
             }
-        })
+        }
+        
+        let uploadManagerView = UploadManagerView(viewModel: uploadManagerViewModel)
+        let hostVC = UIHostingController(rootView: uploadManagerView)
+        self.present(hostVC, animated: true, completion: nil)
     }
 }

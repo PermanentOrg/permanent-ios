@@ -14,6 +14,7 @@ fileprivate enum FontName: String {
 }
 
 fileprivate enum FontSize: CGFloat {
+    case xxxxxxSmall = 8.0
     case xxxxxSmall = 10.0
     case xxxxSmall = 11.0
     case xxxSmall = 12.0
@@ -117,6 +118,15 @@ struct SmallXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
                              size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+
+struct SmallXXXXXXRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xxxxxxSmall.rawValue,
                              relativeTo: .largeTitle))
     }
 }
