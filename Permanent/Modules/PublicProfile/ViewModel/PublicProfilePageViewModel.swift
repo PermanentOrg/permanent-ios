@@ -166,6 +166,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func updateProfileVisibility(isVisible: Bool, completion: @escaping ServerResponse) {
+        EventsManager.trackEvent(event: .EditArchiveProfile)
+        
         let itemsToUpdate = profileItems.filter { item in
             item.fieldNameUI != "profile.basic" && item.fieldNameUI != "profile.timezone" && item.fieldNameUI != "profile.description"
         }
@@ -199,6 +201,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        EventsManager.trackEvent(event: .EditArchiveProfile)
+        
         let apiOperation: APIOperation
         
         switch operationType {
