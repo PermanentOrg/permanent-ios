@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -38,7 +39,7 @@
                                         </subviews>
                                     </stackView>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" name="WhiteGray"/>
                                 <constraints>
                                     <constraint firstItem="5f1-jE-SBN" firstAttribute="top" secondItem="KVy-DE-obu" secondAttribute="top" constant="20" id="DTg-8v-RcZ"/>
                                     <constraint firstAttribute="trailing" secondItem="5f1-jE-SBN" secondAttribute="trailing" constant="16" id="V4z-Km-8qO"/>
@@ -239,7 +240,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="WhiteGray"/>
                         <constraints>
                             <constraint firstItem="ubY-wc-eHn" firstAttribute="top" secondItem="n5v-7d-9oE" secondAttribute="top" constant="-8" id="9Aa-NS-CD8"/>
                             <constraint firstAttribute="trailing" secondItem="ubY-wc-eHn" secondAttribute="trailing" id="Cza-tc-OM1"/>
@@ -269,6 +270,9 @@
         </scene>
     </scenes>
     <resources>
+        <namedColor name="WhiteGray">
+            <color red="0.95686274509803926" green="0.96470588235294119" blue="0.99215686274509807" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
