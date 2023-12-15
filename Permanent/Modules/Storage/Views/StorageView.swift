@@ -61,11 +61,13 @@ struct StorageView: View {
             } label: {
                 CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.")
             }
+            Divider()
             Button {
                 giftStorageIsPresented = true
             } label: {
                 CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.")
             }
+            Divider()
             Button {
                 redeemStorageIspresented = true
             } label: {

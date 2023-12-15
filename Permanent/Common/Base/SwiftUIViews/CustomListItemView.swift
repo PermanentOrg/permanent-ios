@@ -41,9 +41,6 @@ struct CustomListItemView: View {
                     .padding(.trailing, 10)
             }
             .padding(10)
-            if titleText != "Redeem code" {
-                Divider()
-            }
         }
     }
 }
