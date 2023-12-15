@@ -1304,16 +1304,51 @@ extension MainViewController: FABActionSheetDelegate {
         mediaRecorder.present()
     }
     
+//    func openPhotoLibrary() {
+//        PHPhotoLibrary.requestAuthorization { (authStatus) in
+//            switch authStatus {
+//            case .authorized, .limited:
+//                DispatchQueue.main.async {
+//                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
+//                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
+//                    imagePicker.pickerDelegate = self
+//                    
+//                    self.present(imagePicker, animated: true, completion: nil)
+//                }
+//                
+//            case .denied:
+//                let alertController = UIAlertController(title: "Photos permission required".localized(), message: "Please go to Settings and turn on the permissions.".localized(), preferredStyle: .alert)
+//                
+//                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+//                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+//                        return
+//                    }
+//                    if UIApplication.shared.canOpenURL(settingsUrl) {
+//                        UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+//                    }
+//                }
+//                let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+//                
+//                alertController.addAction(cancelAction)
+//                alertController.addAction(settingsAction)
+//                
+//                DispatchQueue.main.async {
+//                    self.present(alertController, animated: true, completion: nil)
+//                }
+//                
+//            default: break
+//            }
+//        }
+//    }
+    
     func openPhotoLibrary() {
-        PHPhotoLibrary.requestAuthorization { (authStatus) in
+        PHPhotoLibrary.requestAuthorization { [weak self] (authStatus) in
             switch authStatus {
             case .authorized, .limited:
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: "PhotoPicker", bundle: nil)
-                    let imagePicker = storyboard.instantiateInitialViewController() as! PhotoTabBarViewController
-                    imagePicker.pickerDelegate = self
-                    
-                    self.present(imagePicker, animated: true, completion: nil)
+                self?.presentPhotoLibraryView { hasUpdates in
+                    if hasUpdates {
+                        self?.refreshCurrentFolder()
+                    }
                 }
                 
             case .denied:
@@ -1333,7 +1368,7 @@ extension MainViewController: FABActionSheetDelegate {
                 alertController.addAction(settingsAction)
                 
                 DispatchQueue.main.async {
-                    self.present(alertController, animated: true, completion: nil)
+                    self?.present(alertController, animated: true, completion: nil)
                 }
                 
             default: break
@@ -1341,6 +1376,24 @@ extension MainViewController: FABActionSheetDelegate {
         }
     }
     
+    func presentPhotoLibraryView(completion: @escaping (Bool) -> Void) {
+        DispatchQueue.main.async {
+            let hostingController = UIHostingController(rootView: CustomPhotoLibraryView(viewModel: CustomPhotoLibraryViewModel()))
+            hostingController.modalPresentationStyle = .pageSheet
+            
+            self.present(hostingController, animated: true, completion: nil)
+            
+            self.fabView.isHidden = false
+            self.clearButtonWasPressed(UIButton())
+            
+            hostingController.rootView.dismissAction = { hasUpdates in
+                hostingController.dismiss(animated: true, completion: {
+                    completion(hasUpdates)
+                })
+            }
+        }
+    }
+        
     func openFileBrowser() {
         let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
         
