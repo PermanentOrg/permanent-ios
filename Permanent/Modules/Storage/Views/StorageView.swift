@@ -43,7 +43,7 @@ struct StorageView: View {
         }
         .sheet(isPresented: $redeemStorageIspresented) {
         } content: {
-            RedeemCodeView()
+            RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData))
         }
     }
     

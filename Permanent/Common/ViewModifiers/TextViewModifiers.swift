@@ -144,3 +144,19 @@ struct MediumSemiBoldTextStyle: ViewModifier {
                              relativeTo: .largeTitle))
     }
 }
+
+struct RegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct RegularSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
