@@ -26,7 +26,7 @@ struct RoundStyledTextFieldView: View {
                     .submitLabel(.done)
                     .onSubmit(doneAction)
             } else {
-                TextField(placeholderText, text: $text)
+                TextField(placeholderText, text: $text, onCommit: doneAction)
                     .modifier(RegularTextStyle())
                     .foregroundColor(Color.darkBlue)
                     .frame(height: 18)
