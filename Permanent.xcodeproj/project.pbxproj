@@ -288,6 +288,9 @@
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
 		5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
+		5EB569A92B305F2300C35543 /* RedeemCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569A82B305F2300C35543 /* RedeemCodeViewModel.swift */; };
+		5EB569AD2B307F3400C35543 /* RoundButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569AC2B307F3400C35543 /* RoundButtonView.swift */; };
+		5EB569AF2B31E41B00C35543 /* RoundStyledTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569AE2B31E41B00C35543 /* RoundStyledTextFieldView.swift */; };
 		5EB6201F278445B6001B9AFD /* BlurbProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */; };
 		5EB6202127844A46001B9AFD /* DescriptionProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */; };
 		5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620242784871B001B9AFD /* EmailProfileItem.swift */; };
@@ -1104,6 +1107,9 @@
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
 		5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
+		5EB569A82B305F2300C35543 /* RedeemCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemCodeViewModel.swift; sourceTree = "<group>"; };
+		5EB569AC2B307F3400C35543 /* RoundButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonView.swift; sourceTree = "<group>"; };
+		5EB569AE2B31E41B00C35543 /* RoundStyledTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundStyledTextFieldView.swift; sourceTree = "<group>"; };
 		5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurbProfileItem.swift; sourceTree = "<group>"; };
 		5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionProfileItem.swift; sourceTree = "<group>"; };
 		5EB620242784871B001B9AFD /* EmailProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProfileItem.swift; sourceTree = "<group>"; };
@@ -2676,6 +2682,7 @@
 				5E633A732B28D7EE004D561C /* StorageViewModel.swift */,
 				5E181B812AF10100002DE69A /* GiftStorageViewModel.swift */,
 				F57CE595282BE9D000B06D95 /* DonateViewModel.swift */,
+				5EB569A82B305F2300C35543 /* RedeemCodeViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -2760,11 +2767,11 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5EB569AB2B307DE500C35543 /* ButtonViews */,
+				5EB569AA2B307DDB00C35543 /* TextFieldViews */,
 				92430A592AF2A1F00098597D /* ChipView */,
 				5E991EF52A53637E006229C0 /* SectionHeaderView.swift */,
 				5E991EE32A4ADDE3006229C0 /* SectionView.swift */,
-				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
-				9229A3AA2A7A7773004DE31D /* PullDownButton.swift */,
 				5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */,
 				5E181B862AF2EAF5002DE69A /* CustomStepperView.swift */,
 				5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */,
@@ -2803,6 +2810,24 @@
 				5E991EF12A4F10ED006229C0 /* TextViewUIRepresentable.swift */,
 			);
 			path = TextViews;
+			sourceTree = "<group>";
+		};
+		5EB569AA2B307DDB00C35543 /* TextFieldViews */ = {
+			isa = PBXGroup;
+			children = (
+				5EB569AE2B31E41B00C35543 /* RoundStyledTextFieldView.swift */,
+			);
+			path = TextFieldViews;
+			sourceTree = "<group>";
+		};
+		5EB569AB2B307DE500C35543 /* ButtonViews */ = {
+			isa = PBXGroup;
+			children = (
+				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
+				9229A3AA2A7A7773004DE31D /* PullDownButton.swift */,
+				5EB569AC2B307F3400C35543 /* RoundButtonView.swift */,
+			);
+			path = ButtonViews;
 			sourceTree = "<group>";
 		};
 		5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */ = {
@@ -4132,6 +4157,7 @@
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
 				5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */,
 				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
+				5EB569AD2B307F3400C35543 /* RoundButtonView.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
 				5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */,
@@ -4265,6 +4291,7 @@
 				5EC9C694290B323000AD2E37 /* LoginViewController.swift in Sources */,
 				5E048FD7292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.swift in Sources */,
 				5E62F7BA27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.swift in Sources */,
+				5EB569AF2B31E41B00C35543 /* RoundStyledTextFieldView.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
@@ -4281,6 +4308,7 @@
 				5E181B822AF10100002DE69A /* GiftStorageViewModel.swift in Sources */,
 				5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */,
 				BCB0726225235DB9003E2F66 /* NavigationBarView.swift in Sources */,
+				5EB569A92B305F2300C35543 /* RedeemCodeViewModel.swift in Sources */,
 				BC42ED8825B6EB630031B965 /* FileDownloadInfoVM.swift in Sources */,
 				F5C8D247273204CA00707301 /* SearchVO.swift in Sources */,
 				BC915F50254718FA00C86012 /* PHAssetExtension.swift in Sources */,

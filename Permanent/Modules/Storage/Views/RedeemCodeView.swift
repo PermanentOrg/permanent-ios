@@ -7,8 +7,8 @@
 import SwiftUI
 
 struct RedeemCodeView: View {
-    var accountData: AccountVOData?
     @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var viewModel: RedeemCodeViewModel
     
     var dismissAction: ((Bool) -> Void)?
     
@@ -35,9 +35,37 @@ struct RedeemCodeView: View {
     }
     
     var contentView: some View {
-            VStack {
-                Text("Redeem View")
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Redeem gift code for free storage")
+                .textStyle(RegularSemiBoldTextStyle())
+                .foregroundColor(.blue900)
+            Text("If you have a gift code, redeem it for complimentary storage below.")
+                .textStyle(SmallXRegularTextStyle())
+                .foregroundColor(.blue700)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+            if #available(iOS 16.0, *) {
+                Text("Enter code".uppercased())
+                    .textStyle(SmallXXXXXRegularTextStyle())
+                    .foregroundColor(.blue700)
+                    .padding(.top, 16)
+                    .kerning(1.6)
+            } else {
+                Text("Enter code".uppercased())
+                    .textStyle(SmallXXXXXRegularTextStyle())
+                    .foregroundColor(.blue700)
+                    .padding(.top, 16)
             }
+            RoundStyledTextFieldView(text: $viewModel.redeemCode, placeholderText: "Enter redeem code...", invalidField: viewModel.invalidDataInserted) {
+                viewModel.redeemCodeRequest()
+            }
+            RoundButtonView(isDisabled: viewModel.invalidDataInserted, isLoading: viewModel.isLoading, text: "Redeem") {
+                viewModel.redeemCodeRequest()
+            }
+            .padding(.top, 16)
+            Spacer()
+        }
+        .padding()
         .navigationBarTitle("Redeem Storage", displayMode: .inline)
     }
     
