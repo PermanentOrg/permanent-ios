@@ -38,6 +38,8 @@ enum AccountEndpoint {
     case updateShareArchiveRequest(archiveVO: MinArchiveVO)
     /// Revoke Share request
     case deleteShareRequest(shareId: Int, folderLinkId: Int, archiveId: Int)
+    ///  Redeem code request
+    case redeemCode(code: String)
     case getSessionAccount
 }
 
@@ -66,6 +68,8 @@ extension AccountEndpoint: RequestProtocol {
             return "/share/delete"
         case .getSessionAccount:
             return "/account/getsessionaccount"
+        case .redeemCode:
+            return "/promo/entry"
         }
     }
 
@@ -109,6 +113,9 @@ extension AccountEndpoint: RequestProtocol {
             
         case .getSessionAccount:
             return getSessionAccount()
+            
+        case .redeemCode(code: let code):
+            return redeemCode(code: code)
         }
     }
 
@@ -361,6 +368,20 @@ extension AccountEndpoint {
             "RequestVO": [
                 "data": [
                     [:]
+                ]
+            ]
+        ]
+    }
+    
+    func redeemCode(code: String) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [
+                        "PromoVO": [
+                            "code": code
+                        ]
+                    ]
                 ]
             ]
         ]

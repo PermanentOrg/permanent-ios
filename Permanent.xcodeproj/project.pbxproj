@@ -281,6 +281,7 @@
 		5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */; };
 		5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */; };
 		5EA70D8F2B2C793A00175D9C /* GradientCustomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */; };
+		5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */; };
 		5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */; };
 		5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */; };
 		5EADF8082625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */; };
@@ -296,6 +297,8 @@
 		5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620242784871B001B9AFD /* EmailProfileItem.swift */; };
 		5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620262784B01D001B9AFD /* GenderProfileItem.swift */; };
 		5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */; };
+		5EB721132B35C9DC0036B28F /* RedeemVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB721122B35C9DC0036B28F /* RedeemVO.swift */; };
+		5EB721152B35CDAB0036B28F /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */; };
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
 		5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */; };
 		5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */; };
@@ -1100,6 +1103,7 @@
 		5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBadgeView.swift; sourceTree = "<group>"; };
 		5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomListItemView.swift; sourceTree = "<group>"; };
 		5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCustomBarView.swift; sourceTree = "<group>"; };
+		5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInvalidAlertMessageView.swift; sourceTree = "<group>"; };
 		5EADF801262475D500D14E9C /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EADF802262475D500D14E9C /* TagCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF8062625BCCD00D14E9C /* TagsNamesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsNamesCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1115,6 +1119,8 @@
 		5EB620242784871B001B9AFD /* EmailProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProfileItem.swift; sourceTree = "<group>"; };
 		5EB620262784B01D001B9AFD /* GenderProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderProfileItem.swift; sourceTree = "<group>"; };
 		5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthInfoProfileItem.swift; sourceTree = "<group>"; };
+		5EB721122B35C9DC0036B28F /* RedeemVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemVO.swift; sourceTree = "<group>"; };
+		5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EBA2B8226009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsMapViewCellCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EBAFCE32A154606005DB527 /* LegacyPlanningLoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningLoadingViewController.swift; sourceTree = "<group>"; };
@@ -2767,6 +2773,7 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5EA94A102B34842300AD67F5 /* AlertsViews */,
 				5EB569AB2B307DE500C35543 /* ButtonViews */,
 				5EB569AA2B307DDB00C35543 /* TextFieldViews */,
 				92430A592AF2A1F00098597D /* ChipView */,
@@ -2810,6 +2817,14 @@
 				5E991EF12A4F10ED006229C0 /* TextViewUIRepresentable.swift */,
 			);
 			path = TextViews;
+			sourceTree = "<group>";
+		};
+		5EA94A102B34842300AD67F5 /* AlertsViews */ = {
+			isa = PBXGroup;
+			children = (
+				5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */,
+			);
+			path = AlertsViews;
 			sourceTree = "<group>";
 		};
 		5EB569AA2B307DDB00C35543 /* TextFieldViews */ = {
@@ -3218,6 +3233,7 @@
 				5ED73B3726143ED5002F9861 /* TagLinkVO.swift */,
 				F5C8D246273204CA00707301 /* SearchVO.swift */,
 				5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */,
+				5EB721122B35C9DC0036B28F /* RedeemVO.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -3235,6 +3251,7 @@
 				5E96F03E279223D90099C0E7 /* NetworkLogger.swift */,
 				5E744F9027E36EAA00A47D27 /* RCValues.swift */,
 				5ED3B3B529F7F4B2000CFF48 /* AppEnvironment.swift */,
+				5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -4283,6 +4300,7 @@
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
+				5EB721132B35C9DC0036B28F /* RedeemVO.swift in Sources */,
 				5E2114922B026CB300944386 /* ViewExtension.swift in Sources */,
 				5E83CC47286C5F8D00A5775B /* ExtensionUploadManager.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
@@ -4452,6 +4470,7 @@
 				BC6358A92536FC8A00EEC48C /* FolderSizeVO.swift in Sources */,
 				BC4526ED251CD62C00E24A51 /* MainViewController.swift in Sources */,
 				5E66731B2A7A4224001C49CC /* SequenceFilenameView.swift in Sources */,
+				5EB721152B35CDAB0036B28F /* KeyboardResponder.swift in Sources */,
 				BC59BAB725C2B7D6005A45D3 /* File.swift in Sources */,
 				BC4526F3251CDB7000E24A51 /* UINavigationControllerExtension.swift in Sources */,
 				5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */,
@@ -4560,6 +4579,7 @@
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
 				5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */,
 				5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */,
+				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
