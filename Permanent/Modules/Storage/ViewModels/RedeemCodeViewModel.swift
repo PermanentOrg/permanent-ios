@@ -49,19 +49,23 @@ class RedeemCodeViewModel: ObservableObject {
                 self?.isLoading = false
                 switch result {
                 case .json(let response, _):
-                    guard 
-                      //  model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<ArchiveVO>.decoder)
+                    guard
                         let model: APIResults<RedeemVO> = JSONHelper.decoding(from: response, with: APIResults<RedeemVO>.decoder),
-                            model.isSuccessful
+                        let data = model.results.first?.data?.first,
+                        let amountRedeemed = data.promoVO?.code,
+                        model.isSuccessful
                     else {
                         self?.showAlert = true
                         self?.invalidDataInserted = true
                         return
                     }
                     
+                    self?.storageRedeemed = amountRedeemed
                     self?.showAlert = false
                     self?.invalidDataInserted = false
                     self?.codeRedeemed = true
+                    return
+                    
                 case .error(_, _):
                     self?.showAlert = true
                     self?.invalidDataInserted = true
