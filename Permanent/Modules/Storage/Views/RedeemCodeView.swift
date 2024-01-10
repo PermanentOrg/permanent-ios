@@ -10,10 +10,10 @@ import Combine
 struct RedeemCodeView: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: RedeemCodeViewModel
-    @State private var showView = false
+    @State private var showInvalidAlertView = false
     @ObservedObject var keyboard = KeyboardResponder()
     
-    var dismissAction: ((Bool) -> Void)?
+    var dismissAction: ((String) -> Void)?
     
     var body: some View {
         ZStack {
@@ -34,7 +34,7 @@ struct RedeemCodeView: View {
         }
         .onChange(of: viewModel.showAlert) { showAlert in
             withAnimation {
-                showView = showAlert
+                showInvalidAlertView = showAlert
             }
         }
         .onChange(of: viewModel.codeRedeemed, perform: { value in
@@ -50,7 +50,7 @@ struct RedeemCodeView: View {
     
     var contentView: some View {
         ZStack(alignment: .bottom) {
-            if showView {
+            if showInvalidAlertView {
                 BottomInvalidAlertMessageView(alertTextTitle: "The code is invalid!", alertTextDescription: "Enter a new code.") {
                     viewModel.showAlert = false
                 }
@@ -107,7 +107,7 @@ struct RedeemCodeView: View {
     }
     
     func dismissView() {
-        dismissAction?(false)
+        dismissAction?(viewModel.storageRedeemedResponse)
         presentationMode.wrappedValue.dismiss()
     }
     

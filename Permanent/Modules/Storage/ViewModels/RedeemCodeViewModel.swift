@@ -33,6 +33,7 @@ class RedeemCodeViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var storageRedeemed: String = ""
     @Published var codeRedeemed: Bool = false
+    @Published var storageRedeemedResponse: String = ""
     var firstTextFieldInput: Bool = true
     
     init(accountData: AccountVOData? = nil) {
@@ -43,14 +44,14 @@ class RedeemCodeViewModel: ObservableObject {
     func redeemCodeRequest() {
         isLoading = true
         let apiOperation = APIOperation(AccountEndpoint.redeemCode(code: redeemCode))
-        
         apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 switch result {
                 case .json(let response, _):
                     guard 
-                        let model: RedeemVO = JSONHelper.convertToModel(from: response),
+                      //  model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<ArchiveVO>.decoder)
+                        let model: APIResults<RedeemVO> = JSONHelper.decoding(from: response, with: APIResults<RedeemVO>.decoder),
                             model.isSuccessful
                     else {
                         self?.showAlert = true

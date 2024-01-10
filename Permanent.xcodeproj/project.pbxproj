@@ -198,6 +198,7 @@
 		5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EF857273B2416004F7EBC /* PublicProfilePageViewModel.swift */; };
 		5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E60451C251206F9002E47CB /* OnboardingViewModel.swift */; };
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
+		5E604E552B4EADD8008C5034 /* BottomInfoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E604E542B4EADD8008C5034 /* BottomInfoMessageView.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
 		5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */; };
 		5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */; };
@@ -1026,6 +1027,7 @@
 		5E5EF855273B23C3004F7EBC /* PublicProfilePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePageViewController.swift; sourceTree = "<group>"; };
 		5E5EF857273B2416004F7EBC /* PublicProfilePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePageViewModel.swift; sourceTree = "<group>"; };
 		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		5E604E542B4EADD8008C5034 /* BottomInfoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInfoMessageView.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthRepository.swift; sourceTree = "<group>"; };
 		5E624DC22947BECE002D6ECB /* FusionLoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionLoginResponse.swift; sourceTree = "<group>"; };
@@ -2823,6 +2825,7 @@
 			isa = PBXGroup;
 			children = (
 				5EA94A112B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift */,
+				5E604E542B4EADD8008C5034 /* BottomInfoMessageView.swift */,
 			);
 			path = AlertsViews;
 			sourceTree = "<group>";
@@ -4540,6 +4543,7 @@
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
 				5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */,
+				5E604E552B4EADD8008C5034 /* BottomInfoMessageView.swift in Sources */,
 				5E181B872AF2EAF5002DE69A /* CustomStepperView.swift in Sources */,
 				5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */,
 				5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */,

@@ -12,6 +12,7 @@ struct StorageView: View {
     @State var addStorageIsPresented: Bool = false
     @State var giftStorageIsPresented: Bool = false
     @State var redeemStorageIspresented: Bool = false
+    @State private var showRedeemNotifView = false
     
     init(viewModel: StateObject<StorageViewModel>) {
         self._viewModel = viewModel
@@ -33,6 +34,11 @@ struct StorageView: View {
                 EmptyView()
             }
         }
+        .onChange(of: viewModel.showRedeemNotif) { showNotif in
+            withAnimation {
+                showRedeemNotifView = showNotif
+            }
+        }
         .sheet(isPresented: $addStorageIsPresented) {
         } content: {
             AddStorageView()
@@ -43,7 +49,9 @@ struct StorageView: View {
         }
         .sheet(isPresented: $redeemStorageIspresented) {
         } content: {
-            RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData))
+            RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData)) { ammount in
+                viewModel.redeemAmmountString = ammount
+            }
         }
     }
     
@@ -54,26 +62,36 @@ struct StorageView: View {
     }
     
     var contentView: some View {
-        VStack {
-            GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio)
-            Button {
-                addStorageIsPresented = true
-            } label: {
-                CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.")
+        ZStack(alignment: .bottom) {
+            if showRedeemNotifView {
+                BottomInfoMessageView(alertTextTitle: "Gift code redeemed!", alertTextDescription: "\(viewModel.reddemAmmountConverted) of storage") {
+                    viewModel.showRedeemNotif = false
+                }
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .padding(.bottom, 10)
+                .padding(.horizontal)
             }
-            Divider()
-            Button {
-                giftStorageIsPresented = true
-            } label: {
-                CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.")
+            VStack {
+                GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio)
+                Button {
+                    addStorageIsPresented = true
+                } label: {
+                    CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.")
+                }
+                Divider()
+                Button {
+                    giftStorageIsPresented = true
+                } label: {
+                    CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.")
+                }
+                Divider()
+                Button {
+                    redeemStorageIspresented = true
+                } label: {
+                    CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.")
+                }
+                Spacer()
             }
-            Divider()
-            Button {
-                redeemStorageIspresented = true
-            } label: {
-                CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.")
-            }
-            Spacer()
         }
         .navigationBarTitle("Storage", displayMode: .inline)
         .padding(.top, 10)

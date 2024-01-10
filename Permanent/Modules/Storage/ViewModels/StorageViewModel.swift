@@ -15,7 +15,17 @@ class StorageViewModel: ObservableObject {
     var spaceTotalReadable: String = ""
     var spaceLeftReadable: String = ""
     var spaceUsedReadable: String = ""
-
+    @Published var showRedeemNotif: Bool = false
+    @Published var reddemAmmountConverted: String = ""
+    @Published var redeemAmmountString: String = "" {
+        didSet {
+            if let reddemAmmountInt = Int(redeemAmmountString),
+               reddemAmmountInt > 0 {
+                reddemAmmountConverted = (reddemAmmountInt * 1024 * 1024).bytesToReadableForm(useDecimal: false)
+                showRedeemNotif = true
+            }
+        }
+    }
     
     init(accountData: AccountVOData?) {
         self.accountData = accountData

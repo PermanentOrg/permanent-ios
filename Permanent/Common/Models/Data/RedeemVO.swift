@@ -6,7 +6,7 @@
 
 import Foundation
 
-struct RedeemVO: Codable {
+struct RedeemVO: Model {
     let results: [RedeemResult]?
     let isSuccessful: Bool
     let actionFailKeys: [JSONAny]?
@@ -24,9 +24,13 @@ struct RedeemVO: Codable {
 }
 
 struct RedeemResult: Codable {
-    let data: JSONAny?
+    let data: PromoVO?
     let message: [String]
     let status: Bool?
     let resultDT: String?
     let createdDT, updatedDT: JSONAny?
+}
+
+struct PromoVO: Codable {
+    let code: String
 }
