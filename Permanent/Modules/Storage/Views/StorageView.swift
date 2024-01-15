@@ -50,7 +50,7 @@ struct StorageView: View {
         .sheet(isPresented: $redeemStorageIspresented) {
         } content: {
             RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData)) { ammount in
-                viewModel.redeemAmmountString = ammount
+                viewModel.redeemAmmountInt = ammount
             }
         }
     }
@@ -64,7 +64,7 @@ struct StorageView: View {
     var contentView: some View {
         ZStack(alignment: .bottom) {
             if showRedeemNotifView {
-                BottomInfoMessageView(alertTextTitle: "Gift code redeemed!", alertTextDescription: "\(viewModel.reddemAmmountConverted) of storage") {
+                BottomInfoMessageView(alertTextTitle: "Gift code redeemed!", alertTextDescription: "\(viewModel.redeemAmmountConverted) of storage") {
                     viewModel.showRedeemNotif = false
                 }
                 .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))

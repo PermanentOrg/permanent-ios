@@ -13,7 +13,7 @@ struct RedeemCodeView: View {
     @State private var showInvalidAlertView = false
     @ObservedObject var keyboard = KeyboardResponder()
     
-    var dismissAction: ((String) -> Void)?
+    var dismissAction: ((Int) -> Void)?
     
     var body: some View {
         ZStack {
@@ -107,7 +107,7 @@ struct RedeemCodeView: View {
     }
     
     func dismissView() {
-        dismissAction?(viewModel.storageRedeemedResponse)
+        dismissAction?(viewModel.storageRedeemed)
         presentationMode.wrappedValue.dismiss()
     }
     

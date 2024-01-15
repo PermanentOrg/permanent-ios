@@ -31,9 +31,8 @@ class RedeemCodeViewModel: ObservableObject {
     }
     @Published var isLoading: Bool = false
     @Published var showAlert: Bool = false
-    @Published var storageRedeemed: String = ""
+    @Published var storageRedeemed: Int = 0
     @Published var codeRedeemed: Bool = false
-    @Published var storageRedeemedResponse: String = ""
     var firstTextFieldInput: Bool = true
     
     init(accountData: AccountVOData? = nil) {
@@ -52,7 +51,7 @@ class RedeemCodeViewModel: ObservableObject {
                     guard
                         let model: APIResults<RedeemVO> = JSONHelper.decoding(from: response, with: APIResults<RedeemVO>.decoder),
                         let data = model.results.first?.data?.first,
-                        let amountRedeemed = data.promoVO?.code,
+                        let amountRedeemed = data.promoVO?.sizeInMB,
                         model.isSuccessful
                     else {
                         self?.showAlert = true
