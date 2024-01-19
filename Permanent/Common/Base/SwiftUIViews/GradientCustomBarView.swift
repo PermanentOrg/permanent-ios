@@ -18,9 +18,11 @@ struct GradientProgressBarView: View {
                     Text("\(value) ")
                         .textStyle(SmallXXXSemiBoldTextStyle())
                         .foregroundColor(.white)
-                    Text("used")
-                        .textStyle(SmallXXXRegularTextStyle())
-                        .foregroundColor(.white)
+                    if value.isNotEmpty {
+                        Text("used")
+                            .textStyle(SmallXXXRegularTextStyle())
+                            .foregroundColor(.white)
+                    }
                 }
                 Spacer()
                 Text("\(maxValue)")
@@ -29,7 +31,7 @@ struct GradientProgressBarView: View {
             }
             .padding(.horizontal)
             
-            ProgressView(value: sizeRatio)
+            ProgressView(value: sizeRatio, total: 1.0)
                 .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
                 .frame(height: 12)
                 .padding(.horizontal)

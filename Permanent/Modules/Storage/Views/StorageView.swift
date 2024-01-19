@@ -9,10 +9,6 @@ import SwiftUI
 struct StorageView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: StorageViewModel
-    @State var addStorageIsPresented: Bool = false
-    @State var giftStorageIsPresented: Bool = false
-    @State var redeemStorageIspresented: Bool = false
-    @State private var showRedeemNotifView = false
     
     init(viewModel: StateObject<StorageViewModel>) {
         self._viewModel = viewModel
@@ -36,21 +32,22 @@ struct StorageView: View {
         }
         .onChange(of: viewModel.showRedeemNotif) { showNotif in
             withAnimation {
-                showRedeemNotifView = showNotif
+                viewModel.showRedeemNotifView = showNotif
             }
         }
-        .sheet(isPresented: $addStorageIsPresented) {
+        .sheet(isPresented: $viewModel.addStorageIsPresented) {
         } content: {
             AddStorageView()
         }
-        .sheet(isPresented: $giftStorageIsPresented) {
+        .sheet(isPresented: $viewModel.giftStorageIsPresented) {
         } content: {
             GiftStorageView(viewModel: StateObject(wrappedValue: GiftStorageViewModel(accountData: viewModel.accountData)))
         }
-        .sheet(isPresented: $redeemStorageIspresented) {
+        .sheet(isPresented: $viewModel.redeemStorageIspresented) {
         } content: {
-            RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData)) { ammount in
+            RedeemCodeView(viewModel: RedeemCodeViewModel(accountData: viewModel.accountData, redeemCode: viewModel.redeemCodeFromUrl)) { ammount in
                 viewModel.redeemAmmountString = ammount
+                viewModel.redeemCodeFromUrl = nil
             }
         }
     }
@@ -63,7 +60,7 @@ struct StorageView: View {
     
     var contentView: some View {
         ZStack(alignment: .bottom) {
-            if showRedeemNotifView {
+            if viewModel.showRedeemNotifView {
                 BottomInfoMessageView(alertTextTitle: "Gift code redeemed!", alertTextDescription: "\(viewModel.reddemAmmountConverted) of storage") {
                     viewModel.showRedeemNotif = false
                 }
@@ -74,19 +71,19 @@ struct StorageView: View {
             VStack {
                 GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio)
                 Button {
-                    addStorageIsPresented = true
+                    viewModel.addStorageIsPresented = true
                 } label: {
                     CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.")
                 }
                 Divider()
                 Button {
-                    giftStorageIsPresented = true
+                    viewModel.giftStorageIsPresented = true
                 } label: {
                     CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.")
                 }
                 Divider()
                 Button {
-                    redeemStorageIspresented = true
+                    viewModel.redeemStorageIspresented = true
                 } label: {
                     CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.")
                 }

@@ -11,6 +11,8 @@ import UIKit
 import GooglePlaces
 import GoogleMaps
 import StripeApplePay
+import SwiftUI
+import KeychainSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -47,11 +49,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         switch url.pathComponents[1] {
         case "share":
-            if rootViewController.isDrawerRootActive {
-                return navigateFromUniversalLink(url: url)
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+               let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
+                if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
+                   let session = try? JSONDecoder().decode(PermSession.self, from: authData),
+                   let archiveId = session.selectedArchive?.archiveID,
+                   archiveId != .zero {
+                    let storageViewModel = StateObject(wrappedValue: StorageViewModel(reddemCode: redeemCode))
+                    let storageView = StorageView(viewModel: storageViewModel)
+                    
+                    let host = UIHostingController(rootView: storageView)
+                    self.window?.rootViewController?.present(host, animated: true, completion: nil)
+                    
+                    return true
+                } else {
+                    
+                    return false
+                }
             } else {
-                saveUnivesalLinkToken(url.lastPathComponent)
-                return false
+                if rootViewController.isDrawerRootActive {
+                    return navigateFromUniversalLink(url: url)
+                } else {
+                    saveUnivesalLinkToken(url.lastPathComponent)
+                    return false
+                }
             }
             
         case "p":
