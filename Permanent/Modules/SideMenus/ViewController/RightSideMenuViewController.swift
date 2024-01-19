@@ -248,13 +248,12 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .storage:
-            var storageView = StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init()))
-            let hostingController = UIHostingController(rootView: storageView)
+            let hostingController = UIHostingController(rootView: StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init())))
             hostingController.modalPresentationStyle = .fullScreen
             
             self.present(hostingController, animated: true, completion: nil)
             
-            storageView.dismissAction = { [weak self] hasUpdates in
+            hostingController.rootView.dismissAction = { [weak self] hasUpdates in
                 hostingController.dismiss(animated: true, completion: { [weak self] in
                     self?.updateAccountInfo()
                     self?.selectedMenuOption = .none
@@ -262,6 +261,7 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
                     self?.adjustUIForAnimation(isOpening: false)
                 })
             }
+            
             
         case .activityFeed:
             let newRootVC = ActivityFeedViewController()
