@@ -25,12 +25,13 @@ class StorageViewModel: ObservableObject {
     @Published var showError: Bool = false
     @Published var showRedeemCodeView: Bool = false
     @Published var showRedeemNotif: Bool = false
-    @Published var reddemAmmountConverted: String = ""
-    @Published var redeemAmmountString: String = "" {
+    @Published var redeemAmmountConverted: String = ""
+    @Published var redeemAmmountInt: Int = 0 {
         didSet {
-            if let reddemAmmountInt = Int(redeemAmmountString),
-               reddemAmmountInt > 0 {
-                reddemAmmountConverted = (reddemAmmountInt * 1024 * 1024).bytesToReadableForm(useDecimal: false)
+            let ammountAdded = redeemAmmountInt * 1024 * 1024
+            if redeemAmmountInt > 0 {
+                redeemAmmountConverted = ammountAdded.bytesToReadableForm(useDecimal: false)
+                addInTotalSpace(spaceToAdd: ammountAdded)
                 showRedeemNotif = true
             }
         }
@@ -96,5 +97,10 @@ class StorageViewModel: ObservableObject {
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
         spaceLeftReadable = spaceLeft.bytesToReadableForm(useDecimal: true)
         spaceUsedReadable = spaceUsed.bytesToReadableForm(useDecimal: true)
+    }
+    
+    func addInTotalSpace(spaceToAdd: Int) {
+        spaceTotal = spaceTotal + spaceToAdd
+        spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
     }
 }

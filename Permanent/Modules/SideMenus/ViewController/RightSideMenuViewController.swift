@@ -248,17 +248,18 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .storage:
-            let hostingController = UIHostingController(rootView: StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init())))
+            var storageView = StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init()))
+            let hostingController = UIHostingController(rootView: storageView)
             hostingController.modalPresentationStyle = .fullScreen
             
             self.present(hostingController, animated: true, completion: nil)
             
-            hostingController.rootView.dismissAction = { hasUpdates in
-                hostingController.dismiss(animated: true, completion: {
-                    self.updateAccountInfo()
-                    self.selectedMenuOption = .none
-                    self.setupTableView()
-                    self.adjustUIForAnimation(isOpening: false)
+            storageView.dismissAction = { [weak self] hasUpdates in
+                hostingController.dismiss(animated: true, completion: { [weak self] in
+                    self?.updateAccountInfo()
+                    self?.selectedMenuOption = .none
+                    self?.setupTableView()
+                    self?.adjustUIForAnimation(isOpening: false)
                 })
             }
             

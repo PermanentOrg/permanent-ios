@@ -15,5 +15,12 @@ struct RedeemVO: Model {
 }
 
 struct PromoVOdata: Codable {
-    let code: String
+    let promoId: Int?
+    let code: String?
+    let sizeInMB: Int?
+    let expiresDT: String?
+    let remainingUses: Int?
+    let status: String?
+    let type: String?
+    let createdDT, updatedDT: String?
 }

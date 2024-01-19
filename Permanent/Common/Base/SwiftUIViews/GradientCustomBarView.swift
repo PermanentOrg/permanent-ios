@@ -7,9 +7,9 @@
 import SwiftUI
 
 struct GradientProgressBarView: View {
-    var value: String
-    var maxValue: String
-    var sizeRatio: Double
+    @Binding var value: String
+    @Binding var maxValue: String
+    @Binding var sizeRatio: Double
     
     var body: some View {
         VStack(spacing: 16) {
@@ -31,10 +31,17 @@ struct GradientProgressBarView: View {
             }
             .padding(.horizontal)
             
-            ProgressView(value: sizeRatio, total: 1.0)
-                .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
-                .frame(height: 12)
-                .padding(.horizontal)
+            if sizeRatio != .zero {
+                ProgressView(value: sizeRatio)
+                    .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
+                    .frame(height: 12)
+                    .padding(.horizontal)
+            } else {
+                ProgressView(value: 0.0)
+                    .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
+                    .frame(height: 12)
+                    .padding(.horizontal)
+            }
         }
         .frame(maxHeight: 72)
         .background(Gradient.purpleYellowGradient)
