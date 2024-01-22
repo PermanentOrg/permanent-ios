@@ -30,7 +30,7 @@ class StorageViewModel: ObservableObject {
         didSet {
             let ammountAdded = redeemAmmountInt * 1024 * 1024
             if redeemAmmountInt > 0 {
-                redeemAmmountConverted = ammountAdded.bytesToReadableForm(useDecimal: false)
+                redeemAmmountConverted = ammountAdded.bytesToReadableForm(useDecimal: true)
                 addInTotalSpace(spaceToAdd: ammountAdded)
                 showRedeemNotif = true
             }
@@ -101,6 +101,7 @@ class StorageViewModel: ObservableObject {
     
     func addInTotalSpace(spaceToAdd: Int) {
         spaceTotal = spaceTotal + spaceToAdd
+        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
     }
 }

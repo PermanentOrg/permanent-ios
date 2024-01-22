@@ -49,30 +49,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         switch url.pathComponents[1] {
         case "share":
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-               let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
-                if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
-                   let session = try? JSONDecoder().decode(PermSession.self, from: authData),
-                   let archiveId = session.selectedArchive?.archiveID,
-                   archiveId != .zero {
-                    let storageViewModel = StateObject(wrappedValue: StorageViewModel(reddemCode: redeemCode))
-                    let storageView = StorageView(viewModel: storageViewModel)
-                    
-                    let host = UIHostingController(rootView: storageView)
-                    self.window?.rootViewController?.present(host, animated: true, completion: nil)
-                    
-                    return true
-                } else {
-                    
-                    return false
-                }
+            if rootViewController.isDrawerRootActive {
+                return navigateFromUniversalLink(url: url)
             } else {
-                if rootViewController.isDrawerRootActive {
-                    return navigateFromUniversalLink(url: url)
-                } else {
-                    saveUnivesalLinkToken(url.lastPathComponent)
-                    return false
-                }
+                saveUnivesalLinkToken(url.lastPathComponent)
+                return false
             }
             
         case "p":
@@ -105,15 +86,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
         case "app":
-            if url.pathComponents.count >= 3, url.pathComponents[2] == "pr" && url.pathComponents[3] == "manage" {
-                if rootViewController.isDrawerRootActive {
-                    return navigateFromSharedArchive()
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+               let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
+                if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
+                   let session = try? JSONDecoder().decode(PermSession.self, from: authData),
+                   let archiveId = session.selectedArchive?.archiveID,
+                   archiveId != .zero {
+                    let storageViewModel = StateObject(wrappedValue: StorageViewModel(reddemCode: redeemCode))
+                    let storageView = StorageView(viewModel: storageViewModel)
+                    
+                    let host = UIHostingController(rootView: storageView)
+                    self.window?.rootViewController?.present(host, animated: true, completion: nil)
+                    
+                    return true
                 } else {
-                    saveSharedArchiveToken()
                     return false
                 }
+            } else {
+                if url.pathComponents.count >= 3, url.pathComponents[2] == "pr" && url.pathComponents[3] == "manage" {
+                    if rootViewController.isDrawerRootActive {
+                        return navigateFromSharedArchive()
+                    } else {
+                        saveSharedArchiveToken()
+                        return false
+                    }
+                }
+                return false
             }
-            return false
             
         default: return false
         }

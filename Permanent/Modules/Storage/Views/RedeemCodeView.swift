@@ -51,17 +51,17 @@ struct RedeemCodeView: View {
     var contentView: some View {
         ZStack(alignment: .bottom) {
             if showInvalidAlertView {
-                BottomInvalidAlertMessageView(alertTextTitle: "The code is invalid!", alertTextDescription: "Enter a new code.") {
+                BottomInvalidAlertMessageView(alertTextTitle: "The code is invalid.", alertTextDescription: "Enter a new code.") {
                     viewModel.showAlert = false
                 }
                 .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
                 .padding(.bottom, keyboard.currentHeight == .zero ? 16 : keyboard.currentHeight - 10)
             }
             VStack(alignment: .leading, spacing: 8) {
-                Text("Redeem gift code for free storage")
+                Text("Redeem gift code for storage")
                     .textStyle(RegularSemiBoldTextStyle())
                     .foregroundColor(.blue900)
-                Text("If you have a gift code, redeem it for complimentary storage below.")
+                Text("If you have a gift code, redeem it for storage below.")
                     .textStyle(SmallXRegularTextStyle())
                     .foregroundColor(.blue700)
                     .lineLimit(2)
