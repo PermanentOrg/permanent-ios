@@ -69,12 +69,11 @@ class StorageViewModel: ObservableObject {
                     completionBlock(APIError.invalidResponse)
                     return
                 }
-                self.accountData = model.results[0].data?[0].accountVO
-                completionBlock(nil)
-               
-                return
-                
-            case .error:
+                if let accountDataVO = model.results[0].data?[0].accountVO {
+                    self.accountData = accountDataVO
+                    completionBlock(nil)
+                    return
+                }
                 completionBlock(APIError.invalidResponse)
                 return
                 
