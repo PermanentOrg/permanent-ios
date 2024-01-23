@@ -86,24 +86,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
         case "app":
-            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-               let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
-                if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
-                   let session = try? JSONDecoder().decode(PermSession.self, from: authData),
-                   let archiveId = session.selectedArchive?.archiveID,
-                   archiveId != .zero {
-                    let storageViewModel = StateObject(wrappedValue: StorageViewModel(reddemCode: redeemCode))
-                    let storageView = StorageView(viewModel: storageViewModel)
-                    
-                    let host = UIHostingController(rootView: storageView)
-                    self.window?.rootViewController?.present(host, animated: true, completion: nil)
-                    
-                    return true
-                } else {
-                    return false
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+            {
+                if let redeemCode = components.queryItems?.first(where: { $0.name == "promoCode" })?.value {
+                    if let authData = KeychainSwift().getData(SessionKeychainHandler.keychainAuthDataKey),
+                       let session = try? JSONDecoder().decode(PermSession.self, from: authData),
+                       let archiveId = session.selectedArchive?.archiveID,
+                       archiveId != .zero {
+                        let storageViewModel = StateObject(wrappedValue: StorageViewModel(reddemCode: redeemCode))
+                        let storageView = StorageView(viewModel: storageViewModel)
+                        
+                        let host = UIHostingController(rootView: storageView)
+                        self.window?.rootViewController?.present(host, animated: true, completion: nil)
+                        
+                        return true
+                    }
                 }
-            } else {
-                if url.pathComponents.count >= 3, url.pathComponents[2] == "pr" && url.pathComponents[3] == "manage" {
+                if components.path == "/app/pr/manage" {
                     if rootViewController.isDrawerRootActive {
                         return navigateFromSharedArchive()
                     } else {
@@ -111,8 +110,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         return false
                     }
                 }
-                return false
             }
+            return false
             
         default: return false
         }
