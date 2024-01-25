@@ -81,6 +81,14 @@ struct SmallXXXRegularTextStyle: ViewModifier {
     }
 }
 
+struct SmallXXXSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.xxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct SmallBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansBold.rawValue,
@@ -121,10 +129,34 @@ struct SmallXRegularTextStyle: ViewModifier {
     }
 }
 
+struct SmallXSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct MediumSemiBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansSemiBold.rawValue,
                              size: FontSize.medium.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct RegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct RegularSemiBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.openSansSemiBold.rawValue,
+                             size: FontSize.regular.rawValue,
                              relativeTo: .largeTitle))
     }
 }

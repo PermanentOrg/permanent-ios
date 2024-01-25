@@ -67,7 +67,32 @@ extension Color {
     static var paleOrange = Color("PaleOrange")
     static var lightGray = Color("LightGray")
     static var lightRed = Color("LightRed")
-    static var error200 = Color("Error200")
+    static var error25 = Color(.error25)
+    static var error200 = Color(.error200)
+    static var error500 = Color(.error500)
     static var barneyPurple = Color(.barneyPurple)
     static var liniarBlue = Color(.liniarBlue)
+    static var blue25 = Color(.blue25)
+    static var blue50 = Color(.blue50)
+    static var blue200 = Color(.blue200)
+    static var blue300 = Color(.blue300)
+    static var blue400 = Color(.blue400)
+    static var blue700 = Color(.blue700)
+    static var blue600 = Color(.blue600)
+    static var blue900 = Color(.blue900)
+    static var yellow = Color(.yellow)
+    static var success25 = Color(.success25)
+    static var success200 = Color(.success200)
+    static var success500 = Color(.success500)
+}
+
+extension Gradient {
+    static var purpleYellowGradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color(red: 0.5, green: 0, blue: 0.5),
+                                                            Color(red: 1, green: 0.6, blue: 0.2)
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                                     endPoint: .bottomTrailing
+    )
 }

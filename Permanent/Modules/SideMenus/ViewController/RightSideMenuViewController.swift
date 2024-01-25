@@ -24,8 +24,7 @@ class RightSideMenuViewController: BaseViewController<AuthViewModel> {
     
     private let tableViewData: [RightDrawerSection: [DrawerOption]] = [
         RightDrawerSection.rightSideMenu: [
-            DrawerOption.addStorage,
-            DrawerOption.giftStorage,
+            DrawerOption.storage,
             DrawerOption.accountInfo,
             DrawerOption.legacyPlanning,
             DrawerOption.activityFeed,
@@ -248,25 +247,21 @@ extension RightSideMenuViewController: UITableViewDataSource, UITableViewDelegat
             let newRootVC = UIViewController.create(withIdentifier: .accountSettings, from: .settings)
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
-        case .addStorage:
-            let newRootVC = UIViewController.create(withIdentifier: .donate, from: .donate)
-            AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
-            
-        case .giftStorage:
-            let hostingController = UIHostingController(rootView: GiftStorageView(viewModel: StateObject(wrappedValue: GiftStorageViewModel.init(accountData: self.viewModel?.accountData))))
+        case .storage:
+            let hostingController = UIHostingController(rootView: StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init())))
             hostingController.modalPresentationStyle = .fullScreen
             
             self.present(hostingController, animated: true, completion: nil)
             
-            // Add a way to call the completion block when the view is dismissed.
-            hostingController.rootView.dismissAction = { hasUpdates in
-                hostingController.dismiss(animated: true, completion: {
-                    self.updateAccountInfo()
-                    self.selectedMenuOption = .none
-                    self.setupTableView()
-                    self.adjustUIForAnimation(isOpening: false)
+            hostingController.rootView.dismissAction = { [weak self] hasUpdates in
+                hostingController.dismiss(animated: true, completion: { [weak self] in
+                    self?.updateAccountInfo()
+                    self?.selectedMenuOption = .none
+                    self?.setupTableView()
+                    self?.adjustUIForAnimation(isOpening: false)
                 })
             }
+            
             
         case .activityFeed:
             let newRootVC = ActivityFeedViewController()
