@@ -8,30 +8,80 @@ import Foundation
 
 class StorageViewModel: ObservableObject {
     var accountData: AccountVOData?
-    var spaceRatio = 0.0
-    var spaceTotal: Int = 0
-    var spaceLeft: Int = 0
-    var spaceUsed: Int = 0
-    var spaceTotalReadable: String = ""
-    var spaceLeftReadable: String = ""
-    var spaceUsedReadable: String = ""
+    
+    @Published var addStorageIsPresented: Bool = false
+    @Published var giftStorageIsPresented: Bool = false
+    @Published var redeemStorageIspresented: Bool = false
+    @Published var showRedeemNotifView = false
+    
+    @Published var redeemCodeFromUrl: String?
+    @Published var spaceRatio = 0.0
+    @Published var spaceTotal: Int = 0
+    @Published var spaceLeft: Int = 0
+    @Published var spaceUsed: Int = 0
+    @Published var spaceTotalReadable: String = ""
+    @Published var spaceLeftReadable: String = ""
+    @Published var spaceUsedReadable: String = ""
+    @Published var showError: Bool = false
+    @Published var showRedeemCodeView: Bool = false
     @Published var showRedeemNotif: Bool = false
     @Published var redeemAmmountConverted: String = ""
     @Published var redeemAmmountInt: Int = 0 {
         didSet {
             let ammountAdded = redeemAmmountInt * 1024 * 1024
             if redeemAmmountInt > 0 {
-                redeemAmmountConverted = ammountAdded.bytesToReadableForm(useDecimal: false)
+                redeemAmmountConverted = ammountAdded.bytesToReadableForm(useDecimal: true)
                 addInTotalSpace(spaceToAdd: ammountAdded)
                 showRedeemNotif = true
             }
         }
     }
     
-    init(accountData: AccountVOData?) {
-        self.accountData = accountData
+    init(reddemCode: String? = nil) {
+        self.redeemCodeFromUrl = reddemCode
+        if reddemCode != nil {
+            redeemStorageIspresented = true
+        }
         
-        getStorageSpaceDetails()
+        getAccountInfo { error in
+            if error != nil {
+                self.showError = true
+            } else {
+                self.getStorageSpaceDetails()
+            }
+        }
+    }
+    
+    func getAccountInfo(_ completionBlock: @escaping ((Error?) -> Void) ) {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+            completionBlock(APIError.unknown)
+            return
+        }
+        
+        let getUserDataOperation = APIOperation(AccountEndpoint.getUserData(accountId: accountId))
+        getUserDataOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<AccountVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(APIError.invalidResponse)
+                    return
+                }
+                if let accountDataVO = model.results[0].data?[0].accountVO {
+                    self.accountData = accountDataVO
+                    completionBlock(nil)
+                    return
+                }
+                completionBlock(APIError.invalidResponse)
+                return
+                
+            default:
+                completionBlock(APIError.invalidResponse)
+                return
+            }
+        }
     }
     
     func getStorageSpaceDetails() {
@@ -50,6 +100,7 @@ class StorageViewModel: ObservableObject {
     
     func addInTotalSpace(spaceToAdd: Int) {
         spaceTotal = spaceTotal + spaceToAdd
+        spaceRatio = Double(spaceUsed) / Double(spaceTotal)
         spaceTotalReadable = spaceTotal.bytesToReadableForm(useDecimal: false)
     }
 }

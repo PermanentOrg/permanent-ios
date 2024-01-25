@@ -35,9 +35,16 @@ class RedeemCodeViewModel: ObservableObject {
     @Published var codeRedeemed: Bool = false
     var firstTextFieldInput: Bool = true
     
-    init(accountData: AccountVOData? = nil) {
+    init(accountData: AccountVOData? = nil, redeemCode: String? = nil) {
+        if let redeemCode = redeemCode {
+            self.redeemCode = redeemCode
+            isConfirmButtonDisabled = false
+            invalidDataInserted = false
+        } else {
+            self.redeemCode = ""
+        }
+
         self.accountData = accountData
-        self.redeemCode = ""
     }
     
     func redeemCodeRequest() {
