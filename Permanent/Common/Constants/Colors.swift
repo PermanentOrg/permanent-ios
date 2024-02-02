@@ -95,4 +95,22 @@ extension Gradient {
                                                      startPoint: .topLeading,
                                                      endPoint: .bottomTrailing
     )
+    
+    static var blue25Gradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color.blue25,
+                                                            Color.blue25
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                                     endPoint: .bottomTrailing
+    )
+    
+    static var whiteGradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color.white,
+                                                            Color.white
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                                     endPoint: .bottomTrailing
+    )
 }

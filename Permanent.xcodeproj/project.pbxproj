@@ -37,6 +37,11 @@
 		5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */; };
 		5E048FDB29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */; };
 		5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */; };
+		5E051C042B69A74F00274657 /* SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C032B69A74F00274657 /* SettingsScreenView.swift */; };
+		5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */; };
+		5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */; };
+		5E051C0C2B6BB90C00274657 /* CustomWhiteNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0B2B6BB90B00274657 /* CustomWhiteNavigationView.swift */; };
+		5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */; };
 		5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44B28915C8E008C0A6B /* LoginPage.swift */; };
 		5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44D28915CE0008C0A6B /* SignUpPage.swift */; };
 		5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */; };
@@ -924,6 +929,11 @@
 		5E048FD6292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareMangementAdditionalOptionCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E048FD929230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementDefaultAccessRoleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E048FDA29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementDefaultAccessRoleCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E051C032B69A74F00274657 /* SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenView.swift; sourceTree = "<group>"; };
+		5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenViewModel.swift; sourceTree = "<group>"; };
+		5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSimpleListItemView.swift; sourceTree = "<group>"; };
+		5E051C0B2B6BB90B00274657 /* CustomWhiteNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomWhiteNavigationView.swift; sourceTree = "<group>"; };
+		5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressGradientStyle.swift; sourceTree = "<group>"; };
 		5E07D44B28915C8E008C0A6B /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5E07D44D28915CE0008C0A6B /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
 		5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuPage.swift; sourceTree = "<group>"; };
@@ -1723,6 +1733,31 @@
 			path = ShareManagementCollectionViewCells;
 			sourceTree = "<group>";
 		};
+		5E051C022B69A6E400274657 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5E051C032B69A74F00274657 /* SettingsScreenView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5E051C052B6AEB0B00274657 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5E051C062B6AEB2900274657 /* SettingsScreenViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5E051C082B6AFA8C00274657 /* CustomListViews */ = {
+			isa = PBXGroup;
+			children = (
+				5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */,
+				5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */,
+			);
+			path = CustomListViews;
+			sourceTree = "<group>";
+		};
 		5E07D44A28915C78008C0A6B /* Pages */ = {
 			isa = PBXGroup;
 			children = (
@@ -2340,6 +2375,8 @@
 		5E4739A72A40F1CB00A20D85 /* SideMenus */ = {
 			isa = PBXGroup;
 			children = (
+				5E051C022B69A6E400274657 /* Views */,
+				5E051C052B6AEB0B00274657 /* ViewModels */,
 				5E3E12422A41EE2600682DE5 /* Cells */,
 				5E4739A82A40F1D400A20D85 /* ViewController */,
 			);
@@ -2775,6 +2812,7 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5E051C082B6AFA8C00274657 /* CustomListViews */,
 				5EA94A102B34842300AD67F5 /* AlertsViews */,
 				5EB569AB2B307DE500C35543 /* ButtonViews */,
 				5EB569AA2B307DDB00C35543 /* TextFieldViews */,
@@ -2784,7 +2822,6 @@
 				5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */,
 				5E181B862AF2EAF5002DE69A /* CustomStepperView.swift */,
 				5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */,
-				5EA70D8C2B2C791100175D9C /* CustomListItemView.swift */,
 				5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */,
 			);
 			path = SwiftUIViews;
@@ -2794,6 +2831,7 @@
 			isa = PBXGroup;
 			children = (
 				5E991EE62A4AE144006229C0 /* CustomNavigationView.swift */,
+				5E051C0B2B6BB90B00274657 /* CustomWhiteNavigationView.swift */,
 			);
 			path = SwiftUINavigationViews;
 			sourceTree = "<group>";
@@ -2940,6 +2978,7 @@
 			children = (
 				5E66730C2A7927E3001C49CC /* CustomButtonStyle.swift */,
 				5E181B842AF14EE8002DE69A /* CustomBarProgressStyle.swift */,
+				5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
@@ -4185,6 +4224,7 @@
 				BCF9065825877D5F00DF1B64 /* UITableViewCellExtension.swift in Sources */,
 				5E6673152A7A3A50001C49CC /* AppendFilenameView.swift in Sources */,
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
+				5E051C042B69A74F00274657 /* SettingsScreenView.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				5E66730F2A793D9B001C49CC /* ReplaceFilenameView.swift in Sources */,
@@ -4300,6 +4340,7 @@
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
+				5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */,
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
 				5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */,
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
@@ -4369,6 +4410,7 @@
 				5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
+				5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */,
 				F540A676267B618A00962B2D /* AccountDeleteViewController.swift in Sources */,
 				BC451D5025B06ABA00DC02DB /* SharedFileActionSheet.swift in Sources */,
 				F58B8BA02758100500D43606 /* PublicArchiveViewModel.swift in Sources */,
@@ -4458,6 +4500,7 @@
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				5E7AE8AB291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift in Sources */,
 				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
+				5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
@@ -4465,6 +4508,7 @@
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
+				5E051C0C2B6BB90C00274657 /* CustomWhiteNavigationView.swift in Sources */,
 				BC6D3B4F2514E60800390927 /* APINetworkSession.swift in Sources */,
 				BC42EDD625C0184D0031B965 /* InviteViewModelDelegate.swift in Sources */,
 				F502C48A26D6132F00657D37 /* GridViewCell.swift in Sources */,

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 protocol DrawerMenuDelegate: AnyObject {
     func didTapDrawerMenuButton()
@@ -98,46 +99,16 @@ class DrawerViewController: UIViewController {
     
     func toggleRightSideMenu(animateBg: Bool = true) {
         isRightMenuExpanded.toggle()
+        backgroundView.alpha = 0.0
         rootViewController.view.hideKeyboard()
         
-        if rightSideMenuController.parent == nil {
-            let bgViewOrigin = CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight)
-            backgroundView.frame = CGRect(origin: bgViewOrigin, size: CGSize(width: view.bounds.width, height: view.bounds.height - bgViewOrigin.y))
-            view.addSubview(backgroundView)
-            
-            addChild(rightSideMenuController)
-            view.addSubview(rightSideMenuController.view)
-            rightSideMenuController.didMove(toParent: self)
+        let settingsScreenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()))
+        let host = UIHostingController(rootView: settingsScreenView)
+        self.rootViewController.present(host, animated: true, completion: nil)
+        
+        host.rootView.dismissAction = { [weak self] hasUpdates in
+            self?.isRightMenuExpanded = false
         }
-        
-        let width: CGFloat = view.bounds.width * 0.75
-        
-        rightSideMenuController.view.frame = CGRect(
-            origin: isRightMenuExpanded ? CGPoint(x: view.bounds.width, y: rightSideMenuOrigin.y) : rightSideMenuOrigin,
-            size: CGSize(width: width, height: rightSideMenuHeight)
-            )
-        
-        rightSideMenuController.adjustUIForAnimation(isOpening: isRightMenuExpanded)
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: { [self] in
-            rightSideMenuController.view.frame = CGRect(
-                origin: isRightMenuExpanded ? rightSideMenuOrigin : CGPoint(x: view.bounds.width, y: rightSideMenuOrigin.y),
-                size: CGSize(width: width, height: rightSideMenuHeight)
-            )
-            
-            if animateBg {
-                backgroundView.alpha = (isRightMenuExpanded) ? 0.5 : 0.0
-            }
-        }, completion: { [self] finished in
-            if isRightMenuExpanded == false {
-                rightSideMenuController.removeFromParent()
-                rightSideMenuController.view.removeFromSuperview()
-                
-                if animateBg {
-                    backgroundView.removeFromSuperview()
-                }
-            }
-        })
     }
 
     func navigateTo(viewController: UIViewController) {
