@@ -8,7 +8,7 @@ import Foundation
 import SwiftUI
 
 class SettingsRouter: ObservableObject {
-    enum View {
+    enum Page {
         case settings
         case account
         case storage
@@ -21,14 +21,14 @@ class SettingsRouter: ObservableObject {
     }
     
     var rootViewController: RootNavigationController
-    var currentView: View
+    var currentView: Page
     
-    init(rootViewController: RootNavigationController, currentView: View) {
+    init(rootViewController: RootNavigationController, currentView: Page) {
         self.rootViewController = rootViewController
         self.currentView = currentView
     }
     
-    func navigate(to view: View, router: SettingsRouter) {
+    func navigate(to view: Page, router: SettingsRouter) {
         if view != .settings {
             self.rootViewController.dismiss(animated: true)
         }
