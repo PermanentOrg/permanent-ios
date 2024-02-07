@@ -9,9 +9,11 @@ import SwiftUI
 struct SettingsScreenView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: SettingsScreenViewModel
+    var settingsRouter: SettingsRouter
     
-    init(viewModel: StateObject<SettingsScreenViewModel>) {
+    init(viewModel: StateObject<SettingsScreenViewModel>, router: SettingsRouter) {
         self._viewModel = viewModel
+        self.settingsRouter = router
     }
     
     var dismissAction: ((Bool) -> Void)?
@@ -25,11 +27,16 @@ struct SettingsScreenView: View {
         .onDisappear(perform: {
             dismissAction?(false)
         })
-        .fullScreenCover(isPresented: $viewModel.storageIsPresented, onDismiss: {
-            dismissView()
-        }, content: {
-            StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init()))
-        })
+        .onChange(of: viewModel.loggedOut) { loggedOut in
+            if loggedOut {
+                settingsRouter.navigate(to: .signUp, router: settingsRouter)
+            }
+        }
+        .alert(isPresented: $viewModel.showError) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                viewModel.showError = false
+            })
+        }
     }
     
     var backgroundView: some View {
@@ -39,61 +46,65 @@ struct SettingsScreenView: View {
     }
     
     var contentView: some View {
-        ZStack(alignment: .bottom) {
-            VStack(alignment: .leading) {
-                CustomWhiteNavigationView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail)
-                GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .settings)
-                    .padding(.horizontal, 5)
-                Group {
-                    Button {
-                        viewModel.accountIsPresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.accountSettings), titleText: "Account")
+            ZStack(alignment: .bottom) {
+                VStack(alignment: .leading) {
+                    CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail)
+                    GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar)
+                        .padding(.horizontal, 5)
+                    Group {
+                        ScrollView(showsIndicators: false) {
+                            VStack(alignment: .leading) {
+                                Button {
+                                    settingsRouter.navigate(to: .account, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.accountSettings), titleText: "Account")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .storage, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.storageSettings), titleText: "Storage")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .myArchives, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.myArchivesSettings), titleText: "My archives")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .invitations, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.invitationsSettings), titleText: "Invitations")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .activityFeed, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.activityFeedSettings), titleText: "Activity feed")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .security, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Security")
+                                }
+                                Button {
+                                    settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)
+                                } label: {
+                                    CustomSimpleListItemView(image: Image(.legacyPlanningSettings), titleText: "Legacy Planning")
+                                }
+                                Spacer()
+                            }
+                        }
+                        Divider()
+                            .padding(.horizontal, -40)
+                        Button {
+                            viewModel.signOut()
+                        } label: {
+                            CustomSimpleListItemView(image: Image(.signOutSettings), titleText: "Sign out", color: .error500)
+                        }
                     }
-                    Button {
-                        viewModel.storageIsPresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.storageSettings), titleText: "Storage")
-                    }
-                    Button {
-                        viewModel.myArchivesIspresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.myArchivesSettings), titleText: "My archives")
-                    }
-                    Button {
-                        viewModel.invitationsIsPresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.invitationsSettings), titleText: "Invitations")
-                    }
-                    Button {
-                        viewModel.activityFeedIspresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.activityFeedSettings), titleText: "Activity feed")
-                    }
-                    Button {
-                        viewModel.securityIspresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Security")
-                    }
-                    Button {
-                        viewModel.legacyPlanningIspresented = true
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.legacyPlanningSettings), titleText: "Legacy Planning")
-                    }
-                    Spacer()
-                    Divider()
-                        .padding(.horizontal, -40)
-                    Button {
-                        print("logout")
-                    } label: {
-                        CustomSimpleListItemView(image: Image(.signOutSettings), titleText: "Sign out", color: .error500)
-                    }
+                    .padding(.horizontal, 10)
                 }
-                .padding(.horizontal, 10)
             }
+            .padding(.bottom, 20)
         }
-        .padding(.bottom, 20)
-    }
     
     var backButton: some View {
         Button(action: {
@@ -109,8 +120,4 @@ struct SettingsScreenView: View {
     func dismissView() {
         presentationMode.wrappedValue.dismiss()
     }
-}
-
-#Preview {
-    SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()))
 }

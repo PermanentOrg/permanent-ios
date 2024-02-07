@@ -1,15 +1,16 @@
 //
-//  CustomWhiteNavigationView.swift
+//  CustomHeaderView.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 01.02.2024.
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct CustomWhiteNavigationView: View {
+struct CustomHeaderView: View {
     var url: URL?
     var titleText: String
     var descText: String
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         ZStack {
@@ -37,8 +38,12 @@ struct CustomWhiteNavigationView: View {
                             .multilineTextAlignment(.leading)
                     }
                     Spacer()
-                    Image(.closeSettings)
-                        .foregroundColor(.blue900)
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(.closeSettings)
+                            .foregroundColor(.blue900)
+                    }
                 }
                 .padding(.horizontal)
             }

@@ -20,6 +20,7 @@ class DrawerViewController: UIViewController {
     var isLeftMenuExpanded: Bool = false
     var isRightMenuExpanded: Bool = false
     let backgroundView = UIView()
+    var settingsRouter: SettingsRouter
     
     fileprivate var leftSideMenuOrigin: CGPoint { CGPoint(x: 0, y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
     fileprivate var rightSideMenuOrigin: CGPoint { CGPoint(x: view.bounds.width - (view.bounds.width * 0.75), y: view.safeAreaInsets.top + rootViewController.barHeight + 0.5) }
@@ -30,6 +31,7 @@ class DrawerViewController: UIViewController {
         self.rootViewController = rootViewController
         self.leftSideMenuController = leftSideMenuController
         self.rightSideMenuController = rightSideMenuController
+        self.settingsRouter = SettingsRouter(rootViewController: rootViewController, currentView: .settings)
         super.init(nibName: nil, bundle: nil)
         
         self.rootViewController.drawerDelegate = self
@@ -102,13 +104,7 @@ class DrawerViewController: UIViewController {
         backgroundView.alpha = 0.0
         rootViewController.view.hideKeyboard()
         
-        let settingsScreenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()))
-        let host = UIHostingController(rootView: settingsScreenView)
-        self.rootViewController.present(host, animated: true, completion: nil)
-        
-        host.rootView.dismissAction = { [weak self] hasUpdates in
-            self?.isRightMenuExpanded = false
-        }
+        settingsRouter.navigate(to: .settings, router: settingsRouter)
     }
 
     func navigateTo(viewController: UIViewController) {

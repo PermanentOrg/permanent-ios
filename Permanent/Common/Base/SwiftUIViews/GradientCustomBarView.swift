@@ -33,13 +33,13 @@ struct GradientProgressBarView: View {
             }
             .padding(.horizontal)
             switch colorScheme {
-            case .settings:
+            case .lightWithGradientBar:
                 ProgressView(value: sizeRatio)
-                    .progressViewStyle(CustomBarProgressGradientStyle(colorScheme: .settings, height: 8, cornerRadius: 3))
+                    .progressViewStyle(CustomBarProgressGradientStyle(colorScheme: .lightWithGradientBar, height: 8, cornerRadius: 3))
                     .frame(height: 12)
                     .padding(.horizontal)
                     .id(redraw)
-            case .storage:
+            case .GradientWithWhiteBar:
                 ProgressView(value: sizeRatio)
                     .progressViewStyle(CustomBarProgressStyle(color: .white, height: 8, cornerRadius: 3))
                     .frame(height: 12)
@@ -53,7 +53,7 @@ struct GradientProgressBarView: View {
         .frame(maxHeight: colorScheme.frameHeightSize)
         .background(colorScheme.backgroundColor)
         .cornerRadius(12)
-        .padding(colorScheme == .storage ? 16  : 0)
+        .padding(colorScheme == .GradientWithWhiteBar ? 16  : 0)
     }
     
     func updateRedraw() {
@@ -62,49 +62,49 @@ struct GradientProgressBarView: View {
 }
 
 enum ColorSchemeForProgressBar {
-    case settings
-    case storage
+    case lightWithGradientBar
+    case GradientWithWhiteBar
 
     var backgroundColor: LinearGradient {
         switch self {
-        case .settings:
+        case .lightWithGradientBar:
             return Gradient.whiteGradient
-        case .storage:
+        case .GradientWithWhiteBar:
             return Gradient.purpleYellowGradient
         }
     }
     var barColor: LinearGradient {
         switch self {
-        case .settings:
+        case .lightWithGradientBar:
             return Gradient.purpleYellowGradient
-        case .storage:
+        case .GradientWithWhiteBar:
             return Gradient.whiteGradient
         }
     }
     
     var textColor: Color {
         switch self {
-        case .settings:
+        case .lightWithGradientBar:
             return Color.black
-        case .storage:
+        case .GradientWithWhiteBar:
             return Color.white
         }
     }
     
     var textSecondaryColor: Color {
         switch self {
-        case .settings:
+        case .lightWithGradientBar:
             return Color.middleGray
-        case .storage:
+        case .GradientWithWhiteBar:
             return Color.white
         }
     }
     
     var frameHeightSize: CGFloat {
         switch self {
-        case .settings:
+        case .lightWithGradientBar:
             return 60
-        case .storage:
+        case .GradientWithWhiteBar:
             return 72
         }
     }

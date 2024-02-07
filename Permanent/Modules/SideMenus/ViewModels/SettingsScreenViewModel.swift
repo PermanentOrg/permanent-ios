@@ -7,16 +7,7 @@
 import SwiftUI
 
 class SettingsScreenViewModel: ObservableObject {
-    var accountData: AccountVOData?
-    
-    @Published var accountIsPresented: Bool = false
-    @Published var storageIsPresented: Bool = false
-    @Published var myArchivesIspresented: Bool = false
-    @Published var invitationsIsPresented: Bool = false
-    @Published var activityFeedIspresented: Bool = false
-    @Published var securityIspresented: Bool = false
-    @Published var legacyPlanningIspresented: Bool = false
-    
+    private var accountData: AccountVOData?
     @Published var spaceRatio = 0.0
     @Published var spaceTotal: Int = 0
     @Published var spaceLeft: Int = 0
@@ -25,12 +16,14 @@ class SettingsScreenViewModel: ObservableObject {
     @Published var spaceLeftReadable: String = ""
     @Published var spaceUsedReadable: String = ""
     
-    @Published var showError: Bool = false
-    
-    var accountID: Int?
+    private var accountID: Int?
     @Published var accountFullName: String = ""
     @Published var accountEmail: String = ""
     @Published var selectedArchiveThumbnailURL: URL?
+
+    @Published var showError: Bool = false
+    @Published var isLoading: Bool = false
+    @Published var loggedOut: Bool = false
     
     init() {
         getAccountInfo { error in
@@ -101,5 +94,83 @@ class SettingsScreenViewModel: ObservableObject {
     func getCurrentArchiveThumbnail() {
         guard let archiveThumbString = AuthenticationManager.shared.session?.selectedArchive?.thumbURL500 else { return }
         selectedArchiveThumbnailURL = URL(string: archiveThumbString)
+    }
+    
+    func deletePushToken(then handler: @escaping ServerResponse) {
+        guard let token: String = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.fcmPushTokenKey)
+        else {
+            handler(.success)
+            return
+        }
+        
+        let deleteTokenParams = (token)
+        let deleteTokenOperation = APIOperation(DeviceEndpoint.delete(params: deleteTokenParams))
+
+        deleteTokenOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    handler(.success)
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+
+            case .error:
+                handler(.error(message: .errorMessage))
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func logout(then handler: @escaping ServerResponse) {
+        AuthenticationManager.shared.logout()
+        
+        let logoutOperation = APIOperation(AuthenticationEndpoint.logout)
+
+        logoutOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard let model: AuthResponse = JSONHelper.convertToModel(from: response) else {
+                    handler(.error(message: .errorMessage))
+                    return
+                }
+
+                if model.isSuccessful == true {
+                    handler(.success)
+                    EventsManager.resetUser()
+                } else {
+                    handler(.error(message: .errorMessage))
+                }
+
+            case .error:
+                handler(.error(message: .errorMessage))
+
+            default:
+                break
+            }
+        }
+    }
+    
+    func signOut() {
+        isLoading = true
+        deletePushToken(then: { status in
+            self.logout(then: { status in
+                self.isLoading = false
+                switch status {
+                case .success:
+                    self.loggedOut = true
+                    
+                case .error(let message):
+                        self.showError = true
+                }
+            })
+        })
     }
 }
