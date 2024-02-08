@@ -29,17 +29,17 @@ class SettingsRouter: ObservableObject {
         self.currentView = currentView
     }
     
-    func navigate(to view: Page, router: SettingsRouter) {
-        if view != .settings {
+    func navigate(to page: Page, router: SettingsRouter) {
+        if page != .settings {
             self.rootViewController.dismiss(animated: true)
         }
-        switch view {
+        switch page {
         case .settings:
             let settingsScreenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()), router: router)
             let host = UIHostingController(rootView: settingsScreenView)
             self.rootViewController.present(host, animated: true, completion: nil)
         case .account:
-            let screenView = AccountInfoView()
+            let screenView = ViewRepresentableContainer(viewRepresentable: AccountInfoViewControllerRepresentable(), title: AccountInfoViewControllerRepresentable().title)
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
@@ -50,22 +50,22 @@ class SettingsRouter: ObservableObject {
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .myArchives:
-            let screenView = ArchivesView()
+            let screenView = ViewRepresentableContainer(viewRepresentable: ArchivesViewControllerRepresentable(), title: ArchivesViewControllerRepresentable().title)
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .invitations:
-            let currentView = InvitesView()
+            let currentView = ViewRepresentableContainer(viewRepresentable: InvitesViewControllerRepresentable(), title: InvitesViewControllerRepresentable().title)
             let host = UIHostingController(rootView: currentView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .activityFeed:
-            let currentView = ActivityFeedView()
+            let currentView = ViewRepresentableContainer(viewRepresentable: ActivityFeedViewControllerRepresentable(), title: ActivityFeedViewControllerRepresentable().title)
             let host = UIHostingController(rootView: currentView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .security:
-            let currentView = AccountSettingsView()
+            let currentView = ViewRepresentableContainer(viewRepresentable: AccountSettingsViewControllerRepresentable(), title: AccountSettingsViewControllerRepresentable().title)
             let host = UIHostingController(rootView: currentView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)

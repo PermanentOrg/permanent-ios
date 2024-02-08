@@ -1,5 +1,5 @@
 //
-//  AccountSettingsViewControllerRepresentable.swift
+//  ArchivesViewControllerRepresentable.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 06.02.2024.
@@ -7,9 +7,11 @@
 import SwiftUI
 import UIKit
 
-struct AccountSettingsViewControllerRepresentable: UIViewControllerRepresentable {
+struct ArchivesViewControllerRepresentable: UIViewControllerRepresentable {
+    let title: String = "Arhives"
+    
     func makeUIViewController(context: Context) -> UIViewController {
-        let viewController = UIViewController.create(withIdentifier: .accountSettings, from: .settings)
+        let viewController = UIViewController.create(withIdentifier: .archives, from: .archives)
         return viewController
     }
     

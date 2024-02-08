@@ -69,7 +69,7 @@ struct StorageView: View {
                 .padding(.horizontal)
             }
             VStack {
-                GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .GradientWithWhiteBar)
+                GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .gradientWithWhiteBar)
                 Button {
                     viewModel.addStorageIsPresented = true
                 } label: {

@@ -8,6 +8,8 @@ import SwiftUI
 import UIKit
 
 struct ActivityFeedViewControllerRepresentable: UIViewControllerRepresentable {
+    let title: String = "Activity Feed"
+    
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = ActivityFeedViewController()
         viewController.viewModel = ActivityFeedViewModel()

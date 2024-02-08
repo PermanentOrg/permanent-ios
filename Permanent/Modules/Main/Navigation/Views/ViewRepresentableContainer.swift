@@ -1,14 +1,16 @@
 //
-//  AccountInfoView.swift
+//  ViewRepresentableContainer.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 06.02.2024.
+//  Created by Lucian Cerbu on 08.02.2024.
 
 import SwiftUI
-import UIKit
 
-struct AccountInfoView: View {
+struct ViewRepresentableContainer: View {
     @Environment(\.presentationMode) var presentationMode
+
+    var viewRepresentable: any UIViewControllerRepresentable
+    var title: String
     
     var body: some View {
         ZStack {
@@ -25,21 +27,21 @@ struct AccountInfoView: View {
             }
         }
     }
-    
+
     var backgroundView: some View {
         Color.whiteGray
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .edgesIgnoringSafeArea(.all)
     }
-    
+
     var contentView: some View {
         VStack {
-            AccountInfoViewControllerRepresentable()
+            AnyView(viewRepresentable)
                 .ignoresSafeArea()
         }
-        .navigationBarTitle("Account", displayMode: .inline)
+        .navigationBarTitle(title, displayMode: .inline)
     }
-    
+
     var backButton: some View {
         Button(action: {
             dismissView()
@@ -50,7 +52,7 @@ struct AccountInfoView: View {
             }
         }
     }
-    
+
     func dismissView() {
         presentationMode.wrappedValue.dismiss()
     }

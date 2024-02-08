@@ -191,7 +191,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromSharedArchive() -> Bool {
-        let screenView = ArchivesView()
+        let screenView = ViewRepresentableContainer(viewRepresentable: ArchivesViewControllerRepresentable(), title: ArchivesViewControllerRepresentable().title)
         let host = UIHostingController(rootView: screenView)
         host.modalPresentationStyle = .fullScreen
         self.rootViewController.present(host, animated: true, completion: nil)

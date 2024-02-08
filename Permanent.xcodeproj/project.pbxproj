@@ -239,14 +239,9 @@
 		5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */; };
 		5E6CCEDC2B71145E00D192FF /* SettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEDB2B71145E00D192FF /* SettingsRouter.swift */; };
 		5E6CCEDF2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */; };
-		5E6CCEE22B72C62400D192FF /* AccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEE12B72C62400D192FF /* AccountInfoView.swift */; };
-		5E6CCEE52B72D07900D192FF /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEE42B72D07900D192FF /* ArchivesView.swift */; };
 		5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */; };
-		5E6CCEE92B72D39B00D192FF /* InvitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEE82B72D39B00D192FF /* InvitesView.swift */; };
 		5E6CCEEB2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEEA2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift */; };
-		5E6CCEEE2B72D5D700D192FF /* ActivityFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEED2B72D5D700D192FF /* ActivityFeedView.swift */; };
 		5E6CCEF02B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEEF2B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift */; };
-		5E6CCEF22B72DCD000D192FF /* AccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEF12B72DCD000D192FF /* AccountSettingsView.swift */; };
 		5E6CCEF42B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEF32B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift */; };
 		5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */; };
 		5E6FB75A2A73E18200984B84 /* MetadataEditFileNamesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FB7592A73E18200984B84 /* MetadataEditFileNamesViewModel.swift */; };
@@ -339,6 +334,7 @@
 		5ECBAFA52A1B643400FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */; };
 		5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ECBAFA82A1B735900FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
+		5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */; };
 		5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */; };
 		5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED06F42286B2BD5006C126B /* MainInterface.storyboard */; };
 		5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1085,14 +1081,9 @@
 		5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPage.swift; sourceTree = "<group>"; };
 		5E6CCEDB2B71145E00D192FF /* SettingsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRouter.swift; sourceTree = "<group>"; };
 		5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewControllerRepresentable.swift; sourceTree = "<group>"; };
-		5E6CCEE12B72C62400D192FF /* AccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoView.swift; sourceTree = "<group>"; };
-		5E6CCEE42B72D07900D192FF /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesViewControllerRepresentable.swift; sourceTree = "<group>"; };
-		5E6CCEE82B72D39B00D192FF /* InvitesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitesView.swift; sourceTree = "<group>"; };
 		5E6CCEEA2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitesViewControllerRepresentable.swift; sourceTree = "<group>"; };
-		5E6CCEED2B72D5D700D192FF /* ActivityFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedView.swift; sourceTree = "<group>"; };
 		5E6CCEEF2B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityFeedViewControllerRepresentable.swift; sourceTree = "<group>"; };
-		5E6CCEF12B72DCD000D192FF /* AccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsView.swift; sourceTree = "<group>"; };
 		5E6CCEF32B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewControllerRepresentable.swift; sourceTree = "<group>"; };
 		5E6FB7572A73E15800984B84 /* MetadataEditFileNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditFileNamesView.swift; sourceTree = "<group>"; };
 		5E6FB7592A73E18200984B84 /* MetadataEditFileNamesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditFileNamesViewModel.swift; sourceTree = "<group>"; };
@@ -1172,6 +1163,7 @@
 		5ECBAF9C2A1B5EED00FACFDF /* ArchiveSteward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveSteward.swift; sourceTree = "<group>"; };
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
 		5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningArchiveDetails.swift; sourceTree = "<group>"; };
+		5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRepresentableContainer.swift; sourceTree = "<group>"; };
 		5ED06F3E286B2BD5006C126B /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
 		5ED06F43286B2BD5006C126B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1825,8 +1817,6 @@
 			children = (
 				5E218BF725A86C9E00B56625 /* PasswordElementView.swift */,
 				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
-				5E6CCEF12B72DCD000D192FF /* AccountSettingsView.swift */,
-				5E6CCEF32B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2279,15 +2269,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		5E46217725C194E8007642BE /* View */ = {
-			isa = PBXGroup;
-			children = (
-				5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */,
-				5E6CCEE12B72C62400D192FF /* AccountInfoView.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		5E47399B2A40B8A700A20D85 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -2420,6 +2401,8 @@
 		5E4739A92A40F1F800A20D85 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				5ECF1DA62B7502E20086EF21 /* ViewControllerRepresentables */,
+				5ECF1DA32B74FD2F0086EF21 /* Views */,
 				5E6CCEDD2B71146200D192FF /* Routers */,
 				BC0D99B6256D3AF600D29041 /* RootNavigationController.swift */,
 			);
@@ -2538,7 +2521,6 @@
 		5E4739C52A41026100A20D85 /* ActivityFeed */ = {
 			isa = PBXGroup;
 			children = (
-				5E6CCEEC2B72D5C200D192FF /* Views */,
 				5E4739C62A4102A600A20D85 /* ViewController */,
 				BC59BAC025C2B8BD005A45D3 /* ViewModels */,
 			);
@@ -2556,7 +2538,6 @@
 		5E4739C72A41034200A20D85 /* AccountSettings */ = {
 			isa = PBXGroup;
 			children = (
-				5E46217725C194E8007642BE /* View */,
 				5E3E12262A41DA0500682DE5 /* ViewController */,
 				5E3E12272A41DA0F00682DE5 /* ViewModel */,
 			);
@@ -2566,7 +2547,6 @@
 		5E4739C82A4103A500A20D85 /* Archives */ = {
 			isa = PBXGroup;
 			children = (
-				5E6CCEE32B72D06600D192FF /* Views */,
 				5E3E123F2A41ED8200682DE5 /* Cells */,
 				5E3E123D2A41ED7000682DE5 /* ViewController */,
 				5E3E123E2A41ED7900682DE5 /* ViewModel */,
@@ -2806,24 +2786,6 @@
 			path = Routers;
 			sourceTree = "<group>";
 		};
-		5E6CCEE32B72D06600D192FF /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				5E6CCEE42B72D07900D192FF /* ArchivesView.swift */,
-				5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		5E6CCEEC2B72D5C200D192FF /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				5E6CCEED2B72D5D700D192FF /* ActivityFeedView.swift */,
-				5E6CCEEF2B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		5E7141432AFD25B2003952CD /* Billing */ = {
 			isa = PBXGroup;
 			children = (
@@ -2949,6 +2911,26 @@
 				5E626CA62A1D6BB400EA9981 /* StewardDetails.swift */,
 			);
 			path = LegacyPlanning;
+			sourceTree = "<group>";
+		};
+		5ECF1DA32B74FD2F0086EF21 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5ECF1DA62B7502E20086EF21 /* ViewControllerRepresentables */ = {
+			isa = PBXGroup;
+			children = (
+				5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */,
+				5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */,
+				5E6CCEEA2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift */,
+				5E6CCEEF2B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift */,
+				5E6CCEF32B72DD1800D192FF /* AccountSettingsViewControllerRepresentable.swift */,
+			);
+			path = ViewControllerRepresentables;
 			sourceTree = "<group>";
 		};
 		5ED06F3F286B2BD5006C126B /* ShareExtension */ = {
@@ -3243,8 +3225,6 @@
 			isa = PBXGroup;
 			children = (
 				BC42EDC025BEE9160031B965 /* InvitationTableViewCell */,
-				5E6CCEE82B72D39B00D192FF /* InvitesView.swift */,
-				5E6CCEEA2B72D3D700D192FF /* InvitesViewControllerRepresentable.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4284,7 +4264,6 @@
 				5E66730F2A793D9B001C49CC /* ReplaceFilenameView.swift in Sources */,
 				92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
-				5E6CCEEE2B72D5D700D192FF /* ActivityFeedView.swift in Sources */,
 				5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				F559F88528F9D91D0015A522 /* FileBrowserViewModel.swift in Sources */,
 				92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */,
@@ -4299,7 +4278,6 @@
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
 				5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
-				5E6CCEE22B72C62400D192FF /* AccountInfoView.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
 				924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */,
 				BCEAB2832581132700567E8C /* SwitchSettingsView.swift in Sources */,
@@ -4352,7 +4330,6 @@
 				5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				5ED3B3AC29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
-				5E6CCEE52B72D07900D192FF /* ArchivesView.swift in Sources */,
 				9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
@@ -4532,6 +4509,7 @@
 				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
 				5EBAFCEA2A1572CD005DB527 /* LegacyPlanningSetUpButton.swift in Sources */,
+				5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */,
 				F559F88A28FEBCC10015A522 /* FolderContentView.swift in Sources */,
 				5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */,
 				F518DDA027CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.swift in Sources */,
@@ -4564,7 +4542,6 @@
 				5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
-				5E6CCEF22B72DCD000D192FF /* AccountSettingsView.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
@@ -4646,7 +4623,6 @@
 				BC6D3B552514F26F00390927 /* APIError.swift in Sources */,
 				5E991EDF2A48E05C006229C0 /* MetadataEditView.swift in Sources */,
 				BC6D3B532514F0C100390927 /* APIOperation.swift in Sources */,
-				5E6CCEE92B72D39B00D192FF /* InvitesView.swift in Sources */,
 				BC648782251B9FC7009D7DE1 /* StoryboardName.swift in Sources */,
 				5EA70D8B2B2C78E200175D9C /* NewBadgeView.swift in Sources */,
 				5E604E552B4EADD8008C5034 /* BottomInfoMessageView.swift in Sources */,

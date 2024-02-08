@@ -1,5 +1,5 @@
 //
-//  AccountInfoUIViewControllerRepresentable.swift
+//  AccountSettingsViewControllerRepresentable.swift
 //  Permanent
 //
 //  Created by Lucian Cerbu on 06.02.2024.
@@ -7,9 +7,11 @@
 import SwiftUI
 import UIKit
 
-struct AccountInfoViewControllerRepresentable: UIViewControllerRepresentable {
+struct AccountSettingsViewControllerRepresentable: UIViewControllerRepresentable {
+    let title: String = "Security"
+    
     func makeUIViewController(context: Context) -> UIViewController {
-        let viewController = UIViewController.create(withIdentifier: .accountInfo, from: .settings)
+        let viewController = UIViewController.create(withIdentifier: .accountSettings, from: .settings)
         return viewController
     }
     

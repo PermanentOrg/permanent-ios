@@ -151,7 +151,7 @@ class DrawerViewController: UIViewController {
     
     func showArchivesView() {
         if showArchives {
-            let screenView = ArchivesView()
+            let screenView = ViewRepresentableContainer(viewRepresentable: ArchivesViewControllerRepresentable(), title: ArchivesViewControllerRepresentable().title)
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             rootViewController.present(host, animated: true, completion: nil)

@@ -10,6 +10,8 @@ import SwiftUI
 import UIKit
 
 struct InvitesViewControllerRepresentable: UIViewControllerRepresentable {
+    let title: String = "Invitations"
+    
     func makeUIViewController(context: Context) -> UIViewController {
         guard let viewController = UIViewController.create(withIdentifier: .invitations, from: .invitations) as? InvitesViewController else {
             return UIViewController()
