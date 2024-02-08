@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class SettingsRouter: ObservableObject {
+class SettingsRouter {
     enum Page {
         case settings
         case account
@@ -22,21 +22,21 @@ class SettingsRouter: ObservableObject {
     }
     
     var rootViewController: RootNavigationController
-    var currentView: Page
+    var currentPage: Page = .settings
     
-    init(rootViewController: RootNavigationController, currentView: Page) {
+    init(rootViewController: RootNavigationController) {
         self.rootViewController = rootViewController
-        self.currentView = currentView
     }
     
     func navigate(to page: Page, router: SettingsRouter) {
         if page != .settings {
             self.rootViewController.dismiss(animated: true)
         }
+        currentPage = page
         switch page {
         case .settings:
-            let settingsScreenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()), router: router)
-            let host = UIHostingController(rootView: settingsScreenView)
+            let screenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()), router: router)
+            let host = UIHostingController(rootView: screenView)
             self.rootViewController.present(host, animated: true, completion: nil)
         case .account:
             let screenView = ViewRepresentableContainer(viewRepresentable: AccountInfoViewControllerRepresentable(), title: AccountInfoViewControllerRepresentable().title)
@@ -44,9 +44,8 @@ class SettingsRouter: ObservableObject {
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .storage:
-            currentView = .storage
-            let storageView = StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init()))
-            let host = UIHostingController(rootView: storageView)
+            let screenView = StorageView(viewModel: StateObject(wrappedValue: StorageViewModel.init()))
+            let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .myArchives:
@@ -55,18 +54,18 @@ class SettingsRouter: ObservableObject {
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .invitations:
-            let currentView = ViewRepresentableContainer(viewRepresentable: InvitesViewControllerRepresentable(), title: InvitesViewControllerRepresentable().title)
-            let host = UIHostingController(rootView: currentView)
+            let screenView = ViewRepresentableContainer(viewRepresentable: InvitesViewControllerRepresentable(), title: InvitesViewControllerRepresentable().title)
+            let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .activityFeed:
-            let currentView = ViewRepresentableContainer(viewRepresentable: ActivityFeedViewControllerRepresentable(), title: ActivityFeedViewControllerRepresentable().title)
-            let host = UIHostingController(rootView: currentView)
+            let screenView = ViewRepresentableContainer(viewRepresentable: ActivityFeedViewControllerRepresentable(), title: ActivityFeedViewControllerRepresentable().title)
+            let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .security:
-            let currentView = ViewRepresentableContainer(viewRepresentable: AccountSettingsViewControllerRepresentable(), title: AccountSettingsViewControllerRepresentable().title)
-            let host = UIHostingController(rootView: currentView)
+            let screenView = ViewRepresentableContainer(viewRepresentable: AccountSettingsViewControllerRepresentable(), title: AccountSettingsViewControllerRepresentable().title)
+            let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .legacyPlanning:

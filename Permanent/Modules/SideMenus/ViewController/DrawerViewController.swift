@@ -29,7 +29,7 @@ class DrawerViewController: UIViewController {
     init(rootViewController: RootNavigationController, leftSideMenuController: SideMenuViewController, showArchives: Bool = false) {
         self.rootViewController = rootViewController
         self.leftSideMenuController = leftSideMenuController
-        self.settingsRouter = SettingsRouter(rootViewController: rootViewController, currentView: .settings)
+        self.settingsRouter = SettingsRouter(rootViewController: rootViewController)
         self.showArchives = showArchives
         super.init(nibName: nil, bundle: nil)
         
