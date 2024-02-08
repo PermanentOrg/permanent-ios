@@ -17,6 +17,7 @@ class SettingsRouter: ObservableObject {
         case activityFeed
         case security
         case legacyPlanning
+        case contactSupport
         case signUp
     }
     
@@ -75,6 +76,9 @@ class SettingsRouter: ObservableObject {
             let host = NavigationController(rootViewController: legacyPlanningLoadingVC)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
+        case .contactSupport:
+            guard let url = URL(string: APIEnvironment.defaultEnv.helpURL) else { return }
+            UIApplication.shared.open(url)
         case .signUp:
             UploadManager.shared.cancelAll()
             

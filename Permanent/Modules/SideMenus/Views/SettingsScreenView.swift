@@ -92,6 +92,12 @@ struct SettingsScreenView: View {
                                 Spacer()
                             }
                         }
+                        .onAppear {
+                            UIScrollView.appearance().bounces = false
+                        }
+                        .onDisappear {
+                            UIScrollView.appearance().bounces = true
+                        }
                         Divider()
                             .padding(.horizontal, -40)
                         Button {
