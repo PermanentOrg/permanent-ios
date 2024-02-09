@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 import FirebaseMessaging
 import FirebaseRemoteConfig
 
@@ -139,9 +140,9 @@ class RootViewController: UIViewController {
     }
     
     func drawerControllerForDeepLink() -> DrawerViewController {
+        var showArchives: Bool = false
         let mainViewController: UIViewController
         let leftSideMenuController = UIViewController.create(withIdentifier: .sideMenu, from: .main) as! SideMenuViewController
-        let rightSideMenuController = UIViewController.create(withIdentifier: .rightSideMenu, from: .main) as! RightSideMenuViewController
         
         if let _: PARequestNotificationPayload = try? PreferencesManager.shared.getNonPlistObject(forKey: Constants.Keys.StorageKeys.requestPAAccess) {
             mainViewController = UIViewController.create(withIdentifier: .members, from: .members)
@@ -174,19 +175,17 @@ class RootViewController: UIViewController {
             mainViewController = newRootVC
         } else if let sharedArchiveToken: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken), sharedArchiveToken {
             PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
+            showArchives = true
             
-            let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
-            
-            leftSideMenuController.selectedMenuOption = .none
-            
-            mainViewController = newRootVC
+            mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
+            (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
         } else {
             mainViewController = UIViewController.create(withIdentifier: .main, from: .main)
             (mainViewController as! MainViewController).viewModel = MyFilesViewModel()
         }
         
         let navController = RootNavigationController(viewController: mainViewController)
-        return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, rightSideMenuController: rightSideMenuController)
+        return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, showArchives: showArchives)
     }
     
     func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {

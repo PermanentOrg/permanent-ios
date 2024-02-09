@@ -9,10 +9,9 @@ import UIKit
 
 struct DonateStorageView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        let vc = DonateViewController()
         let storyboard = UIStoryboard(name: "Donate", bundle: Bundle.main)
-        let controller = storyboard.instantiateViewController(identifier: "donate")
-        return controller
+        let viewController = storyboard.instantiateViewController(identifier: "donate")
+        return viewController
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {

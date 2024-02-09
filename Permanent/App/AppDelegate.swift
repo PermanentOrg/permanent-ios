@@ -191,13 +191,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     fileprivate func navigateFromSharedArchive() -> Bool {
-        let newRootVC = UIViewController.create(withIdentifier: .archives, from: .archives)
-        self.rootViewController.changeDrawerRoot(viewController: newRootVC)
-        
+        let screenView = ViewRepresentableContainer(viewRepresentable: ArchivesViewControllerRepresentable(), title: ArchivesViewControllerRepresentable().title)
+        let host = UIHostingController(rootView: screenView)
+        host.modalPresentationStyle = .fullScreen
+        self.rootViewController.present(host, animated: true, completion: nil)
+
         return true
     }
     
-    fileprivate func saveSharedArchiveToken() {
+    fileprivate func  saveSharedArchiveToken() {
         PreferencesManager.shared.set(true, forKey: Constants.Keys.StorageKeys.sharedArchiveToken)
     }
 }

@@ -31,6 +31,7 @@ class RootNavigationController: UINavigationController {
         topViewController?.navigationItem.leftBarButtonItem?.tintColor = .white
         
         topViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.settings.templated, style: .plain, target: self, action: #selector(didTapRightSideMenuButton))
+        topViewController?.navigationItem.rightBarButtonItem?.tintColor = .white
     }
     
     func changeRootController(viewController: UIViewController) {
