@@ -43,7 +43,7 @@ struct EmailChipView: View {
                     VStack {
                         if item == EmailChipView.inputKey {
                             inputField
-                                .frame(minWidth: 150, maxWidth: availableWidth)
+                                .frame(minWidth: availableWidth < 150 ? availableWidth : 150, maxWidth: availableWidth)
                         } else {
                             EmailChip(text: item) { text in
                                 chips.removeAll(where: { $0 == text })
