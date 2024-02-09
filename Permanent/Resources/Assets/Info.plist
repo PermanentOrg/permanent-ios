@@ -51,6 +51,10 @@
 	<string>Allow access to your Photo Library in order to upload photos and videos from this device to your archive.</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Usual-Regular.ttf</string>
+		<string>Usual-Italic.ttf</string>
+		<string>Usual-Bold.ttf</string>
+		<string>Usual-Medium.ttf</string>
 		<string>OpenSans-Italic.ttf</string>
 		<string>OpenSans-Bold.ttf</string>
 		<string>OpenSans-Regular.ttf</string>

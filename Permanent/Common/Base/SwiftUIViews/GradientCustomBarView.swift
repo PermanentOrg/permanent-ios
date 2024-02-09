@@ -11,25 +11,20 @@ struct GradientProgressBarView: View {
     var maxValue: String
     var sizeRatio: Double
     var colorScheme: ColorSchemeForProgressBar
+    var font: FontType = .openSans
     @State private var redraw = UUID()
     
     var body: some View {
         LazyVStack(spacing: 16) {
             HStack {
                 HStack(spacing: 0) {
-                    Text("\(value) ")
-                        .textStyle(SmallXXXSemiBoldTextStyle())
-                        .foregroundColor(colorScheme.textColor)
+                    UsedValueText(font: font, text: "\(value) ", colorScheme: colorScheme)
                     if value.isNotEmpty {
-                        Text("used")
-                            .textStyle(SmallXXXRegularTextStyle())
-                            .foregroundColor(colorScheme.textSecondaryColor)
+                        UsedText(font: font, colorScheme: colorScheme)
                     }
                 }
                 Spacer()
-                Text("\(maxValue)")
-                    .textStyle(SmallXXXSemiBoldTextStyle())
-                    .foregroundColor(colorScheme.textColor)
+                MaxValueText(font: font, text: "\(maxValue)", colorScheme: colorScheme)
             }
             .padding(.horizontal)
             switch colorScheme {
@@ -106,6 +101,60 @@ enum ColorSchemeForProgressBar {
             return 60
         case .gradientWithWhiteBar:
             return 72
+        }
+    }
+}
+
+fileprivate struct UsedValueText: View {
+    var font: FontType
+    var text: String
+    var colorScheme: ColorSchemeForProgressBar
+    
+    var body: some View {
+        if font == .usual {
+            Text(text)
+                .textStyle(UsualSmallXXXSemiBoldTextStyle())
+                .foregroundColor(colorScheme.textColor)
+        } else {
+            Text(text)
+                .textStyle(SmallXXXSemiBoldTextStyle())
+                .foregroundColor(colorScheme.textColor)
+        }
+    }
+}
+
+fileprivate struct UsedText: View {
+    var font: FontType
+    var text: String = "used"
+    var colorScheme: ColorSchemeForProgressBar
+    
+    var body: some View {
+        if font == .usual {
+            Text(text)
+                .textStyle(UsualSmallXXXRegularTextStyle())
+                .foregroundColor(colorScheme.textSecondaryColor)
+        } else {
+            Text(text)
+                .textStyle(SmallXXXRegularTextStyle())
+                .foregroundColor(colorScheme.textSecondaryColor)
+        }
+    }
+}
+
+fileprivate struct MaxValueText: View {
+    var font: FontType
+    var text: String
+    var colorScheme: ColorSchemeForProgressBar
+    
+    var body: some View {
+        if font == .usual {
+            Text(text)
+                .textStyle(UsualSmallXXXSemiBoldTextStyle())
+                .foregroundColor(colorScheme.textColor)
+        } else {
+            Text(text)
+                .textStyle(SmallXXXSemiBoldTextStyle())
+                .foregroundColor(colorScheme.textColor)
         }
     }
 }

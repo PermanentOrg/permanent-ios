@@ -335,6 +335,26 @@
 		5ECBAFA72A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ECBAFA82A1B735900FACFDF /* LegacyPlanningArchiveDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */; };
 		5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */; };
+		5ECF1DB32B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */; };
+		5ECF1DB42B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */; };
+		5ECF1DB52B7520E20086EF21 /* Usual-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAA2B7520E10086EF21 /* Usual-Bold.ttf */; };
+		5ECF1DB62B7520E20086EF21 /* Usual-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAA2B7520E10086EF21 /* Usual-Bold.ttf */; };
+		5ECF1DB72B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAB2B7520E10086EF21 /* Usual-ExtraBoldItalic.ttf */; };
+		5ECF1DB82B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAB2B7520E10086EF21 /* Usual-ExtraBoldItalic.ttf */; };
+		5ECF1DB92B7520E20086EF21 /* Usual-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAC2B7520E10086EF21 /* Usual-Medium.ttf */; };
+		5ECF1DBA2B7520E20086EF21 /* Usual-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAC2B7520E10086EF21 /* Usual-Medium.ttf */; };
+		5ECF1DBB2B7520E20086EF21 /* Usual-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAD2B7520E10086EF21 /* Usual-Light.ttf */; };
+		5ECF1DBC2B7520E20086EF21 /* Usual-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAD2B7520E10086EF21 /* Usual-Light.ttf */; };
+		5ECF1DBD2B7520E20086EF21 /* Usual-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAE2B7520E10086EF21 /* Usual-Italic.ttf */; };
+		5ECF1DBE2B7520E20086EF21 /* Usual-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAE2B7520E10086EF21 /* Usual-Italic.ttf */; };
+		5ECF1DBF2B7520E20086EF21 /* Usual-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAF2B7520E10086EF21 /* Usual-LightItalic.ttf */; };
+		5ECF1DC02B7520E20086EF21 /* Usual-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DAF2B7520E10086EF21 /* Usual-LightItalic.ttf */; };
+		5ECF1DC12B7520E20086EF21 /* Usual-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB02B7520E10086EF21 /* Usual-BoldItalic.ttf */; };
+		5ECF1DC22B7520E20086EF21 /* Usual-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB02B7520E10086EF21 /* Usual-BoldItalic.ttf */; };
+		5ECF1DC32B7520E20086EF21 /* Usual-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB12B7520E20086EF21 /* Usual-MediumItalic.ttf */; };
+		5ECF1DC42B7520E20086EF21 /* Usual-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB12B7520E20086EF21 /* Usual-MediumItalic.ttf */; };
+		5ECF1DC52B7520E20086EF21 /* Usual-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB22B7520E20086EF21 /* Usual-Regular.ttf */; };
+		5ECF1DC62B7520E20086EF21 /* Usual-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5ECF1DB22B7520E20086EF21 /* Usual-Regular.ttf */; };
 		5ED06F41286B2BD5006C126B /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */; };
 		5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5ED06F42286B2BD5006C126B /* MainInterface.storyboard */; };
 		5ED06F48286B2BD5006C126B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5ED06F3E286B2BD5006C126B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1164,6 +1184,16 @@
 		5ECBAFA22A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveStewardResponseTriggerType.swift; sourceTree = "<group>"; };
 		5ECBAFA62A1B731B00FACFDF /* LegacyPlanningArchiveDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningArchiveDetails.swift; sourceTree = "<group>"; };
 		5ECF1DA42B74FD440086EF21 /* ViewRepresentableContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRepresentableContainer.swift; sourceTree = "<group>"; };
+		5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-ExtraBold.ttf"; sourceTree = "<group>"; };
+		5ECF1DAA2B7520E10086EF21 /* Usual-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Bold.ttf"; sourceTree = "<group>"; };
+		5ECF1DAB2B7520E10086EF21 /* Usual-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		5ECF1DAC2B7520E10086EF21 /* Usual-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Medium.ttf"; sourceTree = "<group>"; };
+		5ECF1DAD2B7520E10086EF21 /* Usual-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Light.ttf"; sourceTree = "<group>"; };
+		5ECF1DAE2B7520E10086EF21 /* Usual-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Italic.ttf"; sourceTree = "<group>"; };
+		5ECF1DAF2B7520E10086EF21 /* Usual-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-LightItalic.ttf"; sourceTree = "<group>"; };
+		5ECF1DB02B7520E10086EF21 /* Usual-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-BoldItalic.ttf"; sourceTree = "<group>"; };
+		5ECF1DB12B7520E20086EF21 /* Usual-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-MediumItalic.ttf"; sourceTree = "<group>"; };
+		5ECF1DB22B7520E20086EF21 /* Usual-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Usual-Regular.ttf"; sourceTree = "<group>"; };
 		5ED06F3E286B2BD5006C126B /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED06F40286B2BD5006C126B /* ShareExtensionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewController.swift; sourceTree = "<group>"; };
 		5ED06F43286B2BD5006C126B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -2933,6 +2963,40 @@
 			path = ViewControllerRepresentables;
 			sourceTree = "<group>";
 		};
+		5ECF1DA72B75209C0086EF21 /* OpenSans */ = {
+			isa = PBXGroup;
+			children = (
+				5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */,
+				5ED0856124E3E5C300CDB4D3 /* OpenSans-BoldItalic.ttf */,
+				5ED0856224E3E5C300CDB4D3 /* OpenSans-ExtraBold.ttf */,
+				5ED0855D24E3E5C300CDB4D3 /* OpenSans-ExtraBoldItalic.ttf */,
+				5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */,
+				5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */,
+				5ED0855E24E3E5C300CDB4D3 /* OpenSans-LightItalic.ttf */,
+				5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */,
+				5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */,
+				5ED0856024E3E5C300CDB4D3 /* OpenSans-SemiBoldItalic.ttf */,
+			);
+			path = OpenSans;
+			sourceTree = "<group>";
+		};
+		5ECF1DA82B7520B20086EF21 /* Usual */ = {
+			isa = PBXGroup;
+			children = (
+				5ECF1DAA2B7520E10086EF21 /* Usual-Bold.ttf */,
+				5ECF1DB02B7520E10086EF21 /* Usual-BoldItalic.ttf */,
+				5ECF1DA92B7520E10086EF21 /* Usual-ExtraBold.ttf */,
+				5ECF1DAB2B7520E10086EF21 /* Usual-ExtraBoldItalic.ttf */,
+				5ECF1DAE2B7520E10086EF21 /* Usual-Italic.ttf */,
+				5ECF1DAD2B7520E10086EF21 /* Usual-Light.ttf */,
+				5ECF1DAF2B7520E10086EF21 /* Usual-LightItalic.ttf */,
+				5ECF1DAC2B7520E10086EF21 /* Usual-Medium.ttf */,
+				5ECF1DB12B7520E20086EF21 /* Usual-MediumItalic.ttf */,
+				5ECF1DB22B7520E20086EF21 /* Usual-Regular.ttf */,
+			);
+			path = Usual;
+			sourceTree = "<group>";
+		};
 		5ED06F3F286B2BD5006C126B /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2960,16 +3024,8 @@
 		5ED0856524E3E5CA00CDB4D3 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				5ED0855F24E3E5C300CDB4D3 /* OpenSans-Bold.ttf */,
-				5ED0856124E3E5C300CDB4D3 /* OpenSans-BoldItalic.ttf */,
-				5ED0856224E3E5C300CDB4D3 /* OpenSans-ExtraBold.ttf */,
-				5ED0855D24E3E5C300CDB4D3 /* OpenSans-ExtraBoldItalic.ttf */,
-				5ED0856324E3E5C300CDB4D3 /* OpenSans-Italic.ttf */,
-				5ED0855C24E3E5C300CDB4D3 /* OpenSans-Light.ttf */,
-				5ED0855E24E3E5C300CDB4D3 /* OpenSans-LightItalic.ttf */,
-				5ED0856424E3E5C400CDB4D3 /* OpenSans-Regular.ttf */,
-				5ED0855B24E3E5C300CDB4D3 /* OpenSans-SemiBold.ttf */,
-				5ED0856024E3E5C300CDB4D3 /* OpenSans-SemiBoldItalic.ttf */,
+				5ECF1DA82B7520B20086EF21 /* Usual */,
+				5ECF1DA72B75209C0086EF21 /* OpenSans */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -3963,14 +4019,19 @@
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
 				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
 				5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */,
+				5ECF1DB72B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */,
 				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				BCE8DA7C2566735C00842ABD /* BottomActionSheet.xib in Resources */,
 				5E5EF853273B1E57004F7EBC /* Profile.storyboard in Resources */,
 				BCE3C94C253852E300EC3A66 /* EmptyFolderView.xib in Resources */,
+				5ECF1DB32B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */,
 				5E2E3D1926D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib in Resources */,
 				BC4526F1251CD6B600E24A51 /* Main.storyboard in Resources */,
+				5ECF1DC52B7520E20086EF21 /* Usual-Regular.ttf in Resources */,
+				5ECF1DBB2B7520E20086EF21 /* Usual-Light.ttf in Resources */,
 				5E048FDC29230AB00023C929 /* ShareManagementDefaultAccessRoleCollectionViewCell.xib in Resources */,
 				BC55970425A3462900BF55DA /* DropdownView.xib in Resources */,
+				5ECF1DB92B7520E20086EF21 /* Usual-Medium.ttf in Resources */,
 				BC59BABD25C2B7D6005A45D3 /* FileLargeCollectionViewCell.xib in Resources */,
 				BC752BC9253EBBD100EF7941 /* UploadFilesView.xib in Resources */,
 				F518DDA127CE6BCA0024C8A0 /* ProfilePageVisibilityCollectionViewCell.xib in Resources */,
@@ -3992,9 +4053,11 @@
 				5ED4B02326C130E00077FDDB /* RightSideDrawerTableViewCell.xib in Resources */,
 				F58F314B27F1A52600B89B99 /* Donate.storyboard in Resources */,
 				06644A8D24EBF51A003CD359 /* BigLogoView.xib in Resources */,
+				5ECF1DB52B7520E20086EF21 /* Usual-Bold.ttf in Resources */,
 				BC42EDB625BB116A0031B965 /* Invitations.storyboard in Resources */,
 				BC8E794C257A8526008ED0F5 /* ArchiveTableViewCell.xib in Resources */,
 				5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */,
+				5ECF1DBD2B7520E20086EF21 /* Usual-Italic.ttf in Resources */,
 				5ED3B3A929F7D6D6000CFF48 /* LegacyPlanning.storyboard in Resources */,
 				5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */,
 				927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */,
@@ -4002,6 +4065,7 @@
 				5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */,
+				5ECF1DC32B7520E20086EF21 /* Usual-MediumItalic.ttf in Resources */,
 				5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */,
 				5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
@@ -4013,6 +4077,7 @@
 				BCB0726025235C59003E2F66 /* NavigationBarView.xib in Resources */,
 				5E62F7BF27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.xib in Resources */,
 				5E7AE8B4291E97DB00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib in Resources */,
+				5ECF1DBF2B7520E20086EF21 /* Usual-LightItalic.ttf in Resources */,
 				5E2E3D0F26D058940090EF02 /* Archives.storyboard in Resources */,
 				F53D0A1D25FB71960080579F /* FileDetailsDateCollectionViewCell.xib in Resources */,
 				5EC8C4BC26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */,
@@ -4028,6 +4093,7 @@
 				5E5DFA712746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib in Resources */,
 				5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
+				5ECF1DC12B7520E20086EF21 /* Usual-BoldItalic.ttf in Resources */,
 				5E5DFA6D27463602000D9924 /* ProfilePageHeaderCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4053,19 +4119,29 @@
 				F559F8B82901764D0015A522 /* FileCollectionViewGridCell.xib in Resources */,
 				92E3FB5D2A176A5B00E9E5A6 /* LegacyArchiveCompletedCell.xib in Resources */,
 				F55252A22907F6250005E011 /* Localizable.strings in Resources */,
+				5ECF1DB42B7520E20086EF21 /* Usual-ExtraBold.ttf in Resources */,
 				F57F1BC8286DE12C004F0466 /* OpenSans-Regular.ttf in Resources */,
 				F57F1BC7286DE125004F0466 /* OpenSans-SemiBold.ttf in Resources */,
 				92E3FB5C2A176A5B00E9E5A6 /* LegacyAccountStatusCell.xib in Resources */,
+				5ECF1DC22B7520E20086EF21 /* Usual-BoldItalic.ttf in Resources */,
 				92E3FB5B2A176A5B00E9E5A6 /* LegacyArchiveCreateCell.xib in Resources */,
+				5ECF1DC02B7520E20086EF21 /* Usual-LightItalic.ttf in Resources */,
 				F5ADBF3C290BBF970007A516 /* ArchiveScreenChooseArchiveDetailsTableViewCell.xib in Resources */,
+				5ECF1DBA2B7520E20086EF21 /* Usual-Medium.ttf in Resources */,
 				5EEC8E15286DCE3E00603FC4 /* FileDetailsTableViewCell.xib in Resources */,
 				F57F1BC9286DE131004F0466 /* OpenSans-Italic.ttf in Resources */,
 				5ED4B9C3287597E400CF044B /* Assets.xcassets in Resources */,
+				5ECF1DC62B7520E20086EF21 /* Usual-Regular.ttf in Resources */,
 				F5ADBF3E290BBFA00007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
+				5ECF1DB82B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */,
+				5ECF1DBE2B7520E20086EF21 /* Usual-Italic.ttf in Resources */,
+				5ECF1DB62B7520E20086EF21 /* Usual-Bold.ttf in Resources */,
 				F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */,
 				5ED06F44286B2BD5006C126B /* MainInterface.storyboard in Resources */,
+				5ECF1DBC2B7520E20086EF21 /* Usual-Light.ttf in Resources */,
 				5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */,
 				F559F8B62901764A0015A522 /* FileCollectionViewCell.xib in Resources */,
+				5ECF1DC42B7520E20086EF21 /* Usual-MediumItalic.ttf in Resources */,
 				F57F1BC6286DE088004F0466 /* OpenSans-Bold.ttf in Resources */,
 				F5ADBF40290BBFAC0007A516 /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
 				F53519C6290BCB850035CCE9 /* Archives.storyboard in Resources */,

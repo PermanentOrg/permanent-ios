@@ -10,6 +10,7 @@ struct CustomHeaderView: View {
     var url: URL?
     var titleText: String
     var descText: String
+    var font: FontType = .openSans
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -27,15 +28,9 @@ struct CustomHeaderView: View {
                         .clipShape(.circle)
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 10) {
-                            Text(titleText)
-                                .textStyle(SmallXSemiBoldTextStyle())
-                                .foregroundColor(.blue900)
+                            TitleText(font: font, text: titleText)
                         }
-                        Text(descText)
-                            .textStyle(SmallXXXRegularTextStyle())
-                            .foregroundColor(.blue400)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
+                        DescriptionText(font: font, text: descText)
                     }
                     Spacer()
                     Button {
@@ -47,6 +42,44 @@ struct CustomHeaderView: View {
                 }
                 .padding(.horizontal)
             }
+        }
+    }
+}
+
+fileprivate struct TitleText: View {
+    var font: FontType
+    var text: String
+    
+    var body: some View {
+        if font == .usual {
+            Text(text)
+                .textStyle(UsualSmallXSemiBoldTextStyle())
+                .foregroundColor(.blue900)
+        } else {
+            Text(text)
+                .textStyle(SmallXSemiBoldTextStyle())
+                .foregroundColor(.blue900)
+        }
+    }
+}
+
+fileprivate struct DescriptionText: View {
+    var font: FontType
+    var text: String
+    
+    var body: some View {
+        if font == .usual {
+            Text(text)
+                .textStyle(UsualSmallXXXRegularTextStyle())
+                .foregroundColor(.blue400)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+        } else {
+            Text(text)
+                .textStyle(SmallXXXRegularTextStyle())
+                .foregroundColor(.blue400)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
         }
     }
 }

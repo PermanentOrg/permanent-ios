@@ -24,7 +24,7 @@ struct CustomSimpleListItemView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 10) {
                         Text(titleText)
-                            .textStyle(SmallXSemiBoldTextStyle())
+                            .textStyle(UsualSmallXRegularTextStyle())
                             .foregroundColor(color)
                     }
                 }
