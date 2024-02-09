@@ -48,8 +48,8 @@ struct SettingsScreenView: View {
     var contentView: some View {
             ZStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
-                    CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, font: .usual)
-                    GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar, font: .usual)
+                    CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual)
+                    GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar, fontType: .usual)
                         .padding(.horizontal, 5)
                     Group {
                         ScrollView(showsIndicators: false) {

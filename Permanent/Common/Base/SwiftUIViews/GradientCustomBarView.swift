@@ -11,20 +11,20 @@ struct GradientProgressBarView: View {
     var maxValue: String
     var sizeRatio: Double
     var colorScheme: ColorSchemeForProgressBar
-    var font: FontType = .openSans
+    var fontType: FontType = .openSans
     @State private var redraw = UUID()
     
     var body: some View {
         LazyVStack(spacing: 16) {
             HStack {
                 HStack(spacing: 0) {
-                    UsedValueText(font: font, text: "\(value) ", colorScheme: colorScheme)
+                    UsedValueText(fontType: fontType, text: "\(value) ", colorScheme: colorScheme)
                     if value.isNotEmpty {
-                        UsedText(font: font, colorScheme: colorScheme)
+                        UsedText(fontType: fontType, colorScheme: colorScheme)
                     }
                 }
                 Spacer()
-                MaxValueText(font: font, text: "\(maxValue)", colorScheme: colorScheme)
+                MaxValueText(fontType: fontType, text: "\(maxValue)", colorScheme: colorScheme)
             }
             .padding(.horizontal)
             switch colorScheme {
@@ -106,12 +106,12 @@ enum ColorSchemeForProgressBar {
 }
 
 fileprivate struct UsedValueText: View {
-    var font: FontType
+    var fontType: FontType
     var text: String
     var colorScheme: ColorSchemeForProgressBar
     
     var body: some View {
-        if font == .usual {
+        if fontType == .usual {
             Text(text)
                 .textStyle(UsualSmallXXXSemiBoldTextStyle())
                 .foregroundColor(colorScheme.textColor)
@@ -124,12 +124,12 @@ fileprivate struct UsedValueText: View {
 }
 
 fileprivate struct UsedText: View {
-    var font: FontType
+    var fontType: FontType
     var text: String = "used"
     var colorScheme: ColorSchemeForProgressBar
     
     var body: some View {
-        if font == .usual {
+        if fontType == .usual {
             Text(text)
                 .textStyle(UsualSmallXXXRegularTextStyle())
                 .foregroundColor(colorScheme.textSecondaryColor)
@@ -142,12 +142,12 @@ fileprivate struct UsedText: View {
 }
 
 fileprivate struct MaxValueText: View {
-    var font: FontType
+    var fontType: FontType
     var text: String
     var colorScheme: ColorSchemeForProgressBar
     
     var body: some View {
-        if font == .usual {
+        if fontType == .usual {
             Text(text)
                 .textStyle(UsualSmallXXXSemiBoldTextStyle())
                 .foregroundColor(colorScheme.textColor)

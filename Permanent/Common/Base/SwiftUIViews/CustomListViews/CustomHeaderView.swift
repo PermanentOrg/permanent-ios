@@ -10,7 +10,7 @@ struct CustomHeaderView: View {
     var url: URL?
     var titleText: String
     var descText: String
-    var font: FontType = .openSans
+    var fontType: FontType = .openSans
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -28,9 +28,9 @@ struct CustomHeaderView: View {
                         .clipShape(.circle)
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 10) {
-                            TitleText(font: font, text: titleText)
+                            TitleText(fontType: fontType, text: titleText)
                         }
-                        DescriptionText(font: font, text: descText)
+                        DescriptionText(fontType: fontType, text: descText)
                     }
                     Spacer()
                     Button {
@@ -47,11 +47,11 @@ struct CustomHeaderView: View {
 }
 
 fileprivate struct TitleText: View {
-    var font: FontType
+    var fontType: FontType
     var text: String
     
     var body: some View {
-        if font == .usual {
+        if fontType == .usual {
             Text(text)
                 .textStyle(UsualSmallXSemiBoldTextStyle())
                 .foregroundColor(.blue900)
@@ -64,11 +64,11 @@ fileprivate struct TitleText: View {
 }
 
 fileprivate struct DescriptionText: View {
-    var font: FontType
+    var fontType: FontType
     var text: String
     
     var body: some View {
-        if font == .usual {
+        if fontType == .usual {
             Text(text)
                 .textStyle(UsualSmallXXXRegularTextStyle())
                 .foregroundColor(.blue400)
