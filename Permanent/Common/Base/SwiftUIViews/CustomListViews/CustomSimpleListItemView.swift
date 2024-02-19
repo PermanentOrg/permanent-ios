@@ -14,7 +14,7 @@ struct CustomSimpleListItemView: View {
     
     var body: some View {
         VStack {
-            HStack(alignment: .top, spacing: 24) {
+            HStack(alignment: .center, spacing: 24) {
                 image
                     .resizable()
                     .foregroundColor(color)

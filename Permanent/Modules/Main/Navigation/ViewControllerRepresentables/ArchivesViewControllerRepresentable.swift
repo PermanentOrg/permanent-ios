@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 struct ArchivesViewControllerRepresentable: UIViewControllerRepresentable {
-    let title: String = "Arhives"
+    let title: String = "Archives"
     
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = UIViewController.create(withIdentifier: .archives, from: .archives)
