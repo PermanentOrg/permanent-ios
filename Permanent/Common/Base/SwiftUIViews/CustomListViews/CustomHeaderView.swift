@@ -19,14 +19,14 @@ struct CustomHeaderView: View {
                 .frame(maxWidth: .infinity, maxHeight: 88)
                 .edgesIgnoringSafeArea(.all)
             VStack {
-                HStack(alignment: .center, spacing: 16) {
+                HStack(alignment: .center, spacing: 10) {
                     WebImage(url: url)
                         .resizable()
                         .foregroundColor(.blue900)
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
                         .clipShape(.circle)
-                    VStack(alignment: .leading, spacing: 0) {
+                        .frame(width: 40, height: 40)
+                    VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 10) {
                             TitleText(fontType: fontType, text: titleText)
                         }
