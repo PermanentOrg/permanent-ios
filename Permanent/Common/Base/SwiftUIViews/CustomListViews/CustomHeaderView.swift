@@ -23,9 +23,9 @@ struct CustomHeaderView: View {
                     WebImage(url: url)
                         .resizable()
                         .foregroundColor(.blue900)
-                        .scaledToFit()
-                        .clipShape(.circle)
+                        .scaledToFill()
                         .frame(width: 40, height: 40)
+                        .clipShape(.circle)
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 10) {
                             TitleText(fontType: fontType, text: titleText)
