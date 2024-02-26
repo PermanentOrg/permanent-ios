@@ -60,7 +60,7 @@ struct Constants {
         struct AccountStatus {}
         struct InviteStatus {}
         struct NotificationType {}
-        struct Locations{}
+        struct Locations {}
     }
 
     struct Design {}
@@ -99,6 +99,8 @@ extension Constants.Design {
     static let avatarRadius: CGFloat = 17.0
     static let shortNotificationBarAnimationDuration: Double = 0.8
     static let longNotificationBarAnimationDuration: Double = 2.2
+    static let orientationLock: UIInterfaceOrientationMask = UIDevice.current.userInterfaceIdiom == .phone ? .portrait : .landscape
+    static let currentPlatform = UIDevice.current.userInterfaceIdiom
 }
 
 extension Constants.API {

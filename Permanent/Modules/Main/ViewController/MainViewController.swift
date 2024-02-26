@@ -1043,8 +1043,13 @@ extension MainViewController: FABViewDelegate {
             return
         }
 
-        actionSheet.delegate = self
-        navigationController?.display(viewController: actionSheet, modally: true)
+        ///To Do: for iPad another presentation mode for this menu should be implemented
+        if Constants.Design.currentPlatform == .phone {
+            actionSheet.delegate = self
+            navigationController?.display(viewController: actionSheet, modally: true)
+        } else {
+            return
+        }
     }
 }
 

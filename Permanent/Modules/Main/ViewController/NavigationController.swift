@@ -14,6 +14,6 @@ class NavigationController: UINavigationController {
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIDevice.current.userInterfaceIdiom == .phone ? [.portrait] : [.all]
+        return Constants.Design.currentPlatform == .phone ? [.portrait] : [.landscape]
     }
 }
