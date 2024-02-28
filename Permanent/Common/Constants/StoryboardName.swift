@@ -78,12 +78,12 @@ enum ViewControllerId: String {
     case updateApp
     case loadingScreen
     case donate
-    case accountOnboarding
-    case accountOnboardingPg1
-    case accountOnboardingPg2
-    case accountOnboardingPg3
-    case accountOnboardingPg1Pending
-    case accountOnboardingPg2Pending
+//    case accountOnboarding
+//    case accountOnboardingPg1
+//    case accountOnboardingPg2
+//    case accountOnboardingPg3
+//    case accountOnboardingPg1Pending
+//    case accountOnboardingPg2Pending
     case publicGallery
     case tagManagement
     case shareManagement
@@ -190,23 +190,23 @@ enum ViewControllerId: String {
         case .donate:
             return "donate"
 
-        case .accountOnboarding:
-            return "accountOnboarding"
-            
-        case .accountOnboardingPg1:
-            return "accountOnboardingPg1"
-            
-        case .accountOnboardingPg2:
-            return "accountOnboardingPg2"
-            
-        case .accountOnboardingPg3:
-            return "accountOnboardingPg3"
-            
-        case .accountOnboardingPg1Pending:
-            return "accountOnboardingPg1Pending"
-            
-        case .accountOnboardingPg2Pending:
-            return "accountOnboardingPg2Pending"
+//        case .accountOnboarding:
+//            return "accountOnboarding"
+//            
+//        case .accountOnboardingPg1:
+//            return "accountOnboardingPg1"
+//            
+//        case .accountOnboardingPg2:
+//            return "accountOnboardingPg2"
+//            
+//        case .accountOnboardingPg3:
+//            return "accountOnboardingPg3"
+//            
+//        case .accountOnboardingPg1Pending:
+//            return "accountOnboardingPg1Pending"
+//            
+//        case .accountOnboardingPg2Pending:
+//            return "accountOnboardingPg2Pending"
 
         case .publicGallery:
             return "publicGallery"
