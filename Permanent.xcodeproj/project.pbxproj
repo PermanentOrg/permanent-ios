@@ -419,7 +419,10 @@
 		5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */; };
 		5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */; };
 		5EE068942B9F23B5004055A4 /* OnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE068932B9F23B4004055A4 /* OnboardingWelcomeView.swift */; };
-		5EE068972B9F2F63004055A4 /* DividerSmallBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE068962B9F2F63004055A4 /* DividerSmallBar.swift */; };
+		5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE068962B9F2F63004055A4 /* DividerSmallBarView.swift */; };
+		5EE068992B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE068982B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift */; };
+		5EE0689B2B9FAA5A004055A4 /* RoundButtonRightImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0689A2B9FAA5A004055A4 /* RoundButtonRightImageView.swift */; };
+		5EE0689D2BA05BA5004055A4 /* SmallRoundButtonImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0689C2BA05BA5004055A4 /* SmallRoundButtonImageView.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
 		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
 		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
@@ -1237,7 +1240,10 @@
 		5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeView.swift; sourceTree = "<group>"; };
 		5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeViewModel.swift; sourceTree = "<group>"; };
 		5EE068932B9F23B4004055A4 /* OnboardingWelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWelcomeView.swift; sourceTree = "<group>"; };
-		5EE068962B9F2F63004055A4 /* DividerSmallBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerSmallBar.swift; sourceTree = "<group>"; };
+		5EE068962B9F2F63004055A4 /* DividerSmallBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerSmallBarView.swift; sourceTree = "<group>"; };
+		5EE068982B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateFirstArchiveView.swift; sourceTree = "<group>"; };
+		5EE0689A2B9FAA5A004055A4 /* RoundButtonRightImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonRightImageView.swift; sourceTree = "<group>"; };
+		5EE0689C2BA05BA5004055A4 /* SmallRoundButtonImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallRoundButtonImageView.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
 		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
@@ -1834,6 +1840,7 @@
 			children = (
 				5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */,
 				5EE068932B9F23B4004055A4 /* OnboardingWelcomeView.swift */,
+				5EE068982B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2943,6 +2950,8 @@
 				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
 				9229A3AA2A7A7773004DE31D /* PullDownButton.swift */,
 				5EB569AC2B307F3400C35543 /* RoundButtonView.swift */,
+				5EE0689A2B9FAA5A004055A4 /* RoundButtonRightImageView.swift */,
+				5EE0689C2BA05BA5004055A4 /* SmallRoundButtonImageView.swift */,
 			);
 			path = ButtonViews;
 			sourceTree = "<group>";
@@ -3061,7 +3070,7 @@
 		5EE068952B9F2F3A004055A4 /* Shapes */ = {
 			isa = PBXGroup;
 			children = (
-				5EE068962B9F2F63004055A4 /* DividerSmallBar.swift */,
+				5EE068962B9F2F63004055A4 /* DividerSmallBarView.swift */,
 			);
 			path = Shapes;
 			sourceTree = "<group>";
@@ -4535,6 +4544,7 @@
 				5E66240D27A9745400D533CA /* PublicProfileAddMilestonesViewController.swift in Sources */,
 				BC6D3B4525138DFF00390927 /* UIButtonExtension.swift in Sources */,
 				5E5EF856273B23C3004F7EBC /* PublicProfilePageViewController.swift in Sources */,
+				5EE068992B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift in Sources */,
 				BC6358B82536FDAC00EEC48C /* NavigateMinResponse.swift in Sources */,
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				5EF15DB22A77E0B600E9A7CA /* CustomSegmentedControl.swift in Sources */,
@@ -4568,7 +4578,7 @@
 				5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
-				5EE068972B9F2F63004055A4 /* DividerSmallBar.swift in Sources */,
+				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
 				5E548E862B29F9F000DD2C59 /* RedeemCodeView.swift in Sources */,
 				5E3E121F2A41902C00682DE5 /* LegacyPlanningDataSourceInterface.swift in Sources */,
 				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
@@ -4640,6 +4650,7 @@
 				5E7AE8AB291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift in Sources */,
 				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
 				5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */,
+				5EE0689B2B9FAA5A004055A4 /* RoundButtonRightImageView.swift in Sources */,
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
@@ -4799,6 +4810,7 @@
 				F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */,
 				5E8BFEA925DEA02C00454F16 /* FilePreviewViewController.swift in Sources */,
 				F51E70D326B166FE007304C7 /* CDNSession.swift in Sources */,
+				5EE0689D2BA05BA5004055A4 /* SmallRoundButtonImageView.swift in Sources */,
 				5EC5A27725E3DBEB005DBB55 /* FilePreviewViewModel.swift in Sources */,
 				5E991EF22A4F10ED006229C0 /* TextViewUIRepresentable.swift in Sources */,
 				F5551E06261E2F5100A7C540 /* ShareNotificationPayload.swift in Sources */,

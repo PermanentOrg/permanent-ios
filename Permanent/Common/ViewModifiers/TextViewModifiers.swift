@@ -15,6 +15,7 @@ fileprivate enum FontName: String {
     case usualMedium = "Usual-Medium"
     case usualBold = "Usual-Bold"
     case usualItalic = "Usual-Italic"
+    case usualLight = "Usual-Light"
 }
 
 fileprivate enum FontSize: CGFloat {
@@ -27,11 +28,36 @@ fileprivate enum FontSize: CGFloat {
     case regular = 16.0
     case medium = 18.0
     case large = 20.0
+    case xLarge = 32.0
 }
 
 enum FontType {
     case usual
     case openSans
+}
+
+struct UsualXLargeTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.xLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualXLargeLightTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualLight.rawValue,
+                             size: FontSize.xLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualXLargeBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualBold.rawValue,
+                             size: FontSize.xLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
 }
 
 struct SmallXXXXXSemiBoldTextStyle: ViewModifier {
@@ -150,6 +176,14 @@ struct RegularBoldTextStyle: ViewModifier {
 struct SmallXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualSmallXMediumTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualMedium.rawValue,
                              size: FontSize.xSmall.rawValue,
                              relativeTo: .largeTitle))
     }
