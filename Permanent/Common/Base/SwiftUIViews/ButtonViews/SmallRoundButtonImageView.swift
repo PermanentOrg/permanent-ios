@@ -35,9 +35,15 @@ struct SmallRoundButtonImageView: View {
                                     .frame(width: 24, height: 24, alignment: .center)
                                     .accentColor(.blue700)
                             }
-                            Text(text)
-                                .textStyle(UsualSmallXMediumTextStyle())
-                                .foregroundColor(.blue700)
+                            if Constants.Design.isPhone {
+                                Text(text)
+                                    .textStyle(UsualSmallXMediumTextStyle())
+                                    .foregroundColor(.blue700)
+                            } else {
+                                Text(text)
+                                    .textStyle(UsualRegularMediumTextStyle())
+                                    .foregroundColor(.blue700)
+                            }
                             if imagePlace == .onRight {
                                 if isLoading {
                                     ProgressView()
@@ -63,9 +69,15 @@ struct SmallRoundButtonImageView: View {
                                     .frame(width: 24, height: 24, alignment: .center)
                                     .accentColor(.white)
                             }
-                            Text(text)
-                                .textStyle(UsualSmallXMediumTextStyle())
-                                .foregroundColor(.white)
+                            if Constants.Design.isPhone {
+                                Text(text)
+                                    .textStyle(UsualSmallXMediumTextStyle())
+                                    .foregroundColor(.white)
+                            } else {
+                                Text(text)
+                                    .textStyle(UsualRegularMediumTextStyle())
+                                    .foregroundColor(.white)
+                            }
                             if imagePlace == .onRight {
                                 if isLoading {
                                     ProgressView()
