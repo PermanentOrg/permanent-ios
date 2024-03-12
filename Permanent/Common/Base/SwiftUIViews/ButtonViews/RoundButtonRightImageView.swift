@@ -24,9 +24,15 @@ struct RoundButtonRightImageView: View {
                 ZStack {
                     Color(.white)
                     HStack() {
-                        Text(text)
-                            .textStyle(UsualSmallXMediumTextStyle())
-                            .foregroundColor(.blue700)
+                        if Constants.Design.isPhone {
+                            Text(text)
+                                .textStyle(UsualSmallXMediumTextStyle())
+                                .foregroundColor(.blue700)
+                        } else {
+                            Text(text)
+                                .textStyle(UsualRegularMediumTextStyle())
+                                .foregroundColor(.blue700)
+                        }
                         Spacer()
                         if isLoading {
                             ProgressView()
@@ -47,9 +53,15 @@ struct RoundButtonRightImageView: View {
             if type == .noColor {
                 ZStack {
                     HStack() {
-                        Text(text)
-                            .textStyle(UsualSmallXMediumTextStyle())
-                            .foregroundColor(.white)
+                        if Constants.Design.isPhone {
+                            Text(text)
+                                .textStyle(UsualSmallXMediumTextStyle())
+                                .foregroundColor(.white)
+                        } else {
+                            Text(text)
+                                .textStyle(UsualRegularMediumTextStyle())
+                                .foregroundColor(.white)
+                        }
                         Spacer()
                         if isLoading {
                             ProgressView()

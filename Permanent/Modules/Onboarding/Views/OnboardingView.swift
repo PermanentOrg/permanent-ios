@@ -71,8 +71,8 @@ struct OnboardingView: View {
                     Spacer()
                 }
             }
-            .padding(.horizontal, 32)
-            .padding(.top, 70)
+            .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
+            .padding(.top, Constants.Design.isPhone ? 70 : 48)
             .padding(.bottom, 40)
         }
         .ignoresSafeArea()
