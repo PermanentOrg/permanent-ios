@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct DividerSmallBar: View {
+struct DividerSmallBarView: View {
     enum DividerType {
         case gradient, empty
     }
@@ -14,18 +14,19 @@ struct DividerSmallBar: View {
     @State var type: DividerType = .empty
     var color: Color = .white
     var gradient: LinearGradient = Gradient.purpleYellowGradient
+    var height: CGFloat = Constants.Design.isPhone ? 2 : 4
     
     var body: some View {
         if type == .gradient {
             Rectangle()
                 .foregroundColor(.clear)
-                .frame(maxWidth: .infinity, minHeight: 2, maxHeight: 2)
+                .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
                 .background(Gradient.purpleYellowGradient)
                 .cornerRadius(30)
         } else {
             Rectangle()
                 .foregroundColor(.clear)
-                .frame(maxWidth: .infinity, minHeight: 2, maxHeight: 2)
+                .frame(maxWidth: .infinity, minHeight: height, maxHeight: height)
                 .background(color)
                 .cornerRadius(30)
                 .opacity(0.1)

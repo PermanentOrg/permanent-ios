@@ -101,6 +101,7 @@ extension Constants.Design {
     static let longNotificationBarAnimationDuration: Double = 2.2
     static let orientationLock: UIInterfaceOrientationMask = UIDevice.current.userInterfaceIdiom == .phone ? .portrait : .landscape
     static let currentPlatform = UIDevice.current.userInterfaceIdiom
+    static let isPhone: Bool = currentPlatform == .phone
 }
 
 extension Constants.API {

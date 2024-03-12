@@ -7,8 +7,11 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    var fullName: String =  AuthenticationManager.shared.session?.account.fullName ?? ""
+    @State private var isBack = false
+    
     enum ContentType {
-        case none, welcome
+        case none, welcome, createArchive
     }
     
     @State private var contentType: ContentType = .welcome
@@ -26,22 +29,47 @@ struct OnboardingView: View {
                     Spacer()
                 }
                 HStack(spacing: 8) {
-                    DividerSmallBar(type: .gradient)
-                    DividerSmallBar(type: .empty)
-                    DividerSmallBar(type: .empty)
+                    DividerSmallBarView(type: .gradient)
+                    DividerSmallBarView(type: .empty)
+                    DividerSmallBarView(type: .empty)
                 }
                 .padding(.top, 24)
                 .padding(.bottom, 32)
-                
-                if contentType != .none {
-                    switch contentType {
-                    case .welcome:
-                        OnboardingWelcomeView()
-                    default:
-                        Spacer()
+                Group {
+                    if contentType != .none {
+                        switch contentType {
+                        case .welcome:
+                            OnboardingWelcomeView(fullName: fullName) {
+                                isBack = false
+                                withAnimation {
+                                    contentType = .createArchive
+                                }
+                            }
+                            .transition(AnyTransition.asymmetric(
+                                insertion:.move(edge: isBack ? .leading : .trailing),
+                                removal: .opacity)
+                            )
+                        case .createArchive:
+                            OnboardingCreateFirstArchiveView {
+                                isBack = true
+                                withAnimation {
+                                    contentType = .welcome
+                                }
+                                
+                            } nextButton: {
+                                
+                            }
+                            .transition(AnyTransition.asymmetric(
+                                insertion:.move(edge: isBack ? .leading : .trailing),
+                                removal: .opacity)
+                            )
+                            
+                        default:
+                            Spacer()
+                        }
                     }
+                    Spacer()
                 }
-                Spacer()
             }
             .padding(.horizontal, 32)
             .padding(.top, 70)
