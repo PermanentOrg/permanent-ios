@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class LoginViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var scrollView: UIScrollView!
@@ -89,7 +90,11 @@ class LoginViewController: BaseViewController<AuthViewModel> {
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {
-                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                    let screenView = OnboardingView()
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
+                    //AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
                 }
                 self?.trackEvents()
             case .mfaToken:

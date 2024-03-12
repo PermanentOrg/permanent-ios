@@ -199,6 +199,10 @@ class RootViewController: UIViewController {
         current = navController
     }
     
+    func presentFullscreen() {
+        
+    }
+    
     fileprivate func setupChild(_ viewController: UIViewController?) {
         guard let viewController = viewController else {
             return

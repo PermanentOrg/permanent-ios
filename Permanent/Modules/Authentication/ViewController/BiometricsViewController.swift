@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class BiometricsViewController: BaseViewController<AuthViewModel> {
     @IBOutlet var titleLabel: UILabel!
@@ -49,7 +50,10 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 let defaultArchive: Int? = AuthenticationManager.shared.session?.account.defaultArchiveID
                 
                 if defaultArchive == nil {
-                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                    let screenView = OnboardingView()
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
                 } else {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 }

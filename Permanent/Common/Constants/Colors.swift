@@ -111,6 +111,15 @@ extension Gradient {
                                                             Color.white
                                                         ]),
                                                      startPoint: .topLeading,
-                                                     endPoint: .bottomTrailing
+                                              endPoint: .bottomTrailing
+    )
+    
+    static var darkLightBlueGradient = LinearGradient(stops:
+                                                        [
+                                                            Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
+                                                            Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                                                        ],
+                                                      startPoint: UnitPoint(x: 0, y: 0),
+                                                      endPoint: UnitPoint(x: 1, y: 1)
     )
 }
