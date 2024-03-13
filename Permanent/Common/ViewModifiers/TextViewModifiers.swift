@@ -29,6 +29,7 @@ fileprivate enum FontSize: CGFloat {
     case medium = 18.0
     case large = 20.0
     case xLarge = 32.0
+    case xxLarge = 56.0
 }
 
 enum FontType {
@@ -52,10 +53,26 @@ struct UsualXLargeLightTextStyle: ViewModifier {
     }
 }
 
+struct UsualXXLargeLightTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualLight.rawValue,
+                             size: FontSize.xxLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct UsualXLargeBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.usualBold.rawValue,
                              size: FontSize.xLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualXXLargeBoldTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualBold.rawValue,
+                             size: FontSize.xxLarge.rawValue,
                              relativeTo: .largeTitle))
     }
 }
@@ -225,6 +242,38 @@ struct RegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
                              size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualRegularMediumTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualMedium.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualLightRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualLight.rawValue,
+                             size: FontSize.regular.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualXXLargeRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.xxLarge.rawValue,
                              relativeTo: .largeTitle))
     }
 }
