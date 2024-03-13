@@ -250,7 +250,8 @@ extension ArchivesEndpoint {
                             "ArchiveVO": [
                                 "archiveId": archiveVO.archiveID!,
                                 "archiveNbr": archiveVO.archiveNbr!,
-                                "thumbArchiveNbr": file.archiveNo
+                                "thumbArchiveNbr": file.archiveNo,
+                                "type": archiveVO.type ?? ""
                             ]
                         ]
                     ]
