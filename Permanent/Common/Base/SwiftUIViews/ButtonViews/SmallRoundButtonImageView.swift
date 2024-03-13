@@ -39,10 +39,12 @@ struct SmallRoundButtonImageView: View {
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.blue700)
+                                    .lineLimit(1)
                             } else {
                                 Text(text)
                                     .textStyle(UsualRegularMediumTextStyle())
                                     .foregroundColor(.blue700)
+                                    .lineLimit(1)
                             }
                             if imagePlace == .onRight {
                                 if isLoading {
@@ -73,10 +75,14 @@ struct SmallRoundButtonImageView: View {
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
                             } else {
                                 Text(text)
                                     .textStyle(UsualRegularMediumTextStyle())
                                     .foregroundColor(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
                             }
                             if imagePlace == .onRight {
                                 if isLoading {

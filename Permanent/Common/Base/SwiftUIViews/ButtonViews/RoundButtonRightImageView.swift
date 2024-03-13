@@ -28,10 +28,14 @@ struct RoundButtonRightImageView: View {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.blue700)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         } else {
                             Text(text)
                                 .textStyle(UsualRegularMediumTextStyle())
                                 .foregroundColor(.blue700)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         }
                         Spacer()
                         if isLoading {
@@ -57,10 +61,14 @@ struct RoundButtonRightImageView: View {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         } else {
                             Text(text)
                                 .textStyle(UsualRegularMediumTextStyle())
                                 .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                         }
                         Spacer()
                         if isLoading {
