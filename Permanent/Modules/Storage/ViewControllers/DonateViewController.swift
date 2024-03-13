@@ -18,7 +18,7 @@ class DonateViewController: BaseViewController<DonateViewModel> {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var contextLabel: UILabel!
     
-    let applePayButton: UIButton = UIButton(type: .roundedRect)
+    let applePayButton: PKPaymentButton = PKPaymentButton(paymentButtonType: .plain, paymentButtonStyle: .black)
     
     static var invalidCharacterSet: CharacterSet = {
         var characterSet = CharacterSet.decimalDigits
@@ -50,12 +50,8 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         donateTextField.clipsToBounds = true
         donateTextField.delegate = self
         
-        applePayButton.setTitle("Endow with Apple Pay®", for: .normal)
-        applePayButton.backgroundColor = .black
-        applePayButton.setFont(TextFontStyle.style35.font)
-        applePayButton.setTitleColor(.white, for: .normal)
-        applePayButton.layer.cornerRadius = 5
         applePayButton.translatesAutoresizingMaskIntoConstraints = false
+        applePayButton.cornerRadius = 5
         applePayButton.addTarget(self, action: #selector(applePayButtonPressed(_:)), for: .touchUpInside)
         paymentView.addSubview(applePayButton)
         
