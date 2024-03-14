@@ -167,7 +167,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
+        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage || viewModel!.isPickingProfilePicture
     }
     
     fileprivate func setupCollectionView() {
@@ -888,7 +888,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
-            headerView.configure(with: viewModel)
+            headerView.configure(with: viewModel, isPickingProfilePicture: viewModel!.isPickingProfilePicture)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
             } else {
@@ -905,7 +905,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
                     headerView.rightButtonTitle = (viewModel?.isSelectingDestination ?? false) ? nil : "Select".localized()
                 }
                 
-                headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton()) }
+                headerView.rightButtonAction = { [weak self] header in self?.selectButtonWasPressed(UIButton())}
                 headerView.clearButtonAction = { [weak self] header in self?.clearButtonWasPressed(UIButton())}
             }
             

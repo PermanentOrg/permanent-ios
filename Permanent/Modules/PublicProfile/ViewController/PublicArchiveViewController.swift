@@ -178,7 +178,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
         let myFilesVM = MyFilesViewModel()
-        myFilesVM.isPickingImage = true
+        myFilesVM.isPickingProfilePicture = true
         myFilesVM.pickerDelegate = self
         myFilesVC.viewModel = myFilesVM
         
@@ -192,7 +192,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
         let myFilesVM = MyFilesViewModel()
-        myFilesVM.isPickingImage = true
+        myFilesVM.isPickingProfilePicture = true
         myFilesVM.pickerDelegate = self
         myFilesVC.viewModel = myFilesVM
         
