@@ -178,7 +178,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
         let myFilesVM = MyFilesViewModel()
-        myFilesVM.isPickingImage = true
+        myFilesVM.isPickingProfilePicture = true
         myFilesVM.pickerDelegate = self
         myFilesVC.viewModel = myFilesVM
         
@@ -192,7 +192,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         
         let myFilesVC = UIViewController.create(withIdentifier: .main, from: .main) as! MainViewController
         let myFilesVM = MyFilesViewModel()
-        myFilesVM.isPickingImage = true
+        myFilesVM.isPickingProfilePicture = true
         myFilesVM.pickerDelegate = self
         myFilesVC.viewModel = myFilesVM
         
@@ -235,6 +235,14 @@ extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
                         self.dismiss(animated: true, completion: {
                             if status == .success, let thumbURL = URL(string: file.thumbnailURL2000) {
                                 self.profilePhotoImageView.sd_setImage(with: thumbURL)
+                                AuthenticationManager.shared.syncSession { [weak self] status in
+                                    switch status {
+                                    case .success:
+                                        self?.profilePhotoImageView.sd_setImage(with: thumbURL)
+                                    case .error(message: _):
+                                        self?.showErrorAlert(message: .errorMessage)
+                                    }
+                                }
                             } else {
                                 self.showErrorAlert(message: .errorMessage)
                             }

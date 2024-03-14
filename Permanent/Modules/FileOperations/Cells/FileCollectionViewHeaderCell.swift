@@ -48,7 +48,7 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
         rightButton.imageView?.contentMode = .scaleAspectFit
     }
     
-    func configure(with viewModel: FilesViewModel?) {
+    func configure(with viewModel: FilesViewModel?, isPickingProfilePicture: Bool = false) {
          guard let viewModel = viewModel else {
              rightButtonTitle = nil
              rightButton.setImage(nil, for: .normal)
@@ -78,6 +78,11 @@ class FileCollectionViewHeaderCell: UICollectionReusableView {
          
          // Update clear button visibility
          clearButton.isHidden = !viewModel.isSelecting
+        
+        if isPickingProfilePicture {
+            rightButton.isHidden = true
+            clearButton.isHidden = true
+        }
      }
     
     @IBAction func leftButtonPressed(_ sender: Any) {
