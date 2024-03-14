@@ -23,22 +23,7 @@ struct OnboardingWelcomeView: View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading) {
-                    HStack(spacing: 0) {
-                        Text("Hello, ")
-                            .textStyle(UsualXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                        Text("\(fullName)")
-                            .textStyle(UsualXLargeBoldTextStyle())
-                            .foregroundColor(.white)
-                        Text("!")
-                            .textStyle(UsualXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                        Spacer()
-                    }
-                    Text("Welcome to")
-                        .textStyle(UsualXLargeLightTextStyle())
-                        .foregroundColor(.white)
-                    Text("Permanent!")
+                    Text("Hello, \(fullName).\nWelcome to\nPermanent!")
                         .textStyle(UsualXLargeLightTextStyle())
                         .foregroundColor(.white)
                 }
@@ -54,26 +39,9 @@ struct OnboardingWelcomeView: View {
     var iPadBody: some View {
         HStack(alignment: .top, spacing: 64) {
             VStack(alignment: .leading) {
-                HStack(spacing: 0) {
-                    Text("Hello, ")
+                    Text("Hello, \(fullName).\nWelcome to\nPermanent!")
                         .textStyle(UsualXXLargeLightTextStyle())
                         .foregroundColor(.white)
-                    Text("\(fullName)")
-                        .textStyle(UsualXXLargeBoldTextStyle())
-                        .foregroundColor(.white)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                    Text(".")
-                        .textStyle(UsualXXLargeLightTextStyle())
-                        .foregroundColor(.white)
-                    Spacer()
-                }
-                Text("Welcome")
-                    .textStyle(UsualXXLargeLightTextStyle())
-                    .foregroundColor(.white)
-                Text("to Permanent!")
-                    .textStyle(UsualXXLargeLightTextStyle())
-                    .foregroundColor(.white)
             }
             ZStack(alignment: .bottom) {
                 VStack {
@@ -84,6 +52,7 @@ struct OnboardingWelcomeView: View {
                         .lineSpacing(8.0)
                     Spacer()
                 }
+                .padding(.top, 10)
                 HStack {
                     Spacer()
                     RoundButtonRightImageView(text: "Get started", action: buttonAction)
