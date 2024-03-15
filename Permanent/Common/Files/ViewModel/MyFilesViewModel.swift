@@ -14,7 +14,6 @@ protocol MyFilesViewModelPickerDelegate: AnyObject {
 class MyFilesViewModel: FilesViewModel {
     static let didSelectFilesNotifName = NSNotification.Name("MyFilesViewModel.didSelectFilesNotifName")
     var isPickingImage: Bool = false
-    var isPickingProfilePicture: Bool = false
     weak var pickerDelegate: MyFilesViewModelPickerDelegate?
     
     override var currentFolderIsRoot: Bool { navigationStack.count == 1 }
