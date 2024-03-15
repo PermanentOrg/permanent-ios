@@ -167,7 +167,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage || viewModel!.isPickingProfilePicture
+        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
     }
     
     fileprivate func setupCollectionView() {
@@ -888,7 +888,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
             
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FileCollectionViewHeaderCell.identifier, for: indexPath) as! FileCollectionViewHeaderCell
             headerView.leftButtonTitle = viewModel?.title(forSection: section)
-            headerView.configure(with: viewModel, isPickingProfilePicture: viewModel!.isPickingProfilePicture)
+            headerView.configure(with: viewModel, isPickingProfilePicture: viewModel!.isPickingImage)
             if viewModel?.shouldPerformAction(forSection: section) == true {
                 headerView.leftButtonAction = { [weak self] header in self?.headerButtonAction(UIButton()) }
             } else {
