@@ -228,7 +228,11 @@ extension PublicArchiveViewController: PublicArchiveChildDelegate {
 extension PublicArchiveViewController: MyFilesViewModelPickerDelegate {
     func myFilesVMDidPickFile(viewModel: MyFilesViewModel, file: FileModel) {
         dismiss(animated: true) {
-            let alert = UIAlertController(title: "Updating...".localized(), message: "Please wait while your banner is being updated".localized(), preferredStyle: .alert)
+            var alertDescription: String = "Please wait while your banner is updated."
+            if self.isPickingProfilePicture {
+                alertDescription = "Please wait while your profile picture is updated."
+            }
+            let alert = UIAlertController(title: "Updating...", message: alertDescription, preferredStyle: .alert)
             self.present(alert, animated: true, completion: {
                 if self.isPickingProfilePicture {
                     self.viewModel?.updateProfilePicture(file: file, then: { status in
