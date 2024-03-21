@@ -262,6 +262,22 @@ struct UsualRegularMediumTextStyle: ViewModifier {
     }
 }
 
+struct UsualMediumTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualMedium.rawValue,
+                             size: FontSize.medium.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualMediumRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.medium.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct UsualLightRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.usualLight.rawValue,

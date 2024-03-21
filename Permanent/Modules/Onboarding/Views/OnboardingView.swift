@@ -28,13 +28,7 @@ struct OnboardingView: View {
                         .clipped()
                     Spacer()
                 }
-                HStack(spacing: 8) {
-                    DividerSmallBarView(type: .gradient)
-                    DividerSmallBarView(type: .empty)
-                    DividerSmallBarView(type: .empty)
-                }
-                .padding(.top, 24)
-                .padding(.bottom, 32)
+                topProgressBar
                 Group {
                     if contentType != .none {
                         switch contentType {
@@ -76,5 +70,27 @@ struct OnboardingView: View {
             .padding(.bottom, 40)
         }
         .ignoresSafeArea()
+    }
+    
+    var topProgressBar: some View {
+        HStack(spacing: 8) {
+            switch contentType {
+            case .none:
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+            case .welcome:
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+            case .createArchive:
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+            }
+        }
+        .padding(.top, 24)
+        .padding(.bottom, 32)
+        
     }
 }
