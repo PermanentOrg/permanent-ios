@@ -22,34 +22,39 @@ struct OnboardingWelcomeView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading) {
                     Text("Hello, \(fullName).\nWelcome to\nPermanent!")
                         .textStyle(UsualXLargeLightTextStyle())
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                    Text("\(welcomeMessage)")
+                        .textStyle(UsualSmallXRegularTextStyle())
+                        .foregroundColor(.blue25)
+                        .lineSpacing(8.0)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
                 }
-                Text("\(welcomeMessage)")
-                    .textStyle(UsualSmallXRegularTextStyle())
-                    .foregroundColor(.blue25)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .lineSpacing(8.0)
+                RoundButtonRightImageView(text: "Get started", action: buttonAction)
             }
-            RoundButtonRightImageView(text: "Get started", action: buttonAction)
         }
-    }
+    
     var iPadBody: some View {
         HStack(alignment: .top, spacing: 64) {
-            VStack(alignment: .leading) {
+            VStack() {
+                HStack() {
                     Text("Hello, \(fullName).\nWelcome to\nPermanent!")
                         .textStyle(UsualXXLargeLightTextStyle())
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                }
             }
             ZStack(alignment: .bottom) {
                 VStack {
                     Text("\(welcomeMessage)")
                         .textStyle(UsualRegularTextStyle())
                         .foregroundColor(.blue25)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                         .lineSpacing(8.0)
+                        .multilineTextAlignment(.leading)
                     Spacer()
                 }
                 .padding(.top, 10)

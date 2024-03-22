@@ -109,4 +109,30 @@ enum ArchiveType: String, CaseIterable {
     var milestoneDescriptionTextHint: String {
         return "Description".localized()
     }
+    
+    var onboardingType: String {
+        switch self {
+        case .person:
+            return "Personal"
+        case .family:
+            return "Family"
+        case .organization:
+            return "Organization"
+        case .nonProfit:
+            return "Nonprofit Organization"
+        }
+    }
+    
+    var onboardingDescription: String {
+        switch self {
+        case .person:
+            return "Create an archive that captures my life journey."
+        case .family:
+            return "Create an archive that captures my family life."
+        case .organization:
+            return "Create an archive that captures an organization life."
+        case .nonProfit:
+            return "Create an archive that captures an nonprofit organization life."
+        }
+    }
 }
