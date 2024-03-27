@@ -415,6 +415,9 @@
 		5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */; };
 		5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
 		5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B3726143ED5002F9861 /* TagLinkVO.swift */; };
+		5ED9B6582BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5ED9B6572BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy */; };
+		5ED9B6592BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5ED9B6572BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy */; };
+		5ED9B65A2BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5ED9B6572BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy */; };
 		5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */; };
 		5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
@@ -1230,6 +1233,7 @@
 		5ED581CA25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileDetailsBottomCollectionViewCell.xib; sourceTree = "<group>"; };
 		5ED73B242613C30E002F9861 /* TagEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagEndpoint.swift; sourceTree = "<group>"; };
 		5ED73B3726143ED5002F9861 /* TagLinkVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLinkVO.swift; sourceTree = "<group>"; };
+		5ED9B6572BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5EDDAE592A9E312E00415D9A /* EditDateAndTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeView.swift; sourceTree = "<group>"; };
 		5EDDAE5D2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDateAndTimeViewModel.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
@@ -2366,6 +2370,7 @@
 				5E3E124A2A431F9600682DE5 /* EnvVars.generated.swift */,
 				5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */,
 				F5551D87261C559B00A7C540 /* EnvVars.stencil */,
+				5ED9B6572BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -4009,6 +4014,7 @@
 				5ED0856D24E4257100CDB4D3 /* OpenSans-Regular.ttf in Resources */,
 				5EBDBD4D26F1F698002142DB /* ArchiveScreenSectionTitleTableViewCell.xib in Resources */,
 				5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */,
+				5ED9B6582BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */,
 				5E62F7CF27FB10610046F6C8 /* PublicGalleryCellCollectionViewCell.xib in Resources */,
 				BCF906672587B12000DF1B64 /* Members.storyboard in Resources */,
 				5EADF804262475D500D14E9C /* TagCollectionViewCell.xib in Resources */,
@@ -4134,6 +4140,7 @@
 				5ECF1DC62B7520E20086EF21 /* Usual-Regular.ttf in Resources */,
 				F5ADBF3E290BBFA00007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
 				5ECF1DB82B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */,
+				5ED9B65A2BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */,
 				5ECF1DBE2B7520E20086EF21 /* Usual-Italic.ttf in Resources */,
 				5ECF1DB62B7520E20086EF21 /* Usual-Bold.ttf in Resources */,
 				F55252A12907F1EA0005E011 /* EmptyFolderView.xib in Resources */,
@@ -4152,6 +4159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ED9B6592BB34D0A00A2F6F3 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
