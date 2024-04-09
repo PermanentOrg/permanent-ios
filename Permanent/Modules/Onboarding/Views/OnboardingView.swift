@@ -29,7 +29,6 @@ struct OnboardingView: View {
                     Spacer()
                 }
                 topProgressBar
-//                Group {
                     if contentType != .none {
                         switch contentType {
                         case .welcome:
