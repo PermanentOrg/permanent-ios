@@ -6,19 +6,21 @@
 //
 
 import Foundation
+import SwiftUI
 
-enum ArchiveType: String, CaseIterable {
- 
-    case person = "type.archive.person"
-    case family = "type.archive.family"
-    case organization = "type.archive.organization"
+enum ArchiveType: String, CaseIterable, Identifiable {
+    var id: String { return self.rawValue }
+    
+    case person, individual = "type.archive.person"
+    case family, familyHistory = "type.archive.family"
+    case community, organization = "type.archive.organization"
     case nonProfit = "type.archive.nonprofit"
     
     var archiveName: String {
         switch self {
-        case .person: return "Person".localized()
-        case .family: return "Family".localized()
-        case .organization: return "Organization".localized()
+        case .person, .individual: return "Person".localized()
+        case .family, .familyHistory: return "Family".localized()
+        case .organization, .community: return "Organization".localized()
         case .nonProfit: return "Nonprofit".localized()
         }
     }
@@ -43,13 +45,11 @@ enum ArchiveType: String, CaseIterable {
     }
     var personalInformationPublicPageTitle: String {
         switch self {
-        case .person:
+        case .person, .individual:
             return "Person Information".localized()
-            
-        case .family:
+        case .family, .familyHistory:
             return "Family Information".localized()
-            
-        case .organization:
+        case .organization, .community:
             return "Organization Information".localized()
         case .nonProfit:
             return "Nonprofit Information".localized()
@@ -65,13 +65,13 @@ enum ArchiveType: String, CaseIterable {
     
     var longDescriptionTitle: String {
         switch self {
-        case .person:
+        case .person, .individual:
             return "Tell us about this Person".localized()
             
-        case .family:
+        case .family, .familyHistory:
             return "Tell us about this Family".localized()
             
-        case .organization:
+        case .organization, .community:
             return "Tell us about this Organization".localized()
             
         case .nonProfit:
@@ -80,13 +80,13 @@ enum ArchiveType: String, CaseIterable {
     }
     var longDescriptionHint: String {
         switch self {
-        case .person:
+        case .person, .individual:
             return "Tell the story of the Person this Archive is for".localized()
             
-        case .family:
+        case .family, .familyHistory:
             return "Tell the story of the Family this Archive is for".localized()
             
-        case .organization:
+        case .organization, .community:
             return "Tell the story of the Organization this Archive is for".localized()
             
         case .nonProfit:
@@ -114,8 +114,14 @@ enum ArchiveType: String, CaseIterable {
         switch self {
         case .person:
             return "Personal"
+        case .individual:
+            return "Individual"
         case .family:
             return "Family"
+        case .familyHistory:
+            return "Family History"
+        case .community:
+            return "Community"
         case .organization:
             return "Organization"
         case .nonProfit:
@@ -131,8 +137,33 @@ enum ArchiveType: String, CaseIterable {
             return "Create an archive that captures my family life."
         case .organization:
             return "Create an archive that captures an organization life."
+        case .individual:
+            return "Create an archive that captures a person’s life."
+        case .familyHistory:
+            return "Create an archive that captures my family history."
+        case .community:
+            return "Create an archive that captures a community life."
         case .nonProfit:
             return "Create an archive that captures an nonprofit organization life."
+        }
+    }
+    
+    var onboardingDescriptionIcon: Image {
+        switch self {
+        case .person:
+            return Image(.onbrdPersonal)
+        case .family:
+            return Image(.onbrdFamily)
+        case .organization:
+            return Image(.onbrdOrganization)
+        case .nonProfit:
+            return Image(.onbrdOrganization)
+        case .individual:
+            return Image(.onbrdIndividual)
+        case .familyHistory:
+            return Image(.onbrdFamilyHist)
+        case .community:
+            return Image(.onbrdCommunity)
         }
     }
 }

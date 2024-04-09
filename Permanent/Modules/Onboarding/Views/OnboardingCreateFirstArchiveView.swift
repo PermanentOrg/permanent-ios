@@ -7,8 +7,8 @@
 import SwiftUI
 
 struct OnboardingCreateFirstArchiveView: View {
-    @State var archiveType: ArchiveType = .person
-    @State var presentArchivesList: Bool = false
+    @State var presentSelectArchivesType: Bool = false
+    @ObservedObject var onboardingValues: OnboardingStorageValues
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -32,8 +32,8 @@ struct OnboardingCreateFirstArchiveView: View {
                     .foregroundColor(.blue25)
                     .lineSpacing(8.0)
                 GradientArchiveButtonView(action: {
-                    presentArchivesList = true
-                }, archiveType: archiveType)
+                    presentSelectArchivesType = true
+                }, archiveType: $onboardingValues.archiveType)
                 Spacer()
             }
             HStack(alignment: .center) {
@@ -42,6 +42,9 @@ struct OnboardingCreateFirstArchiveView: View {
                 
             }
         }
+        .sheet(isPresented: $presentSelectArchivesType, content: {
+            OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+        })
     }
     
     var iPadBody: some View {
@@ -67,17 +70,20 @@ struct OnboardingCreateFirstArchiveView: View {
                         Spacer()
                     }
                     GradientArchiveButtonView(action: {
-                        presentArchivesList = true
-                    }, archiveType: archiveType)
+                        presentSelectArchivesType = true
+                    }, archiveType: $onboardingValues.archiveType)
                     Spacer()
                 }
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
                         .frame(width: 120)
-                    RoundButtonRightImageView(text: "Let’s create a \(archiveType) archive", action: nextButton)
+                    RoundButtonRightImageView(text: "Let’s create a \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
                 }
             }
             .padding(.top, 10)
         }
+        .sheet(isPresented: $presentSelectArchivesType, content: {
+            OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+        })
     }
 }

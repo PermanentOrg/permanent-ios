@@ -8,12 +8,12 @@ import SwiftUI
 
 struct GradientArchiveButtonView: View {
     var action: (() -> Void)
-    var archiveType: ArchiveType
+    @Binding var archiveType: ArchiveType
     
     var body: some View {
         Button(action: action) {
             HStack(alignment: .top, spacing: 24) {
-                Image(.onboardingFav)
+                archiveType.onboardingDescriptionIcon
                     .foregroundColor(.white)
                     .frame(width: 24, height: 24)
                 HStack() {
@@ -40,7 +40,9 @@ struct GradientArchiveButtonView: View {
                                 .lineSpacing(4.0)
                         }
                     }
-                    Spacer()
+                    if Constants.Design.isPhone == false {
+                        Spacer()
+                    }
                 }
                 Image(.onboardingArrowDown)
                     .foregroundColor(.white)
