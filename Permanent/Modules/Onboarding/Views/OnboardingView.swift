@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    var fullName: String =  AuthenticationManager.shared.session?.account.fullName ?? ""
+    @StateObject var onboardingValues = OnboardingStorageValues()
     @State private var isBack = false
     
     enum ContentType {
@@ -29,11 +29,10 @@ struct OnboardingView: View {
                     Spacer()
                 }
                 topProgressBar
-                Group {
                     if contentType != .none {
                         switch contentType {
                         case .welcome:
-                            OnboardingWelcomeView(fullName: fullName) {
+                            OnboardingWelcomeView {
                                 isBack = false
                                 withAnimation {
                                     contentType = .createArchive
@@ -43,8 +42,10 @@ struct OnboardingView: View {
                                 insertion:.move(edge: isBack ? .leading : .trailing),
                                 removal: .opacity)
                             )
+     
+                            
                         case .createArchive:
-                            OnboardingCreateFirstArchiveView {
+                            OnboardingCreateFirstArchiveView(onboardingValues: onboardingValues) {
                                 isBack = true
                                 withAnimation {
                                     contentType = .welcome
@@ -63,7 +64,6 @@ struct OnboardingView: View {
                         }
                     }
                     Spacer()
-                }
             }
             .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 70 : 48)

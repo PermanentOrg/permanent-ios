@@ -283,7 +283,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let archiveType = viewModel?.archiveType {
             switch archiveType {
-            case .person:
+            case .person, .individual:
                 if let latitude = viewModel?.birthInfoProfileItem?.birthLocation?.latitude,
                     let longitude = viewModel?.birthInfoProfileItem?.birthLocation?.longitude {
                     return (latitude, longitude)
@@ -291,7 +291,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
                     return (0, 0)
                 }
                 
-            case .family, .organization, .nonProfit:
+            case .family, .organization, .nonProfit, .community, .familyHistory:
                 if let latitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.latitude,
                     let longitude = viewModel?.establishedInfoProfileItem?.establishedLocation?.longitude {
                     return (latitude, longitude)
@@ -362,7 +362,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
     func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
         if let archiveType = viewModel?.archiveType {
             switch archiveType {
-            case .person:
+            case .person, .individual:
                 if viewModel?.birthInfoProfileItem == nil {
                     viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
                 } else {
@@ -370,7 +370,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
                 }
                 locationTextField.text = viewModel?.birthInfoProfileItem?.birthLocationFormated
                 
-            case .organization, .family, .nonProfit:
+            case .organization, .family, .nonProfit, .community, .familyHistory:
                 if viewModel?.establishedInfoProfileItem == nil {
                     viewModel?.createNewEstablishedInfoProfileItem(newLocation: locationVC.pickedLocation)
                 } else {

@@ -99,7 +99,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         guard let archiveType = archiveType else { return [:] }
         switch archiveType {
-        case .person:
+        case .person, .individual:
             if profileGenderProfileItem?.personGender?.isNotEmpty ?? false {
                 informationCells.append(.gender)
             }
@@ -111,7 +111,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             }
             profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
 
-        case .family, .organization, .nonProfit:
+        case .family, .organization, .nonProfit, .community, .familyHistory:
             if establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
                 informationCells.append(.establishedDate)
             }
