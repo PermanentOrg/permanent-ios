@@ -51,14 +51,22 @@ struct OnboardingSelectArchiveTypeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading) {
                     ForEach(ArchiveType.allCases, id: \.onboardingType) { item in
-                        Button {
-                            onboardingValues.archiveType = item
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            ArchiveTypeView(archiveType: item)
+                        if item != .nonProfit {
+                            Button {
+                                onboardingValues.archiveType = item
+                                presentationMode.wrappedValue.dismiss()
+                            } label: {
+                                ArchiveTypeView(archiveType: item)
+                            }
                         }
                     }
                 }
+            }
+            .onAppear {
+                UIScrollView.appearance().bounces = false
+            }
+            .onDisappear {
+                UIScrollView.appearance().bounces = true
             }
             Spacer()
         }
@@ -94,14 +102,22 @@ struct OnboardingSelectArchiveTypeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading) {
                     ForEach(ArchiveType.allCases, id: \.onboardingType) { item in
-                        Button {
-                            onboardingValues.archiveType = item
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            ArchiveTypeView(archiveType: item)
+                        if item != .nonProfit {
+                            Button {
+                                onboardingValues.archiveType = item
+                                presentationMode.wrappedValue.dismiss()
+                            } label: {
+                                ArchiveTypeView(archiveType: item)
+                            }
                         }
                     }
                 }
+            }
+            .onAppear {
+                UIScrollView.appearance().bounces = false
+            }
+            .onDisappear {
+                UIScrollView.appearance().bounces = true
             }
             Spacer()
         }

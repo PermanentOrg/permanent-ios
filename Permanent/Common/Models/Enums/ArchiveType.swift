@@ -136,13 +136,13 @@ enum ArchiveType: String, CaseIterable, Identifiable {
         case .family:
             return "Create an archive that captures my family life."
         case .organization:
-            return "Create an archive that captures an organization life."
+            return "Create an archive that captures an organization’s life."
         case .individual:
             return "Create an archive that captures a person’s life."
         case .familyHistory:
             return "Create an archive that captures my family history."
         case .community:
-            return "Create an archive that captures a community life."
+            return "Create an archive that captures a community’s life."
         case .nonProfit:
             return "Create an archive that captures an nonprofit organization life."
         }
