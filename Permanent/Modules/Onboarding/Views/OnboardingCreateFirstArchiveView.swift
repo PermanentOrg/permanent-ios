@@ -77,7 +77,7 @@ struct OnboardingCreateFirstArchiveView: View {
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
                         .frame(width: 120)
-                    RoundButtonRightImageView(text: "Let’s create a \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
+                    RoundButtonRightImageView(text: "Let’s create \(onboardingValues.getIndefiniteArticle()) \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
                 }
             }
             .padding(.top, 10)
