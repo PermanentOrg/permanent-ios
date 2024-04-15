@@ -9,6 +9,8 @@ import Foundation
 
 class FilesMetadataViewModel: ObservableObject {
     
+    @Published var isLoading: Bool = false
+    
     @Published var selectedFiles: [FileModel] = [] {
         didSet {
             let tags = Array(Set(selectedFiles.flatMap{ $0.tagVOS ?? [] }.map{ TagVO(tagVO: $0)}))
@@ -75,6 +77,7 @@ class FilesMetadataViewModel: ObservableObject {
     }
     
     func refreshFiles() {
+        isLoading = true
         Task {[weak self] in
             guard let strongSelf = self else { return }
             let records = try await strongSelf.selectedFiles.asyncMap(strongSelf.getRecord)
@@ -87,7 +90,8 @@ class FilesMetadataViewModel: ObservableObject {
                     }
                     return nil
                 }
-               
+                
+                strongSelf.isLoading = false
             }
         }
     }
