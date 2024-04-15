@@ -13,6 +13,7 @@ struct SectionView: View {
     var rightButtonView: RightButtonView?
     var haveRightSection: Bool = true
     var divider: Divider? = nil
+    var isLoading: Bool = false
     
     var body: some View {
         VStack {
@@ -21,14 +22,16 @@ struct SectionView: View {
                 Text(title)
                     .textStyle(SmallRegularTextStyle())
                 Spacer()
-                if haveRightSection {
+                if isLoading {
+                    ProgressView()
+                } else if haveRightSection {
                     rightButtonView
                 }
             }
             divider
-                .padding(.top, 24)
+                .padding(.top, 20)
         }
-        .padding(.top, 24)
+        .padding(.top, 20)
     }
 }
 
