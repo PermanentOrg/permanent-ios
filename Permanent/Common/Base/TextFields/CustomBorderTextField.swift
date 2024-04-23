@@ -34,7 +34,7 @@ struct CustomBorderTextField: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 0)
-            .frame(maxWidth: .infinity, minHeight: 56, maxHeight: 56, alignment: .leading)
+            .frame(height: 56, alignment: .leading)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -63,7 +63,7 @@ struct CustomBorderTextField: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 0)
-            .frame(maxWidth: .infinity, minHeight: 72, maxHeight: 72, alignment: .leading)
+            .frame(height: 72, alignment: .leading)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
