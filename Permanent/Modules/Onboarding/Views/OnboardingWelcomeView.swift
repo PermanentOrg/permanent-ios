@@ -32,6 +32,7 @@ struct OnboardingWelcomeView: View {
                     Spacer()
                 }
                 RoundButtonRightImageView(text: "Get started", action: buttonAction)
+                .padding(.bottom, 40)
             }
         }
     
@@ -60,6 +61,7 @@ struct OnboardingWelcomeView: View {
                     Spacer()
                     RoundButtonRightImageView(text: "Get started", action: buttonAction)
                         .frame(width: 170)
+                        .padding(.bottom, 40)
                 }
             }
         }

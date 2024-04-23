@@ -39,8 +39,8 @@ struct OnboardingCreateFirstArchiveView: View {
             HStack(alignment: .center) {
                 SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
                 SmallRoundButtonImageView(text: "Next", action: nextButton)
-                
             }
+            .padding(.bottom, 40)
         }
         .sheet(isPresented: $presentSelectArchivesType, content: {
             OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
@@ -79,6 +79,7 @@ struct OnboardingCreateFirstArchiveView: View {
                         .frame(width: 120)
                     RoundButtonRightImageView(text: "Let’s create \(onboardingValues.getIndefiniteArticle()) \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
                 }
+                .padding(.bottom, 40)
             }
             .padding(.top, 10)
         }

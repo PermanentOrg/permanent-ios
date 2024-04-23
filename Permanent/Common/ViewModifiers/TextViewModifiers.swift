@@ -28,6 +28,7 @@ fileprivate enum FontSize: CGFloat {
     case regular = 16.0
     case medium = 18.0
     case large = 20.0
+    case mediumLarge = 24.0
     case xLarge = 32.0
     case xxLarge = 56.0
 }
@@ -41,6 +42,22 @@ struct UsualXLargeTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.usualRegular.rawValue,
                              size: FontSize.xLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualRegularMediumLargeTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.mediumLarge.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualMediumLargeTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualMedium.rawValue,
+                             size: FontSize.mediumLarge.rawValue,
                              relativeTo: .largeTitle))
     }
 }
