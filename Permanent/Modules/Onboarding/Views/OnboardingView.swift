@@ -9,13 +9,14 @@ import SwiftUI
 struct OnboardingView: View {
     @StateObject var onboardingValues = OnboardingStorageValues()
     @State private var isBack = false
-    
-    enum ContentType {
-        case none, welcome, createArchive
-    }
-    
     @State private var contentType: ContentType = .welcome
     
+    enum ContentType {
+        case none, welcome, createArchive, setArchiveName
+    }
+    
+    @State var bottomButtonsPadding: CGFloat =  40
+
     var body: some View {
         ZStack {
             Gradient.darkLightBlueGradient
@@ -28,49 +29,72 @@ struct OnboardingView: View {
                         .clipped()
                     Spacer()
                 }
+                .onTapGesture {
+                    dismissKeyboard()
+                }
                 topProgressBar
-                    if contentType != .none {
-                        switch contentType {
-                        case .welcome:
-                            OnboardingWelcomeView {
-                                isBack = false
-                                withAnimation {
-                                    contentType = .createArchive
-                                }
-                            }
-                            .transition(AnyTransition.asymmetric(
-                                insertion:.move(edge: isBack ? .leading : .trailing),
-                                removal: .opacity)
-                            )
-     
-                            
-                        case .createArchive:
-                            OnboardingCreateFirstArchiveView(onboardingValues: onboardingValues) {
-                                isBack = true
-                                withAnimation {
-                                    contentType = .welcome
-                                }
-                                
-                            } nextButton: {
-                                
-                            }
-                            .transition(AnyTransition.asymmetric(
-                                insertion:.move(edge: isBack ? .leading : .trailing),
-                                removal: .opacity)
-                            )
-                            
-                        default:
-                            Spacer()
-                        }
+                    .onTapGesture {
+                        dismissKeyboard()
                     }
-                    Spacer()
+                if contentType != .none {
+                    switch contentType {
+                    case .welcome:
+                        OnboardingWelcomeView {
+                            isBack = false
+                            withAnimation {
+                                contentType = .createArchive
+                            }
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                        
+                    case .createArchive:
+                        OnboardingCreateFirstArchiveView(onboardingValues: onboardingValues) {
+                            isBack = true
+                            withAnimation {
+                                contentType = .welcome
+                            }
+                            
+                        } nextButton: {
+                            isBack = false
+                            withAnimation {
+                                contentType = .setArchiveName
+                            }
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                        
+                    case .setArchiveName:
+                        OnboardingArchiveName(onboardingValues: onboardingValues) {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            isBack = true
+                            withAnimation {
+                                contentType = .createArchive
+                            }
+                        } nextButton: {
+                            
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                        
+                    default:
+                        Spacer()
+                    }
+                }
+                Spacer()
             }
             .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 70 : 48)
-            .padding(.bottom, 40)
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(.container)
     }
+    
     
     var topProgressBar: some View {
         HStack(spacing: 8) {
@@ -83,7 +107,7 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
-            case .createArchive:
+            case .createArchive, .setArchiveName:
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
@@ -92,5 +116,9 @@ struct OnboardingView: View {
         .padding(.top, 24)
         .padding(.bottom, 32)
         
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

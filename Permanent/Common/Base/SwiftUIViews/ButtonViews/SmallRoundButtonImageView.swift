@@ -39,11 +39,13 @@ struct SmallRoundButtonImageView: View {
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.blue700)
+                                    .opacity(isDisabled ? 0.5 : 1)
                                     .lineLimit(1)
                             } else {
                                 Text(text)
                                     .textStyle(UsualRegularMediumTextStyle())
                                     .foregroundColor(.blue700)
+                                    .opacity(isDisabled ? 0.5 : 1)
                                     .lineLimit(1)
                             }
                             if imagePlace == .onRight {
