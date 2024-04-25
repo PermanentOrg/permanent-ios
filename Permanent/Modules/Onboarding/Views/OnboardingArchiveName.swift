@@ -12,7 +12,6 @@ struct OnboardingArchiveName: View {
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
-    @State var bottomButtonsPadding: CGFloat = 40
     @State var isKeyboardPresented = false
     @State var textFieldText: String = ""
     
@@ -52,14 +51,11 @@ struct OnboardingArchiveName: View {
                 }
                 .onReceive(keyboardPublisher) { keyboard in
                     if keyboard.isFirstResponder {
-                        bottomButtonsPadding = 10
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
                             withAnimation {
                                 scrollReader.scrollTo(0, anchor: .center)
                             }
                         })
-                    } else {
-                        bottomButtonsPadding = 40
                     }
                 }
                 .onAppear {
@@ -73,7 +69,7 @@ struct OnboardingArchiveName: View {
                 SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
                 SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
             }
-            .padding(.bottom, bottomButtonsPadding)
+            .padding(.bottom, 40)
             .sheet(isPresented: $presentSelectArchivesType, content: {
                 OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
             })
@@ -115,14 +111,11 @@ struct OnboardingArchiveName: View {
                     }
                     .onReceive(keyboardPublisher) { keyboard in
                         if keyboard.isFirstResponder {
-                            bottomButtonsPadding = 10
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
                                 withAnimation {
                                     scrollReader.scrollTo(1, anchor: .center)
                                 }
                             })
-                        } else {
-                            bottomButtonsPadding = 40
                         }
                     }
                     .onAppear {
@@ -137,7 +130,7 @@ struct OnboardingArchiveName: View {
                         .frame(width: 120)
                     RoundButtonRightImageView(text: "Create the archive", action: nextButton)
                 }
-                .padding(.bottom, bottomButtonsPadding)
+                .padding(.bottom, 40)
             }
         }
     }
