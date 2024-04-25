@@ -128,7 +128,7 @@ struct OnboardingArchiveName: View {
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
                         .frame(width: 120)
-                    RoundButtonRightImageView(text: "Create the archive", action: nextButton)
+                    RoundButtonRightImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Create the archive", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }
