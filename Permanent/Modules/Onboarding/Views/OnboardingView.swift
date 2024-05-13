@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @State private var contentType: ContentType = .welcome
     
     enum ContentType {
-        case none, welcome, createArchive, setArchiveName
+        case none, welcome, createArchive, setArchiveName, chartYourPath
     }
     
     @State var bottomButtonsPadding: CGFloat =  40
@@ -76,6 +76,26 @@ struct OnboardingView: View {
                                 contentType = .createArchive
                             }
                         } nextButton: {
+                            isBack = false
+                            withAnimation {
+                                contentType = .chartYourPath
+                            }
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                    
+                    case .chartYourPath:
+                        OnboardingChartYourPathView(onboardingValues: onboardingValues) {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            isBack = true
+                            withAnimation {
+                                contentType = .setArchiveName
+                            }
+                        } nextButton: {
+                            
+                        } skipButton: {
                             
                         }
                         .transition(AnyTransition.asymmetric(
@@ -103,13 +123,20 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
+                
             case .welcome:
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
+                
             case .createArchive, .setArchiveName:
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+                
+            case .chartYourPath:
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
             }
         }

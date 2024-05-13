@@ -131,4 +131,13 @@ extension Gradient {
                                                       startPoint: UnitPoint(x: 0, y: 0),
                                                       endPoint: UnitPoint(x: 1, y: 1)
     )
+    
+    static var lightDarkPurpleGradient = LinearGradient(stops:
+                                                        [
+                                                            Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
+                                                            Gradient.Stop(color: Color(red: 0.72, green: 0.26, blue: 0.65), location: 1.00),
+                                                        ],
+                                                      startPoint: UnitPoint(x: 0, y: 0),
+                                                      endPoint: UnitPoint(x: 1, y: 1)
+    )
 }
