@@ -1238,7 +1238,6 @@ extension SharesViewController {
         
         guard index >= 0 && index < collectionView.numberOfItems(inSection: 0) else {
             // Handle the case where the index is out of bounds
-            print("Index out of bounds")
             return
         }
         
