@@ -49,14 +49,11 @@ struct OnboardingChartYourPathView: View {
                         }
                     }
                 }
-                Spacer(minLength: 160)
+                Spacer(minLength: 120)
             }
-            VStack {
-                RoundButtonRightImageView(type: .noBorder, text: "Skip this step", rightImage: Image(.onboardingForward), action: skipButton)
-                HStack(alignment: .center) {
-                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                    SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
-                }
+            HStack(alignment: .center) {
+                SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
+                SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
             }
             .padding(.bottom, 40)
             .sheet(isPresented: $presentSelectArchivesType, content: {
@@ -65,53 +62,54 @@ struct OnboardingChartYourPathView: View {
         }
     }
     
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
     var iPadBody: some View {
-        HStack(alignment: .top, spacing: 64) {
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    HStack() {
-                        Text("Create your \n\(onboardingValues.archiveType.onboardingType) archive")
-                            .textStyle(UsualXXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
-                        Spacer()
-                    }
-                    Spacer()
-                }
-            }
+        GeometryReader { geometry in
             ZStack(alignment: .bottom) {
-                ScrollViewReader { scrollReader in
+                VStack {
+                    HStack(alignment: .top, spacing: 0) {
+                        VStack {
+                            HStack() {
+                                Text("Chart your \npath to success")
+                                    .textStyle(UsualXXLargeLightTextStyle())
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.leading)
+                                Spacer()
+                            }
+                        }
+                        .frame(width: geometry.size.width * 2 / 3)
+                        
+                        Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
+                            .textStyle(UsualRegularTextStyle())
+                            .foregroundColor(.blue25)
+                            .lineSpacing(8.0)
+                    }
                     ScrollView(showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 64) {
-                            Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
-                                .textStyle(UsualRegularTextStyle())
-                                .foregroundColor(.blue25)
-                                .lineSpacing(8.0)
-                            CustomBorderTextField(textFieldText: $onboardingValues.textFieldText, placeholder: "Name...")
-                        }
-                    }
-                    .onReceive(keyboardPublisher) { keyboard in
-                        if keyboard.isFirstResponder {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                                withAnimation {
-                                    scrollReader.scrollTo(1, anchor: .center)
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(OnboardingPath.allCases, id: \.self) { path in
+                                Button {
+                                    onboardingValues.togglePath(path: path)
+                                } label: {
+                                    PathItemView(path: path, isSelected: onboardingValues.selectedPath.contains(path))
                                 }
-                            })
+                                .padding(.trailing, 10)
+                            }
                         }
                     }
-                    .onAppear {
-                        UIScrollView.appearance().bounces = false
-                    }
-                    .onDisappear {
-                        UIScrollView.appearance().bounces = true
-                    }
+                    Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {
+                    Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                        .frame(width: 120)
-                    RoundButtonRightImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Create the archive", action: nextButton)
+                    RoundButtonRightImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
+                .padding(.trailing, 10)
             }
         }
     }
