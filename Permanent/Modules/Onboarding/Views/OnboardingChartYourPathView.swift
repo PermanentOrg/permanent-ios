@@ -26,7 +26,7 @@ struct OnboardingChartYourPathView: View {
     
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
-            VStack {
+            VStack(spacing: 0) {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
@@ -44,12 +44,18 @@ struct OnboardingChartYourPathView: View {
                                     } label: {
                                         PathItemView(path: path, isSelected: onboardingValues.selectedPath.contains(path))
                                     }
+                                    .padding(.bottom, path.description.contains("Something else") ? 4 : 0)
                                 }
                             }
                         }
                     }
                 }
-                Spacer(minLength: 120)
+                Color(.white)
+                    .opacity(0.16)
+                    .frame(height: 1)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, -40)
+                Spacer(minLength: 130)
             }
             HStack(alignment: .center) {
                 SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
