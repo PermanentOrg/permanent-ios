@@ -50,7 +50,7 @@
 		5E07D45528917D83008C0A6B /* UploadFilesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */; };
 		5E086BE62BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */; };
 		5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */; };
-		5E086BEA2BEE4408007B1AF3 /* PathItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE92BEE4408007B1AF3 /* PathItemView.swift */; };
+		5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
@@ -308,6 +308,8 @@
 		5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */; };
+		5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */; };
+		5EB503B72C04CB5500534F09 /* OnboardingWhatsImportant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB503B62C04CB5500534F09 /* OnboardingWhatsImportant.swift */; };
 		5EB569A92B305F2300C35543 /* RedeemCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569A82B305F2300C35543 /* RedeemCodeViewModel.swift */; };
 		5EB569AD2B307F3400C35543 /* RoundButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569AC2B307F3400C35543 /* RoundButtonView.swift */; };
 		5EB569AF2B31E41B00C35543 /* RoundStyledTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB569AE2B31E41B00C35543 /* RoundStyledTextFieldView.swift */; };
@@ -984,7 +986,7 @@
 		5E07D45428917D83008C0A6B /* UploadFilesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFilesUITests.swift; sourceTree = "<group>"; };
 		5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingChartYourPathView.swift; sourceTree = "<group>"; };
 		5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPath.swift; sourceTree = "<group>"; };
-		5E086BE92BEE4408007B1AF3 /* PathItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathItemView.swift; sourceTree = "<group>"; };
+		5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingItemView.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
@@ -1178,6 +1180,8 @@
 		5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBorderTextField.swift; sourceTree = "<group>"; };
+		5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWhatsImportantView.swift; sourceTree = "<group>"; };
+		5EB503B62C04CB5500534F09 /* OnboardingWhatsImportant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWhatsImportant.swift; sourceTree = "<group>"; };
 		5EB569A82B305F2300C35543 /* RedeemCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemCodeViewModel.swift; sourceTree = "<group>"; };
 		5EB569AC2B307F3400C35543 /* RoundButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonView.swift; sourceTree = "<group>"; };
 		5EB569AE2B31E41B00C35543 /* RoundStyledTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundStyledTextFieldView.swift; sourceTree = "<group>"; };
@@ -1866,7 +1870,8 @@
 				5EE3E9DF2BCD447100A5EFE5 /* OnboardingArchiveName.swift */,
 				5ED9A7B72BBF3BD6009BDD70 /* ArchiveTypeView.swift */,
 				5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */,
-				5E086BE92BEE4408007B1AF3 /* PathItemView.swift */,
+				5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */,
+				5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3707,6 +3712,7 @@
 				5E781EA72787006B0007E397 /* ProfileItemOperation.swift */,
 				5E3A05FF29E44D7900A6C531 /* Workspace.swift */,
 				5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */,
+				5EB503B62C04CB5500534F09 /* OnboardingWhatsImportant.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -4454,6 +4460,7 @@
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
+				5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */,
 				BCF9065D2587964E00DF1B64 /* SharedFileTableViewCell.swift in Sources */,
 				5ED73B3826143ED5002F9861 /* TagLinkVO.swift in Sources */,
 				5E46217525C17CE2007642BE /* InfoViewModel.swift in Sources */,
@@ -4799,6 +4806,7 @@
 				BC6E70F1252C740300113D5F /* PermanentError.swift in Sources */,
 				BCE3C94F25385FB500EC3A66 /* EmptyFolderView.swift in Sources */,
 				5EDDAE5E2A9F4A3E00415D9A /* EditDateAndTimeViewModel.swift in Sources */,
+				5EB503B72C04CB5500534F09 /* OnboardingWhatsImportant.swift in Sources */,
 				F557A64427A1C26200C061D4 /* PublicProfileOnlinePresenceViewController.swift in Sources */,
 				BC59BAE625C2B8DD005A45D3 /* NotificationsEndpoint.swift in Sources */,
 				F5D209BE285B483E006DCF9F /* PermSession.swift in Sources */,
@@ -4817,7 +4825,7 @@
 				F5853CFA26DEBB9D0050E377 /* PRMNTActionSheetViewController.swift in Sources */,
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
 				5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */,
-				5E086BEA2BEE4408007B1AF3 /* PathItemView.swift in Sources */,
+				5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */,
 				5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */,
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,

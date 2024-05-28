@@ -1,12 +1,12 @@
 //
-//  OnboardingChartYourPathView.swift
+//  OnboardingWhatsImportantView.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 08.05.2024.
+//  Created by Lucian Cerbu on 27.05.2024.
 
 import SwiftUI
 
-struct OnboardingChartYourPathView: View {
+struct OnboardingWhatsImportantView: View {
     @State var presentSelectArchivesType: Bool = false
     @ObservedObject var onboardingValues: OnboardingStorageValues
     
@@ -30,21 +30,21 @@ struct OnboardingChartYourPathView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            Text("Chart your \npath to success")
+                            Text("Tell us what’s\nimportant to you")
                                 .textStyle(UsualXLargeLightTextStyle())
                                 .foregroundColor(.white)
-                            Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
+                            Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
                                 .lineSpacing(8.0)
                             VStack(alignment: .leading) {
-                                ForEach(OnboardingPath.allCases, id: \.id) { path in
+                                ForEach(OnboardingWhatsImportant.allCases, id: \.id) { item in
                                     Button {
-                                        onboardingValues.togglePath(path: path)
+                                        onboardingValues.toggleWhatsImportant(whatsImportant: item)
                                     } label: {
-                                        OnboardingItemView(description: path.description, isSelected: onboardingValues.selectedPath.contains(path))
+                                        OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
                                     }
-                                    .padding(.bottom, path.description.contains("Something else") ? 4 : 0)
+                                    .padding(.bottom, item.description.contains("Interest in digital preservation solutions") ? 4 : 0)
                                 }
                             }
                         }
@@ -81,7 +81,7 @@ struct OnboardingChartYourPathView: View {
                     HStack(alignment: .top, spacing: 0) {
                         VStack {
                             HStack() {
-                                Text("Chart your \npath to success")
+                                Text("Tell us what’s\nimportant to you")
                                     .textStyle(UsualXXLargeLightTextStyle())
                                     .foregroundColor(.white)
                                     .multilineTextAlignment(.leading)
@@ -90,18 +90,18 @@ struct OnboardingChartYourPathView: View {
                         }
                         .frame(width: geometry.size.width * 2 / 3)
                         
-                        Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
+                        Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
                             .textStyle(UsualRegularTextStyle())
                             .foregroundColor(.blue25)
                             .lineSpacing(8.0)
                     }
                     ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 16) {
-                            ForEach(OnboardingPath.allCases, id: \.self) { path in
+                            ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
                                 Button {
-                                    onboardingValues.togglePath(path: path)
+                                    onboardingValues.toggleWhatsImportant(whatsImportant: item)
                                 } label: {
-                                    OnboardingItemView(description: path.description, isSelected: onboardingValues.selectedPath.contains(path))
+                                    OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
                                 }
                                 .padding(.trailing, 10)
                             }

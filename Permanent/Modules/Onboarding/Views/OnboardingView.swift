@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @State private var contentType: ContentType = .welcome
     
     enum ContentType {
-        case none, welcome, createArchive, setArchiveName, chartYourPath
+        case none, welcome, createArchive, setArchiveName, chartYourPath, whatsImportant
     }
     
     @State var bottomButtonsPadding: CGFloat =  40
@@ -94,6 +94,26 @@ struct OnboardingView: View {
                                 contentType = .setArchiveName
                             }
                         } nextButton: {
+                            isBack = false
+                            withAnimation {
+                                contentType = .whatsImportant
+                            }
+                        } skipButton: {
+                            
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                        
+                    case .whatsImportant:
+                        OnboardingWhatsImportantView(onboardingValues: onboardingValues) {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            isBack = true
+                            withAnimation {
+                                contentType = .chartYourPath
+                            }
+                        } nextButton: {
                             
                         } skipButton: {
                             
@@ -138,6 +158,12 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
+                
+            case .whatsImportant:
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
+                
             }
         }
         .padding(.top, 24)

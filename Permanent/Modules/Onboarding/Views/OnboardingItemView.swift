@@ -6,8 +6,8 @@
 
 import SwiftUI
 
-struct PathItemView: View {
-    var path: OnboardingPath
+struct OnboardingItemView: View {
+    var description: String
     var isSelected: Bool = false
     
     var body: some View {
@@ -19,7 +19,7 @@ struct PathItemView: View {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .accentColor(.white)
-                        Text("\(path.description)")
+                        Text("\(description)")
                             .textStyle(UsualSmallXRegularTextStyle())
                             .foregroundColor(.white)
                             .lineSpacing(8.0)
@@ -44,7 +44,7 @@ struct PathItemView: View {
                             .renderingMode(.template)
                             .frame(width: 30, height: 30)
                             .accentColor(.white)
-                        Text("\(path.description)")
+                        Text("\(description)")
                             .textStyle(UsualMediumRegularTextStyle())
                             .accentColor(.white)
                             .lineLimit(2)
@@ -72,7 +72,7 @@ struct PathItemView: View {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .accentColor(.white)
-                        Text("\(path.description)")
+                        Text("\(description)")
                             .textStyle(UsualSmallXRegularTextStyle())
                             .foregroundColor(.white)
                             .lineLimit(2)
@@ -98,7 +98,7 @@ struct PathItemView: View {
                             .renderingMode(.template)
                             .frame(width: 30, height: 30)
                             .accentColor(.white)
-                        Text("\(path.description)")
+                        Text("\(description)")
                             .textStyle(UsualMediumRegularTextStyle())
                             .accentColor(.white)
                             .lineLimit(2)
