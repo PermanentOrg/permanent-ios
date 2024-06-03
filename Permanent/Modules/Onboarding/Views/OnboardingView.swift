@@ -137,7 +137,7 @@ struct OnboardingView: View {
     
     
     var topProgressBar: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Constants.Design.isPhone ? 8 : 24) {
             switch contentType {
             case .none:
                 DividerSmallBarView(type: .empty)
@@ -145,7 +145,7 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 
             case .welcome:
-                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
                 
@@ -155,13 +155,13 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 
             case .chartYourPath:
-                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 
             case .whatsImportant:
-                DividerSmallBarView(type: .gradient)
-                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
                 
             }

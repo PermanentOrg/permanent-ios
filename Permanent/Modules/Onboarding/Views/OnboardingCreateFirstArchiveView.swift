@@ -24,9 +24,14 @@ struct OnboardingCreateFirstArchiveView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                Text("Create your first\narchive.")
-                    .textStyle(UsualXLargeLightTextStyle())
-                    .foregroundColor(.white)
+                CustomTextLabel(
+                    preText: "Create your first\n",
+                    boldText: "Archive",
+                    postText: "",
+                    preAndPostTextFont: TextFontStyle.style46.font,
+                    boldTextFont: TextFontStyle.style47.font
+                )
+                .frame(height: 100)
                 Text("What do you plan to capture and preserve with your first archive?")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
@@ -51,10 +56,14 @@ struct OnboardingCreateFirstArchiveView: View {
         HStack(alignment: .top, spacing: 64) {
             VStack {
                 HStack() {
-                    Text("Create your\nfirst archive.")
-                        .textStyle(UsualXXLargeLightTextStyle())
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.leading)
+                    CustomTextLabel(
+                        preText: "Create your\nfirst ",
+                        boldText: "Archive",
+                        postText: "",
+                        preAndPostTextFont: TextFontStyle.style48.font,
+                        boldTextFont: TextFontStyle.style49.font
+                    )
+                    .frame(height: 120)
                     Spacer()
                 }
                 Spacer()

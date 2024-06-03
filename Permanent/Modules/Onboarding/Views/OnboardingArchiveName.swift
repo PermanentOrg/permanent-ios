@@ -28,12 +28,17 @@ struct OnboardingArchiveName: View {
             ScrollViewReader { scrollReader in
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
-                        Text("Create your \n\(onboardingValues.archiveType.onboardingType) archive")
-                            .textStyle(UsualXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                            .onTapGesture {
-                                dismissKeyboard()
-                            }
+                        CustomTextLabel(
+                            preText: "Create your \n",
+                            boldText: "\(onboardingValues.archiveType.onboardingType)",
+                            postText: " archive",
+                            preAndPostTextFont: TextFontStyle.style46.font,
+                            boldTextFont: TextFontStyle.style47.font
+                        )
+                        .frame(height: 100)
+                        .onTapGesture {
+                            dismissKeyboard()
+                        }
                         Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
                             .textStyle(UsualSmallXRegularTextStyle())
                             .foregroundColor(.blue25)
@@ -81,10 +86,14 @@ struct OnboardingArchiveName: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     HStack() {
-                        Text("Create your \n\(onboardingValues.archiveType.onboardingType) archive")
-                            .textStyle(UsualXXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
+                        CustomTextLabel(
+                            preText: "Create your \n",
+                            boldText: "\(onboardingValues.archiveType.onboardingType)",
+                            postText: "\nArchive",
+                            preAndPostTextFont: TextFontStyle.style48.font,
+                            boldTextFont: TextFontStyle.style49.font
+                        )
+                        .frame(height: 200)
                         Spacer()
                     }
                     Spacer()
