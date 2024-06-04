@@ -8,6 +8,7 @@ import SwiftUI
 
 struct OnboardingArchiveName: View {
     @State var presentSelectArchivesType: Bool = false
+    @State private var dynamicHeight: CGFloat = 0
     @ObservedObject var onboardingValues: OnboardingStorageValues
     
     var backButton: (() -> Void)
@@ -24,55 +25,67 @@ struct OnboardingArchiveName: View {
     }
     
     var iPhoneBody: some View {
-        ZStack(alignment: .bottom) {
-            ScrollViewReader { scrollReader in
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 24) {
-                        Text("Create your \n\(onboardingValues.archiveType.onboardingType) archive")
-                            .textStyle(UsualXLargeLightTextStyle())
-                            .foregroundColor(.white)
+        GeometryReader { geometry in
+            ZStack(alignment: .bottom) {
+                ScrollViewReader { scrollReader in
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 24) {
+                            CustomTextView(
+                                preText: "Create your \n",
+                                boldText: "\(onboardingValues.archiveType.onboardingType)",
+                                postText: "\(onboardingValues.archiveType == .familyHistory ? "\n" : " ")archive",
+                                preAndPostTextFont: TextFontStyle.style46.font,
+                                boldTextFont: TextFontStyle.style47.font
+                            )
+                            .background(GeometryReader { geometry in
+                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                            })
+                            .onPreferenceChange(HeightPreferenceKey.self) { value in
+                                self.dynamicHeight = value
+                            }
                             .onTapGesture {
                                 dismissKeyboard()
                             }
-                        Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
-                            .textStyle(UsualSmallXRegularTextStyle())
-                            .foregroundColor(.blue25)
-                            .lineSpacing(8.0)
-                            .onTapGesture {
-                                dismissKeyboard()
-                            }
-                        CustomBorderTextField(textFieldText: $onboardingValues.textFieldText, placeholder: "Name...")
-                        Spacer(minLength: 90)
-                            .id(0)
-                            .onTapGesture {
-                                dismissKeyboard()
-                            }
+                            Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
+                                .textStyle(UsualSmallXRegularTextStyle())
+                                .foregroundColor(.blue25)
+                                .lineSpacing(8.0)
+                                .onTapGesture {
+                                    dismissKeyboard()
+                                }
+                            CustomBorderTextField(textFieldText: $onboardingValues.textFieldText, placeholder: "Name...")
+                            Spacer(minLength: 90)
+                                .id(0)
+                                .onTapGesture {
+                                    dismissKeyboard()
+                                }
+                        }
+                    }
+                    .onReceive(keyboardPublisher) { keyboard in
+                        if keyboard.isFirstResponder {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                                withAnimation {
+                                    scrollReader.scrollTo(0, anchor: .center)
+                                }
+                            })
+                        }
+                    }
+                    .onAppear {
+                        UIScrollView.appearance().bounces = false
+                    }
+                    .onDisappear {
+                        UIScrollView.appearance().bounces = true
                     }
                 }
-                .onReceive(keyboardPublisher) { keyboard in
-                    if keyboard.isFirstResponder {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                            withAnimation {
-                                scrollReader.scrollTo(0, anchor: .center)
-                            }
-                        })
-                    }
+                HStack(alignment: .center) {
+                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
+                    SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
                 }
-                .onAppear {
-                    UIScrollView.appearance().bounces = false
-                }
-                .onDisappear {
-                    UIScrollView.appearance().bounces = true
-                }
+                .padding(.bottom, 40)
+                .sheet(isPresented: $presentSelectArchivesType, content: {
+                    OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+                })
             }
-            HStack(alignment: .center) {
-                SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
-            }
-            .padding(.bottom, 40)
-            .sheet(isPresented: $presentSelectArchivesType, content: {
-                OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
-            })
         }
     }
     
@@ -81,10 +94,19 @@ struct OnboardingArchiveName: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     HStack() {
-                        Text("Create your \n\(onboardingValues.archiveType.onboardingType) archive")
-                            .textStyle(UsualXXLargeLightTextStyle())
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
+                        CustomTextView(
+                            preText: "Create your \n",
+                            boldText: "\(onboardingValues.archiveType.onboardingType)",
+                            postText: "\nArchive",
+                            preAndPostTextFont: TextFontStyle.style48.font,
+                            boldTextFont: TextFontStyle.style49.font
+                        )
+                        .background(GeometryReader { geometry in
+                            Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                        })
+                        .onPreferenceChange(HeightPreferenceKey.self) { value in
+                            self.dynamicHeight = value
+                        }
                         Spacer()
                     }
                     Spacer()

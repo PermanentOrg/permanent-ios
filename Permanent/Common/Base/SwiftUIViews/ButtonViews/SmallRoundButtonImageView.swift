@@ -21,6 +21,7 @@ struct SmallRoundButtonImageView: View {
     var isLoading: Bool = false
     let text: String
     var image: Image = Image(.rightArrowShort)
+    var hasSpacer: Bool = false
     let action: () -> Void
     
     var body: some View {
@@ -72,6 +73,9 @@ struct SmallRoundButtonImageView: View {
                                 image
                                     .frame(width: 24, height: 24, alignment: .center)
                                     .accentColor(.white)
+                                if hasSpacer {
+                                    Spacer()
+                                }
                             }
                             if Constants.Design.isPhone {
                                 Text(text)
@@ -98,6 +102,7 @@ struct SmallRoundButtonImageView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal, 24)
                     }
                     .frame(height: 56)
                     .cornerRadius(12)
