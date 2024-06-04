@@ -8,6 +8,7 @@ import SwiftUI
 
 struct OnboardingCreateFirstArchiveView: View {
     @State var presentSelectArchivesType: Bool = false
+    @State private var dynamicHeight: CGFloat = 0
     @ObservedObject var onboardingValues: OnboardingStorageValues
     
     var backButton: (() -> Void)
@@ -24,14 +25,19 @@ struct OnboardingCreateFirstArchiveView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                CustomTextLabel(
+                CustomTextView(
                     preText: "Create your first\n",
                     boldText: "Archive",
                     postText: "",
                     preAndPostTextFont: TextFontStyle.style46.font,
                     boldTextFont: TextFontStyle.style47.font
                 )
-                .frame(height: 100)
+                .background(GeometryReader { geometry in
+                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                })
+                .onPreferenceChange(HeightPreferenceKey.self) { value in
+                    self.dynamicHeight = value
+                }
                 Text("What do you plan to capture and preserve with your first archive?")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
@@ -56,14 +62,19 @@ struct OnboardingCreateFirstArchiveView: View {
         HStack(alignment: .top, spacing: 64) {
             VStack {
                 HStack() {
-                    CustomTextLabel(
+                    CustomTextView(
                         preText: "Create your\nfirst ",
                         boldText: "Archive",
                         postText: "",
                         preAndPostTextFont: TextFontStyle.style48.font,
                         boldTextFont: TextFontStyle.style49.font
                     )
-                    .frame(height: 120)
+                    .background(GeometryReader { geometry in
+                        Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                    })
+                    .onPreferenceChange(HeightPreferenceKey.self) { value in
+                        self.dynamicHeight = value
+                    }
                     Spacer()
                 }
                 Spacer()

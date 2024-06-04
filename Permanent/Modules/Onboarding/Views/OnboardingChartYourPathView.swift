@@ -8,6 +8,7 @@ import SwiftUI
 
 struct OnboardingChartYourPathView: View {
     @State var presentSelectArchivesType: Bool = false
+    @State private var dynamicHeight: CGFloat = 0
     @ObservedObject var onboardingValues: OnboardingStorageValues
     
     var backButton: (() -> Void)
@@ -30,14 +31,19 @@ struct OnboardingChartYourPathView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            CustomTextLabel(
+                            CustomTextView(
                                 preText: "Chart your \n",
                                 boldText: "path",
                                 postText: " to success",
                                 preAndPostTextFont: TextFontStyle.style46.font,
                                 boldTextFont: TextFontStyle.style47.font
                             )
-                            .frame(height: 100)
+                            .background(GeometryReader { geometry in
+                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                            })
+                            .onPreferenceChange(HeightPreferenceKey.self) { value in
+                                self.dynamicHeight = value
+                            }
                             Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
@@ -86,14 +92,19 @@ struct OnboardingChartYourPathView: View {
                     HStack(alignment: .top, spacing: 8) {
                         VStack {
                             HStack() {
-                                CustomTextLabel(
+                                CustomTextView(
                                     preText: "Chart your \n",
                                     boldText: "path",
                                     postText: " to success",
                                     preAndPostTextFont: TextFontStyle.style48.font,
                                     boldTextFont: TextFontStyle.style49.font
                                 )
-                                .frame(height: 120)
+                                .background(GeometryReader { geometry in
+                                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                                })
+                                .onPreferenceChange(HeightPreferenceKey.self) { value in
+                                    self.dynamicHeight = value
+                                }
                                 Spacer()
                             }
                         }
@@ -103,6 +114,7 @@ struct OnboardingChartYourPathView: View {
                             .textStyle(UsualRegularTextStyle())
                             .foregroundColor(.blue25)
                             .lineSpacing(8.0)
+                            .padding(.top, 10)
                     }
                     ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 16) {
@@ -116,6 +128,7 @@ struct OnboardingChartYourPathView: View {
                             }
                         }
                     }
+                    .padding(.top, 15)
                     Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {

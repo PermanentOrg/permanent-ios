@@ -8,6 +8,7 @@ import SwiftUI
 
 struct OnboardingWhatsImportantView: View {
     @State var presentSelectArchivesType: Bool = false
+    @State private var dynamicHeight: CGFloat = 0
     @ObservedObject var onboardingValues: OnboardingStorageValues
     
     var backButton: (() -> Void)
@@ -30,14 +31,19 @@ struct OnboardingWhatsImportantView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            CustomTextLabel(
+                            CustomTextView(
                                 preText: "Tell us what’s\n",
                                 boldText: "important",
                                 postText: " to you",
                                 preAndPostTextFont: TextFontStyle.style46.font,
                                 boldTextFont: TextFontStyle.style47.font
                             )
-                            .frame(height: 100)
+                            .background(GeometryReader { geometry in
+                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                            })
+                            .onPreferenceChange(HeightPreferenceKey.self) { value in
+                                self.dynamicHeight = value
+                            }
                             Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
@@ -92,14 +98,19 @@ struct OnboardingWhatsImportantView: View {
                     HStack(alignment: .top, spacing: 0) {
                         VStack {
                             HStack() {
-                                CustomTextLabel(
+                                CustomTextView(
                                     preText: "Tell us what’s\n",
                                     boldText: "important",
                                     postText: " to you",
                                     preAndPostTextFont: TextFontStyle.style48.font,
                                     boldTextFont: TextFontStyle.style49.font
                                 )
-                                .frame(height: 120)
+                                .background(GeometryReader { geometry in
+                                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+                                })
+                                .onPreferenceChange(HeightPreferenceKey.self) { value in
+                                    self.dynamicHeight = value
+                                }
                                 Spacer()
                             }
                         }
@@ -109,6 +120,7 @@ struct OnboardingWhatsImportantView: View {
                             .textStyle(UsualRegularTextStyle())
                             .foregroundColor(.blue25)
                             .lineSpacing(8.0)
+                            .padding(.top, 10)
                     }
                     ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 16) {
@@ -128,6 +140,7 @@ struct OnboardingWhatsImportantView: View {
                     .onDisappear {
                         UIScrollView.appearance().bounces = true
                     }
+                    .padding(.top, 15)
                     Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {
