@@ -11,10 +11,23 @@ import SwiftUI
 enum ArchiveType: String, CaseIterable, Identifiable {
     var id: String { return self.rawValue }
     
-    case person, individual = "type.archive.person"
-    case family, familyHistory = "type.archive.family"
-    case community, organization = "type.archive.organization"
-    case nonProfit = "type.archive.nonprofit"
+    case person, individual
+    case family, familyHistory
+    case community, organization
+    case nonProfit
+    
+    var rawValue: String {
+        switch self {
+        case .person, .individual:
+            return "type.archive.person"
+        case .family, .familyHistory:
+            return "type.archive.family"
+        case .community, .organization:
+            return "type.archive.organization"
+        case .nonProfit:
+            return "type.archive.nonprofit"
+        }
+    }
     
     var archiveName: String {
         switch self {

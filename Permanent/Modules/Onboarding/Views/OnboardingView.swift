@@ -7,9 +7,10 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @StateObject var onboardingValues = OnboardingStorageValues()
+    @ObservedObject var onboardingValues = OnboardingStorageValues(username: "", password: "")
     @State private var isBack = false
     @State private var contentType: ContentType = .welcome
+    @Environment(\.presentationMode) var presentationMode
     
     enum ContentType {
         case none, welcome, createArchive, setArchiveName, chartYourPath, whatsImportant
@@ -39,7 +40,7 @@ struct OnboardingView: View {
                 if contentType != .none {
                     switch contentType {
                     case .welcome:
-                        OnboardingWelcomeView {
+                        OnboardingWelcomeView(onboardingStorageValues: onboardingValues) {
                             isBack = false
                             withAnimation {
                                 contentType = .createArchive
@@ -114,7 +115,12 @@ struct OnboardingView: View {
                                 contentType = .chartYourPath
                             }
                         } nextButton: {
-                            
+                                onboardingValues.finishOnboard(_:) { response in
+                                    if response == .success {
+                                        AppDelegate.shared.rootViewController.setDrawerRoot()
+                                        dismissView()
+                                    }
+                                }
                         } skipButton: {
                             
                         }
@@ -133,6 +139,11 @@ struct OnboardingView: View {
             .padding(.top, Constants.Design.isPhone ? 70 : 48)
         }
         .ignoresSafeArea(.all)
+        .alert(isPresented: $onboardingValues.showAlert) {
+            Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
+                onboardingValues.showAlert = false
+            })
+        }
     }
     
     
@@ -173,5 +184,9 @@ struct OnboardingView: View {
     
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    func dismissView() {
+        presentationMode.wrappedValue.dismiss()
     }
 }

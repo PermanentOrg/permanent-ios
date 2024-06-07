@@ -75,8 +75,8 @@ struct OnboardingWhatsImportantView: View {
                 Spacer(minLength: 130)
             }
             HStack(alignment: .center) {
-                SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                SmallRoundButtonImageView(isDisabled: true, text: "Next", action: nextButton)
+                SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft,isDisabled: onboardingValues.isLoading, text: "Back", image: Image(.leftArrowShort), action: backButton)
+                SmallRoundButtonImageView(isLoading: onboardingValues.isLoading, text: "Next", action: nextButton)
             }
             .padding(.bottom, 40)
             .sheet(isPresented: $presentSelectArchivesType, content: {
@@ -145,8 +145,8 @@ struct OnboardingWhatsImportantView: View {
                 }
                 HStack(spacing: 32) {
                     Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
-                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
-                    RoundButtonRightImageView(isDisabled: true, text: "Next", action: nextButton)
+                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, isDisabled: onboardingValues.isLoading, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
+                    RoundButtonRightImageView(isLoading: onboardingValues.isLoading, text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }

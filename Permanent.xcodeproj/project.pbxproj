@@ -3472,8 +3472,8 @@
 			children = (
 				5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */,
 				5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */,
-				5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */,
 				5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */,
+				5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */,
 				5EE17FF524EE94DA00496AF7 /* PageViewController.swift */,
 			);
 			path = ViewController;
