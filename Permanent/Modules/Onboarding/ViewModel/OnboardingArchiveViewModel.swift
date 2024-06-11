@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class OnboardingStorageValues: ObservableObject {
+class OnboardingArchiveViewModel: ObservableObject {
     var username: String
     var password: String
     @Published var archiveType: ArchiveType = .person

@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingCreateFirstArchiveView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingStorageValues
+    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -28,7 +28,7 @@ struct OnboardingCreateFirstArchiveView: View {
                 CustomTextView(
                     preText: "Create your first\n",
                     boldText: "Archive",
-                    postText: "",
+                    postText: " ",
                     preAndPostTextFont: TextFontStyle.style46.font,
                     boldTextFont: TextFontStyle.style47.font
                 )
@@ -42,6 +42,8 @@ struct OnboardingCreateFirstArchiveView: View {
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
                     .lineSpacing(8.0)
+                    .multilineTextAlignment(.leading)
+                
                 GradientArchiveButtonView(action: {
                     presentSelectArchivesType = true
                 }, archiveType: $onboardingValues.archiveType)

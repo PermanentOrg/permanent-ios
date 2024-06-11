@@ -40,9 +40,7 @@ struct GradientArchiveButtonView: View {
                                 .lineSpacing(4.0)
                         }
                     }
-                    if Constants.Design.isPhone == false {
-                        Spacer()
-                    }
+                    Spacer()
                 }
                 Image(.onboardingArrowDown)
                     .foregroundColor(.white)
@@ -50,6 +48,7 @@ struct GradientArchiveButtonView: View {
             }
             .padding(Constants.Design.isPhone ? 24 : 32)
         }
+        .frame(maxWidth: .infinity)
         .frame(height: Constants.Design.isPhone ? 112 : 168)
         .background(Gradient.purpleYellowGradient2)
         .cornerRadius(12)

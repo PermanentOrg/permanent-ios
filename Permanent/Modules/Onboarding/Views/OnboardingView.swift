@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @ObservedObject var onboardingValues = OnboardingStorageValues(username: "", password: "")
+    @ObservedObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
     @State private var isBack = false
     @State private var contentType: ContentType = .welcome
     @Environment(\.presentationMode) var presentationMode
@@ -115,12 +115,12 @@ struct OnboardingView: View {
                                 contentType = .chartYourPath
                             }
                         } nextButton: {
-                                onboardingValues.finishOnboard(_:) { response in
-                                    if response == .success {
-                                        AppDelegate.shared.rootViewController.setDrawerRoot()
-                                        dismissView()
-                                    }
+                            onboardingValues.finishOnboard(_:) { response in
+                                if response == .success {
+                                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                                    dismissView()
                                 }
+                            }
                         } skipButton: {
                             
                         }
@@ -128,7 +128,6 @@ struct OnboardingView: View {
                             insertion:.move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
-                        
                     default:
                         Spacer()
                     }
@@ -137,6 +136,10 @@ struct OnboardingView: View {
             }
             .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 70 : 48)
+            LoadingOverlay()
+                .opacity(onboardingValues.isLoading  ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5), value: onboardingValues.isLoading)
+                .allowsHitTesting(onboardingValues.isLoading)
         }
         .ignoresSafeArea(.all)
         .alert(isPresented: $onboardingValues.showAlert) {

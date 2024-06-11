@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 struct OnboardingWelcomeView: View {
-    var onboardingStorageValues: OnboardingStorageValues
+    var onboardingStorageValues: OnboardingArchiveViewModel
     @State private var dynamicHeight: CGFloat = 0
     var buttonAction: (() -> Void)
     

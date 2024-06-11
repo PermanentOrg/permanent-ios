@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingChartYourPathView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingStorageValues
+    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
