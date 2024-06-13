@@ -7,27 +7,26 @@
 import SwiftUI
 
 struct GradientSemiCirclesLoaderView: View {
-    @State private var rotateSlowly = false
-    @State private var rotateQuickly = false
+    @State private var rotate = false
 
     var body: some View {
         ZStack {
             SemiCircle()
                 .stroke(Gradient.purpleYellowGradient, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                 .frame(width: 25, height: 25)
-                .rotationEffect(.degrees(rotateSlowly ? 360 : 0))
-                .animation(Animation.linear(duration: 4).repeatForever(autoreverses: false), value: rotateSlowly)
+                .rotationEffect(.degrees(rotate ? 360 : 0))
+                .animation(Animation.linear(duration: 4).repeatForever(autoreverses: false), value: rotate)
                 .onAppear {
-                    rotateSlowly = true
+                    rotate = true
                 }
             
             SemiCircle()
                 .stroke(Gradient.yellowPurpleGradient, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                 .frame(width: 50, height: 50)
-                .rotationEffect(.degrees(rotateQuickly ? 360 : 0))
-                .animation(Animation.linear(duration: 2).repeatForever(autoreverses: false), value: rotateQuickly)
+                .rotationEffect(.degrees(rotate ? 360 : 0))
+                .animation(Animation.linear(duration: 2).repeatForever(autoreverses: false), value: rotate)
                 .onAppear {
-                    rotateQuickly = true
+                    rotate = true
                 }
                 .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
         }
