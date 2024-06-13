@@ -8,7 +8,7 @@ import SwiftUI
 
 struct OnboardingSelectArchiveTypeView: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var onboardingValues: OnboardingStorageValues
+    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
     var body: some View {
         VStack {

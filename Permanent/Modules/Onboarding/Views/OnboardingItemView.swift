@@ -86,6 +86,7 @@ struct OnboardingItemView: View {
                 }
                 .frame(height: Constants.Design.isPhone ? 96 : 120)
                 .frame(maxWidth: .infinity)
+                .background(Color(red: 0.07, green: 0.11, blue: 0.29))
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)

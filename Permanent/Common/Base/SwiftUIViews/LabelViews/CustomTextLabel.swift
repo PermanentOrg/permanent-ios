@@ -12,10 +12,11 @@ struct CustomTextLabel: UIViewRepresentable {
     var postText: String
     var preAndPostTextFont: UIFont
     var boldTextFont: UIFont
+    var lineSpacing: CGFloat = 7
     
     func makeUIView(context: Context) -> UILabel {
         let label = UILabel()
-        label.numberOfLines = 0  // Allow multiple lines if needed
+        label.numberOfLines = 0  
         label.lineBreakMode = .byWordWrapping
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.attributedText = createAttributedText()
@@ -27,9 +28,33 @@ struct CustomTextLabel: UIViewRepresentable {
     }
     
     private func createAttributedText() -> NSAttributedString {
-        let preAttributedText = NSAttributedString(string: preText, attributes: [.foregroundColor: UIColor.white, .font: preAndPostTextFont])
-        let boldAttributedText = NSAttributedString(string: boldText, attributes: [.foregroundColor: UIColor.white, .font: boldTextFont])
-        let postAttributedText = NSAttributedString(string: postText, attributes: [.foregroundColor: UIColor.white, .font: preAndPostTextFont])
+        let paragraphStyle = NSMutableParagraphStyle()
+         paragraphStyle.lineSpacing = lineSpacing
+        
+        let preAttributedText = NSAttributedString(
+            string: preText,
+            attributes: [
+                .foregroundColor: UIColor.white,
+                .font: preAndPostTextFont,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+        let boldAttributedText = NSAttributedString(
+            string: boldText,
+            attributes: [
+                .foregroundColor: UIColor.white,
+                .font: boldTextFont,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+        let postAttributedText = NSAttributedString(
+            string: postText,
+            attributes: [
+                .foregroundColor: UIColor.white,
+                .font: preAndPostTextFont,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
         
         let combinedText = NSMutableAttributedString()
         combinedText.append(preAttributedText)

@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingWhatsImportantView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingStorageValues
+    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -76,7 +76,7 @@ struct OnboardingWhatsImportantView: View {
             }
             HStack(alignment: .center) {
                 SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                SmallRoundButtonImageView(isDisabled: true, text: "Next", action: nextButton)
+                SmallRoundButtonImageView(text: "Next", action: nextButton)
             }
             .padding(.bottom, 40)
             .sheet(isPresented: $presentSelectArchivesType, content: {
@@ -146,7 +146,7 @@ struct OnboardingWhatsImportantView: View {
                 HStack(spacing: 32) {
                     Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
-                    RoundButtonRightImageView(isDisabled: true, text: "Next", action: nextButton)
+                    RoundButtonRightImageView(text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }

@@ -8,6 +8,7 @@ import SwiftUI
 import UIKit
 
 struct OnboardingWelcomeView: View {
+    var onboardingStorageValues: OnboardingArchiveViewModel
     @State private var dynamicHeight: CGFloat = 0
     var buttonAction: (() -> Void)
     
@@ -24,7 +25,7 @@ struct OnboardingWelcomeView: View {
             VStack(alignment: .leading, spacing: 24) {
                 CustomTextView(
                     preText: "Hello, ",
-                    boldText: "\(OnboardingStorageValues().fullName)",
+                    boldText: "\(onboardingStorageValues.fullName)",
                     postText: ".\nWelcome to\nPermanent!",
                     preAndPostTextFont: TextFontStyle.style46.font,
                     boldTextFont: TextFontStyle.style47.font
@@ -35,7 +36,7 @@ struct OnboardingWelcomeView: View {
                 .onPreferenceChange(HeightPreferenceKey.self) { value in
                     self.dynamicHeight = value
                 }
-                Text("\(OnboardingStorageValues().welcomeMessage)")
+                Text("\(onboardingStorageValues.welcomeMessage)")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
                     .lineSpacing(8.0)
@@ -54,7 +55,7 @@ struct OnboardingWelcomeView: View {
                 HStack() {
                     CustomTextView(
                         preText: "Hello, ",
-                        boldText: "\(OnboardingStorageValues().fullName)",
+                        boldText: "\(onboardingStorageValues.fullName)",
                         postText: ".\nWelcome to\nPermanent!",
                         preAndPostTextFont: TextFontStyle.style48.font,
                         boldTextFont: TextFontStyle.style49.font
@@ -70,7 +71,7 @@ struct OnboardingWelcomeView: View {
             }
             ZStack(alignment: .bottom) {
                 VStack {
-                    Text("\(OnboardingStorageValues().welcomeMessage)")
+                    Text("\(onboardingStorageValues.welcomeMessage)")
                         .textStyle(UsualRegularTextStyle())
                         .foregroundColor(.blue25)
                         .lineSpacing(8.0)

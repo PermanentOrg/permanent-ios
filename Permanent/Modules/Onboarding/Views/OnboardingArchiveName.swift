@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingArchiveName: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingStorageValues
+    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -53,7 +53,7 @@ struct OnboardingArchiveName: View {
                                 .onTapGesture {
                                     dismissKeyboard()
                                 }
-                            CustomBorderTextField(textFieldText: $onboardingValues.textFieldText, placeholder: "Name...")
+                            CustomBorderTextField(textFieldText: $onboardingValues.archiveName, placeholder: "Name...")
                             Spacer(minLength: 90)
                                 .id(0)
                                 .onTapGesture {
@@ -79,7 +79,7 @@ struct OnboardingArchiveName: View {
                 }
                 HStack(alignment: .center) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                    SmallRoundButtonImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Next", action: nextButton)
+                    SmallRoundButtonImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
                 .sheet(isPresented: $presentSelectArchivesType, content: {
@@ -123,7 +123,7 @@ struct OnboardingArchiveName: View {
                                 .onTapGesture {
                                     dismissKeyboard()
                                 }
-                            CustomBorderTextField(textFieldText: $onboardingValues.textFieldText, placeholder: "Name...")
+                            CustomBorderTextField(textFieldText: $onboardingValues.archiveName, placeholder: "Name...")
                             Spacer(minLength: 60)
                                 .id(1)
                                 .onTapGesture {
@@ -150,7 +150,7 @@ struct OnboardingArchiveName: View {
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
                         .frame(width: 120)
-                    RoundButtonRightImageView(isDisabled: onboardingValues.textFieldText.isEmpty, text: "Create the archive", action: nextButton)
+                    RoundButtonRightImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Create the archive", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }

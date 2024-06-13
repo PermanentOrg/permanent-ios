@@ -105,6 +105,15 @@ extension Gradient {
         endPoint: UnitPoint(x: 1, y: 1)
     )
     
+    static var yellowPurpleGradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color(red: 1, green: 0.6, blue: 0.2),
+                                                            Color(red: 0.5, green: 0, blue: 0.5)
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                                     endPoint: .bottomTrailing
+    )
+    
     static var blue25Gradient = LinearGradient(gradient:
                                                         Gradient(colors: [
                                                             Color.blue25,
