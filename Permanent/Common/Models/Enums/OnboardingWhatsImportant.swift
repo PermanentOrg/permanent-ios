@@ -27,4 +27,21 @@ enum OnboardingWhatsImportant: String, CaseIterable, Identifiable {
             return "Interest in digital preservation solutions"
         }
     }
+    
+    var tag: String {
+        switch self {
+        case .access:
+            return "safe"
+        case .supporting:
+            return "nonprofit"
+        case .preserving:
+            return "genealogy"
+        case .professional:
+            return "professional"
+        case .collaborate:
+            return "collaborate"
+        case .interest:
+            return "digipres"
+        }
+    }
 }

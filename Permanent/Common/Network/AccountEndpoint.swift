@@ -41,6 +41,7 @@ enum AccountEndpoint {
     ///  Redeem code request
     case redeemCode(code: String)
     case getSessionAccount
+    case addRemoveTags(archiveType:String, addGoalTags: [String]?, addWhyTags: [String]?, removeGoalTags: [String]?, removeWhyTags: [String]?)
 }
 
 extension AccountEndpoint: RequestProtocol {
@@ -70,6 +71,8 @@ extension AccountEndpoint: RequestProtocol {
             return "/account/getsessionaccount"
         case .redeemCode:
             return "/promo/entry"
+        case .addRemoveTags:
+            return "/account/tags"
         }
     }
 
@@ -116,10 +119,20 @@ extension AccountEndpoint: RequestProtocol {
             
         case .redeemCode(code: let code):
             return redeemCode(code: code)
+            
+        case .addRemoveTags(archiveType: let archiveType, addGoalTags: let addGoalTags, addWhyTags: let addWhyTags, removeGoalTags: let removeGoalTags, removeWhyTags: let removeWhyTags):
+            return addRemoveTags(archiveType: archiveType, addGoalTags: addGoalTags, addWhyTags: addWhyTags, removeGoalTags: removeGoalTags, removeWhyTags: removeWhyTags)
         }
     }
 
-    var method: RequestMethod { .post }
+    var method: RequestMethod {
+        switch self {
+        case .addRemoveTags:
+            return .put
+        default:
+            return .post
+        }
+    }
 
     var requestType: RequestType { .data }
 
@@ -148,7 +161,14 @@ extension AccountEndpoint: RequestProtocol {
     
     var bodyData: Data? { nil }
     
-    var customURL: String? { nil }
+    var customURL: String? {
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
+        switch self {
+        case .addRemoveTags(_, _, _, _, _):
+            return "\(endpointPath)api/v2/account/tags"
+        default : return nil
+        }
+    }
 }
 
 extension AccountEndpoint {
@@ -384,6 +404,41 @@ extension AccountEndpoint {
                     ]
                 ]
             ]
+        ]
+    }
+    
+    func addRemoveTags(archiveType: String, addGoalTags: [String]?, addWhyTags: [String]?, removeGoalTags: [String]?, removeWhyTags: [String]?) -> RequestParameters {
+        var addFormattedTags: [String] = []
+        var removeFormattedTags: [String] = []
+        if let addGoals = addGoalTags {
+            addFormattedTags.append(contentsOf: addGoals.map { "goal:\($0)" })
+        }
+        
+        if let addWhys = addWhyTags {
+            addFormattedTags.append(contentsOf: addWhys.map { "why:\($0)" })
+        }
+        
+        if let removeGoals = removeGoalTags {
+            removeFormattedTags.append(contentsOf: removeGoals.map { "goal:\($0)" })
+        }
+        
+        if let removeWhys = removeWhyTags {
+            removeFormattedTags.append(contentsOf: removeWhys.map { "why:\($0)" })
+        }
+        
+        guard let addedFormattedTagsJson = try? JSONEncoder().encode(addFormattedTags),
+              let addedFormattedTagsDict = try? JSONSerialization.jsonObject(with: addedFormattedTagsJson, options: []) else {
+            return []
+        }
+        
+        guard let removedFormattedTagsJson = try? JSONEncoder().encode(removeFormattedTags),
+              let removedFormattedTagsDict = try? JSONSerialization.jsonObject(with: removedFormattedTagsJson, options: []) else {
+            return []
+        }
+        
+        return [
+            "addTags": addedFormattedTagsDict,
+            "removeTags": removedFormattedTagsDict
         ]
     }
 }

@@ -31,4 +31,25 @@ enum OnboardingPath: String, CaseIterable, Identifiable {
             return "Something else..."
         }
     }
+    
+    var tag: String {
+        switch self {
+        case .capture:
+            return "capture"
+        case .digitize:
+            return "digitize"
+        case .collaborate:
+            return "collaborate"
+        case .createPublicArchive:
+            return "publish"
+        case .shareArchive:
+            return "share"
+        case .createPlan:
+            return "legacy"
+        case .organize:
+            return "organize"
+        case .somethingElse:
+            return "undefined"
+        }
+    }
 }

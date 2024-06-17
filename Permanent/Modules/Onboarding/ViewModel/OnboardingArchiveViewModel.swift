@@ -54,22 +54,44 @@ class OnboardingArchiveViewModel: ObservableObject {
     
     func finishOnboard(_ completionBlock: @escaping ServerResponse) {
         isLoading = true
-        createArchive(name: archiveName, type: archiveType.rawValue) { archiveVO, error in
+        createArchive(name: archiveName, type: archiveType.rawValue) { [self] archiveVO, error in
             if let archiveVO = archiveVO, let archiveID = archiveVO.archiveID {
-                self.updateAccount(withDefaultArchiveId: archiveID) { [self] accountVO, error in
+                updateAccount(withDefaultArchiveId: archiveID) { [self] accountVO, error in
                     if accountVO != nil {
                         changeArchive(archiveVO) { success, error in
                             if success {
-                                AuthenticationManager.shared.login(withUsername: self.username, password: self.password) { status in
-                                    self.isLoading = false
-                                    if status == .success {
-                                        UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-                                        completionBlock(.success)
-                                    } else {
-                                        self.showAlert = true
-                                        completionBlock(.error(message: .errorMessage))
-                                    }
-                                }
+//                                AuthenticationManager.shared.refreshCurrentArchive { result in
+//                                    if success {
+
+
+                                                AuthenticationManager.shared.login(withUsername: self.username, password: self.password) { status in
+                                                    if status == .success {
+                                                        UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
+                                                        self.addTags { error in
+                                                            self.isLoading = false
+                                                            if error == nil {
+                                                        completionBlock(.success)
+                                                    } else {
+                                                        self.showAlert = true
+                                                        completionBlock(.error(message: .errorMessage))
+                                                    }
+                                                }
+                                                
+                                            } else {
+                                                self.isLoading = false
+                                                self.showAlert = true
+                                                completionBlock(.error(message: .errorMessage))
+                                            }
+                                        }
+                                        
+//                                    } else {
+//                                        self.isLoading = false
+//                                        self.showAlert = true
+//                                        completionBlock(.error(message: .errorMessage))
+//                                    }
+//                                }
+                                
+          
                             } else {
                                 self.isLoading = false
                                 self.showAlert = true
@@ -192,6 +214,37 @@ class OnboardingArchiveViewModel: ObservableObject {
                 completionBlock(nil, APIError.invalidResponse)
                 return
             }
+        }
+    }
+    
+    func addTags(completionBlock: @escaping ((Error?) -> Void)) {
+        let goalTags: [String] = selectedPath.compactMap({$0.tag})
+        let whyTags: [String] = selectedWhatsImportant.compactMap({$0.tag})
+        
+        let addTagsOperation = APIOperation(AccountEndpoint.addRemoveTags(archiveType: archiveType.tag, addGoalTags: goalTags, addWhyTags: whyTags, removeGoalTags: nil, removeWhyTags: nil))
+        addTagsOperation.execute(in: APIRequestDispatcher()) { result in
+            completionBlock(nil)
+//            switch result {
+//            case .json(let response, _):
+//                guard
+//                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+//                    model.isSuccessful
+//                else {
+//                    completionBlock(APIError.invalidResponse)
+//                    return
+//                }
+//                completionBlock(nil)
+//                
+//                return
+//                
+//            case .error:
+//                completionBlock(APIError.invalidResponse)
+//                return
+//                
+//            default:
+//                completionBlock(APIError.invalidResponse)
+//                return
+//            }
         }
     }
     
