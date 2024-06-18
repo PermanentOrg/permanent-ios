@@ -145,8 +145,8 @@ extension AccountEndpoint: RequestProtocol {
     }
     
     var headers: RequestHeaders? {
-        if method == .post {
-            if case .signUpV2(let _) = self {
+        if method == .post || method == .put {
+            if case .signUpV2(_) = self {
                 return [
                     "content-type": "application/json; charset=utf-8",
                     "Request-Version": "2"
@@ -410,6 +410,10 @@ extension AccountEndpoint {
     func addRemoveTags(archiveType: String, addGoalTags: [String]?, addWhyTags: [String]?, removeGoalTags: [String]?, removeWhyTags: [String]?) -> RequestParameters {
         var addFormattedTags: [String] = []
         var removeFormattedTags: [String] = []
+        var result: RequestParameters = []
+        
+        addFormattedTags.append(archiveType)
+        
         if let addGoals = addGoalTags {
             addFormattedTags.append(contentsOf: addGoals.map { "goal:\($0)" })
         }
@@ -426,19 +430,23 @@ extension AccountEndpoint {
             removeFormattedTags.append(contentsOf: removeWhys.map { "why:\($0)" })
         }
         
-        guard let addedFormattedTagsJson = try? JSONEncoder().encode(addFormattedTags),
-              let addedFormattedTagsDict = try? JSONSerialization.jsonObject(with: addedFormattedTagsJson, options: []) else {
-            return []
-        }
         
-        guard let removedFormattedTagsJson = try? JSONEncoder().encode(removeFormattedTags),
-              let removedFormattedTagsDict = try? JSONSerialization.jsonObject(with: removedFormattedTagsJson, options: []) else {
-            return []
-        }
-        
-        return [
-            "addTags": addedFormattedTagsDict,
-            "removeTags": removedFormattedTagsDict
+              
+//        guard let addedFormattedTagsJson = try? JSONEncoder().encode(addFormattedTags),
+//              let addedFormattedTagsDict = try? JSONSerialization.jsonObject(with: addedFormattedTagsJson, options: []) else {
+//            return []
+//        }
+//        
+//        guard let removedFormattedTagsJson = try? JSONEncoder().encode(removeFormattedTags),
+//              let removedFormattedTagsDict = try? JSONSerialization.jsonObject(with: removedFormattedTagsJson, options: []) else {
+//            return []
+//        }
+    
+        result = [
+            "addTags": addFormattedTags,
+            "removeTags": removeFormattedTags
         ]
+        
+        return result
     }
 }

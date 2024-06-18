@@ -60,38 +60,25 @@ class OnboardingArchiveViewModel: ObservableObject {
                     if accountVO != nil {
                         changeArchive(archiveVO) { success, error in
                             if success {
-//                                AuthenticationManager.shared.refreshCurrentArchive { result in
-//                                    if success {
-
-
-                                                AuthenticationManager.shared.login(withUsername: self.username, password: self.password) { status in
-                                                    if status == .success {
-                                                        UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-                                                        self.addTags { error in
-                                                            self.isLoading = false
-                                                            if error == nil {
-                                                        completionBlock(.success)
-                                                    } else {
-                                                        self.showAlert = true
-                                                        completionBlock(.error(message: .errorMessage))
-                                                    }
-                                                }
-                                                
+                                AuthenticationManager.shared.login(withUsername: self.username, password: self.password) { status in
+                                    if status == .success {
+                                        UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
+                                        self.addTags { error in
+                                            self.isLoading = false
+                                            if error == nil {
+                                                completionBlock(.success)
                                             } else {
-                                                self.isLoading = false
                                                 self.showAlert = true
                                                 completionBlock(.error(message: .errorMessage))
                                             }
                                         }
                                         
-//                                    } else {
-//                                        self.isLoading = false
-//                                        self.showAlert = true
-//                                        completionBlock(.error(message: .errorMessage))
-//                                    }
-//                                }
-                                
-          
+                                    } else {
+                                        self.isLoading = false
+                                        self.showAlert = true
+                                        completionBlock(.error(message: .errorMessage))
+                                    }
+                                }
                             } else {
                                 self.isLoading = false
                                 self.showAlert = true
@@ -224,27 +211,6 @@ class OnboardingArchiveViewModel: ObservableObject {
         let addTagsOperation = APIOperation(AccountEndpoint.addRemoveTags(archiveType: archiveType.tag, addGoalTags: goalTags, addWhyTags: whyTags, removeGoalTags: nil, removeWhyTags: nil))
         addTagsOperation.execute(in: APIRequestDispatcher()) { result in
             completionBlock(nil)
-//            switch result {
-//            case .json(let response, _):
-//                guard
-//                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
-//                    model.isSuccessful
-//                else {
-//                    completionBlock(APIError.invalidResponse)
-//                    return
-//                }
-//                completionBlock(nil)
-//                
-//                return
-//                
-//            case .error:
-//                completionBlock(APIError.invalidResponse)
-//                return
-//                
-//            default:
-//                completionBlock(APIError.invalidResponse)
-//                return
-//            }
         }
     }
     
