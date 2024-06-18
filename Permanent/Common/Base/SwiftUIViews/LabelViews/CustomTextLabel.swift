@@ -17,7 +17,7 @@ struct CustomTextLabel: UIViewRepresentable {
     func makeUIView(context: Context) -> UILabel {
         let label = UILabel()
         label.numberOfLines = 0  
-        label.lineBreakMode = .byWordWrapping
+        label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.attributedText = createAttributedText()
         return label
