@@ -13,7 +13,7 @@ struct OnboardingView: View {
     @Environment(\.presentationMode) var presentationMode
     
     enum ContentType {
-        case none, welcome, createArchive, setArchiveName, chartYourPath, whatsImportant
+        case none, welcome, createArchive, setArchiveName, chartYourPath, whatsImportant, congratulations
     }
     
     @State var bottomButtonsPadding: CGFloat =  40
@@ -117,8 +117,10 @@ struct OnboardingView: View {
                         } nextButton: {
                             onboardingValues.finishOnboard(_:) { response in
                                 if response == .success {
-                                    AppDelegate.shared.rootViewController.setDrawerRoot()
-                                    dismissView()
+                                    isBack = false
+                                    withAnimation {
+                                        contentType = .congratulations
+                                    }
                                 }
                             }
                         } skipButton: {
@@ -128,6 +130,15 @@ struct OnboardingView: View {
                             insertion:.move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
+                        
+                    case .congratulations:
+                        OnboardingCongratulationsView(onboardingValues: onboardingValues) {
+                            
+                        } nextButton: {
+                            AppDelegate.shared.rootViewController.setDrawerRoot()
+                            dismissView()
+                        }
+
                     default:
                         Spacer()
                     }
@@ -169,15 +180,19 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 
             case .chartYourPath:
-                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 
             case .whatsImportant:
-                DividerSmallBarView(type: .empty)
-                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
-                
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
+            
+            case .congratulations:
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .gradient)
             }
         }
         .padding(.top, 24)
