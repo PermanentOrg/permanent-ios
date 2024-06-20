@@ -179,4 +179,23 @@ enum ArchiveType: String, CaseIterable, Identifiable {
             return Image(.onbrdCommunity)
         }
     }
+    
+    var tag: String {
+        switch self {
+        case .person:
+            return "type:myself"
+        case .individual:
+            return "type:individual"
+        case .family:
+            return "type:family"
+        case .familyHistory:
+            return "type:famhist"
+        case .community:
+            return "type:community"
+        case .organization:
+            return "type:org"
+        case .nonProfit:
+            return "type:other"
+        }
+    }
 }

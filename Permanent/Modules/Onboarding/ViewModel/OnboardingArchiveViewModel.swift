@@ -14,10 +14,12 @@ class OnboardingArchiveViewModel: ObservableObject {
     @Published var archiveName: String = ""
     @Published var selectedPath: [OnboardingPath] = []
     @Published var selectedWhatsImportant: [OnboardingWhatsImportant] = []
+    @Published var pendingArchives: [OnboardingPendingArchives] = []
     @Published var fullName: String
     @Published var isLoading: Bool = false
     @Published var showAlert: Bool = false
     var account: AccountVOData?
+
     
     let welcomeMessage: String = "We’re so glad you’re here!\n\nAt Permanent, it is our mission to provide a safe and secure place to store, preserve, and share the digital legacy of all people, whether that's for you or for your friends, family, interests or organizations.\n\nWe know that starting this journey can sometimes be overwhelming, but don’t worry. We’re here to help you every step of the way."
     
@@ -54,18 +56,35 @@ class OnboardingArchiveViewModel: ObservableObject {
     
     func finishOnboard(_ completionBlock: @escaping ServerResponse) {
         isLoading = true
-        createArchive(name: archiveName, type: archiveType.rawValue) { archiveVO, error in
+        createArchive(name: archiveName, type: archiveType.rawValue) { [self] archiveVO, error in
             if let archiveVO = archiveVO, let archiveID = archiveVO.archiveID {
-                self.updateAccount(withDefaultArchiveId: archiveID) { [self] accountVO, error in
+                updateAccount(withDefaultArchiveId: archiveID) { [self] accountVO, error in
                     if accountVO != nil {
                         changeArchive(archiveVO) { success, error in
                             if success {
                                 AuthenticationManager.shared.login(withUsername: self.username, password: self.password) { status in
-                                    self.isLoading = false
                                     if status == .success {
                                         UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-                                        completionBlock(.success)
+                                        self.addTags { error in
+                                            if error == nil {
+                                                self.getAccountArchives { error in
+                                                    self.isLoading = false
+                                                    if error == nil {
+                                                        completionBlock(.success)
+                                                    } else {
+                                                        self.showAlert = true
+                                                        completionBlock(.error(message: .errorMessage))
+                                                    }
+                                                }
+                                            } else {
+                                                self.isLoading = false
+                                                self.showAlert = true
+                                                completionBlock(.error(message: .errorMessage))
+                                            }
+                                        }
+                                        
                                     } else {
+                                        self.isLoading = false
                                         self.showAlert = true
                                         completionBlock(.error(message: .errorMessage))
                                     }
@@ -195,7 +214,59 @@ class OnboardingArchiveViewModel: ObservableObject {
         }
     }
     
+    func addTags(completionBlock: @escaping ((Error?) -> Void)) {
+        let goalTags: [String] = selectedPath.compactMap({$0.tag})
+        let whyTags: [String] = selectedWhatsImportant.compactMap({$0.tag})
+        
+        let addTagsOperation = APIOperation(AccountEndpoint.addRemoveTags(archiveType: archiveType.tag, addGoalTags: goalTags, addWhyTags: whyTags, removeGoalTags: nil, removeWhyTags: nil))
+        addTagsOperation.execute(in: APIRequestDispatcher()) { result in
+            completionBlock(nil)
+        }
+    }
+    
     func setCurrentArchive(_ archive: ArchiveVOData) {
         AuthenticationManager.shared.session?.selectedArchive = archive
     }
+    
+    func getAccountArchives(_ completionBlock: @escaping ((Error?) -> Void) ) {
+        guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+            completionBlock(APIError.unknown)
+            return
+        }
+        
+        let getAccountArchivesDataOperation = APIOperation(ArchivesEndpoint.getArchivesByAccountId(accountId: Int(accountId)))
+        getAccountArchivesDataOperation.execute(in: APIRequestDispatcher()) { [self] result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    let archives = model.results.first?.data,
+                    model.isSuccessful
+                else {
+                    completionBlock(APIError.invalidResponse)
+                    return
+                }
+                
+                for archive in archives {
+                    if let fullName = archive.archiveVO?.fullName {
+                        if archive.archiveVO?.status == ArchiveVOData.Status.pending {
+                            pendingArchives.append(OnboardingPendingArchives(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName))
+                        }
+                    }
+                }
+                
+                completionBlock(nil)
+                return
+                
+            case .error:
+                completionBlock(APIError.invalidResponse)
+                return
+                
+            default:
+                completionBlock(APIError.invalidResponse)
+                return
+            }
+        }
+    }
+
 }

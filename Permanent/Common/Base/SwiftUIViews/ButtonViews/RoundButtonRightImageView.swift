@@ -24,7 +24,8 @@ struct RoundButtonRightImageView: View {
             case .fillColor:
                 ZStack {
                     Color(.white)
-                    HStack() {
+                    HStack(spacing: 16) {
+                        Spacer()
                         if Constants.Design.isPhone {
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
@@ -38,7 +39,6 @@ struct RoundButtonRightImageView: View {
                                 .opacity(isDisabled ? 0.5 : 1)
                                 .lineLimit(1)
                         }
-                        Spacer()
                         if isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .blue700))
@@ -48,6 +48,7 @@ struct RoundButtonRightImageView: View {
                                 .frame(width: 24, height: 24, alignment: .center)
                                 .accentColor(.blue700)
                         }
+                        Spacer()
                     }
                     .padding(.horizontal, 24)
                 }

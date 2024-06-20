@@ -7,7 +7,6 @@
 import SwiftUI
 
 struct OnboardingChartYourPathView: View {
-    @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
     @ObservedObject var onboardingValues: OnboardingArchiveViewModel
     
@@ -73,9 +72,6 @@ struct OnboardingChartYourPathView: View {
                 SmallRoundButtonImageView(text: "Next", action: nextButton)
             }
             .padding(.bottom, 40)
-            .sheet(isPresented: $presentSelectArchivesType, content: {
-                OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
-            })
         }
     }
     
