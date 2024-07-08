@@ -121,6 +121,8 @@
 		5E3A060429E73B2100A6C531 /* WorkspaceSegmentedControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A060229E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift */; };
 		5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F559F88628FE96A30015A522 /* SaveDestinationBrowserViewModel.swift */; };
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
+		5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */; };
+		5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */; };
 		5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */; };
 		5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
 		5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */; };
@@ -306,6 +308,7 @@
 		5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */; };
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
 		5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB053D22BD120C400AFE66D /* TextField+Extension.swift */; };
+		5EB2D2362C245EEA0029D0DE /* OnboardingPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB2D2352C245EEA0029D0DE /* OnboardingPendingArchives.swift */; };
 		5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */; };
@@ -1040,6 +1043,8 @@
 		5E3A05FF29E44D7900A6C531 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
 		5E3A060229E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSegmentedControlView.swift; sourceTree = "<group>"; };
 		5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldNameUI.swift; sourceTree = "<group>"; };
+		5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsView.swift; sourceTree = "<group>"; };
+		5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveDetailsView.swift; sourceTree = "<group>"; };
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
 		5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
 		5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
@@ -1180,6 +1185,7 @@
 		5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagsNamesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
 		5EB053D22BD120C400AFE66D /* TextField+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+Extension.swift"; sourceTree = "<group>"; };
+		5EB2D2352C245EEA0029D0DE /* OnboardingPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPendingArchives.swift; sourceTree = "<group>"; };
 		5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBorderTextField.swift; sourceTree = "<group>"; };
@@ -1872,10 +1878,12 @@
 				5EE068982B9F94A3004055A4 /* OnboardingCreateFirstArchiveView.swift */,
 				5ED9A7B52BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift */,
 				5EE3E9DF2BCD447100A5EFE5 /* OnboardingArchiveName.swift */,
-				5ED9A7B72BBF3BD6009BDD70 /* ArchiveTypeView.swift */,
 				5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */,
 				5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */,
 				5EB503B42C04C9B600534F09 /* OnboardingWhatsImportantView.swift */,
+				5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */,
+				5ED9A7B72BBF3BD6009BDD70 /* ArchiveTypeView.swift */,
+				5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3456,6 +3464,7 @@
 				F5C8D246273204CA00707301 /* SearchVO.swift */,
 				5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */,
 				5EB721122B35C9DC0036B28F /* RedeemVO.swift */,
+				5EB2D2352C245EEA0029D0DE /* OnboardingPendingArchives.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -4465,6 +4474,7 @@
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
+				5EB2D2362C245EEA0029D0DE /* OnboardingPendingArchives.swift in Sources */,
 				5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
 				927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */,
@@ -4545,6 +4555,7 @@
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */,
+				5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */,
 				5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */,
 				5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */,
 				5E048FCB2923057F0023C929 /* ShareManagementToggleCollectionViewCell.swift in Sources */,
@@ -4647,6 +4658,7 @@
 				5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */,
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
+				5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */,
 				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5EA70D8F2B2C793A00175D9C /* GradientCustomBarView.swift in Sources */,
