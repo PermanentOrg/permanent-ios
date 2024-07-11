@@ -429,18 +429,6 @@ extension AccountEndpoint {
         if let removeWhys = removeWhyTags {
             removeFormattedTags.append(contentsOf: removeWhys.map { "why:\($0)" })
         }
-        
-        
-              
-//        guard let addedFormattedTagsJson = try? JSONEncoder().encode(addFormattedTags),
-//              let addedFormattedTagsDict = try? JSONSerialization.jsonObject(with: addedFormattedTagsJson, options: []) else {
-//            return []
-//        }
-//        
-//        guard let removedFormattedTagsJson = try? JSONEncoder().encode(removeFormattedTags),
-//              let removedFormattedTagsDict = try? JSONSerialization.jsonObject(with: removedFormattedTagsJson, options: []) else {
-//            return []
-//        }
     
         result = [
             "addTags": addFormattedTags,

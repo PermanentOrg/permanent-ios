@@ -82,10 +82,23 @@ struct OnboardingWelcomeView: View {
                 HStack {
                     Spacer()
                     RoundButtonRightImageView(text: "Get started", action: buttonAction)
-                        .frame(width: 170)
+                        .frame(width: 243)
                         .padding(.bottom, 40)
                 }
             }
         }
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    onboardingViewModel.fullName = "long archive name name name"
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingWelcomeView(onboardingStorageValues: onboardingViewModel) {
+            
+        }
+    }
+    .ignoresSafeArea()
 }

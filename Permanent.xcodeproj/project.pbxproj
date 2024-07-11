@@ -451,6 +451,7 @@
 		5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */; };
 		5EE3E9E02BCD447100A5EFE5 /* OnboardingArchiveName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE3E9DF2BCD447100A5EFE5 /* OnboardingArchiveName.swift */; };
 		5EE46D07260368B900FD756D /* LocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE46D06260368B900FD756D /* LocationSetViewController.swift */; };
+		5EE77BD92C3EADD4006D854C /* AccessRoleChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE77BD82C3EADD4006D854C /* AccessRoleChipView.swift */; };
 		5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */; };
 		5EE9D8C227A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */; };
 		5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */; };
@@ -1289,6 +1290,7 @@
 		5EE3E11025A72ED0009BACA8 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
 		5EE3E9DF2BCD447100A5EFE5 /* OnboardingArchiveName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingArchiveName.swift; sourceTree = "<group>"; };
 		5EE46D06260368B900FD756D /* LocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSetViewController.swift; sourceTree = "<group>"; };
+		5EE77BD82C3EADD4006D854C /* AccessRoleChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessRoleChipView.swift; sourceTree = "<group>"; };
 		5EE9D8BF27A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageInformationCollectionViewCell.swift; sourceTree = "<group>"; };
 		5EE9D8C027A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageInformationCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EE9D8C327A188C100CE5F9C /* ProfilePageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageData.swift; sourceTree = "<group>"; };
@@ -2947,6 +2949,7 @@
 				5E181B862AF2EAF5002DE69A /* CustomStepperView.swift */,
 				5EA70D8A2B2C78E200175D9C /* NewBadgeView.swift */,
 				5EA70D8E2B2C793A00175D9C /* GradientCustomBarView.swift */,
+				5EE77BD82C3EADD4006D854C /* AccessRoleChipView.swift */,
 			);
 			path = SwiftUIViews;
 			sourceTree = "<group>";
@@ -4756,6 +4759,7 @@
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
+				5EE77BD92C3EADD4006D854C /* AccessRoleChipView.swift in Sources */,
 				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,
 				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
 				927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */,

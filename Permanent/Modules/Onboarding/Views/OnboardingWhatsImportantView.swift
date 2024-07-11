@@ -141,15 +141,33 @@ struct OnboardingWhatsImportantView: View {
                         UIScrollView.appearance().bounces = true
                     }
                     .padding(.top, 15)
-                    Spacer(minLength: 100)
+                    Spacer(minLength: 130)
                 }
                 HStack(spacing: 32) {
-                    Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
-                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
-                    RoundButtonRightImageView(text: "Next", action: nextButton)
+                    Spacer(minLength: geometry.size.width / 2)
+                    HStack(spacing: 32) {
+                        SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
+                        RoundButtonRightImageView(text: "Next", action: nextButton)
+                    }
                 }
                 .padding(.bottom, 40)
             }
         }
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingWhatsImportantView(onboardingValues: onboardingViewModel) {
+            
+        } nextButton: {
+            
+        } skipButton: {
+            
+        }
+    }
+    .ignoresSafeArea()
 }

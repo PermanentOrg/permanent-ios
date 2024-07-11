@@ -98,8 +98,8 @@ struct OnboardingCreateFirstArchiveView: View {
                 }
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                        .frame(width: 120)
-                    RoundButtonRightImageView(text: "Let’s create \(onboardingValues.getIndefiniteArticle()) \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
+                        //.frame(width: 120)
+                    RoundButtonRightImageView(text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }
@@ -109,4 +109,18 @@ struct OnboardingCreateFirstArchiveView: View {
             OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
         })
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingCreateFirstArchiveView(onboardingValues: onboardingViewModel) {
+            
+        } nextButton: {
+            
+        }
+    }
+    .ignoresSafeArea()
 }
