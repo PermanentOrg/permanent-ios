@@ -23,19 +23,11 @@ struct OnboardingWelcomeView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                CustomTextView(
+                OnboardingTitleTextView(
                     preText: "Hello, ",
                     boldText: "\(onboardingStorageValues.fullName)",
-                    postText: ".\nWelcome to\nPermanent!",
-                    preAndPostTextFont: TextFontStyle.style46.font,
-                    boldTextFont: TextFontStyle.style47.font
+                    postText: ".\nWelcome to\nPermanent!"
                 )
-                .background(GeometryReader { geometry in
-                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                })
-                .onPreferenceChange(HeightPreferenceKey.self) { value in
-                    self.dynamicHeight = value
-                }
                 Text("\(onboardingStorageValues.welcomeMessage)")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
@@ -53,19 +45,11 @@ struct OnboardingWelcomeView: View {
         HStack(alignment: .top, spacing: 64) {
             VStack() {
                 HStack() {
-                    CustomTextView(
+                    OnboardingTitleTextView(
                         preText: "Hello, ",
                         boldText: "\(onboardingStorageValues.fullName)",
-                        postText: ".\nWelcome to\nPermanent!",
-                        preAndPostTextFont: TextFontStyle.style48.font,
-                        boldTextFont: TextFontStyle.style49.font
+                        postText: ".\nWelcome to\nPermanent!"
                     )
-                    .background(GeometryReader { geometry in
-                        Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                    })
-                    .onPreferenceChange(HeightPreferenceKey.self) { value in
-                        self.dynamicHeight = value
-                    }
                     Spacer()
                 }
             }

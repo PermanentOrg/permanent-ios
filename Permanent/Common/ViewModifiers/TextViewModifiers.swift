@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-fileprivate enum FontName: String {
+enum FontName: String {
     case openSansRegular = "OpenSans-Regular"
     case openSansSemiBold = "OpenSans-SemiBold"
     case openSansBold = "OpenSans-Bold"

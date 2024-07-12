@@ -30,19 +30,11 @@ struct OnboardingArchiveName: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            CustomTextView(
+                            OnboardingTitleTextView(
                                 preText: "Create your \n",
                                 boldText: "\(onboardingValues.archiveType.onboardingType)",
-                                postText: "\(onboardingValues.archiveType == .familyHistory ? "\n" : " ")archive",
-                                preAndPostTextFont: TextFontStyle.style46.font,
-                                boldTextFont: TextFontStyle.style47.font
+                                postText: "\(onboardingValues.archiveType == .familyHistory ? "\n" : " ")archive"
                             )
-                            .background(GeometryReader { geometry in
-                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                            })
-                            .onPreferenceChange(HeightPreferenceKey.self) { value in
-                                self.dynamicHeight = value
-                            }
                             .onTapGesture {
                                 dismissKeyboard()
                             }
@@ -94,19 +86,11 @@ struct OnboardingArchiveName: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     HStack() {
-                        CustomTextView(
+                        OnboardingTitleTextView(
                             preText: "Create your \n",
                             boldText: "\(onboardingValues.archiveType.onboardingType)",
-                            postText: "\nArchive",
-                            preAndPostTextFont: TextFontStyle.style48.font,
-                            boldTextFont: TextFontStyle.style49.font
+                            postText: "\nArchive"
                         )
-                        .background(GeometryReader { geometry in
-                            Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                        })
-                        .onPreferenceChange(HeightPreferenceKey.self) { value in
-                            self.dynamicHeight = value
-                        }
                         Spacer()
                     }
                     Spacer()

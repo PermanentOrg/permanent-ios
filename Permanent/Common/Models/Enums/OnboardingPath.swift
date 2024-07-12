@@ -28,7 +28,7 @@ enum OnboardingPath: String, CaseIterable, Identifiable {
         case .organize:
             return "Organize my materials"
         case .somethingElse:
-            return "Something else..."
+            return "Something else"
         }
     }
     
