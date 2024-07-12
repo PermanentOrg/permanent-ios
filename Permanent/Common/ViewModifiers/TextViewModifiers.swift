@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-fileprivate enum FontName: String {
+enum FontName: String {
     case openSansRegular = "OpenSans-Regular"
     case openSansSemiBold = "OpenSans-SemiBold"
     case openSansBold = "OpenSans-Bold"
@@ -105,6 +105,14 @@ struct SmallXXXXXSemiBoldTextStyle: ViewModifier {
 struct SmallXXXXXRegularTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansRegular.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualSmallXXXXXRegularTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
                              size: FontSize.xxxxxSmall.rawValue,
                              relativeTo: .largeTitle))
     }

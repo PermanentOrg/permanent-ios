@@ -25,19 +25,11 @@ struct OnboardingCreateFirstArchiveView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                CustomTextView(
+                OnboardingTitleTextView(
                     preText: "Create your first\n",
                     boldText: "Archive",
-                    postText: " ",
-                    preAndPostTextFont: TextFontStyle.style46.font,
-                    boldTextFont: TextFontStyle.style47.font
+                    postText: " "
                 )
-                .background(GeometryReader { geometry in
-                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                })
-                .onPreferenceChange(HeightPreferenceKey.self) { value in
-                    self.dynamicHeight = value
-                }
                 Text("What do you plan to capture and preserve with your first archive?")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
@@ -64,19 +56,11 @@ struct OnboardingCreateFirstArchiveView: View {
         HStack(alignment: .top, spacing: 64) {
             VStack {
                 HStack() {
-                    CustomTextView(
+                    OnboardingTitleTextView(
                         preText: "Create your\nfirst ",
                         boldText: "Archive",
-                        postText: "",
-                        preAndPostTextFont: TextFontStyle.style48.font,
-                        boldTextFont: TextFontStyle.style49.font
+                        postText: ""
                     )
-                    .background(GeometryReader { geometry in
-                        Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                    })
-                    .onPreferenceChange(HeightPreferenceKey.self) { value in
-                        self.dynamicHeight = value
-                    }
                     Spacer()
                 }
                 Spacer()
@@ -98,8 +82,8 @@ struct OnboardingCreateFirstArchiveView: View {
                 }
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                        .frame(width: 120)
-                    RoundButtonRightImageView(text: "Let’s create \(onboardingValues.getIndefiniteArticle()) \(onboardingValues.archiveType.onboardingType) archive", action: nextButton)
+                        //.frame(width: 120)
+                    RoundButtonRightImageView(text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }
@@ -109,4 +93,18 @@ struct OnboardingCreateFirstArchiveView: View {
             OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
         })
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingCreateFirstArchiveView(onboardingValues: onboardingViewModel) {
+            
+        } nextButton: {
+            
+        }
+    }
+    .ignoresSafeArea()
 }

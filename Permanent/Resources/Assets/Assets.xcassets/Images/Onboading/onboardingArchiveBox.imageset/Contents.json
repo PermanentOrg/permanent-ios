@@ -2,7 +2,11 @@
   "images" : [
     {
       "filename" : "onboardingArchiveBox.svg",
-      "idiom" : "universal"
+      "idiom" : "iphone"
+    },
+    {
+      "filename" : "onbordingTabletArchive.svg",
+      "idiom" : "ipad"
     }
   ],
   "info" : {

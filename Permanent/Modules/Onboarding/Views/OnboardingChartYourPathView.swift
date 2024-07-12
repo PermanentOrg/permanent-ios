@@ -30,19 +30,11 @@ struct OnboardingChartYourPathView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            CustomTextView(
+                            OnboardingTitleTextView(
                                 preText: "Chart your \n",
                                 boldText: "path",
-                                postText: " to success",
-                                preAndPostTextFont: TextFontStyle.style46.font,
-                                boldTextFont: TextFontStyle.style47.font
+                                postText: " to success"
                             )
-                            .background(GeometryReader { geometry in
-                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                            })
-                            .onPreferenceChange(HeightPreferenceKey.self) { value in
-                                self.dynamicHeight = value
-                            }
                             Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
@@ -78,62 +70,73 @@ struct OnboardingChartYourPathView: View {
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
+        GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
     var iPadBody: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
-                VStack {
+                VStack(spacing: 64) {
                     HStack(alignment: .top, spacing: 8) {
                         VStack {
                             HStack() {
-                                CustomTextView(
+                                OnboardingTitleTextView(
                                     preText: "Chart your \n",
                                     boldText: "path",
-                                    postText: " to success",
-                                    preAndPostTextFont: TextFontStyle.style48.font,
-                                    boldTextFont: TextFontStyle.style49.font
+                                    postText: " to success"
                                 )
-                                .background(GeometryReader { geometry in
-                                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                                })
-                                .onPreferenceChange(HeightPreferenceKey.self) { value in
-                                    self.dynamicHeight = value
-                                }
                                 Spacer()
                             }
                         }
-                        .frame(width: geometry.size.width * 2 / 3 + 2)
+                        .frame(width: geometry.size.width / 2)
                         
-                        Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
+                        Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours. \n\nMy goal is to...")
                             .textStyle(UsualRegularTextStyle())
                             .foregroundColor(.blue25)
                             .lineSpacing(8.0)
-                            .padding(.top, 10)
+                            .padding(.top, 20)
                     }
                     ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 16) {
+                        LazyVGrid(columns: columns, spacing: 24) {
                             ForEach(OnboardingPath.allCases, id: \.self) { path in
                                 Button {
                                     onboardingValues.togglePath(path: path)
                                 } label: {
                                     OnboardingItemView(description: path.description, isSelected: onboardingValues.selectedPath.contains(path))
                                 }
-                                .padding(.trailing, path == .collaborate || path == .createPlan ? 0 : 8)
+                                .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                             }
                         }
                     }
                     .padding(.top, 15)
                     Spacer(minLength: 100)
                 }
-                HStack(spacing: 32) {
-                    Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
-                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
-                    RoundButtonRightImageView(text: "Next", action: nextButton)
+                HStack(spacing: 0) {
+                    Spacer(minLength: geometry.size.width / 2)
+                    HStack(spacing: 32) {
+                        SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
+                        RoundButtonRightImageView(text: "Next", action: nextButton)
+                    }
                 }
                 .padding(.bottom, 40)
             }
         }
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingChartYourPathView(onboardingValues: onboardingViewModel) {
+            
+        } nextButton: {
+            
+        } skipButton: {
+            
+        }
+    }
+    .ignoresSafeArea()
 }

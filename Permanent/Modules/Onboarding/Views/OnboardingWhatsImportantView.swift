@@ -31,19 +31,11 @@ struct OnboardingWhatsImportantView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
-                            CustomTextView(
+                            OnboardingTitleTextView(
                                 preText: "Tell us what’s\n",
                                 boldText: "important",
-                                postText: " to you",
-                                preAndPostTextFont: TextFontStyle.style46.font,
-                                boldTextFont: TextFontStyle.style47.font
+                                postText: " to you"
                             )
-                            .background(GeometryReader { geometry in
-                                Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                            })
-                            .onPreferenceChange(HeightPreferenceKey.self) { value in
-                                self.dynamicHeight = value
-                            }
                             Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
@@ -88,49 +80,51 @@ struct OnboardingWhatsImportantView: View {
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
+        GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
     var iPadBody: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
-                VStack {
-                    HStack(alignment: .top, spacing: 0) {
+                VStack(spacing: 64) {
+                    HStack(alignment: .top, spacing: 8) {
                         VStack {
                             HStack() {
-                                CustomTextView(
+                                OnboardingTitleTextView(
                                     preText: "Tell us what’s\n",
                                     boldText: "important",
-                                    postText: " to you",
-                                    preAndPostTextFont: TextFontStyle.style48.font,
-                                    boldTextFont: TextFontStyle.style49.font
+                                    postText: " to you"
                                 )
-                                .background(GeometryReader { geometry in
-                                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                                })
-                                .onPreferenceChange(HeightPreferenceKey.self) { value in
-                                    self.dynamicHeight = value
-                                }
                                 Spacer()
                             }
                         }
-                        .frame(width: geometry.size.width * 2 / 3 + 2)
-                        
-                        Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
-                            .textStyle(UsualRegularTextStyle())
-                            .foregroundColor(.blue25)
-                            .lineSpacing(8.0)
-                            .padding(.top, 10)
+                        .frame(width: geometry.size.width / 2)
+                        HStack {
+                            Text("Finally, we’re curious...\n")
+                            + Text("What brought you to Permanent.org")
+                                .bold()
+                            + Text("?")
+                        }
+                        .font(
+                            .custom(
+                                "Usual-Regular",
+                                fixedSize: 16)
+                        )
+                        .foregroundColor(.blue25)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineSpacing(8.0)
+                        .padding(.top, 20)
                     }
                     ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 16) {
+                        LazyVGrid(columns: columns, spacing: 24) {
                             ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
                                 Button {
                                     onboardingValues.toggleWhatsImportant(whatsImportant: item)
                                 } label: {
                                     OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
                                 }
-                                .padding(.trailing, item == .preserving || item == .interest ? 0 : 8)
+                                .padding(.trailing, item == .professional ? 0 : 15)
                             }
                         }
                     }
@@ -144,12 +138,30 @@ struct OnboardingWhatsImportantView: View {
                     Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {
-                    Spacer(minLength: (geometry.size.width * 2 / 3) - 25)
-                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), hasSpacer: true, action: backButton)
-                    RoundButtonRightImageView(text: "Next", action: nextButton)
+                    Spacer(minLength: geometry.size.width / 2)
+                    HStack(spacing: 32) {
+                        SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
+                        RoundButtonRightImageView(text: "Next", action: nextButton)
+                    }
                 }
                 .padding(.bottom, 40)
             }
         }
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingWhatsImportantView(onboardingValues: onboardingViewModel) {
+            
+        } nextButton: {
+            
+        } skipButton: {
+            
+        }
+    }
+    .ignoresSafeArea()
 }

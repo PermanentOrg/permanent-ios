@@ -39,22 +39,24 @@ struct OnboardingItemView: View {
                 )
             } else {
                 VStack(alignment: .leading) {
-                    HStack(alignment: .top, spacing: 0) {
+                    HStack(alignment: .center, spacing: 0) {
                         Image(.checkBoxCheckedFill)
                             .renderingMode(.template)
                             .frame(width: 30, height: 30)
                             .accentColor(.white)
+                            .foregroundColor(.white)
                             .padding(.top, -5)
                         Text("\(description)")
-                            .textStyle(UsualMediumRegularTextStyle())
+                            .textStyle(UsualSmallXRegularTextStyle())
                             .accentColor(.white)
-                            .lineLimit(3)
+                            .foregroundColor(.white)
+                            .lineLimit(2)
                             .multilineTextAlignment(.leading)
                             .padding(.leading, 10)
                         Spacer()
                     }
                     .padding(.vertical, 16)
-                    .padding(.horizontal, Constants.Design.isPhone ? 24 : 32)
+                    .padding(.horizontal, Constants.Design.isPhone ? 24 : 16)
                 }
                 .frame(height: Constants.Design.isPhone ? 96 : 120)
                 .background(Gradient.lightDarkPurpleGradient)
@@ -95,26 +97,28 @@ struct OnboardingItemView: View {
                 )
             } else {
                 VStack(alignment: .leading) {
-                    HStack(alignment: .top, spacing: 0) {
+                    HStack(alignment: .center, spacing: 0) {
                         Image(.checkBoxEmpty)
                             .renderingMode(.template)
                             .frame(width: 30, height: 30)
                             .accentColor(.white)
+                            .foregroundColor(.white)
                             .padding(.top, -5)
                         Text("\(description)")
-                            .textStyle(UsualMediumRegularTextStyle())
+                            .textStyle(UsualSmallXRegularTextStyle())
                             .accentColor(.white)
+                            .foregroundColor(.white)
                             .lineLimit(3)
                             .multilineTextAlignment(.leading)
                             .padding(.leading, 10)
                         Spacer()
                     }
                     .padding(.vertical, 16)
-                    .padding(.horizontal, Constants.Design.isPhone ? 24 : 32)
+                    .padding(.horizontal, Constants.Design.isPhone ? 24 : 16)
                 }
                 .frame(height: Constants.Design.isPhone ? 96 : 120)
                 .frame(maxWidth: .infinity)
-                .background(Color(red: 0.07, green: 0.11, blue: 0.29))
+                .background(Color(.blue900))
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
@@ -124,4 +128,15 @@ struct OnboardingItemView: View {
             }
         }
     }
+}
+
+#Preview {
+    return ZStack {
+        Color(.black)
+        HStack(spacing: 32) {
+            OnboardingItemView(description: "Create a plan for passing on my digital materials", isSelected: true)
+            OnboardingItemView(description: "Create a public archive to share a legacy", isSelected: false)
+        }
+    }
+    .ignoresSafeArea()
 }

@@ -180,18 +180,18 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 
             case .chartYourPath:
-                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 
             case .whatsImportant:
-                DividerSmallBarView(type: .gradient)
-                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
             
             case .congratulations:
-                DividerSmallBarView(type: .gradient)
-                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .gradient)
             }
         }
@@ -207,4 +207,21 @@ struct OnboardingView: View {
     func dismissView() {
         presentationMode.wrappedValue.dismiss()
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    onboardingViewModel.fullName = "long username name name"
+    onboardingViewModel.pendingArchives = [
+        OnboardingPendingArchives(fullname: "Documents", accessType: "viewer"),
+        OnboardingPendingArchives(fullname: "Files", accessType: "admin"),
+        OnboardingPendingArchives(fullname: "Photos", accessType: "editor")
+        ]
+    onboardingViewModel.archiveName = "new archive"
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingView(onboardingValues: onboardingViewModel)
+    }
+    .ignoresSafeArea()
 }

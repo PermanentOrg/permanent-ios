@@ -23,19 +23,11 @@ struct OnboardingWelcomeView: View {
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 24) {
-                CustomTextView(
+                OnboardingTitleTextView(
                     preText: "Hello, ",
                     boldText: "\(onboardingStorageValues.fullName)",
-                    postText: ".\nWelcome to\nPermanent!",
-                    preAndPostTextFont: TextFontStyle.style46.font,
-                    boldTextFont: TextFontStyle.style47.font
+                    postText: ".\nWelcome to\nPermanent!"
                 )
-                .background(GeometryReader { geometry in
-                    Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                })
-                .onPreferenceChange(HeightPreferenceKey.self) { value in
-                    self.dynamicHeight = value
-                }
                 Text("\(onboardingStorageValues.welcomeMessage)")
                     .textStyle(UsualSmallXRegularTextStyle())
                     .foregroundColor(.blue25)
@@ -53,19 +45,11 @@ struct OnboardingWelcomeView: View {
         HStack(alignment: .top, spacing: 64) {
             VStack() {
                 HStack() {
-                    CustomTextView(
+                    OnboardingTitleTextView(
                         preText: "Hello, ",
                         boldText: "\(onboardingStorageValues.fullName)",
-                        postText: ".\nWelcome to\nPermanent!",
-                        preAndPostTextFont: TextFontStyle.style48.font,
-                        boldTextFont: TextFontStyle.style49.font
+                        postText: ".\nWelcome to\nPermanent!"
                     )
-                    .background(GeometryReader { geometry in
-                        Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-                    })
-                    .onPreferenceChange(HeightPreferenceKey.self) { value in
-                        self.dynamicHeight = value
-                    }
                     Spacer()
                 }
             }
@@ -82,10 +66,23 @@ struct OnboardingWelcomeView: View {
                 HStack {
                     Spacer()
                     RoundButtonRightImageView(text: "Get started", action: buttonAction)
-                        .frame(width: 170)
+                        .frame(width: 243)
                         .padding(.bottom, 40)
                 }
             }
         }
     }
+}
+
+#Preview {
+    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    onboardingViewModel.fullName = "long archive name name name"
+    
+    return ZStack {
+        Color(.primary)
+        OnboardingWelcomeView(onboardingStorageValues: onboardingViewModel) {
+            
+        }
+    }
+    .ignoresSafeArea()
 }
