@@ -9,11 +9,11 @@ import SwiftUI
 struct OnboardingView: View {
     @ObservedObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
     @State private var isBack = false
-    @State private var contentType: ContentType = .welcome
+    @State private var contentType: ContentType = .none
     @Environment(\.presentationMode) var presentationMode
     
     enum ContentType {
-        case none, welcome, createArchive, setArchiveName, chartYourPath, whatsImportant, congratulations
+        case none, welcome, pendingWelcome, createArchive, setArchiveName, chartYourPath, whatsImportant, congratulations
     }
     
     @State var bottomButtonsPadding: CGFloat =  40
@@ -41,6 +41,17 @@ struct OnboardingView: View {
                     switch contentType {
                     case .welcome:
                         OnboardingWelcomeView(onboardingStorageValues: onboardingValues) {
+                            isBack = false
+                            withAnimation {
+                                contentType = .createArchive
+                            }
+                        }
+                        .transition(AnyTransition.asymmetric(
+                            insertion:.move(edge: isBack ? .leading : .trailing),
+                            removal: .opacity)
+                        )
+                    case .pendingWelcome:
+                        OnboardingInvitedWelcomeView(onboardingStorageValues: onboardingValues) {
                             isBack = false
                             withAnimation {
                                 contentType = .createArchive
@@ -158,6 +169,9 @@ struct OnboardingView: View {
                 onboardingValues.showAlert = false
             })
         }
+        .onAppear(perform: {
+            contentType = onboardingValues.allArchives.isEmpty ? .welcome : .pendingWelcome
+        })
     }
     
     
@@ -170,6 +184,11 @@ struct OnboardingView: View {
                 DividerSmallBarView(type: .empty)
                 
             case .welcome:
+                DividerSmallBarView(type: .gradient)
+                DividerSmallBarView(type: .empty)
+                DividerSmallBarView(type: .empty)
+                
+            case .pendingWelcome:
                 DividerSmallBarView(type: .gradient)
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
@@ -212,10 +231,10 @@ struct OnboardingView: View {
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "long username name name"
-    onboardingViewModel.pendingArchives = [
-        OnboardingPendingArchives(fullname: "Documents", accessType: "viewer"),
-        OnboardingPendingArchives(fullname: "Files", accessType: "admin"),
-        OnboardingPendingArchives(fullname: "Photos", accessType: "editor")
+    onboardingViewModel.allArchives = [
+        OnboardingInvitedArchives(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33),
+        OnboardingInvitedArchives(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355),
+        OnboardingInvitedArchives(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400)
         ]
     onboardingViewModel.archiveName = "new archive"
     

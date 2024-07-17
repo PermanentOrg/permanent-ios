@@ -36,8 +36,8 @@ struct OnboardingCongratulationsView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
-                            ForEach(onboardingValues.pendingArchives) {archive in
-                                ArchiveDetailsView(pendingArchive: archive)
+                            ForEach(onboardingValues.allArchives) {archive in
+                                ArchiveDetailsView(archive: archive)
                             }
                         }
                     }
@@ -76,11 +76,11 @@ struct OnboardingCongratulationsView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 32) {
-                        if !onboardingValues.pendingArchives.isEmpty {
+                        if !onboardingValues.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
-                                    ForEach(onboardingValues.pendingArchives) {archive in
-                                        ArchiveDetailsView(pendingArchive: archive)
+                                    ForEach(onboardingValues.allArchives) {archive in
+                                        ArchiveDetailsView(archive: archive)
                                     }
                                 }
                                 .overlay(
@@ -136,10 +136,10 @@ struct OnboardingCongratulationsView: View {
 
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    onboardingViewModel.pendingArchives = [
-        OnboardingPendingArchives(fullname: "Documents", accessType: "viewer"),
-        OnboardingPendingArchives(fullname: "Files", accessType: "admin"),
-        OnboardingPendingArchives(fullname: "Photos", accessType: "editor")
+    onboardingViewModel.allArchives = [
+        OnboardingInvitedArchives(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
+        OnboardingInvitedArchives(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
+        OnboardingInvitedArchives(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444)
         ]
     
     return ZStack {

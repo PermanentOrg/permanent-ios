@@ -14,28 +14,37 @@ class OnboardingArchiveViewModel: ObservableObject {
     @Published var archiveName: String = ""
     @Published var selectedPath: [OnboardingPath] = []
     @Published var selectedWhatsImportant: [OnboardingWhatsImportant] = []
-    @Published var pendingArchives: [OnboardingPendingArchives] = []
+    @Published var allArchives: [OnboardingInvitedArchives] = []
+    @Published var allArchivesVO: [ArchiveVO] = []
     @Published var fullName: String
     @Published var isLoading: Bool = false
     @Published var showAlert: Bool = false
     var account: AccountVOData?
-
     
+    //To do
     let welcomeMessage: String = "We’re so glad you’re here!\n\nAt Permanent, it is our mission to provide a safe and secure place to store, preserve, and share the digital legacy of all people, whether that's for you or for your friends, family, interests or organizations.\n\nWe know that starting this journey can sometimes be overwhelming, but don’t worry. We’re here to help you every step of the way."
     
     init(username: String?, password: String?) {
+        isLoading = true
         self.username = username ?? ""
         self.password = password ?? ""
         self.fullName = AuthenticationManager.shared.session?.account.fullName ?? ""
+        
+        self.getAccountArchives { error in
+            self.isLoading = false
+            if error != nil {
+                self.showAlert = true
+            }
+        }
     }
-
+    
     func getIndefiniteArticle() -> String {
         if archiveType == .person || archiveType == .organization {
             return "an"
         }
         return "a"
     }
-
+    
     func togglePath(path: OnboardingPath) {
         if let index = selectedPath.firstIndex(of: path) {
             selectedPath.remove(at: index)
@@ -43,7 +52,7 @@ class OnboardingArchiveViewModel: ObservableObject {
             selectedPath.append(path)
         }
     }
-
+    
     func toggleWhatsImportant(whatsImportant: OnboardingWhatsImportant) {
         if let index = selectedWhatsImportant.firstIndex(of: whatsImportant) {
             selectedWhatsImportant.remove(at: index)
@@ -51,7 +60,7 @@ class OnboardingArchiveViewModel: ObservableObject {
             selectedWhatsImportant.append(whatsImportant)
         }
     }
-
+    
     func finishOnboard(_ completionBlock: @escaping ServerResponse) {
         isLoading = true
         createArchive(name: archiveName, type: archiveType.rawValue) { [weak self] archiveVO, error in
@@ -218,15 +227,69 @@ class OnboardingArchiveViewModel: ObservableObject {
                     completionBlock(APIError.invalidResponse)
                     return
                 }
+                allArchivesVO = archives
                 for archive in archives {
-                    if let fullName = archive.archiveVO?.fullName, archive.archiveVO?.status == ArchiveVOData.Status.pending {
-                        pendingArchives.append(OnboardingPendingArchives(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName))
+                    if let fullName = archive.archiveVO?.fullName,
+                       let status = archive.archiveVO?.status,
+                       let archiveID = archive.archiveVO?.archiveID,
+                        status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
+                        allArchives.append(OnboardingInvitedArchives(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID))
                     }
                 }
                 completionBlock(nil)
-
+                
             default:
                 completionBlock(APIError.invalidResponse)
+            }
+        }
+    }
+    
+    func acceptPendingArchive(archive: OnboardingInvitedArchives) {
+        isLoading = true
+        guard let archiveVO = allArchivesVO.first(where: { $0.archiveVO?.archiveID == archive.archiveID}),
+              let archiveVOData = archiveVO.archiveVO else {
+            isLoading = false
+            showAlert = true
+            return
+        }
+        
+        acceptArchiveOperation(archive: archiveVOData, { status, error in
+            self.isLoading = false
+            if status {
+                guard let _ = archiveVOData.archiveID else {
+                    self.showAlert = true
+                    return
+                }
+                
+                archive.status = .ok
+            }
+        })
+    }
+    
+    func acceptArchiveOperation(archive: ArchiveVOData, _ completionBlock: @escaping ((Bool, Error?) -> Void)) {
+        let acceptArchiveOperation = APIOperation(ArchivesEndpoint.accept(archiveVO: archive))
+
+        acceptArchiveOperation.execute(in: APIRequestDispatcher()) { result in
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                    model.isSuccessful
+                else {
+                    completionBlock(false, APIError.invalidResponse)
+                    return
+                }
+
+                completionBlock(true, nil)
+                return
+                
+            case .error:
+                completionBlock(false, APIError.invalidResponse)
+                return
+                
+            default:
+                completionBlock(false, APIError.invalidResponse)
+                return
             }
         }
     }
