@@ -23,7 +23,7 @@ struct ArchiveDetailsView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .lineLimit(1)
-                    if archive.accessType.isNotEmpty && archive.status != .currentOwner {
+                    if archive.accessType.isNotEmpty && !archive.accessType.lowercased().contains("owner") {
                         Text("Invited as \(archive.accessType)")
                             .textStyle(UsualSmallXXXRegularTextStyle())
                             .foregroundColor(.white.opacity(0.5))
@@ -94,7 +94,7 @@ struct ArchiveDetailsView: View {
 }
 
 #Preview {
-    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.currentOwner, archiveID: 1212)
+    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.pending, archiveID: 1212)
     var archiveOk = OnboardingArchive(fullname: "John Smith", accessType: "Owner", status: ArchiveVOData.Status.ok, archiveID: 322)
     return ZStack {
         Color(.primary)
@@ -102,7 +102,7 @@ struct ArchiveDetailsView: View {
             ArchiveDetailsView(archive: archivePending, showStatus: true) {
                 print("Accepted")
             }
-            ArchiveDetailsView(archive: archiveOk, showStatus: true) {
+            ArchiveDetailsView(archive: archiveOk, showStatus: false) {
                 
             }
         }

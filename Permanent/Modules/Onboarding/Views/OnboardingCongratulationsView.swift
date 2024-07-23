@@ -46,7 +46,6 @@ struct OnboardingCongratulationsView: View {
                 
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
-                        ArchiveDetailsView(archive: onboardingValues.createdArchive)
                         VStack(spacing: 16) {
                             ForEach(onboardingValues.allArchives) {archive in
                                 ArchiveDetailsView(archive: archive)
@@ -91,7 +90,6 @@ struct OnboardingCongratulationsView: View {
                         if !onboardingValues.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
-                                    ArchiveDetailsView(archive: onboardingValues.createdArchive)
                                     ForEach(onboardingValues.allArchives) {archive in
                                         ArchiveDetailsView(archive: archive)
                                     }
@@ -154,7 +152,6 @@ struct OnboardingCongratulationsView: View {
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
         OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444)
         ]
-    onboardingViewModel.createdArchive.fullname = "Videos"
     
     return ZStack {
         Color(.primary)

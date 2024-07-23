@@ -166,9 +166,11 @@ struct OnboardingView: View {
                 onboardingValues.showAlert = false
             })
         }
-        .onAppear(perform: {
-            contentType = onboardingValues.allArchives.isEmpty ? .welcome : .pendingWelcome
-            firstViewContentType = contentType
+        .onChange(of: onboardingValues.initIsLoading, perform: { loading in
+            if !loading {
+                contentType = onboardingValues.allArchives.isEmpty ? .welcome : .pendingWelcome
+                firstViewContentType = contentType
+            }
         })
     }
     

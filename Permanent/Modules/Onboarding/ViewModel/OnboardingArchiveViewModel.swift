@@ -16,9 +16,9 @@ class OnboardingArchiveViewModel: ObservableObject {
     @Published var selectedWhatsImportant: [OnboardingWhatsImportant] = []
     @Published var allArchives: [OnboardingArchive] = []
     @Published var allArchivesVO: [ArchiveVO] = []
-    @Published var createdArchive: OnboardingArchive
     @Published var fullName: String
     @Published var isLoading: Bool = false
+    @Published var initIsLoading: Bool = false
     @Published var showAlert: Bool = false
     var account: AccountVOData?
     
@@ -27,13 +27,14 @@ class OnboardingArchiveViewModel: ObservableObject {
     
     init(username: String?, password: String?) {
         isLoading = true
+        initIsLoading = true
         self.username = username ?? ""
         self.password = password ?? ""
         self.fullName = AuthenticationManager.shared.session?.account.fullName ?? ""
-        self.createdArchive = OnboardingArchive(fullname: "", accessType: AccessRole.owner.groupName, status: .currentOwner, archiveID: 0)
         
         self.getAccountArchives { error in
             self.isLoading = false
+            self.initIsLoading = false
             if error != nil {
                 self.showAlert = true
             }
@@ -68,7 +69,6 @@ class OnboardingArchiveViewModel: ObservableObject {
         createArchive(name: archiveName, type: archiveType.rawValue) { [weak self] archiveVO, error in
             guard let self = self else { return }
             if let archiveVO = archiveVO, let archiveID = archiveVO.archiveID {
-                self.createdArchive.fullname = archiveVO.fullName ?? ""
                 self.updateAccount(withDefaultArchiveId: archiveID) { accountVO, error in
                     self.handleAccountUpdate(accountVO: accountVO, archiveVO: archiveVO, completionBlock: completionBlock)
                 }
@@ -226,19 +226,28 @@ class OnboardingArchiveViewModel: ObservableObject {
             guard let self = self else { return }
             switch result {
             case .json(let response, _):
-                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder), let archives = model.results.first?.data, model.isSuccessful else {
+                guard let model: APIResults<ArchiveVO> = JSONHelper.decoding(from: response, with: APIResults<NoDataModel>.decoder),
+                        model.isSuccessful else {
                     completionBlock(APIError.invalidResponse)
                     return
                 }
-                allArchivesVO = archives
-                for archive in archives {
-                    if let fullName = archive.archiveVO?.fullName,
-                       let status = archive.archiveVO?.status,
-                       let archiveID = archive.archiveVO?.archiveID,
-                        status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
-                        allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID))
+                
+                if let archives = model.results.first?.data {
+                    allArchives = []
+                    allArchivesVO = archives
+                    for archive in archives {
+                        if let fullName = archive.archiveVO?.fullName,
+                           let status = archive.archiveVO?.status,
+                           let archiveID = archive.archiveVO?.archiveID,
+                            status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
+                            allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID))
+                        }
                     }
+                } else {
+                    allArchives = []
+                    allArchivesVO = []
                 }
+                
                 completionBlock(nil)
                 
             default:
