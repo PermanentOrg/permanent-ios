@@ -14,8 +14,9 @@ class OnboardingArchiveViewModel: ObservableObject {
     @Published var archiveName: String = ""
     @Published var selectedPath: [OnboardingPath] = []
     @Published var selectedWhatsImportant: [OnboardingWhatsImportant] = []
-    @Published var allArchives: [OnboardingInvitedArchives] = []
+    @Published var allArchives: [OnboardingArchive] = []
     @Published var allArchivesVO: [ArchiveVO] = []
+    @Published var createdArchive: OnboardingArchive
     @Published var fullName: String
     @Published var isLoading: Bool = false
     @Published var showAlert: Bool = false
@@ -29,6 +30,7 @@ class OnboardingArchiveViewModel: ObservableObject {
         self.username = username ?? ""
         self.password = password ?? ""
         self.fullName = AuthenticationManager.shared.session?.account.fullName ?? ""
+        self.createdArchive = OnboardingArchive(fullname: "", accessType: AccessRole.owner.groupName, status: .currentOwner, archiveID: 0)
         
         self.getAccountArchives { error in
             self.isLoading = false
@@ -66,6 +68,7 @@ class OnboardingArchiveViewModel: ObservableObject {
         createArchive(name: archiveName, type: archiveType.rawValue) { [weak self] archiveVO, error in
             guard let self = self else { return }
             if let archiveVO = archiveVO, let archiveID = archiveVO.archiveID {
+                self.createdArchive.fullname = archiveVO.fullName ?? ""
                 self.updateAccount(withDefaultArchiveId: archiveID) { accountVO, error in
                     self.handleAccountUpdate(accountVO: accountVO, archiveVO: archiveVO, completionBlock: completionBlock)
                 }
@@ -233,7 +236,7 @@ class OnboardingArchiveViewModel: ObservableObject {
                        let status = archive.archiveVO?.status,
                        let archiveID = archive.archiveVO?.archiveID,
                         status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
-                        allArchives.append(OnboardingInvitedArchives(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID))
+                        allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID))
                     }
                 }
                 completionBlock(nil)
@@ -244,7 +247,7 @@ class OnboardingArchiveViewModel: ObservableObject {
         }
     }
     
-    func acceptPendingArchive(archive: OnboardingInvitedArchives) {
+    func acceptPendingArchive(archive: OnboardingArchive) {
         isLoading = true
         guard let archiveVO = allArchivesVO.first(where: { $0.archiveVO?.archiveID == archive.archiveID}),
               let archiveVOData = archiveVO.archiveVO else {

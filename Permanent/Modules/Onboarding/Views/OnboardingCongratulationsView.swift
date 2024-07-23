@@ -28,13 +28,25 @@ struct OnboardingCongratulationsView: View {
                 Text("Congratulations!")
                     .textStyle(UsualXLargeLightTextStyle())
                     .foregroundColor(.white)
-                    .lineSpacing(8.0)
-                Text("Get started by uploading your first files, or learn more about your new archive by viewing our help articles through the ‘?’ button in the lower right-hand corner.")
-                    .textStyle(UsualSmallXRegularTextStyle())
-                    .foregroundColor(.blue25)
-                    .lineSpacing(8.0)
+                    .lineSpacing(8.0)               
+                HStack {
+                    Text("Get started by uploading your first files, or learn more about your new archive by ")
+                    + Text("[viewing our help articles here.](https://permanent.zohodesk.com/portal/en/kb/permanent-legacy-foundation)")
+                        .underline()
+                }
+                .font(
+                    .custom(
+                        "Usual-Regular",
+                        fixedSize: 14)
+                )
+                .foregroundColor(.blue25)
+                .accentColor(.blue25)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(8.0)
+                
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
+                        ArchiveDetailsView(archive: onboardingValues.createdArchive)
                         VStack(spacing: 16) {
                             ForEach(onboardingValues.allArchives) {archive in
                                 ArchiveDetailsView(archive: archive)
@@ -79,6 +91,7 @@ struct OnboardingCongratulationsView: View {
                         if !onboardingValues.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
+                                    ArchiveDetailsView(archive: onboardingValues.createdArchive)
                                     ForEach(onboardingValues.allArchives) {archive in
                                         ArchiveDetailsView(archive: archive)
                                     }
@@ -137,10 +150,11 @@ struct OnboardingCongratulationsView: View {
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.allArchives = [
-        OnboardingInvitedArchives(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
-        OnboardingInvitedArchives(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
-        OnboardingInvitedArchives(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444)
+        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
+        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444)
         ]
+    onboardingViewModel.createdArchive.fullname = "Videos"
     
     return ZStack {
         Color(.primary)

@@ -22,6 +22,7 @@ struct ArchiveVOData: Model {
         case pending = "status.generic.pending"
         case orphaned = "status.generic.orphaned"
         case genAvatar = "status.archive.gen_avatar"
+        case currentOwner = "status.generic.owner"
         
         case unknown = "N/A"
         

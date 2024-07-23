@@ -104,9 +104,9 @@ struct OnboardingInvitedWelcomeView: View {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "long archive name name name"
     onboardingViewModel.allArchives = [
-        OnboardingInvitedArchives(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
-        OnboardingInvitedArchives(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 22),
-        OnboardingInvitedArchives(fullname: "Files", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 333)
+        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 22),
+        OnboardingArchive(fullname: "Files", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 333)
         ]
     
     return ZStack {

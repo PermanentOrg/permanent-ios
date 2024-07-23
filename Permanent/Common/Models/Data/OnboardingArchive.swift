@@ -6,7 +6,7 @@
 
 import Foundation
 
-class OnboardingInvitedArchives: Identifiable, Decodable {
+class OnboardingArchive: Identifiable, Decodable {
     var id = UUID()
     
     var fullname: String

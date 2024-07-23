@@ -7,14 +7,11 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @ObservedObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
+    @StateObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
     @State private var isBack = false
-    @State private var contentType: ContentType = .none
+    @State private var contentType: OnboardingContentType = .none
     @Environment(\.presentationMode) var presentationMode
-    
-    enum ContentType {
-        case none, welcome, pendingWelcome, createArchive, setArchiveName, chartYourPath, whatsImportant, congratulations
-    }
+    @State private var firstViewContentType: OnboardingContentType = .none
     
     @State var bottomButtonsPadding: CGFloat =  40
 
@@ -66,7 +63,7 @@ struct OnboardingView: View {
                         OnboardingCreateFirstArchiveView(onboardingValues: onboardingValues) {
                             isBack = true
                             withAnimation {
-                                contentType = .welcome
+                                contentType = firstViewContentType
                             }
                             
                         } nextButton: {
@@ -171,6 +168,7 @@ struct OnboardingView: View {
         }
         .onAppear(perform: {
             contentType = onboardingValues.allArchives.isEmpty ? .welcome : .pendingWelcome
+            firstViewContentType = contentType
         })
     }
     
@@ -232,9 +230,9 @@ struct OnboardingView: View {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "long username name name"
     onboardingViewModel.allArchives = [
-        OnboardingInvitedArchives(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33),
-        OnboardingInvitedArchives(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355),
-        OnboardingInvitedArchives(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400)
+        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33),
+        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400)
         ]
     onboardingViewModel.archiveName = "new archive"
     
@@ -243,4 +241,8 @@ struct OnboardingView: View {
         OnboardingView(onboardingValues: onboardingViewModel)
     }
     .ignoresSafeArea()
+}
+
+enum OnboardingContentType {
+    case none, welcome, pendingWelcome, createArchive, setArchiveName, chartYourPath, whatsImportant, congratulations
 }

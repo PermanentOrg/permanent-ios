@@ -308,7 +308,7 @@
 		5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */; };
 		5EADF80C262EDFCA00D14E9C /* TagsCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */; };
 		5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB053D22BD120C400AFE66D /* TextField+Extension.swift */; };
-		5EB2D2362C245EEA0029D0DE /* OnboardingInvitedArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB2D2352C245EEA0029D0DE /* OnboardingInvitedArchives.swift */; };
+		5EB2D2362C245EEA0029D0DE /* OnboardingArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */; };
 		5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */; };
 		5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB45A452943403600277800 /* UIDeviceExtension.swift */; };
 		5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */; };
@@ -1187,7 +1187,7 @@
 		5EADF8072625BCCD00D14E9C /* TagsNamesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TagsNamesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5EADF80B262EDFC900D14E9C /* TagsCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewLayout.swift; sourceTree = "<group>"; };
 		5EB053D22BD120C400AFE66D /* TextField+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+Extension.swift"; sourceTree = "<group>"; };
-		5EB2D2352C245EEA0029D0DE /* OnboardingInvitedArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInvitedArchives.swift; sourceTree = "<group>"; };
+		5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingArchive.swift; sourceTree = "<group>"; };
 		5EB3EDBE2B04D18600D76B83 /* ResponseGiftingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGiftingModel.swift; sourceTree = "<group>"; };
 		5EB45A452943403600277800 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		5EB4C6372BD2F00100561F0F /* CustomBorderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBorderTextField.swift; sourceTree = "<group>"; };
@@ -3470,7 +3470,7 @@
 				F5C8D246273204CA00707301 /* SearchVO.swift */,
 				5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */,
 				5EB721122B35C9DC0036B28F /* RedeemVO.swift */,
-				5EB2D2352C245EEA0029D0DE /* OnboardingInvitedArchives.swift */,
+				5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -4481,7 +4481,7 @@
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
-				5EB2D2362C245EEA0029D0DE /* OnboardingInvitedArchives.swift in Sources */,
+				5EB2D2362C245EEA0029D0DE /* OnboardingArchive.swift in Sources */,
 				5E5AB60F2A6494170030BF61 /* AddTagsView.swift in Sources */,
 				F54596C325FF737200E0BC5F /* FilePreviewNavigationController.swift in Sources */,
 				927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */,
