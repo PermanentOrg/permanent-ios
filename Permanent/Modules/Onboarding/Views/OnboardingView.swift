@@ -9,9 +9,9 @@ import SwiftUI
 struct OnboardingView: View {
     @StateObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
     @State private var isBack = false
-    @State private var contentType: OnboardingContentType = .none
     @Environment(\.presentationMode) var presentationMode
-    @State private var firstViewContentType: OnboardingContentType = .none
+    @State var contentType: OnboardingContentType = .none
+    @State var firstViewContentType: OnboardingContentType = .none
     
     @State var bottomButtonsPadding: CGFloat =  40
 
@@ -51,9 +51,15 @@ struct OnboardingView: View {
                         OnboardingInvitedWelcomeView(onboardingStorageValues: onboardingValues) {
                             isBack = false
                             withAnimation {
+                                contentType = .congratulations
+                            }
+                        } newArchiveButtonAction: {
+                            isBack = false
+                            withAnimation {
                                 contentType = .createArchive
                             }
                         }
+                        
                         .transition(AnyTransition.asymmetric(
                             insertion:.move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
@@ -240,7 +246,7 @@ struct OnboardingView: View {
     
     return ZStack {
         Color(.primary)
-        OnboardingView(onboardingValues: onboardingViewModel)
+        OnboardingView(onboardingValues: onboardingViewModel, contentType: .pendingWelcome, firstViewContentType: .pendingWelcome)
     }
     .ignoresSafeArea()
 }

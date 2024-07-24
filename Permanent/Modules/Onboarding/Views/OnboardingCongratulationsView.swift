@@ -47,7 +47,16 @@ struct OnboardingCongratulationsView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
-                            ForEach(onboardingValues.allArchives) {archive in
+                            ForEach(onboardingValues.allArchives.sorted(by: {
+                                let isFirstItem = $0.accessType.lowercased().contains("owner")
+                                let isSecondItem = $1.accessType.lowercased().contains("owner")
+                                
+                                if isFirstItem == isSecondItem {
+                                    return $0.accessType < $1.accessType
+                                }
+                                
+                                return isFirstItem && !isSecondItem
+                            })) { archive in
                                 ArchiveDetailsView(archive: archive)
                             }
                         }
@@ -64,7 +73,7 @@ struct OnboardingCongratulationsView: View {
                 
             }
             HStack(alignment: .center) {
-                SmallRoundButtonImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Done", image: Image(.onboardingCheckmark),  action: nextButton)
+                SmallRoundButtonImageView(text: "Done", image: Image(.onboardingCheckmark),  action: nextButton)
             }
             .padding(.bottom, 40)
         }
@@ -136,7 +145,7 @@ struct OnboardingCongratulationsView: View {
                     .padding(.top, 20)
                     HStack(spacing: 32) {
                         Spacer(minLength: geometry.size.width / 2)
-                        RoundButtonRightImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Done", rightImage: Image(.onboardingCheckmark), action: nextButton)
+                        RoundButtonRightImageView(text: "Done", rightImage: Image(.onboardingCheckmark), action: nextButton)
                     }
                     .padding(.bottom, 40)
                 }
@@ -148,9 +157,10 @@ struct OnboardingCongratulationsView: View {
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.allArchives = [
-        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
+        OnboardingArchive(fullname: "Documents", accessType: "owner", status: ArchiveVOData.Status.pending, archiveID: 33),
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
-        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444)
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444),
+        OnboardingArchive(fullname: "Text", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 4444)
         ]
     
     return ZStack {

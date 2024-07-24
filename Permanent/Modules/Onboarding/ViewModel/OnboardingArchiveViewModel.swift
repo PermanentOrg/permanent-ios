@@ -20,10 +20,8 @@ class OnboardingArchiveViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var initIsLoading: Bool = false
     @Published var showAlert: Bool = false
+    @Published var isArchiveAccepted: Bool = false
     var account: AccountVOData?
-    
-    //To do
-    let welcomeMessage: String = "We’re so glad you’re here!\n\nAt Permanent, it is our mission to provide a safe and secure place to store, preserve, and share the digital legacy of all people, whether that's for you or for your friends, family, interests or organizations.\n\nWe know that starting this journey can sometimes be overwhelming, but don’t worry. We’re here to help you every step of the way."
     
     init(username: String?, password: String?) {
         isLoading = true
@@ -268,6 +266,7 @@ class OnboardingArchiveViewModel: ObservableObject {
         acceptArchiveOperation(archive: archiveVOData, { status, error in
             self.isLoading = false
             if status {
+                self.isArchiveAccepted = true
                 guard let _ = archiveVOData.archiveID else {
                     self.showAlert = true
                     return
@@ -291,9 +290,16 @@ class OnboardingArchiveViewModel: ObservableObject {
                     completionBlock(false, APIError.invalidResponse)
                     return
                 }
-
-                completionBlock(true, nil)
-                return
+                
+                self.changeArchive(archive) { success, error in
+                    if success {
+                        completionBlock(true, nil)
+                        return
+                    } else {
+                        completionBlock(false, APIError.invalidResponse)
+                        return
+                    }
+                }
                 
             case .error:
                 completionBlock(false, APIError.invalidResponse)

@@ -10,7 +10,8 @@ import UIKit
 struct OnboardingInvitedWelcomeView: View {
     var onboardingStorageValues: OnboardingArchiveViewModel
     @State private var dynamicHeight: CGFloat = 0
-    var buttonAction: (() -> Void)
+    var nextButtonAction: (() -> Void)
+    var newArchiveButtonAction: (() -> Void)
     
     var body: some View {
         if Constants.Design.isPhone {
@@ -22,6 +23,8 @@ struct OnboardingInvitedWelcomeView: View {
     
     var iPhoneBody: some View {
         ZStack(alignment: .bottom) {
+            ScrollViewReader { scrollReader in
+                ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 OnboardingTitleTextView(
                     preText: "Hello, ",
@@ -33,9 +36,7 @@ struct OnboardingInvitedWelcomeView: View {
                     .foregroundColor(.blue25)
                     .lineSpacing(8.0)
                     .multilineTextAlignment(.leading)
-                ScrollViewReader { scrollReader in
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 24) {
+                        VStack(spacing: 20) {
                             ForEach(onboardingStorageValues.allArchives) { archive in
                                 if archive.status == .ok || archive.status == .pending {
                                     ArchiveDetailsView(archive: archive, showStatus: true, acceptArchive: {
@@ -58,12 +59,14 @@ struct OnboardingInvitedWelcomeView: View {
                     }
                     Spacer()
                 }
-                .padding(.top, 10)
-                Spacer(minLength: 100)
+                Spacer(minLength: 200)
             }
             
-            RoundButtonRightImageView(text: "Get started", action: buttonAction)
-                .padding(.bottom, 40)
+            VStack(spacing: 20) {
+                RoundButtonRightImageView(isDisabled: !onboardingStorageValues.isArchiveAccepted, text: "Next", action: nextButtonAction)
+                SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "New Archive", image: Image(.onboardingPlus), action: newArchiveButtonAction)
+            }
+            .padding(.bottom, 40)
         }
     }
     
@@ -91,7 +94,7 @@ struct OnboardingInvitedWelcomeView: View {
                 .padding(.top, 10)
                 HStack {
                     Spacer()
-                    RoundButtonRightImageView(text: "Get started", action: buttonAction)
+                    RoundButtonRightImageView(text: "New Archive", action: nextButtonAction)
                         .frame(width: 243)
                         .padding(.bottom, 40)
                 }
@@ -112,6 +115,8 @@ struct OnboardingInvitedWelcomeView: View {
     return ZStack {
         Color(.primary)
         OnboardingInvitedWelcomeView(onboardingStorageValues: onboardingViewModel) {
+            
+        } newArchiveButtonAction: {
             
         }
     }
