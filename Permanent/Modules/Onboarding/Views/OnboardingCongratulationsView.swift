@@ -99,7 +99,16 @@ struct OnboardingCongratulationsView: View {
                         if !onboardingValues.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
-                                    ForEach(onboardingValues.allArchives) {archive in
+                                    ForEach(onboardingValues.allArchives.sorted(by: {
+                                        let isFirstItem = $0.accessType.lowercased().contains("owner")
+                                        let isSecondItem = $1.accessType.lowercased().contains("owner")
+                                        
+                                        if isFirstItem == isSecondItem {
+                                            return $0.accessType < $1.accessType
+                                        }
+                                        
+                                        return isFirstItem && !isSecondItem
+                                    })) { archive in
                                         ArchiveDetailsView(archive: archive)
                                     }
                                 }
