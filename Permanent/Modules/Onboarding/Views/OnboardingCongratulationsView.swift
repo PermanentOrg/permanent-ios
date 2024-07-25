@@ -28,16 +28,36 @@ struct OnboardingCongratulationsView: View {
                 Text("Congratulations!")
                     .textStyle(UsualXLargeLightTextStyle())
                     .foregroundColor(.white)
-                    .lineSpacing(8.0)
-                Text("Get started by uploading your first files, or learn more about your new archive by viewing our help articles through the ‘?’ button in the lower right-hand corner.")
-                    .textStyle(UsualSmallXRegularTextStyle())
-                    .foregroundColor(.blue25)
-                    .lineSpacing(8.0)
+                    .lineSpacing(8.0)               
+                HStack {
+                    Text("Get started by uploading your first files, or learn more about your new archive by ")
+                    + Text("[viewing our help articles here.](https://permanent.zohodesk.com/portal/en/kb/permanent-legacy-foundation)")
+                        .underline()
+                }
+                .font(
+                    .custom(
+                        "Usual-Regular",
+                        fixedSize: 14)
+                )
+                .foregroundColor(.blue25)
+                .accentColor(.blue25)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(8.0)
+                
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
-                            ForEach(onboardingValues.pendingArchives) {archive in
-                                ArchiveDetailsView(pendingArchive: archive)
+                            ForEach(onboardingValues.allArchives.sorted(by: {
+                                let isFirstItem = $0.accessType.lowercased().contains("owner")
+                                let isSecondItem = $1.accessType.lowercased().contains("owner")
+                                
+                                if isFirstItem == isSecondItem {
+                                    return $0.accessType < $1.accessType
+                                }
+                                
+                                return isFirstItem && !isSecondItem
+                            })) { archive in
+                                ArchiveDetailsView(archive: archive)
                             }
                         }
                     }
@@ -53,7 +73,7 @@ struct OnboardingCongratulationsView: View {
                 
             }
             HStack(alignment: .center) {
-                SmallRoundButtonImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Done", image: Image(.onboardingCheckmark),  action: nextButton)
+                SmallRoundButtonImageView(text: "Done", image: Image(.onboardingCheckmark),  action: nextButton)
             }
             .padding(.bottom, 40)
         }
@@ -76,11 +96,20 @@ struct OnboardingCongratulationsView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 32) {
-                        if !onboardingValues.pendingArchives.isEmpty {
+                        if !onboardingValues.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
-                                    ForEach(onboardingValues.pendingArchives) {archive in
-                                        ArchiveDetailsView(pendingArchive: archive)
+                                    ForEach(onboardingValues.allArchives.sorted(by: {
+                                        let isFirstItem = $0.accessType.lowercased().contains("owner")
+                                        let isSecondItem = $1.accessType.lowercased().contains("owner")
+                                        
+                                        if isFirstItem == isSecondItem {
+                                            return $0.accessType < $1.accessType
+                                        }
+                                        
+                                        return isFirstItem && !isSecondItem
+                                    })) { archive in
+                                        ArchiveDetailsView(archive: archive)
                                     }
                                 }
                                 .overlay(
@@ -125,7 +154,7 @@ struct OnboardingCongratulationsView: View {
                     .padding(.top, 20)
                     HStack(spacing: 32) {
                         Spacer(minLength: geometry.size.width / 2)
-                        RoundButtonRightImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Done", rightImage: Image(.onboardingCheckmark), action: nextButton)
+                        RoundButtonRightImageView(text: "Done", rightImage: Image(.onboardingCheckmark), action: nextButton)
                     }
                     .padding(.bottom, 40)
                 }
@@ -136,10 +165,11 @@ struct OnboardingCongratulationsView: View {
 
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    onboardingViewModel.pendingArchives = [
-        OnboardingPendingArchives(fullname: "Documents", accessType: "viewer"),
-        OnboardingPendingArchives(fullname: "Files", accessType: "admin"),
-        OnboardingPendingArchives(fullname: "Photos", accessType: "editor")
+    onboardingViewModel.allArchives = [
+        OnboardingArchive(fullname: "Documents", accessType: "owner", status: ArchiveVOData.Status.pending, archiveID: 33),
+        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444),
+        OnboardingArchive(fullname: "Text", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 4444)
         ]
     
     return ZStack {
