@@ -66,26 +66,79 @@ struct ArchiveDetailsView: View {
         } else {
             HStack(alignment: .center, spacing: 16) {
                 thumbnail
-                HStack {
-                    HStack {
-                        Text("The ")
-                        + Text("\(archive.fullname)")
-                            .bold()
-                        + Text(" Archive")
+                if showStatus {
+                    VStack(spacing: 5) {
+                        HStack {
+                            Text("The ")
+                            + Text("\(archive.fullname)")
+                                .bold()
+                            + Text(" Archive")
+                        }
+                        .font(
+                            .custom(
+                                "Usual-Regular",
+                                fixedSize: 16)
+                        )
+                        .foregroundColor(.white)
+                        .accentColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineSpacing(8.0)
+                        Text("Invited as \(archive.accessType)")
+                            .textStyle(UsualSmallXRegularTextStyle())
+                            .foregroundColor(.white.opacity(0.5))
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .lineLimit(1)
                     }
-                    .font(
-                        .custom(
-                            "Usual-Regular",
-                            fixedSize: 16)
-                    )
-                    .foregroundColor(.white)
-                    .accentColor(.white)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineSpacing(8.0)
-                    Spacer()
-                }
-                if archive.accessType.isNotEmpty {
-                    AccessRoleChipView(text: archive.accessType, textColor: .white)
+                    if archive.status == .ok {
+                        HStack(spacing: 0) {
+                            Text("Accepted")
+                                .textStyle(UsualSmallXXXSemiBoldTextStyle())
+                                .foregroundColor(Color(red: 0.2, green: 0.84, blue: 0.52))
+                                .padding(.horizontal, -10)
+                        }
+                        Image(.onboardingCheckmark)
+                            .renderingMode(.template)
+                            .foregroundColor(Color(red: 0.2, green: 0.84, blue: 0.52))
+                            .frame(width: 24, height: 24)
+                    } else if archive.status == .pending {
+                        Button(action: acceptArchive) {
+                            HStack(spacing: 0) {
+                                Text("Accept")
+                                    .textStyle(UsualSmallXXXSemiBoldTextStyle())
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .inset(by: 0.5)
+                                    .stroke(.white.opacity(0.32), lineWidth: 1)
+                            )
+                        }
+                    }
+                } else {
+                    HStack {
+                        HStack {
+                            Text("The ")
+                            + Text("\(archive.fullname)")
+                                .bold()
+                            + Text(" Archive")
+                        }
+                        .font(
+                            .custom(
+                                "Usual-Regular",
+                                fixedSize: 16)
+                        )
+                        .foregroundColor(.white)
+                        .accentColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineSpacing(8.0)
+                        Spacer()
+                    }
+                    if archive.accessType.isNotEmpty {
+                        AccessRoleChipView(text: archive.accessType, textColor: .white)
+                    }
                 }
             }
             .frame(height: 48)
@@ -94,12 +147,16 @@ struct ArchiveDetailsView: View {
 }
 
 #Preview {
-    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.pending, archiveID: 1212)
-    var archiveOk = OnboardingArchive(fullname: "John Smith", accessType: "Owner", status: ArchiveVOData.Status.ok, archiveID: 322)
+    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.ok, archiveID: 1212)
+    var archiveSecondPending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.pending, archiveID: 1212)
+    var archiveOk = OnboardingArchive(fullname: "John Wade", accessType: "Owner", status: ArchiveVOData.Status.ok, archiveID: 322)
     return ZStack {
         Color(.primary)
         VStack {
             ArchiveDetailsView(archive: archivePending, showStatus: true) {
+                print("Accepted")
+            }
+            ArchiveDetailsView(archive: archiveSecondPending, showStatus: true) {
                 print("Accepted")
             }
             ArchiveDetailsView(archive: archiveOk, showStatus: false) {
