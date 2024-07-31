@@ -120,9 +120,9 @@ struct OnboardingInvitedWelcomeView: View {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "long archive name name name"
     onboardingViewModel.allArchives = [
-        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33),
-        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 22),
-        OnboardingArchive(fullname: "Files", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 333)
+        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.pending, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 22, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Files", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 333, thumbnailURL: "https://stagingcdn.permanent.org/018i-0000.thumb.w500?t=1753775559&Expires=1753775559&Signature=fPtRSvSdX1~fd5Bw8MlaUpJhUanzE0o~WM2k92IPMtscIzHJMybFcPh6aCXbASL777fvn5GXOv2UPdSMSzA0UPCXLy6pXcl4iiwFSbyiS7Zw5kUCIQdf45y013nos4CBM9pnl1UcfWwUJGI~gu7Vf5FwrZb3sEsXq2FVf2YN96WbIpFKGWo8sdlC4oN~ubIpmVsoUQDZ-F~jwmI2hfjYwXom8KXU4c70C2BmeF6qrLdneANmeR4kOqoQa78VLJRMII-nu75TEHpnhhm400fMZ61Om-rFLirsdhdrPfwFmfigd1ir8ja3iaJzmXSLD6LA8CwgjMMN1tBWf4qXUmddIw__&Key-Pair-Id=APKAJP2D34UGZ6IG443Q", isThumbnailGenerated: true)
         ]
     
     return ZStack {

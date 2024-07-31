@@ -12,7 +12,6 @@ struct OnboardingView: View {
     @Environment(\.presentationMode) var presentationMode
     @State var contentType: OnboardingContentType = .none
     @State var firstViewContentType: OnboardingContentType = .none
-    
     @State var bottomButtonsPadding: CGFloat =  40
 
     var body: some View {
@@ -238,9 +237,9 @@ struct OnboardingView: View {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "long username name name"
     onboardingViewModel.allArchives = [
-        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33),
-        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355),
-        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400)
+        OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400, thumbnailURL: "", isThumbnailGenerated: false)
         ]
     onboardingViewModel.archiveName = "new archive"
     

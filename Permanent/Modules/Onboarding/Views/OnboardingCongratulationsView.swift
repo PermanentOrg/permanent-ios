@@ -166,10 +166,10 @@ struct OnboardingCongratulationsView: View {
 #Preview {
     var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
     onboardingViewModel.allArchives = [
-        OnboardingArchive(fullname: "Documents", accessType: "owner", status: ArchiveVOData.Status.pending, archiveID: 33),
-        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222),
-        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444),
-        OnboardingArchive(fullname: "Text", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 4444)
+        OnboardingArchive(fullname: "Documents", accessType: "owner", status: ArchiveVOData.Status.pending, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444, thumbnailURL: "", isThumbnailGenerated: false),
+        OnboardingArchive(fullname: "Text", accessType: "owner", status: ArchiveVOData.Status.ok, archiveID: 4444, thumbnailURL: "", isThumbnailGenerated: false)
         ]
     
     return ZStack {
