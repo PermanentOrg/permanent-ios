@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 struct OnboardingWelcomeView: View {
-    var onboardingStorageValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingInvitedWelcomeViewModel
     @State private var dynamicHeight: CGFloat = 0
     var buttonAction: (() -> Void)
     
@@ -25,7 +25,7 @@ struct OnboardingWelcomeView: View {
             VStack(alignment: .leading, spacing: 24) {
                 OnboardingTitleTextView(
                     preText: "Hello, ",
-                    boldText: "\(onboardingStorageValues.fullName)",
+                    boldText: "\(viewModel.containerViewModel.fullName)",
                     postText: ".\nWelcome to\nPermanent!"
                 )
                 Text("We’re so glad you’re here!\n\nAt Permanent, it is our mission to provide a safe and secure place to store, preserve, and share the digital legacy of all people, whether that's for you or for your friends, family, interests or organizations.\n\nWe know that starting this journey can sometimes be overwhelming, but don’t worry. We’re here to help you every step of the way.")
@@ -36,8 +36,11 @@ struct OnboardingWelcomeView: View {
                 Spacer()
             }
             
-            RoundButtonRightImageView(text: "Get started", action: buttonAction)
-                .padding(.bottom, 40)
+            RoundButtonRightImageView(text: "Get started", action: {
+                buttonAction()
+                viewModel.containerViewModel.creatingNewArchive = true
+            })
+            .padding(.bottom, 40)
         }
     }
     
@@ -47,7 +50,7 @@ struct OnboardingWelcomeView: View {
                 HStack() {
                     OnboardingTitleTextView(
                         preText: "Hello, ",
-                        boldText: "\(onboardingStorageValues.fullName)",
+                        boldText: "\(viewModel.containerViewModel.fullName)",
                         postText: ".\nWelcome to\nPermanent!"
                     )
                     Spacer()
@@ -65,9 +68,12 @@ struct OnboardingWelcomeView: View {
                 .padding(.top, 10)
                 HStack {
                     Spacer()
-                    RoundButtonRightImageView(text: "Get started", action: buttonAction)
-                        .frame(width: 243)
-                        .padding(.bottom, 40)
+                    RoundButtonRightImageView(text: "Get started", action: {
+                        buttonAction()
+                        viewModel.containerViewModel.creatingNewArchive = true
+                    })
+                    .frame(width: 243)
+                    .padding(.bottom, 40)
                 }
             }
         }
@@ -75,14 +81,14 @@ struct OnboardingWelcomeView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    onboardingViewModel.fullName = "long archive name name name"
-    
+    var viewModel = OnboardingInvitedWelcomeViewModel(containerViewModel: OnboardingContainerViewModel(username: "", password: ""))
+    viewModel.containerViewModel.fullName = "really long user name"
+
     return ZStack {
         Color(.primary)
-        OnboardingWelcomeView(onboardingStorageValues: onboardingViewModel) {
+        OnboardingWelcomeView(viewModel: viewModel, buttonAction: {
             
-        }
+        })
     }
     .ignoresSafeArea()
 }

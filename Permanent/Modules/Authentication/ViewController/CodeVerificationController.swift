@@ -71,7 +71,7 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {
-                    let screenView = OnboardingView()
+                    let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
                     let host = UIHostingController(rootView: screenView)
                     host.modalPresentationStyle = .fullScreen
                     AppDelegate.shared.rootViewController.present(host, animated: true)

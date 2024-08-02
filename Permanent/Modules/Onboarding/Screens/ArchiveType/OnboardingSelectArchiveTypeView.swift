@@ -8,7 +8,7 @@ import SwiftUI
 
 struct OnboardingSelectArchiveTypeView: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingSelectArchiveTypeViewModel
     
     var body: some View {
         VStack {
@@ -53,7 +53,7 @@ struct OnboardingSelectArchiveTypeView: View {
                     ForEach(ArchiveType.allCases, id: \.onboardingType) { item in
                         if item != .nonProfit {
                             Button {
-                                onboardingValues.archiveType = item
+                                viewModel.containerViewModel.archiveType = item
                                 presentationMode.wrappedValue.dismiss()
                             } label: {
                                 ArchiveTypeView(archiveType: item)
@@ -104,7 +104,7 @@ struct OnboardingSelectArchiveTypeView: View {
                     ForEach(ArchiveType.allCases, id: \.onboardingType) { item in
                         if item != .nonProfit {
                             Button {
-                                onboardingValues.archiveType = item
+                                viewModel.containerViewModel.archiveType = item
                                 presentationMode.wrappedValue.dismiss()
                             } label: {
                                 ArchiveTypeView(archiveType: item)

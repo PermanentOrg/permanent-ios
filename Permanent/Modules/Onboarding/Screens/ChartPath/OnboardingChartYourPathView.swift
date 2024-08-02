@@ -1,15 +1,14 @@
 //
-//  OnboardingWhatsImportantView.swift
+//  OnboardingChartYourPathView.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 27.05.2024.
+//  Created by Lucian Cerbu on 08.05.2024.
 
 import SwiftUI
 
-struct OnboardingWhatsImportantView: View {
-    @State var presentSelectArchivesType: Bool = false
+struct OnboardingChartYourPathView: View {
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingChartYourPathViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -32,31 +31,25 @@ struct OnboardingWhatsImportantView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
                             OnboardingTitleTextView(
-                                preText: "Tell us what’s\n",
-                                boldText: "important",
-                                postText: " to you"
+                                preText: "Chart your \n",
+                                boldText: "path",
+                                postText: " to success"
                             )
-                            Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
+                            Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours.")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
                                 .lineSpacing(8.0)
                             VStack(alignment: .leading) {
-                                ForEach(OnboardingWhatsImportant.allCases, id: \.id) { item in
+                                ForEach(OnboardingPath.allCases, id: \.id) { path in
                                     Button {
-                                        onboardingValues.toggleWhatsImportant(whatsImportant: item)
+                                        viewModel.togglePath(path: path)
                                     } label: {
-                                        OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
+                                        OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path))
                                     }
-                                    .padding(.bottom, item.description.contains("Interest in digital preservation solutions") ? 4 : 0)
+                                    .padding(.bottom, path.description.contains("Something else") ? 4 : 0)
                                 }
                             }
                         }
-                    }
-                    .onAppear {
-                        UIScrollView.appearance().bounces = false
-                    }
-                    .onDisappear {
-                        UIScrollView.appearance().bounces = true
                     }
                 }
                 Color(.white)
@@ -71,9 +64,6 @@ struct OnboardingWhatsImportantView: View {
                 SmallRoundButtonImageView(text: "Next", action: nextButton)
             }
             .padding(.bottom, 40)
-            .sheet(isPresented: $presentSelectArchivesType, content: {
-                OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
-            })
         }
     }
     
@@ -92,52 +82,37 @@ struct OnboardingWhatsImportantView: View {
                         VStack {
                             HStack() {
                                 OnboardingTitleTextView(
-                                    preText: "Tell us what’s\n",
-                                    boldText: "important",
-                                    postText: " to you"
+                                    preText: "Chart your \n",
+                                    boldText: "path",
+                                    postText: " to success"
                                 )
                                 Spacer()
                             }
                         }
                         .frame(width: geometry.size.width / 2)
-                        HStack {
-                            Text("Finally, we’re curious...\n")
-                            + Text("What brought you to Permanent.org")
-                                .bold()
-                            + Text("?")
-                        }
-                        .font(
-                            .custom(
-                                "Usual-Regular",
-                                fixedSize: 16)
-                        )
-                        .foregroundColor(.blue25)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .lineSpacing(8.0)
-                        .padding(.top, 20)
+                        
+                        Text("Let’s set some goals. Everyone has unique goals for preserving their legacy. We want to learn more about how we can help you achieve yours. \n\nMy goal is to...")
+                            .textStyle(UsualRegularTextStyle())
+                            .foregroundColor(.blue25)
+                            .lineSpacing(8.0)
+                            .padding(.top, 20)
                     }
                     ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 24) {
-                            ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
+                            ForEach(OnboardingPath.allCases, id: \.self) { path in
                                 Button {
-                                    onboardingValues.toggleWhatsImportant(whatsImportant: item)
+                                    viewModel.togglePath(path: path)
                                 } label: {
-                                    OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
+                                    OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path))
                                 }
-                                .padding(.trailing, item == .professional ? 0 : 15)
+                                .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                             }
                         }
-                    }
-                    .onAppear {
-                        UIScrollView.appearance().bounces = false
-                    }
-                    .onDisappear {
-                        UIScrollView.appearance().bounces = true
                     }
                     .padding(.top, 15)
                     Spacer(minLength: 100)
                 }
-                HStack(spacing: 32) {
+                HStack(spacing: 0) {
                     Spacer(minLength: geometry.size.width / 2)
                     HStack(spacing: 32) {
                         SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
@@ -151,11 +126,11 @@ struct OnboardingWhatsImportantView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    var onboardingViewModel = OnboardingChartYourPathViewModel(containerViewModel: OnboardingContainerViewModel(username: "none", password: "none"))
     
     return ZStack {
         Color(.primary)
-        OnboardingWhatsImportantView(onboardingValues: onboardingViewModel) {
+        OnboardingChartYourPathView(viewModel: onboardingViewModel) {
             
         } nextButton: {
             

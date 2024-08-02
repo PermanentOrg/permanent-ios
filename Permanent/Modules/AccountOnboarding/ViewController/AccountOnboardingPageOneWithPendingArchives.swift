@@ -55,8 +55,6 @@ class AccountOnboardingPageOneWithPendingArchives: BaseViewController<AccountOnb
                             self?.hideSpinner()
                             
                             if status {
-                                UserDefaults.standard.set(1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-                                
                                 AppDelegate.shared.rootViewController.setDrawerRoot()
                             } else {
                                 self?.showErrorAlert(message: .errorMessage)

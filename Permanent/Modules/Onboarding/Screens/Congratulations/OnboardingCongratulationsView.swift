@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct OnboardingCongratulationsView: View {
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingCongratulationsViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -47,7 +47,7 @@ struct OnboardingCongratulationsView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
-                            ForEach(onboardingValues.allArchives.sorted(by: {
+                            ForEach(viewModel.containerViewModel.allArchives.sorted(by: {
                                 let isFirstItem = $0.accessType.lowercased().contains("owner")
                                 let isSecondItem = $1.accessType.lowercased().contains("owner")
                                 
@@ -96,10 +96,10 @@ struct OnboardingCongratulationsView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 32) {
-                        if !onboardingValues.allArchives.isEmpty {
+                        if !viewModel.containerViewModel.allArchives.isEmpty {
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 32) {
-                                    ForEach(onboardingValues.allArchives.sorted(by: {
+                                    ForEach(viewModel.containerViewModel.allArchives.sorted(by: {
                                         let isFirstItem = $0.accessType.lowercased().contains("owner")
                                         let isSecondItem = $1.accessType.lowercased().contains("owner")
                                         
@@ -164,8 +164,8 @@ struct OnboardingCongratulationsView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    onboardingViewModel.allArchives = [
+    var onboardingViewModel = OnboardingCongratulationsViewModel(containerViewModel: OnboardingContainerViewModel(username: "", password: ""))
+    onboardingViewModel.containerViewModel.allArchives = [
         OnboardingArchive(fullname: "Documents", accessType: "owner", status: ArchiveVOData.Status.pending, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.ok, archiveID: 222, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 4444, thumbnailURL: "", isThumbnailGenerated: false),
@@ -174,7 +174,7 @@ struct OnboardingCongratulationsView: View {
     
     return ZStack {
         Color(.primary)
-        OnboardingCongratulationsView(onboardingValues: onboardingViewModel) {
+        OnboardingCongratulationsView(viewModel: onboardingViewModel) {
             
         } nextButton: {
             

@@ -10,6 +10,7 @@ import KeychainSwift
 
 enum BannerType: String {
     case legacy = "org.permanent.banner.legacy"
+    case noBanner
 }
 
 extension BannerType {
@@ -18,6 +19,8 @@ extension BannerType {
         switch self {
         case .legacy:
             return "Legacy Planning"
+        default:
+            return ""
         }
     }
     
@@ -25,6 +28,8 @@ extension BannerType {
         switch self {
         case .legacy:
             return "Your Legacy Plan will determine when, how, and with whom your materials will be shared when you are gone."
+        default:
+            return ""
         }
     }
     
@@ -32,6 +37,8 @@ extension BannerType {
         switch self {
         case .legacy:
             return UIImage(named: "legacyPlanning")
+        default:
+            return UIImage(named: "")
         }
     }
 }
@@ -47,6 +54,9 @@ extension BannerType {
     
     mutating func shouldShowBanner() -> Bool {
         guard let key = getKey() else {
+            return false
+        }
+        if self == .noBanner {
             return false
         }
         guard let show = KeychainSwift().getBool(key) else {
