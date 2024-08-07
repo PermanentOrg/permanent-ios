@@ -97,20 +97,28 @@ struct OnboardingChartYourPathView: View {
                             .lineSpacing(8.0)
                             .padding(.top, 20)
                     }
-                    ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 24) {
-                            ForEach(OnboardingPath.allCases, id: \.self) { path in
-                                Button {
-                                    viewModel.togglePath(path: path)
-                                } label: {
-                                    OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path))
+                    GeometryReader { gridGeometry in
+                        ScrollView(showsIndicators: false) {
+                            LazyVGrid(columns: columns, spacing: 24) {
+                                ForEach(OnboardingPath.allCases, id: \.self) { path in
+                                    Button {
+                                        viewModel.togglePath(path: path)
+                                    } label: {
+                                        OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path), height: gridGeometry.size.height / 4)
+                                    }
+                                    .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                                 }
-                                .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                             }
+                            .onAppear {
+                                UIScrollView.appearance().bounces = false
+                            }
+                            .onDisappear {
+                                UIScrollView.appearance().bounces = true
+                            }
+                            .padding(.top, 15)
+                            Spacer(minLength: 100)
                         }
                     }
-                    .padding(.top, 15)
-                    Spacer(minLength: 100)
                 }
                 HStack(spacing: 0) {
                     Spacer(minLength: geometry.size.width / 2)

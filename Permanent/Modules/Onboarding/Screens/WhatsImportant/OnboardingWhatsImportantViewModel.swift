@@ -35,12 +35,25 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
                 }
             }
         } else {
-            self.addTags { error in
-                self.handleTagsAdded(error: error, completionBlock: completionBlock)
+            self.getAccountArchives { error in
+                if error == nil {
+                    let acceptedArchive = self.containerViewModel.allArchivesVO.filter({ archive in
+                        archive.archiveVO?.status == .ok
+                    }).first
+                    if let archiveVO = acceptedArchive?.archiveVO, let archiveID = archiveVO.archiveID {
+                        self.updateAccount(withDefaultArchiveId: archiveID) { accountVO, error in
+                            self.handleAccountUpdate(accountVO: accountVO, archiveVO: archiveVO, completionBlock: completionBlock)
+                        }
+                    } else {
+                        self.handleError(completionBlock)
+                    }
+                } else {
+                    self.handleError(completionBlock)
+                }
             }
         }
     }
-
+    
     private func handleAccountUpdate(accountVO: AccountVOData?, archiveVO: ArchiveVOData, completionBlock: @escaping ServerResponse) {
         if accountVO != nil {
             self.changeArchive(archiveVO) { success, error in
@@ -66,23 +79,16 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
             self.handleError(completionBlock)
         }
     }
-
+    
     private func handleTagsAdded(error: Error?, completionBlock: @escaping ServerResponse) {
         if error == nil {
-            self.getAccountArchives { error in
-                self.containerViewModel.isLoading = false
-                if error == nil {
-                    completionBlock(.success)
-                } else {
-                    self.containerViewModel.showAlert = true
-                    completionBlock(.error(message: .errorMessage))
-                }
-            }
+            completionBlock(.success)
+            containerViewModel.isLoading = false
         } else {
             self.handleError(completionBlock)
         }
     }
-
+    
     private func handleError(_ completionBlock: @escaping ServerResponse) {
         self.containerViewModel.isLoading = false
         self.containerViewModel.showAlert = true
@@ -176,9 +182,11 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
     func setCurrentArchive(_ archive: ArchiveVOData) {
         AuthenticationManager.shared.session?.selectedArchive = archive
     }
-
+    
     func getAccountArchives(_ completionBlock: @escaping ((Error?) -> Void)) {
+        containerViewModel.isLoading = true
         guard let accountId: Int = AuthenticationManager.shared.session?.account.accountID else {
+            containerViewModel.isLoading = false
             completionBlock(APIError.unknown)
             return
         }
@@ -201,7 +209,7 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
                         if let fullName = archive.archiveVO?.fullName,
                            let status = archive.archiveVO?.status,
                            let archiveID = archive.archiveVO?.archiveID,
-                            status == ArchiveVOData.Status.pending || status == ArchiveVOData.Status.ok {
+                           status == ArchiveVOData.Status.ok {
                             containerViewModel.allArchives.append(OnboardingArchive(fullname: containerViewModel.fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID, thumbnailURL: archive.archiveVO?.thumbURL200 ?? "", isThumbnailGenerated: archive.archiveVO?.thumbStatus != .genAvatar ? true : false))
                         }
                     }
@@ -217,5 +225,4 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
             }
         }
     }
-    
 }

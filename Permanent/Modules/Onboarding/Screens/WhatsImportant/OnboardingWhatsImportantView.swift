@@ -122,26 +122,28 @@ struct OnboardingWhatsImportantView: View {
                         .lineSpacing(8.0)
                         .padding(.top, 20)
                     }
-                    ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 24) {
-                            ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
-                                Button {
-                                    viewModel.toggleWhatsImportant(whatsImportant: item)
-                                } label: {
-                                    OnboardingItemView(description: item.description, isSelected: viewModel.containerViewModel.selectedWhatsImportant.contains(item))
+                    GeometryReader { gridGeometry in
+                        ScrollView(showsIndicators: false) {
+                            LazyVGrid(columns: columns, spacing: 24) {
+                                ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
+                                    Button {
+                                        viewModel.toggleWhatsImportant(whatsImportant: item)
+                                    } label: {
+                                        OnboardingItemView(description: item.description, isSelected: viewModel.containerViewModel.selectedWhatsImportant.contains(item), height: gridGeometry.size.height / 4)
+                                    }
+                                    .padding(.trailing, item == .professional ? 0 : 15)
                                 }
-                                .padding(.trailing, item == .professional ? 0 : 15)
                             }
                         }
+                        .onAppear {
+                            UIScrollView.appearance().bounces = false
+                        }
+                        .onDisappear {
+                            UIScrollView.appearance().bounces = true
+                        }
+                        .padding(.top, 15)
+                        Spacer(minLength: 100)
                     }
-                    .onAppear {
-                        UIScrollView.appearance().bounces = false
-                    }
-                    .onDisappear {
-                        UIScrollView.appearance().bounces = true
-                    }
-                    .padding(.top, 15)
-                    Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {
                     Spacer(minLength: geometry.size.width / 2)

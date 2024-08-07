@@ -37,16 +37,19 @@ struct OnboardingInvitedWelcomeView: View {
                     .lineSpacing(8.0)
                     .multilineTextAlignment(.leading)
                 VStack(spacing: 20) {
-                    ForEach(viewModel.containerViewModel.allArchives) { archive in
+                    ForEach(viewModel.containerViewModel.allArchives, id: \.id) { archive in
                         if archive.status == .ok || archive.status == .pending {
                             ArchiveDetailsView(archive: archive, showStatus: true, acceptArchive: {
                                 viewModel.acceptPendingArchive(archive: archive)
                             })
-                            Rectangle()
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                                .opacity(0.16)
-                                .cornerRadius(30)
+                            if viewModel.containerViewModel.allArchives.last?.id != archive.id {
+                                Rectangle()
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                                    .opacity(0.16)
+                                    .cornerRadius(30)
+                            }
+
                         }
                     }
                 }
@@ -101,11 +104,13 @@ struct OnboardingInvitedWelcomeView: View {
                                 ArchiveDetailsView(archive: archive, showStatus: true, acceptArchive: {
                                     viewModel.acceptPendingArchive(archive: archive)
                                 })
-                                Rectangle()
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
-                                    .opacity(0.16)
-                                    .cornerRadius(30)
+                                if viewModel.containerViewModel.allArchives.last?.id != archive.id {
+                                    Rectangle()
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                                        .opacity(0.16)
+                                        .cornerRadius(30)
+                                }
                             }
                         }
                     }

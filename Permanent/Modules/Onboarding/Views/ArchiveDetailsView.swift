@@ -11,6 +11,7 @@ struct ArchiveDetailsView: View {
     var thumbnail: Image = Image(.onboardingArchiveBox)
     var archive: OnboardingArchive
     var showStatus: Bool = false
+    var isLoading: Bool = false
     var acceptArchive: (() -> Void) = { }
     
     
@@ -46,10 +47,14 @@ struct ArchiveDetailsView: View {
                             .frame(width: 24, height: 24)
                     } else if archive.status == .pending {
                         Button(action: acceptArchive) {
-                            HStack(spacing: 0) {
+                            HStack(spacing: 5) {
                                 Text("Accept")
                                     .textStyle(UsualSmallXXXSemiBoldTextStyle())
                                     .foregroundColor(.white)
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                }
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
@@ -112,10 +117,14 @@ struct ArchiveDetailsView: View {
                             .frame(width: 24, height: 24)
                     } else if archive.status == .pending {
                         Button(action: acceptArchive) {
-                            HStack(spacing: 0) {
+                            HStack(spacing: 5) {
                                 Text("Accept")
                                     .textStyle(UsualSmallXXXSemiBoldTextStyle())
                                     .foregroundColor(.white)
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                }
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
@@ -157,16 +166,16 @@ struct ArchiveDetailsView: View {
 }
 
 #Preview {
-    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.ok, archiveID: 1212, thumbnailURL: "", isThumbnailGenerated: false)
+    var archivePending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.pending, archiveID: 1212, thumbnailURL: "", isThumbnailGenerated: false)
     var archiveSecondPending = OnboardingArchive(fullname: "John Smith", accessType: "Viewer", status: ArchiveVOData.Status.pending, archiveID: 1212, thumbnailURL: "", isThumbnailGenerated: false)
     var archiveOk = OnboardingArchive(fullname: "John Wade", accessType: "Owner", status: ArchiveVOData.Status.ok, archiveID: 322, thumbnailURL: "https://stagingcdn.permanent.org/018i-0000.thumb.w500?t=1753775559&Expires=1753775559&Signature=fPtRSvSdX1~fd5Bw8MlaUpJhUanzE0o~WM2k92IPMtscIzHJMybFcPh6aCXbASL777fvn5GXOv2UPdSMSzA0UPCXLy6pXcl4iiwFSbyiS7Zw5kUCIQdf45y013nos4CBM9pnl1UcfWwUJGI~gu7Vf5FwrZb3sEsXq2FVf2YN96WbIpFKGWo8sdlC4oN~ubIpmVsoUQDZ-F~jwmI2hfjYwXom8KXU4c70C2BmeF6qrLdneANmeR4kOqoQa78VLJRMII-nu75TEHpnhhm400fMZ61Om-rFLirsdhdrPfwFmfigd1ir8ja3iaJzmXSLD6LA8CwgjMMN1tBWf4qXUmddIw__&Key-Pair-Id=APKAJP2D34UGZ6IG443Q", isThumbnailGenerated: true)
     return ZStack {
         Color(.primary)
         VStack {
-            ArchiveDetailsView(archive: archivePending, showStatus: true) {
+            ArchiveDetailsView(archive: archivePending, showStatus: true, isLoading:  true) {
                 print("Accepted")
             }
-            ArchiveDetailsView(archive: archiveSecondPending, showStatus: false) {
+            ArchiveDetailsView(archive: archiveSecondPending, showStatus: true, isLoading:  false) {
                 print("Accepted")
             }
             ArchiveDetailsView(archive: archiveOk, showStatus: false) {

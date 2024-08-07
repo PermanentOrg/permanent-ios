@@ -9,6 +9,7 @@ import SwiftUI
 struct OnboardingItemView: View {
     var description: String
     var isSelected: Bool = false
+    var height: CGFloat = Constants.Design.isPhone ? 96 : 120
     
     var body: some View {
         if isSelected {
@@ -29,7 +30,7 @@ struct OnboardingItemView: View {
                     .padding(.vertical, 16)
                     .padding(.horizontal, Constants.Design.isPhone ? 24 : 32)
                 }
-                .frame(height: Constants.Design.isPhone ? 96 : 120)
+                .frame(height: height)
                 .background(Gradient.lightDarkPurpleGradient)
                 .cornerRadius(12)
                 .overlay(
@@ -50,15 +51,16 @@ struct OnboardingItemView: View {
                             .textStyle(UsualSmallXRegularTextStyle())
                             .accentColor(.white)
                             .foregroundColor(.white)
-                            .lineLimit(2)
+                            .lineLimit(3)
                             .multilineTextAlignment(.leading)
                             .padding(.leading, 10)
+                            .minimumScaleFactor(0.85)
                         Spacer()
                     }
                     .padding(.vertical, 16)
                     .padding(.horizontal, Constants.Design.isPhone ? 24 : 16)
                 }
-                .frame(height: Constants.Design.isPhone ? 96 : 120)
+                .frame(height: height)
                 .background(Gradient.lightDarkPurpleGradient)
                 .cornerRadius(12)
                 .overlay(
@@ -86,7 +88,7 @@ struct OnboardingItemView: View {
                     .padding(.vertical, 16)
                     .padding(.horizontal, Constants.Design.isPhone ? 24 : 32)
                 }
-                .frame(height: Constants.Design.isPhone ? 96 : 120)
+                .frame(height: height)
                 .frame(maxWidth: .infinity)
                 .background(Color(red: 0.07, green: 0.11, blue: 0.29))
                 .cornerRadius(12)
@@ -111,12 +113,13 @@ struct OnboardingItemView: View {
                             .lineLimit(3)
                             .multilineTextAlignment(.leading)
                             .padding(.leading, 10)
+                            .minimumScaleFactor(0.85)
                         Spacer()
                     }
                     .padding(.vertical, 16)
                     .padding(.horizontal, Constants.Design.isPhone ? 24 : 16)
                 }
-                .frame(height: Constants.Design.isPhone ? 96 : 120)
+                .frame(height: height)
                 .frame(maxWidth: .infinity)
                 .background(Color(.blue900))
                 .cornerRadius(12)
@@ -133,9 +136,11 @@ struct OnboardingItemView: View {
 #Preview {
     return ZStack {
         Color(.black)
-        HStack(spacing: 32) {
+        VStack(spacing: 32) {
             OnboardingItemView(description: "Create a plan for passing on my digital materials", isSelected: true)
-            OnboardingItemView(description: "Create a public archive to share a legacy", isSelected: false)
+                .frame(width: 200)
+            OnboardingItemView(description: "Create a plan for passing on my digital materials", isSelected: false)
+                .frame(width: 200)
         }
     }
     .ignoresSafeArea()
