@@ -82,8 +82,19 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
     
     private func handleTagsAdded(error: Error?, completionBlock: @escaping ServerResponse) {
         if error == nil {
-            completionBlock(.success)
-            containerViewModel.isLoading = false
+            if containerViewModel.creatingNewArchive {
+                self.getAccountArchives { error in
+                    self.containerViewModel.isLoading = false
+                    if error == nil {
+                        completionBlock(.success)
+                    } else {
+                        self.handleError(completionBlock)
+                    }
+                }
+            } else {
+                containerViewModel.isLoading = false
+                completionBlock(.success)
+            }
         } else {
             self.handleError(completionBlock)
         }
