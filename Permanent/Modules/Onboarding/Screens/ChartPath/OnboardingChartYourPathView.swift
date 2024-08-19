@@ -8,7 +8,7 @@ import SwiftUI
 
 struct OnboardingChartYourPathView: View {
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingChartYourPathViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -42,9 +42,9 @@ struct OnboardingChartYourPathView: View {
                             VStack(alignment: .leading) {
                                 ForEach(OnboardingPath.allCases, id: \.id) { path in
                                     Button {
-                                        onboardingValues.togglePath(path: path)
+                                        viewModel.togglePath(path: path)
                                     } label: {
-                                        OnboardingItemView(description: path.description, isSelected: onboardingValues.selectedPath.contains(path))
+                                        OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path))
                                     }
                                     .padding(.bottom, path.description.contains("Something else") ? 4 : 0)
                                 }
@@ -97,20 +97,28 @@ struct OnboardingChartYourPathView: View {
                             .lineSpacing(8.0)
                             .padding(.top, 20)
                     }
-                    ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 24) {
-                            ForEach(OnboardingPath.allCases, id: \.self) { path in
-                                Button {
-                                    onboardingValues.togglePath(path: path)
-                                } label: {
-                                    OnboardingItemView(description: path.description, isSelected: onboardingValues.selectedPath.contains(path))
+                    GeometryReader { gridGeometry in
+                        ScrollView(showsIndicators: false) {
+                            LazyVGrid(columns: columns, spacing: 24) {
+                                ForEach(OnboardingPath.allCases, id: \.self) { path in
+                                    Button {
+                                        viewModel.togglePath(path: path)
+                                    } label: {
+                                        OnboardingItemView(description: path.description, isSelected: viewModel.containerViewModel.selectedPath.contains(path), height: gridGeometry.size.height / 4)
+                                    }
+                                    .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                                 }
-                                .padding(.trailing, path == .createPublicArchive || path == .somethingElse ? 0 : 15)
                             }
+                            .onAppear {
+                                UIScrollView.appearance().bounces = false
+                            }
+                            .onDisappear {
+                                UIScrollView.appearance().bounces = true
+                            }
+                            .padding(.top, 15)
+                            Spacer(minLength: 100)
                         }
                     }
-                    .padding(.top, 15)
-                    Spacer(minLength: 100)
                 }
                 HStack(spacing: 0) {
                     Spacer(minLength: geometry.size.width / 2)
@@ -126,11 +134,11 @@ struct OnboardingChartYourPathView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    var onboardingViewModel = OnboardingChartYourPathViewModel(containerViewModel: OnboardingContainerViewModel(username: "none", password: "none"))
     
     return ZStack {
         Color(.primary)
-        OnboardingChartYourPathView(onboardingValues: onboardingViewModel) {
+        OnboardingChartYourPathView(viewModel: onboardingViewModel) {
             
         } nextButton: {
             

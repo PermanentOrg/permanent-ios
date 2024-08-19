@@ -7,11 +7,10 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @StateObject var onboardingValues = OnboardingArchiveViewModel(username: "", password: "")
+    @ObservedObject var viewModel: OnboardingContainerViewModel
+    
     @State private var isBack = false
     @Environment(\.presentationMode) var presentationMode
-    @State var contentType: OnboardingContentType = .none
-    @State var firstViewContentType: OnboardingContentType = .none
     @State var bottomButtonsPadding: CGFloat =  40
 
     var body: some View {
@@ -33,48 +32,45 @@ struct OnboardingView: View {
                     .onTapGesture {
                         dismissKeyboard()
                     }
-                if contentType != .none {
-                    switch contentType {
+                if viewModel.contentType != .none {
+                    switch viewModel.contentType {
                     case .welcome:
-                        OnboardingWelcomeView(onboardingStorageValues: onboardingValues) {
+                        OnboardingWelcomeView(viewModel: OnboardingInvitedWelcomeViewModel(containerViewModel: viewModel), buttonAction: {
                             isBack = false
                             withAnimation {
-                                contentType = .createArchive
+                                viewModel.contentType = .createArchive
                             }
-                        }
+                        })
                         .transition(AnyTransition.asymmetric(
                             insertion:.move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
                     case .pendingWelcome:
-                        OnboardingInvitedWelcomeView(onboardingStorageValues: onboardingValues) {
+                        OnboardingInvitedWelcomeView(viewModel: OnboardingInvitedWelcomeViewModel(containerViewModel: viewModel)) {
                             isBack = false
                             withAnimation {
-                                contentType = .congratulations
+                                viewModel.contentType = .chartYourPath
                             }
                         } newArchiveButtonAction: {
                             isBack = false
                             withAnimation {
-                                contentType = .createArchive
+                                viewModel.contentType = .createArchive
                             }
                         }
-                        
                         .transition(AnyTransition.asymmetric(
                             insertion:.move(edge: isBack ? .leading : .trailing),
                             removal: .opacity)
                         )
-                        
                     case .createArchive:
-                        OnboardingCreateFirstArchiveView(onboardingValues: onboardingValues) {
+                        OnboardingCreateFirstArchiveView(viewModel: OnboardingCreateFirstArchiveViewModel(containerViewModel: viewModel)) {
                             isBack = true
                             withAnimation {
-                                contentType = firstViewContentType
+                                viewModel.contentType = viewModel.firstViewContentType
                             }
-                            
                         } nextButton: {
                             isBack = false
                             withAnimation {
-                                contentType = .setArchiveName
+                                viewModel.contentType = .setArchiveName
                             }
                         }
                         .transition(AnyTransition.asymmetric(
@@ -83,16 +79,16 @@ struct OnboardingView: View {
                         )
                         
                     case .setArchiveName:
-                        OnboardingArchiveName(onboardingValues: onboardingValues) {
+                        OnboardingArchiveNameView(viewModel: OnboardingArchiveNameViewModel(containerViewModel: viewModel)) {
                             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             isBack = true
                             withAnimation {
-                                contentType = .createArchive
+                                viewModel.contentType = .createArchive
                             }
                         } nextButton: {
                             isBack = false
                             withAnimation {
-                                contentType = .chartYourPath
+                                viewModel.contentType = .chartYourPath
                             }
                         }
                         .transition(AnyTransition.asymmetric(
@@ -101,16 +97,20 @@ struct OnboardingView: View {
                         )
                     
                     case .chartYourPath:
-                        OnboardingChartYourPathView(onboardingValues: onboardingValues) {
+                        OnboardingChartYourPathView(viewModel: OnboardingChartYourPathViewModel(containerViewModel: viewModel)) {
                             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             isBack = true
                             withAnimation {
-                                contentType = .setArchiveName
+                                if viewModel.creatingNewArchive {
+                                    viewModel.contentType = .setArchiveName
+                                } else {
+                                    viewModel.contentType = viewModel.firstViewContentType
+                                }
                             }
                         } nextButton: {
                             isBack = false
                             withAnimation {
-                                contentType = .whatsImportant
+                                viewModel.contentType = .whatsImportant
                             }
                         } skipButton: {
                             
@@ -121,20 +121,16 @@ struct OnboardingView: View {
                         )
                         
                     case .whatsImportant:
-                        OnboardingWhatsImportantView(onboardingValues: onboardingValues) {
+                        OnboardingWhatsImportantView(viewModel: OnboardingWhatsImportantViewModel(containerViewModel: viewModel)) {
                             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             isBack = true
                             withAnimation {
-                                contentType = .chartYourPath
+                                viewModel.contentType = .chartYourPath
                             }
                         } nextButton: {
-                            onboardingValues.finishOnboard(_:) { response in
-                                if response == .success {
-                                    isBack = false
-                                    withAnimation {
-                                        contentType = .congratulations
-                                    }
-                                }
+                            isBack = false
+                            withAnimation {
+                                viewModel.contentType = .congratulations
                             }
                         } skipButton: {
                             
@@ -145,7 +141,7 @@ struct OnboardingView: View {
                         )
                         
                     case .congratulations:
-                        OnboardingCongratulationsView(onboardingValues: onboardingValues) {
+                        OnboardingCongratulationsView(viewModel: OnboardingCongratulationsViewModel(containerViewModel: viewModel)) {
                             
                         } nextButton: {
                             AppDelegate.shared.rootViewController.setDrawerRoot()
@@ -161,20 +157,20 @@ struct OnboardingView: View {
             .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 70 : 48)
             LoadingOverlay()
-                .opacity(onboardingValues.isLoading  ? 1 : 0)
-                .animation(.easeInOut(duration: 0.5), value: onboardingValues.isLoading)
-                .allowsHitTesting(onboardingValues.isLoading)
+                .opacity(viewModel.isLoading  ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5), value: viewModel.isLoading)
+                .allowsHitTesting(viewModel.isLoading)
         }
         .ignoresSafeArea(.all)
-        .alert(isPresented: $onboardingValues.showAlert) {
+        .alert(isPresented: $viewModel.showAlert) {
             Alert(title: Text("Error"), message: Text("Something went wrong. Please try again later."), dismissButton: .default(Text(String.ok)) {
-                onboardingValues.showAlert = false
+                viewModel.showAlert = false
             })
         }
-        .onChange(of: onboardingValues.initIsLoading, perform: { loading in
+        .onChange(of: viewModel.initIsLoading, perform: { loading in
             if !loading {
-                contentType = onboardingValues.allArchives.isEmpty ? .welcome : .pendingWelcome
-                firstViewContentType = contentType
+                viewModel.contentType = viewModel.allArchives.isEmpty ? .welcome : .pendingWelcome
+                viewModel.firstViewContentType = viewModel.contentType
             }
         })
     }
@@ -182,7 +178,7 @@ struct OnboardingView: View {
     
     var topProgressBar: some View {
         HStack(spacing: Constants.Design.isPhone ? 8 : 24) {
-            switch contentType {
+            switch viewModel.contentType {
             case .none:
                 DividerSmallBarView(type: .empty)
                 DividerSmallBarView(type: .empty)
@@ -234,18 +230,20 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    onboardingViewModel.fullName = "long username name name"
+    var onboardingViewModel = OnboardingContainerViewModel(username: "none", password: "none")
+    onboardingViewModel.fullName = "really long username"
     onboardingViewModel.allArchives = [
         OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Files", accessType: "admin", status: ArchiveVOData.Status.pending, archiveID: 355, thumbnailURL: "", isThumbnailGenerated: false),
         OnboardingArchive(fullname: "Photos", accessType: "editor", status: ArchiveVOData.Status.pending, archiveID: 400, thumbnailURL: "", isThumbnailGenerated: false)
         ]
     onboardingViewModel.archiveName = "new archive"
+    onboardingViewModel.contentType = .pendingWelcome
+    onboardingViewModel.firstViewContentType = .pendingWelcome
     
     return ZStack {
         Color(.primary)
-        OnboardingView(onboardingValues: onboardingViewModel, contentType: .pendingWelcome, firstViewContentType: .pendingWelcome)
+        OnboardingView(viewModel: onboardingViewModel)
     }
     .ignoresSafeArea()
 }

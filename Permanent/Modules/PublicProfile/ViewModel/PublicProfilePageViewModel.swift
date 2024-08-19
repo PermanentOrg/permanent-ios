@@ -61,7 +61,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
     init(_ archiveData: ArchiveVOData) {
         self.archiveData = archiveData
         guard let archiveType = archiveData.type else { return }
-        self.archiveType = ArchiveType(rawValue: archiveType)
+        self.archiveType = ArchiveType.byRawValue(archiveType)
     }
     
     func getProfileViewData() -> [ProfileSection: [ProfileCellType]] {

@@ -53,6 +53,19 @@ enum ArchiveType: String, CaseIterable, Identifiable {
         }
     }
     
+    static func byRawValue(_ rawType: String) -> ArchiveType{
+        switch rawType {
+        case "type.archive.person":
+            return .person
+        case "type.archive.family":
+            return .family
+        case "type.archive.organization":
+            return .organization
+        default:
+            return .person
+        }
+    }
+    
     var aboutPublicPageTitle: String {
         return "About This Archive".localized()
     }

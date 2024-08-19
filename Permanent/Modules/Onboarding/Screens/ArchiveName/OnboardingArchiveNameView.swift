@@ -6,10 +6,10 @@
 
 import SwiftUI
 
-struct OnboardingArchiveName: View {
+struct OnboardingArchiveNameView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingArchiveNameViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -32,8 +32,8 @@ struct OnboardingArchiveName: View {
                         VStack(alignment: .leading, spacing: 24) {
                             OnboardingTitleTextView(
                                 preText: "Create your \n",
-                                boldText: "\(onboardingValues.archiveType.onboardingType)",
-                                postText: "\(onboardingValues.archiveType == .familyHistory ? "\n" : " ")archive"
+                                boldText: "\(viewModel.containerViewModel.archiveType.onboardingType)",
+                                postText: "\(viewModel.containerViewModel.archiveType == .familyHistory ? "\n" : " ")archive"
                             )
                             .onTapGesture {
                                 dismissKeyboard()
@@ -45,7 +45,7 @@ struct OnboardingArchiveName: View {
                                 .onTapGesture {
                                     dismissKeyboard()
                                 }
-                            CustomBorderTextField(textFieldText: $onboardingValues.archiveName, placeholder: "Name...")
+                            CustomBorderTextField(textFieldText: $viewModel.containerViewModel.archiveName, placeholder: "Name...")
                             Spacer(minLength: 90)
                                 .id(0)
                                 .onTapGesture {
@@ -71,11 +71,11 @@ struct OnboardingArchiveName: View {
                 }
                 HStack(alignment: .center) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                    SmallRoundButtonImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Next", action: nextButton)
+                    SmallRoundButtonImageView(isDisabled: viewModel.containerViewModel.archiveName.isEmpty, text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
                 .sheet(isPresented: $presentSelectArchivesType, content: {
-                    OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+                    OnboardingSelectArchiveTypeView(viewModel: OnboardingSelectArchiveTypeViewModel(containerViewModel: viewModel.containerViewModel))
                 })
             }
         }
@@ -88,7 +88,7 @@ struct OnboardingArchiveName: View {
                     HStack() {
                         OnboardingTitleTextView(
                             preText: "Create your \n",
-                            boldText: "\(onboardingValues.archiveType.onboardingType)",
+                            boldText: "\(viewModel.containerViewModel.archiveType.onboardingType)",
                             postText: "\nArchive"
                         )
                         Spacer()
@@ -107,7 +107,7 @@ struct OnboardingArchiveName: View {
                                 .onTapGesture {
                                     dismissKeyboard()
                                 }
-                            CustomBorderTextField(textFieldText: $onboardingValues.archiveName, placeholder: "Name...")
+                            CustomBorderTextField(textFieldText: $viewModel.containerViewModel.archiveName, placeholder: "Name...")
                             Spacer(minLength: 60)
                                 .id(1)
                                 .onTapGesture {
@@ -133,7 +133,7 @@ struct OnboardingArchiveName: View {
                 }
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                    RoundButtonRightImageView(isDisabled: onboardingValues.archiveName.isEmpty, text: "Next", action: nextButton)
+                    RoundButtonRightImageView(isDisabled: viewModel.containerViewModel.archiveName.isEmpty, text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)
             }

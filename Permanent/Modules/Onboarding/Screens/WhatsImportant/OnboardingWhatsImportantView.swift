@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingWhatsImportantView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingWhatsImportantViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -43,9 +43,9 @@ struct OnboardingWhatsImportantView: View {
                             VStack(alignment: .leading) {
                                 ForEach(OnboardingWhatsImportant.allCases, id: \.id) { item in
                                     Button {
-                                        onboardingValues.toggleWhatsImportant(whatsImportant: item)
+                                        viewModel.toggleWhatsImportant(whatsImportant: item)
                                     } label: {
-                                        OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
+                                        OnboardingItemView(description: item.description, isSelected: viewModel.containerViewModel.selectedWhatsImportant.contains(item))
                                     }
                                     .padding(.bottom, item.description.contains("Interest in digital preservation solutions") ? 4 : 0)
                                 }
@@ -68,11 +68,17 @@ struct OnboardingWhatsImportantView: View {
             }
             HStack(alignment: .center) {
                 SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.leftArrowShort), action: backButton)
-                SmallRoundButtonImageView(text: "Next", action: nextButton)
+                SmallRoundButtonImageView(text: "Next", action: {
+                    viewModel.finishOnboard(_:) { response in
+                        if response == .success {
+                            nextButton()
+                        }
+                    }
+                })
             }
             .padding(.bottom, 40)
             .sheet(isPresented: $presentSelectArchivesType, content: {
-                OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+                OnboardingSelectArchiveTypeView(viewModel: OnboardingSelectArchiveTypeViewModel(containerViewModel: viewModel.containerViewModel))
             })
         }
     }
@@ -116,32 +122,40 @@ struct OnboardingWhatsImportantView: View {
                         .lineSpacing(8.0)
                         .padding(.top, 20)
                     }
-                    ScrollView(showsIndicators: false) {
-                        LazyVGrid(columns: columns, spacing: 24) {
-                            ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
-                                Button {
-                                    onboardingValues.toggleWhatsImportant(whatsImportant: item)
-                                } label: {
-                                    OnboardingItemView(description: item.description, isSelected: onboardingValues.selectedWhatsImportant.contains(item))
+                    GeometryReader { gridGeometry in
+                        ScrollView(showsIndicators: false) {
+                            LazyVGrid(columns: columns, spacing: 24) {
+                                ForEach(OnboardingWhatsImportant.allCases, id: \.self) { item in
+                                    Button {
+                                        viewModel.toggleWhatsImportant(whatsImportant: item)
+                                    } label: {
+                                        OnboardingItemView(description: item.description, isSelected: viewModel.containerViewModel.selectedWhatsImportant.contains(item), height: gridGeometry.size.height / 4)
+                                    }
+                                    .padding(.trailing, item == .professional ? 0 : 15)
                                 }
-                                .padding(.trailing, item == .professional ? 0 : 15)
                             }
                         }
+                        .onAppear {
+                            UIScrollView.appearance().bounces = false
+                        }
+                        .onDisappear {
+                            UIScrollView.appearance().bounces = true
+                        }
+                        .padding(.top, 15)
+                        Spacer(minLength: 100)
                     }
-                    .onAppear {
-                        UIScrollView.appearance().bounces = false
-                    }
-                    .onDisappear {
-                        UIScrollView.appearance().bounces = true
-                    }
-                    .padding(.top, 15)
-                    Spacer(minLength: 100)
                 }
                 HStack(spacing: 32) {
                     Spacer(minLength: geometry.size.width / 2)
                     HStack(spacing: 32) {
                         SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                        RoundButtonRightImageView(text: "Next", action: nextButton)
+                        RoundButtonRightImageView(text: "Next", action: {
+                            viewModel.finishOnboard(_:) { response in
+                                if response == .success {
+                                    nextButton()
+                                }
+                            }
+                        })
                     }
                 }
                 .padding(.bottom, 40)
@@ -151,11 +165,11 @@ struct OnboardingWhatsImportantView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
-    
+    var onboardingViewModel = OnboardingWhatsImportantViewModel(containerViewModel: OnboardingContainerViewModel(username: nil, password: nil))
+
     return ZStack {
         Color(.primary)
-        OnboardingWhatsImportantView(onboardingValues: onboardingViewModel) {
+        OnboardingWhatsImportantView(viewModel: onboardingViewModel) {
             
         } nextButton: {
             

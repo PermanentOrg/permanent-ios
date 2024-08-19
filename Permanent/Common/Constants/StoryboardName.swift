@@ -42,7 +42,6 @@ enum ViewControllerId: String {
     case onboarding
     case login
     case recoverPassword
-    case welcomePage
     case verificationCode
     case termsConditions
     case twoStepVerification
@@ -144,9 +143,6 @@ enum ViewControllerId: String {
             
         case .tagDetails:
             return "TagDetails"
-            
-        case .welcomePage:
-            return "WelcomePage"
             
         case .passwordUpdate:
             return "PasswordUpdate"

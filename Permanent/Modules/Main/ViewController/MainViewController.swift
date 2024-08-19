@@ -517,7 +517,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func showBanner() {
-        var bannerType = BannerType.legacy
+        var bannerType = BannerType.noBanner
         if bannerType.shouldShowBanner() {
             let bannerView = BannerView(type: bannerType)
             bannerView.dismissAction = {
@@ -581,11 +581,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         case .success:
             refreshCollectionView()
             toggleFileAction(viewModel?.fileAction)
-            
-            let pendingInvitations = UserDefaults.standard.integer(forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-            if pendingInvitations != 0 {
-                displayWelcomePage()
-            }
             
         case .error(let message):
             showErrorAlert(message: message)
@@ -768,11 +763,6 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self.showErrorAlert(message: message)
             }
         })
-    }
-    
-    func displayWelcomePage() {
-        let vc = UIViewController.create(withIdentifier: .welcomePage, from: .onboarding) as! WelcomePageViewController
-        self.present(vc, animated: true, completion: nil)
     }
 }
 

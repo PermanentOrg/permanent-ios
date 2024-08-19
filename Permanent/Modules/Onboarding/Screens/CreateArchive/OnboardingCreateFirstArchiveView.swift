@@ -9,7 +9,7 @@ import SwiftUI
 struct OnboardingCreateFirstArchiveView: View {
     @State var presentSelectArchivesType: Bool = false
     @State private var dynamicHeight: CGFloat = 0
-    @ObservedObject var onboardingValues: OnboardingArchiveViewModel
+    @ObservedObject var viewModel: OnboardingCreateFirstArchiveViewModel
     
     var backButton: (() -> Void)
     var nextButton: (() -> Void)
@@ -38,7 +38,7 @@ struct OnboardingCreateFirstArchiveView: View {
                 
                 GradientArchiveButtonView(action: {
                     presentSelectArchivesType = true
-                }, archiveType: $onboardingValues.archiveType)
+                }, archiveType: $viewModel.containerViewModel.archiveType)
                 Spacer()
             }
             HStack(alignment: .center) {
@@ -48,7 +48,7 @@ struct OnboardingCreateFirstArchiveView: View {
             .padding(.bottom, 40)
         }
         .sheet(isPresented: $presentSelectArchivesType, content: {
-            OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+            OnboardingSelectArchiveTypeView(viewModel: OnboardingSelectArchiveTypeViewModel(containerViewModel: viewModel.containerViewModel))
         })
     }
     
@@ -77,7 +77,7 @@ struct OnboardingCreateFirstArchiveView: View {
                     }
                     GradientArchiveButtonView(action: {
                         presentSelectArchivesType = true
-                    }, archiveType: $onboardingValues.archiveType)
+                    }, archiveType: $viewModel.containerViewModel.archiveType)
                     Spacer()
                 }
                 HStack(spacing: 32) {
@@ -90,17 +90,17 @@ struct OnboardingCreateFirstArchiveView: View {
             .padding(.top, 10)
         }
         .sheet(isPresented: $presentSelectArchivesType, content: {
-            OnboardingSelectArchiveTypeView(onboardingValues: onboardingValues)
+            OnboardingSelectArchiveTypeView(viewModel: OnboardingSelectArchiveTypeViewModel(containerViewModel: viewModel.containerViewModel))
         })
     }
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingArchiveViewModel(username: "none", password: "none")
+    var onboardingViewModel = OnboardingCreateFirstArchiveViewModel(containerViewModel: OnboardingContainerViewModel(username: "", password: ""))
     
     return ZStack {
         Color(.primary)
-        OnboardingCreateFirstArchiveView(onboardingValues: onboardingViewModel) {
+        OnboardingCreateFirstArchiveView(viewModel: onboardingViewModel) {
             
         } nextButton: {
             
