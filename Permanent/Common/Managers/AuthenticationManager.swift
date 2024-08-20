@@ -89,6 +89,8 @@ class AuthenticationManager {
                     if loginError == .mfaToken {
                         mfaSession = MFASession(email: username, methodType: CodeVerificationType.mfa)
                         handler(.mfaToken)
+                    } else if loginError == .unknown {
+                        handler(.unknown)
                     } else {
                         handler(.error(message: loginError.description))
                     }
