@@ -3,21 +3,21 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'Permanent' do
-  pod 'Firebase/Analytics', '6.32.2'
-  pod 'Firebase/Crashlytics', '6.32.2'
-  pod 'Firebase/Messaging'
-  pod 'Firebase/RemoteConfig'
+  pod 'Firebase/Analytics', '11.1.0'
+  pod 'Firebase/Crashlytics', '11.1.0'
+  pod 'Firebase/Messaging', '11.1.0'
+  pod 'Firebase/RemoteConfig', '11.1.0'
   pod 'Protobuf', '3.22.3'
   pod 'ObjectMapper', '4.2.0'
   pod 'SDWebImage', '5.10.0'
   pod 'SDWebImageSwiftUI', '2.2.3'
   pod 'Sourcery', '1.4.1'
-  pod 'GoogleMaps', '6.1.1.0'
-  pod 'GooglePlaces', '6.1.1.0'
+  pod 'GoogleMaps', '8.4.0'
+  pod 'GooglePlaces', '8.5.0'
   pod 'KeychainSwift', '20.0'
   pod 'StripeApplePay', '22.8.1'
   pod 'SkeletonView', '1.30.4'
-  pod 'Mixpanel-swift'
+  pod 'Mixpanel-swift', '4.3.0'
 
   target 'PermanentTests' do
         inherit! :search_paths

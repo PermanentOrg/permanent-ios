@@ -100,8 +100,6 @@
 		5E2114932B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
-		5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */; };
-		5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
@@ -130,7 +128,6 @@
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
 		5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */; };
 		5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */; };
-		5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */; };
 		5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
 		5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */; };
 		5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */; };
@@ -182,12 +179,6 @@
 		5E473A052A41883600A20D85 /* TagEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED73B242613C30E002F9861 /* TagEndpoint.swift */; };
 		5E473A062A41886A00A20D85 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC1E3242549A43F00B71866 /* ArrayExtension.swift */; };
 		5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC915F4F254718FA00C86012 /* PHAssetExtension.swift */; };
-		5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */; };
-		5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */; };
-		5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */; };
-		5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */; };
-		5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */; };
-		5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */; };
 		5E4E4CCF29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */; };
 		5E4E4CD029826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */; };
 		5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E548E832B29F9D600DD2C59 /* AddStorageView.swift */; };
@@ -214,7 +205,6 @@
 		5E5EF853273B1E57004F7EBC /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E5EF852273B1E56004F7EBC /* Profile.storyboard */; };
 		5E5EF856273B23C3004F7EBC /* PublicProfilePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EF855273B23C3004F7EBC /* PublicProfilePageViewController.swift */; };
 		5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EF857273B2416004F7EBC /* PublicProfilePageViewModel.swift */; };
-		5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E60451C251206F9002E47CB /* OnboardingViewModel.swift */; };
 		5E60451E25120826002E47CB /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B0EB2424E67B6A003D90C6 /* SignUpViewController.swift */; };
 		5E604E552B4EADD8008C5034 /* BottomInfoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E604E542B4EADD8008C5034 /* BottomInfoMessageView.swift */; };
 		5E611E33261C681700B17491 /* TagDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E611E32261C681700B17491 /* TagDetailsViewController.swift */; };
@@ -447,11 +437,6 @@
 		5EE0689B2B9FAA5A004055A4 /* RoundButtonRightImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0689A2B9FAA5A004055A4 /* RoundButtonRightImageView.swift */; };
 		5EE0689D2BA05BA5004055A4 /* SmallRoundButtonImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0689C2BA05BA5004055A4 /* SmallRoundButtonImageView.swift */; };
 		5EE0ADB325F8216D008ABDC6 /* TagVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0ADB225F8216D008ABDC6 /* TagVO.swift */; };
-		5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FF524EE94DA00496AF7 /* PageViewController.swift */; };
-		5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */; };
-		5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */; };
-		5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */; };
-		5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */; };
 		5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */; };
 		5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */; };
 		5EE3E10E25A72DB8009BACA8 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */; };
@@ -895,11 +880,6 @@
 		F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E793D6294B5AB000CFCCA5 /* AuthTextField.swift */; };
 		F5EA7C81286DB56700001110 /* PreferencesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB0725825221494003E2F66 /* PreferencesManager.swift */; };
 		F5EA7C82286DC02C00001110 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC5501E255AB31800CA1574 /* FileHelper.swift */; };
-		F5EAD0632822BBC700EC2584 /* AccountOnboardingPageOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EAD0622822BBC700EC2584 /* AccountOnboardingPageOne.swift */; };
-		F5EAD0652822BBDC00EC2584 /* AccountOnboardingPageTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EAD0642822BBDC00EC2584 /* AccountOnboardingPageTwo.swift */; };
-		F5EAD0672822BBE900EC2584 /* AccountOnboardingPageThree.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EAD0662822BBE900EC2584 /* AccountOnboardingPageThree.swift */; };
-		F5EEB4CF281C033800D584AD /* AccountOnboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F5EEB4CE281C033800D584AD /* AccountOnboarding.storyboard */; };
-		F5EEB4D42821537600D584AD /* AccountOnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EEB4D32821537500D584AD /* AccountOnboardingViewController.swift */; };
 		F5EEB4D62821556C00D584AD /* AccountOnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EEB4D52821556C00D584AD /* AccountOnboardingViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -1032,8 +1012,6 @@
 		5E2114912B026CB300944386 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
-		5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOneWithPendingArchives.swift; sourceTree = "<group>"; };
-		5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageTwoWithPendingArchives.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1061,7 +1039,6 @@
 		5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsView.swift; sourceTree = "<group>"; };
 		5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveDetailsView.swift; sourceTree = "<group>"; };
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
-		5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
 		5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AccountRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
@@ -1076,12 +1053,6 @@
 		5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InputTextWithLabelElementViewViewController.xib; sourceTree = "<group>"; };
 		5E46386C276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePersonalInfoViewController.swift; sourceTree = "<group>"; };
 		5E4739B42A40FDFA00A20D85 /* ShareManagementRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareManagementRepository.swift; sourceTree = "<group>"; };
-		5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingAcceptArchiveTableViewCell.swift; sourceTree = "<group>"; };
-		5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingAcceptArchiveTableViewCell.xib; sourceTree = "<group>"; };
-		5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingMakeDefaultArchiveTableViewCell.swift; sourceTree = "<group>"; };
-		5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingMakeDefaultArchiveTableViewCell.xib; sourceTree = "<group>"; };
-		5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingHeaderTableViewCell.swift; sourceTree = "<group>"; };
-		5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountOnboardingHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		5E4E4CCD29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagsHeaderCollectionView.swift; sourceTree = "<group>"; };
 		5E4E4CCE29826F4000FEF292 /* ArchiveSettingsTagsHeaderCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveSettingsTagsHeaderCollectionView.xib; sourceTree = "<group>"; };
 		5E548E832B29F9D600DD2C59 /* AddStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStorageView.swift; sourceTree = "<group>"; };
@@ -1106,7 +1077,6 @@
 		5E5EF852273B1E56004F7EBC /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		5E5EF855273B23C3004F7EBC /* PublicProfilePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePageViewController.swift; sourceTree = "<group>"; };
 		5E5EF857273B2416004F7EBC /* PublicProfilePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfilePageViewModel.swift; sourceTree = "<group>"; };
-		5E60451C251206F9002E47CB /* OnboardingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		5E604E542B4EADD8008C5034 /* BottomInfoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInfoMessageView.swift; sourceTree = "<group>"; };
 		5E611E32261C681700B17491 /* TagDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailsViewController.swift; sourceTree = "<group>"; };
 		5E624DBE29475A34002D6ECB /* FusionAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAuthRepository.swift; sourceTree = "<group>"; };
@@ -1293,11 +1263,6 @@
 		5EE0689A2B9FAA5A004055A4 /* RoundButtonRightImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonRightImageView.swift; sourceTree = "<group>"; };
 		5EE0689C2BA05BA5004055A4 /* SmallRoundButtonImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallRoundButtonImageView.swift; sourceTree = "<group>"; };
 		5EE0ADB225F8216D008ABDC6 /* TagVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagVO.swift; sourceTree = "<group>"; };
-		5EE17FF524EE94DA00496AF7 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
-		5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboadingViewController.swift; sourceTree = "<group>"; };
-		5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageOne.swift; sourceTree = "<group>"; };
-		5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageTwo.swift; sourceTree = "<group>"; };
-		5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageThree.swift; sourceTree = "<group>"; };
 		5EE291B126F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveScreenPendingArchiveDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		5EE291B226F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArchiveScreenPendingArchiveDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		5EE3E10D25A72DB8009BACA8 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
@@ -1669,11 +1634,6 @@
 		F5E4BA412670D16F0027D97A /* BaseOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOperation.swift; sourceTree = "<group>"; };
 		F5E4BA432670D1940027D97A /* UploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadOperation.swift; sourceTree = "<group>"; };
 		F5E793D6294B5AB000CFCCA5 /* AuthTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextField.swift; sourceTree = "<group>"; };
-		F5EAD0622822BBC700EC2584 /* AccountOnboardingPageOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageOne.swift; sourceTree = "<group>"; };
-		F5EAD0642822BBDC00EC2584 /* AccountOnboardingPageTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageTwo.swift; sourceTree = "<group>"; };
-		F5EAD0662822BBE900EC2584 /* AccountOnboardingPageThree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingPageThree.swift; sourceTree = "<group>"; };
-		F5EEB4CE281C033800D584AD /* AccountOnboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AccountOnboarding.storyboard; sourceTree = "<group>"; };
-		F5EEB4D32821537500D584AD /* AccountOnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountOnboardingViewController.swift; sourceTree = "<group>"; };
 		F5EEB4D52821556C00D584AD /* AccountOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingViewModel.swift; sourceTree = "<group>"; };
 		FC94838FAF288C7DF233D661 /* Pods-Permanent.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Permanent.dev-debug.xcconfig"; path = "Target Support Files/Pods-Permanent/Pods-Permanent.dev-debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2395,19 +2355,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		5E3E12412A41EDB300682DE5 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				5E4D0AEA2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift */,
-				5E4D0AEB2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib */,
-				5E4D0AF228328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift */,
-				5E4D0AF328328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib */,
-				5E4D0AEE2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift */,
-				5E4D0AEF2832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
 		5E3E12422A41EE2600682DE5 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -2442,14 +2389,6 @@
 				5E8B706A283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.xib */,
 			);
 			path = Cells;
-			sourceTree = "<group>";
-		};
-		5E3E12472A41F48600682DE5 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				5E60451C251206F9002E47CB /* OnboardingViewModel.swift */,
-			);
-			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		5E3E12482A41F50A00682DE5 /* ViewModel */ = {
@@ -2614,8 +2553,6 @@
 		5E4739AC2A40F9F100A20D85 /* AccountOnboarding */ = {
 			isa = PBXGroup;
 			children = (
-				5E3E12412A41EDB300682DE5 /* Cells */,
-				F5EEB4D22821537500D584AD /* ViewController */,
 				5E3E12402A41EDAA00682DE5 /* ViewModel */,
 			);
 			path = AccountOnboarding;
@@ -2626,8 +2563,6 @@
 			children = (
 				5E1582A92C5BA09500103EA8 /* Screens */,
 				5E0B1BD22B961CCE00B10BB5 /* Views */,
-				BC4526EB251CD61500E24A51 /* ViewController */,
-				5E3E12472A41F48600682DE5 /* ViewModel */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -3401,8 +3336,6 @@
 			isa = PBXGroup;
 			children = (
 				5E2C5D2524D98EE300E2B95F /* Launch.storyboard */,
-				5E3CD44D24EE7F390081B978 /* Onboarding.storyboard */,
-				F5EEB4CE281C033800D584AD /* AccountOnboarding.storyboard */,
 				BC6D3B3D251363A900390927 /* Authentication.storyboard */,
 				BC4526F0251CD6B600E24A51 /* Main.storyboard */,
 				BCC1CCE82578F8DA0069E337 /* Share.storyboard */,
@@ -3581,18 +3514,6 @@
 				5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */,
 			);
 			path = Helpers;
-			sourceTree = "<group>";
-		};
-		BC4526EB251CD61500E24A51 /* ViewController */ = {
-			isa = PBXGroup;
-			children = (
-				5EE17FFD24EE9AC500496AF7 /* OnboadingViewController.swift */,
-				5EE1800224EECBD500496AF7 /* OnboardingPageOne.swift */,
-				5EE1800424EF2A6F00496AF7 /* OnboardingPageTwo.swift */,
-				5EE1800624EF2A8100496AF7 /* OnboardingPageThree.swift */,
-				5EE17FF524EE94DA00496AF7 /* PageViewController.swift */,
-			);
-			path = ViewController;
 			sourceTree = "<group>";
 		};
 		BC55970225A3461A00BF55DA /* DropdownView */ = {
@@ -4020,19 +3941,6 @@
 			path = Upload;
 			sourceTree = "<group>";
 		};
-		F5EEB4D22821537500D584AD /* ViewController */ = {
-			isa = PBXGroup;
-			children = (
-				F5EAD0622822BBC700EC2584 /* AccountOnboardingPageOne.swift */,
-				5E278897282D423E007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift */,
-				F5EAD0662822BBE900EC2584 /* AccountOnboardingPageThree.swift */,
-				F5EAD0642822BBDC00EC2584 /* AccountOnboardingPageTwo.swift */,
-				5E278899282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift */,
-				F5EEB4D32821537500D584AD /* AccountOnboardingViewController.swift */,
-			);
-			path = ViewController;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4197,7 +4105,6 @@
 				F54257A028AE6F2300D79AA1 /* FileCollectionViewGridCell.xib in Resources */,
 				92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */,
 				BC6D3B3E251363A900390927 /* Authentication.storyboard in Resources */,
-				5E4D0AED2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.xib in Resources */,
 				5E202E072981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.xib in Resources */,
 				5EADF8092625BCCE00D14E9C /* TagsNamesCollectionViewCell.xib in Resources */,
 				F5C37D4928AD62060062D9EB /* FileCollectionViewCell.xib in Resources */,
@@ -4214,7 +4121,6 @@
 				5ED581CC25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.xib in Resources */,
 				5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */,
 				5ED0856C24E4256B00CDB4D3 /* OpenSans-SemiBold.ttf in Resources */,
-				5E3CD44E24EE7F390081B978 /* Onboarding.storyboard in Resources */,
 				5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */,
 				5ECF1DB72B7520E20086EF21 /* Usual-ExtraBoldItalic.ttf in Resources */,
 				5EE291B426F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.xib in Resources */,
@@ -4259,14 +4165,12 @@
 				5E048FD8292308B10023C929 /* ShareMangementAdditionalOptionCollectionViewCell.xib in Resources */,
 				927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */,
 				5E1C546229B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib in Resources */,
-				5E4D0AF12832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.xib in Resources */,
 				BC0D99C6256DB18500D29041 /* DrawerTableViewCell.xib in Resources */,
 				5E46217B25C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib in Resources */,
 				5ECF1DC32B7520E20086EF21 /* Usual-MediumItalic.ttf in Resources */,
 				5EBA2B8426009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.xib in Resources */,
 				5E7AE8B0291D0A8D00F2A41D /* ShareManagementLinkNotGeneratedCollectionViewCell.xib in Resources */,
 				5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */,
-				5E4D0AF528328AC500C6439C /* AccountOnboardingHeaderTableViewCell.xib in Resources */,
 				92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */,
 				F52D2B85292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.xib in Resources */,
 				5E048FD42923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.xib in Resources */,
@@ -4286,7 +4190,6 @@
 				5E62F7BB27F5E5910046F6C8 /* PublicGalleryHeaderCollectionViewCell.xib in Resources */,
 				5ED581C725EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.xib in Resources */,
 				5E56FDC4274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.xib in Resources */,
-				F5EEB4CF281C033800D584AD /* AccountOnboarding.storyboard in Resources */,
 				5E5DFA712746361D000D9924 /* ProfilePageFooterCollectionViewCell.xib in Resources */,
 				5E56FDC02744247D00BC3BE0 /* ProfilePageArchiveCollectionViewCell.xib in Resources */,
 				BCC1E32C254A193C00B71866 /* ActionDialogView.xib in Resources */,
@@ -4522,7 +4425,6 @@
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
 				5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */,
-				5E4D0AF428328AC500C6439C /* AccountOnboardingHeaderTableViewCell.swift in Sources */,
 				5EB569AD2B307F3400C35543 /* RoundButtonView.swift in Sources */,
 				BC11C80C25595BA3008BDEFA /* RecordVOPayload.swift in Sources */,
 				BCD414E82580BFFE0019548F /* ShareLinkOption.swift in Sources */,
@@ -4550,7 +4452,6 @@
 				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
-				5E4D0AF02832697A00C6439C /* AccountOnboardingMakeDefaultArchiveTableViewCell.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
@@ -4562,7 +4463,6 @@
 				5E6673132A79B4E3001C49CC /* CustomTextFieldStyle.swift in Sources */,
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
-				F5EEB4D42821537600D584AD /* AccountOnboardingViewController.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
 				F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
@@ -4704,7 +4604,6 @@
 				BC11C808255953B2008BDEFA /* APIPayload.swift in Sources */,
 				BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */,
 				F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */,
-				5EE1800324EECBD500496AF7 /* OnboardingPageOne.swift in Sources */,
 				F559F87928F99E3E0015A522 /* FolderNavigationViewModel.swift in Sources */,
 				5ED428892A12D0E1001F88FB /* LegacyPlanningRepository.swift in Sources */,
 				5E5DFA702746361D000D9924 /* ProfilePageFooterCollectionViewCell.swift in Sources */,
@@ -4762,10 +4661,8 @@
 				5E1582B92C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift in Sources */,
 				5EA70D8F2B2C793A00175D9C /* GradientCustomBarView.swift in Sources */,
 				5EE9D8C627A1EE8100CE5F9C /* EstablishedInfoProfileItem.swift in Sources */,
-				5EE17FF624EE94DA00496AF7 /* PageViewController.swift in Sources */,
 				BC59BAD125C2B8BD005A45D3 /* NotificationProtocol.swift in Sources */,
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
-				5E27889A282D43CC007EE374 /* AccountOnboardingPageTwoWithPendingArchives.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
@@ -4788,7 +4685,6 @@
 				5E1582BF2C5CD7C600103EA8 /* OnboardingChartYourPathViewModel.swift in Sources */,
 				5E56FDC3274424BD00BC3BE0 /* ProfilePageAboutCollectionViewCell.swift in Sources */,
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
-				5EE1800524EF2A6F00496AF7 /* OnboardingPageTwo.swift in Sources */,
 				5E6673112A79439B001C49CC /* ReplaceFilenameViewModel.swift in Sources */,
 				5E991EE42A4ADDE4006229C0 /* SectionView.swift in Sources */,
 				F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */,
@@ -4881,7 +4777,6 @@
 				BCF906722589FA1700DF1B64 /* TooltipView.swift in Sources */,
 				5E63944E29702F830043D952 /* ForgotPasswordResponse.swift in Sources */,
 				BC648780251B6591009D7DE1 /* LoginResponse.swift in Sources */,
-				5E60451D251206F9002E47CB /* OnboardingViewModel.swift in Sources */,
 				F5C80BD929893C8400CC1939 /* PublicProfileDeeplinkPayload.swift in Sources */,
 				BCC1E3252549A43F00B71866 /* ArrayExtension.swift in Sources */,
 				5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */,
@@ -4896,7 +4791,6 @@
 				BC0D99C9256E5B8B00D29041 /* DrawerOption.swift in Sources */,
 				5E62F7BE27F5E5A50046F6C8 /* PublicGalleryFooterCollectionViewCell.swift in Sources */,
 				5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */,
-				F5EAD0632822BBC700EC2584 /* AccountOnboardingPageOne.swift in Sources */,
 				5E3A060029E44D7900A6C531 /* Workspace.swift in Sources */,
 				BCF9066B2587B2D200DF1B64 /* MemberTableViewCell.swift in Sources */,
 				5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */,
@@ -4921,7 +4815,6 @@
 				5ED9A7B82BBF3BD6009BDD70 /* ArchiveTypeView.swift in Sources */,
 				5E604E552B4EADD8008C5034 /* BottomInfoMessageView.swift in Sources */,
 				5E181B872AF2EAF5002DE69A /* CustomStepperView.swift in Sources */,
-				5E278898282D423F007EE374 /* AccountOnboardingPageOneWithPendingArchives.swift in Sources */,
 				5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */,
 				BD95ECC125D53E58009B443F /* ScreenLockManager.swift in Sources */,
 				BC59BAD025C2B8BD005A45D3 /* NotificationVO.swift in Sources */,
@@ -4953,7 +4846,6 @@
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
 				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
 				92430A902B10A55E0098597D /* EventType.swift in Sources */,
-				5EE1800724EF2A8100496AF7 /* OnboardingPageThree.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
 				5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */,
@@ -4973,7 +4865,6 @@
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				5E8B706B283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
-				F5EAD0652822BBDC00EC2584 /* AccountOnboardingPageTwo.swift in Sources */,
 				9220ACCC2A1CBB4F003797C9 /* AccountSteward.swift in Sources */,
 				BC0D99CC256E5BF000D29041 /* TableViewData.swift in Sources */,
 				BCF4E5D5255C2DFB003505BA /* ParentFolderVO.swift in Sources */,
@@ -4981,7 +4872,6 @@
 				BC11C7FE25558E03008BDEFA /* UIContextualActionExtension.swift in Sources */,
 				5ED9A7B62BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
-				F5EAD0672822BBE900EC2584 /* AccountOnboardingPageThree.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
@@ -4989,8 +4879,6 @@
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
-				5EE17FFE24EE9AC500496AF7 /* OnboadingViewController.swift in Sources */,
-				5E4D0AEC2832695C00C6439C /* AccountOnboardingAcceptArchiveTableViewCell.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */,
@@ -5490,7 +5378,7 @@
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5521,7 +5409,7 @@
 				ENV_VARS_FILENAME = "env-vars.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5547,7 +5435,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.10.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5568,7 +5456,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.10.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5589,7 +5477,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.10.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5610,7 +5498,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.10.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5631,7 +5519,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5655,7 +5543,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5679,7 +5567,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5703,7 +5591,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PermanentTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5734,7 +5622,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5768,7 +5656,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5802,7 +5690,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5836,7 +5724,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Victory Square Partners. All rights reserved.";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5928,7 +5816,7 @@
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6013,7 +5901,7 @@
 				ENV_VARS_FILENAME = "env-vars-staging.sh";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = "$(SRCROOT)/Permanent/Resources/Assets/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6040,7 +5928,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6065,7 +5953,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6090,7 +5978,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6115,7 +6003,7 @@
 				DEVELOPMENT_TEAM = C8YKZNBVWT;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = PushExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

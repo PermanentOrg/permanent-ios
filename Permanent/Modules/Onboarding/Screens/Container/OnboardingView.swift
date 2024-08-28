@@ -230,7 +230,7 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    var onboardingViewModel = OnboardingContainerViewModel(username: "none", password: "none")
+    let onboardingViewModel = OnboardingContainerViewModel(username: "none", password: "none")
     onboardingViewModel.fullName = "really long username"
     onboardingViewModel.allArchives = [
         OnboardingArchive(fullname: "Documents", accessType: "viewer", status: ArchiveVOData.Status.ok, archiveID: 33, thumbnailURL: "", isThumbnailGenerated: false),
