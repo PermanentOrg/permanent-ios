@@ -11,7 +11,6 @@ enum StoryboardName: String {
     case main
     case authentication
     case launch
-    case onboarding
     case welcomePage
     case members
     case share
@@ -21,13 +20,11 @@ enum StoryboardName: String {
     case archives
     case profile
     case donate
-    case accountOnboarding
     case archiveSettings
     case legacyPlanning
     
     var name: String {
         switch self {
-        case .accountOnboarding: return "AccountOnboarding"
         case .archiveSettings: return "ArchiveSettings"
         case .legacyPlanning: return "LegacyPlanning"
             
