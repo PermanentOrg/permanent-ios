@@ -38,7 +38,7 @@ struct OnboardingArchiveNameView: View {
                             .onTapGesture {
                                 dismissKeyboard()
                             }
-                            Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
+                            Text("Name your new archive. This is the formal or official name of the person, family, group, or organization the archive represents. You can edit the name later if needed.")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
                                 .lineSpacing(8.0)
@@ -100,7 +100,7 @@ struct OnboardingArchiveNameView: View {
                 ScrollViewReader { scrollReader in
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 64) {
-                            Text("Name your new archive. This is the legal or official name of the person, family, group, or organization the archive is about. You can edit the name later if needed.")
+                            Text("Name your new archive. This is the formal or official name of the person, family, group, or organization the archive represents. You can edit the name later if needed.")
                                 .textStyle(UsualRegularTextStyle())
                                 .foregroundColor(.blue25)
                                 .lineSpacing(8.0)
