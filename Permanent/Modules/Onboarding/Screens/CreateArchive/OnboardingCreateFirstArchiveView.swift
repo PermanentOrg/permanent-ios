@@ -68,7 +68,7 @@ struct OnboardingCreateFirstArchiveView: View {
             ZStack(alignment: .bottom) {
                 VStack(spacing: 32) {
                     HStack() {
-                        Text("With my first archive, I plan to capture and preserve material about…")
+                        Text("What do you plan to capture and preserve with your first archive?")
                             .textStyle(UsualRegularTextStyle())
                             .foregroundColor(.blue25)
                             .lineSpacing(8.0)

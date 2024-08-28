@@ -221,7 +221,7 @@ class OnboardingWhatsImportantViewModel: ObservableObject {
                            let status = archive.archiveVO?.status,
                            let archiveID = archive.archiveVO?.archiveID,
                            status == ArchiveVOData.Status.ok {
-                            containerViewModel.allArchives.append(OnboardingArchive(fullname: containerViewModel.fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID, thumbnailURL: archive.archiveVO?.thumbURL200 ?? "", isThumbnailGenerated: archive.archiveVO?.thumbStatus != .genAvatar ? true : false))
+                            containerViewModel.allArchives.append(OnboardingArchive(fullname: fullName, accessType: AccessRole.roleForValue(archive.archiveVO?.accessRole).groupName, status: status, archiveID: archiveID, thumbnailURL: archive.archiveVO?.thumbURL200 ?? "", isThumbnailGenerated: archive.archiveVO?.thumbStatus != .genAvatar ? true : false))
                         }
                     }
                 } else {
