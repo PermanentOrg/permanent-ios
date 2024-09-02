@@ -82,7 +82,6 @@ struct OnboardingCreateFirstArchiveView: View {
                 }
                 HStack(spacing: 32) {
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back", image: Image(.backArrowOnboarding), action: backButton)
-                        //.frame(width: 120)
                     RoundButtonRightImageView(text: "Next", action: nextButton)
                 }
                 .padding(.bottom, 40)

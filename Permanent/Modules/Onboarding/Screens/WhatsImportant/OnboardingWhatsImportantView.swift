@@ -36,7 +36,7 @@ struct OnboardingWhatsImportantView: View {
                                 boldText: "important",
                                 postText: " to you"
                             )
-                            Text("Finally, we’re curious -- what brought you to\nPermanent.org?")
+                            Text("Finally, we’re curious —  what brought you to\nPermanent.org?")
                                 .textStyle(UsualSmallXRegularTextStyle())
                                 .foregroundColor(.blue25)
                                 .lineSpacing(8.0)
