@@ -21,6 +21,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var loginLabel: UILabel!
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var separatorViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var theContainer: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,14 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         
         viewModel = AuthViewModel()
 
-        initUI()
+        //initUI()
+        let childView = UIHostingController(rootView: AuthenticatorContainerView())
+        addChild(childView)
+        childView.view.frame = theContainer.bounds
+        theContainer.addSubview(childView.view)
+        childView.didMove(toParent: self)
+        
+        
         setupNotifications()
         
         NotificationCenter.default.addObserver(forName: AccountDeleteViewModel.accountDeleteSuccessNotification, object: nil, queue: nil) { [weak self] notif in

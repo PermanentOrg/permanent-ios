@@ -317,6 +317,8 @@
 		5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620242784871B001B9AFD /* EmailProfileItem.swift */; };
 		5EB620272784B01D001B9AFD /* GenderProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620262784B01D001B9AFD /* GenderProfileItem.swift */; };
 		5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */; };
+		5EB66F022C872875000D4C82 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB66F012C872875000D4C82 /* LoginView.swift */; };
+		5EB66F042C872888000D4C82 /* AuthenticatorContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB66F032C872888000D4C82 /* AuthenticatorContainerView.swift */; };
 		5EB721132B35C9DC0036B28F /* RedeemVO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB721122B35C9DC0036B28F /* RedeemVO.swift */; };
 		5EB721152B35CDAB0036B28F /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */; };
 		5EBA2B8326009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */; };
@@ -1186,6 +1188,8 @@
 		5EB620242784871B001B9AFD /* EmailProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailProfileItem.swift; sourceTree = "<group>"; };
 		5EB620262784B01D001B9AFD /* GenderProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderProfileItem.swift; sourceTree = "<group>"; };
 		5EB620282784B038001B9AFD /* BirthInfoProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthInfoProfileItem.swift; sourceTree = "<group>"; };
+		5EB66F012C872875000D4C82 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		5EB66F032C872888000D4C82 /* AuthenticatorContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorContainerView.swift; sourceTree = "<group>"; };
 		5EB721122B35C9DC0036B28F /* RedeemVO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemVO.swift; sourceTree = "<group>"; };
 		5EB721142B35CDAB0036B28F /* KeyboardResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		5EBA2B8126009D92005C7B12 /* FileDetailsMapViewCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDetailsMapViewCellCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -2570,6 +2574,7 @@
 		5E4739AE2A40FA6000A20D85 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				5EB66F052C873474000D4C82 /* Screens */,
 				BC6D3B3F251363D600390927 /* ViewController */,
 			);
 			path = Authentication;
@@ -3041,6 +3046,15 @@
 				5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */,
 			);
 			path = ButtonViews;
+			sourceTree = "<group>";
+		};
+		5EB66F052C873474000D4C82 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				5EB66F032C872888000D4C82 /* AuthenticatorContainerView.swift */,
+				5EB66F012C872875000D4C82 /* LoginView.swift */,
+			);
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		5ECBAF9F2A1B5F0200FACFDF /* LegacyPlanning */ = {
@@ -4535,6 +4549,7 @@
 				5E66730D2A7927E3001C49CC /* CustomButtonStyle.swift in Sources */,
 				BC42EDC725C011010031B965 /* Invite.swift in Sources */,
 				BC1C7B39254861E7008E9A0D /* DateUtils.swift in Sources */,
+				5EB66F042C872888000D4C82 /* AuthenticatorContainerView.swift in Sources */,
 				F5551D88261C559B00A7C540 /* EnvVars.stencil in Sources */,
 				BC6AF9B6259343BE00483BBA /* AccountVM.swift in Sources */,
 				06819AA624EC208F003D0EB0 /* CustomTextField.swift in Sources */,
@@ -4664,6 +4679,7 @@
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
+				5EB66F022C872875000D4C82 /* LoginView.swift in Sources */,
 				BC752BCF253EE53000EF7941 /* FABView.swift in Sources */,
 				5ED3B3B029F7E0BC000CFF48 /* LegacyPlanningViewModel.swift in Sources */,
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
