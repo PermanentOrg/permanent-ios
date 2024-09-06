@@ -82,9 +82,8 @@ class RootViewController: UIViewController {
                         self?.setRoot(named: .biometrics, from: .authentication)
                     }
                 } else {
-                    let isNewUser: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.isNewUserStorageKey) ?? true
                     let skipOnboarding: Bool = CommandLine.arguments.contains("--SkipOnboarding")
-                    let route: (ViewControllerId, StoryboardName) = (isNewUser && !skipOnboarding) ? (.onboarding, .onboarding) : (.signUp, .authentication)
+                    let route: (ViewControllerId, StoryboardName) = (.signUp, .authentication)
                     
                     if skipOnboarding {
                         AuthenticationManager.shared.logout()
@@ -197,6 +196,10 @@ class RootViewController: UIViewController {
         setupChild(navController)
         removeChild(current)
         current = navController
+    }
+    
+    func presentFullscreen() {
+        
     }
     
     fileprivate func setupChild(_ viewController: UIViewController?) {

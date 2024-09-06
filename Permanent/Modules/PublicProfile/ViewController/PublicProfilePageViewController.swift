@@ -116,7 +116,10 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         super.viewDidAppear(true)
         
         if currentSegmentValue == 0 {
-            collectionView.reloadSections([1])
+            if viewModel?.archiveType != nil {
+                collectionView.reloadSections([1])
+            }
+           
         } else {
             let bottomSectionsSet = IndexSet(integersIn: 1...4)
             collectionView.reloadSections(bottomSectionsSet)

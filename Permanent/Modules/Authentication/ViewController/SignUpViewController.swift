@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBOutlet private var scrollView: UIScrollView!
@@ -129,7 +130,10 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
             if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                 AppDelegate.shared.rootViewController.setDrawerRoot()
             } else {
-                AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: self.emailField.text, password: self.passwordField.text))
+                let host = UIHostingController(rootView: screenView)
+                host.modalPresentationStyle = .fullScreen
+                AppDelegate.shared.rootViewController.present(host, animated: true)
             }
             
             EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,

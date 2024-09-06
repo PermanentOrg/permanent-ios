@@ -96,6 +96,24 @@ extension Gradient {
                                                      endPoint: .bottomTrailing
     )
     
+    static var purpleYellowGradient2 = LinearGradient(
+        stops: [
+            Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
+            Gradient.Stop(color: Color(red: 1, green: 0.6, blue: 0.2), location: 1.00),
+        ],
+        startPoint: UnitPoint(x: 0, y: 0),
+        endPoint: UnitPoint(x: 1, y: 1)
+    )
+    
+    static var yellowPurpleGradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color(red: 1, green: 0.6, blue: 0.2),
+                                                            Color(red: 0.5, green: 0, blue: 0.5)
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                                     endPoint: .bottomTrailing
+    )
+    
     static var blue25Gradient = LinearGradient(gradient:
                                                         Gradient(colors: [
                                                             Color.blue25,
@@ -111,6 +129,24 @@ extension Gradient {
                                                             Color.white
                                                         ]),
                                                      startPoint: .topLeading,
-                                                     endPoint: .bottomTrailing
+                                              endPoint: .bottomTrailing
+    )
+    
+    static var darkLightBlueGradient = LinearGradient(stops:
+                                                        [
+                                                            Gradient.Stop(color: Color(red: 0.07, green: 0.11, blue: 0.29), location: 0.00),
+                                                            Gradient.Stop(color: Color(red: 0.21, green: 0.27, blue: 0.57), location: 1.00),
+                                                        ],
+                                                      startPoint: UnitPoint(x: 0, y: 0),
+                                                      endPoint: UnitPoint(x: 1, y: 1)
+    )
+    
+    static var lightDarkPurpleGradient = LinearGradient(stops:
+                                                        [
+                                                            Gradient.Stop(color: Color(red: 0.5, green: 0, blue: 0.5), location: 0.00),
+                                                            Gradient.Stop(color: Color(red: 0.72, green: 0.26, blue: 0.65), location: 1.00),
+                                                        ],
+                                                      startPoint: UnitPoint(x: 0, y: 0),
+                                                      endPoint: UnitPoint(x: 1, y: 1)
     )
 }

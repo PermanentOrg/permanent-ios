@@ -1,0 +1,16 @@
+{
+  "images" : [
+    {
+      "filename" : "onboardingArchiveBox.svg",
+      "idiom" : "iphone"
+    },
+    {
+      "filename" : "onbordingTabletArchive.svg",
+      "idiom" : "ipad"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

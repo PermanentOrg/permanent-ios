@@ -52,6 +52,10 @@ struct TextFontStyle {
     static let style43 = TextStyle(UIFont(name: "OpenSans-SemiBold", size: 10)!, TextStyle.calculateSpacing(fontSize: CGFloat(10), lineHeight: CGFloat(12)), NSTextAlignment.center)
     static let style44 = TextStyle(UIFont(name: "OpenSans-Bold", size: 13)!, TextStyle.calculateSpacing(fontSize: CGFloat(13), lineHeight: CGFloat(18)), NSTextAlignment.natural)
     static let style45 = TextStyle(UIFont(name: "OpenSans-Italic", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style46 = TextStyle(UIFont(name: "Usual-Light", size: 32)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style47 = TextStyle(UIFont(name: "Usual-Bold", size: 32)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style48 = TextStyle(UIFont(name: "Usual-Light", size: 56)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style49 = TextStyle(UIFont(name: "Usual-Bold", size: 56)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
 }
 
 struct Constants {
@@ -101,6 +105,7 @@ extension Constants.Design {
     static let longNotificationBarAnimationDuration: Double = 2.2
     static let orientationLock: UIInterfaceOrientationMask = UIDevice.current.userInterfaceIdiom == .phone ? .portrait : .landscape
     static let currentPlatform = UIDevice.current.userInterfaceIdiom
+    static let isPhone: Bool = currentPlatform == .phone
 }
 
 extension Constants.API {
@@ -151,7 +156,6 @@ extension Constants.API.NotificationType {
 }
 
 extension Constants.Keys.StorageKeys {
-    static let isNewUserStorageKey = "isNewUser"
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let publicURLToken = "publicURLTokenKey"
@@ -162,7 +166,6 @@ extension Constants.Keys.StorageKeys {
     static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
-    static let signUpInvitationsAccepted = "signUpInvitationsAccepted"
     static let modelVersion = "modelVersion"
     static let minAppVersion = "minAppVersion"
 }

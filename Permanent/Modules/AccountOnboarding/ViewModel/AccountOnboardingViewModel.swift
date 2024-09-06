@@ -111,8 +111,6 @@ class AccountOnboardingViewModel: ViewModelInterface {
                     if accountVO != nil {
                         changeArchive(archiveVO) { success, error in
                             if success {
-                                UserDefaults.standard.set(-1, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
-                                
                                 completionBlock(.success)
                             } else {
                                 completionBlock(.error(message: .errorMessage))
@@ -360,7 +358,6 @@ class AccountOnboardingViewModel: ViewModelInterface {
                 completionBlock(false, APIError.invalidResponse)
                 return
             } else {
-                UserDefaults.standard.set(2, forKey: Constants.Keys.StorageKeys.signUpInvitationsAccepted)
                 completionBlock(true, nil)
                 return
             }

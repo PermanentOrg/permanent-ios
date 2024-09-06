@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class CodeVerificationController: BaseViewController<AuthViewModel> {
     @IBOutlet private var scrollView: UIScrollView!
@@ -70,7 +71,13 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {
-                    AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
+                    let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
+                    //self.rootViewController.present(host, animated: true, completion: nil)
+                    
+                    //AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
                 }
             case .error(let message):
                 self.showErrorAlert(message: message)

@@ -11,7 +11,6 @@ enum StoryboardName: String {
     case main
     case authentication
     case launch
-    case onboarding
     case welcomePage
     case members
     case share
@@ -21,13 +20,11 @@ enum StoryboardName: String {
     case archives
     case profile
     case donate
-    case accountOnboarding
     case archiveSettings
     case legacyPlanning
     
     var name: String {
         switch self {
-        case .accountOnboarding: return "AccountOnboarding"
         case .archiveSettings: return "ArchiveSettings"
         case .legacyPlanning: return "LegacyPlanning"
             
@@ -42,7 +39,6 @@ enum ViewControllerId: String {
     case onboarding
     case login
     case recoverPassword
-    case welcomePage
     case verificationCode
     case termsConditions
     case twoStepVerification
@@ -144,9 +140,6 @@ enum ViewControllerId: String {
             
         case .tagDetails:
             return "TagDetails"
-            
-        case .welcomePage:
-            return "WelcomePage"
             
         case .passwordUpdate:
             return "PasswordUpdate"
