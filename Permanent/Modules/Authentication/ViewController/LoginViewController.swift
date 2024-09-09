@@ -100,6 +100,8 @@ class LoginViewController: BaseViewController<AuthViewModel> {
                 let verificationCodeVC = UIViewController.create(withIdentifier: .verificationCode, from: .authentication) as! CodeVerificationController
                 self?.present(verificationCodeVC, animated: true)
                 self?.trackEvents()
+            case .unknown:
+                self?.showAlert(title: .error, message: .incorrectCredentials)
             case .error(message: let message):
                 self?.showAlert(title: .error, message: message)
             }

@@ -1236,7 +1236,13 @@ extension SharesViewController {
             return
         }
         
+        guard index >= 0 && index < collectionView.numberOfItems(inSection: 0) else {
+            // Handle the case where the index is out of bounds
+            return
+        }
+        
         let indexPath = IndexPath(row: index, section: 0)
+        
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
     }
 }

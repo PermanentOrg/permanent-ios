@@ -49,7 +49,8 @@ platform :ios do
     match(type: "adhoc",
           app_identifier: "org.permanent.permanent.staging",
           git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
-          force_for_new_devices: true
+          force_for_new_devices: true,
+          verbose: true
           )
     match(type: "adhoc",
           app_identifier: "org.permanent.permanent.staging.PushExtension",
