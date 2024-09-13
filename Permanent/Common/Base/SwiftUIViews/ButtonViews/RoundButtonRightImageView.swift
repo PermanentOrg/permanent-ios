@@ -17,6 +17,8 @@ struct RoundButtonRightImageView: View {
     let text: String
     var rightImage: Image = Image(.rightArrowShort)
     let action: () -> Void
+    var ignoreDeviceType: Bool = false
+    var isPhone: Bool = true
     
     var body: some View {
         Button(action: action, label: {
@@ -26,7 +28,7 @@ struct RoundButtonRightImageView: View {
                     Color(.white)
                     HStack(spacing: 16) {
                         Spacer()
-                        if Constants.Design.isPhone {
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.blue700)
@@ -58,7 +60,7 @@ struct RoundButtonRightImageView: View {
             case .noColor:
                 ZStack {
                     HStack() {
-                        if Constants.Design.isPhone {
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.white)
@@ -96,7 +98,7 @@ struct RoundButtonRightImageView: View {
                 ZStack {
                     HStack() {
                         Spacer()
-                        if Constants.Design.isPhone {
+                        if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
                             Text(text)
                                 .textStyle(UsualSmallXMediumTextStyle())
                                 .foregroundColor(.white)

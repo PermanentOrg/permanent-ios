@@ -31,7 +31,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         viewModel = AuthViewModel()
 
         //initUI()
-        let childView = UIHostingController(rootView: AuthenticatorContainerView())
+        let childView = UIHostingController(rootView: AuthenticatorContainerView(viewModel: AuthenticatorContainerViewModel()))
         addChild(childView)
         childView.view.frame = theContainer.bounds
         theContainer.addSubview(childView.view)

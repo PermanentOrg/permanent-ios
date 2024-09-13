@@ -11,9 +11,11 @@ struct CustomBorderTextField: View {
     var placeholder: String = "Enter your text here"
     var preText: String = "The"
     var afterText: String = "Archive"
+    var ignoreDeviceType: Bool = false
+    var isPhone: Bool = true
     
     var body: some View {
-        if Constants.Design.isPhone {
+        if Constants.Design.isPhone || (ignoreDeviceType && isPhone) {
             HStack(alignment: .center, spacing: 8) {
                 Text("\(preText)")
                     .textStyle(UsualRegularTextStyle())

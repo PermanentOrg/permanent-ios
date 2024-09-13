@@ -23,6 +23,8 @@ struct SmallRoundButtonImageView: View {
     var image: Image = Image(.rightArrowShort)
     var hasSpacer: Bool = false
     let action: () -> Void
+    var ignoreDeviceType: Bool = false
+    var isPhone: Bool = true
     
     var body: some View {
         Button(action: action, label: {
@@ -36,7 +38,7 @@ struct SmallRoundButtonImageView: View {
                                     .frame(width: 24, height: 24, alignment: .center)
                                     .accentColor(.blue700)
                             }
-                            if Constants.Design.isPhone {
+                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.blue700)
@@ -77,7 +79,7 @@ struct SmallRoundButtonImageView: View {
                                     Spacer()
                                 }
                             }
-                            if Constants.Design.isPhone {
+                            if Constants.Design.isPhone || (ignoreDeviceType && isPhone){
                                 Text(text)
                                     .textStyle(UsualSmallXMediumTextStyle())
                                     .foregroundColor(.white)
