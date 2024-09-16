@@ -22,17 +22,28 @@ struct LoginView: View {
                     Spacer()
                 }
                 HStack() {
-                    Text("Sign in to\nPermanent")
-                        .font(
-                            .custom(
-                                "Usual-Regular",
-                                size: 32)
-                        )
-                        .fontWeight(.light)
-                        .lineSpacing(8)
-                        .foregroundStyle(.white)
+                    if Constants.Design.isPhone {
+                        Text("Sign in to\nPermanent")
+                            .font(
+                                .custom(
+                                    "Usual-Regular",
+                                    size: 32)
+                            )
+                            .fontWeight(.light)
+                            .lineSpacing(8)
+                            .foregroundStyle(.white)
+                    } else {
+                        Text("Sign in to Permanent")
+                            .font(
+                                .custom(
+                                    "Usual-Regular",
+                                    size: 32)
+                            )
+                            .fontWeight(.light)
+                            .lineSpacing(8)
+                            .foregroundStyle(.white)
+                    }
                     Spacer()
-                    
                 }
                 .layoutPriority(1)
                 if showEmptySpace {
@@ -89,9 +100,9 @@ struct LoginView: View {
                 }
             }
             .padding(Constants.Design.isPhone ? 32 : 64)
-            .padding(.top, 32)
+            .padding(.top, Constants.Design.isPhone ? 32 : 0)
             ErrorBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
-                .padding(32)
+                .padding(Constants.Design.isPhone ? 32 : 64)
         }
         .onChange(of: viewModel.loginStatus, perform: { status in
             if let _ = status {

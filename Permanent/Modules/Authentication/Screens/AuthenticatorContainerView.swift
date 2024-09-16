@@ -19,7 +19,7 @@ struct AuthenticatorContainerView: View {
                 HStack(spacing: 0) {
                     if !Constants.Design.isPhone {
                         AuthLeftSideView()
-                            .frame(width: (geometry.size.width / 3) * 2)
+                            .frame(width: geometry.size.width * 0.61)
                     }
                     LoginView(viewModel: LoginViewModel(containerViewModel: viewModel), loginSuccess: {
                         dismissView()
