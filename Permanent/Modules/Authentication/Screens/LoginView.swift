@@ -102,7 +102,6 @@ struct LoginView: View {
             .padding(Constants.Design.isPhone ? 32 : 64)
             .padding(.top, Constants.Design.isPhone ? 32 : 0)
             ErrorBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
-                .padding(Constants.Design.isPhone ? 32 : 64)
         }
         .onChange(of: viewModel.loginStatus, perform: { status in
             if let _ = status {
