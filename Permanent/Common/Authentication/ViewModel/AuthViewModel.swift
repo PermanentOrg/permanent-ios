@@ -95,7 +95,7 @@ class AuthViewModel: ViewModelInterface {
         
         AuthenticationManager.shared.login(withUsername: email, password: password) { status in
             switch status {
-            case .success, .mfaToken:
+            case .success, .mfaToken, .unknown:
                 handler(status)
                 
             case .error(message: _):
@@ -190,6 +190,7 @@ class AuthViewModel: ViewModelInterface {
 enum LoginStatus: Equatable {
     case success
     case mfaToken
+    case unknown
     case error(message: String?)
 }
 

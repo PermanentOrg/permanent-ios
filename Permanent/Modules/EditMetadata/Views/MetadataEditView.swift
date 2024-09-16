@@ -10,7 +10,7 @@ import SwiftUI
 struct MetadataEditView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: FilesMetadataViewModel
-
+    
     @State var showAddNewTag: Bool = false
     @State var showEditFilenames: Bool = false
     @State var showSetLocation: Bool = false
@@ -26,13 +26,14 @@ struct MetadataEditView: View {
                 Color.whiteGray
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
+                SnackBarView(message: "Gathering file metadata...", show: $viewModel.isLoading)
                 ScrollView(showsIndicators: false) {
                     LazyVStack {
                         Group {
                             SectionHeaderView(selectedFiles: $viewModel.selectedFiles)
                             Divider()
                                 .padding(.horizontal, 0)
-                                .padding(.top, 24)
+                                .padding(.top, 20)
                         }
                         Group {
                             VStack(alignment: .leading) {
@@ -43,34 +44,37 @@ struct MetadataEditView: View {
                                         text: "Enter Description",
                                         action: { }
                                     ),
-                                    haveRightSection: false
+                                    haveRightSection: false,
+                                    isLoading: viewModel.isLoading
                                 )
+                                if !viewModel.isLoading {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 2)
+                                            .fill(Color.white)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 2)
+                                                    .inset(by: 0.5)
+                                                    .stroke(Color.galleryGray, lineWidth: 1)
+                                            )
+                                        TextView(text: $viewModel.inputText,
+                                                 didSaved: $viewModel.didSaved,
+                                                 textStyle: TextFontStyle.style39,
+                                                 textColor: .middleGray)
+                                        .padding(.all, 5)
+                                        .frame(maxHeight: 72)
+                                    }
+                                    .frame(height: 72)
+                                    .foregroundColor(.clear)
+                                    if viewModel.haveDiffDescription {
+                                        Text("Some files already have descriptions.")
+                                            .textStyle(SmallXXRegularTextStyle())
+                                            .foregroundColor(.lightRed)
+                                            .padding(.top, 5)
+                                    }
+                                }
                                 
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.white)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 2)
-                                                .inset(by: 0.5)
-                                                .stroke(Color.galleryGray, lineWidth: 1)
-                                        )
-                                    TextView(text: $viewModel.inputText,
-                                             didSaved: $viewModel.didSaved,
-                                             textStyle: TextFontStyle.style39,
-                                             textColor: .middleGray)
-                                    .padding(.all, 5)
-                                    .frame(maxHeight: 72)
-                                }
-                                .frame(height: 72)
-                                .foregroundColor(.clear)
-                                if viewModel.haveDiffDescription {
-                                    Text("Some files already have descriptions.")
-                                        .textStyle(SmallXXRegularTextStyle())
-                                        .foregroundColor(.lightRed)
-                                        .padding(.top, 5)
-                                    Divider()
-                                        .padding(.top, 0)
-                                }
+                                Divider()
+                                    .padding(.top, 20)
                             }
                         }
                         Group {
@@ -84,12 +88,15 @@ struct MetadataEditView: View {
                                         viewModel.assignAllTagsToAll()
                                     }
                                 ),
-                                haveRightSection: viewModel.havePartialTags
+                                haveRightSection: viewModel.havePartialTags,
+                                isLoading: viewModel.isLoading
                             )
-                            .padding(.top, -10)
-                            TagsView(viewModel: viewModel, showAddNewTagView: $showAddNewTag)
-                            Spacer(minLength: 24)
+                            if !viewModel.isLoading {
+                                TagsView(viewModel: viewModel, showAddNewTagView: $showAddNewTag)
+                            }
+                            
                             Divider()
+                                .padding(.top, 20)
                         }
                         SectionView(
                             assetName: "metadataFileNames",
@@ -100,7 +107,8 @@ struct MetadataEditView: View {
                                     showEditFilenames.toggle()
                                 }
                             ),
-                            divider: Divider.init()
+                            divider: Divider.init(),
+                            isLoading: viewModel.isLoading
                         )
                         SectionView(
                             assetName: "metadataDateAndTime",
@@ -111,7 +119,8 @@ struct MetadataEditView: View {
                                     showEditDataTime.toggle()
                                 }
                             ),
-                            divider: Divider.init()
+                            divider: Divider.init(),
+                            isLoading: viewModel.isLoading
                         )
                         SectionView(
                             assetName: "metadataLocations",
@@ -121,7 +130,8 @@ struct MetadataEditView: View {
                                 action: {
                                     showSetLocation.toggle()
                                 }
-                            )
+                            ),
+                            isLoading: viewModel.isLoading
                         )
                         Spacer(minLength: 50)
                     }
@@ -150,7 +160,7 @@ struct MetadataEditView: View {
                 AddLocationView(viewModel: AddLocationViewModel(selectedFiles: viewModel.selectedFiles, commonLocation: viewModel.commonLocation))
             }
             .sheet(isPresented: $showEditDataTime) {
-                    EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
+                EditDateAndTimeView(viewModel: EditDateAndTimeViewModel(selectedFiles: viewModel.selectedFiles, hasUpdates: $viewModel.hasUpdates))
             }
             .onAppear {
                 viewModel.refreshFiles()

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -1087,12 +1088,13 @@ Cg
                         <outlet property="separatorView" destination="fdm-PO-BRl" id="LrF-73-zv4"/>
                         <outlet property="separatorViewHeight" destination="eYD-Em-hUv" id="IkF-Pe-Iwt"/>
                         <outlet property="signUpButton" destination="KGx-6Y-vKV" id="UKm-ba-Kde"/>
+                        <outlet property="theContainer" destination="imY-z5-Xnt" id="gjD-JX-Hfw"/>
                         <outlet property="titleLabel" destination="E0f-3X-XKO" id="rob-rz-Teo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sOG-6q-MF5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4133" y="-2417"/>
+            <point key="canvasLocation" x="-4133.3333333333339" y="-2417.4107142857142"/>
         </scene>
         <!--Two Step Verification View Controller-->
         <scene sceneID="6La-39-3Rm">
@@ -1432,6 +1434,56 @@ Cg
             <point key="canvasLocation" x="-2175" y="-2417"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="DRF-B7-pJi">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="HQ1-Kb-oUw">
+            <size key="intrinsicContentSize" width="126" height="30"/>
+        </designable>
+        <designable name="J0q-9P-Urs">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="KGx-6Y-vKV">
+            <size key="intrinsicContentSize" width="54" height="30"/>
+        </designable>
+        <designable name="OaK-kf-z91">
+            <size key="intrinsicContentSize" width="46" height="30"/>
+        </designable>
+        <designable name="Qht-TS-1xP">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="SHM-i5-eFY">
+            <size key="intrinsicContentSize" width="46" height="30"/>
+        </designable>
+        <designable name="Tle-gw-J1C">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="a1z-PM-87f">
+            <size key="intrinsicContentSize" width="37" height="30"/>
+        </designable>
+        <designable name="aVZ-og-PaL">
+            <size key="intrinsicContentSize" width="47" height="30"/>
+        </designable>
+        <designable name="tgW-up-yf2">
+            <size key="intrinsicContentSize" width="49" height="30"/>
+        </designable>
+        <designable name="tzo-gX-hRd">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="u5U-Gg-4ER">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="wIt-7C-qTC">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="xdm-Yz-NSI">
+            <size key="intrinsicContentSize" width="32" height="34"/>
+        </designable>
+        <designable name="ylK-Xx-0wu">
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+    </designables>
     <resources>
         <image name="LogoNameLarge" width="226" height="226"/>
         <image name="logo_preview" width="64" height="48"/>
@@ -1439,10 +1491,10 @@ Cg
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemPinkColor">
-            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
