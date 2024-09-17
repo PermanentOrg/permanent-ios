@@ -19,6 +19,7 @@ struct LoginView: View {
             VStack(spacing: 32) {
                 HStack() {
                     Image(.authLogo)
+                        .frame(height: Constants.Design.isPhone ? 32 : 64)
                     Spacer()
                 }
                 HStack() {
@@ -51,7 +52,6 @@ struct LoginView: View {
                 }
                 VStack(spacing: 16) {
                     CustomLoginFormView(username: $viewModel.username, password: $viewModel.password, focusedField: _focusedField) {
-                        
                         signIn()
                     }
                     RoundButtonRightImageView(text: "Sign in", action: {
@@ -100,6 +100,7 @@ struct LoginView: View {
                 }
             }
             .padding(Constants.Design.isPhone ? 32 : 64)
+            .padding(.leading, Constants.Design.isPhone ? 32 : 0)
             .padding(.top, Constants.Design.isPhone ? 32 : 0)
             ErrorBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
         }

@@ -18,8 +18,13 @@ struct AuthenticatorContainerView: View {
                 Gradient.darkLightBlueGradient
                 HStack(spacing: 0) {
                     if !Constants.Design.isPhone {
-                        AuthLeftSideView()
-                            .frame(width: geometry.size.width * 0.61)
+                        AuthLeftSideView(viewModel: AuthLeftSideViewModel(containerViewModel: viewModel), startExploringAction: {
+                            UIApplication.shared.open(URL(string: "https://www.permanent.org/gallery")!)
+                        })
+                            .frame(width: geometry.size.width * 0.58)
+                            .cornerRadius(12)
+                            .padding(.vertical, 64)
+                            .padding(.leading, 64)
                     }
                     LoginView(viewModel: LoginViewModel(containerViewModel: viewModel), loginSuccess: {
                         dismissView()
