@@ -19,13 +19,13 @@ struct CustomLoginFormView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            TextField("Username", text: $username)
-                .textStyle(UsualRegularMediumTextStyle())
+            TextField("", text: $username)
+                .textStyle(UsualSmallXRegularTextStyle())
                 .placeholder(when: username.isEmpty) {
                     Text("Email address".uppercased())
-                        .font(.custom("Usual", size: 10))
-                        .kerning(1.6)
                         .foregroundColor(.white)
+                        .font(.custom("Usual-Regular", size: 10))
+                        .kerning(1.6)
                         .lineLimit(1)
                 }
                 .foregroundColor(.white)
@@ -52,7 +52,8 @@ struct CustomLoginFormView: View {
                     focusedField = .username
                 }
             
-            SecureField("Password", text: $password)
+            SecureField("", text: $password)
+                .font(.custom("Usual-Regular", size: 14))
                 .foregroundColor(.white)
                 .placeholder(when: password.isEmpty) {
                     Text("Password".uppercased())

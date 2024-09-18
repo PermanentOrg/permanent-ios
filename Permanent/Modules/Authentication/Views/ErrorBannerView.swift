@@ -74,5 +74,6 @@ struct ErrorBannerView: View {
             }
         }
         .padding(.horizontal, Constants.Design.isPhone ? 32 : 64) // Adjust this padding as needed for the notification's position
+        .padding(.leading, Constants.Design.isPhone ? 0 : -16)
     }
 }

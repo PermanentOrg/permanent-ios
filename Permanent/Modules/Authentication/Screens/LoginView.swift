@@ -90,7 +90,7 @@ struct LoginView: View {
                         .layoutPriority(0.5)
                     
                 }
-                SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Register", image: Image(.iconauthUserPlus), action: {
+                SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign Up", image: Image(.iconauthUserPlus), action: {
                 })
                 .buttonStyle(NoTapAnimationStyle())
                 
@@ -100,8 +100,9 @@ struct LoginView: View {
                 }
             }
             .padding(Constants.Design.isPhone ? 32 : 64)
-            .padding(.leading, Constants.Design.isPhone ? 32 : 0)
+            .padding(.leading, Constants.Design.isPhone ? 0 : -16)
             .padding(.top, Constants.Design.isPhone ? 32 : 0)
+            .padding(.bottom, Constants.Design.isPhone ? 8 : 0)
             ErrorBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
         }
         .onChange(of: viewModel.loginStatus, perform: { status in
