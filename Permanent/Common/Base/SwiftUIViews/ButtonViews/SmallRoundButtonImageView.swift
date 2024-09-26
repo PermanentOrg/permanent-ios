@@ -12,7 +12,7 @@ struct SmallRoundButtonImageView: View {
         case fillColor, noColor
     }
     enum ImagePlace {
-        case onLeft, onRight
+        case onLeft, onRight, none
     }
     
     var type: ButtonType = .fillColor

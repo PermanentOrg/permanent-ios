@@ -19,6 +19,7 @@ struct RoundButtonRightImageView: View {
     let action: () -> Void
     var ignoreDeviceType: Bool = false
     var isPhone: Bool = true
+    var hasImage: Bool = true
     
     var body: some View {
         Button(action: action, label: {
@@ -46,9 +47,11 @@ struct RoundButtonRightImageView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .blue700))
                                 .frame(width: 24, height: 24)
                         } else {
-                            rightImage
-                                .frame(width: 24, height: 24, alignment: .center)
-                                .accentColor(.blue700)
+                            if hasImage {
+                                rightImage
+                                    .frame(width: 24, height: 24, alignment: .center)
+                                    .accentColor(.blue700)
+                            }
                         }
                         Spacer()
                     }
@@ -79,8 +82,10 @@ struct RoundButtonRightImageView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .frame(width: 24, height: 24)
                         } else {
-                            rightImage
-                                .frame(width: 24, height: 24, alignment: .center)
+                            if hasImage {
+                                rightImage
+                                    .frame(width: 24, height: 24, alignment: .center)
+                            }
                         }
                     }
                     .padding(.horizontal, 24)
@@ -116,9 +121,11 @@ struct RoundButtonRightImageView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .frame(width: 24, height: 24)
                         } else {
-                            rightImage
-                                .frame(width: 24, height: 24, alignment: .center)
-                                .accentColor(.white)
+                            if hasImage {
+                                rightImage
+                                    .frame(width: 24, height: 24, alignment: .center)
+                                    .accentColor(.white)
+                            }
                         }
                         Spacer()
                     }
