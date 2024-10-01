@@ -25,3 +25,15 @@ struct AuthImageForRightSidePageView: View {
         }
     }
 }
+
+#Preview {
+    GeometryReader { geometry in
+        ZStack {
+            Gradient.darkLightBlueGradient
+                .ignoresSafeArea(.all)
+            AuthImageForRightSidePageView(page: .login)
+                .padding(0)
+            //.padding(Constants.Design.isPhone ? 32 : 64)
+        }
+    }
+}

@@ -11,8 +11,6 @@ class LoginViewModel: ObservableObject {
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var loginStatus: LoginStatus?
-    @Published var bannerErrorMessage: ErrorBannerMessage = .none
-    @Published var showErrorBanner: Bool = false
     
     var containerViewModel: AuthenticatorContainerViewModel
     
@@ -28,19 +26,23 @@ class LoginViewModel: ObservableObject {
         self.loginStatus = nil
         if !areFieldsValid(emailField: username, passwordField: password) {
             loginStatus = LoginStatus.error(message: "The entered data is invalid")
-            displayErrorBanner(bannerErrorMessage: .invalidData)
+            containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidData)
             return
         }
         
         containerViewModel.isLoading = true
         login(withUsername: username, password: password, then: {[weak self] newStatus in
+            if newStatus == .mfaToken {
+            self?.containerViewModel.password = self?.password ?? ""
+            self?.containerViewModel.username = self?.username ?? ""
+            }
             self?.loginStatus = newStatus
             self?.containerViewModel.isLoading = false
             switch newStatus {
             case .error(message: let message):
-                self?.displayErrorBanner(bannerErrorMessage: .error)
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .error)
             case .unknown:
-                self?.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
             default:
                 break
             }
@@ -68,25 +70,5 @@ class LoginViewModel: ObservableObject {
         EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
                                      email: AuthenticationManager.shared.session?.account.primaryEmail)
         EventsManager.trackEvent(event: .SignIn)
-    }
-    
-    func displayErrorBanner(bannerErrorMessage: ErrorBannerMessage) {
-        if showErrorBanner {
-            withAnimation {
-                showErrorBanner = false
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.bannerErrorMessage = bannerErrorMessage
-                withAnimation {
-                    self.showErrorBanner = true
-                }
-            }
-        } else {
-            self.bannerErrorMessage = bannerErrorMessage
-            withAnimation {
-                showErrorBanner = true
-            }
-        }
     }
 }
