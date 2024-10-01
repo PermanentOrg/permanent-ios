@@ -9,8 +9,6 @@ class AuthVerifyIdentityViewModel: ObservableObject {
     var containerViewModel: AuthenticatorContainerViewModel
     let authRepo: AuthRepository
     @Published var pinCode: String = ""
-    @Published var bannerErrorMessage: AuthBannerMessage = .none
-    @Published var showErrorBanner: Bool = false
     
     init(containerViewModel: AuthenticatorContainerViewModel) {
         self.containerViewModel = containerViewModel
@@ -20,7 +18,7 @@ class AuthVerifyIdentityViewModel: ObservableObject {
     
     func verify2FA(then handler: @escaping AuthLoginResponse) {
         guard pinCode.count == 4 else {
-            displayErrorBanner(bannerErrorMessage: .emptyPinCode)
+            containerViewModel.displayErrorBanner(bannerErrorMessage: .emptyPinCode)
             handler(.emptyPinCode)
             return
         }
@@ -33,7 +31,7 @@ class AuthVerifyIdentityViewModel: ObservableObject {
                 EventsManager.trackEvent(event: .SignIn)
 
             case .error(let message):
-                self.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
+                self.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
                 handler(.invalidPinCode)
             }
         }
@@ -45,35 +43,11 @@ class AuthVerifyIdentityViewModel: ObservableObject {
             self.containerViewModel.isLoading = false
             switch status {
             case .error(message: _):
-                self.displayErrorBanner(bannerErrorMessage: .resentCodeError)
+                self.containerViewModel.displayErrorBanner(bannerErrorMessage: .resentCodeError)
             default:
-                self.displayErrorBanner(bannerErrorMessage: .successResendCode)
+                self.containerViewModel.displayErrorBanner(bannerErrorMessage: .successResendCode)
                 return
             }
         }
     }
-    
-    func displayErrorBanner(bannerErrorMessage: AuthBannerMessage) {
-        if showErrorBanner {
-            withAnimation {
-                showErrorBanner = false
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.bannerErrorMessage = bannerErrorMessage
-                withAnimation {
-                    self.showErrorBanner = true
-                }
-            }
-        } else {
-            self.bannerErrorMessage = bannerErrorMessage
-            withAnimation {
-                showErrorBanner = true
-            }
-        }
-    }
-}
-
-enum FocusPin: Hashable {
-    case pin(Int)
 }

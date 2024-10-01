@@ -65,7 +65,13 @@ struct AuthBannerView: View {
                 .animation(.easeInOut(duration: 0.3), value: isVisible)
             }
         }
-        .padding(.horizontal, Constants.Design.isPhone ? 32 : 64)
-        .padding(.leading, Constants.Design.isPhone ? 0 : -16)
+    }
+}
+
+#Preview {
+    ZStack {
+        Gradient.darkLightBlueGradient
+            .ignoresSafeArea()
+        AuthBannerView(message: .invalidCredentials, isVisible: .constant(true))
     }
 }

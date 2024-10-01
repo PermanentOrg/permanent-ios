@@ -98,11 +98,6 @@ struct LoginView: View {
                         .layoutPriority(0.5)
                 }
             }
-            .padding(Constants.Design.isPhone ? 32 : 64)
-            .padding(.leading, Constants.Design.isPhone ? 0 : -16)
-            .padding(.top, Constants.Design.isPhone ? 32 : 0)
-            .padding(.bottom, Constants.Design.isPhone ? 8 : 0)
-            AuthBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
         }
         .onChange(of: viewModel.loginStatus, perform: { status in
             if let _ = status {
@@ -132,7 +127,7 @@ struct LoginView: View {
                 if keyboardSize.size.height > 120 {
                     if !keyboardOpenend {
                         keyboardOpenend = true
-                        withAnimation {
+                        withAnimation(.linear(duration: 0.3)) {
                             showEmptySpace = false
                         }
                     }
@@ -143,7 +138,7 @@ struct LoginView: View {
                 if keyboardSize.size.height > 120 {
                     if keyboardOpenend && self.focusedField == nil{
                         keyboardOpenend = false
-                        withAnimation {
+                        withAnimation(.linear(duration: 0.3)) {
                             showEmptySpace = true
                         }
                     }
@@ -169,11 +164,26 @@ struct LoginView: View {
 }
 
 #Preview {
-    ZStack {
-        Gradient.darkLightBlueGradient
-        LoginView(viewModel: LoginViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
-            
-        })
+    GeometryReader { geometry in
+        ZStack {
+            Gradient.darkLightBlueGradient
+            HStack(spacing: 64) {
+                if !Constants.Design.isPhone {
+                    AuthLeftSideView(viewModel: AuthLeftSideViewModel(containerViewModel: AuthenticatorContainerViewModel()), startExploringAction: {
+                        UIApplication.shared.open(URL(string: "https://www.permanent.org/gallery")!)
+                    })
+                    .frame(width: geometry.size.width * 0.58)
+                    .cornerRadius(12)
+                }
+                VStack(spacing: 0) {
+                    LoginView(viewModel: LoginViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
+                        
+                    })
+                    Spacer()
+                }
+            }
+            .padding(Constants.Design.isPhone ? 32 : 64)
+        }
     }
-    .ignoresSafeArea()
+    .ignoresSafeArea(.all)
 }

@@ -92,7 +92,7 @@ struct AuthVerifyIdentityView: View {
                     .lineLimit(1)
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color(red: 0.72, green: 0.73, blue: 0.79))
-                    .layoutPriority(1)
+//                    .layoutPriority(1)
                 Button(action: {
                     UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/newticket/")!)
                 }, label: {
@@ -106,21 +106,15 @@ struct AuthVerifyIdentityView: View {
                 })
                 if !showEmptySpace {
                     Spacer()
-                        .layoutPriority(0.5)
                 }
             }
-            .padding(Constants.Design.isPhone ? 32 : 64)
-            .padding(.leading, Constants.Design.isPhone ? 0 : -16)
-            .padding(.top, Constants.Design.isPhone ? 32 : 0)
-            .padding(.bottom, Constants.Design.isPhone ? 8 : 0)
-            AuthBannerView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 if keyboardSize.size.height > 120 {
                     if !keyboardOpenend {
                         keyboardOpenend = true
-                        withAnimation {
+                        withAnimation(.linear(duration: 0.3)) {
                             showEmptySpace = false
                         }
                     }
@@ -131,7 +125,7 @@ struct AuthVerifyIdentityView: View {
                 if keyboardSize.size.height > 120 {
                     if keyboardOpenend && self.focusedPin == nil{
                         keyboardOpenend = false
-                        withAnimation {
+                        withAnimation(.linear(duration: 0.3)) {
                             showEmptySpace = true
                         }
                     }
@@ -171,11 +165,15 @@ struct AuthVerifyIdentityView: View {
 }
 
 #Preview {
-    ZStack {
-        Gradient.darkLightBlueGradient
-        AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
-            
-        })
+    GeometryReader { geometry in
+        ZStack {
+            Gradient.darkLightBlueGradient
+                .ignoresSafeArea()
+            VStack(spacing: 0) {
+                AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: AuthenticatorContainerViewModel()), loginSuccess: {
+                })
+            }
+        }
     }
-    .ignoresSafeArea()
+    .ignoresSafeArea(.keyboard)
 }

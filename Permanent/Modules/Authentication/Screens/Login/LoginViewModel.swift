@@ -11,8 +11,6 @@ class LoginViewModel: ObservableObject {
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var loginStatus: LoginStatus?
-    @Published var bannerErrorMessage: AuthBannerMessage = .none
-    @Published var showErrorBanner: Bool = false
     
     var containerViewModel: AuthenticatorContainerViewModel
     
@@ -28,7 +26,7 @@ class LoginViewModel: ObservableObject {
         self.loginStatus = nil
         if !areFieldsValid(emailField: username, passwordField: password) {
             loginStatus = LoginStatus.error(message: "The entered data is invalid")
-            displayErrorBanner(bannerErrorMessage: .invalidData)
+            containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidData)
             return
         }
         
@@ -42,9 +40,9 @@ class LoginViewModel: ObservableObject {
             self?.containerViewModel.isLoading = false
             switch newStatus {
             case .error(message: let message):
-                self?.displayErrorBanner(bannerErrorMessage: .error)
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .error)
             case .unknown:
-                self?.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
             default:
                 break
             }
@@ -72,25 +70,5 @@ class LoginViewModel: ObservableObject {
         EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
                                      email: AuthenticationManager.shared.session?.account.primaryEmail)
         EventsManager.trackEvent(event: .SignIn)
-    }
-    
-    func displayErrorBanner(bannerErrorMessage: AuthBannerMessage) {
-        if showErrorBanner {
-            withAnimation {
-                showErrorBanner = false
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.bannerErrorMessage = bannerErrorMessage
-                withAnimation {
-                    self.showErrorBanner = true
-                }
-            }
-        } else {
-            self.bannerErrorMessage = bannerErrorMessage
-            withAnimation {
-                showErrorBanner = true
-            }
-        }
     }
 }

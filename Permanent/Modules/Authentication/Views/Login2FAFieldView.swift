@@ -7,6 +7,11 @@
 import SwiftUI
 import Combine
 
+
+enum FocusPin: Hashable {
+    case pin(Int)
+}
+
 struct Login2FAFieldView: View {
     @Binding private var code: String
     @State private var pins: [String]
@@ -31,12 +36,10 @@ struct Login2FAFieldView: View {
                             if index < numberOfFields - 1 {
                                 pinFocusState = FocusPin.pin(index + 1)
                             } else {
-                                // Uncomment this if you want to clear focus after the last digit
                                 pinFocusState = nil
                             }
                         }
                         else if newVal.count == numberOfFields, let intValue = Int(newVal) {
-                            // Pasted value
                             code = newVal
                             updatePinsFromOTP()
                             pinFocusState = FocusPin.pin(numberOfFields - 1)
@@ -48,15 +51,14 @@ struct Login2FAFieldView: View {
                         }
                         updateOTPString()
                     }
+                    .keyboardType(.numberPad)
                     .focused($pinFocusState, equals: FocusPin.pin(index))
                     .onTapGesture {
-                        // Set focus to the current field when tapped
                         pinFocusState = FocusPin.pin(index)
                     }
             }
         }
         .onAppear {
-            // Initialize pins based on the OTP string
             updatePinsFromOTP()
         }
     }
