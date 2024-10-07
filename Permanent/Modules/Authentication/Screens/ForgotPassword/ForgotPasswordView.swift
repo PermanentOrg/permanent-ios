@@ -95,7 +95,6 @@ struct ForgotPasswordView: View {
                         
                     }
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onLeft, text: "Back to Sign in", image: Image(.backArrowOnboarding), action: {
-                        print("\(geometry.size.height) keyb \(keyboardHeight) \n")
                         viewModel.containerViewModel.setContentType(.login)
                     })
                     
