@@ -59,7 +59,7 @@ struct LoginView: View {
                     })
                 }
                 Button(action: {
-                    
+                    self.viewModel.containerViewModel.setContentType(.forgotPassword)
                 }, label: {
                     Text("Forgot password?")
                         .font(
@@ -115,7 +115,7 @@ struct LoginView: View {
                     loginSuccess()
                     
                 case .mfaToken:
-                    self.viewModel.containerViewModel.contentType = .verifyIdentity
+                    self.viewModel.containerViewModel.setContentType(.verifyIdentity)
                     break
                 default:
                     break

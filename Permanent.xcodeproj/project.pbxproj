@@ -52,6 +52,10 @@
 		5E0AA7EF2C937561003FBCF2 /* CustomLoginFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */; };
 		5E0AA7F12C937714003FBCF2 /* AuthBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */; };
 		5E0AA7F42C937747003FBCF2 /* NoTapAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */; };
+		5E0AB9E12CAEAAE900C80A94 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E02CAEAAE900C80A94 /* ForgotPasswordView.swift */; };
+		5E0AB9E32CAEB43F00C80A94 /* ForgotPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E22CAEB43400C80A94 /* ForgotPasswordViewModel.swift */; };
+		5E0AB9E52CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E42CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift */; };
+		5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */; };
 		5E0ADB8D279052A500F39E7E /* PublicProfileLocationSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */; };
 		5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
@@ -1004,6 +1008,10 @@
 		5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoginFormView.swift; sourceTree = "<group>"; };
 		5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerView.swift; sourceTree = "<group>"; };
 		5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoTapAnimationStyle.swift; sourceTree = "<group>"; };
+		5E0AB9E02CAEAAE900C80A94 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		5E0AB9E22CAEB43400C80A94 /* ForgotPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModel.swift; sourceTree = "<group>"; };
+		5E0AB9E42CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomForgotPasswordFieldView.swift; sourceTree = "<group>"; };
+		5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordConfimationView.swift; sourceTree = "<group>"; };
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
@@ -1887,6 +1895,7 @@
 		5E0AA7ED2C93753F003FBCF2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5E0AB9E42CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift */,
 				5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */,
 				5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */,
 				5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */,
@@ -1902,6 +1911,16 @@
 				5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */,
 			);
 			path = Styles;
+			sourceTree = "<group>";
+		};
+		5E0AB9DF2CAEAABC00C80A94 /* ForgotPassword */ = {
+			isa = PBXGroup;
+			children = (
+				5E0AB9E02CAEAAE900C80A94 /* ForgotPasswordView.swift */,
+				5E0AB9E62CB026D800C80A94 /* ForgotPasswordConfimationView.swift */,
+				5E0AB9E22CAEB43400C80A94 /* ForgotPasswordViewModel.swift */,
+			);
+			path = ForgotPassword;
 			sourceTree = "<group>";
 		};
 		5E0B1BD22B961CCE00B10BB5 /* Views */ = {
@@ -3122,6 +3141,7 @@
 				5EC20FD22CA5903A00CCE8EF /* LeftSideView */,
 				5EC20FD02CA5901100CCE8EF /* Login */,
 				5EC20FD12CA5901C00CCE8EF /* VerifyIdentity */,
+				5E0AB9DF2CAEAABC00C80A94 /* ForgotPassword */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -4712,6 +4732,7 @@
 				5E048FD32923088C0023C929 /* ShareManagementExpirationDateCollectionViewCell.swift in Sources */,
 				5E2CFA22274E843A0055941C /* PublicProfilePageEndpoint.swift in Sources */,
 				5E4739B52A40FDFA00A20D85 /* ShareManagementRepository.swift in Sources */,
+				5E0AB9E12CAEAAE900C80A94 /* ForgotPasswordView.swift in Sources */,
 				BC4526FB251E1D7500E24A51 /* AuthResponse.swift in Sources */,
 				5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */,
 				BC6D3B472514E2D100390927 /* RequestProtocol.swift in Sources */,
@@ -4949,6 +4970,7 @@
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
 				BCD414D7257F74780019548F /* ShareLinkViewModel.swift in Sources */,
+				5E0AB9E72CB026D800C80A94 /* ForgotPasswordConfimationView.swift in Sources */,
 				BC42EDDD25C06D080031B965 /* InviteVOPayload.swift in Sources */,
 				5EE068942B9F23B5004055A4 /* OnboardingWelcomeView.swift in Sources */,
 				BC326AB1252738FB00A69597 /* AccountUpdateResponse.swift in Sources */,
@@ -4976,6 +4998,7 @@
 				BC59BAB425C2B7D6005A45D3 /* SharePreviewViewModelDelegate.swift in Sources */,
 				5E6FB7582A73E15800984B84 /* MetadataEditFileNamesView.swift in Sources */,
 				5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */,
+				5E0AB9E32CAEB43F00C80A94 /* ForgotPasswordViewModel.swift in Sources */,
 				5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */,
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
@@ -5031,6 +5054,7 @@
 				BC2E3BB2255AE7D700301C07 /* UISearchBarExtension.swift in Sources */,
 				BC6AF9B32593434500483BBA /* AccessRole.swift in Sources */,
 				5EC9C693290B323000AD2E37 /* CodeVerificationController.swift in Sources */,
+				5E0AB9E52CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift in Sources */,
 				F540B76125EE8CD9009D331A /* ImagePreviewViewController.swift in Sources */,
 				F502C4D926DCF1E700657D37 /* ArchivesViewModel.swift in Sources */,
 				BC566CEA2546FE00000249E1 /* UploadFileMetaResponse.swift in Sources */,

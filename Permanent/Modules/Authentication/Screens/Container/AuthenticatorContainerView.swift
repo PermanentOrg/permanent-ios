@@ -42,9 +42,30 @@ struct AuthenticatorContainerView: View {
                                         LoginView(viewModel: LoginViewModel(containerViewModel: viewModel), loginSuccess: {
                                             dismissView()
                                         })
+                                        .transition(AnyTransition.asymmetric(
+                                            insertion: viewModel.insertionViewTransition,
+                                            removal: .opacity)
+                                        )
                                     case .verifyIdentity:
                                         AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: viewModel), loginSuccess: {
                                         })
+                                        .transition(AnyTransition.asymmetric(
+                                            insertion: viewModel.insertionViewTransition,
+                                            removal: .opacity)
+                                        )
+                                    case .forgotPassword:
+                                        ForgotPasswordView(viewModel: ForgotPasswordViewModel(containerViewModel: viewModel)) {
+                                        }
+                                        .transition(AnyTransition.asymmetric(
+                                            insertion: viewModel.insertionViewTransition,
+                                            removal: .opacity)
+                                        )
+                                    case .forgotPasswordConfirmation:
+                                        ForgotPasswordConfimationView(viewModel: viewModel)
+                                            .transition(AnyTransition.asymmetric(
+                                                insertion: viewModel.insertionViewTransition,
+                                                removal: .opacity)
+                                            )
                                     default:
                                         Spacer()
                                     }
