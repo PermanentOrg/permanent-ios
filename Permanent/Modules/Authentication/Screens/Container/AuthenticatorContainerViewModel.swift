@@ -11,6 +11,7 @@ class AuthenticatorContainerViewModel: ObservableObject {
     @Published var contentType: AuthContentType = .login
     @Published var firstViewContentType: AuthContentType = .login
     @Published var isLoading: Bool = false
+    @Published var insertionViewTransition: AnyTransition = .opacity
     
     @Published var bannerErrorMessage: AuthBannerMessage = .none
     @Published var showErrorBanner: Bool = false
@@ -38,10 +39,36 @@ class AuthenticatorContainerViewModel: ObservableObject {
             }
         }
     }
+    
+    func setContentType(_ newContentType: AuthContentType) {
+        if Constants.Design.isPhone {
+            switch contentType {
+            case .login:
+                insertionViewTransition = .move(edge: .trailing)
+            case .verifyIdentity:
+                insertionViewTransition = .move(edge: .trailing)
+            case .forgotPassword:
+                if newContentType == .forgotPasswordConfirmation {
+                    insertionViewTransition = .move(edge: .trailing)
+                } else {
+                    insertionViewTransition = .move(edge: .leading)
+                }
+            case .forgotPasswordConfirmation:
+                insertionViewTransition = .move(edge: .trailing)
+            default:
+                insertionViewTransition = .move(edge: .trailing)
+            }
+        }
+        withAnimation {
+            contentType = newContentType
+        }
+    }
 }
 
 enum AuthContentType {
     case login
     case verifyIdentity
+    case forgotPassword
+    case forgotPasswordConfirmation
     case none
 }

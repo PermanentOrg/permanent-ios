@@ -30,7 +30,7 @@ class AuthVerifyIdentityViewModel: ObservableObject {
                 handler(.success)
                 EventsManager.trackEvent(event: .SignIn)
 
-            case .error(let message):
+            case .error(_):
                 self.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
                 handler(.invalidPinCode)
             }
