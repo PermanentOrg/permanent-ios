@@ -419,4 +419,14 @@ extension AppDelegate {
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return Constants.Design.orientationLock
     }
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        PhotoManager.shared.start()
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        if PermSession.currentSession != nil {
+            PhotoManager.shared.start()
+        }
+    }
 }

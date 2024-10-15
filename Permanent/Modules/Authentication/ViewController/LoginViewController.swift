@@ -88,7 +88,13 @@ class LoginViewController: BaseViewController<AuthViewModel> {
             switch loginStatus {
             case .success:
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
-                    AppDelegate.shared.rootViewController.setDrawerRoot()
+//                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                    let photoLibraryService = FetchAlbumsViewModel()
+                    let screenView = PhotoGalery()
+                        .environmentObject(photoLibraryService)
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
                 } else {
                     let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: self?.emailField.text, password: self?.passwordField.text))
                     let host = UIHostingController(rootView: screenView)

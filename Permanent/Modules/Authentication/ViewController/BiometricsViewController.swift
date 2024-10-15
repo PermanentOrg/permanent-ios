@@ -55,7 +55,13 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                     host.modalPresentationStyle = .fullScreen
                     AppDelegate.shared.rootViewController.present(host, animated: true)
                 } else {
-                    AppDelegate.shared.rootViewController.setDrawerRoot()
+//                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                    let photoLibraryService = FetchAlbumsViewModel()
+                    let screenView = PhotoGalery()
+                        .environmentObject(photoLibraryService)
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
                 }
             }
         }, onFailure: { error in

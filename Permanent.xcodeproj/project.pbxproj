@@ -485,6 +485,13 @@
 		927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CA2A2634CA00BDF26A /* GradientView.swift */; };
 		927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CC2A2F290E00BDF26A /* BannerView.swift */; };
 		9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */; };
+		9298AD512CB6A26200048768 /* PhotoThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD4E2CB6A26200048768 /* PhotoThumbnail.swift */; };
+		9298AD522CB6A26200048768 /* FetchAlbumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD4F2CB6A26200048768 /* FetchAlbumsViewModel.swift */; };
+		9298AD532CB6A26200048768 /* PhotoGalery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD502CB6A26200048768 /* PhotoGalery.swift */; };
+		9298AD582CB6BF8400048768 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD572CB6BF8400048768 /* PhotoManager.swift */; };
+		9298AD5A2CB6CC8800048768 /* OtherUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD592CB6CC8800048768 /* OtherUploadManager.swift */; };
+		9298AD5C2CB8155400048768 /* OtherUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD5B2CB8155400048768 /* OtherUploadOperation.swift */; };
+		9298AD5E2CBD170100048768 /* UserDefaultManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9298AD5D2CBD170100048768 /* UserDefaultManager.swift */; };
 		92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886A2A9782AC0040941E /* AddLocationView.swift */; };
 		92B9886E2A9783F30040941E /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886D2A9783F30040941E /* MapView.swift */; };
 		92C73E402A13BDC8000EF633 /* LegacyAccountStatusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */; };
@@ -1312,6 +1319,13 @@
 		927AE0CA2A2634CA00BDF26A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		927AE0CC2A2F290E00BDF26A /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
 		9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationViewModel.swift; sourceTree = "<group>"; };
+		9298AD4E2CB6A26200048768 /* PhotoThumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoThumbnail.swift; sourceTree = "<group>"; };
+		9298AD4F2CB6A26200048768 /* FetchAlbumsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchAlbumsViewModel.swift; sourceTree = "<group>"; };
+		9298AD502CB6A26200048768 /* PhotoGalery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoGalery.swift; sourceTree = "<group>"; };
+		9298AD572CB6BF8400048768 /* PhotoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
+		9298AD592CB6CC8800048768 /* OtherUploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtherUploadManager.swift; sourceTree = "<group>"; };
+		9298AD5B2CB8155400048768 /* OtherUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherUploadOperation.swift; sourceTree = "<group>"; };
+		9298AD5D2CBD170100048768 /* UserDefaultManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultManager.swift; sourceTree = "<group>"; };
 		92B9886A2A9782AC0040941E /* AddLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationView.swift; sourceTree = "<group>"; };
 		92B9886D2A9783F30040941E /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		92C73E3F2A13BDC8000EF633 /* LegacyAccountStatusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyAccountStatusCell.swift; sourceTree = "<group>"; };
@@ -2409,6 +2423,7 @@
 		5E47399B2A40B8A700A20D85 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				9298AD4D2CB6A22100048768 /* PhotoAlbum */,
 				5E4739AD2A40FA1F00A20D85 /* Onboarding */,
 				5E4739AE2A40FA6000A20D85 /* Authentication */,
 				5E4739AC2A40F9F100A20D85 /* AccountOnboarding */,
@@ -3246,6 +3261,44 @@
 				927AE0C82A262EA100BDF26A /* BannerView.xib */,
 			);
 			path = Banner;
+			sourceTree = "<group>";
+		};
+		9298AD4D2CB6A22100048768 /* PhotoAlbum */ = {
+			isa = PBXGroup;
+			children = (
+				9298AD562CB6BF6C00048768 /* Managers */,
+				9298AD552CB6BF6100048768 /* ViewModel */,
+				9298AD542CB6BF5000048768 /* UI */,
+			);
+			path = PhotoAlbum;
+			sourceTree = "<group>";
+		};
+		9298AD542CB6BF5000048768 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				9298AD502CB6A26200048768 /* PhotoGalery.swift */,
+				9298AD4E2CB6A26200048768 /* PhotoThumbnail.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		9298AD552CB6BF6100048768 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				9298AD4F2CB6A26200048768 /* FetchAlbumsViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		9298AD562CB6BF6C00048768 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				9298AD592CB6CC8800048768 /* OtherUploadManager.swift */,
+				9298AD572CB6BF8400048768 /* PhotoManager.swift */,
+				9298AD5B2CB8155400048768 /* OtherUploadOperation.swift */,
+				9298AD5D2CBD170100048768 /* UserDefaultManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		92B9886C2A9783D30040941E /* SetLocation */ = {
@@ -4688,6 +4741,7 @@
 				92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */,
 				F5428E7A2641DDC20096C7B8 /* FileDetailsBaseCollectionViewCell.swift in Sources */,
 				F558C24928B605F9008BC77B /* FileMenuViewController.swift in Sources */,
+				9298AD5A2CB6CC8800048768 /* OtherUploadManager.swift in Sources */,
 				92430A5D2AF2A1F00098597D /* EmailChip.swift in Sources */,
 				F540A678267B649800962B2D /* AccountDeleteViewModel.swift in Sources */,
 				5E1582BF2C5CD7C600103EA8 /* OnboardingChartYourPathViewModel.swift in Sources */,
@@ -4729,6 +4783,7 @@
 				5EADF803262475D500D14E9C /* TagCollectionViewCell.swift in Sources */,
 				BC600DF825B6E6C200193C96 /* DownloadManagerGCD.swift in Sources */,
 				5E7AE8AB291CE7FF00F2A41D /* ShareManagementSeparatorFooterCollectionViewCell.swift in Sources */,
+				9298AD5C2CB8155400048768 /* OtherUploadOperation.swift in Sources */,
 				BCAEED8725C1B96200A13C0F /* InviteStatus.swift in Sources */,
 				5E051C072B6AEB2900274657 /* SettingsScreenViewModel.swift in Sources */,
 				5EE0689B2B9FAA5A004055A4 /* RoundButtonRightImageView.swift in Sources */,
@@ -4736,6 +4791,7 @@
 				5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
+				9298AD5E2CBD170100048768 /* UserDefaultManager.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
 				BCC1E3222549866300B71866 /* FileListType.swift in Sources */,
@@ -4754,12 +4810,14 @@
 				5E5EF858273B2416004F7EBC /* PublicProfilePageViewModel.swift in Sources */,
 				F559F87B28F9A0750015A522 /* FolderViewSelectionViewModel.swift in Sources */,
 				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
+				9298AD532CB6A26200048768 /* PhotoGalery.swift in Sources */,
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
 				BCD414E4257FCEB50019548F /* SharebyURLVOPayload.swift in Sources */,
 				BC6D3B512514EF3300390927 /* OperationProtocol.swift in Sources */,
+				9298AD582CB6BF8400048768 /* PhotoManager.swift in Sources */,
 				5EE77BD92C3EADD4006D854C /* AccessRoleChipView.swift in Sources */,
 				F559F87528F990F20015A522 /* FolderContentViewModel.swift in Sources */,
 				F58B8B9C2757F67A00D43606 /* PublicArchiveViewController.swift in Sources */,
@@ -4866,6 +4924,7 @@
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
+				9298AD522CB6A26200048768 /* FetchAlbumsViewModel.swift in Sources */,
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
 				5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */,
@@ -4887,6 +4946,7 @@
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
+				9298AD512CB6A26200048768 /* PhotoThumbnail.swift in Sources */,
 				BC11C80525594B41008BDEFA /* APIResults.swift in Sources */,
 				BC11C7FB2555769A008BDEFA /* Strings.swift in Sources */,
 				F58B8B9E2758047200D43606 /* PublicArchiveFileViewController.swift in Sources */,

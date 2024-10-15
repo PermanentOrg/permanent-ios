@@ -10,6 +10,7 @@ import Foundation
 class FileInfo: NSObject, NSCoding {
     var id: String = NSUUID().uuidString
     var archiveId: Int
+    var creationDate: Date?
     
     var fileContents: Data?
     var mimeType: String? {
@@ -18,6 +19,7 @@ class FileInfo: NSObject, NSCoding {
     var name: String
     var url: URL
     var folder: FolderInfo
+    var assetID: String?
     
     var didFailUpload = false
     
@@ -35,6 +37,19 @@ class FileInfo: NSObject, NSCoding {
         self.url = url
         self.folder = folder
         self.archiveId = archiveId
+        
+        if loadInMemory {
+            fileContents = try? Data(contentsOf: url)
+        }
+    }
+    
+    init(withURL url: URL, named name: String, assetId: String? = nil, folder: FolderInfo, creationDate: Date?, archiveId: Int = -1, loadInMemory: Bool = false) {
+        self.name = name
+        self.url = url
+        self.folder = folder
+        self.archiveId = archiveId
+        self.creationDate = creationDate
+        self.assetID = assetId
         
         if loadInMemory {
             fileContents = try? Data(contentsOf: url)

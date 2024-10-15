@@ -69,7 +69,13 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
                 self.dismiss(animated: true)
                 EventsManager.trackEvent(event: .SignIn)
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
-                    AppDelegate.shared.rootViewController.setDrawerRoot()
+//                    AppDelegate.shared.rootViewController.setDrawerRoot()
+                    let photoLibraryService = FetchAlbumsViewModel()
+                    let screenView = PhotoGalery()
+                        .environmentObject(photoLibraryService)
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
                 } else {
                     let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: nil, password: nil))
                     let host = UIHostingController(rootView: screenView)
@@ -90,7 +96,13 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
         
         switch status {
         case .success:
-            AppDelegate.shared.rootViewController.setDrawerRoot()
+//            AppDelegate.shared.rootViewController.setDrawerRoot()
+            let photoLibraryService = FetchAlbumsViewModel()
+            let screenView = PhotoGalery()
+                .environmentObject(photoLibraryService)
+            let host = UIHostingController(rootView: screenView)
+            host.modalPresentationStyle = .fullScreen
+            AppDelegate.shared.rootViewController.present(host, animated: true)
         case .error(let message):
             showAlert(title: .error, message: message)
         }
