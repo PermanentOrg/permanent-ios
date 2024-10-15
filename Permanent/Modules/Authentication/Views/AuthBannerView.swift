@@ -37,6 +37,9 @@ struct AuthBannerView: View {
                         }
                         Spacer()
                         Button(action: {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            }
                             withAnimation {
                                 isVisible = false
                             }

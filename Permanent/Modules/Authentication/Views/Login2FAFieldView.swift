@@ -8,22 +8,24 @@ import SwiftUI
 import Combine
 
 
-enum FocusPin: Hashable {
+enum FocusPinType: Hashable {
     case pin(Int)
 }
 
 struct Login2FAFieldView: View {
     @Binding private var code: String
     @State private var pins: [String]
-    @FocusState var pinFocusState: FocusPin?
+    @FocusState var pinFocusState: FocusPinType?
+    @Binding var focusedPin: FocusPinType?
     
     var numberOfFields: Int
     
-    init(numberOfFields: Int, code: Binding<String>, pinFocusState: FocusPin?) {
+    init(numberOfFields: Int, code: Binding<String>, focusedPin: Binding<FocusPinType?>) {
         self.numberOfFields = numberOfFields
         self._code = code
         self._pins = State(initialValue: Array(repeating: "", count: numberOfFields))
-        self.pinFocusState = pinFocusState
+        self._focusedPin = focusedPin
+        self.pinFocusState = focusedPin.wrappedValue
     }
     
     var body: some View {
@@ -34,7 +36,7 @@ struct Login2FAFieldView: View {
                     .onChange(of: pins[index]) { newVal in
                         if newVal.count == 1 {
                             if index < numberOfFields - 1 {
-                                pinFocusState = FocusPin.pin(index + 1)
+                                pinFocusState = FocusPinType.pin(index + 1)
                             } else {
                                 pinFocusState = nil
                             }
@@ -42,24 +44,44 @@ struct Login2FAFieldView: View {
                         else if newVal.count == numberOfFields, let intValue = Int(newVal) {
                             code = newVal
                             updatePinsFromOTP()
-                            pinFocusState = FocusPin.pin(numberOfFields - 1)
+                            pinFocusState = FocusPinType.pin(numberOfFields - 1)
                         }
                         else if newVal.isEmpty {
                             if index > 0 {
-                                pinFocusState = FocusPin.pin(index - 1)
+                                pinFocusState = FocusPinType.pin(index - 1)
                             }
                         }
                         updateOTPString()
                     }
                     .keyboardType(.numberPad)
-                    .focused($pinFocusState, equals: FocusPin.pin(index))
+                    .focused($pinFocusState, equals: FocusPinType.pin(index))
                     .onTapGesture {
-                        pinFocusState = FocusPin.pin(index)
+                        pinFocusState = FocusPinType.pin(index)
                     }
             }
         }
         .onAppear {
             updatePinsFromOTP()
+        }
+        .onChange(of: focusedPin) { newFocusedPin in
+            if newFocusedPin == nil {
+                pinFocusState = nil
+            }
+        }
+        .onChange(of: pinFocusState, perform: { newValue in
+            if newValue != nil {
+                focusedPin = newValue
+            }
+        })
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
+            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
+            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                
+            }
         }
     }
     
@@ -111,7 +133,7 @@ struct Login2FAFieldView_Previews: PreviewProvider {
         
         ZStack {
             Gradient.darkLightBlueGradient
-            Login2FAFieldView(numberOfFields: 4, code: .constant("4321"), pinFocusState: .none)
+            Login2FAFieldView(numberOfFields: 4, code: .constant("4321"),focusedPin: .constant(.pin(1)))
         }
         .ignoresSafeArea()
     }

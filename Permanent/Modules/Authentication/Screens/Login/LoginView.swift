@@ -16,86 +16,96 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 32) {
-                HStack() {
-                    Image(.authLogo)
-                        .frame(height: Constants.Design.isPhone ? 32 : 64)
-                    Spacer()
-                }
-                HStack() {
-                    if Constants.Design.isPhone {
-                        Text("Sign in to\nPermanent")
-                            .font(
-                                .custom(
-                                    "Usual-Regular",
-                                    size: 32)
-                            )
-                            .fontWeight(.light)
-                            .lineSpacing(8)
-                            .foregroundStyle(.white)
-                    } else {
-                        Text("Sign in to Permanent")
-                            .font(
-                                .custom(
-                                    "Usual-Regular",
-                                    size: 32)
-                            )
-                            .fontWeight(.light)
-                            .lineSpacing(8)
-                            .foregroundStyle(.white)
+            GeometryReader { geometry in
+                VStack(spacing: 32) {
+                    if geometry.size.height > 680 {
+                        HStack() {
+                            Image(.authLogo)
+                                .frame(height: Constants.Design.isPhone ? 32 : 64)
+                            Spacer()
+                        }
+                    } else if showEmptySpace {
+                        HStack() {
+                            Image(.authLogo)
+                                .frame(height: Constants.Design.isPhone ? 32 : 64)
+                            Spacer()
+                        }
                     }
-                    Spacer()
-                }
-                .layoutPriority(1)
-                if showEmptySpace {
-                    Spacer()
-                }
-                VStack(spacing: 16) {
-                    CustomLoginFormView(username: $viewModel.username, password: $viewModel.password, focusedField: _focusedField) {
-                        signIn()
+                    HStack() {
+                        if Constants.Design.isPhone {
+                            Text("Sign in to\nPermanent")
+                                .font(
+                                    .custom(
+                                        "Usual-Regular",
+                                        size: 32)
+                                )
+                                .fontWeight(.light)
+                                .lineSpacing(8)
+                                .foregroundStyle(.white)
+                        } else {
+                            Text("Sign in to Permanent")
+                                .font(
+                                    .custom(
+                                        "Usual-Regular",
+                                        size: 32)
+                                )
+                                .fontWeight(.light)
+                                .lineSpacing(8)
+                                .foregroundStyle(.white)
+                        }
+                        Spacer()
                     }
-                    RoundButtonRightImageView(text: "Sign in", action: {
-                        signIn()
+                    .layoutPriority(1)
+                    if showEmptySpace {
+                        Spacer()
+                    }
+                    VStack(spacing: 16) {
+                        CustomLoginFormView(username: $viewModel.username, password: $viewModel.password, focusedField: _focusedField) {
+                            signIn()
+                        }
+                        RoundButtonRightImageView(text: "Sign in", action: {
+                            signIn()
+                        })
+                    }
+                    Button(action: {
+                        self.viewModel.containerViewModel.setContentType(.forgotPassword)
+                    }, label: {
+                        Text("Forgot password?")
+                            .font(
+                                .custom("Usual-Regular", size: 14)
+                                .weight(.medium)
+                            )
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.white)
                     })
-                }
-                Button(action: {
-                    self.viewModel.containerViewModel.setContentType(.forgotPassword)
-                }, label: {
-                    Text("Forgot password?")
-                        .font(
-                            .custom("Usual-Regular", size: 14)
-                            .weight(.medium)
-                        )
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.white)
-                })
-                HStack(spacing: 20) {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 1)
-                        .background(Color(red: 0.54, green: 0.55, blue: 0.64))
-                        .layoutPriority(0.5)
-                    Text("New to Permanent?".uppercased())
-                        .font(
-                            .custom("Usual-Regular", size: 10))
-                        .kerning(1.6)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(Color(red: 0.72, green: 0.73, blue: 0.79))
-                        .layoutPriority(1)
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 1)
-                        .background(Color(red: 0.54, green: 0.55, blue: 0.64))
-                        .layoutPriority(0.5)
+                    HStack(spacing: 20) {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(height: 1)
+                            .background(Color(red: 0.54, green: 0.55, blue: 0.64))
+                            .layoutPriority(0.5)
+                        Text("New to Permanent?".uppercased())
+                            .font(
+                                .custom("Usual-Regular", size: 10))
+                            .kerning(1.6)
+                            .lineLimit(1)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(Color(red: 0.72, green: 0.73, blue: 0.79))
+                            .layoutPriority(1)
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(height: 1)
+                            .background(Color(red: 0.54, green: 0.55, blue: 0.64))
+                            .layoutPriority(0.5)
+                        
+                    }
+                    SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign Up", image: Image(.iconauthUserPlus), action: {
+                    })
                     
-                }
-                SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign Up", image: Image(.iconauthUserPlus), action: {
-                })
-                
-                if !showEmptySpace {
-                    Spacer()
-                        .layoutPriority(0.5)
+                    if !showEmptySpace {
+                        Spacer()
+                            .layoutPriority(0.5)
+                    }
                 }
             }
         }
@@ -172,7 +182,7 @@ struct LoginView: View {
                     AuthLeftSideView(viewModel: AuthLeftSideViewModel(containerViewModel: AuthenticatorContainerViewModel()), startExploringAction: {
                         UIApplication.shared.open(URL(string: "https://www.permanent.org/gallery")!)
                     })
-                    .frame(width: geometry.size.width * 0.58)
+                    .frame(width: geometry.size.width * 0.70)
                     .cornerRadius(12)
                 }
                 VStack(spacing: 0) {
