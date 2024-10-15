@@ -11,7 +11,6 @@ struct AuthVerifyIdentityView: View {
     @State var showEmptySpace: Bool = true
     @State var keyboardOpenend: Bool = false
     @State var keyboardHeight: CGFloat = 0
-    @FocusState var focusedPin: FocusPinType?
     let bottomButtonId = UUID()
     let topElementId = UUID()
     
@@ -77,15 +76,7 @@ struct AuthVerifyIdentityView: View {
                                     Spacer()
                                 }
                                 VStack(spacing: 24) {
-                                    Login2FAFieldView(numberOfFields: 4,
-                                                      code: $viewModel.pinCode,
-                                                      focusedPin: Binding(
-                                                        get: { focusedPin },
-                                                        set: { newValue in
-                                                            focusedPin = newValue
-                                                        }
-                                                      )
-                                    )
+                                    Login2FAFieldView(viewModel: viewModel)
                                     .id(bottomButtonId)
                                     RoundButtonRightImageView(text: "Verify", action: {
                                         signIn()
@@ -196,7 +187,6 @@ struct AuthVerifyIdentityView: View {
             withAnimation {
                 showEmptySpace = true
             }
-            focusedPin = nil
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .frame(maxWidth: .infinity)
@@ -207,7 +197,6 @@ struct AuthVerifyIdentityView: View {
         //            showEmptySpace = true
         //        }
         //        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        focusedPin = nil
        // UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.verify2FA { status in
             switch status {

@@ -13,20 +13,12 @@ enum FocusPinType: Hashable {
 }
 
 struct Login2FAFieldView: View {
-    @Binding private var code: String
-    @State private var pins: [String]
+    
+    @StateObject var viewModel: AuthVerifyIdentityViewModel
+    @State private var pins = State(initialValue: Array(repeating: "", count: 4)).wrappedValue
     @FocusState var pinFocusState: FocusPinType?
-    @Binding var focusedPin: FocusPinType?
     
-    var numberOfFields: Int
-    
-    init(numberOfFields: Int, code: Binding<String>, focusedPin: Binding<FocusPinType?>) {
-        self.numberOfFields = numberOfFields
-        self._code = code
-        self._pins = State(initialValue: Array(repeating: "", count: numberOfFields))
-        self._focusedPin = focusedPin
-        self.pinFocusState = focusedPin.wrappedValue
-    }
+    var numberOfFields: Int = 4
     
     var body: some View {
         HStack(spacing: 16) {
@@ -42,7 +34,7 @@ struct Login2FAFieldView: View {
                             }
                         }
                         else if newVal.count == numberOfFields, let intValue = Int(newVal) {
-                            code = newVal
+                            viewModel.pinCode = newVal
                             updatePinsFromOTP()
                             pinFocusState = FocusPinType.pin(numberOfFields - 1)
                         }
@@ -63,16 +55,6 @@ struct Login2FAFieldView: View {
         .onAppear {
             updatePinsFromOTP()
         }
-        .onChange(of: focusedPin) { newFocusedPin in
-            if newFocusedPin == nil {
-                pinFocusState = nil
-            }
-        }
-        .onChange(of: pinFocusState, perform: { newValue in
-            if newValue != nil {
-                focusedPin = newValue
-            }
-        })
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
 
@@ -83,17 +65,23 @@ struct Login2FAFieldView: View {
                 
             }
         }
+        .onChange(of: viewModel.removeFocusState) { newValue in
+            if newValue {
+                pinFocusState = nil
+                viewModel.removeFocusState = false
+            }
+        }
     }
     
     private func updatePinsFromOTP() {
-        let otpArray = Array(code.prefix(numberOfFields))
+        let otpArray = Array(viewModel.pinCode.prefix(numberOfFields))
         for (index, char) in otpArray.enumerated() {
             pins[index] = String(char)
         }
     }
     
     private func updateOTPString() {
-        code = pins.joined()
+        viewModel.pinCode = pins.joined()
     }
 }
 
@@ -133,7 +121,7 @@ struct Login2FAFieldView_Previews: PreviewProvider {
         
         ZStack {
             Gradient.darkLightBlueGradient
-            Login2FAFieldView(numberOfFields: 4, code: .constant("4321"),focusedPin: .constant(.pin(1)))
+            Login2FAFieldView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: AuthenticatorContainerViewModel()))
         }
         .ignoresSafeArea()
     }
