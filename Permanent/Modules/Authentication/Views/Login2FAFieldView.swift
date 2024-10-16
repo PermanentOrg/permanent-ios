@@ -13,19 +13,17 @@ enum FocusPinType: Hashable {
 }
 
 struct Login2FAFieldView: View {
+    var numberOfFields: Int
     @Binding private var code: String
     @State private var pins: [String]
     @FocusState var pinFocusState: FocusPinType?
-    @Binding var focusedPin: FocusPinType?
-    
-    var numberOfFields: Int
-    
-    init(numberOfFields: Int, code: Binding<String>, focusedPin: Binding<FocusPinType?>) {
+    @Binding var digitsDisabled: Bool
+
+    init(numberOfFields: Int, code: Binding<String>, digitsDisabled: Binding<Bool>) {
         self.numberOfFields = numberOfFields
         self._code = code
         self._pins = State(initialValue: Array(repeating: "", count: numberOfFields))
-        self._focusedPin = focusedPin
-        self.pinFocusState = focusedPin.wrappedValue
+        self._digitsDisabled = digitsDisabled
     }
     
     var body: some View {
@@ -55,6 +53,7 @@ struct Login2FAFieldView: View {
                     }
                     .keyboardType(.numberPad)
                     .focused($pinFocusState, equals: FocusPinType.pin(index))
+                    .disabled(digitsDisabled)
                     .onTapGesture {
                         pinFocusState = FocusPinType.pin(index)
                     }
@@ -62,26 +61,6 @@ struct Login2FAFieldView: View {
         }
         .onAppear {
             updatePinsFromOTP()
-        }
-        .onChange(of: focusedPin) { newFocusedPin in
-            if newFocusedPin == nil {
-                pinFocusState = nil
-            }
-        }
-        .onChange(of: pinFocusState, perform: { newValue in
-            if newValue != nil {
-                focusedPin = newValue
-            }
-        })
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
-            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
-            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                
-            }
         }
     }
     
@@ -133,7 +112,7 @@ struct Login2FAFieldView_Previews: PreviewProvider {
         
         ZStack {
             Gradient.darkLightBlueGradient
-            Login2FAFieldView(numberOfFields: 4, code: .constant("4321"),focusedPin: .constant(.pin(1)))
+            Login2FAFieldView(numberOfFields: 4, code: .constant("4321"), digitsDisabled: .constant(false))
         }
         .ignoresSafeArea()
     }

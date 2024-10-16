@@ -32,21 +32,7 @@ struct AuthVerifyIdentityView: View {
                                         .frame(height: Constants.Design.isPhone ? 32 : 64)
                                     Spacer()
                                 }
-//                                if geometry.size.height > 680 {
-//                                    HStack() {
-//                                        Image(.authLogo)
-//                                            .frame(height: Constants.Design.isPhone ? 32 : 64)
-//                                        Spacer()
-//                                    }
-//                                } else if showEmptySpace {
-//                                    HStack() {
-//                                        Image(.authLogo)
-//                                            .frame(height: Constants.Design.isPhone ? 32 : 64)
-//                                        Spacer()
-//                                    }
-//                                }
-                                //.id(topElementId)
-                                //.layoutPriority(2)
+                                .id(topElementId)
                                 HStack() {
                                     Text("Verify your identity")
                                         .font(
@@ -59,7 +45,6 @@ struct AuthVerifyIdentityView: View {
                                         .foregroundStyle(.white)
                                     Spacer()
                                 }
-                                //.layoutPriority(1)
                                 HStack {
                                     Text("Please check your email or SMS for the 4-digit code and enter it below.")
                                         .font(
@@ -71,21 +56,12 @@ struct AuthVerifyIdentityView: View {
                                         .frame(height: 56)
                                     Spacer()
                                 }
-                                //.layoutPriority(1)
                                 
                                 if showEmptySpace && geometry.size.height > 680 {
                                     Spacer()
                                 }
                                 VStack(spacing: 24) {
-                                    Login2FAFieldView(numberOfFields: 4,
-                                                      code: $viewModel.pinCode,
-                                                      focusedPin: Binding(
-                                                        get: { focusedPin },
-                                                        set: { newValue in
-                                                            focusedPin = newValue
-                                                        }
-                                                      )
-                                    )
+                                    Login2FAFieldView(numberOfFields: 4, code: $viewModel.pinCode, digitsDisabled: $viewModel.digitsDisabled)
                                     .id(bottomButtonId)
                                     RoundButtonRightImageView(text: "Verify", action: {
                                         signIn()
@@ -146,10 +122,9 @@ struct AuthVerifyIdentityView: View {
                                         Spacer()
                                             .frame(height: keyboardHeight)
                                     }
-                                    
                                 }
                             }
-                            .frame(height: geometry.size.height - (Constants.Design.isPhone ? 10 : 0))
+                            .frame(height: geometry.size.height - (Constants.Design.isPhone ? 16 : 0))
                     }
                     .onAppear {
                         UIScrollView.appearance().bounces = false
@@ -157,13 +132,13 @@ struct AuthVerifyIdentityView: View {
                     .onDisappear {
                         UIScrollView.appearance().bounces = true
                     }
-//                    .onChange(of: keyboardOpenend) { newValue in
-//                        if newValue {
-//                            scrollView.scrollTo(bottomButtonId)
-//                        } else {
-//                            scrollView.scrollTo(topElementId)
-//                        }
-//                    }
+                    .onChange(of: keyboardOpenend) { newValue in
+                        if newValue && !Constants.Design.isPhone {
+                            scrollView.scrollTo(bottomButtonId)
+                        } else {
+                            scrollView.scrollTo(topElementId)
+                        }
+                    }
                 }
             }
         }
@@ -203,12 +178,7 @@ struct AuthVerifyIdentityView: View {
     }
     
     private func signIn() {
-        //        withAnimation {
-        //            showEmptySpace = true
-        //        }
-        //        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         focusedPin = nil
-       // UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.verify2FA { status in
             switch status {
             case .success:
