@@ -57,7 +57,6 @@ class FetchAlbumsViewModel: ObservableObject {
             switch status {
             case .authorized:
                 self?.fetchAssets()
-                PhotoManager.shared
             default:
                 break
             }
@@ -84,6 +83,7 @@ class FetchAlbumsViewModel: ObservableObject {
                 assets.append(FetchedAssets(asset: object, isUploaded: self.isUploaded(asset: object)))
             }
             self.assets = assets
+            PhotoManager.shared.start()
         }
     }
     

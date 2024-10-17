@@ -17,12 +17,6 @@ class PhotoManager {
     
     var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
-    init() {
-        getRoot(then: { status in
-            self.start()
-        })
-    }
-    
     func getRoot(then handler: @escaping ServerResponse) {
         let currentArchive = AuthenticationManager.shared.session?.selectedArchive
         let apiOperation = APIOperation(FilesEndpoint.getPublicRoot(archiveNbr: currentArchive!.archiveNbr!))
@@ -55,9 +49,11 @@ class PhotoManager {
     }
     
     func start() {
-        self.checkForNewPhotos { assets in
-            self.startUpload(assets: assets)
-        }
+        getRoot(then: { status in
+            self.checkForNewPhotos { assets in
+                self.startUpload(assets: assets)
+            }
+        })
     }
     
     func checkForNewPhotos(completion: @escaping ([PHAsset]) -> Void) {
@@ -85,29 +81,33 @@ class PhotoManager {
     
     func startUpload(assets: [PHAsset]) {
         Task {
-            let chunkedAssets = assets.chunked(into: 10)
+            let chunkedAssets = assets.chunked(into: 5)
             for chunk in chunkedAssets {
                 isLoading = true
                 do {
                     backgroundTask = await UIApplication.shared.beginBackgroundTask(withName: "com.permanent.backgroundTask") {
-                        OtherUploadManager.shared.uploadQueue.cancelAllOperations()
-                        UIApplication.shared.endBackgroundTask(self.backgroundTask)
-                        self.backgroundTask = .invalid
-                        self.isLoading = false
-                        print("canceling background task")
+                        self.cancelBackgroundTask()
                     }
 
                     let fileInfos = try await getURLS(assets: chunk)
                     await OtherUploadManager.shared.upload(files: fileInfos) // Wait for upload to complete
                     
                     await UIApplication.shared.endBackgroundTask(backgroundTask)
-                    isLoading = false
                     backgroundTask = .invalid
+                    isLoading = false
                 } catch {
                     print("Error processing chunk: \(error)")
                 }
             }
         }
+    }
+    
+    func cancelBackgroundTask() {
+        OtherUploadManager.shared.uploadQueue.cancelAllOperations()
+        print("canceling background task")
+        self.isLoading = false
+        UIApplication.shared.endBackgroundTask(self.backgroundTask)
+        self.backgroundTask = .invalid
     }
 
     func getURLS(assets: [PHAsset]) async throws -> [FileInfo] {

@@ -10,12 +10,17 @@ import Photos
 struct PhotoGalery: View {
     
     @EnvironmentObject var service: FetchAlbumsViewModel
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         CustomNavigationView {
             VStack {
                 libraryView
                     .onAppear {
+                        service.fetchAssets()
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { (_) in
+                        print("did become active")
                         service.fetchAssets()
                     }
             }
