@@ -45,6 +45,12 @@ class AuthenticatorContainerViewModel: ObservableObject {
             switch contentType {
             case .login:
                 insertionViewTransition = .move(edge: .trailing)
+            case .register:
+                if newContentType == .login {
+                    insertionViewTransition = .move(edge: .leading)
+                } else {
+                    insertionViewTransition = .move(edge: .trailing)
+                }
             case .verifyIdentity:
                 insertionViewTransition = .move(edge: .trailing)
             case .forgotPassword:
@@ -67,6 +73,7 @@ class AuthenticatorContainerViewModel: ObservableObject {
 
 enum AuthContentType {
     case login
+    case register
     case verifyIdentity
     case forgotPassword
     case forgotPasswordConfirmation
