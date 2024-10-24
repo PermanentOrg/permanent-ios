@@ -100,6 +100,7 @@ struct LoginView: View {
                         
                     }
                     SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign Up", image: Image(.iconauthUserPlus), action: {
+                        self.viewModel.containerViewModel.setContentType(.register)
                     })
                     
                     if !showEmptySpace {
