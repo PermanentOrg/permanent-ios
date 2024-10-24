@@ -53,6 +53,7 @@ struct CustomRegisterFormView: View {
                 .clipShape(.rect(cornerRadius: 4))
                 .onTapGesture {
                     focusedField = .fullname
+                    actionForFirstFieldTap()
                 }
             
             TextField("", text: $email)
@@ -86,6 +87,7 @@ struct CustomRegisterFormView: View {
                 .clipShape(.rect(cornerRadius: 4))
                 .onTapGesture {
                     focusedField = .email
+                    actionForFirstFieldTap()
                 }
             
             SecureField("", text: $password)
@@ -117,16 +119,8 @@ struct CustomRegisterFormView: View {
                 .clipShape(.rect(cornerRadius: 4))
                 .onTapGesture {
                     focusedField = .password
-                }
-        }
-        .onChange(of: focusedField) { newValue in
-            if newValue != nil {
-                if newValue == .password {
                     actionForLastFieldTap()
-                } else {
-                    actionForFirstFieldTap()
                 }
-            }
         }
     }
 }

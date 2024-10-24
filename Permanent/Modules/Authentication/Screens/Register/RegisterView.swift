@@ -17,7 +17,7 @@ struct RegisterView: View {
     let titleId = UUID()
     let passwordFieldId = UUID()
     let topElementId = UUID()
-    
+    let bottomSpacer = UUID()
     var loginSuccess: (() -> Void)
     
     var body: some View {
@@ -26,11 +26,8 @@ struct RegisterView: View {
                 ScrollViewReader { scrollView in
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 32) {
-                            if Constants.Design.isPhone {
-                                Color.clear
-                                    .frame(height: 0)
-                            }
-                            
+                            Color.clear
+                                .frame(height: 0)
                             HStack() {
                                 Image(.authLogo)
                                     .frame(height: Constants.Design.isPhone ? 32 : 64)
@@ -53,18 +50,14 @@ struct RegisterView: View {
                             VStack(spacing: 16) {
                                 CustomRegisterFormView(fullname: $viewModel.fullname, email: $viewModel.email, password: $viewModel.password, focusedField: _focusedField) {
                                     withAnimation {
-                                        scrollView.scrollTo(bottomButtonId)
+                                        scrollView.scrollTo(bottomButtonId, anchor: .bottom)
                                     }
                                 }actionForFirstFieldTap: {
                                     withAnimation {
-                                        scrollView.scrollTo(bottomButtonId)
+                                        scrollView.scrollTo(titleId, anchor: .top)
                                     }
                                 }actionForLastFieldTap: {
-                                    withAnimation {
-                                        scrollView.scrollTo(bottomButtonId)
-                                    }
                                 }
-                                .id(passwordFieldId)
                             }
                             
                             HStack(spacing: 0) {
@@ -107,12 +100,12 @@ struct RegisterView: View {
                                 .layoutPriority(1)
                                 .padding(.trailing, 2)
                             }
-                            
                             RoundButtonRightImageView(text: "Sign Up", rightImage: Image(.rightArrowShort), action: {
                                 
                             })
                             .opacity(!viewModel.agreeTermsAndConditions ? 0.5 : 1)
                             .disabled(!viewModel.agreeTermsAndConditions)
+                            .id(passwordFieldId)
                             
                             
                             HStack(spacing: 20) {
@@ -139,17 +132,16 @@ struct RegisterView: View {
                             SmallRoundButtonImageView(type: .noColor, imagePlace: .onRight, text: "Sign in", image: Image(.authRegisterKey), action: {
                                 self.viewModel.containerViewModel.setContentType(.login)
                             })
+                            .padding(.bottom, Constants.Design.isPhone ? 2 : 3)
                             .id(bottomButtonId)
                             
                             if !showEmptySpace {
                                 Spacer()
                                     .frame(height: keyboardHeight - 64 > 0 ? keyboardHeight - 64 : keyboardHeight)
                             }
-                            Color.clear
-                                .frame(height: 0)
                         }
                     }
-                    .frame(height: geometry.size.height - (Constants.Design.isPhone ? 16 : 0))
+                    .frame(height: geometry.size.height)
                     .onAppear {
                         UIScrollView.appearance().bounces = false
                     }
@@ -164,24 +156,24 @@ struct RegisterView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 keyboardHeight = keyboardSize.size.height
-                    if keyboardHeight > 120 {
-                        if !keyboardOpenend {
-                            keyboardOpenend = true
-                            withAnimation(.bouncy(duration: 0.3)) {
-                                showEmptySpace = false
-                            }
+                if keyboardHeight > 120 {
+                    if !keyboardOpenend {
+                        keyboardOpenend = true
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            showEmptySpace = false
+                        }
                     }
                 }
             }
         }.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 keyboardHeight = 0
-                    if keyboardSize.height > 120 {
-                        if keyboardOpenend {
-                            keyboardOpenend = false
-                            withAnimation(.bouncy(duration: 0.3)) {
-                                showEmptySpace = true
-                            }
+                if keyboardSize.height > 120 {
+                    if keyboardOpenend {
+                        keyboardOpenend = false
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            showEmptySpace = true
+                        }
                     }
                 }
             }
