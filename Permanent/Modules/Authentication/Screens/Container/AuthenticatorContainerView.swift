@@ -78,6 +78,14 @@ struct AuthenticatorContainerView: View {
                             insertion: viewModel.insertionViewTransition,
                             removal: .opacity)
                         )
+                    case .register:
+                        RegisterView(viewModel: RegisterViewModel(containerViewModel: viewModel), loginSuccess: {
+                            dismissView()
+                        })
+                        .transition(AnyTransition.asymmetric(
+                            insertion: viewModel.insertionViewTransition,
+                            removal: .opacity)
+                        )
                     case .verifyIdentity:
                         AuthVerifyIdentityView(viewModel: AuthVerifyIdentityViewModel(containerViewModel: viewModel), loginSuccess: {})
                             .transition(AnyTransition.asymmetric(

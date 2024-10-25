@@ -304,6 +304,9 @@
 		5E9977AC284898C7003E0C46 /* PublicGalleryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */; };
 		5E9977AE284E8BFC003E0C46 /* DonateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AD284E8BFC003E0C46 /* DonateTests.swift */; };
 		5E9977B0285098FD003E0C46 /* AVCaptureDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */; };
+		5E9C8E8F2CC2A7A9004C058F /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E8E2CC2A7A9004C058F /* RegisterView.swift */; };
+		5E9C8E912CC2A9F8004C058F /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */; };
+		5E9C8E932CC63D74004C058F /* CustomRegisterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */; };
 		5E9E73D52BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
@@ -1197,6 +1200,9 @@
 		5E9977AB284898C7003E0C46 /* PublicGalleryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryTests.swift; sourceTree = "<group>"; };
 		5E9977AD284E8BFC003E0C46 /* DonateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateTests.swift; sourceTree = "<group>"; };
 		5E9977AF285098FD003E0C46 /* AVCaptureDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureDeviceExtension.swift; sourceTree = "<group>"; };
+		5E9C8E8E2CC2A7A9004C058F /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
+		5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomRegisterFormView.swift; sourceTree = "<group>"; };
 		5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientArchiveButtonView.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
@@ -1897,6 +1903,7 @@
 			children = (
 				5E0AB9E42CAEBAF500C80A94 /* CustomForgotPasswordFieldView.swift */,
 				5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */,
+				5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */,
 				5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */,
 				5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */,
 				5E7A87F62C99C83700228EB4 /* AuthImageForRightSidePageView.swift */,
@@ -3104,6 +3111,15 @@
 			path = TextViews;
 			sourceTree = "<group>";
 		};
+		5E9C8E8D2CC29751004C058F /* Register */ = {
+			isa = PBXGroup;
+			children = (
+				5E9C8E8E2CC2A7A9004C058F /* RegisterView.swift */,
+				5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */,
+			);
+			path = Register;
+			sourceTree = "<group>";
+		};
 		5EA94A102B34842300AD67F5 /* AlertsViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -3140,6 +3156,7 @@
 				5E814A492C90DDA6005FF97C /* Container */,
 				5EC20FD22CA5903A00CCE8EF /* LeftSideView */,
 				5EC20FD02CA5901100CCE8EF /* Login */,
+				5E9C8E8D2CC29751004C058F /* Register */,
 				5EC20FD12CA5901C00CCE8EF /* VerifyIdentity */,
 				5E0AB9DF2CAEAABC00C80A94 /* ForgotPassword */,
 			);
@@ -4830,6 +4847,7 @@
 				5E991EE42A4ADDE4006229C0 /* SectionView.swift in Sources */,
 				F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */,
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
+				5E9C8E912CC2A9F8004C058F /* RegisterViewModel.swift in Sources */,
 				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
 				5EBAFCEA2A1572CD005DB527 /* LegacyPlanningSetUpButton.swift in Sources */,
@@ -4868,6 +4886,7 @@
 				BC6AF9A925933EAF00483BBA /* MembersViewModel.swift in Sources */,
 				5E548E842B29F9D600DD2C59 /* AddStorageView.swift in Sources */,
 				BC30AFD925A46E7900D37BB5 /* ArchiveSharePayload.swift in Sources */,
+				5E9C8E8F2CC2A7A9004C058F /* RegisterView.swift in Sources */,
 				BC6AF9B92593675600483BBA /* ArchiveVOPayload.swift in Sources */,
 				BCB0725925221494003E2F66 /* PreferencesManager.swift in Sources */,
 				5E1C3C4E28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift in Sources */,
@@ -5008,6 +5027,7 @@
 				5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */,
 				5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */,
 				BC04DACA2567D040009D9C0C /* RelocateRecordPayload.swift in Sources */,
+				5E9C8E932CC63D74004C058F /* CustomRegisterFormView.swift in Sources */,
 				BC0D99B7256D3AF600D29041 /* RootNavigationController.swift in Sources */,
 				5E8B706B283D6E5A004295C6 /* PublicGalleryNoArchiveCellCollectionViewCell.swift in Sources */,
 				BCE8DA7825655E8F00842ABD /* FileState.swift in Sources */,
