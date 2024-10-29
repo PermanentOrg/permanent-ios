@@ -514,6 +514,8 @@
 		92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */; };
 		92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */; };
 		92C73E462A14D530000EF633 /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C73E452A14D530000EF633 /* RoundedView.swift */; };
+		92C95C4F2CCFB154002CE018 /* EventsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C95C4E2CCFB154002CE018 /* EventsEndpoint.swift */; };
+		92C95C512CCFB445002CE018 /* EventsPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C95C502CCFB445002CE018 /* EventsPayload.swift */; };
 		92DCF7832A1507E5004C36CB /* LegacyAccountStatusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */; };
 		92DCF7852A150976004C36CB /* LegacyArchiveCompletedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */; };
 		92DCF7872A1509E0004C36CB /* LegacyArchiveCreateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */; };
@@ -1364,6 +1366,8 @@
 		92C73E412A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCompletedCell.swift; sourceTree = "<group>"; };
 		92C73E432A13BE1D000EF633 /* LegacyArchiveCreateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArchiveCreateCell.swift; sourceTree = "<group>"; };
 		92C73E452A14D530000EF633 /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
+		92C95C4E2CCFB154002CE018 /* EventsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsEndpoint.swift; sourceTree = "<group>"; };
+		92C95C502CCFB445002CE018 /* EventsPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsPayload.swift; sourceTree = "<group>"; };
 		92DCF7822A1507E5004C36CB /* LegacyAccountStatusCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyAccountStatusCell.xib; sourceTree = "<group>"; };
 		92DCF7842A150976004C36CB /* LegacyArchiveCompletedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCompletedCell.xib; sourceTree = "<group>"; };
 		92DCF7862A1509E0004C36CB /* LegacyArchiveCreateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LegacyArchiveCreateCell.xib; sourceTree = "<group>"; };
@@ -3517,6 +3521,7 @@
 				F5C8D248273205B000707301 /* SearchEndpoint.swift */,
 				F58F315327F72A1500B89B99 /* BillingEndpoint.swift */,
 				5ED428822A12432E001F88FB /* LegacyPlanningEndpoint.swift */,
+				92C95C4E2CCFB154002CE018 /* EventsEndpoint.swift */,
 				BC6D3B582514F61400390927 /* Layer */,
 			);
 			path = Network;
@@ -3641,6 +3646,7 @@
 				5E62F7C827F79FF40046F6C8 /* PopularArchive.swift */,
 				5EB721122B35C9DC0036B28F /* RedeemVO.swift */,
 				5EB2D2352C245EEA0029D0DE /* OnboardingArchive.swift */,
+				92C95C502CCFB445002CE018 /* EventsPayload.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -4714,6 +4720,7 @@
 				BC6AF9B0259342E100483BBA /* Account.swift in Sources */,
 				5EB721132B35C9DC0036B28F /* RedeemVO.swift in Sources */,
 				5E2114922B026CB300944386 /* ViewExtension.swift in Sources */,
+				92C95C4F2CCFB154002CE018 /* EventsEndpoint.swift in Sources */,
 				5E83CC47286C5F8D00A5775B /* ExtensionUploadManager.swift in Sources */,
 				BC6E70F3252C74B600113D5F /* PermanentLocalAuthentication.swift in Sources */,
 				BCA120C6256279C100ECAD7B /* SortOption.swift in Sources */,
@@ -4803,6 +4810,7 @@
 				5E647334263C22F900E6566D /* NotificationName.swift in Sources */,
 				BC581A4E255A98DB00171D7A /* MediaRecorder.swift in Sources */,
 				5E991EF62A53637E006229C0 /* SectionHeaderView.swift in Sources */,
+				92C95C512CCFB445002CE018 /* EventsPayload.swift in Sources */,
 				5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
