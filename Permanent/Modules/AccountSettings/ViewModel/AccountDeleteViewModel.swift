@@ -8,7 +8,6 @@
 import Foundation
 
 class AccountDeleteViewModel: ViewModelInterface {
-    
     static let accountDeleteSuccessNotification = Notification.Name("AccountDeleteViewModel.accountDeleteSuccessNotification")
     
     func deleteAccount(completion: @escaping ((Bool) -> Void)) {

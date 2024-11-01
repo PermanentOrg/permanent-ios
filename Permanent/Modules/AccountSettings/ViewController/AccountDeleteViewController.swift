@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import SwiftUI
 
 class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
+    var deleteAccountClosure: (() -> Void)?
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var confirmTextField: UITextField!
@@ -38,15 +40,14 @@ class AccountDeleteViewController: BaseViewController<AccountDeleteViewModel> {
     @IBAction func deleteButtonPressed(_ sender: Any) {
         if confirmTextField.text == "DELETE" {
             showSpinner()
-            viewModel?.deletePushToken(then: { [self] status in
-                viewModel?.deleteAccount(completion: { [self] success in
+            viewModel?.deletePushToken(then: { [weak self] status in
+                self?.viewModel?.deleteAccount(completion: { [weak self] success in
                     if success {
-                        hideSpinner()
+                        self?.hideSpinner()
                         UploadManager.shared.cancelAll()
-                        
-                        AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
-                        
-                        dismiss(animated: true) {
+
+                        self?.dismiss(animated: false) {
+                            self?.deleteAccountClosure?()
                             NotificationCenter.default.post(name: AccountDeleteViewModel.accountDeleteSuccessNotification, object: self)
                         }
                     }

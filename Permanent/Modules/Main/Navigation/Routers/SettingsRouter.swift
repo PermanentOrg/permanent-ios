@@ -39,8 +39,12 @@ class SettingsRouter {
             let host = UIHostingController(rootView: screenView)
             self.rootViewController.present(host, animated: true, completion: nil)
         case .account:
-            let screenView = ViewRepresentableContainer(viewRepresentable: AccountInfoViewControllerRepresentable(), title: AccountInfoViewControllerRepresentable().title)
+            var infoRepresentable: AccountInfoViewControllerRepresentable = AccountInfoViewControllerRepresentable()
+            let screenView = ViewRepresentableContainer(viewRepresentable: infoRepresentable, title: AccountInfoViewControllerRepresentable().title)
             let host = UIHostingController(rootView: screenView)
+            infoRepresentable.deleteAccountClosure = {
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+            }
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
         case .storage:

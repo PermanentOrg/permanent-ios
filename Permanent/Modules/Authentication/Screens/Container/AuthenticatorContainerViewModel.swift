@@ -8,6 +8,7 @@ import Foundation
 import SwiftUI
 
 class AuthenticatorContainerViewModel: ObservableObject {
+    @Published var accountWasDeleted: Bool = false
     @Published var contentType: AuthContentType = .login
     @Published var firstViewContentType: AuthContentType = .login
     @Published var isLoading: Bool = false

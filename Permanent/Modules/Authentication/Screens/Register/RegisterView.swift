@@ -101,12 +101,11 @@ struct RegisterView: View {
                                 .padding(.trailing, 2)
                             }
                             RoundButtonRightImageView(text: "Sign Up", rightImage: Image(.rightArrowShort), action: {
-                                
+                                viewModel.attemptRegister()
                             })
-                            .opacity(!viewModel.agreeTermsAndConditions ? 0.5 : 1)
-                            .disabled(!viewModel.agreeTermsAndConditions)
+                            .opacity(!viewModel.agreeTermsAndConditions || !viewModel.areFieldsValid() ? 0.5 : 1)
+                            .disabled(!viewModel.agreeTermsAndConditions || !viewModel.areFieldsValid())
                             .id(passwordFieldId)
-                            
                             
                             HStack(spacing: 20) {
                                 Rectangle()
@@ -151,8 +150,22 @@ struct RegisterView: View {
                 }
             }
         }
-        .onChange(of: viewModel.loginStatus, perform: { status in
+        .onChange(of: viewModel.registerStatus, perform: { status in
+            if let _ = status {
+                switch status {
+                case .success:
+                    let screenView = OnboardingView(viewModel: OnboardingContainerViewModel(username: viewModel.email, password: viewModel.password))
+                    let host = UIHostingController(rootView: screenView)
+                    host.modalPresentationStyle = .fullScreen
+                    AppDelegate.shared.rootViewController.present(host, animated: true)
+                    viewModel.trackEvents()
+                    
+                default:
+                    break
+                }
+            }
         })
+        
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 keyboardHeight = keyboardSize.size.height
