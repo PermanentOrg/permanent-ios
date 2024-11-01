@@ -5,6 +5,7 @@
 //  Created by Lucian Cerbu on 27.01.2021.
 //
 
+import SwiftUI
 import UIKit
 
 class AccountInfoViewController: BaseViewController<InfoViewModel> {
@@ -61,9 +62,15 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
     }
     
     @IBAction func deleteButtonPressed(_ sender: Any) {
-        let deleteVC = UIViewController.create(withIdentifier: .accountDelete, from: .settings)
+        guard let deleteVC = UIViewController.create(withIdentifier: .accountDelete, from: .settings) as? AccountDeleteViewController else { return }
         let navigationController = NavigationController(rootViewController: deleteVC)
         present(navigationController, animated: true, completion: nil)
+        
+        deleteVC.deleteAccountClosure = { [weak self] in
+            self?.parent?.dismiss(animated: false, completion: {
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+            })
+        }
     }
     
     func getUserDetails() {

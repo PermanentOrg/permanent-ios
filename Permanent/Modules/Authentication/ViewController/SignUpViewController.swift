@@ -42,7 +42,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         
         NotificationCenter.default.addObserver(forName: AccountDeleteViewModel.accountDeleteSuccessNotification, object: nil, queue: nil) { [weak self] notif in
             // Height of 80 because this controller doesn't have a navigation bar
-            self?.view.showNotificationBanner(height: 80, title: "Your account was successfully deleted".localized())
         }
     }
     

@@ -2147,8 +2147,8 @@
 		5E3E12262A41DA0500682DE5 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				F540A675267B618A00962B2D /* AccountDeleteViewController.swift */,
 				5E46217125C17C5A007642BE /* AccountInfoViewController.swift */,
+				F540A675267B618A00962B2D /* AccountDeleteViewController.swift */,
 				5E46217825C1A2CA007642BE /* InputTextWithLabelElementViewViewController.swift */,
 				5E46217925C1A2CA007642BE /* InputTextWithLabelElementViewViewController.xib */,
 			);

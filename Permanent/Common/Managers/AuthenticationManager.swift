@@ -150,10 +150,10 @@ class AuthenticationManager {
         }
     }
     
-    func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
+    func signUp(with credentials: SignUpV2Credentials, then handler: @escaping (RequestStatus) -> Void) {
         logout()
         
-        accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.loginCredentials.email, password: credentials.loginCredentials.password) { [self] result in
+        accountRepository.createAccount(fullName: credentials.name, primaryEmail: credentials.email, password: credentials.password, optIn: credentials.optIn) { [self] result in
             switch result {
             case .success((let signupResponse, let account)):
                 let token = signupResponse.token
