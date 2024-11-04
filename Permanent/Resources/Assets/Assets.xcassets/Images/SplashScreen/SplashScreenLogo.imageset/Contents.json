@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "authLogo.svg",
+      "filename" : "image 7.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "compression-type" : "lossless"
+    "compression-type" : "automatic"
   }
 }
