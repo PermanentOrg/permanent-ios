@@ -12,6 +12,10 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var loginButton: UIButton!
     @IBOutlet var biometricsButton: UIButton!
+    @IBOutlet weak var topConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var trailingConstraint: NSLayoutConstraint!
     
     
     override func viewDidLoad() {
@@ -24,6 +28,10 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     
     fileprivate func initUI() {
         view.backgroundColor = .primary
+        if !Constants.Design.isPhone {
+            leadingConstraint.constant = view.frame.width * 0.36
+            trailingConstraint.constant = view.frame.width * 0.36
+        }
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = view.bounds
