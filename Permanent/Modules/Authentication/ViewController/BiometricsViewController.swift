@@ -12,6 +12,9 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var loginButton: UIButton!
     @IBOutlet var biometricsButton: UIButton!
+    @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var trailingConstraint: NSLayoutConstraint!
+    var isCheckingBiometrics = false
     
     
     override func viewDidLoad() {
@@ -24,6 +27,10 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     
     fileprivate func initUI() {
         view.backgroundColor = .primary
+        if !Constants.Design.isPhone {
+            leadingConstraint.constant = view.frame.width * 0.36
+            trailingConstraint.constant = view.frame.width * 0.36
+        }
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = view.bounds
@@ -64,7 +71,10 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     }
     
     private func attemptBiometricsAuth() {
+        guard !isCheckingBiometrics else { return }
+        isCheckingBiometrics = true
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
+            self.isCheckingBiometrics = false
             DispatchQueue.main.async {
                 EventsManager.trackEvent(event: .SignIn)
                 let defaultArchive: Int? = AuthenticationManager.shared.session?.account.defaultArchiveID
@@ -79,6 +89,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 }
             }
         }, onFailure: { error in
+            self.isCheckingBiometrics = false
             self.handleBiometricsFailure(error)
         })
     }
@@ -126,7 +137,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
         // Nothing to do here. Case treated by `loggedin` API call.
         case LocalAuthErrors.localHardwareUnavailableError.statusCode:
             break
-            
+
         default:
             DispatchQueue.main.async {
                 self.showAlert(title: .error, message: error.errorDescription)

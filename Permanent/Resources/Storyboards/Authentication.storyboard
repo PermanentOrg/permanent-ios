@@ -1312,8 +1312,10 @@ Cg
                     </view>
                     <connections>
                         <outlet property="biometricsButton" destination="YVx-LP-IWE" id="95T-Ls-NiT"/>
+                        <outlet property="leadingConstraint" destination="pRE-gV-waE" id="uG6-7J-EXG"/>
                         <outlet property="loginButton" destination="1oE-8u-oNO" id="v4q-Dc-xtt"/>
                         <outlet property="titleLabel" destination="raA-Tx-XHQ" id="pTo-Q3-t2e"/>
+                        <outlet property="trailingConstraint" destination="ZiB-uC-YwS" id="Noa-fk-k42"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wbf-GM-ZQk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1461,10 +1463,10 @@ Cg
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemPinkColor">
-            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
