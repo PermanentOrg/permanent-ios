@@ -1312,11 +1312,9 @@ Cg
                     </view>
                     <connections>
                         <outlet property="biometricsButton" destination="YVx-LP-IWE" id="95T-Ls-NiT"/>
-                        <outlet property="bottomConstraint" destination="dhQ-Wq-xVQ" id="8nJ-dQ-nIu"/>
                         <outlet property="leadingConstraint" destination="pRE-gV-waE" id="uG6-7J-EXG"/>
                         <outlet property="loginButton" destination="1oE-8u-oNO" id="v4q-Dc-xtt"/>
                         <outlet property="titleLabel" destination="raA-Tx-XHQ" id="pTo-Q3-t2e"/>
-                        <outlet property="topConstraint" destination="IoY-xx-5Wf" id="yAU-ft-Qi3"/>
                         <outlet property="trailingConstraint" destination="ZiB-uC-YwS" id="Noa-fk-k42"/>
                     </connections>
                 </viewController>
