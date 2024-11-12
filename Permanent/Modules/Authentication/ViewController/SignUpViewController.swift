@@ -22,6 +22,7 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var separatorViewHeight: NSLayoutConstraint!
     @IBOutlet weak var theContainer: UIView!
+    var showRegisterView: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +32,8 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
         viewModel = AuthViewModel()
 
         //initUI()
-        let childView = UIHostingController(rootView: AuthenticatorContainerView(viewModel: AuthenticatorContainerViewModel()))
+        
+        let childView = UIHostingController(rootView: AuthenticatorContainerView(viewModel: AuthenticatorContainerViewModel(contentType: showRegisterView ? .register : .login)))
         addChild(childView)
         childView.view.frame = theContainer.bounds
         theContainer.addSubview(childView.view)

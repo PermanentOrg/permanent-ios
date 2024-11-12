@@ -187,9 +187,15 @@ class RootViewController: UIViewController {
         return DrawerViewController(rootViewController: navController, leftSideMenuController: leftSideMenuController, showArchives: showArchives)
     }
     
-    func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName) {
+    func setRoot(named controller: ViewControllerId, from storyboard: StoryboardName, showRegisterView: Bool = false) {
         let navController = NavigationController()
-        let viewController = UIViewController.create(withIdentifier: controller, from: storyboard)
+        var viewController = UIViewController.create(withIdentifier: controller, from: storyboard)
+        
+        if showRegisterView {
+            let signupController = viewController as! SignUpViewController
+            signupController.showRegisterView = true
+            viewController = signupController
+        }
         
         navController.viewControllers = [viewController]
         

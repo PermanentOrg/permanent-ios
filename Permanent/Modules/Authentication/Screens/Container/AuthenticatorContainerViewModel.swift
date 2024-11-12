@@ -9,7 +9,7 @@ import SwiftUI
 
 class AuthenticatorContainerViewModel: ObservableObject {
     @Published var accountWasDeleted: Bool = false
-    @Published var contentType: AuthContentType = .login
+    @Published var contentType: AuthContentType
     @Published var firstViewContentType: AuthContentType = .login
     @Published var isLoading: Bool = false
     @Published var insertionViewTransition: AnyTransition = .opacity
@@ -20,6 +20,10 @@ class AuthenticatorContainerViewModel: ObservableObject {
     var username: String = ""
     var password: String = ""
     var mfaSession: MFASession?
+    
+    init(contentType: AuthContentType = .login) {
+        self.contentType = contentType
+    }
     
     func displayErrorBanner(bannerErrorMessage: AuthBannerMessage) {
         if showErrorBanner {
