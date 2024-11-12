@@ -100,7 +100,7 @@ class RootViewController: UIViewController {
             }
             
             self?.sessionExpiredObserver = NotificationCenter.default.addObserver(forName: APIRequestDispatcher.sessionExpiredNotificationName, object: nil, queue: nil) { [weak self] notification in
-                guard self?.current is SignUpViewController == false else { return }
+                guard self?.current is AuthenticationViewController == false else { return }
                 
                 self?.dismiss(animated: false) {
                     self?.setRoot(named: .signUp, from: .authentication)
@@ -192,7 +192,7 @@ class RootViewController: UIViewController {
         var viewController = UIViewController.create(withIdentifier: controller, from: storyboard)
         
         if showRegisterView {
-            let signupController = viewController as! SignUpViewController
+            let signupController = viewController as! AuthenticationViewController
             signupController.showRegisterView = true
             viewController = signupController
         }
