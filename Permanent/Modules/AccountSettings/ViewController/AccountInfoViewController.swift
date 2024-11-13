@@ -68,7 +68,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         
         deleteVC.deleteAccountClosure = { [weak self] in
             self?.parent?.dismiss(animated: false, completion: {
-                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+                AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication, showRegisterView: true)
             })
         }
     }
