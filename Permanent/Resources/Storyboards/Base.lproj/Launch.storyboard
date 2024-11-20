@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -15,15 +17,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNameLarge" translatesAutoresizingMaskIntoConstraints="NO" id="EOs-Ty-QhS" userLabel="Logo Image View">
-                                <rect key="frame" x="103.5" y="265" width="207" height="226"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="EOs-Ty-QhS" userLabel="Logo Image View">
+                                <rect key="frame" x="141.5" y="398.5" width="131" height="99"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="EOs-Ty-QhS" secondAttribute="height" multiplier="128/96" id="4y0-i3-tps"/>
+                                </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.073621921239999999" green="0.1067599133" blue="0.29004743700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="orq-xA-E86"/>
+                        <color key="backgroundColor" name="DarkBlue"/>
                         <constraints>
-                            <constraint firstAttribute="centerY" secondItem="EOs-Ty-QhS" secondAttribute="centerY" constant="70" id="A8c-i3-RKC"/>
+                            <constraint firstAttribute="centerY" secondItem="EOs-Ty-QhS" secondAttribute="centerY" id="A8c-i3-RKC"/>
                             <constraint firstItem="EOs-Ty-QhS" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="F7g-cP-tND"/>
-                            <constraint firstItem="EOs-Ty-QhS" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.5" id="egf-RU-lIV"/>
+                            <constraint firstItem="EOs-Ty-QhS" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" multiplier="0.11" id="JYy-cA-Onp"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -33,6 +39,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LogoNameLarge" width="226" height="226"/>
+        <image name="SplashScreenLogo" width="171" height="128"/>
+        <namedColor name="DarkBlue">
+            <color red="0.074509803921568626" green="0.10588235294117647" blue="0.29019607843137257" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

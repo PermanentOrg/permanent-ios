@@ -14,8 +14,8 @@ class AccountRepository {
         self.remoteDataSource = remoteDataSource
     }
     
-    func createAccount(fullName: String, primaryEmail: String, password: String, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
-        remoteDataSource.createAccount(fullName: fullName, primaryEmail: primaryEmail, password: password) { result in
+    func createAccount(fullName: String, primaryEmail: String, password: String, optIn: Bool = false, then handler: @escaping (Result<(SignUpResponse, AccountVOData), Error>) -> Void) {
+        remoteDataSource.createAccount(fullName: fullName, primaryEmail: primaryEmail, password: password, optIn: optIn) { result in
             handler(result)
         }
     }

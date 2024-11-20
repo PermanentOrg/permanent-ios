@@ -116,7 +116,7 @@ class AuthViewModel: ViewModelInterface, LoginEventProtocol {
     }
     
     func signUp(with credentials: SignUpCredentials, then handler: @escaping (RequestStatus) -> Void) {
-        AuthenticationManager.shared.signUp(with: credentials) { status in
+        AuthenticationManager.shared.signUp(with: (credentials.loginCredentials.email, credentials.loginCredentials.password, credentials.loginCredentials.email, false)) { status in
             switch status {
             case .success:
                 handler(.success)
@@ -191,6 +191,12 @@ enum LoginStatus: Equatable {
     case mfaToken
     case unknown
     case error(message: String?)
+}
+
+enum RegisterStatus: Equatable {
+    case success
+    case error(message: String?)
+    case unknown
 }
 
 enum RequestStatus: Equatable {

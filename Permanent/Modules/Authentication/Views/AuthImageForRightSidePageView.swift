@@ -15,7 +15,7 @@ struct AuthImageForRightSidePageView: View {
             Rectangle()
                 .foregroundColor(.clear)
                 .background(
-                    Image(.authLoginLeft)
+                    Image(.authSignInLeft)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .clipped()

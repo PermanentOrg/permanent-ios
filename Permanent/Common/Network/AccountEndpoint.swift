@@ -9,7 +9,7 @@ import Foundation
 
 typealias LoginCredentials = (email: String, password: String)
 typealias SignUpCredentials = (name: String, loginCredentials: LoginCredentials)
-typealias SignUpV2Credentials = (name: String, email: String, password: String)
+typealias SignUpV2Credentials = (name: String, email: String, password: String, optIn: Bool)
 typealias ChangePasswordCredentials = (password: String, passwordVerify: String, passwordOld: String)
 typealias UpdateData = (email: String, phone: String)
 typealias UpdateUserData = (fullName: String?, primaryEmail: String?, primaryPhone: String?, address: String?, address2: String?, city: String?, state: String?, zip: String?, country: String?)
@@ -202,7 +202,7 @@ extension AccountEndpoint {
             "agreed": true,
             "createArchive": false,
             "fullName": credentials.name,
-            "optIn": false,
+            "optIn": credentials.optIn,
             "primaryEmail": credentials.email,
             "password": credentials.password,
             "passwordVerify": credentials.password
