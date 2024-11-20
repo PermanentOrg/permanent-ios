@@ -143,10 +143,6 @@ class SignUpViewController: BaseViewController<AuthViewModel> {
                 host.modalPresentationStyle = .fullScreen
                 AppDelegate.shared.rootViewController.present(host, animated: true)
             }
-            
-            EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
-                                         email: AuthenticationManager.shared.session?.account.primaryEmail)
-            EventsManager.trackEvent(event: .SignUp)
         case .error(let message):
             showAlert(title: .error, message: message)
         }

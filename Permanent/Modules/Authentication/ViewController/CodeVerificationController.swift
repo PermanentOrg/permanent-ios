@@ -63,11 +63,11 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
             return
         }
         
-        AuthenticationManager.shared.verify2FA(code: code) { result in
+        AuthenticationManager.shared.verify2FA(code: code) {[weak self] result in
             switch result {
             case .success:
-                self.dismiss(animated: true)
-                EventsManager.trackEvent(event: .SignIn)
+                self?.dismiss(animated: true)
+                (self?.viewModel as? AuthViewModel)?.trackLoginEvent()
                 if AuthenticationManager.shared.session?.account.defaultArchiveID != nil {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 } else {
@@ -80,7 +80,7 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
                     //AppDelegate.shared.rootViewController.setRoot(named: .accountOnboarding, from: .accountOnboarding)
                 }
             case .error(let message):
-                self.showErrorAlert(message: message)
+                self?.showErrorAlert(message: message)
             }
         }
     }
@@ -95,4 +95,6 @@ class CodeVerificationController: BaseViewController<AuthViewModel> {
             showAlert(title: .error, message: message)
         }
     }
+    
+    
 }

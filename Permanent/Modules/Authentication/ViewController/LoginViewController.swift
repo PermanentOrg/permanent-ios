@@ -95,23 +95,15 @@ class LoginViewController: BaseViewController<AuthViewModel> {
                     host.modalPresentationStyle = .fullScreen
                     AppDelegate.shared.rootViewController.present(host, animated: true)
                 }
-                self?.trackEvents()
             case .mfaToken:
                 let verificationCodeVC = UIViewController.create(withIdentifier: .verificationCode, from: .authentication) as! CodeVerificationController
                 self?.present(verificationCodeVC, animated: true)
-                self?.trackEvents()
             case .unknown:
                 self?.showAlert(title: .error, message: .incorrectCredentials)
             case .error(message: let message):
                 self?.showAlert(title: .error, message: message)
             }
         })
-    }
-    
-    func trackEvents() {
-        EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
-                                     email: AuthenticationManager.shared.session?.account.primaryEmail)
-        EventsManager.trackEvent(event: .SignIn)
     }
     
     @IBAction

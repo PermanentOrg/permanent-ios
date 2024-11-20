@@ -144,7 +144,6 @@ class SettingsScreenViewModel: ObservableObject {
 
                 if model.isSuccessful == true {
                     handler(.success)
-                    EventsManager.resetUser()
                 } else {
                     handler(.error(message: .errorMessage))
                 }

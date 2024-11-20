@@ -7,9 +7,27 @@
 import Foundation
 
 struct EventsBodyPayload: Codable {
-    let event: String
-    let distinctId: String
-    let data: [String: String]
+    private let analytics: EventsAnalyticPayload
+    
+    var event: String {
+        return analytics.event
+    }
+    var distinctId: String {
+        return analytics.distinctId
+    }
+    var data: [String: String] {
+        return analytics.data
+    }
+    
+    init(event: String, distinctId: String, data: [String: String]) {
+        self.analytics = EventsAnalyticPayload(event: event, distinctId: distinctId, data: data)
+    }
+    
+    private struct EventsAnalyticPayload: Codable {
+        let event: String
+        let distinctId: String
+        let data: [String: String]
+    }
 }
 
 struct EventsPayload: Codable {

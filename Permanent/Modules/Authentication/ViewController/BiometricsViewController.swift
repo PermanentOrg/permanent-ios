@@ -45,8 +45,7 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
     
     private func attemptBiometricsAuth() {
         PermanentLocalAuthentication.instance.authenticate(onSuccess: {
-            DispatchQueue.main.async {
-                EventsManager.trackEvent(event: .SignIn)
+            DispatchQueue.main.async {[weak self] in
                 let defaultArchive: Int? = AuthenticationManager.shared.session?.account.defaultArchiveID
                 
                 if defaultArchive == nil {
@@ -57,6 +56,8 @@ class BiometricsViewController: BaseViewController<AuthViewModel> {
                 } else {
                     AppDelegate.shared.rootViewController.setDrawerRoot()
                 }
+                
+                (self?.viewModel as? AuthViewModel)?.trackLoginEvent()
             }
         }, onFailure: { error in
             self.handleBiometricsFailure(error)

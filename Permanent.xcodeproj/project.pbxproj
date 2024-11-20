@@ -491,12 +491,6 @@
 		92430A5D2AF2A1F00098597D /* EmailChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5A2AF2A1F00098597D /* EmailChip.swift */; };
 		92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */; };
 		92430A5F2AF2A1F00098597D /* EmailChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A5C2AF2A1F00098597D /* EmailChipView.swift */; };
-		92430A902B10A55E0098597D /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8E2B10A55E0098597D /* EventType.swift */; };
-		92430A912B10A55E0098597D /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8F2B10A55E0098597D /* EventsManager.swift */; };
-		92430A932B10A5690098597D /* EventPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A922B10A5690098597D /* EventPage.swift */; };
-		92430A942B10D5680098597D /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8E2B10A55E0098597D /* EventType.swift */; };
-		92430A952B10D56B0098597D /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A8F2B10A55E0098597D /* EventsManager.swift */; };
-		92430A962B10D56E0098597D /* EventPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92430A922B10A5690098597D /* EventPage.swift */; };
 		924E839C2A165D28005D813B /* ButtonWithRightImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924E839B2A165D28005D813B /* ButtonWithRightImage.swift */; };
 		924F162F2A45954A00B75D4E /* TagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924F162E2A45954A00B75D4E /* TagsView.swift */; };
 		924F16312A459C2E00B75D4E /* FlowGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924F16302A459C2E00B75D4E /* FlowGrid.swift */; };
@@ -507,6 +501,7 @@
 		927AE0C92A262EA100BDF26A /* BannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 927AE0C82A262EA100BDF26A /* BannerView.xib */; };
 		927AE0CB2A2634CA00BDF26A /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CA2A2634CA00BDF26A /* GradientView.swift */; };
 		927AE0CD2A2F290E00BDF26A /* BannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927AE0CC2A2F290E00BDF26A /* BannerView.swift */; };
+		927DFCC32CDA6696007A0489 /* EventsPayloadBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927DFCC22CDA6696007A0489 /* EventsPayloadBuilder.swift */; };
 		9295F3F32A9CC2C70061C9C9 /* AddLocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */; };
 		92B9886B2A9782AC0040941E /* AddLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886A2A9782AC0040941E /* AddLocationView.swift */; };
 		92B9886E2A9783F30040941E /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B9886D2A9783F30040941E /* MapView.swift */; };
@@ -1346,9 +1341,6 @@
 		92430A5A2AF2A1F00098597D /* EmailChip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChip.swift; sourceTree = "<group>"; };
 		92430A5B2AF2A1F00098597D /* EmailChipsTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipsTextField.swift; sourceTree = "<group>"; };
 		92430A5C2AF2A1F00098597D /* EmailChipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailChipView.swift; sourceTree = "<group>"; };
-		92430A8E2B10A55E0098597D /* EventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
-		92430A8F2B10A55E0098597D /* EventsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
-		92430A922B10A5690098597D /* EventPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPage.swift; sourceTree = "<group>"; };
 		924E839B2A165D28005D813B /* ButtonWithRightImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithRightImage.swift; sourceTree = "<group>"; };
 		924F162E2A45954A00B75D4E /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 		924F16302A459C2E00B75D4E /* FlowGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowGrid.swift; sourceTree = "<group>"; };
@@ -1359,6 +1351,7 @@
 		927AE0C82A262EA100BDF26A /* BannerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerView.xib; sourceTree = "<group>"; };
 		927AE0CA2A2634CA00BDF26A /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		927AE0CC2A2F290E00BDF26A /* BannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerView.swift; sourceTree = "<group>"; };
+		927DFCC22CDA6696007A0489 /* EventsPayloadBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsPayloadBuilder.swift; sourceTree = "<group>"; };
 		9295F3F22A9CC2C70061C9C9 /* AddLocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationViewModel.swift; sourceTree = "<group>"; };
 		92B9886A2A9782AC0040941E /* AddLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationView.swift; sourceTree = "<group>"; };
 		92B9886D2A9783F30040941E /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
@@ -3366,9 +3359,7 @@
 		92430A8D2B10A55E0098597D /* Events */ = {
 			isa = PBXGroup;
 			children = (
-				92430A8E2B10A55E0098597D /* EventType.swift */,
-				92430A8F2B10A55E0098597D /* EventsManager.swift */,
-				92430A922B10A5690098597D /* EventPage.swift */,
+				927DFCC22CDA6696007A0489 /* EventsPayloadBuilder.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -4703,6 +4694,7 @@
 				5ED428832A12432E001F88FB /* LegacyPlanningEndpoint.swift in Sources */,
 				F58F315427F72A1500B89B99 /* BillingEndpoint.swift in Sources */,
 				F5D6693C27467F1300DFA75C /* FileSearchTagsCollectionViewCell.swift in Sources */,
+				927DFCC32CDA6696007A0489 /* EventsPayloadBuilder.swift in Sources */,
 				BC0D99AD256BD72200D29041 /* Colors.swift in Sources */,
 				5EC9C695290B323000AD2E37 /* TwoStepVerificationViewController.swift in Sources */,
 				F559F8BA29017CE80015A522 /* FolderNavigationView.swift in Sources */,
@@ -4937,7 +4929,6 @@
 				5E46386D276CAAF70035D8CE /* PublicProfilePersonalInfoViewController.swift in Sources */,
 				F557A64227A190F900C061D4 /* SocialMediaProfileItem.swift in Sources */,
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
-				92430A912B10A55E0098597D /* EventsManager.swift in Sources */,
 				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
 				5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */,
@@ -5015,7 +5006,6 @@
 				BCD414DA257F80500019548F /* ShareEndpoint.swift in Sources */,
 				BCEECDAF25B0594B00A4520E /* Downloader.swift in Sources */,
 				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
-				92430A902B10A55E0098597D /* EventType.swift in Sources */,
 				5E7A87F72C99C83D00228EB4 /* AuthImageForRightSidePageView.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
@@ -5049,7 +5039,6 @@
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
-				92430A932B10A5690098597D /* EventPage.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
@@ -5201,7 +5190,6 @@
 				5E473A022A41880A00A20D85 /* FileDownloadInfo.swift in Sources */,
 				5ECBAF9E2A1B5EF500FACFDF /* ArchiveSteward.swift in Sources */,
 				5E4739E82A4186EB00A20D85 /* VerifyCodeResponse.swift in Sources */,
-				92430A942B10D5680098597D /* EventType.swift in Sources */,
 				F559F8AB28FF02A10015A522 /* FileListType.swift in Sources */,
 				F51B3321288B0A8500EA15DA /* FileAction.swift in Sources */,
 				5E1CCC22287F051D00913EEA /* ActionDialogStyle.swift in Sources */,
@@ -5227,7 +5215,6 @@
 				F561F84A299D6E7A00B3BD09 /* ShareEndpoint.swift in Sources */,
 				F559F88F28FEE9690015A522 /* FileBrowserViewModel.swift in Sources */,
 				5ED3B3B129F7E4FF000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
-				92430A952B10D56B0098597D /* EventsManager.swift in Sources */,
 				9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */,
 				5E473A072A41887600A20D85 /* PHAssetExtension.swift in Sources */,
 				5ED4B9D42876E05800CF044B /* LocnVO.swift in Sources */,
@@ -5342,7 +5329,6 @@
 				5E473A042A41882100A20D85 /* CDNSession.swift in Sources */,
 				F559F89C28FEEAA70015A522 /* RecordVOPayload.swift in Sources */,
 				5ED4B9C42875C51700CF044B /* UIImageViewExtension.swift in Sources */,
-				92430A962B10D56E0098597D /* EventPage.swift in Sources */,
 				5E3E12452A41F16500682DE5 /* EmptyFolderView.swift in Sources */,
 				F51B3324288B0B9800EA15DA /* MinArchiveVO.swift in Sources */,
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,

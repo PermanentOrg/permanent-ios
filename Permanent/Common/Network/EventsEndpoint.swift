@@ -7,12 +7,12 @@
 import Foundation
 
 enum EventsEndpoint {
-    case sendEvent
+    case sendEvent(eventsPayload: EventsPayload)
 }
 
 extension EventsEndpoint: RequestProtocol {
     var path: String {
-        "event"
+        ""
     }
     
     var method: RequestMethod {
@@ -20,7 +20,10 @@ extension EventsEndpoint: RequestProtocol {
     }
     
     var parameters: RequestParameters? {
-        return getEventParameters()
+        switch self {
+        case .sendEvent(let eventsPayload):
+            getEventParameters(eventsPayload: eventsPayload)
+        }
     }
     
     var requestType: RequestType {
@@ -39,26 +42,46 @@ extension EventsEndpoint: RequestProtocol {
     }
     
     var bodyData: Data? {
-        nil
+        switch self {
+        case .sendEvent(let eventsPayload):
+            return encodePayload(eventsPayload)
+        }
     }
     
     var customURL: String? {
-        nil
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
+        return "\(endpointPath)api/v2/event"
     }
 }
 
 extension EventsEndpoint {
     
-    func getEventParameters() -> RequestParameters {
-        var parameters: [String : Any] = [
-            "archiveId": "\(String(describing: archiveDetails.archiveId ?? 0))",
-            "stewardEmail": archiveDetails.stewardEmail,
-            "type": archiveDetails.type,
-            "trigger": [
-                "type": archiveDetails.triggerType
+    func getEventParameters(eventsPayload: EventsPayload) -> RequestParameters {
+        let parameters: [String : Any] = [
+            "entity": eventsPayload.entity,
+            "action": eventsPayload.action,
+            "version": eventsPayload.version,
+            "entityId": eventsPayload.entityId,
+            "body": [
+                "analytics": [
+                    "event": eventsPayload.body.event,
+                    "distinctId": eventsPayload.body.distinctId,
+                    "data": []
+                ]
             ]
         ]
         return parameters
     }
     
+    func encodePayload(_ payload: EventsPayload) -> Data? {
+        let encoder = JSONEncoder()
+        
+        do {
+            let jsonData = try encoder.encode(payload)
+            return jsonData
+        } catch {
+            print("Encoding error: \(error)")
+            return nil
+        }
+    }
 }

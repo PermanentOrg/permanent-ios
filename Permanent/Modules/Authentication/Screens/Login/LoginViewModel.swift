@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 
-class LoginViewModel: ObservableObject {
+class LoginViewModel: ObservableObject, LoginEventProtocol {
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var loginStatus: LoginStatus?
@@ -65,10 +65,18 @@ class LoginViewModel: ObservableObject {
             }
         }
     }
-    
-    func trackEvents() {
-        EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
-                                     email: AuthenticationManager.shared.session?.account.primaryEmail)
-        EventsManager.trackEvent(event: .SignIn)
+}
+
+protocol LoginEventProtocol {
+    func trackLoginEvent()
+}
+
+extension LoginEventProtocol {
+    func trackLoginEvent() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.login,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }
