@@ -32,7 +32,7 @@ class LoginSecurityViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .json(let response, _):
-                    guard let methods: [IDPUserMethod] = JSONHelper.convertToModel(from: response) else {
+                    guard let methods: [IDPUserMethodModel] = JSONHelper.convertToModel(from: response) else {
                         self?.updateTwoFactorStatus(enabled: false)
                         return
                     }

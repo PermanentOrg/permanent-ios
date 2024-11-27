@@ -109,8 +109,8 @@
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
 		5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */; };
-		5E24A2282CF6875D003F22AE /* IDPUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2272CF6875D003F22AE /* IDPUserResponse.swift */; };
-		5E24A2292CF6875D003F22AE /* IDPUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2272CF6875D003F22AE /* IDPUserResponse.swift */; };
+		5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
+		5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
@@ -1051,7 +1051,7 @@
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
 		5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleView.swift; sourceTree = "<group>"; };
-		5E24A2272CF6875D003F22AE /* IDPUserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPUserResponse.swift; sourceTree = "<group>"; };
+		5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPUserMethodModel.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1793,7 +1793,7 @@
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
 				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
-				5E24A2272CF6875D003F22AE /* IDPUserResponse.swift */,
+				5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */,
 				5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */,
 				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
@@ -4968,6 +4968,7 @@
 				5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */,
+				5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
@@ -4991,7 +4992,6 @@
 				F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
-				5E24A2282CF6875D003F22AE /* IDPUserResponse.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
@@ -5293,6 +5293,7 @@
 				F559F89828FEEA020015A522 /* SortOption.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
 				5E4739F62A4187AB00A20D85 /* DescriptionProfileItem.swift in Sources */,
+				5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				5E4739CE2A410B9600A20D85 /* BaseViewController.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
@@ -5345,7 +5346,6 @@
 				5ED4B9C62876DF2C00CF044B /* CodableHelper.swift in Sources */,
 				92E3FB592A176A4600E9E5A6 /* UITableViewCellExtension.swift in Sources */,
 				F5ADBF3D290BBF9C0007A516 /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
-				5E24A2292CF6875D003F22AE /* IDPUserResponse.swift in Sources */,
 				5E4739DD2A4185B300A20D85 /* PRMNTActionSheetViewController.swift in Sources */,
 				F559F88E28FEE9690015A522 /* FolderContentViewModel.swift in Sources */,
 				F561F84D299D716B00B3BD09 /* SharebyURLVOPayload.swift in Sources */,
