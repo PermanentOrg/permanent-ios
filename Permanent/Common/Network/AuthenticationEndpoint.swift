@@ -30,6 +30,7 @@ enum AuthenticationEndpoint {
     case createCredentials(credentials: CreateCredentials)
     /// Logs out the user.
     case logout
+    case getIDPUser
 }
 
 extension AuthenticationEndpoint: RequestProtocol {
@@ -61,6 +62,8 @@ extension AuthenticationEndpoint: RequestProtocol {
 
     var path: String {
         switch self {
+        case .getIDPUser:
+            return ""
         case .verifyAuth:
             return "/auth/loggedin"
         case .login:
@@ -77,7 +80,12 @@ extension AuthenticationEndpoint: RequestProtocol {
     }
 
     var method: RequestMethod {
-        return .post
+        switch self {
+        case .getIDPUser:
+            return .get
+        default:
+            return .post
+        }
     }
     
     var progressHandler: ProgressHandler? {
@@ -88,7 +96,15 @@ extension AuthenticationEndpoint: RequestProtocol {
     
     var bodyData: Data? { nil }
     
-    var customURL: String? { nil }
+    var customURL: String? {
+        let endpointPath = APIEnvironment.defaultEnv.apiServer
+        switch self {
+        case .getIDPUser:
+            return "\(endpointPath)api/v2/idpuser"
+        default:
+            return nil
+        }
+    }
     
     var headers: RequestHeaders? {
         if method == .post {
@@ -100,6 +116,11 @@ extension AuthenticationEndpoint: RequestProtocol {
             } else {
                 return ["content-type": "application/json; charset=utf-8"]
             }
+        } else if case .getIDPUser = self {
+            return [
+                "content-type": "application/json; charset=utf-8",
+                "Request-Version": "2"
+            ]
         } else {
             return nil
         }

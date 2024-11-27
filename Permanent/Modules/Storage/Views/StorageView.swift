@@ -85,7 +85,7 @@ struct StorageView: View {
                 Button {
                     viewModel.redeemStorageIspresented = true
                 } label: {
-                    CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.")
+                    CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.", showBadge: true)
                 }
                 Spacer()
             }
@@ -99,7 +99,7 @@ struct StorageView: View {
             dismissView()
         }) {
             HStack {
-                Image(.backArrowNewDesign)
+                Image(.settingsNavigationBarBackIcon)
                     .foregroundColor(.white)
             }
         }
