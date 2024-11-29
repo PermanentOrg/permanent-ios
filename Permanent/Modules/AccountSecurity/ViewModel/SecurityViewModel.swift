@@ -27,9 +27,9 @@ protocol SecurityViewModelViewDelegate: ViewModelDelegateInterface {
 extension SecurityViewModel: SecurityViewModelDelegate {
     func changePassword(with accountId: Int, data: ChangePasswordCredentials, then handler: @escaping (PasswordChangeStatus) -> Void) {
         let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data))
-
+        
         changePasswordOperation.execute(in: APIRequestDispatcher()) { result in
-
+            
             switch result {
             case .json(let response, _):
                 guard
@@ -55,13 +55,13 @@ extension SecurityViewModel: SecurityViewModelDelegate {
             case .error:
                 handler(.error(message: .errorMessage))
                 self.viewDelegate?.passwordUpdated(success: false)
-
+                
             default:
                 break
             }
         }
     }
-
+    
     func getAuthTypeText() -> String {
         let authType = BiometryUtils.biometryInfo.name
         var authTextType: String
@@ -75,24 +75,19 @@ extension SecurityViewModel: SecurityViewModelDelegate {
         }
         return authTextType
     }
-
+    
     func getUserBiomericsStatus() -> Bool {
         let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
         return !(authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode)
     }
-
+    
     func getAuthToggleStatus() -> Bool {
         let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
         var biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
         if authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode {
             biometricsAuthEnabled = false
         }
-
+        
         return biometricsAuthEnabled
     }
-}
-
-enum PasswordChangeStatus {
-    case success(message: String?)
-    case error(message: String?)
 }

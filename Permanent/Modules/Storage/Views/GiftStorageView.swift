@@ -56,7 +56,7 @@ struct GiftStorageView: View {
             dismissView()
         }) {
             HStack {
-                Image(.backArrowNewDesign)
+                Image(.settingsNavigationBarBackIcon)
                     .foregroundColor(.white)
             }
         }

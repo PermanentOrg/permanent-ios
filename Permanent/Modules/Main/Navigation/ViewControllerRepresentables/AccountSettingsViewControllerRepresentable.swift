@@ -8,7 +8,7 @@ import SwiftUI
 import UIKit
 
 struct AccountSettingsViewControllerRepresentable: UIViewControllerRepresentable {
-    let title: String = "Security"
+    let title: String = "Login & Security"
     
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = UIViewController.create(withIdentifier: .accountSettings, from: .settings)

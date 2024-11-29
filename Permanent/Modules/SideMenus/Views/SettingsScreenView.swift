@@ -80,9 +80,9 @@ struct SettingsScreenView: View {
                                     CustomSimpleListItemView(image: Image(.activityFeedSettings), titleText: "Activity feed")
                                 }
                                 Button {
-                                    settingsRouter.navigate(to: .security, router: settingsRouter)
+                                    settingsRouter.navigate(to: .loginAndSecurity, router: settingsRouter)
                                 } label: {
-                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Security")
+                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: true)
                                 }
                                 Button {
                                     settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)

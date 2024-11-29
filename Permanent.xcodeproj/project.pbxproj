@@ -41,6 +41,8 @@
 		5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */; };
 		5E051C0C2B6BB90C00274657 /* CustomHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0B2B6BB90B00274657 /* CustomHeaderView.swift */; };
 		5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */; };
+		5E05D39C2CECDCE700CD9837 /* LoginSecurityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */; };
+		5E05D39E2CECDDB000CD9837 /* LoginSecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */; };
 		5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44B28915C8E008C0A6B /* LoginPage.swift */; };
 		5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44D28915CE0008C0A6B /* SignUpPage.swift */; };
 		5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */; };
@@ -106,6 +108,9 @@
 		5E2114932B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
+		5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */; };
+		5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
+		5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
@@ -995,6 +1000,8 @@
 		5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSimpleListItemView.swift; sourceTree = "<group>"; };
 		5E051C0B2B6BB90B00274657 /* CustomHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHeaderView.swift; sourceTree = "<group>"; };
 		5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressGradientStyle.swift; sourceTree = "<group>"; };
+		5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSecurityView.swift; sourceTree = "<group>"; };
+		5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSecurityViewModel.swift; sourceTree = "<group>"; };
 		5E07D44B28915C8E008C0A6B /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5E07D44D28915CE0008C0A6B /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
 		5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuPage.swift; sourceTree = "<group>"; };
@@ -1043,6 +1050,8 @@
 		5E2114912B026CB300944386 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
+		5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleView.swift; sourceTree = "<group>"; };
+		5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPUserMethodModel.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1784,6 +1793,7 @@
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
 				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
+				5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */,
 				5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */,
 				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
@@ -2042,8 +2052,17 @@
 			children = (
 				5E218BF725A86C9E00B56625 /* PasswordElementView.swift */,
 				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
+				5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		5E24A2252CF67E6C003F22AE /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */,
+			);
+			path = CustomViews;
 			sourceTree = "<group>";
 		};
 		5E2C5D0E24D98EE100E2B95F = {
@@ -2167,6 +2186,7 @@
 			isa = PBXGroup;
 			children = (
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
+				5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -3050,6 +3070,7 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5E24A2252CF67E6C003F22AE /* CustomViews */,
 				5ECD1D9D2C1339B50049A03F /* LoadingAnimations */,
 				5E92165D2C0DC118002AACA3 /* LabelViews */,
 				5E051C082B6AFA8C00274657 /* CustomListViews */,
@@ -4585,6 +4606,7 @@
 				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
+				5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
@@ -4597,6 +4619,7 @@
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
+				5E05D39E2CECDDB000CD9837 /* LoginSecurityViewModel.swift in Sources */,
 				F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
@@ -4648,6 +4671,7 @@
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				5E92165F2C0DC14C002AACA3 /* OnboardingTitleTextView.swift in Sources */,
 				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
+				5E05D39C2CECDCE700CD9837 /* LoginSecurityView.swift in Sources */,
 				5E6CCEF02B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
 				5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */,
@@ -4944,6 +4968,7 @@
 				5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */,
+				5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
@@ -5268,6 +5293,7 @@
 				F559F89828FEEA020015A522 /* SortOption.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
 				5E4739F62A4187AB00A20D85 /* DescriptionProfileItem.swift in Sources */,
+				5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				5E4739CE2A410B9600A20D85 /* BaseViewController.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
@@ -5547,7 +5573,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -5577,7 +5603,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -5995,7 +6021,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "DEV-Debug";
 		};
@@ -6082,7 +6108,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "DEV-Release";
 		};
