@@ -44,6 +44,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         super.viewDidLoad()
 
         viewModel = SharedFilesViewModel()
+        viewModel?.trackOpenFiles()
         
         let hasSavedFile = checkSavedFile()
         let hasSavedFolder = checkSavedFolder()

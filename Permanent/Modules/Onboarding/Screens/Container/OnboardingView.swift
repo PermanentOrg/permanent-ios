@@ -112,6 +112,7 @@ struct OnboardingView: View {
                             withAnimation {
                                 viewModel.contentType = .whatsImportant
                             }
+                            viewModel.trackEvents(action: .skipGoals)
                         } skipButton: {
                             
                         }
@@ -132,6 +133,7 @@ struct OnboardingView: View {
                             withAnimation {
                                 viewModel.contentType = .congratulations
                             }
+                            viewModel.trackEvents(action: .skipWhyPermanent)
                         } skipButton: {
                             
                         }
