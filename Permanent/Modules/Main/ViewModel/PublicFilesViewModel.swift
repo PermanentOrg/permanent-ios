@@ -65,4 +65,8 @@ class PublicFilesViewModel: MyFilesViewModel {
         
         return url
     }
+    
+    override func trackOpenFiles(action: AccountEventAction) {
+        super.trackOpenFiles(action: AccountEventAction.openPublicWorkspace)
+    }
 }

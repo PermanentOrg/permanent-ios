@@ -49,7 +49,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        viewModel?.trackOpenArchiveMenu()
     }
     
     fileprivate func initUI() {

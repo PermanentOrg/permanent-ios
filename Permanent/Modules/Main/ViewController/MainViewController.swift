@@ -168,6 +168,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.alpha = 0
         
         fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
+        
+        viewModel?.trackOpenFiles()
     }
     
     fileprivate func setupCollectionView() {

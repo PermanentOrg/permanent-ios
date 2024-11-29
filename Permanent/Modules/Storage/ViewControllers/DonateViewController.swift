@@ -30,6 +30,7 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         super.viewDidLoad()
         
         viewModel = DonateViewModel()
+        viewModel?.trackOpenStorage()
 
         title = "Storage".localized()
         setTextContent()

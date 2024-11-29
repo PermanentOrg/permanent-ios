@@ -29,6 +29,7 @@ enum AccountEventAction: String, EventAction {
     case submitReasons = "submit_reasons"
     case openAccountMenu = "open_account_menu"
     case openArchiveMenu = "open_archive_menu"
+    case openArchiveProfile = "open_archive_profile"
     case openStorageModal = "open_storage_modal"
     case purchaseStorage = "purchase_storage"
     case openPromoEntry = "open_promo_entry"
@@ -110,6 +111,8 @@ enum AccountEventAction: String, EventAction {
             return "Share"
         case .copyShareLink:
             return "Copy Share Link"
+        case .openArchiveProfile:
+            return "Screen View"
         }
     }
 }
@@ -124,7 +127,6 @@ enum RecordEventAction: String, EventAction {
     var entity: String {
         return "record"
     }
-
 
     var event: String {
         switch self {

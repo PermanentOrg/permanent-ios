@@ -189,4 +189,13 @@ class SharedFilesViewModel: FilesViewModel {
             }
         }
     }
+    
+    func trackOpenFiles(action: AccountEventAction = AccountEventAction.openSharedWorkspace) {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(eventAction: action,
+                                                       entityId: String(accountId),
+                                                       data: ["workspace": "Shared Files"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
 }
