@@ -263,6 +263,14 @@ struct UsualSmallXSemiBoldTextStyle: ViewModifier {
     }
 }
 
+struct UsualSmallXLightTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
+                             size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct MediumSemiBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansSemiBold.rawValue,

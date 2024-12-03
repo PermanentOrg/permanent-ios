@@ -17,14 +17,19 @@ class LoginSecurityViewModel: ObservableObject {
     @Published var isTwoStepVerificationToggleOn: Bool = false
     @Published var isSecurityToggleOn: Bool = false
     @Published var twoFactorBadgeStatus: SecurityBadgeStatus? = nil
+    @Published var twoFactorMethods: [TwoFactorMethod] = []
     
+    /// Initializes the view model and sets up initial state
+    /// - Checks the current two-factor authentication status
+    /// - Sets up biometric authentication toggle state
     init() {
         checkTwoFactorStatus()
         isSecurityToggleOn = getAuthToggleStatus()
     }
     
     /// Checks the current status of two-factor authentication by fetching
-    /// the user's IDP methods from the server
+    /// the user's IDP methods from the server.
+    /// Updates the UI state based on the server response.
     private func checkTwoFactorStatus() {
         let operation = APIOperation(AuthenticationEndpoint.getIDPUser)
         
@@ -35,6 +40,13 @@ class LoginSecurityViewModel: ObservableObject {
                     guard let methods: [IDPUserMethodModel] = JSONHelper.convertToModel(from: response) else {
                         self?.updateTwoFactorStatus(enabled: false)
                         return
+                    }
+                    
+                    // Convert IDPUserMethodModel to TwoFactorMethod
+                    self?.twoFactorMethods = methods.map { method in
+                        TwoFactorMethod(methodId: method.methodId, 
+                                      method: method.method,
+                                      value: method.value)
                     }
                     
                     // If we have any methods, 2FA is enabled
@@ -52,6 +64,7 @@ class LoginSecurityViewModel: ObservableObject {
     
     /// Updates the UI state based on whether two-factor authentication is enabled
     /// - Parameter enabled: Boolean indicating if 2FA is enabled
+    /// Updates the badge status color and text based on the enabled state
     private func updateTwoFactorStatus(enabled: Bool) {
         isTwoStepVerificationToggleOn = enabled
         if isTwoStepVerificationToggleOn {
@@ -62,8 +75,8 @@ class LoginSecurityViewModel: ObservableObject {
     }
     
     /// Returns the appropriate authentication type text based on the device's
-    /// biometric capabilities (Face ID or Touch ID)
-    /// - Returns: A localized string representing the auth type
+    /// biometric capabilities
+    /// - Returns: A localized string representing the auth type (Face ID or Touch ID)
     func getAuthTypeText() -> String {
         let authType = BiometryUtils.biometryInfo.name
         var authTextType: String
@@ -80,20 +93,23 @@ class LoginSecurityViewModel: ObservableObject {
     
     /// Checks if the device has biometric authentication hardware available
     /// - Returns: Boolean indicating if biometric authentication is available
+    /// Returns false if hardware is unavailable or not supported
     func getUserBiomericsStatus() -> Bool {
         let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
         return !(authStatus.error?.statusCode == LocalAuthErrors.localHardwareUnavailableError.statusCode)
     }
     
-    /// Updates and saves the biometric authentication toggle status
+    /// Updates and saves the biometric authentication toggle status to user preferences
     /// - Parameter isEnabled: Boolean indicating if biometric auth should be enabled
+    /// Also updates the UI toggle state
     func updateBiometricsStatus(isEnabled: Bool) {
         PreferencesManager.shared.set(isEnabled, forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled)
         isSecurityToggleOn = isEnabled
     }
     
-    /// Retrieves the current biometric authentication toggle status
-    /// - Returns: Boolean indicating if biometric auth is enabled in user preferences
+    /// Retrieves the current biometric authentication toggle status from preferences
+    /// - Returns: Boolean indicating if biometric auth is enabled
+    /// Also checks hardware availability and disables if not supported
     func getAuthToggleStatus() -> Bool {
         let authStatus = PermanentLocalAuthentication.instance.canAuthenticate()
         var biometricsAuthEnabled: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.biometricsAuthEnabled) ?? true
