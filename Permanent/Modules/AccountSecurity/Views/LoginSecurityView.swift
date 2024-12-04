@@ -3,11 +3,13 @@
 //  Permanent
 //
 //  Created by Lucian Cerbu on 19.11.2024.
+
 import SwiftUI
 
 struct LoginSecurityView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: LoginSecurityViewModel
+    @State private var navigateToTwoStep = false
     
     init(viewModel: StateObject<LoginSecurityViewModel>) {
         self._viewModel = viewModel
@@ -50,8 +52,12 @@ struct LoginSecurityView: View {
                     )
                 }
                 Divider()
-                Button {
-                    viewModel.addStorageIsPresented = true
+                NavigationLink {
+                    TwoStepVerificationView(
+                        isTwoFactorEnabled: viewModel.isTwoStepVerificationToggleOn,
+                        twoFactorMethods: viewModel.twoFactorMethods
+                    )
+                    .navigationBarBackButtonHidden(true)
                 } label: {
                     CustomListItemView(
                         image: Image(.securityTwoStepVerify),
