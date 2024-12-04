@@ -16,8 +16,14 @@ struct OnboardingInvitedWelcomeView: View {
     var body: some View {
         if Constants.Design.isPhone {
             iPhoneBody
+                .onAppear {
+                    viewModel.trackEvents()
+                }
         } else {
             iPadBody
+                .onAppear {
+                    viewModel.trackEvents()
+                }
         }
     }
     

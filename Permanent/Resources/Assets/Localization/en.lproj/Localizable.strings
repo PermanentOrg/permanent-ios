@@ -50,7 +50,7 @@
 "TwoStepSubtitle" = "Add an extra layer of security by entering a verification code we send to your phone.";
 "TwoStepTitle" = "Protect your account with 2-Step Verification";
 "UnlockWithBiometrics" = "Unlock with %@";
-"UseLoginCredentials" = "Use login credentials instead";
+"UseLoginCredentials" = "Unlock with Sign in credentials";
 "UsePasscode" = "Use passcode";
 "WelcomeMessage" = "Nice to see you again";
 "BiometricsSetup" = "Permanent works best with %@ and requires a passcode.";

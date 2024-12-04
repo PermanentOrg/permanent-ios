@@ -339,6 +339,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = archiveData {
             archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
             archiveLegacyPlanningVC.selectedArchive = archiveData
+            archiveLegacyPlanningVC.viewModel?.account = viewModel?.account
             archiveLegacyPlanningVC.viewModel?.stewardType = .archive
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
             navControl.modalPresentationStyle = .fullScreen

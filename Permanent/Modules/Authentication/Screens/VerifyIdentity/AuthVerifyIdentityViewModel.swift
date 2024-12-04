@@ -37,8 +37,6 @@ class AuthVerifyIdentityViewModel: ObservableObject {
             switch result {
             case .success:
                 handler(.success)
-                EventsManager.trackEvent(event: .SignIn)
-
             case .error(_):
                 self.pinCode = ""
                 self.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)

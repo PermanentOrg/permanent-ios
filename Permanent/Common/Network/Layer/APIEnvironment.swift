@@ -5,9 +5,9 @@
 //  Created by Adrian Creteanu on 18/09/2020.
 //
 
-enum APIEnvironment: EnvironmentProtocol {
+enum APIEnvironment: String, EnvironmentProtocol {
     case staging
-    case development
+    case development = "dev"
     case production
     
     /// The default HTTP request headers for the given environment.

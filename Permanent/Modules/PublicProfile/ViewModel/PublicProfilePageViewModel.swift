@@ -76,11 +76,11 @@ class PublicProfilePageViewModel: ViewModelInterface {
             ProfileSection.milestones: [
             ]
         ]
-
+        
         if isEditDataEnabled {
             profileViewData[ProfileSection.profileVisibility] = [ ProfileCellType.profileVisibility ]
         }
-
+        
         var aboutCells = [ProfileCellType]()
         if blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
             aboutCells.append(.blurb)
@@ -89,7 +89,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
             aboutCells.append(.longDescription)
         }
         profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
-
+        
         var informationCells = [ProfileCellType]()
         if basicProfileItem?.fullName?.isNotEmpty ?? false {
             informationCells.append(.fullName)
@@ -110,7 +110,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 informationCells.append(.birthLocation)
             }
             profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.gender, ProfileCellType.birthDate, ProfileCellType.birthLocation] : informationCells
-
+            
         case .family, .organization, .nonProfit, .community, .familyHistory:
             if establishedInfoProfileItem?.establishedDate?.isNotEmpty ?? false {
                 informationCells.append(.establishedDate)
@@ -118,13 +118,13 @@ class PublicProfilePageViewModel: ViewModelInterface {
             if establishedInfoProfileItem?.establishedLocationFormated?.isNotEmpty ?? false {
                 informationCells.append(.establishedLocation)
             }
-
+            
             profileViewData[.information] = isEditDataEnabled ? [ProfileCellType.fullName, ProfileCellType.nickName, ProfileCellType.establishedDate, ProfileCellType.establishedLocation] : informationCells
         }
-
+        
         profileViewData[.onlinePresenceEmail] = emailProfileItems.map({ _ in .onlinePresenceEmail })
         profileViewData[.onlinePresenceLink] = socialMediaProfileItems.map({ _ in .onlinePresenceLink })
-
+        
         profileViewData[.milestones] = milestonesProfileItems.map({ _ in .milestone })
         
         return profileViewData
@@ -153,7 +153,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 
                 completionBlock(nil)
                 return
-            
+                
             case .error:
                 completionBlock(APIError.invalidResponse)
                 return
@@ -166,8 +166,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func updateProfileVisibility(isVisible: Bool, completion: @escaping ServerResponse) {
-        EventsManager.trackEvent(event: .EditArchiveProfile)
-        
         let itemsToUpdate = profileItems.filter { item in
             item.fieldNameUI != "profile.basic" && item.fieldNameUI != "profile.timezone" && item.fieldNameUI != "profile.description"
         }
@@ -188,7 +186,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 
                 completion(.success)
                 NotificationCenter.default.post(name: Self.profileItemsUpdatedNotificationName, object: nil)
-
+                
             case .error:
                 completion(.error(message: .errorMessage))
                 return
@@ -201,8 +199,6 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        EventsManager.trackEvent(event: .EditArchiveProfile)
-        
         let apiOperation: APIOperation
         
         switch operationType {
@@ -248,8 +244,11 @@ class PublicProfilePageViewModel: ViewModelInterface {
                     completionBlock(true, nil, newProfileItem.profileItemId)
                 }
                 
+                
+                self.trackEditProfileEvent(profileItemId: String(profileItemModel.profileItemId ?? 0))
+        
                 NotificationCenter.default.post(name: Self.profileItemsUpdatedNotificationName, object: nil)
-
+                
             case .error:
                 completionBlock(false, APIError.invalidResponse, nil)
                 return
@@ -315,7 +314,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
     func modifyBirthInfoProfileItem(profileItemId: Int? = nil, newValueBirthDate: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let newProfileItem = BirthInfoProfileItem()
         if let valueBirthDate = newValueBirthDate,
-            valueBirthDate.isEmpty {
+           valueBirthDate.isEmpty {
             newProfileItem.birthDate = nil
         } else {
             newProfileItem.birthDate = newValueBirthDate
@@ -362,7 +361,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
     func modifyEstablishedInfoProfileItem(profileItemId: Int? = nil, newValue: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
         let newProfileItem = EstablishedInfoProfileItem()
         if let valueEstablishedDate = newValue,
-            valueEstablishedDate.isEmpty {
+           valueEstablishedDate.isEmpty {
             newProfileItem.establishedDate = nil
         } else {
             newProfileItem.establishedDate = newValue
@@ -393,26 +392,26 @@ class PublicProfilePageViewModel: ViewModelInterface {
         var textFieldHaveNewValue = (false, false)
         
         if let savedFullName = basicProfileItem?.fullName,
-            savedFullName != fullNameNewValue {
+           savedFullName != fullNameNewValue {
             textFieldHaveNewValue.0 = true
         } else if (fullNameNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue.0 = true
         }
         
         if let savedNickname = basicProfileItem?.nickname,
-            savedNickname != nicknameNewValue {
+           savedNickname != nicknameNewValue {
             textFieldHaveNewValue.1 = true
         } else if (nicknameNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue.1 = true
         }
         
         if let fullName = fullNameNewValue,
-            fullName.isEmpty {
+           fullName.isEmpty {
             textFieldIsEmpty.0 = true
         }
         
         if let nickname = nicknameNewValue,
-            nickname.isEmpty {
+           nickname.isEmpty {
             textFieldIsEmpty.1 = true
         }
         
@@ -422,7 +421,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         
         if textFieldHaveNewValue.0 || textFieldHaveNewValue.1,
-            textFieldIsEmpty == (true, true) {
+           textFieldIsEmpty == (true, true) {
             modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
                 if result {
                     self.basicProfileItem?.profileItemId = nil
@@ -454,14 +453,14 @@ class PublicProfilePageViewModel: ViewModelInterface {
         var textFieldHaveNewValue = false
         
         if let savedProfileGender = profileGenderProfileItem?.personGender,
-            savedProfileGender != genderNewValue {
+           savedProfileGender != genderNewValue {
             textFieldHaveNewValue = true
         } else if (genderNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue = true
         }
         
         if let value = genderNewValue,
-            value.isEmpty {
+           value.isEmpty {
             textFieldIsEmpty = true
         }
         
@@ -471,7 +470,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         
         if textFieldHaveNewValue,
-            textFieldIsEmpty {
+           textFieldIsEmpty {
             modifyGenderProfileItem(profileItemId: profileGenderProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
                 if result {
                     self.profileGenderProfileItem?.profileItemId = nil
@@ -502,7 +501,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         var textFieldHaveNewValue = false
         
         if let savedBirthDate = birthInfoProfileItem?.birthDate,
-            savedBirthDate != birthDateNewValue {
+           savedBirthDate != birthDateNewValue {
             textFieldHaveNewValue = true
         } else if (birthDateNewValue ?? "").isNotEmpty {
             textFieldHaveNewValue = true
@@ -541,7 +540,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         var textFieldHaveNewValue = false
         
         if let savedDate = establishedInfoProfileItem?.establishedDate,
-            savedDate != newValue {
+           savedDate != newValue {
             textFieldHaveNewValue = true
         } else if (newValue ?? "").isNotEmpty {
             textFieldHaveNewValue = true
@@ -657,5 +656,24 @@ class PublicProfilePageViewModel: ViewModelInterface {
                 completion(nil)
             }
         }
+    }
+    
+    func trackEditProfileEvent(profileItemId: String) {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: ProfileItemEventAction.update,
+                                                       entityId: profileItemId) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
+    func trackPageViewEvent() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openArchiveProfile,
+                                                       entityId: String(accountId),
+                                                       data: ["page":"Archive Profile"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }
