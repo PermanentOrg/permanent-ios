@@ -40,6 +40,9 @@ struct RedeemCodeView: View {
         .onChange(of: viewModel.codeRedeemed, perform: { value in
             dismissView()
         })
+        .onAppear(perform: {
+            viewModel.trackOpenReedeemCOde()
+        })
     }
     
     var backgroundView: some View {

@@ -42,20 +42,32 @@ class RegisterViewModel: ObservableObject {
     
     func signUp(then handler: @escaping (RegisterStatus) -> Void) {
         let credentials: SignUpV2Credentials = (fullname, email, password, agreeUpdates)
-        AuthenticationManager.shared.signUp(with: credentials) { status in
+        AuthenticationManager.shared.signUp(with: credentials) {[weak self] status in
             switch status {
             case .success:
-                handler(.success)
-                
+                self?.signIn(then: handler)
             case .error(message: _):
+                handler(.error(message: .errorMessage))
+            }
+        }
+    }
+    
+    func signIn(then handler: @escaping (RegisterStatus) -> Void) {
+        AuthenticationManager.shared.login(withUsername: email, password: password) { status in
+            if status == .success {
+                handler(.success)
+            }
+            else {
                 handler(.error(message: .errorMessage))
             }
         }
     }
 
     func trackEvents() {
-        EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
-                                     email: AuthenticationManager.shared.session?.account.primaryEmail)
-        EventsManager.trackEvent(event: .SignUp)
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.create,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }

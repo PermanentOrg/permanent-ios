@@ -49,8 +49,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        EventsManager.trackPageView(page: .ArchiveMenu)
+        viewModel?.trackOpenArchiveMenu()
     }
     
     fileprivate func initUI() {

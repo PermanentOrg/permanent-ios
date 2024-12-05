@@ -86,5 +86,13 @@ class OnboardingContainerViewModel: ObservableObject {
             }
         }
     }
+    
+    func trackEvents(action: AccountEventAction) {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(eventAction: action,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
 }
 

@@ -35,6 +35,9 @@ class AppendFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol {
     func getSelectedFiles() -> [FileModel] {
         let filteredFiles = selectedFiles.map { file in
             var newFile = file
+            if let dateWithTimeZone = newFile.createdDT {
+                newFile.date = dateWithTimeZone
+            }
             let name = newFile.name
             if selectedOption?.title == "Before name" {
                 newFile.name = String("\(textToAppend)\(name)")
