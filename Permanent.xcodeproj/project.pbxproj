@@ -3024,8 +3024,8 @@
 		5E991EDC2A48E018006229C0 /* EditMetadata */ = {
 			isa = PBXGroup;
 			children = (
-				5E991EEA2A4C8FF3006229C0 /* ViewModels */,
 				5E991EDD2A48E032006229C0 /* Views */,
+				5E991EEA2A4C8FF3006229C0 /* ViewModels */,
 			);
 			path = EditMetadata;
 			sourceTree = "<group>";
