@@ -30,6 +30,7 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         super.viewDidLoad()
         
         viewModel = DonateViewModel()
+        viewModel?.trackOpenStorage()
 
         title = "Storage".localized()
         setTextContent()
@@ -64,8 +65,6 @@ class DonateViewController: BaseViewController<DonateViewModel> {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        EventsManager.trackPageView(page: .Storage)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -258,7 +257,6 @@ extension DonateViewController: ApplePayContextDelegate {
         switch status {
         case .success:
             showAlert(title: "Thank you!".localized(), message: "Your donation was successful!".localized())
-            EventsManager.trackEvent(event: .PurchaseStorage)
         case .error:
             showErrorAlert(message: .errorMessage)
             

@@ -35,6 +35,7 @@ class PublicGalleryViewController: BaseViewController<PublicGalleryViewModel> {
         super.viewDidLoad()
         
         viewModel = PublicGalleryViewModel()
+        viewModel?.trackOpenFiles()
         
         styleNavBar()
         initUI()

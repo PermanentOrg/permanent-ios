@@ -70,6 +70,7 @@ class RedeemCodeViewModel: ObservableObject {
                     self?.showAlert = false
                     self?.invalidDataInserted = false
                     self?.codeRedeemed = true
+                    self?.trackReedeemCode()
                     return
                     
                 case .error(_, _):
@@ -81,5 +82,24 @@ class RedeemCodeViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func trackOpenReedeemCode() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openRedeemGift,
+                                                       entityId: String(accountId),
+                                                       data: ["page":"Redeem Gift"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
+    func trackReedeemCode() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.submitPromo,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }

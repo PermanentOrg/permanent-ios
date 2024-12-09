@@ -102,6 +102,7 @@ class LegacyPlanningStatusViewController: BaseViewController<LegacyPlanningStatu
         if let legacyPlanningStewardVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
             legacyPlanningStewardVC.viewModel = LegacyPlanningViewModel()
             legacyPlanningStewardVC.viewModel?.stewardType = type
+            legacyPlanningStewardVC.viewModel?.account = viewModel?.session?.account
             legacyPlanningStewardVC.selectedArchive = archive
             navigationController?.pushViewController(legacyPlanningStewardVC, animated: true)
         }
