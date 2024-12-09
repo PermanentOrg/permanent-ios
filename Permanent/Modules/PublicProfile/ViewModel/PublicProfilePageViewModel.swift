@@ -660,7 +660,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     
     func trackEditProfileEvent(profileItemId: String) {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: ProfileItemEventAction.update,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: ProfileItemEventAction.update,
                                                        entityId: profileItemId) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
@@ -668,7 +669,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     
     func trackPageViewEvent() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.openArchiveProfile,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openArchiveProfile,
                                                        entityId: String(accountId),
                                                        data: ["page":"Archive Profile"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))

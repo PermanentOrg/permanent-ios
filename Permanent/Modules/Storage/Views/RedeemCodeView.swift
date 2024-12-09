@@ -41,7 +41,7 @@ struct RedeemCodeView: View {
             dismissView()
         })
         .onAppear(perform: {
-            viewModel.trackOpenReedeemCOde()
+            viewModel.trackOpenReedeemCode()
         })
     }
     

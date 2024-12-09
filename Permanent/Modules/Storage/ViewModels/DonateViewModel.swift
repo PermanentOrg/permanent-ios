@@ -67,7 +67,8 @@ class DonateViewModel: ViewModelInterface {
     
     func trackOpenStorage() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.openStorageModal,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openStorageModal,
                                                        entityId: String(accountId),
                                                        data: ["page":"Storage"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
@@ -76,7 +77,8 @@ class DonateViewModel: ViewModelInterface {
     
     func trackPurchaseStorage() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.purchaseStorage,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.purchaseStorage,
                                                        entityId: String(accountId)) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}

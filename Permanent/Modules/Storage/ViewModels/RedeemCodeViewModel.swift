@@ -84,9 +84,10 @@ class RedeemCodeViewModel: ObservableObject {
         }
     }
     
-    func trackOpenReedeemCOde() {
+    func trackOpenReedeemCode() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.openRedeemGift,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openRedeemGift,
                                                        entityId: String(accountId),
                                                        data: ["page":"Redeem Gift"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
@@ -95,7 +96,8 @@ class RedeemCodeViewModel: ObservableObject {
     
     func trackReedeemCode() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.submitPromo,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.submitPromo,
                                                        entityId: String(accountId)) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}

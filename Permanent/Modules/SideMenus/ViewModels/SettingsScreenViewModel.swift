@@ -175,7 +175,8 @@ class SettingsScreenViewModel: ObservableObject {
     
     func trackEvents() {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: AccountEventAction.openAccountMenu,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openAccountMenu,
                                                        entityId: String(accountId),
                                                        data: ["page":"Account Menu"]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))

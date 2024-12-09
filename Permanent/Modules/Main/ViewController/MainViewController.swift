@@ -544,6 +544,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func showLegacy() {
         if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
             legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            legacyPlanningLoadingVC.viewModel?.account = AuthenticationManager.shared.session?.account
             let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
             customNavController.modalPresentationStyle = .fullScreen
             self.present(customNavController, animated: true, completion: nil)
@@ -1262,6 +1263,7 @@ extension MainViewController: FABActionSheetDelegate {
         actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
         present(actionSheet, animated: true, completion: nil)
+        viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
     }
     
     func openCamera() {
@@ -1318,6 +1320,7 @@ extension MainViewController: FABActionSheetDelegate {
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
+        viewModel?.trackEvent(action: RecordEventAction.submit)
     }
     
     private func newFolderAction() {
@@ -1414,6 +1417,8 @@ extension MainViewController {
         documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
         documentInteractionController.name = url.localizedName ?? url.lastPathComponent
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+        
+        viewModel?.trackEvent(action: AccountEventAction.openShareModal)
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {

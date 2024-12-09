@@ -92,8 +92,13 @@ class MyFilesViewModel: FilesViewModel {
     }
     
     func trackOpenFiles(action: AccountEventAction = AccountEventAction.openPrivateWorkspace) {
+        trackEvent(action: action)
+    }
+    
+    func trackEvent(action: any EventAction) {
         guard let accountId = AuthenticationManager.shared.session?.account.accountID,
-              let payload = EventsPayloadBuilder.build(eventAction: action,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: action,
                                                        entityId: String(accountId),
                                                        data: ["workspace": rootFolderName]) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
