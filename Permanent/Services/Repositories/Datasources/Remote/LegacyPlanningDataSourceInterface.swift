@@ -11,7 +11,7 @@ protocol LegacyPlanningDataSourceInterface {
     func setArchiveSteward(archiveId: Int, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void)
     func updateArchiveSteward(directiveId: String, stewardEmail: String, note: String, completion: @escaping (Result<ArchiveSteward, Error>) -> Void)
     func getLegacyContact(completion: @escaping (Result<[AccountSteward]?, Error>) -> Void)
-    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void)
+    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<AccountSteward, Error>) -> Void)
     func updateAccountSteward(legacyContactId: String, name: String?, stewardEmail: String?, completion: @escaping (Result<AccountSteward?, Error>) -> Void)
 }
 
@@ -86,7 +86,7 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
          }
      }
     
-    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<AccountSteward, Error>) -> Void) {
         let setAccountStewardOperation = APIOperation(LegacyPlanningEndpoint.setAccountSteward(name: name, stewardEmail: stewardEmail))
         setAccountStewardOperation.execute(in: APIRequestDispatcher()) { result in
             switch result {
@@ -95,7 +95,7 @@ class LegacyPlanningDataSource: LegacyPlanningDataSourceInterface {
                     completion(.failure(APIError.invalidResponse))
                     return
                 }
-                completion(.success(true))
+                completion(.success(model))
                 return
             case .error(let error, _):
                 completion(.failure(error ?? APIError.invalidResponse))

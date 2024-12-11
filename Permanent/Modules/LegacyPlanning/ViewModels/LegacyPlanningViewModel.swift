@@ -59,6 +59,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
             case .success(let steward):
                 self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
                 self?.stewardWasUpdated?(true)
+                self?.trackUpdateEvents(action: DirectiveEventAction.create, entityId: steward.directiveId)
             }
             
             self?.isLoading?(false)
@@ -73,9 +74,10 @@ class LegacyPlanningViewModel: ViewModelInterface {
                 if let error = error as? APIError {
                     self?.showError?(error)
                 }
-            case .success:
-                self?.selectedSteward = LegacyPlanningSteward(name: name, email: email, status: .pending, type: .account)
+            case .success(let steward):
+                self?.selectedSteward = LegacyPlanningSteward(id: steward.legacyContactId, name: steward.name, email: steward.email, status: .pending, type: .account)
                 self?.stewardWasUpdated?(true)
+                self?.trackUpdateEvents(action: LegacyContactEventAction.create, entityId: self?.selectedSteward?.id)
             }
             
             self?.isLoading?(false)
@@ -159,11 +161,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     self?.showError?(error)
                 }
             case .success(let steward):
-                if(self?.selectedSteward == nil) {
-                    self?.trackUpdateEvents(action: DirectiveEventAction.create, entityId: steward.directiveId)
-                } else {
-                    self?.trackUpdateEvents(action: DirectiveEventAction.update, entityId: steward.directiveId)
-                }
+                self?.trackUpdateEvents(action: DirectiveEventAction.update, entityId: steward.directiveId)
                 self?.selectedSteward = LegacyPlanningSteward(id: steward.directiveId, name: name, email: email, status: .pending, type: .archive)
                 self?.stewardWasUpdated?(true)
             }
@@ -181,11 +179,7 @@ class LegacyPlanningViewModel: ViewModelInterface {
                     self?.showError?(error)
                 }
             case .success:
-                if(self?.selectedSteward == nil) {
-                    self?.trackUpdateEvents(action: LegacyContactEventAction.create, entityId: self?.selectedSteward?.id)
-                } else {
-                    self?.trackUpdateEvents(action: LegacyContactEventAction.update, entityId: self?.selectedSteward?.id)
-                }
+                self?.trackUpdateEvents(action: LegacyContactEventAction.update, entityId: self?.selectedSteward?.id)
                 self?.selectedSteward = LegacyPlanningSteward(id: self?.selectedSteward?.id ?? "", name: name ?? "", email: stewardEmail ?? "", status: .pending, type: .account)
                 self?.stewardWasUpdated?(true)
             }
