@@ -29,17 +29,18 @@ class AuthVerifyIdentityViewModel: ObservableObject {
             return
         }
         containerViewModel.isLoading = true
-        AuthenticationManager.shared.verify2FA(code: pinCode) { result in
+        AuthenticationManager.shared.verify2FA(code: pinCode) {[weak self] result in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.digitsDisabled = false
+                self?.digitsDisabled = false
             }
-            self.containerViewModel.isLoading = false
+            self?.containerViewModel.isLoading = false
             switch result {
             case .success:
                 handler(.success)
+                self?.trackLoginEvent()
             case .error(_):
-                self.pinCode = ""
-                self.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
+                self?.pinCode = ""
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPinCode)
                 handler(.invalidPinCode)
             }
         }
@@ -62,5 +63,14 @@ class AuthVerifyIdentityViewModel: ObservableObject {
                 return
             }
         }
+    }
+    
+    func trackLoginEvent() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.login,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }
