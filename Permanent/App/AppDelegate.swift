@@ -17,6 +17,7 @@ import KeychainSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    static let navigateToFolderNotifName = NSNotification.Name("AppDelegate.navigateToFolderNotifName")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if CommandLine.arguments.contains("--AddTextClearButton") {
@@ -161,7 +162,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         sharePreviewVC.viewModel = viewModel
         
         rootViewController.navigateTo(viewController: sharePreviewVC)
+        
+        sharePreviewVC.navigateTo = { [weak self] params in
+            self?.navigateToFolder(params: params)
+        }
+        
         return true
+    }
+    
+    fileprivate func navigateToFolder(params: NavigateMinParams) {
+        if let drawerVC = self.rootViewController.current as? DrawerViewController {
+            try? PreferencesManager.shared.setCustomObject([params],forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+            if let mainVC = drawerVC.rootViewController.visibleViewController as? MainViewController {
+                mainVC.navigationToShareFolderLink()
+            } else {
+                self.rootViewController.setDrawerRoot()
+            }
+        }
     }
     
     fileprivate func saveUnivesalLinkToken(_ token: String) {

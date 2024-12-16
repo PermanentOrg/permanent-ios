@@ -20,6 +20,8 @@ protocol SharePreviewViewModelDelegate {
     
     var accountArchives: [ArchiveVOData]? { get }
     
+    var navigateParams: NavigateMinParams? { get set }
+    
     // Events
     
     func start()

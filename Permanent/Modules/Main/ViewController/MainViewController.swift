@@ -30,6 +30,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
+    var navParams: NavigateMinParams? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,6 +118,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             } else {
                 self?.dismissFloatingActionIsland()
             }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
+            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
+                self?.refreshCollectionView()
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
+            self?.navigationToShareFolderLink()
         }
         
         showBanner()
@@ -563,7 +574,18 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func navigationToShareFolderLink() {
+        if let navParamsOptional: [NavigateMinParams]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
+           let navParams = navParamsOptional?.first  {
+            directoryLabel.text = navParams.folderName
+            backButton.isHidden = false
+            navigateToFolder(withParams: navParams, backNavigation: false, shouldDisplaySpinner: true, then: {
+                PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+            })
+        }
+    }
+    
+    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
@@ -584,6 +606,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         case .success:
             refreshCollectionView()
             toggleFileAction(viewModel?.fileAction)
+            navigationToShareFolderLink()
             
         case .error(let message):
             showErrorAlert(message: message)

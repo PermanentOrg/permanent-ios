@@ -32,6 +32,8 @@ class SharePreviewViewController: UIViewController {
         }
     }
     
+    var navigateTo: ((NavigateMinParams) -> Void) = { _ in }
+    
     // MARK: - UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -121,7 +123,7 @@ class SharePreviewViewController: UIViewController {
             actionButton.configureActionButtonUI(title: status.infoText, bgColor: .backgroundPrimary)
             
         default:
-            actionButton.configureActionButtonUI(title: status.infoText)
+            actionButton.configureActionButtonUI(title: viewModel.navigateParams == nil ? status.infoText : .viewInArchive)
         }
         
         actionButton.isHidden = false
@@ -130,7 +132,14 @@ class SharePreviewViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func previewAction(_ sender: UIButton) {
-        viewModel.performAction()
+        if viewModel.navigateParams == nil {
+            viewModel.performAction()
+        } else {
+            navigationController?.popViewController(animated: true)
+            if let params = viewModel.navigateParams {
+                self.navigateTo(params)
+            }
+        }
     }
     
     @IBAction func changeArchiveButtonPressed(_ sender: Any) {
