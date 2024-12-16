@@ -172,7 +172,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate func navigateToFolder(params: NavigateMinParams) {
         if let drawerVC = self.rootViewController.current as? DrawerViewController {
-            try? PreferencesManager.shared.setCustomObject([params],forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+            try? PreferencesManager.shared.setCodableObject(NavigationDataForShareFolderLink(archiveNo: params.archiveNo, folderLinkId: params.folderLinkId, folderName: params.folderName), forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
             if let mainVC = drawerVC.rootViewController.visibleViewController as? MainViewController {
                 mainVC.navigationToShareFolderLink()
             } else {

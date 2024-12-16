@@ -44,3 +44,11 @@ protocol SharePreviewViewModelViewDelegate: AnyObject {
     
     func updateSpinner(isLoading: Bool)
 }
+
+struct NavigationDataForShareFolderLink: Codable {
+    var archiveNo: String = ""
+    
+    var folderLinkId: Int = 0
+    
+    var folderName: String?
+}

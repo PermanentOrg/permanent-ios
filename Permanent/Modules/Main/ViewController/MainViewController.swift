@@ -575,13 +575,14 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     }
     
     func navigationToShareFolderLink() {
-        if let navParamsOptional: [NavigateMinParams]? = try? PreferencesManager.shared.getCustomObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
-           let navParams = navParamsOptional?.first  {
+        if let navParamsOptional: NavigationDataForShareFolderLink? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
+           let navParams = navParamsOptional  {
             directoryLabel.text = navParams.folderName
             backButton.isHidden = false
-            navigateToFolder(withParams: navParams, backNavigation: false, shouldDisplaySpinner: true, then: {
-                PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+            navigateToFolder(withParams: NavigateMinParams(archiveNo: navParams.archiveNo, folderLinkId: navParams.folderLinkId, folderName: navParams.folderName), backNavigation: false, shouldDisplaySpinner: true, then: {
             })
+            
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
         }
     }
     
