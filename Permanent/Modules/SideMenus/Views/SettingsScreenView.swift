@@ -82,7 +82,7 @@ struct SettingsScreenView: View {
                                 Button {
                                     settingsRouter.navigate(to: .loginAndSecurity, router: settingsRouter)
                                 } label: {
-                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: true)
+                                    CustomSimpleListItemView(image: Image(.securitySettings), titleText: "Login & Security", notificationIcon: !(viewModel.twoFactorAuthenticationEnabled == true)&&(viewModel.isLoading2FAStatus == false))
                                 }
                                 Button {
                                     settingsRouter.navigate(to: .legacyPlanning, router: settingsRouter)

@@ -108,7 +108,7 @@ struct TwoStepVerificationView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 HStack {
-                                    Text("\(method.type.displayName == TwoFactorMethod.MethodType.sms.displayName ? "+1 " : "")\(method.value)")
+                                    Text("\(method.value)")
                                         .textStyle(UsualSmallXRegularTextStyle())
                                         .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
 
