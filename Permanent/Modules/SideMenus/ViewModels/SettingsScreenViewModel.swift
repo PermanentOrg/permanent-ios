@@ -25,6 +25,10 @@ class SettingsScreenViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var loggedOut: Bool = false
     
+    @Published var twoFactorAuthenticationEnabled: Bool? = nil
+    @Published var isLoading2FAStatus: Bool = false
+    @Published var twoFactorMethods: [TwoFactorMethod] = []
+    
     init() {
         getAccountInfo { error in
             if error != nil {
@@ -34,6 +38,11 @@ class SettingsScreenViewModel: ObservableObject {
                 self.getStorageSpaceDetails()
                 self.getCurrentArchiveThumbnail()
             }
+        }
+        if let twoFactorStatus: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled) {
+            twoFactorAuthenticationEnabled = twoFactorStatus
+        } else {
+            getTwoFAStatus()
         }
     }
     
@@ -65,6 +74,43 @@ class SettingsScreenViewModel: ObservableObject {
             default:
                 completionBlock(APIError.invalidResponse)
                 return
+            }
+        }
+    }
+    
+    func getTwoFAStatus() {
+        let operation = APIOperation(AuthenticationEndpoint.getIDPUser)
+        isLoading2FAStatus = true
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading2FAStatus = false
+                switch result {
+                case .json(let response, _):
+                    guard let methods: [IDPUserMethodModel] = JSONHelper.convertToModel(from: response) else {
+                        PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                        self?.twoFactorAuthenticationEnabled = false
+                        return
+                    }
+                    
+                    // Convert IDPUserMethodModel to TwoFactorMethod
+                    self?.twoFactorMethods = methods.map { method in
+                        TwoFactorMethod(methodId: method.methodId,
+                                        method: method.method,
+                                        value: method.value)
+                    }
+                    
+                    // If we have any methods, 2FA is enabled
+                    PreferencesManager.shared.set(!methods.isEmpty, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.twoFactorAuthenticationEnabled = !methods.isEmpty
+                    
+                case .error:
+                    PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.twoFactorAuthenticationEnabled = false
+                    
+                default:
+                    PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.twoFactorAuthenticationEnabled = false
+                }
             }
         }
     }
@@ -145,6 +191,7 @@ class SettingsScreenViewModel: ObservableObject {
                 if model.isSuccessful == true {
                     handler(.success)
                     EventsManager.resetUser()
+                    PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
                 } else {
                     handler(.error(message: .errorMessage))
                 }

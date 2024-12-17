@@ -167,6 +167,7 @@ extension Constants.Keys.StorageKeys {
     static let requestPAAccess = "requestPAAccess"
     static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
+    static let twoFactorAuthEnabled = "twoFactorAuthEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let modelVersion = "modelVersion"
     static let minAppVersion = "minAppVersion"
