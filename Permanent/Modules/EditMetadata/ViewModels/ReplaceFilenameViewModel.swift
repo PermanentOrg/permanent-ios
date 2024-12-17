@@ -23,6 +23,9 @@ class ReplaceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol 
     func getSelectedFiles() -> [FileModel] {
         let filteredFiles = selectedFiles.map { file in
             var newFile = file
+            if let dateWithTimeZone = newFile.createdDT {
+                newFile.date = dateWithTimeZone
+            }
             let name = newFile.name
             newFile.name = name.replacingOccurrences(of: findText, with: replaceText)
             return newFile

@@ -20,6 +20,8 @@ protocol SharePreviewViewModelDelegate {
     
     var accountArchives: [ArchiveVOData]? { get }
     
+    var navigateParams: NavigateMinParams? { get set }
+    
     // Events
     
     func start()
@@ -41,4 +43,12 @@ protocol SharePreviewViewModelViewDelegate: AnyObject {
     func viewInArchive()
     
     func updateSpinner(isLoading: Bool)
+}
+
+struct NavigationDataForShareFolderLink: Codable {
+    var archiveNo: String = ""
+    
+    var folderLinkId: Int = 0
+    
+    var folderName: String?
 }

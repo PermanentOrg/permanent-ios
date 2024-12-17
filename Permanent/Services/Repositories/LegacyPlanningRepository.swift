@@ -26,7 +26,7 @@ class LegacyPlanningRepository {
         remoteDataSource.setArchiveSteward(archiveId: archiveId, stewardEmail: stewardEmail, note: note, completion: completion)
     }
     
-    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func setAccountSteward(name: String, stewardEmail: String, completion: @escaping (Result<AccountSteward, Error>) -> Void) {
         remoteDataSource.setAccountSteward(name: name, stewardEmail: stewardEmail, completion: completion)
     }
     

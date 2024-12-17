@@ -111,7 +111,7 @@ class InfoViewModel: ViewModelInterface {
 
         let updateUserDataOperation = APIOperation(AccountEndpoint.updateUserData(accountId: accountId, updateData: userData))
 
-        updateUserDataOperation.execute(in: apiDispatch) { result in
+        updateUserDataOperation.execute(in: apiDispatch) {[weak self] result in
             switch result {
             case .json(let response, _):
                 guard
@@ -137,6 +137,7 @@ class InfoViewModel: ViewModelInterface {
                     AuthenticationManager.shared.session?.account = accountVO
                 }
 
+                self?.trackEvents(action: .update)
                 handler(.success(message: .userDetailsChangedSuccessfully))
 
             case .error:
@@ -179,5 +180,14 @@ class InfoViewModel: ViewModelInterface {
         }
         
         return result
+    }
+    
+    func trackEvents(action: AccountEventAction) {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: action,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }

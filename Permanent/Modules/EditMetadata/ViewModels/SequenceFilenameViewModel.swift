@@ -53,7 +53,7 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
     
     static let displayDateFormatter: DateFormatter = {
         let displayDateFormatter = DateFormatter()
-        displayDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        displayDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         return displayDateFormatter
     }()
@@ -72,6 +72,9 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         var fileNumber = 0
         let filteredFiles = selectedFiles.map { file in
             var newFile = file
+            if let dateWithTimeZone = newFile.createdDT {
+                newFile.date = dateWithTimeZone
+            }
             if selectedFormatOptions?.title == "Count" {
                 if selectedWhereOptions?.title == "Before name" {
                     newFile.name = String("\(calculateZeros(currentFile: fileNumber + 1))\(fileNumber + (Int(startNumberText) ?? 0))\(baseText)")
@@ -80,7 +83,7 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
                 }
                 fileNumber += 1
             } else {
-                var file = selectedFiles.first
+                var file = file
                 var formattedDate: String = ""
                 
                 if let date = dateDetails(file: file) {
@@ -133,7 +136,6 @@ class SequenceFilenameViewModel: ObservableObject, MetadataEditFilenamesProtocol
         let date: Date?
         
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.init(secondsFromGMT: 0)
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         switch selectedAdditionalOption?.title {

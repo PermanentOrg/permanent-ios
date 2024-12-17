@@ -30,6 +30,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     
     let fileHelper = FileHelper()
     let documentInteractionController = UIDocumentInteractionController()
+    var navParams: NavigateMinParams? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,6 +120,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }
         }
         
+        NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
+            if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
+                self?.refreshCollectionView()
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: AppDelegate.navigateToFolderNotifName, object: nil, queue: nil) { [weak self] _ in
+            self?.navigationToShareFolderLink()
+        }
+        
         showBanner()
     }
 
@@ -168,6 +179,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.alpha = 0
         
         fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
+        
+        viewModel?.trackOpenFiles()
     }
     
     fileprivate func setupCollectionView() {
@@ -542,6 +555,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     func showLegacy() {
         if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
             legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            legacyPlanningLoadingVC.viewModel?.account = AuthenticationManager.shared.session?.account
             let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
             customNavController.modalPresentationStyle = .fullScreen
             self.present(customNavController, animated: true, completion: nil)
@@ -560,7 +574,19 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         })
     }
     
-    private func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
+    func navigationToShareFolderLink() {
+        if let navParamsOptional: NavigationDataForShareFolderLink? = try? PreferencesManager.shared.getCodableObject(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink),
+           let navParams = navParamsOptional  {
+            directoryLabel.text = navParams.folderName
+            backButton.isHidden = false
+            navigateToFolder(withParams: NavigateMinParams(archiveNo: navParams.archiveNo, folderLinkId: navParams.folderLinkId, folderName: navParams.folderName), backNavigation: false, shouldDisplaySpinner: true, then: {
+            })
+            
+            PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.navigationToShareFolderLink)
+        }
+    }
+    
+    func navigateToFolder(withParams params: NavigateMinParams, backNavigation: Bool, shouldDisplaySpinner: Bool = true, then handler: VoidAction? = nil) {
         shouldDisplaySpinner ? showSpinner() : nil
         
         viewModel?.navigateMin(params: params, backNavigation: backNavigation, then: { status in
@@ -581,6 +607,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         case .success:
             refreshCollectionView()
             toggleFileAction(viewModel?.fileAction)
+            navigationToShareFolderLink()
             
         case .error(let message):
             showErrorAlert(message: message)
@@ -1251,9 +1278,6 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func showActionSheet() {
-        EventsManager.trackEvent(event: .InitiateUpload,
-                                 properties: ["workspace": viewModel is PublicFilesViewModel ? "Public" : "Private"])
-        
         let cameraAction = UIAlertAction(title: .takePhotoOrVideo, style: .default) { _ in self.openCamera() }
         let photoLibraryAction = UIAlertAction(title: .photoLibrary, style: .default) { _ in self.openPhotoLibrary() }
         let browseAction = UIAlertAction(title: .browse, style: .default) { _ in self.openFileBrowser() }
@@ -1263,6 +1287,7 @@ extension MainViewController: FABActionSheetDelegate {
         actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
         present(actionSheet, animated: true, completion: nil)
+        viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
     }
     
     func openCamera() {
@@ -1319,8 +1344,7 @@ extension MainViewController: FABActionSheetDelegate {
         
         let files = FileInfo.createFiles(from: urls, parentFolder: folderInfo, loadInMemory: loadInMemory)
         upload(files: files)
-        EventsManager.trackEvent(event: .FinalizeUpload,
-                                 properties: ["workspace": viewModel is PublicFilesViewModel ? "Public" : "Private"])
+        viewModel?.trackEvent(action: RecordEventAction.submit)
     }
     
     private func newFolderAction() {
@@ -1417,6 +1441,8 @@ extension MainViewController {
         documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
         documentInteractionController.name = url.localizedName ?? url.lastPathComponent
         documentInteractionController.presentOptionsMenu(from: .zero, in: view, animated: true)
+        
+        viewModel?.trackEvent(action: AccountEventAction.openShareModal)
     }
     
     func renameAction(file: FileModel, atIndexPath indexPath: IndexPath) {

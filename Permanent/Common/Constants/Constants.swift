@@ -160,6 +160,7 @@ extension Constants.Keys.StorageKeys {
     static let uploadFilesKey = "uploadFilesKey"
     static let shareURLToken = "shareURLTokenStorageKey"
     static let publicURLToken = "publicURLTokenKey"
+    static let navigationToShareFolderLink = "navigationToShareFolderLink"
     static let sharedArchiveToken = "sharedArchiveToken"
     static let sharedFileKey = "sharedFileKey"
     static let sharedFolderKey = "sharedFolderKey"

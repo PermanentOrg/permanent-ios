@@ -204,4 +204,14 @@ class PublicGalleryViewModel: ViewModelInterface {
             }
         }
     }
+    
+    func trackOpenFiles() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openPublicGallery,
+                                                       entityId: String(accountId),
+                                                       data: ["workspace": "Public Gallery"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
 }
