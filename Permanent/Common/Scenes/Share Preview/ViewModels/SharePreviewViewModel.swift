@@ -30,7 +30,9 @@ class SharePreviewViewModel {
     var currentArchive: ArchiveVOData? { return AuthenticationManager.shared.session?.selectedArchive }
     
     var accountArchives: [ArchiveVOData]? = []
-
+    
+    var navigateParams: NavigateMinParams?
+    
     // MARK: - Events
     
     func start() {
@@ -127,6 +129,19 @@ class SharePreviewViewModel {
     }
     
     fileprivate func onFetchSharedItemsSuccess(_ model: SharebyURLVOData) {
+        if let accountVO = model.accountVO,
+           let shareCreatorEmail = accountVO.primaryEmail,
+           let currentUserEmail = AuthenticationManager.shared.session?.account.primaryEmail,
+           let folderData = model.folderData,
+           let folderLinkId = folderData.folderLinkID,
+           
+           let archiveNbr = folderData.archiveNbr,
+           let folderName = folderData.displayName,
+           shareCreatorEmail == currentUserEmail {
+            navigateParams = NavigateMinParams(archiveNo: archiveNbr, folderLinkId: folderLinkId, folderName: folderName)
+        }
+        
+        
         if let folderData = model.folderData {
             if let files = extractSharedFiles(from: folderData) {
                 self.files = files
