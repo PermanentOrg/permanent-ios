@@ -145,6 +145,8 @@
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
 		5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */; };
 		5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */; };
+		5E3CEA9D2D14A0150029353E /* CustomPasswordFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */; };
+		5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */; };
 		5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
 		5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */; };
 		5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */; };
@@ -486,6 +488,8 @@
 		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */; };
 		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
+		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
+		5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */; };
 		6A9003F462545A081BD4059B /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */; };
 		9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
@@ -1092,6 +1096,8 @@
 		5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsView.swift; sourceTree = "<group>"; };
 		5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveDetailsView.swift; sourceTree = "<group>"; };
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
+		5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordFieldView.swift; sourceTree = "<group>"; };
+		5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordViewModel.swift; sourceTree = "<group>"; };
 		5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AccountRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
@@ -1347,6 +1353,8 @@
 		5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentedControl.swift; sourceTree = "<group>"; };
 		5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideViewModel.swift; sourceTree = "<group>"; };
 		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
+		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
+		5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCustomNavigationView.swift; sourceTree = "<group>"; };
 		66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PermanentTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -2068,6 +2076,8 @@
 				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
 				5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */,
 				5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */,
+				5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */,
+				5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2205,6 +2215,7 @@
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
 				5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */,
 				5E24A2322CF9EA59003F22AE /* TwoStepVerificationViewModel.swift */,
+				5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -3114,6 +3125,7 @@
 		5E991EE52A4AE121006229C0 /* SwiftUINavigationViews */ = {
 			isa = PBXGroup;
 			children = (
+				5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */,
 				5E991EE62A4AE144006229C0 /* CustomNavigationView.swift */,
 			);
 			path = SwiftUINavigationViews;
@@ -4653,6 +4665,7 @@
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
+				5E3CEA9D2D14A0150029353E /* CustomPasswordFieldView.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
@@ -4813,7 +4826,9 @@
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				5EF15DB22A77E0B600E9A7CA /* CustomSegmentedControl.swift in Sources */,
 				BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */,
+				5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */,
 				5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */,
+				5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */,
 				5E187FA22A0CE3A800DCD52F /* LegacyPlanningSteward.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				9229A3AB2A7A7773004DE31D /* PullDownButton.swift in Sources */,
@@ -4834,6 +4849,7 @@
 				92B9886E2A9783F30040941E /* MapView.swift in Sources */,
 				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
 				5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
+				5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */,
 				5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */,
 				5E048FCF292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.swift in Sources */,
 				BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */,
