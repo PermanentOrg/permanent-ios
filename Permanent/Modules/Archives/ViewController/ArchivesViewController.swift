@@ -107,7 +107,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             styled: .inputWithDropdown,
             withTitle: "Create new archive".localized(),
             placeholders: ["Archive name".localized(), "Archive Type".localized()],
-            dropdownValues: archiveTypes,
+            dropdownValues: archiveTypes.uniqued(),
             positiveButtonTitle: .create,
             positiveAction: {
                 if let fieldsInput = self.actionDialog?.fieldsInput,
@@ -160,7 +160,9 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     @objc func doneButtonPressed(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: {
+            NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: self, userInfo: nil)
+        })
     }
     
     func switchToArchive(_ archive: ArchiveVOData) {

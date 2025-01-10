@@ -119,6 +119,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }
         }
         
+        NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.refreshCurrentFolder()
+        }
+        
         showBanner()
     }
 
