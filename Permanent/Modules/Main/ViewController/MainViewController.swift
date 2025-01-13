@@ -120,6 +120,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             }
         }
         
+        NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: nil) { [weak self] _ in
+          //  self?.refreshCurrentFolder()
+          //  self?.refreshCollectionView()
+        }
+        
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
             if (self?.viewModel?.refreshUploadQueue() ?? false) && (self?.viewModel?.queueItemsForCurrentFolder.count ?? 0 > 0) {
                 self?.refreshCollectionView()

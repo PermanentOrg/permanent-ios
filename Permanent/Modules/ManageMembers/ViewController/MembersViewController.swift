@@ -177,7 +177,7 @@ class MembersViewController: BaseViewController<MembersViewModel> {
             case .error(let message):
                 DispatchQueue.main.async {
                     self.hideSpinner()
-                    self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white)
+                    self.view.showNotificationBanner(title: message ?? .errorMessage, backgroundColor: .deepRed, textColor: .white, animationDelayInSeconds: Constants.Design.longNotificationBarAnimationDuration)
                 }
             }
         })

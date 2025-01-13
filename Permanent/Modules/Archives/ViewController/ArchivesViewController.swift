@@ -107,7 +107,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             styled: .inputWithDropdown,
             withTitle: "Create new archive".localized(),
             placeholders: ["Archive name".localized(), "Archive Type".localized()],
-            dropdownValues: archiveTypes,
+            dropdownValues: archiveTypes.uniqued(),
             positiveButtonTitle: .create,
             positiveAction: {
                 if let fieldsInput = self.actionDialog?.fieldsInput,
@@ -174,6 +174,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 tableView.reloadData()
                 
                 delegate?.archivesViewControllerDidChangeArchive(self)
+                NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: self, userInfo: nil)
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }
