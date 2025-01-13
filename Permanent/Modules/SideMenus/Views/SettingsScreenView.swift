@@ -94,6 +94,7 @@ struct SettingsScreenView: View {
                         }
                         .onAppear {
                             UIScrollView.appearance().bounces = false
+                            viewModel.trackEvents()
                         }
                         .onDisappear {
                             UIScrollView.appearance().bounces = true

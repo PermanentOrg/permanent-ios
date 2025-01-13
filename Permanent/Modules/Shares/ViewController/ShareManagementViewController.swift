@@ -246,6 +246,8 @@ class ShareManagementViewController: BaseViewController<ShareLinkViewModel> {
         activityViewController.setValue(emailSubject, forKey: "Subject")
         activityViewController.popoverPresentationController?.sourceView = view
         present(activityViewController, animated: true, completion: nil)
+        
+        viewModel?.trackCopyLink()
     }
     
     // MARK: - Network Requests

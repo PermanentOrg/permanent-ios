@@ -41,6 +41,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         super.viewDidLoad()
         if viewModel?.stewardType == .archive {
             viewModel?.selectedArchive = selectedArchive
+            viewModel?.trackEvents(action: AccountEventAction.openArchiveSteward)
+        } else {
+            viewModel?.trackEvents(action: AccountEventAction.openLegacyContact)
         }
         
         viewModel?.isLoading = { [weak self] loading in

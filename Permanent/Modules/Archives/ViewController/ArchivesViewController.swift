@@ -160,9 +160,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     }
     
     @objc func doneButtonPressed(_ sender: Any) {
-        dismiss(animated: true, completion: {
-            NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: self, userInfo: nil)
-        })
+        dismiss(animated: true, completion: nil)
     }
     
     func switchToArchive(_ archive: ArchiveVOData) {
@@ -176,6 +174,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
                 tableView.reloadData()
                 
                 delegate?.archivesViewControllerDidChangeArchive(self)
+                NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: self, userInfo: nil)
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }
@@ -341,6 +340,7 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
         if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = archiveData {
             archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
             archiveLegacyPlanningVC.selectedArchive = archiveData
+            archiveLegacyPlanningVC.viewModel?.account = viewModel?.account
             archiveLegacyPlanningVC.viewModel?.stewardType = .archive
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
             navControl.modalPresentationStyle = .fullScreen

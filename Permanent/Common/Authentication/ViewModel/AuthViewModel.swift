@@ -10,7 +10,7 @@ import UIKit
 
 typealias ServerResponse = (RequestStatus) -> Void
 
-class AuthViewModel: ViewModelInterface {
+class AuthViewModel: ViewModelInterface, LoginEventProtocol {
     var sessionProtocol: NetworkSessionProtocol = APINetworkSession()
     static let updateArchiveSettingsChevron = Notification.Name("AuthViewModel.updateArchiveSettingsChevron")
     var archiveSetingsWasPressed: Bool = false {
@@ -142,7 +142,6 @@ class AuthViewModel: ViewModelInterface {
 
                 if model.isSuccessful == true {
                     handler(.success)
-                    EventsManager.resetUser()
                 } else {
                     handler(.error(message: .errorMessage))
                 }
