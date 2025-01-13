@@ -122,7 +122,7 @@ struct LoginView: View {
                         host.modalPresentationStyle = .fullScreen
                         AppDelegate.shared.rootViewController.present(host, animated: true)
                     }
-                    viewModel.trackEvents()
+                    viewModel.trackLoginEvent()
                     loginSuccess()
                     
                 case .mfaToken:

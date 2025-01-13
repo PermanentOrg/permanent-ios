@@ -15,7 +15,7 @@ class LegacyPlanningStatusViewModel: ObservableObject, ViewModelInterface {
     private var archivesRepository: ArchivesRepository
     private var legacyRepository: LegacyPlanningRepository
     
-    private var session: PermSession? {
+    var session: PermSession? {
         return PermSession.currentSession
     }
     

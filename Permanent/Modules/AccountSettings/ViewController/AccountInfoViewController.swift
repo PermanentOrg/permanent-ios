@@ -26,6 +26,7 @@ class AccountInfoViewController: BaseViewController<InfoViewModel> {
         super.viewDidLoad()
         viewModel = InfoViewModel()
         initUI()
+        viewModel?.trackEvents(action: AccountEventAction.openLoginInfo)
     }
 
     private func initUI() {
