@@ -121,8 +121,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
         
         NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: nil) { [weak self] _ in
-          //  self?.refreshCurrentFolder()
-          //  self?.refreshCollectionView()
+            guard let _ = self?.viewModel?.removeCurrentFolderFromHierarchy() else { return }
+            self?.getRootFolder()
+            self?.backButton.isHidden = true
+            self?.directoryLabel.text = self?.viewModel?.rootFolderName
         }
         
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
