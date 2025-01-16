@@ -48,11 +48,119 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         switch url.pathComponents[1] {
         case "share":
-            if rootViewController.isDrawerRootActive {
-                return navigateFromUniversalLink(url: url)
+            if url.absoluteString.contains("targetArchiveNbr")
+            {
+                let pathComponents = url.pathComponents
+                let queryItems = URLComponents(string: url.absoluteString)?.queryItems
+                
+                let shareIdOpt = pathComponents.count > 3 ? pathComponents[3] : nil
+                let folderLinkIdOpt = pathComponents.count > 4 ? pathComponents[4] : nil
+                
+                let targetArchiveNbrOpt = queryItems?.first(where: { $0.name == "targetArchiveNbr" })?.value
+                
+                guard let shareId: Int = Int(shareIdOpt ?? ""),
+                      let folderLinkId: Int = Int(folderLinkIdOpt ?? "") else {
+                    return true
+                }
+                
+                // Add API request here
+                let apiOperation = APIOperation(ShareEndpoint.getShareForPreview(shareId: shareId, folder_linkId: folderLinkId))
+                apiOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+                    switch result {
+                    case .json(let response, _):
+                        
+                        guard let model: APIResults<ShareVO> = JSONHelper.decoding( from: response, with: APIResults<ShareVO>.decoder),
+                              let data = model.results.first?.data,
+                              let shareVO = data.first?.shareVO
+                        else {
+                            return
+                        }
+                        guard
+                            let toArchiveId: Int = shareVO.archiveID else {
+                            return
+                        }
+                        let accessRole: String = AccessRole.roleForValue(shareVO.accessRole ?? "").groupName
+                        let toArchiveNbr: String = targetArchiveNbrOpt ?? ""
+                        let toArchiveName: String = ""
+
+                        if let name: String = shareVO.recordVO?.displayName as? String,
+                           let recordId: Int = shareVO.recordVO?.recordID {
+                    DispatchQueue.main.async {
+                        guard
+                            let archiveNbrInt = shareVO.recordVO?.archiveID else {
+                            return
+                        }
+                        let archiveNbr: String = String(archiveNbrInt)
+                        
+                        let shareNotifPayload = ShareNotificationPayload(name: name, recordId: recordId, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
+                        try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFileKey)
+                        
+                        if let drawerVC = self?.rootViewController.current as? DrawerViewController {
+                            drawerVC.dismiss(animated: false) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    if let sharesVC = drawerVC.rootViewController.visibleViewController as? SharesViewController {
+                                        sharesVC.segmentedControl.selectedSegmentIndex = 1
+                                        sharesVC.segmentedControlValueChanged(sharesVC.segmentedControl)
+                                        
+                                        _ = sharesVC.checkSavedFile()
+                                    } else {
+                                        let sharesVC = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                                        sharesVC.selectedIndex = ShareListType.sharedWithMe.rawValue
+                                        
+                                        drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
+                                        
+                                        self?.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if let sharedFolderName: String = shareVO.folderVO?.displayName as? String {
+                    DispatchQueue.main.async {
+                        guard
+                            let archiveNbrInt = shareVO.folderVO?.archiveID else {
+                            return
+                        }
+                        let archiveNbr: String = String(archiveNbrInt)
+                        
+                        let shareNotifPayload = ShareNotificationPayload(name: sharedFolderName, recordId: 0, folderLinkId: folderLinkId, archiveNbr: archiveNbr, type: FileType.miscellaneous.rawValue, toArchiveId: toArchiveId, toArchiveNbr: toArchiveNbr, toArchiveName: toArchiveName, accessRole: accessRole)
+                        try? PreferencesManager.shared.setNonPlistObject(shareNotifPayload, forKey: Constants.Keys.StorageKeys.sharedFolderKey)
+                        
+                        if let drawerVC = self?.rootViewController.current as? DrawerViewController {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                if drawerVC.rootViewController.visibleViewController is SharesViewController == false {
+                                    let sharesVC: SharesViewController = UIViewController.create(withIdentifier: .shares, from: .share) as! SharesViewController
+                                    
+                                    drawerVC.leftSideMenuController.selectedMenuOption = TableViewData.drawerData[DrawerSection.navigationScreens]![0]
+                                    
+                                    self?.rootViewController.changeDrawerRoot(viewController: sharesVC)
+                                } else {
+                                    let sharesVC = drawerVC.rootViewController.visibleViewController as! SharesViewController
+                                    sharesVC.segmentedControl.selectedSegmentIndex = 1
+                                    sharesVC.segmentedControlValueChanged(sharesVC.segmentedControl)
+                                    
+                                    _ = sharesVC.checkSavedFolder()
+                                }
+                            }
+                        }
+                    }
+                }
+                        
+                    case .error(let error, _):
+                        break
+                        
+                    default:
+                        break
+                    }
+                }
+                return true
             } else {
-                saveUnivesalLinkToken(url.lastPathComponent)
-                return false
+                if rootViewController.isDrawerRootActive {
+                    return navigateFromUniversalLink(url: url)
+                } else {
+                    saveUnivesalLinkToken(url.lastPathComponent)
+                    return false
+                }
             }
             
         case "p":

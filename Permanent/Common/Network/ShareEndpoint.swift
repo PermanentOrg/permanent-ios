@@ -23,6 +23,8 @@ enum ShareEndpoint {
     
     case requestShareAccess(token: String)
     
+    case getShareForPreview(shareId: Int, folder_linkId: Int)
+    
 }
 
 extension ShareEndpoint: RequestProtocol {
@@ -35,12 +37,20 @@ extension ShareEndpoint: RequestProtocol {
         case .getShares: return "/share/getShares"
         case .checkLink: return "/share/checkShareLink"
         case .requestShareAccess: return "/share/requestShareAccess"
+        case .getShareForPreview: return "/share/getShareForPreview"
         }
     }
     
     var method: RequestMethod { .post }
     
-    var parameters: RequestParameters? { nil }
+    var parameters: RequestParameters? {
+        switch self {
+        case .getShareForPreview(let shareId, let folder_linkId):
+            return getShareForPreview(shareId: shareId, folder_linkId: folder_linkId)
+        default :
+            return nil
+        }
+    }
     
     var requestType: RequestType { .data }
     
@@ -96,4 +106,22 @@ extension ShareEndpoint: RequestProtocol {
     }
     
     var customURL: String? { nil }
+}
+
+extension ShareEndpoint {
+    func getShareForPreview(shareId: Int, folder_linkId: Int) -> RequestParameters {
+        return [
+            "RequestVO":
+                [
+                    "data": [
+                        [
+                            "ShareVO": [
+                                "shareId": "\(shareId)",
+                                "folder_linkId": "\(folder_linkId)"
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    }
 }
