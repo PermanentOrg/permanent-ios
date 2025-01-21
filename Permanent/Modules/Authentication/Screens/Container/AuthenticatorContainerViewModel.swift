@@ -15,6 +15,7 @@ class AuthenticatorContainerViewModel: ObservableObject {
     @Published var insertionViewTransition: AnyTransition = .opacity
     
     @Published var bannerErrorMessage: AuthBannerMessage = .none
+    @Published var maintenanceTopBannerWasDisplayed: Bool = false
     @Published var showErrorBanner: Bool = false
     
     var username: String = ""
