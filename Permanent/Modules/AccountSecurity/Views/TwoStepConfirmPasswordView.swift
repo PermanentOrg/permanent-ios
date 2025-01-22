@@ -7,54 +7,39 @@
 import SwiftUI
 
 struct TwoStepConfirmPasswordView: View {
-    @StateObject private var viewModel: TwoStepConfirmPasswordViewModel
-    
-    init(viewModel: TwoStepConfirmPasswordViewModel) {
-        _viewModel = StateObject(wrappedValue: TwoStepConfirmPasswordViewModel())
-    }
+    @StateObject var viewModel: TwoStepConfirmPasswordViewModel
     
     var body: some View {
-        SimpleCustomNavigationView(content: {
-            ZStack(alignment: .top) {
-                VStack(spacing: 32) {
-                    HStack {
-                        Text("Enter your Permanent account") +
-                        Text(" password ").bold() +
-                        Text("to continue adding a two-step verification method.")
-                    }
-                    .font(
-                        .custom(
-                            "Usual-Regular",
-                            fixedSize: 14)
-                    )
-                    .multilineTextAlignment(.leading)
-                    .lineSpacing(5)
-                    .foregroundColor(.blue700)
-                    VStack(spacing: 16) {
-                        CustomPasswordFieldView(password: $viewModel.textFieldPassword) {
-                            
-                        }
-                        RoundButtonUsualFontView(isDisabled: !viewModel.textFieldPassword.isEmpty, isLoading: false, text: "Confirm password") {
-                            
-                        }
-                    }
-                    Spacer()
+        ZStack(alignment: .top) {
+            VStack(spacing: 32) {
+                HStack {
+                    Text("Enter your Permanent account") +
+                    Text(" password ").bold() +
+                    Text("to continue adding a two-step verification method.")
                 }
-                .padding(32)
+                .font(
+                    .custom(
+                        "Usual-Regular",
+                        fixedSize: 14)
+                )
+                .multilineTextAlignment(.leading)
+                .lineSpacing(5)
+                .foregroundColor(.blue700)
+                VStack(spacing: 16) {
+                    CustomPasswordFieldView(password: $viewModel.textFieldPassword) {
+                        viewModel.attemptLogin()
+                    }
+                    RoundButtonUsualFontView(isDisabled: viewModel.textFieldPassword.isEmpty || viewModel.isLoading, isLoading: viewModel.isLoading, text: "Confirm password") {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        viewModel.attemptLogin()
+                    }
+                }
+                Spacer()
             }
-            .navigationBarTitle("Confirm your password", displayMode: .inline)
-            .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            }
-        }, leftButton: {
-            EmptyView()
-        }, rightButton: {
-            EmptyView()
-        },
-                                   backgroundColor: .white,
-                                   textColor: UIColor(Color.blue900),
-                                   textStyle: TextFontStyle.style50,
-                                   showLeftChevron: false
-        )
+        }
+        .navigationBarTitle("Confirm your password", displayMode: .inline)
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
     }
 }

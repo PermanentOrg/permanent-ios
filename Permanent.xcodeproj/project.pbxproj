@@ -293,6 +293,11 @@
 		5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9DB37325516B27004F453B /* FolderInfo.swift */; };
 		5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */; };
 		5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC76EA255E8BF800903D3C /* URLExtension.swift */; };
+		5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */; };
+		5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */; };
+		5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */; };
+		5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */; };
+		5E865D0D2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */; };
 		5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */; };
 		5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */; };
 		5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */; };
@@ -1201,6 +1206,11 @@
 		5E814A452C8F29E3005FF97C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideView.swift; sourceTree = "<group>"; };
 		5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUploadManager.swift; sourceTree = "<group>"; };
+		5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepBottomNotificationView.swift; sourceTree = "<group>"; };
+		5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerView.swift; sourceTree = "<group>"; };
+		5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerViewModel.swift; sourceTree = "<group>"; };
+		5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseVerificationView.swift; sourceTree = "<group>"; };
+		5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseVerificationViewModel.swift; sourceTree = "<group>"; };
 		5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordUpdateViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
@@ -2076,8 +2086,11 @@
 				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
 				5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */,
 				5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */,
+				5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */,
 				5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */,
+				5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */,
 				5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */,
+				5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2215,7 +2228,9 @@
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
 				5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */,
 				5E24A2322CF9EA59003F22AE /* TwoStepVerificationViewModel.swift */,
+				5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */,
 				5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */,
+				5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -4782,6 +4797,7 @@
 				06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */,
 				5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */,
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
+				5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
@@ -4920,6 +4936,7 @@
 				5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */,
 				5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */,
 				5EE3E9E02BCD447100A5EFE5 /* OnboardingArchiveNameView.swift in Sources */,
+				5E865D0D2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
 				5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */,
 				F5BC105C278D991400595F94 /* PublicFilesViewModel.swift in Sources */,
@@ -5042,6 +5059,7 @@
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */,
+				5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
@@ -5079,6 +5097,7 @@
 				5E0AB9E32CAEB43F00C80A94 /* ForgotPasswordViewModel.swift in Sources */,
 				5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */,
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
+				5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
 				5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
@@ -5101,6 +5120,7 @@
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
 				92430A932B10A5690098597D /* EventPage.swift in Sources */,
+				5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,

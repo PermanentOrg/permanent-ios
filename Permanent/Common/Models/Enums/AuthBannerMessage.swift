@@ -12,6 +12,7 @@ enum AuthBannerMessage {
     case resentCodeError
     case codeExpiredError
     case successResendCode
+    case successPasswordConfirmed
     case error
     case none
     
@@ -31,6 +32,8 @@ enum AuthBannerMessage {
             return "The code expired."
         case .successResendCode:
             return "The code was resent."
+        case .successPasswordConfirmed:
+            return "Password confirmed"
         case .error:
             return .errorMessage
         case .none:
