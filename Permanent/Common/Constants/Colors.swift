@@ -74,6 +74,7 @@ extension Color {
     static var liniarBlue = Color(.liniarBlue)
     static var blue25 = Color(.blue25)
     static var blue50 = Color(.blue50)
+    static var blue100 = Color(.blue100)
     static var blue200 = Color(.blue200)
     static var blue300 = Color(.blue300)
     static var blue400 = Color(.blue400)

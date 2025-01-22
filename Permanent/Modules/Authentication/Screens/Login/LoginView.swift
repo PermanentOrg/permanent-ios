@@ -109,6 +109,9 @@ struct LoginView: View {
                     }
                 }
             }
+            TopBannerView(isVisible: $viewModel.isOfflineBannerDisplayed, bannerDismissed: $viewModel.containerViewModel.maintenanceTopBannerWasDisplayed)
+                .padding(.top, Constants.Design.isPhone ? -32 : -64)
+                .ignoresSafeArea()
         }
         .onChange(of: viewModel.loginStatus, perform: { status in
             if let _ = status {
