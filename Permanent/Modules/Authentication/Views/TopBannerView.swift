@@ -18,10 +18,10 @@ struct TopBannerView: View {
                         Image(.authTopBannerIcon)
                             .frame(width: 24, height: 24, alignment: .center)
                         HStack {
-                            Text("The Permanent app may be down briefly")
-                            + Text(" on January 30th, 9:00 PM MST ")
+                            Text("The Permanent app may be briefly unavailable on")
+                            + Text(" January 30th, 9:00 PM MST ")
                                 .bold()
-                            + Text("for updates (5\("-")10 minutes). Thank you for your patience! ")
+                            + Text("for routine maintenance. Thank you for your patience.")
                         }
                         .font(.custom("Usual-Regular", size: 14))
                         .lineSpacing(6)
