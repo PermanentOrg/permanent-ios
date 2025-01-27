@@ -12,7 +12,7 @@ struct TwoStepVerificationView: View {
     @StateObject var viewModel: TwoStepVerificationViewModel
     
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
-        _viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
+        self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
     }
     
     var body: some View {

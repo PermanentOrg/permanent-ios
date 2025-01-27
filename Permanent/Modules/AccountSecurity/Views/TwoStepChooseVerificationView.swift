@@ -16,5 +16,6 @@ struct TwoStepChooseVerificationView: View {
 }
 
 #Preview {
-
+    TwoStepChooseVerificationView(viewModel: 
+                                    TwoStepChooseVerificationViewModel(containerViewModel: TwoStepConfirmationContainerViewModel()))
 }
