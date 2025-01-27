@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TwoStepVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
-    @StateObject private var viewModel: TwoStepVerificationViewModel
+    @StateObject var viewModel: TwoStepVerificationViewModel
     
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         _viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
@@ -47,7 +47,7 @@ struct TwoStepVerificationView: View {
                 }
                 if viewModel.twoFactorMethods.count < 2 {
                     RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: viewModel.twoFactorMethods.isEmpty ? "Add two-step verification method" : "Change verification method") {
-                        // Add method action
+                        viewModel.showAddVerificationMethod = true
                     }
                     .padding(.horizontal, 24)
                 }
@@ -69,6 +69,9 @@ struct TwoStepVerificationView: View {
             }
         }
         .navigationBarTitle("Two-step verification", displayMode: .inline)
+        .sheet(isPresented: $viewModel.showAddVerificationMethod) {
+            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel())
+        }
     }
     
     var bannerTwoStepVerificationView: some View {
