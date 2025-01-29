@@ -166,4 +166,33 @@ platform :ios do
     #upload to TestFlight
     upload_to_testflight(app_identifier: "org.permanent.PermanentArchive")
   end
+
+  lane :update_devices do     
+    # connect to the app store
+    app_store_connect_api_key(key_id: ENV['APP_STORE_CONNECT_API_KEY_KEY_ID'],
+      issuer_id: ENV['APP_STORE_CONNECT_API_KEY_ISSUER_ID'],
+      key_content: ENV['APP_STORE_CONNECT_API_KEY_KEY']
+      )
+
+    # resolve the provisioning profiles and certs from private repo
+    match(type: "appstore",
+          readonly: false,
+          app_identifier: "org.permanent.PermanentArchive",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
+          )
+    match(type: "appstore",
+          readonly: false,
+          app_identifier: "org.permanent.PermanentArchive.PushExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
+          )
+    match(type: "appstore",
+          readonly: false,
+          app_identifier: "org.permanent.PermanentArchive.ShareExtension",
+          git_url: "https://oauth2:#{ENV['FASTLANE_MATCH_TOKEN']}@github.com/PermanentOrg/permanent-ios-certs.git",
+          keychain_password: ""
+          )
+  end
+
 end
