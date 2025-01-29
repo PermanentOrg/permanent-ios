@@ -1,9 +1,7 @@
-name: Deploy Firebase Beta
+name: Update Devices
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
 
 jobs:
   build:
