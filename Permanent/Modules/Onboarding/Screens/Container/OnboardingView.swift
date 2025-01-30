@@ -112,8 +112,9 @@ struct OnboardingView: View {
                             withAnimation {
                                 viewModel.contentType = .whatsImportant
                             }
+                            viewModel.trackEvents(action: .skipGoals)
                         } skipButton: {
-                            
+                            viewModel.trackEvents(action: .skipGoals)
                         }
                         .transition(AnyTransition.asymmetric(
                             insertion:.move(edge: isBack ? .leading : .trailing),
@@ -132,8 +133,9 @@ struct OnboardingView: View {
                             withAnimation {
                                 viewModel.contentType = .congratulations
                             }
+                            viewModel.trackEvents(action: .skipWhyPermanent)
                         } skipButton: {
-                            
+                            viewModel.trackEvents(action: .skipWhyPermanent)
                         }
                         .transition(AnyTransition.asymmetric(
                             insertion:.move(edge: isBack ? .leading : .trailing),

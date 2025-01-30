@@ -49,8 +49,7 @@ class SideMenuViewController: BaseViewController<AuthViewModel> {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        EventsManager.trackPageView(page: .ArchiveMenu)
+        viewModel?.trackOpenArchiveMenu()
     }
     
     fileprivate func initUI() {
@@ -279,6 +278,7 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = AuthenticationManager.shared.session?.selectedArchive {
                 archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
                 archiveLegacyPlanningVC.selectedArchive = archiveData
+                archiveLegacyPlanningVC.viewModel?.account = AuthenticationManager.shared.session?.account
                 archiveLegacyPlanningVC.viewModel?.stewardType = .archive
                 let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
                 navControl.modalPresentationStyle = .fullScreen

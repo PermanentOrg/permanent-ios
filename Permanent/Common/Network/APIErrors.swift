@@ -105,7 +105,7 @@ enum MembersOperationsError: String {
             return "There is already a pending owner for this Permanent Archive".localized()
             
         case .emailNotValid:
-            return .emailIsNotValid
+            return "No account found for this email address".localized()
             
         case .duplicateAccount:
             return "This account already has access to the Permanent Archive".localized()

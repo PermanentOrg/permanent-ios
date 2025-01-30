@@ -90,4 +90,18 @@ class MyFilesViewModel: FilesViewModel {
         let params: NavigateMinParams = (archiveNo, folderLinkId, nil)
         navigateMin(params: params, backNavigation: false, then: handler)
     }
+    
+    func trackOpenFiles(action: AccountEventAction = AccountEventAction.openPrivateWorkspace) {
+        trackEvent(action: action)
+    }
+    
+    func trackEvent(action: any EventAction) {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: action,
+                                                       entityId: String(accountId),
+                                                       data: ["workspace": rootFolderName]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
 }

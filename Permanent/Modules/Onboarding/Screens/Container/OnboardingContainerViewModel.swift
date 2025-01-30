@@ -86,5 +86,16 @@ class OnboardingContainerViewModel: ObservableObject {
             }
         }
     }
+    
+    func trackEvents(action: AccountEventAction) {
+        if(action == .skipGoals && !selectedPath.isEmpty) { return }
+        if(action == .skipWhyPermanent && !selectedWhatsImportant.isEmpty) { return }
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: action,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
 }
 

@@ -55,6 +55,8 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
 
         viewModel = PublicProfilePageViewModel(archiveData)
         
+        viewModel?.trackPageViewEvent()
+        
         getAllByArchiveNbr(archiveData)
         initUI()
         initButtonStates()
