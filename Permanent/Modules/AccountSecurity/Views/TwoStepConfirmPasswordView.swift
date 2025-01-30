@@ -36,6 +36,8 @@ struct TwoStepConfirmPasswordView: View {
                 }
                 Spacer()
             }
+            .frame(maxWidth: .infinity)
+            .padding(32)
         }
         .navigationBarTitle("Confirm your password", displayMode: .inline)
         .onTapGesture {

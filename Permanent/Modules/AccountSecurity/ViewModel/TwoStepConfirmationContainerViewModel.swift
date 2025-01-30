@@ -47,6 +47,8 @@ enum TwoStepConfirmationContentType {
     case confirmPassword
     case chooseVerification
     case register
+    case choosePhoneNumber
+    case chooseEmail
     case none
     
     func screenTitle() -> String {
@@ -58,6 +60,10 @@ enum TwoStepConfirmationContentType {
                 return "Choose Verification"
             case .register:
                 return "Register"
+            case .chooseEmail:
+                return "Add email verification method"
+            case .choosePhoneNumber:
+                return "Add text verification method"
             case .none:
                 return ""
             }

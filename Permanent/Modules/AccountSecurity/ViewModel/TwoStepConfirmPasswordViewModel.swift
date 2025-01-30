@@ -20,7 +20,7 @@ class TwoStepConfirmPasswordViewModel: ObservableObject {
     func attemptLogin() {
         containerViewModel.showErrorBanner = false
         if !areFieldsValid(emailField: AuthenticationManager.shared.session?.account.primaryEmail, passwordField: textFieldPassword) {
-            containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+            containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPassword)
             return
         }
         
@@ -33,7 +33,7 @@ class TwoStepConfirmPasswordViewModel: ObservableObject {
             case .error(message: _):
                 self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .error)
             case .unknown:
-                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidCredentials)
+                self?.containerViewModel.displayErrorBanner(bannerErrorMessage: .invalidPassword)
             default:
                 break
             }
@@ -86,6 +86,4 @@ class TwoStepConfirmPasswordViewModel: ObservableObject {
             }
         }
     }
-    
-    
 }

@@ -8,8 +8,10 @@ import SwiftUI
 
 class TwoStepChooseVerificationViewModel: ObservableObject {
     var containerViewModel: TwoStepConfirmationContainerViewModel
+    @Published var isEmailMethodSelected: Bool? = nil
     
-    init(containerViewModel: TwoStepConfirmationContainerViewModel) {
+    init(containerViewModel: TwoStepConfirmationContainerViewModel, isEmailMethodSelected: Bool?) {
         self.containerViewModel = containerViewModel
+        self.isEmailMethodSelected = isEmailMethodSelected
     }
 }
