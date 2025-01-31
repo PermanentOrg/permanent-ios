@@ -7,6 +7,7 @@
 enum AuthBannerMessage {
     case invalidData
     case invalidCredentials
+    case invalidPassword
     case emptyPinCode
     case invalidPinCode
     case resentCodeError
@@ -22,6 +23,8 @@ enum AuthBannerMessage {
             return "The entered data is invalid"
         case .invalidCredentials:
             return "Incorrect email or password."
+        case .invalidPassword:
+            return "Incorrect password."
         case .emptyPinCode:
             return "The 4-digit code is incorrect."
         case .invalidPinCode:

@@ -9,6 +9,7 @@ import Foundation
 
 class ArchivesViewModel: ViewModelInterface {
     static let closeArchiveSettings = Notification.Name("ArchivesViewModel.closeArchiveSettings")
+    static let didChangeArchiveNotification = Notification.Name("ArchivesViewModel.didChangeArchiveNotification")
     
     var account: AccountVOData?
     var defaultArchiveId: Int? { account?.defaultArchiveID }

@@ -33,7 +33,7 @@ extension String {
 
 extension String {
     var isValidEmail: Bool {
-        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,20}"
+        let emailRegex = "[a-zA-Z0-9\\+\\.\\_%\\-\\+]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: self)
     }
 

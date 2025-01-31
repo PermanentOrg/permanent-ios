@@ -7,15 +7,24 @@
 import Foundation
 import SwiftUI
 
-class LoginViewModel: ObservableObject {
+class LoginViewModel: ObservableObject, LoginEventProtocol {
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var loginStatus: LoginStatus?
+    @Published var isOfflineBannerDisplayed: Bool = false
     
     var containerViewModel: AuthenticatorContainerViewModel
     
     init(containerViewModel: AuthenticatorContainerViewModel) {
         self.containerViewModel = containerViewModel
+        
+        if isBeforeDeadline() && containerViewModel.maintenanceTopBannerWasDisplayed == false {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: { [weak self] in
+                    withAnimation {
+                        self?.isOfflineBannerDisplayed = true
+                    }
+            })
+        }
     }
     
     func areFieldsValid(emailField: String?, passwordField: String?) -> Bool {
@@ -67,9 +76,43 @@ class LoginViewModel: ObservableObject {
         }
     }
     
-    func trackEvents() {
-        EventsManager.setUserProfile(id: AuthenticationManager.shared.session?.account.accountID,
-                                     email: AuthenticationManager.shared.session?.account.primaryEmail)
-        EventsManager.trackEvent(event: .SignIn)
+    private func isBeforeDeadline() -> Bool {
+        var components = DateComponents()
+        components.year = 2025
+        components.month = 1  // January
+        components.day = 30
+        components.hour = 21  // 9 PM
+        components.minute = 0
+        components.timeZone = TimeZone(abbreviation: "MST")
+        
+        let targetDate = Calendar.current.date(from: components)!
+        let currentDate = Date()
+        
+        return currentDate < targetDate
+    }
+}
+
+protocol LoginEventProtocol {
+    func trackLoginEvent()
+}
+
+extension LoginEventProtocol {
+    func trackLoginEvent() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.login,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
+    func trackOpenArchiveMenu() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openArchiveMenu,
+                                                       entityId: String(accountId),
+                                                       data: ["page":"Archive Menu"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
     }
 }

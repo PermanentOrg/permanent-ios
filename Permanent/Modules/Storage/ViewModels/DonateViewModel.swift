@@ -33,8 +33,9 @@ class DonateViewModel: ViewModelInterface {
 
         req.httpBody = try? JSONSerialization.data(withJSONObject: json, options: [])
         
-        let dt = URLSession.shared.dataTask(with: req) { data, urlresponse, error in
+        let dt = URLSession.shared.dataTask(with: req) {[weak self] data, urlresponse, error in
             if let data = data, let jsonObj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                self?.trackPurchaseStorage()
                 let clientSecret = jsonObj["paymentIntent"] as? String
                 completion(clientSecret)
             } else {
@@ -63,4 +64,24 @@ class DonateViewModel: ViewModelInterface {
         ]
         return json
     }
+    
+    func trackOpenStorage() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.openStorageModal,
+                                                       entityId: String(accountId),
+                                                       data: ["page":"Storage"]) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
+    func trackPurchaseStorage() {
+        guard let accountId = AuthenticationManager.shared.session?.account.accountID,
+              let payload = EventsPayloadBuilder.build(accountId: accountId,
+                                                       eventAction: AccountEventAction.purchaseStorage,
+                                                       entityId: String(accountId)) else { return }
+        let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
+        updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
 }

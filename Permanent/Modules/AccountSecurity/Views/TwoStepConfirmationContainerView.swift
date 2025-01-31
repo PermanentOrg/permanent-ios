@@ -21,7 +21,19 @@ struct TwoStepConfirmationContainerView: View {
                             removal: .opacity)
                         )
                 case .chooseVerification:
-                    TwoStepChooseVerificationView(viewModel: TwoStepChooseVerificationViewModel(containerViewModel: viewModel))
+                    TwoStepChooseVerificationView(viewModel: TwoStepChooseVerificationViewModel(containerViewModel: viewModel, isEmailMethodSelected: nil))
+                        .transition(AnyTransition.asymmetric(
+                            insertion: viewModel.insertionViewTransition,
+                            removal: .opacity)
+                        )
+                case .chooseEmail:
+                    TwoStepChooseEmailView(viewModel: TwoStepChooseEmailViewModel(containerViewModel: viewModel))
+                        .transition(AnyTransition.asymmetric(
+                            insertion: viewModel.insertionViewTransition,
+                            removal: .opacity)
+                        )
+                case .choosePhoneNumber:
+                    TwoStepChoosePhoneView(viewModel: TwoStepChoosePhoneViewModel(containerViewModel: viewModel))
                         .transition(AnyTransition.asymmetric(
                             insertion: viewModel.insertionViewTransition,
                             removal: .opacity)
@@ -30,18 +42,17 @@ struct TwoStepConfirmationContainerView: View {
                     EmptyView()
                 }
                 TwoStepBottomNotificationView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
-                    .padding(.bottom, Constants.Design.isPhone ? -32 : -64)
+                    .padding(.horizontal, 32)
             }
-            .padding(32)
             .navigationBarTitle(viewModel.contentType.screenTitle(), displayMode: .inline)
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }, leftButton: {
             switch viewModel.contentType {
-            case .chooseVerification:
+            case .chooseEmail, .choosePhoneNumber:
                 Button {
-                    viewModel.setContentType(.confirmPassword)
+                    viewModel.setContentType(.chooseVerification)
                 } label: {
                     Image(.twoStepBack)
                         .frame(width: 24, height: 24)
