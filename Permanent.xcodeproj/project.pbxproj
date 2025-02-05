@@ -100,6 +100,7 @@
 		5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
 		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
+		5E1DAFFB2D4D023100E13347 /* CustomEmailFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E4FA82988897F0062984C /* ManageTagsTests.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
@@ -326,6 +327,7 @@
 		5E9C8E912CC2A9F8004C058F /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */; };
 		5E9C8E932CC63D74004C058F /* CustomRegisterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */; };
 		5E9E73D52BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */; };
+		5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
 		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
@@ -1066,6 +1068,7 @@
 		5E1C546029B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewHeaderCell.xib; sourceTree = "<group>"; };
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
+		5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEmailFieldView.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
 		5E1E4FA82988897F0062984C /* ManageTagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsTests.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1244,6 +1247,7 @@
 		5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomRegisterFormView.swift; sourceTree = "<group>"; };
 		5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientArchiveButtonView.swift; sourceTree = "<group>"; };
+		5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPhoneFieldView.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
 		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
@@ -2106,6 +2110,8 @@
 				5EF300352D4AC007001FFEE7 /* TwoStepChooseEmailView.swift */,
 				5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */,
 				5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */,
+				5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */,
+				5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */,
 				5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */,
 			);
 			path = Views;
@@ -4791,6 +4797,7 @@
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				5E991EE72A4AE144006229C0 /* CustomNavigationView.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
+				5E1DAFFB2D4D023100E13347 /* CustomEmailFieldView.swift in Sources */,
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */,
 				5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */,
@@ -4928,6 +4935,7 @@
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */,
+				5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */,

@@ -16,6 +16,8 @@ enum CodeVerificationType: String {
 // TODO: See if this type is appropiate.
 typealias VerifyCodeCredentials = (email: String, code: String, type: CodeVerificationType)
 typealias CreateCredentials = (name: String, password: String, email: String, phone: String?)
+typealias Send2FAEnableCodeParameters = (method: String, value: String)
+typealias Enable2FAParameters = (method: String, value: String, code: String)
 
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
@@ -30,7 +32,12 @@ enum AuthenticationEndpoint {
     case createCredentials(credentials: CreateCredentials)
     /// Logs out the user.
     case logout
+    /// Gets user two factor authentication methods
     case getIDPUser
+    /// Send code for enable 2FA
+    case send2FAEnableCode(parameters: Send2FAEnableCodeParameters)
+    /// Enable 2FA
+    case enable2FA(parameters: Enable2FAParameters)
 }
 
 extension AuthenticationEndpoint: RequestProtocol {
@@ -46,7 +53,10 @@ extension AuthenticationEndpoint: RequestProtocol {
             return createCredentialsPayload(for: credentials)
         case .verifyAuth:
             return verifyAuth()
-
+//        case .send2FAEnableCode(let parameters):
+//            return send2FAEnableCode(using: parameters)
+//        case .enable2FA(let parameters):
+//            return enable2FA(using: parameters)
         default:
             return nil
         }
@@ -76,6 +86,10 @@ extension AuthenticationEndpoint: RequestProtocol {
             return "/auth/createCredentials"
         case .logout:
             return "/auth/logout"
+        case .send2FAEnableCode:
+            return ""
+        case .enable2FA:
+            return ""
         }
     }
 
@@ -94,13 +108,26 @@ extension AuthenticationEndpoint: RequestProtocol {
         set {}
     }
     
-    var bodyData: Data? { nil }
+    var bodyData: Data? {
+        switch self {
+        case .send2FAEnableCode(let parameters):
+            return try? JSONEncoder().encode(["method": parameters.method, "value": parameters.value])
+        case .enable2FA(let parameters):
+            return try? JSONEncoder().encode(["method": parameters.method, "value": parameters.value, "code": parameters.code])
+        default:
+            return nil
+        }
+    }
     
     var customURL: String? {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
         switch self {
         case .getIDPUser:
             return "\(endpointPath)api/v2/idpuser"
+        case .send2FAEnableCode:
+            return "\(endpointPath)api/v2/idpuser/send-enable-code"
+        case .enable2FA:
+            return "\(endpointPath)api/v2/idpuser/enable-two-factor"
         default:
             return nil
         }
@@ -184,6 +211,26 @@ extension AuthenticationEndpoint {
     }
     
     func verifyAuth() -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [:]
+                ]
+            ]
+        ]
+    }
+    
+    func send2FAEnableCode(using parameters: Send2FAEnableCodeParameters) -> RequestParameters {
+        return [
+            "RequestVO": [
+                "data": [
+                    [:]
+                ]
+            ]
+        ]
+    }
+    
+    func enable2FA(using parameters: Enable2FAParameters) -> RequestParameters {
         return [
             "RequestVO": [
                 "data": [
