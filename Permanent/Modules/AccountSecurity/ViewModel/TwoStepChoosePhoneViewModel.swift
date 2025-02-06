@@ -8,8 +8,88 @@ import SwiftUI
 
 class TwoStepChoosePhoneViewModel: ObservableObject {
     var containerViewModel: TwoStepConfirmationContainerViewModel
+    @Published var formattedPhone: String = ""
+    @Published var rawPhone: String = ""
+    @Published var isLoading: Bool = false
+    @Published var phoneAlreadyConfirmed: Bool = false
+    @Published var remainingTime: Int = 0
+    @Published var canResend: Bool = true
+    @Published private(set) var sendCodeButtonTitle: String = "Send Code"
+    
+    private var timer: Timer?
     
     init(containerViewModel: TwoStepConfirmationContainerViewModel) {
         self.containerViewModel = containerViewModel
+    }
+    
+    func sendTwoFactorEnableCode() {
+        isLoading = true
+        let phoneNumberForRequest = formattedPhone.replacingOccurrences(of: "+1 ", with: "")
+        withAnimation {
+            containerViewModel.showErrorBanner = false
+        }
+        
+        let send2FAParameters: Send2FAEnableCodeParameters = (method: "sms", value: phoneNumberForRequest)
+        
+        let send2FAEnableCodeOperation = APIOperation(AuthenticationEndpoint.send2FAEnableCode(parameters: send2FAParameters))
+        send2FAEnableCodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            self?.isLoading = false
+            
+            switch result {
+            case .json(let response, _):
+                self?.containerViewModel.displayBannerWithAutoClose(.successCodeSend)
+                self?.startResendTimer()
+                self?.phoneAlreadyConfirmed = true
+            case .error(let error, _):
+                if let apiError = error as? APIError, apiError == .badRequest {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPhoneNumber)
+                } else {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                }
+            default:
+                self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            }
+        }
+    }
+    
+    private func updateButtonTitle() {
+        if canResend {
+            sendCodeButtonTitle = "Send Code"
+        } else {
+            if remainingTime == 0 {
+                sendCodeButtonTitle = "Send Code"
+            } else {
+                let minutes = remainingTime / 60
+                let seconds = remainingTime % 60
+                sendCodeButtonTitle = String(format: "Resend (%02d:%02d)", minutes, seconds)
+            }
+        }
+    }
+    
+    private func startResendTimer() {
+        canResend = false
+        remainingTime = 60
+        updateButtonTitle()
+        
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            guard let self = self else {
+                timer.invalidate()
+                return
+            }
+            
+            if self.remainingTime > 0 {
+                self.remainingTime -= 1
+                self.updateButtonTitle()
+            } else {
+                self.canResend = true
+                self.updateButtonTitle()
+                timer.invalidate()
+            }
+        }
+    }
+    
+    deinit {
+        timer?.invalidate()
     }
 }

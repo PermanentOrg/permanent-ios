@@ -10,7 +10,7 @@ struct TwoStepBottomNotificationView: View {
     let message: AuthBannerMessage
     @Binding var isVisible: Bool
     var isError: Bool {
-        if message == .successResendCode || message == .successPasswordConfirmed {
+        if message == .successResendCode || message == .successPasswordConfirmed || message == .successCodeSend {
             return false
         }
         return true
