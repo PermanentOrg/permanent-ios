@@ -12,7 +12,12 @@ struct TwoStepChoosePhoneView: View {
     var body: some View {
         ZStack(alignment: .top) {
             VStack(spacing: 32) {
-                Text("Enter your phone number and click the button to send a one-time use code. At this time, we can only accept North American cell phone numbers for SMS.")
+                HStack {
+                    Text("Enter your phone number and click the button to send a one-time use code. At this time, we can only accept ") +
+                    Text("North American")
+                        .bold() +
+                    Text(" cell phone numbers for SMS.")
+                }
                 .font(
                     .custom(
                         "Usual-Regular",
@@ -37,7 +42,6 @@ struct TwoStepChoosePhoneView: View {
             .frame(maxWidth: .infinity)
             .padding(32)
         }
-        //.navigationBarTitle("Confirm your password", displayMode: .inline)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }

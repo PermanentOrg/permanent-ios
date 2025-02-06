@@ -37,7 +37,6 @@ struct TwoStepChooseEmailView: View {
             .frame(maxWidth: .infinity)
             .padding(32)
         }
-        //.navigationBarTitle("Confirm your password", displayMode: .inline)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
