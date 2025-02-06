@@ -23,11 +23,13 @@ struct TwoStepChooseEmailView: View {
                 .foregroundColor(.blue700)
                 VStack(spacing: 16) {
                     CustomEmailFieldView(email: $viewModel.textFieldEmail) {
-                       // viewModel.attemptLogin()
+                        viewModel.sendTwoFactorEnableCode()
                     }
-                    RoundButtonUsualFontView(isDisabled: !viewModel.textFieldEmail.isValidEmail || viewModel.isLoading, isLoading: viewModel.isLoading, text: "Send code") {
+                    .disabled(viewModel.emailAlreadyConfirmed)
+                    .opacity(viewModel.emailAlreadyConfirmed ? 0.5 : 1)
+                    RoundButtonUsualFontView(isDisabled: !viewModel.textFieldEmail.isValidEmail || viewModel.isLoading || viewModel.remainingTime > 0, isLoading: viewModel.isLoading, text: viewModel.sendCodeButtonTitle) {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        //viewModel.attemptLogin()
+                        viewModel.sendTwoFactorEnableCode()
                     }
                 }
                 Spacer()
@@ -35,9 +37,13 @@ struct TwoStepChooseEmailView: View {
             .frame(maxWidth: .infinity)
             .padding(32)
         }
-        .navigationBarTitle("Confirm your password", displayMode: .inline)
+        //.navigationBarTitle("Confirm your password", displayMode: .inline)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
+}
+
+#Preview {
+    TwoStepChooseEmailView(viewModel: TwoStepChooseEmailViewModel(containerViewModel: TwoStepConfirmationContainerViewModel()))
 }

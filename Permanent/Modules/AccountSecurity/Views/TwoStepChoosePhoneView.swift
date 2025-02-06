@@ -23,11 +23,13 @@ struct TwoStepChoosePhoneView: View {
                 .foregroundColor(.blue700)
                 VStack(spacing: 16) {
                     CustomPhoneFieldView(phone: $viewModel.formattedPhone, rawPhoneNumber: $viewModel.rawPhone) {
-                       viewModel.attemptSendCode()
+                       viewModel.sendTwoFactorEnableCode()
                     }
-                    RoundButtonUsualFontView(isDisabled: !viewModel.rawPhone.isUSPhoneNumber || viewModel.isLoading, isLoading: viewModel.isLoading, text: "Send code") {
+                    .disabled(viewModel.phoneAlreadyConfirmed)
+                    .opacity(viewModel.phoneAlreadyConfirmed ? 0.5 : 1)
+                    RoundButtonUsualFontView(isDisabled: !viewModel.rawPhone.isUSPhoneNumber || viewModel.isLoading || viewModel.remainingTime > 0, isLoading: viewModel.isLoading, text: viewModel.sendCodeButtonTitle) {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        viewModel.attemptSendCode()
+                        viewModel.sendTwoFactorEnableCode()
                     }
                 }
                 Spacer()
@@ -35,7 +37,7 @@ struct TwoStepChoosePhoneView: View {
             .frame(maxWidth: .infinity)
             .padding(32)
         }
-        .navigationBarTitle("Confirm your password", displayMode: .inline)
+        //.navigationBarTitle("Confirm your password", displayMode: .inline)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
