@@ -10,11 +10,14 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
     var containerViewModel: TwoStepConfirmationContainerViewModel
     @Published var formattedPhone: String = ""
     @Published var rawPhone: String = ""
-    @Published var isLoading: Bool = false
+    @Published var isLoadingPhoneValidation: Bool = false
+    @Published var isLoadingCodeVerification: Bool = false
     @Published var phoneAlreadyConfirmed: Bool = false
     @Published var remainingTime: Int = 0
     @Published var canResend: Bool = true
     @Published private(set) var sendCodeButtonTitle: String = "Send Code"
+    
+    @Published var pinCode: String = ""
     
     private var timer: Timer?
     
@@ -23,7 +26,7 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
     }
     
     func sendTwoFactorEnableCode() {
-        isLoading = true
+        isLoadingPhoneValidation = true
         let phoneNumberForRequest = formattedPhone.replacingOccurrences(of: "+1 ", with: "")
         withAnimation {
             containerViewModel.showErrorBanner = false
@@ -33,7 +36,7 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
         
         let send2FAEnableCodeOperation = APIOperation(AuthenticationEndpoint.send2FAEnableCode(parameters: send2FAParameters))
         send2FAEnableCodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            self?.isLoading = false
+            self?.isLoadingPhoneValidation = false
             
             switch result {
             case .json(let response, _):
@@ -49,6 +52,42 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
+        }
+    }
+    
+    func verifyAndEnableReceivedTwoFactorEnableCode() {
+        isLoadingCodeVerification = true
+        let phoneNumberForRequest = formattedPhone.replacingOccurrences(of: "+1 ", with: "")
+        withAnimation {
+            containerViewModel.showErrorBanner = false
+        }
+        let enable2FAParameters: Enable2FAParameters = (method: "sms", value: phoneNumberForRequest, code: pinCode)
+
+        let enable2FACodeOperation = APIOperation(AuthenticationEndpoint.enable2FA(parameters: enable2FAParameters))
+        enable2FACodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            self?.isLoadingCodeVerification = false
+            
+            switch result {
+            case .json(let response, _):
+                self?.containerViewModel.dismissContainer = true
+                
+            case .error(let error, _):
+                if let apiError = error as? APIError, apiError == .badRequest {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
+                } else {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                }
+            default:
+                self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            }
+        }
+    }
+    
+    func testEnableCode() {
+        isLoadingCodeVerification = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7.5) { [weak self] in
+            self?.isLoadingCodeVerification = false
+            self?.containerViewModel.dismissContainer = true
         }
     }
     

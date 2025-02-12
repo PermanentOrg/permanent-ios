@@ -43,6 +43,7 @@ class TwoStepConfirmationContainerViewModel: ObservableObject {
     @Published var showAddVerificationMethod: Bool = false
     @Published var contentType: TwoStepConfirmationContentType = .confirmPassword
     @Published var insertionViewTransition: AnyTransition = .opacity
+    @Published var dismissContainer: Bool = false
     
     func displayBanner(bannerErrorMessage: AuthBannerMessage) {
         if showErrorBanner {
