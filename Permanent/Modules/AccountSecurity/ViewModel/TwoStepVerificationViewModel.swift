@@ -15,6 +15,7 @@ class TwoStepVerificationViewModel: ObservableObject {
     @Published var isTwoFactorEnabled: Bool
     @Published var twoFactorMethods: [TwoFactorMethod]
     @Published var showAddVerificationMethod: Bool = false
+    @Published var refreshAccountDataRequired: Bool = false
     
     /// Initializes the view model with the current 2FA state
     /// - Parameters:
@@ -32,4 +33,47 @@ class TwoStepVerificationViewModel: ObservableObject {
             return false
         }
     }
-} 
+    
+    func refreshAccountData() {
+        print("data refreshed")
+        refreshAccountDataRequired = false
+        getTwoFAStatus()
+    }
+    
+    func getTwoFAStatus() {
+        isLoading = true
+        let operation = APIOperation(AuthenticationEndpoint.getIDPUser)
+        operation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .json(let response, _):
+                    guard let methods: [IDPUserMethodModel] = JSONHelper.convertToModel(from: response) else {
+                      //  PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                        self?.isTwoFactorEnabled = false
+                        return
+                    }
+                    
+                    // Convert IDPUserMethodModel to TwoFactorMethod
+                    self?.twoFactorMethods = methods.map { method in
+                        TwoFactorMethod(methodId: method.methodId,
+                                        method: method.method,
+                                        value: method.value)
+                    }
+                    
+                    // If we have any methods, 2FA is enabled
+                  //  PreferencesManager.shared.set(!methods.isEmpty, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.isTwoFactorEnabled = !methods.isEmpty
+                    
+                case .error:
+                  //  PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.isTwoFactorEnabled = false
+                    
+                default:
+                   // PreferencesManager.shared.set(false, forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
+                    self?.isTwoFactorEnabled = false
+                }
+            }
+        }
+    }
+}

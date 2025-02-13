@@ -178,7 +178,8 @@ struct RegisterView: View {
                     }
                 }
             }
-        }.onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 keyboardHeight = 0
                 if keyboardSize.height > 120 {
