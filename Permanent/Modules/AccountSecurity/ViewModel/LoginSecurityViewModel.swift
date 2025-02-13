@@ -30,7 +30,7 @@ class LoginSecurityViewModel: ObservableObject {
     /// Checks the current status of two-factor authentication by fetching
     /// the user's IDP methods from the server.
     /// Updates the UI state based on the server response.
-    private func checkTwoFactorStatus() {
+    func checkTwoFactorStatus() {
         let operation = APIOperation(AuthenticationEndpoint.getIDPUser)
         
         operation.execute(in: APIRequestDispatcher()) { [weak self] result in
@@ -41,16 +41,16 @@ class LoginSecurityViewModel: ObservableObject {
                         self?.updateTwoFactorStatus(enabled: false)
                         return
                     }
-                    
                     // Convert IDPUserMethodModel to TwoFactorMethod
-                    self?.twoFactorMethods = methods.map { method in
-                        TwoFactorMethod(methodId: method.methodId, 
-                                      method: method.method,
-                                      value: method.value)
+                    withAnimation {
+                        self?.twoFactorMethods = methods.map { method in
+                            TwoFactorMethod(methodId: method.methodId,
+                                            method: method.method,
+                                            value: method.value)
+                        }
+                        // If we have any methods, 2FA is enabled
+                        self?.updateTwoFactorStatus(enabled: !methods.isEmpty)
                     }
-                    
-                    // If we have any methods, 2FA is enabled
-                    self?.updateTwoFactorStatus(enabled: !methods.isEmpty)
                     
                 case .error:
                     self?.updateTwoFactorStatus(enabled: false)

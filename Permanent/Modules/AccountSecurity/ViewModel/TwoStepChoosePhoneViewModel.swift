@@ -69,6 +69,7 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
             
             switch result {
             case .json(let response, _):
+                self?.containerViewModel.refreshSecurityView = true
                 self?.containerViewModel.dismissContainer = true
                 
             case .error(let error, _):
@@ -80,14 +81,6 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
             }
-        }
-    }
-    
-    func testEnableCode() {
-        isLoadingCodeVerification = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 7.5) { [weak self] in
-            self?.isLoadingCodeVerification = false
-            self?.containerViewModel.dismissContainer = true
         }
     }
     

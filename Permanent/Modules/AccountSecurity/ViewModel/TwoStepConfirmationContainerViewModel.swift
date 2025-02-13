@@ -44,6 +44,11 @@ class TwoStepConfirmationContainerViewModel: ObservableObject {
     @Published var contentType: TwoStepConfirmationContentType = .confirmPassword
     @Published var insertionViewTransition: AnyTransition = .opacity
     @Published var dismissContainer: Bool = false
+    @Binding var refreshSecurityView: Bool
+    
+    init(refreshSecurityView: Binding<Bool>) {
+        self._refreshSecurityView = refreshSecurityView
+    }
     
     func displayBanner(bannerErrorMessage: AuthBannerMessage) {
         if showErrorBanner {

@@ -67,7 +67,6 @@ struct TwoStepChooseEmailView: View {
                                         RoundButtonUsualFontView(isDisabled: viewModel.pinCode.count != 4, isLoading: viewModel.isLoadingCodeVerification, text: "Enable") {
                                             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                             viewModel.verifyAndEnableReceivedTwoFactorEnableCode()
-//                                            viewModel.testEnableCode()
                                         }
                                     }
                                     .padding(.horizontal, 32)
@@ -122,5 +121,5 @@ struct TwoStepChooseEmailView: View {
 }
 
 #Preview {
-    TwoStepChooseEmailView(viewModel: TwoStepChooseEmailViewModel(containerViewModel: TwoStepConfirmationContainerViewModel()))
+    TwoStepChooseEmailView(viewModel: TwoStepChooseEmailViewModel(containerViewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: .constant(false))))
 }
