@@ -8,10 +8,11 @@ enum AuthBannerMessage {
     case invalidData
     case invalidCredentials
     case invalidPassword
-    case invalidEmail
+    case incorrectEmail
     case invalidPhoneNumber
     case emptyPinCode
     case invalidPinCode
+    case invalidEmail
     case resentCodeError
     case codeExpiredError
     case successResendCode
@@ -29,8 +30,10 @@ enum AuthBannerMessage {
             return "Incorrect email or password."
         case .invalidPassword:
             return "Incorrect password."
-        case .invalidEmail:
+        case .incorrectEmail:
             return "Incorrect email."
+        case .invalidEmail:
+            return "Invalid email entered."
         case .invalidPhoneNumber:
             return "Incorrect phone number."
         case .emptyPinCode:
