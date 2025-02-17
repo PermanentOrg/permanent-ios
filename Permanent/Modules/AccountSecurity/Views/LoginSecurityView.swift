@@ -79,6 +79,9 @@ struct LoginSecurityView: View {
                 )
                 Spacer()
             }
+            .onAppear() {
+                viewModel.checkTwoFactorStatus()
+            }
         }
         .navigationBarTitle("Login & Security", displayMode: .inline)
         .padding(.top, 10)

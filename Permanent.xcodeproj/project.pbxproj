@@ -136,6 +136,7 @@
 		5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */; };
 		5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */; };
 		5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */; };
+		5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */; };
 		5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E3A060029E44D7900A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
@@ -1103,6 +1104,7 @@
 		5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
+		5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Add2FAFieldView.swift; sourceTree = "<group>"; };
 		5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogView.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E3A05FF29E44D7900A6C531 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
@@ -2113,6 +2115,7 @@
 				5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */,
 				5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */,
 				5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */,
+				5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -5041,6 +5044,7 @@
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
+				5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */,
 				5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */,
 				5E548E8A2B2AF3EF00DD2C59 /* DonateStorageView.swift in Sources */,
 				5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */,

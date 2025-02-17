@@ -9,11 +9,14 @@ import SwiftUI
 class TwoStepChooseEmailViewModel: ObservableObject {
     var containerViewModel: TwoStepConfirmationContainerViewModel
     @Published var textFieldEmail: String = ""
-    @Published var isLoading: Bool = false
+    @Published var isLoadingEmailValidation: Bool = false
+    @Published var isLoadingCodeVerification: Bool = false
     @Published var emailAlreadyConfirmed: Bool = false
     @Published var remainingTime: Int = 0
     @Published var canResend: Bool = true
     @Published private(set) var sendCodeButtonTitle: String = "Send Code"
+    
+    @Published var pinCode: String = ""
     
     private var timer: Timer?
     
@@ -22,7 +25,8 @@ class TwoStepChooseEmailViewModel: ObservableObject {
     }
     
     func sendTwoFactorEnableCode() {
-        isLoading = true
+        isLoadingEmailValidation = true
+        
         withAnimation {
             containerViewModel.showErrorBanner = false
         }
@@ -31,16 +35,46 @@ class TwoStepChooseEmailViewModel: ObservableObject {
         
         let send2FAEnableCodeOperation = APIOperation(AuthenticationEndpoint.send2FAEnableCode(parameters: send2FAParameters))
         send2FAEnableCodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
-            self?.isLoading = false
+            self?.isLoadingEmailValidation = false
             
             switch result {
             case .json(let response, _):
                 self?.containerViewModel.displayBannerWithAutoClose(.successCodeSend)
                 self?.startResendTimer()
-                self?.emailAlreadyConfirmed = true
+                withAnimation {
+                    self?.emailAlreadyConfirmed = true
+                }
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidEmail)
+                } else {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                }
+            default:
+                self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            }
+        }
+    }
+    
+    func verifyAndEnableReceivedTwoFactorEnableCode() {
+        isLoadingCodeVerification = true
+        withAnimation {
+            containerViewModel.showErrorBanner = false
+        }
+        let enable2FAParameters: Enable2FAParameters = (method: "email", value: textFieldEmail, code: pinCode)
+
+        let enable2FACodeOperation = APIOperation(AuthenticationEndpoint.enable2FA(parameters: enable2FAParameters))
+        enable2FACodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            self?.isLoadingCodeVerification = false
+            
+            switch result {
+            case .json(let response, _):
+                self?.containerViewModel.refreshSecurityView = true
+                self?.containerViewModel.dismissContainer = true
+                
+            case .error(let error, _):
+                if let apiError = error as? APIError, apiError == .badRequest {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
                 }

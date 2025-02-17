@@ -14,7 +14,6 @@ struct TwoStepVerificationView: View {
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
     }
-    
     var body: some View {
         CustomNavigationView {
             ZStack {
@@ -68,9 +67,14 @@ struct TwoStepVerificationView: View {
                 .padding(.bottom, 32)
             }
         }
+        .onChange(of: viewModel.refreshAccountDataRequired, perform: { newValue in
+            if newValue {
+                viewModel.refreshAccountData()
+            }
+        })
         .navigationBarTitle("Two-step verification", displayMode: .inline)
         .sheet(isPresented: $viewModel.showAddVerificationMethod) {
-            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel())
+            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired))
         }
     }
     

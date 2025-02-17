@@ -25,7 +25,7 @@ class SettingsScreenViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var loggedOut: Bool = false
     
-    @Published var twoFactorAuthenticationEnabled: Bool? = nil
+    @Published var twoFactorAuthenticationEnabled: Bool? = true
     @Published var isLoading2FAStatus: Bool = false
     @Published var twoFactorMethods: [TwoFactorMethod] = []
     
@@ -39,11 +39,7 @@ class SettingsScreenViewModel: ObservableObject {
                 self.getCurrentArchiveThumbnail()
             }
         }
-        if let twoFactorStatus: Bool = PreferencesManager.shared.getValue(forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled) {
-            twoFactorAuthenticationEnabled = twoFactorStatus
-        } else {
             getTwoFAStatus()
-        }
     }
     
     func getAccountInfo(_ completionBlock: @escaping ((Error?) -> Void) ) {
