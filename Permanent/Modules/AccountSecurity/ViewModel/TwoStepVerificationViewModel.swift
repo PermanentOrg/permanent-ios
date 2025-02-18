@@ -14,8 +14,10 @@ class TwoStepVerificationViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var isTwoFactorEnabled: Bool
     @Published var twoFactorMethods: [TwoFactorMethod]
-    @Published var showAddVerificationMethod: Bool = false
+    @Published var checkVerificationMethod: Bool = false
     @Published var refreshAccountDataRequired: Bool = false
+    @Published var deleteWasConfirmed: Bool = false
+    @Published var methodSelectedForDelete: TwoFactorMethod?
     
     /// Initializes the view model with the current 2FA state
     /// - Parameters:
