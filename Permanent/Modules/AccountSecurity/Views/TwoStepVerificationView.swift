@@ -28,7 +28,18 @@ struct TwoStepVerificationView: View {
             } rightButton: {
                 EmptyView()
             }
-            DeleteBottomAlertView(showErrorMessage: $showDeleteAlert, deleteConfirmed: $viewModel.checkVerificationMethod, twoFactorMethod: viewModel.methodSelectedForDelete)
+            TwoStepBottomNotificationView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
+                .padding(.horizontal, 32)
+            DeleteBottomAlertView(showErrorMessage: $showDeleteAlert, deleteMethodConfirmed: $viewModel.deleteMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)
+        }
+        .onAppear() {
+            if viewModel.deleteMethodConfirmed != nil {
+                viewModel.deleteMethodConfirmed = nil
+            }
+            
+            if viewModel.methodSelectedForDelete != nil {
+                viewModel.methodSelectedForDelete = nil
+            }
         }
     }
     
@@ -76,9 +87,25 @@ struct TwoStepVerificationView: View {
                 viewModel.refreshAccountData()
             }
         })
+        .onChange(of: viewModel.deleteMethodConfirmed, perform: { newValue in
+            if let _ = newValue {
+                viewModel.checkVerificationMethod = true
+            }
+        })
+        .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
+            if newValue != .none {
+                if viewModel.showError == false {
+                    viewModel.methodSelectedForDelete = nil
+                    viewModel.deleteMethodConfirmed = nil
+                    viewModel.displayBannerWithAutoClose()
+                }
+            } else {
+                viewModel.showBottomBanner = false
+            }
+        })
         .navigationBarTitle("Two-step verification", displayMode: .inline)
         .sheet(isPresented: $viewModel.checkVerificationMethod) {
-            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired))
+            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: $viewModel.methodSelectedForDelete, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage))
         }
     }
     
@@ -161,104 +188,3 @@ struct TwoStepVerificationView: View {
     }
 }
 
-struct DeleteBottomAlertView: View {
-    @Binding var showErrorMessage: Bool
-    @Binding var deleteConfirmed: Bool
-    var twoFactorMethod: TwoFactorMethod?
-    
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            if showErrorMessage {
-                Color.blue700
-                    .opacity(0.5)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation {
-                            showErrorMessage = false
-                        }
-                    }
-                
-                ZStack {
-                    VStack {
-                        HStack {
-                            Text("Are you sure you want to delete your ") +
-                            Text("\(twoFactorMethod?.type.displayName ?? "")").bold() +
-                            Text(" two-step verification method?")
-                        }
-                        .font(.custom("Usual-Regular", size: 14))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.blue700)
-                        .padding(.top, 32)
-                        .padding(.horizontal, 32)
-                        
-                        VStack(spacing: 16) {
-                            Button(action: {
-                                if #available(iOS 17.0, *) {
-                                    withAnimation {
-                                        showErrorMessage = false
-                                    } completion: {
-                                        deleteConfirmed = true
-                                    }
-                                } else {
-                                    withAnimation {
-                                        showErrorMessage = false
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                                        deleteConfirmed = true
-                                    }
-                                }
-                            }, label: {
-                                HStack {
-                                    Spacer()
-                                    Text("Delete")
-                                        .fontWeight(.medium)
-                                        .font(.custom("Usual-Regular", size: 14))
-                                        .foregroundColor(Color(.white))
-                                    Spacer()
-                                       
-                                }
-                                .padding(16)
-                                .frame(height: 56)
-                                .background(Color.error500)
-                                .cornerRadius(12)
-                                .shadow(color: Color.black.opacity(0.07), radius: 40, x: 0, y: 5)
-                                .frame(maxWidth: .infinity)
-                            })
-                            Button(action: {
-                                withAnimation {
-                                    showErrorMessage = false
-                                }
-                                
-                                
-                            }, label: {
-                                HStack {
-                                    Spacer()
-                                    Text("Cancel")
-                                        .font(.custom("Usual-Regular", size: 14))
-                                        .fontWeight(.medium)
-                                        .foregroundColor(Color(.blue900))
-                                    Spacer()
-                                }
-                                .padding(16)
-                                .frame(height: 56)
-                                .background(Color.blue50)
-                                .cornerRadius(12)
-                                .shadow(color: Color.black.opacity(0.07), radius: 40, x: 0, y: 5)
-                                .frame(maxWidth: .infinity)
-
-                            })
-                        }
-                        .padding(32)
-                        
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .background(Color(.white))
-                .cornerRadius(12)
-                .padding(.horizontal, 0)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .ignoresSafeArea()
-    }
-}

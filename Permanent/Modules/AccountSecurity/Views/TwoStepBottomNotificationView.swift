@@ -10,7 +10,7 @@ struct TwoStepBottomNotificationView: View {
     let message: AuthBannerMessage
     @Binding var isVisible: Bool
     var isError: Bool {
-        if message == .successResendCode || message == .successPasswordConfirmed || message == .successCodeSend {
+        if message == .successResendCode || message == .successPasswordConfirmed || message == .successCodeSend || message == .successSmsAdded || message == .successEmailAdded || message == .successSmsDeleted || message == .successEmailDeleted {
             return false
         }
         return true
@@ -33,27 +33,31 @@ struct TwoStepBottomNotificationView: View {
                                 Text("\(message.text)")
                                     .font(.custom("Usual-Regular", size: 14))
                                     .foregroundColor(isError ? Color(red: 0.94, green: 0.27, blue: 0.22) : Color(.success600))
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
                             }
                         }
                         Spacer()
-                        Button(action: {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                            }
-                            withAnimation {
-                                isVisible = false
-                            }
-                        }, label: {
-                            if isError {
-                                Text(message == .codeExpiredError ? "Resend" : "OK")
-                                    .font(.custom("Usual-Regular", size: 14)
-                                        .weight(.medium)
-                                    )
-                                    .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
-                            } else {
-                                Image(.authCloseBannerSuccess)
-                            }
-                        })
+                        if !(message == .successCodeSend || message == .successSmsAdded || message == .successEmailAdded || message == .successSmsDeleted || message == .successEmailDeleted) {
+                            Button(action: {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                }
+                                withAnimation {
+                                    isVisible = false
+                                }
+                            }, label: {
+                                if isError {
+                                    Text(message == .codeExpiredError ? "Resend" : "OK")
+                                        .font(.custom("Usual-Regular", size: 14)
+                                            .weight(.medium)
+                                        )
+                                        .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
+                                } else {
+                                    Image(.authCloseBannerSuccess)
+                                }
+                            })
+                        }
                     }
                     .padding(24)
                     .frame(maxWidth: .infinity)

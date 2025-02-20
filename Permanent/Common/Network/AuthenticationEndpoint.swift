@@ -120,12 +120,10 @@ extension AuthenticationEndpoint: RequestProtocol {
         case .enable2FA(let parameters):
             return try? JSONEncoder().encode(["method": parameters.method, "value": parameters.value, "code": parameters.code])
         case .send2FADisableCode(let parameters):
-            let method = parameters.method == "93ZC" ? "" : "GXT5"
-            return try? JSONEncoder().encode(["methodId": method])
+            return try? JSONEncoder().encode(["methodId": parameters.method])
         case .disable2FA(let parameters):
             guard let code = parameters.code else { return nil }
-            let method = parameters.method == "93ZC" ? "" : "GXT5"
-            return try? JSONEncoder().encode(["methodId": method, "code": code])
+            return try? JSONEncoder().encode(["methodId": parameters.method, "code": code])
         default:
             return nil
         }
@@ -141,6 +139,8 @@ extension AuthenticationEndpoint: RequestProtocol {
         case .enable2FA:
             return "\(endpointPath)api/v2/idpuser/enable-two-factor"
         case .send2FADisableCode:
+            return "\(endpointPath)api/v2/idpuser/send-disable-code"
+        case .disable2FA:
             return "\(endpointPath)api/v2/idpuser/disable-two-factor"
         default:
             return nil

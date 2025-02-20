@@ -29,7 +29,15 @@ class TwoStepConfirmPasswordViewModel: ObservableObject {
             self?.isLoading = false
             switch newStatus {
             case .success:
-                self?.containerViewModel.setContentType(.chooseVerification)
+                if let methodSelectedForDelete = self?.containerViewModel.methodSelectedForDelete {
+                    if methodSelectedForDelete.type == .sms {
+                        self?.containerViewModel.setContentType(.choosePhoneNumber)
+                    } else {
+                        self?.containerViewModel.setContentType(.chooseEmail)
+                    }
+                } else {
+                    self?.containerViewModel.setContentType(.chooseVerification)
+                }
             case .error(message: _):
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .error)
             case .unknown:

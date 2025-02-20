@@ -16,8 +16,11 @@ class TwoStepVerificationViewModel: ObservableObject {
     @Published var twoFactorMethods: [TwoFactorMethod]
     @Published var checkVerificationMethod: Bool = false
     @Published var refreshAccountDataRequired: Bool = false
-    @Published var deleteWasConfirmed: Bool = false
+    @Published var deleteMethodConfirmed: TwoFactorMethod?
     @Published var methodSelectedForDelete: TwoFactorMethod?
+    @Published var showBottomBanner: Bool = false
+    @Published var bottomBannerMessage: AuthBannerMessage = .none
+    
     
     /// Initializes the view model with the current 2FA state
     /// - Parameters:
@@ -37,9 +40,36 @@ class TwoStepVerificationViewModel: ObservableObject {
     }
     
     func refreshAccountData() {
-        print("data refreshed")
         refreshAccountDataRequired = false
         getTwoFAStatus()
+    }
+    
+    func displayBanner() {
+        if showBottomBanner {
+            withAnimation {
+                showBottomBanner = false
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                withAnimation {
+                    self.showBottomBanner = true
+                }
+            }
+        } else {
+            withAnimation {
+                showBottomBanner = true
+            }
+        }
+    }
+    
+    func displayBannerWithAutoClose() {
+        displayBanner()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            withAnimation {
+                self?.showBottomBanner = false
+            }
+        }
     }
     
     func getTwoFAStatus() {

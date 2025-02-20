@@ -57,17 +57,22 @@ struct TwoStepConfirmationContainerView: View {
             }, leftButton: {
                 switch viewModel.contentType {
                 case .chooseEmail, .choosePhoneNumber:
-                    Button {
-                        viewModel.setContentType(.chooseVerification)
-                    } label: {
-                        Image(.twoStepBack)
-                            .frame(width: 24, height: 24)
+                    if let _ = viewModel.methodSelectedForDelete {
+                        EmptyView()
+                    } else {
+                        Button {
+                            viewModel.setContentType(.chooseVerification)
+                        } label: {
+                            Image(.twoStepBack)
+                                .frame(width: 24, height: 24)
+                        }
                     }
                 default:
                     EmptyView()
                 }
             }, rightButton: {
                 Button {
+                    viewModel.methodSelectedForDelete = nil
                     presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(.twoStepClose)

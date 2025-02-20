@@ -18,6 +18,10 @@ enum AuthBannerMessage {
     case successResendCode
     case successCodeSend
     case successPasswordConfirmed
+    case successEmailAdded
+    case successSmsAdded
+    case successEmailDeleted
+    case successSmsDeleted
     case error
     case generalError
     case none
@@ -50,6 +54,14 @@ enum AuthBannerMessage {
             return "The code was resent."
         case .successPasswordConfirmed:
             return "Password confirmed"
+        case .successSmsAdded:
+            return "SMS verification method was added."
+        case .successEmailAdded:
+            return "Email verification method was added."
+        case .successSmsDeleted:
+            return "Text verification was disabled."
+        case .successEmailDeleted:
+            return "Email verification was disabled."
         case .error:
             return .errorMessage
         case .generalError:

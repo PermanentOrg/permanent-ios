@@ -6,7 +6,7 @@
 
 import Foundation
 
-struct TwoFactorMethod: Identifiable {
+struct TwoFactorMethod: Identifiable, Equatable {
     var id: String { methodId }
     let methodId: String
     var type: MethodType

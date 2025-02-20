@@ -23,6 +23,17 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
     
     init(containerViewModel: TwoStepConfirmationContainerViewModel) {
         self.containerViewModel = containerViewModel
+        if let _ = containerViewModel.methodSelectedForDelete {
+            sendTwoFactorCode()
+        }
+    }
+    
+    func sendTwoFactorCode() {
+        if let _ = containerViewModel.methodSelectedForDelete {
+            sendTwoFactorDisableCode()
+        } else {
+            sendTwoFactorEnableCode()
+        }
     }
     
     func sendTwoFactorEnableCode() {
@@ -55,7 +66,52 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
         }
     }
     
-    func verifyAndEnableReceivedTwoFactorEnableCode() {
+    func sendTwoFactorDisableCode() {
+        isLoadingPhoneValidation = true
+        
+        withAnimation {
+            containerViewModel.showErrorBanner = false
+        }
+        
+        guard let deleteMethodId: String = containerViewModel.methodSelectedForDelete?.methodId else {
+            self.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            return
+        }
+        
+        let send2FAParameters: Send2FADisableCodeParameters = (method: deleteMethodId, code: nil)
+        
+        let send2FADisableCodeOperation = APIOperation(AuthenticationEndpoint.send2FADisableCode(parameters: send2FAParameters))
+        send2FADisableCodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            self?.isLoadingPhoneValidation = false
+            
+            switch result {
+            case .json(let response, _):
+                self?.containerViewModel.displayBannerWithAutoClose(.successCodeSend)
+                self?.startResendTimer()
+                withAnimation {
+                    self?.phoneAlreadyConfirmed = true
+                }
+            case .error(let error, _):
+                if let apiError = error as? APIError, apiError == .badRequest {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                } else {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                }
+            default:
+                self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            }
+        }
+    }
+    
+    func verifyTwoFACode() {
+        if let _ = containerViewModel.methodSelectedForDelete {
+            verifyAndDisableTwoFactorCode()
+        } else {
+            verifyAndEnableTwoFactorCode()
+        }
+    }
+    
+    func verifyAndEnableTwoFactorCode() {
         isLoadingCodeVerification = true
         let phoneNumberForRequest = formattedPhone.replacingOccurrences(of: "+1 ", with: "")
         withAnimation {
@@ -77,6 +133,41 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 } else {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+                }
+            default:
+                self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            }
+        }
+    }
+    
+    func verifyAndDisableTwoFactorCode() {
+        isLoadingCodeVerification = true
+        withAnimation {
+            containerViewModel.showErrorBanner = false
+        }
+        
+        guard let deleteMethodId: String = containerViewModel.methodSelectedForDelete?.methodId else {
+            self.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
+            return
+        }
+        
+        let disable2FAParameters: Send2FADisableCodeParameters = (method: deleteMethodId, code: pinCode)
+
+        let disable2FACodeOperation = APIOperation(AuthenticationEndpoint.disable2FA(parameters: disable2FAParameters))
+        disable2FACodeOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
+            self?.isLoadingCodeVerification = false
+            
+            switch result {
+            case .json(let response, _):
+                self?.containerViewModel.refreshSecurityView = true
+                self?.containerViewModel.twoStepVerificationBottomBannerMessage = .successSmsDeleted
+                self?.containerViewModel.dismissContainer = true
+                
+            case .error(let error, _):
+                if let apiError = error as? APIError, apiError == .badRequest {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
+                } else {
+                    self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
                 }
             default:
                 self?.containerViewModel.displayBanner(bannerErrorMessage: .generalError)
