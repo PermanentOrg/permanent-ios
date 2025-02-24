@@ -23,6 +23,8 @@
 		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
 		374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
+		5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */; };
+		5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */; };
 		5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */; };
 		5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */; };
 		5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */; };
@@ -1008,6 +1010,8 @@
 		37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandViewController.swift; sourceTree = "<group>"; };
 		3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
+		5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualBlue50View.swift; sourceTree = "<group>"; };
+		5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteBottomAlertView.swift; sourceTree = "<group>"; };
 		5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewController.swift; sourceTree = "<group>"; };
 		5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementTitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementTitleCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -2115,7 +2119,9 @@
 				5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */,
 				5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */,
 				5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */,
+				5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */,
 				5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */,
+				5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -5058,6 +5064,7 @@
 				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
+				5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */,
 				5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				924F162F2A45954A00B75D4E /* TagsView.swift in Sources */,
@@ -5154,6 +5161,7 @@
 				5ED9A7B62BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
+				5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */,
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
 				5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */,

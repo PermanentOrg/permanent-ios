@@ -45,9 +45,13 @@ class TwoStepConfirmationContainerViewModel: ObservableObject {
     @Published var insertionViewTransition: AnyTransition = .opacity
     @Published var dismissContainer: Bool = false
     @Binding var refreshSecurityView: Bool
+    @Binding var methodSelectedForDelete: TwoFactorMethod?
+    @Binding var twoStepVerificationBottomBannerMessage: AuthBannerMessage
     
-    init(refreshSecurityView: Binding<Bool>) {
+    init(refreshSecurityView: Binding<Bool>, methodSelectedForDelete: Binding<TwoFactorMethod?>, twoStepVerificationBottomBannerMessage: Binding<AuthBannerMessage>) {
         self._refreshSecurityView = refreshSecurityView
+        self._methodSelectedForDelete = methodSelectedForDelete
+        self._twoStepVerificationBottomBannerMessage = twoStepVerificationBottomBannerMessage
     }
     
     func displayBanner(bannerErrorMessage: AuthBannerMessage) {

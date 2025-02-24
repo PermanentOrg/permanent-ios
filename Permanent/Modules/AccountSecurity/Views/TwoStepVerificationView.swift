@@ -10,21 +10,36 @@ import SwiftUI
 struct TwoStepVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: TwoStepVerificationViewModel
+    @State var showDeleteAlert: Bool = false
     
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
     }
     var body: some View {
-        CustomNavigationView {
-            ZStack {
-                backgroundView
-                contentView
+        ZStack {
+            CustomNavigationView {
+                ZStack {
+                    backgroundView
+                    contentView
+                }
+                .ignoresSafeArea(.all)
+            } leftButton: {
+                backButton
+            } rightButton: {
+                EmptyView()
             }
-            .ignoresSafeArea(.all)
-        } leftButton: {
-            backButton
-        } rightButton: {
-            EmptyView()
+            TwoStepBottomNotificationView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
+                .padding(.horizontal, 32)
+            DeleteBottomAlertView(showErrorMessage: $showDeleteAlert, deleteMethodConfirmed: $viewModel.deleteMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)
+        }
+        .onAppear() {
+            if viewModel.deleteMethodConfirmed != nil {
+                viewModel.deleteMethodConfirmed = nil
+            }
+            
+            if viewModel.methodSelectedForDelete != nil {
+                viewModel.methodSelectedForDelete = nil
+            }
         }
     }
     
@@ -46,7 +61,7 @@ struct TwoStepVerificationView: View {
                 }
                 if viewModel.twoFactorMethods.count < 2 {
                     RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: viewModel.twoFactorMethods.isEmpty ? "Add two-step verification method" : "Change verification method") {
-                        viewModel.showAddVerificationMethod = true
+                        viewModel.checkVerificationMethod = true
                     }
                     .padding(.horizontal, 24)
                 }
@@ -72,9 +87,25 @@ struct TwoStepVerificationView: View {
                 viewModel.refreshAccountData()
             }
         })
+        .onChange(of: viewModel.deleteMethodConfirmed, perform: { newValue in
+            if let _ = newValue {
+                viewModel.checkVerificationMethod = true
+            }
+        })
+        .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
+            if newValue != .none {
+                if viewModel.showError == false {
+                    viewModel.methodSelectedForDelete = nil
+                    viewModel.deleteMethodConfirmed = nil
+                    viewModel.displayBannerWithAutoClose()
+                }
+            } else {
+                viewModel.showBottomBanner = false
+            }
+        })
         .navigationBarTitle("Two-step verification", displayMode: .inline)
-        .sheet(isPresented: $viewModel.showAddVerificationMethod) {
-            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired))
+        .sheet(isPresented: $viewModel.checkVerificationMethod) {
+            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: $viewModel.methodSelectedForDelete, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage))
         }
     }
     
@@ -107,7 +138,10 @@ struct TwoStepVerificationView: View {
                                     
                                     Spacer()
                                     Button {
-                                        
+                                        viewModel.methodSelectedForDelete = method
+                                        withAnimation {
+                                            showDeleteAlert = true
+                                        }
                                     } label: {
                                         Image(.twoStepDeleteIcon)
                                             .frame(width: 16, height: 16)
@@ -153,3 +187,4 @@ struct TwoStepVerificationView: View {
         presentationMode.wrappedValue.dismiss()
     }
 }
+

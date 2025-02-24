@@ -18,6 +18,7 @@ typealias VerifyCodeCredentials = (email: String, code: String, type: CodeVerifi
 typealias CreateCredentials = (name: String, password: String, email: String, phone: String?)
 typealias Send2FAEnableCodeParameters = (method: String, value: String)
 typealias Enable2FAParameters = (method: String, value: String, code: String)
+typealias Send2FADisableCodeParameters = (method: String, code: String?)
 
 enum AuthenticationEndpoint {
     /// Verifies if user is authenticated.
@@ -38,6 +39,10 @@ enum AuthenticationEndpoint {
     case send2FAEnableCode(parameters: Send2FAEnableCodeParameters)
     /// Enable 2FA
     case enable2FA(parameters: Enable2FAParameters)
+    /// Send code to delete 2FA method
+    case send2FADisableCode(parameters: Send2FADisableCodeParameters)
+    /// Disable 2FA
+    case disable2FA(parameters: Send2FADisableCodeParameters)
 }
 
 extension AuthenticationEndpoint: RequestProtocol {
@@ -53,10 +58,6 @@ extension AuthenticationEndpoint: RequestProtocol {
             return createCredentialsPayload(for: credentials)
         case .verifyAuth:
             return verifyAuth()
-//        case .send2FAEnableCode(let parameters):
-//            return send2FAEnableCode(using: parameters)
-//        case .enable2FA(let parameters):
-//            return enable2FA(using: parameters)
         default:
             return nil
         }
@@ -90,6 +91,10 @@ extension AuthenticationEndpoint: RequestProtocol {
             return ""
         case .enable2FA:
             return ""
+        case .send2FADisableCode:
+            return ""
+        case .disable2FA:
+            return ""
         }
     }
 
@@ -114,6 +119,11 @@ extension AuthenticationEndpoint: RequestProtocol {
             return try? JSONEncoder().encode(["method": parameters.method, "value": parameters.value])
         case .enable2FA(let parameters):
             return try? JSONEncoder().encode(["method": parameters.method, "value": parameters.value, "code": parameters.code])
+        case .send2FADisableCode(let parameters):
+            return try? JSONEncoder().encode(["methodId": parameters.method])
+        case .disable2FA(let parameters):
+            guard let code = parameters.code else { return nil }
+            return try? JSONEncoder().encode(["methodId": parameters.method, "code": code])
         default:
             return nil
         }
@@ -128,6 +138,10 @@ extension AuthenticationEndpoint: RequestProtocol {
             return "\(endpointPath)api/v2/idpuser/send-enable-code"
         case .enable2FA:
             return "\(endpointPath)api/v2/idpuser/enable-two-factor"
+        case .send2FADisableCode:
+            return "\(endpointPath)api/v2/idpuser/send-disable-code"
+        case .disable2FA:
+            return "\(endpointPath)api/v2/idpuser/disable-two-factor"
         default:
             return nil
         }
