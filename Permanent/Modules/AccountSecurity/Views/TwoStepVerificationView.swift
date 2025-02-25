@@ -11,6 +11,7 @@ struct TwoStepVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: TwoStepVerificationViewModel
     @State var showDeleteAlert: Bool = false
+    @State var changeAuthMethodAlert: Bool = false
     
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
@@ -31,10 +32,15 @@ struct TwoStepVerificationView: View {
             TwoStepBottomNotificationView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
             DeleteBottomAlertView(showErrorMessage: $showDeleteAlert, deleteMethodConfirmed: $viewModel.deleteMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)
+            ChangeAuthMethodBottomAlertView(showErrorMessage: $changeAuthMethodAlert, deleteMethodConfirmed: $viewModel.changeMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)
         }
         .onAppear() {
             if viewModel.deleteMethodConfirmed != nil {
                 viewModel.deleteMethodConfirmed = nil
+            }
+            
+            if viewModel.changeMethodConfirmed != nil {
+                viewModel.changeMethodConfirmed = nil
             }
             
             if viewModel.methodSelectedForDelete != nil {
@@ -61,7 +67,14 @@ struct TwoStepVerificationView: View {
                 }
                 if viewModel.twoFactorMethods.count < 2 {
                     RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: viewModel.twoFactorMethods.isEmpty ? "Add two-step verification method" : "Change verification method") {
-                        viewModel.checkVerificationMethod = true
+                        if viewModel.isTwoFactorEnabled {
+                            viewModel.methodSelectedForDelete = viewModel.twoFactorMethods.first
+                            withAnimation {
+                                changeAuthMethodAlert = true
+                            }
+                        } else {
+                            viewModel.checkVerificationMethod = true
+                        }
                     }
                     .padding(.horizontal, 24)
                 }
@@ -89,6 +102,13 @@ struct TwoStepVerificationView: View {
         })
         .onChange(of: viewModel.deleteMethodConfirmed, perform: { newValue in
             if let _ = newValue {
+                viewModel.changeAuthFlow = false
+                viewModel.checkVerificationMethod = true
+            }
+        })
+        .onChange(of: viewModel.changeMethodConfirmed, perform: { newValue in
+            if let _ = newValue {
+                viewModel.changeAuthFlow = true
                 viewModel.checkVerificationMethod = true
             }
         })
@@ -97,6 +117,7 @@ struct TwoStepVerificationView: View {
                 if viewModel.showError == false {
                     viewModel.methodSelectedForDelete = nil
                     viewModel.deleteMethodConfirmed = nil
+                    viewModel.changeMethodConfirmed = nil
                     viewModel.displayBannerWithAutoClose()
                 }
             } else {
@@ -105,7 +126,7 @@ struct TwoStepVerificationView: View {
         })
         .navigationBarTitle("Two-step verification", displayMode: .inline)
         .sheet(isPresented: $viewModel.checkVerificationMethod) {
-            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: $viewModel.methodSelectedForDelete, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage))
+            TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: viewModel.changeAuthFlow ? $viewModel.changeMethodConfirmed : $viewModel.deleteMethodConfirmed, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage, changingAuthFlow: viewModel.changeAuthFlow))
         }
     }
     

@@ -44,14 +44,33 @@ class TwoStepConfirmationContainerViewModel: ObservableObject {
     @Published var contentType: TwoStepConfirmationContentType = .confirmPassword
     @Published var insertionViewTransition: AnyTransition = .opacity
     @Published var dismissContainer: Bool = false
+    var changingAuthMethodFlow: Bool = false
     @Binding var refreshSecurityView: Bool
     @Binding var methodSelectedForDelete: TwoFactorMethod?
     @Binding var twoStepVerificationBottomBannerMessage: AuthBannerMessage
     
-    init(refreshSecurityView: Binding<Bool>, methodSelectedForDelete: Binding<TwoFactorMethod?>, twoStepVerificationBottomBannerMessage: Binding<AuthBannerMessage>) {
+    init(refreshSecurityView: Binding<Bool>, methodSelectedForDelete: Binding<TwoFactorMethod?>, twoStepVerificationBottomBannerMessage: Binding<AuthBannerMessage>, changingAuthFlow: Bool = false) {
         self._refreshSecurityView = refreshSecurityView
         self._methodSelectedForDelete = methodSelectedForDelete
         self._twoStepVerificationBottomBannerMessage = twoStepVerificationBottomBannerMessage
+        self.changingAuthMethodFlow = changingAuthFlow
+        
+        updateContent()
+    }
+    
+    func updateContent() {
+        if let deleteMethod = methodSelectedForDelete {
+            if deleteMethod.type == .sms {
+                setContentType(.choosePhoneNumber)
+            } else {
+                setContentType(.chooseEmail)
+            }
+        }
+    }
+    
+    func removeSelectedMethod() {
+        _methodSelectedForDelete = .init(projectedValue: .constant(nil))
+        refreshSecurityView = true
     }
     
     func displayBanner(bannerErrorMessage: AuthBannerMessage) {

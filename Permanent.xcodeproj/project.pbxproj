@@ -25,6 +25,7 @@
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
 		5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */; };
 		5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */; };
+		5E018AC12D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */; };
 		5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */; };
 		5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */; };
 		5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */; };
@@ -1012,6 +1013,7 @@
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
 		5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualBlue50View.swift; sourceTree = "<group>"; };
 		5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteBottomAlertView.swift; sourceTree = "<group>"; };
+		5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeAuthMethodBottomAlertView.swift; sourceTree = "<group>"; };
 		5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewController.swift; sourceTree = "<group>"; };
 		5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementTitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementTitleCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -2122,6 +2124,7 @@
 				5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */,
 				5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */,
 				5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */,
+				5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4925,6 +4928,7 @@
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
 				5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */,
+				5E018AC12D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift in Sources */,
 				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5E1582B92C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift in Sources */,

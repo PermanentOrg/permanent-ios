@@ -1,11 +1,11 @@
 //
-//  DeleteBottomAlertView.swift
+//  DeleteBottomAlertView 2.swift
 //  Permanent
 //
-//  Created by Lucian Cerbu on 20.02.2025.
+//  Created by Lucian Cerbu on 24.02.2025.
 import SwiftUI
 
-struct DeleteBottomAlertView: View {
+struct ChangeAuthMethodBottomAlertView: View {
     @Binding var showErrorMessage: Bool
     @Binding var deleteMethodConfirmed: TwoFactorMethod?
     var twoFactorMethod: TwoFactorMethod?
@@ -24,15 +24,14 @@ struct DeleteBottomAlertView: View {
                     }
                 
                 ZStack {
-                    VStack {
+                    VStack(alignment: .center) {
                         HStack {
-                            Text("Are you sure you want to delete your ") +
-                            Text("\(twoFactorMethod?.type.displayName ?? "")").bold() +
-                            Text(" two-step verification method?")
+                            Text("To change the two-step verification method, you must first disable the currently enabled method.\nAre you sure you want to delete ") +
+                            Text(String( "\(twoFactorMethod?.type.displayName ?? "") verification method?").lowercased()).bold()
                         }
                         .font(.custom("Usual-Regular", size: 14))
-                        .multilineTextAlignment(.center)
                         .lineSpacing(6)
+                        .multilineTextAlignment(.center)
                         .foregroundColor(.blue700)
                         .padding(.top, 32)
                         .padding(.horizontal, 32)
@@ -56,7 +55,7 @@ struct DeleteBottomAlertView: View {
                             }, label: {
                                 HStack {
                                     Spacer()
-                                    Text("Delete")
+                                    Text("Continue")
                                         .fontWeight(.medium)
                                         .font(.custom("Usual-Regular", size: 14))
                                         .foregroundColor(Color(.white))
