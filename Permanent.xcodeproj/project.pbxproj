@@ -54,6 +54,7 @@
 		5E086BE62BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */; };
 		5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */; };
 		5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */; };
+		5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */; };
 		5E0AA7EF2C937561003FBCF2 /* CustomLoginFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */; };
 		5E0AA7F12C937714003FBCF2 /* AuthBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */; };
 		5E0AA7F42C937747003FBCF2 /* NoTapAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */; };
@@ -289,6 +290,7 @@
 		5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */; };
 		5E7AE8B4291E97DB00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */; };
 		5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */; };
+		5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */; };
 		5E814A432C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */; };
 		5E814A462C8F29E3005FF97C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A452C8F29E3005FF97C /* LoginViewModel.swift */; };
 		5E814A482C8F34E4005FF97C /* AuthLeftSideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */; };
@@ -1042,6 +1044,7 @@
 		5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingChartYourPathView.swift; sourceTree = "<group>"; };
 		5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPath.swift; sourceTree = "<group>"; };
 		5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingItemView.swift; sourceTree = "<group>"; };
+		5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerBottomMessage.swift; sourceTree = "<group>"; };
 		5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoginFormView.swift; sourceTree = "<group>"; };
 		5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerView.swift; sourceTree = "<group>"; };
 		5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoTapAnimationStyle.swift; sourceTree = "<group>"; };
@@ -1220,6 +1223,7 @@
 		5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementLinkAndShowSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkAndShowSettingsCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABTagsManagementActionSheet.swift; sourceTree = "<group>"; };
+		5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNotificationWithOverlayView.swift; sourceTree = "<group>"; };
 		5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorContainerViewModel.swift; sourceTree = "<group>"; };
 		5E814A452C8F29E3005FF97C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideView.swift; sourceTree = "<group>"; };
@@ -2108,8 +2112,6 @@
 		5E218BF225A869B100B56625 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5E218BF725A86C9E00B56625 /* PasswordElementView.swift */,
-				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
 				5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */,
 				5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */,
 				5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */,
@@ -2125,6 +2127,10 @@
 				5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */,
 				5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */,
 				5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */,
+				5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */,
+				5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */,
+				5E218BF725A86C9E00B56625 /* PasswordElementView.swift */,
+				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4841,6 +4847,7 @@
 				5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
+				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
@@ -5030,6 +5037,7 @@
 				F559F87B28F9A0750015A522 /* FolderViewSelectionViewModel.swift in Sources */,
 				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
+				5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,

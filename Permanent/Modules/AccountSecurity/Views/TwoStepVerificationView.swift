@@ -29,7 +29,7 @@ struct TwoStepVerificationView: View {
             } rightButton: {
                 EmptyView()
             }
-            TwoStepBottomNotificationView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
+            BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
             DeleteBottomAlertView(showErrorMessage: $showDeleteAlert, deleteMethodConfirmed: $viewModel.deleteMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)
             ChangeAuthMethodBottomAlertView(showErrorMessage: $changeAuthMethodAlert, deleteMethodConfirmed: $viewModel.changeMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete)

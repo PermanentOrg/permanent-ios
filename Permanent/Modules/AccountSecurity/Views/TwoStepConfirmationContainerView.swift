@@ -42,8 +42,9 @@ struct TwoStepConfirmationContainerView: View {
                     default:
                         EmptyView()
                     }
-                    TwoStepBottomNotificationView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
+                    BottomNotificationWithOverlayView(message: viewModel.bannerErrorMessage, isVisible: $viewModel.showErrorBanner)
                         .padding(.horizontal, 32)
+                        .animation(.default, value: viewModel.showErrorBanner)
                 }
                 .navigationBarTitle(viewModel.contentType.screenTitle(), displayMode: .inline)
                 .onTapGesture {
