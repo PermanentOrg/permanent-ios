@@ -18,8 +18,10 @@ class TwoStepVerificationViewModel: ObservableObject {
     @Published var refreshAccountDataRequired: Bool = false
     @Published var deleteMethodConfirmed: TwoFactorMethod?
     @Published var methodSelectedForDelete: TwoFactorMethod?
+    @Published var changeMethodConfirmed: TwoFactorMethod?
+    @Published var changeAuthFlow: Bool = false
     @Published var showBottomBanner: Bool = false
-    @Published var bottomBannerMessage: AuthBannerMessage = .none
+    @Published var bottomBannerMessage: BannerBottomMessage = .none
     
     
     /// Initializes the view model with the current 2FA state

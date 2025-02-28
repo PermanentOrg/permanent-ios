@@ -159,10 +159,17 @@ class TwoStepChoosePhoneViewModel: ObservableObject {
             
             switch result {
             case .json(let response, _):
-                self?.containerViewModel.refreshSecurityView = true
-                self?.containerViewModel.twoStepVerificationBottomBannerMessage = .successSmsDeleted
-                self?.containerViewModel.dismissContainer = true
-                
+                if let changingAuthMethod = self?.containerViewModel.changingAuthMethodFlow,
+                   changingAuthMethod {
+                    self?.containerViewModel.changingAuthMethodFlow = false
+                    self?.containerViewModel.removeSelectedMethod()
+                    self?.containerViewModel.setContentType(.chooseVerification)
+                    self?.containerViewModel.displayBannerWithAutoClose(.successSmsDeleted)
+                } else {
+                    self?.containerViewModel.refreshSecurityView = true
+                    self?.containerViewModel.twoStepVerificationBottomBannerMessage = .successSmsDeleted
+                    self?.containerViewModel.dismissContainer = true
+                }
             case .error(let error, _):
                 if let apiError = error as? APIError, apiError == .badRequest {
                     self?.containerViewModel.displayBanner(bannerErrorMessage: .invalidPinCode)
