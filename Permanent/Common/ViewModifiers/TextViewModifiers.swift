@@ -118,6 +118,14 @@ struct UsualSmallXXXXXRegularTextStyle: ViewModifier {
     }
 }
 
+struct UsualSmallXXXXXMediumTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualMedium.rawValue,
+                             size: FontSize.xxxxxSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
 struct SmallXXXXXItalicTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.openSansItalic.rawValue,
@@ -250,6 +258,14 @@ struct SmallXSemiBoldTextStyle: ViewModifier {
 struct UsualSmallXSemiBoldTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content.font(.custom(FontName.usualMedium.rawValue,
+                             size: FontSize.xSmall.rawValue,
+                             relativeTo: .largeTitle))
+    }
+}
+
+struct UsualSmallXLightTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content.font(.custom(FontName.usualRegular.rawValue,
                              size: FontSize.xSmall.rawValue,
                              relativeTo: .largeTitle))
     }

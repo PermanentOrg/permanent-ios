@@ -67,6 +67,7 @@ class LoginViewModel: ObservableObject, LoginEventProtocol {
         AuthenticationManager.shared.login(withUsername: email, password: password) { status in
             switch status {
             case .success, .mfaToken, .unknown:
+                PreferencesManager.shared.removeValue(forKey: Constants.Keys.StorageKeys.twoFactorAuthEnabled)
                 handler(status)
                 
             case .error(message: _):

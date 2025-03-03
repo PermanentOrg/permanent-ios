@@ -99,7 +99,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         guard let archiveType = archiveType else { return [:] }
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             if profileGenderProfileItem?.personGender?.isNotEmpty ?? false {
                 informationCells.append(.gender)
             }

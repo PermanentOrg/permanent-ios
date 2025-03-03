@@ -47,7 +47,7 @@ struct ViewRepresentableContainer: View {
             dismissView()
         }) {
             HStack {
-                Image(.backArrowNewDesign)
+                Image(.settingsNavigationBarBackIcon)
                     .foregroundColor(.white)
             }
         }

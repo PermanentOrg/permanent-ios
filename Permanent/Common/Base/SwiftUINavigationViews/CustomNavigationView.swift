@@ -18,7 +18,10 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
         self.rightButtons = rightButton()
         
         UINavigationBar.appearance().backgroundColor = .darkBlue
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            NSAttributedString.Key.font: TextFontStyle.style51.font
+        ]
         UINavigationBar.appearance().isTranslucent = false
         UIScrollView.appearance().bounces = false
         
@@ -26,7 +29,8 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             let navigationBarAppearance = UINavigationBarAppearance()
             navigationBarAppearance.configureWithOpaqueBackground()
             navigationBarAppearance.titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor : UIColor.white
+                NSAttributedString.Key.foregroundColor : UIColor.white,
+                NSAttributedString.Key.font: TextFontStyle.style51.font
             ]
             navigationBarAppearance.backgroundColor = UIColor.darkBlue
             UINavigationBar.appearance().standardAppearance = navigationBarAppearance
