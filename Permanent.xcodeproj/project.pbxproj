@@ -5609,7 +5609,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5666,7 +5666,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -5695,7 +5695,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5703,7 +5703,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -5726,14 +5726,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -5748,7 +5748,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5769,7 +5769,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5790,7 +5790,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5811,7 +5811,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5838,7 +5838,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5864,7 +5864,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5890,7 +5890,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5916,7 +5916,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5948,7 +5948,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5982,7 +5982,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6016,7 +6016,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6050,7 +6050,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6114,7 +6114,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -6143,7 +6143,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6151,7 +6151,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "DEV-Debug";
 		};
@@ -6201,7 +6201,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -6230,7 +6230,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6238,7 +6238,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "DEV-Release";
 		};
@@ -6258,7 +6258,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6283,7 +6283,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6308,7 +6308,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6333,7 +6333,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
