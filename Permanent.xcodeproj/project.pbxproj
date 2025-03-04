@@ -23,6 +23,9 @@
 		37455747BFDB890EC35B23E2 /* ShareManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374554B71E0322714462588A /* ShareManagementTests.swift */; };
 		374557E26C431EDBB0B56D68 /* FloatingActionIslandViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */; };
 		5E0182C326B40A7200DB1F79 /* AccountInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */; };
+		5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */; };
+		5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */; };
+		5E018AC12D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */; };
 		5E03F408291AA49200DFCE09 /* ShareManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */; };
 		5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */; };
 		5E03F40D291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */; };
@@ -41,6 +44,8 @@
 		5E051C0A2B6AFAD800274657 /* CustomSimpleListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */; };
 		5E051C0C2B6BB90C00274657 /* CustomHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0B2B6BB90B00274657 /* CustomHeaderView.swift */; };
 		5E051C0E2B6C39E900274657 /* CustomBarProgressGradientStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */; };
+		5E05D39C2CECDCE700CD9837 /* LoginSecurityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */; };
+		5E05D39E2CECDDB000CD9837 /* LoginSecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */; };
 		5E07D44C28915C8E008C0A6B /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44B28915C8E008C0A6B /* LoginPage.swift */; };
 		5E07D44E28915CE0008C0A6B /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44D28915CE0008C0A6B /* SignUpPage.swift */; };
 		5E07D45028915FB7008C0A6B /* RightSideMenuPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */; };
@@ -49,6 +54,7 @@
 		5E086BE62BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */; };
 		5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */; };
 		5E086BEA2BEE4408007B1AF3 /* OnboardingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */; };
+		5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */; };
 		5E0AA7EF2C937561003FBCF2 /* CustomLoginFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */; };
 		5E0AA7F12C937714003FBCF2 /* AuthBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */; };
 		5E0AA7F42C937747003FBCF2 /* NoTapAnimationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */; };
@@ -98,6 +104,7 @@
 		5E1CCC27287F055F00913EEA /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE3C96325388C8D00EC3A66 /* UIImageExtension.swift */; };
 		5E1CCC28287F056C00913EEA /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D3B4425138DFF00390927 /* UIButtonExtension.swift */; };
 		5E1CCC29287F133000913EEA /* ActionDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BCC1E32B254A193C00B71866 /* ActionDialogView.xib */; };
+		5E1DAFFB2D4D023100E13347 /* CustomEmailFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */; };
 		5E1DE53C27E1245000FBD7FA /* UpdateNecessaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */; };
 		5E1E4FA92988897F0062984C /* ManageTagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1E4FA82988897F0062984C /* ManageTagsTests.swift */; };
 		5E202E062981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */; };
@@ -106,6 +113,14 @@
 		5E2114932B026CB300944386 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2114912B026CB300944386 /* ViewExtension.swift */; };
 		5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E218BF725A86C9E00B56625 /* PasswordElementView.swift */; };
 		5E218BFA25A86C9E00B56625 /* PasswordElementView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E218BF825A86C9E00B56625 /* PasswordElementView.xib */; };
+		5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */; };
+		5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
+		5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */; };
+		5E24A22F2CF9E53F003F22AE /* TwoStepVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */; };
+		5E24A2332CF9EA59003F22AE /* TwoStepVerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2322CF9EA59003F22AE /* TwoStepVerificationViewModel.swift */; };
+		5E24A2372CFA0411003F22AE /* WarningBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2362CFA0411003F22AE /* WarningBannerView.swift */; };
+		5E24A2392CFA0411003F22AE /* BannerTwoStepVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2342CFA0411003F22AE /* BannerTwoStepVerificationView.swift */; };
+		5E24A23B2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A23A2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
 		5E2C5D2424D98EE300E2B95F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E2C5D2324D98EE300E2B95F /* Assets.xcassets */; };
@@ -119,11 +134,13 @@
 		5E2E3D1926D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */; };
 		5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */; };
 		5E2EE3B32881CB150072D635 /* ViewModelDelegateInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06644A8824EA78F5003CD359 /* ViewModelDelegateInterface.swift */; };
+		5E317F542CFE5B1B00937DF2 /* SimpleTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E317F522CFE5B1B00937DF2 /* SimpleTagView.swift */; };
 		5E31B62C292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */; };
 		5E31B62F292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B62D292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift */; };
 		5E31B630292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */; };
 		5E31B633292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */; };
 		5E31B634292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */; };
+		5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */; };
 		5E37F2D52AA75248004F00E8 /* CustomDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */; };
 		5E381F0B27AB0B7100F7E277 /* MilestonesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */; };
 		5E3A060029E44D7900A6C531 /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A05FF29E44D7900A6C531 /* Workspace.swift */; };
@@ -134,6 +151,8 @@
 		5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3A6EE8275F610B00AD6DCC /* FieldNameUI.swift */; };
 		5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */; };
 		5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */; };
+		5E3CEA9D2D14A0150029353E /* CustomPasswordFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */; };
+		5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */; };
 		5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */; };
 		5E3E121D2A41902C00682DE5 /* AccountRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */; };
 		5E3E121E2A41902C00682DE5 /* AuthRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */; };
@@ -271,6 +290,7 @@
 		5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */; };
 		5E7AE8B4291E97DB00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */; };
 		5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */; };
+		5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */; };
 		5E814A432C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */; };
 		5E814A462C8F29E3005FF97C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A452C8F29E3005FF97C /* LoginViewModel.swift */; };
 		5E814A482C8F34E4005FF97C /* AuthLeftSideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */; };
@@ -280,6 +300,11 @@
 		5E83CC4B286C602500A5775B /* FolderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9DB37325516B27004F453B /* FolderInfo.swift */; };
 		5E83CC4C286C602900A5775B /* ExtensionUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */; };
 		5E83CC4D286D0EFE00A5775B /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC76EA255E8BF800903D3C /* URLExtension.swift */; };
+		5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */; };
+		5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */; };
+		5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */; };
+		5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */; };
+		5E865D0D2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */; };
 		5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */; };
 		5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */; };
 		5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */; };
@@ -308,6 +333,7 @@
 		5E9C8E912CC2A9F8004C058F /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */; };
 		5E9C8E932CC63D74004C058F /* CustomRegisterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */; };
 		5E9E73D52BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */; };
+		5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */; };
 		5EA03CA527832D0300CE0320 /* BasicProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */; };
 		5EA04CE826AEE14A00BC00FB /* SignUpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */; };
 		5EA5B3DA2A71026500C39217 /* BottomButtonsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */; };
@@ -473,8 +499,15 @@
 		5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */; };
 		5EF0B6E927F43D62000CBAF6 /* PublicGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */; };
 		5EF15DB22A77E0B600E9A7CA /* CustomSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */; };
+		5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300352D4AC007001FFEE7 /* TwoStepChooseEmailView.swift */; };
+		5EF300382D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */; };
+		5EF3003A2D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */; };
+		5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */; };
 		5EFC404F292E938E00FD244B /* FilesRemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50E135628F43368003DF4CC /* FilesRemoteDataSource.swift */; };
 		5EFC5B3B2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */; };
+		5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */; };
+		5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */; };
+		5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */; };
 		6A9003F462545A081BD4059B /* Pods_Permanent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */; };
 		9220ACC22A179F88003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
 		9220ACC32A17A768003797C9 /* LegacyPlanningStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9220ACC12A179F88003797C9 /* LegacyPlanningStatusViewModel.swift */; };
@@ -980,6 +1013,9 @@
 		37455AD70432816FB08AB8B1 /* FloatingActionIslandViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingActionIslandViewController.swift; sourceTree = "<group>"; };
 		3A02D1E9D8D61B854725D647 /* Pods_Permanent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Permanent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E0182C226B40A7200DB1F79 /* AccountInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoTests.swift; sourceTree = "<group>"; };
+		5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualBlue50View.swift; sourceTree = "<group>"; };
+		5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteBottomAlertView.swift; sourceTree = "<group>"; };
+		5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeAuthMethodBottomAlertView.swift; sourceTree = "<group>"; };
 		5E03F407291AA49200DFCE09 /* ShareManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementViewController.swift; sourceTree = "<group>"; };
 		5E03F40A291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementTitleCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E03F40B291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementTitleCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -998,6 +1034,8 @@
 		5E051C092B6AFAD800274657 /* CustomSimpleListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSimpleListItemView.swift; sourceTree = "<group>"; };
 		5E051C0B2B6BB90B00274657 /* CustomHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHeaderView.swift; sourceTree = "<group>"; };
 		5E051C0D2B6C39E900274657 /* CustomBarProgressGradientStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBarProgressGradientStyle.swift; sourceTree = "<group>"; };
+		5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSecurityView.swift; sourceTree = "<group>"; };
+		5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSecurityViewModel.swift; sourceTree = "<group>"; };
 		5E07D44B28915C8E008C0A6B /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5E07D44D28915CE0008C0A6B /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
 		5E07D44F28915FB7008C0A6B /* RightSideMenuPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightSideMenuPage.swift; sourceTree = "<group>"; };
@@ -1006,6 +1044,7 @@
 		5E086BE52BEBEC91007B1AF3 /* OnboardingChartYourPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingChartYourPathView.swift; sourceTree = "<group>"; };
 		5E086BE72BED2572007B1AF3 /* OnboardingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPath.swift; sourceTree = "<group>"; };
 		5E086BE92BEE4408007B1AF3 /* OnboardingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingItemView.swift; sourceTree = "<group>"; };
+		5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerBottomMessage.swift; sourceTree = "<group>"; };
 		5E0AA7EE2C937561003FBCF2 /* CustomLoginFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoginFormView.swift; sourceTree = "<group>"; };
 		5E0AA7F02C937714003FBCF2 /* AuthBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBannerView.swift; sourceTree = "<group>"; };
 		5E0AA7F32C937747003FBCF2 /* NoTapAnimationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoTapAnimationStyle.swift; sourceTree = "<group>"; };
@@ -1039,6 +1078,7 @@
 		5E1C546029B8CA0C00A04B99 /* FileCollectionViewHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileCollectionViewHeaderCell.xib; sourceTree = "<group>"; };
 		5E1CCC17287EE4B800913EEA /* ShareExtensionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionNavigationController.swift; sourceTree = "<group>"; };
 		5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareExtensionViewModel.swift; sourceTree = "<group>"; };
+		5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEmailFieldView.swift; sourceTree = "<group>"; };
 		5E1DE53B27E1245000FBD7FA /* UpdateNecessaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNecessaryViewController.swift; sourceTree = "<group>"; };
 		5E1E4FA82988897F0062984C /* ManageTagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagsTests.swift; sourceTree = "<group>"; };
 		5E202E042981FD660063DDED /* ArchiveSettingsTagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveSettingsTagCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1046,6 +1086,13 @@
 		5E2114912B026CB300944386 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5E218BF725A86C9E00B56625 /* PasswordElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordElementView.swift; sourceTree = "<group>"; };
 		5E218BF825A86C9E00B56625 /* PasswordElementView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PasswordElementView.xib; sourceTree = "<group>"; };
+		5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToggleView.swift; sourceTree = "<group>"; };
+		5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPUserMethodModel.swift; sourceTree = "<group>"; };
+		5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationView.swift; sourceTree = "<group>"; };
+		5E24A2322CF9EA59003F22AE /* TwoStepVerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepVerificationViewModel.swift; sourceTree = "<group>"; };
+		5E24A2342CFA0411003F22AE /* BannerTwoStepVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerTwoStepVerificationView.swift; sourceTree = "<group>"; };
+		5E24A2362CFA0411003F22AE /* WarningBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningBannerView.swift; sourceTree = "<group>"; };
+		5E24A23A2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualFontView.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1060,11 +1107,13 @@
 		5E2E3D1626D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftSideHeaderTableViewCell.swift; sourceTree = "<group>"; };
 		5E2E3D1726D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LeftSideHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		5E2E3D1A26D517E10090EF02 /* ArchiveType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveType.swift; sourceTree = "<group>"; };
+		5E317F522CFE5B1B00937DF2 /* SimpleTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTagView.swift; sourceTree = "<group>"; };
 		5E31B62B292FA7DE00934408 /* ShareManagementAccessRolesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesViewController.swift; sourceTree = "<group>"; };
 		5E31B62D292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E31B62E292FA9BC00934408 /* ShareManagementAccessRolesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E31B631292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementAccessRolesHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		5E31B632292FA9EA00934408 /* ShareManagementAccessRolesHeaderCollectionReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementAccessRolesHeaderCollectionReusableView.xib; sourceTree = "<group>"; };
+		5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Add2FAFieldView.swift; sourceTree = "<group>"; };
 		5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogView.swift; sourceTree = "<group>"; };
 		5E381F0A27AB0B7100F7E277 /* MilestonesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestonesTableViewCell.swift; sourceTree = "<group>"; };
 		5E3A05FF29E44D7900A6C531 /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
@@ -1073,6 +1122,8 @@
 		5E3ACA502C21EBB00031A2A0 /* OnboardingCongratulationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCongratulationsView.swift; sourceTree = "<group>"; };
 		5E3ACA522C22EF720031A2A0 /* ArchiveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveDetailsView.swift; sourceTree = "<group>"; };
 		5E3B81A1286C5E3E003E8764 /* ShareExtensionDEV-Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShareExtensionDEV-Debug.entitlements"; sourceTree = "<group>"; };
+		5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPasswordFieldView.swift; sourceTree = "<group>"; };
+		5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordViewModel.swift; sourceTree = "<group>"; };
 		5E3E12182A41902C00682DE5 /* ArchivesRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArchivesRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/ArchivesRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E12192A41902C00682DE5 /* AccountRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AccountRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
 		5E3E121A2A41902C00682DE5 /* AuthRemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthRemoteDataSource.swift; path = Permanent/Services/Repositories/Datasources/Remote/AuthRemoteDataSource.swift; sourceTree = SOURCE_ROOT; };
@@ -1172,10 +1223,16 @@
 		5E7AE8B1291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManagementLinkAndShowSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E7AE8B2291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareManagementLinkAndShowSettingsCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E7C851F29A39F84000DF3CA /* FABTagsManagementActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FABTagsManagementActionSheet.swift; sourceTree = "<group>"; };
+		5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomNotificationWithOverlayView.swift; sourceTree = "<group>"; };
 		5E814A422C8F27B0005FF97C /* AuthenticatorContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorContainerViewModel.swift; sourceTree = "<group>"; };
 		5E814A452C8F29E3005FF97C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		5E814A472C8F34E4005FF97C /* AuthLeftSideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideView.swift; sourceTree = "<group>"; };
 		5E83CC46286C5F8D00A5775B /* ExtensionUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUploadManager.swift; sourceTree = "<group>"; };
+		5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepBottomNotificationView.swift; sourceTree = "<group>"; };
+		5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerView.swift; sourceTree = "<group>"; };
+		5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmationContainerViewModel.swift; sourceTree = "<group>"; };
+		5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseVerificationView.swift; sourceTree = "<group>"; };
+		5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseVerificationViewModel.swift; sourceTree = "<group>"; };
 		5E86DE93272852EA009A0A18 /* PasswordUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordUpdateViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4A24F3AB4300812361 /* BasePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePageViewController.swift; sourceTree = "<group>"; };
 		5E8A3E4C24F3ABD500812361 /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
@@ -1202,6 +1259,7 @@
 		5E9C8E902CC2A9ED004C058F /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		5E9C8E922CC63D60004C058F /* CustomRegisterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomRegisterFormView.swift; sourceTree = "<group>"; };
 		5E9E73D42BA9BB5B007B3EC0 /* GradientArchiveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientArchiveButtonView.swift; sourceTree = "<group>"; };
+		5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPhoneFieldView.swift; sourceTree = "<group>"; };
 		5EA03CA427832D0200CE0320 /* BasicProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicProfileItem.swift; sourceTree = "<group>"; };
 		5EA04CE726AEE14A00BC00FB /* SignUpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTests.swift; sourceTree = "<group>"; };
 		5EA5B3D92A71026500C39217 /* BottomButtonsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomButtonsSectionView.swift; sourceTree = "<group>"; };
@@ -1327,7 +1385,14 @@
 		5EF0B6E627F43CFA000CBAF6 /* PublicGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewController.swift; sourceTree = "<group>"; };
 		5EF0B6E827F43D62000CBAF6 /* PublicGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicGalleryViewModel.swift; sourceTree = "<group>"; };
 		5EF15DB12A77E0B600E9A7CA /* CustomSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentedControl.swift; sourceTree = "<group>"; };
+		5EF300352D4AC007001FFEE7 /* TwoStepChooseEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseEmailView.swift; sourceTree = "<group>"; };
+		5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChooseEmailViewModel.swift; sourceTree = "<group>"; };
+		5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneViewModel.swift; sourceTree = "<group>"; };
+		5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepChoosePhoneView.swift; sourceTree = "<group>"; };
 		5EFC5B3A2C986D8A00ED40A9 /* AuthLeftSideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLeftSideViewModel.swift; sourceTree = "<group>"; };
+		5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorMethod.swift; sourceTree = "<group>"; };
+		5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepConfirmPasswordView.swift; sourceTree = "<group>"; };
+		5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCustomNavigationView.swift; sourceTree = "<group>"; };
 		66D393D0AF0E820F85F119D3 /* Pods_PermanentTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PermanentTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA7DA7E35CC88C6BBC541F2 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8E782DE197F0DAAD60CD1427 /* Pods-PermanentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PermanentTests.debug.xcconfig"; path = "Target Support Files/Pods-PermanentTests/Pods-PermanentTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1789,6 +1854,7 @@
 				5ED0856924E3EBBB00CDB4D3 /* TextStyle.swift */,
 				BC566CE92546FE00000249E1 /* UploadFileMetaResponse.swift */,
 				BC4526DF251CAB7F00E24A51 /* VerifyCodeResponse.swift */,
+				5E24A22A2CF73845003F22AE /* IDPUserMethodModel.swift */,
 				5E63944D29702F830043D952 /* ForgotPasswordResponse.swift */,
 				BC4526FA251E1D7500E24A51 /* AuthResponse.swift */,
 				BC8945102524B24000FA8D7A /* SignUpResponse.swift */,
@@ -2046,10 +2112,37 @@
 		5E218BF225A869B100B56625 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5E05D39B2CECDCDB00CD9837 /* LoginSecurityView.swift */,
+				5E24A22E2CF9E539003F22AE /* TwoStepVerificationView.swift */,
+				5E865D062D403AB4005B41B7 /* TwoStepConfirmationContainerView.swift */,
+				5EFECC2C2D11C9C9000842BF /* TwoStepConfirmPasswordView.swift */,
+				5E865D0A2D40E709005B41B7 /* TwoStepChooseVerificationView.swift */,
+				5EF300352D4AC007001FFEE7 /* TwoStepChooseEmailView.swift */,
+				5EF3003B2D4AC772001FFEE7 /* TwoStepChoosePhoneView.swift */,
+				5E3CEA9C2D14A0150029353E /* CustomPasswordFieldView.swift */,
+				5E1DAFFA2D4D022B00E13347 /* CustomEmailFieldView.swift */,
+				5E9F5CEE2D53591600F6213E /* CustomPhoneFieldView.swift */,
+				5E865D042D3FCF41005B41B7 /* TwoStepBottomNotificationView.swift */,
+				5E018ABC2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift */,
+				5E328DEA2D59FF0F00EE2307 /* Add2FAFieldView.swift */,
+				5E018ABE2D6777BB0023E13A /* DeleteBottomAlertView.swift */,
+				5E018AC02D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift */,
+				5E7D2F6D2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift */,
+				5E0950852D6F58EE0002EFC5 /* BannerBottomMessage.swift */,
 				5E218BF725A86C9E00B56625 /* PasswordElementView.swift */,
 				5E218BF825A86C9E00B56625 /* PasswordElementView.xib */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		5E24A2252CF67E6C003F22AE /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				5E24A2342CFA0411003F22AE /* BannerTwoStepVerificationView.swift */,
+				5E24A2362CFA0411003F22AE /* WarningBannerView.swift */,
+				5E24A2242CF67E6C003F22AE /* CustomToggleView.swift */,
+			);
+			path = CustomViews;
 			sourceTree = "<group>";
 		};
 		5E2C5D0E24D98EE100E2B95F = {
@@ -2173,6 +2266,13 @@
 			isa = PBXGroup;
 			children = (
 				5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */,
+				5E05D39D2CECDDAD00CD9837 /* LoginSecurityViewModel.swift */,
+				5E24A2322CF9EA59003F22AE /* TwoStepVerificationViewModel.swift */,
+				5E865D082D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift */,
+				5E3CEA9E2D14A45D0029353E /* TwoStepConfirmPasswordViewModel.swift */,
+				5E865D0C2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift */,
+				5EF300372D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift */,
+				5EF300392D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -2723,6 +2823,7 @@
 		5E4739C42A41022600A20D85 /* AccountSecurity */ = {
 			isa = PBXGroup;
 			children = (
+				5EFCE3E42CFE022100D7E802 /* Models */,
 				5E218BF225A869B100B56625 /* Views */,
 				5E3E12282A41DAC300682DE5 /* ViewController */,
 				5E3E12292A41DACF00682DE5 /* ViewModel */,
@@ -3056,6 +3157,7 @@
 		5E991EE02A4AD29F006229C0 /* SwiftUIViews */ = {
 			isa = PBXGroup;
 			children = (
+				5E24A2252CF67E6C003F22AE /* CustomViews */,
 				5ECD1D9D2C1339B50049A03F /* LoadingAnimations */,
 				5E92165D2C0DC118002AACA3 /* LabelViews */,
 				5E051C082B6AFA8C00274657 /* CustomListViews */,
@@ -3065,6 +3167,7 @@
 				92430A592AF2A1F00098597D /* ChipView */,
 				5EE068952B9F2F3A004055A4 /* Shapes */,
 				5E991EF52A53637E006229C0 /* SectionHeaderView.swift */,
+				5E317F522CFE5B1B00937DF2 /* SimpleTagView.swift */,
 				5E991EE32A4ADDE3006229C0 /* SectionView.swift */,
 				5E37F2D42AA75248004F00E8 /* CustomDialogView.swift */,
 				5E181B862AF2EAF5002DE69A /* CustomStepperView.swift */,
@@ -3079,6 +3182,7 @@
 		5E991EE52A4AE121006229C0 /* SwiftUINavigationViews */ = {
 			isa = PBXGroup;
 			children = (
+				5EFECC302D120A25000842BF /* SimpleCustomNavigationView.swift */,
 				5E991EE62A4AE144006229C0 /* CustomNavigationView.swift */,
 			);
 			path = SwiftUINavigationViews;
@@ -3136,6 +3240,7 @@
 		5EB569AB2B307DE500C35543 /* ButtonViews */ = {
 			isa = PBXGroup;
 			children = (
+				5E24A23A2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift */,
 				5E991EE12A4AD2F3006229C0 /* RightButtonView.swift */,
 				9229A3AA2A7A7773004DE31D /* PullDownButton.swift */,
 				5EB569AC2B307F3400C35543 /* RoundButtonView.swift */,
@@ -3333,6 +3438,14 @@
 				5E1C3C4D28ECA78D007C1A63 /* TagsRemoteDataSourceInterface.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		5EFCE3E42CFE022100D7E802 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5EFCE3E32CFE022100D7E802 /* TwoFactorMethod.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		9229A3A92A792DD0004DE31D /* Styles */ = {
@@ -4592,6 +4705,7 @@
 				9220ACCF2A20E6CE003797C9 /* RoundedImageView.swift in Sources */,
 				BCFFD293252B506B009485C1 /* UIViewControllerExtension.swift in Sources */,
 				BC42EDD325C014CC0031B965 /* InviteEndpoint.swift in Sources */,
+				5E24A2262CF67E6C003F22AE /* CustomToggleView.swift in Sources */,
 				BC42EDC325BEE9310031B965 /* InvitationTableViewCell.swift in Sources */,
 				5EB053D32BD120C400AFE66D /* TextField+Extension.swift in Sources */,
 				BC59BAB925C2B7D6005A45D3 /* ShareStatus.swift in Sources */,
@@ -4604,10 +4718,12 @@
 				F557A64927A1C81600C061D4 /* OnlinePresenceTableViewCell.swift in Sources */,
 				BC62D580254181BD00E84DA9 /* DataExtension.swift in Sources */,
 				BC6358A42536D8EA00EEC48C /* FilesViewModel.swift in Sources */,
+				5E05D39E2CECDDB000CD9837 /* LoginSecurityViewModel.swift in Sources */,
 				F5E793D7294B5AB000CFCCA5 /* AuthTextField.swift in Sources */,
 				BC42EDCD25C011290031B965 /* InviteVO.swift in Sources */,
 				BCA120CC2562C64300ECAD7B /* HighlightColor.swift in Sources */,
 				5EE291B326F37AA200159F4D /* ArchiveScreenPendingArchiveDetailsTableViewCell.swift in Sources */,
+				5E3CEA9D2D14A0150029353E /* CustomPasswordFieldView.swift in Sources */,
 				BCF4E5DB255C3782003505BA /* AttachmentRecordVO.swift in Sources */,
 				06644A8B24EBF4CD003CD359 /* CustomView.swift in Sources */,
 				BC6D3B4D2514E57500390927 /* NetworkSessionProtocol.swift in Sources */,
@@ -4628,6 +4744,7 @@
 				BC600DD625B1E36D00193C96 /* UITableViewExtension.swift in Sources */,
 				F56522642604ADB6007CA99D /* LocationEndpoint.swift in Sources */,
 				BC600DF525B6D80900193C96 /* FileDownloadInfo.swift in Sources */,
+				5EF300382D4AC3BC001FFEE7 /* TwoStepChooseEmailViewModel.swift in Sources */,
 				BC8E794F257A8559008ED0F5 /* ArchiveTableViewCell.swift in Sources */,
 				5EC8C4BB26D6726B002A7ECC /* ArchiveScreenChooseArchiveDetailsTableViewCell.swift in Sources */,
 				5EB503B52C04C9B600534F09 /* OnboardingWhatsImportantView.swift in Sources */,
@@ -4655,6 +4772,7 @@
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
 				5E92165F2C0DC14C002AACA3 /* OnboardingTitleTextView.swift in Sources */,
 				5EE9D8C427A188C100CE5F9C /* ProfilePageData.swift in Sources */,
+				5E05D39C2CECDCE700CD9837 /* LoginSecurityView.swift in Sources */,
 				5E6CCEF02B72D65800D192FF /* ActivityFeedViewControllerRepresentable.swift in Sources */,
 				BCC5501F255AB31800CA1574 /* FileHelper.swift in Sources */,
 				5EB45A462943403600277800 /* UIDeviceExtension.swift in Sources */,
@@ -4663,6 +4781,7 @@
 				5E1582B72C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift in Sources */,
 				F56AF715283676FF0069725A /* UITapGestureRecognizerExtension.swift in Sources */,
 				BD96908F25D17E3700E49AB3 /* RegisterRecordResponse.swift in Sources */,
+				5E317F542CFE5B1B00937DF2 /* SimpleTagView.swift in Sources */,
 				BC6AF9A32590E6EC00483BBA /* UILabelExtension.swift in Sources */,
 				5ED73B252613C30E002F9861 /* TagEndpoint.swift in Sources */,
 				5E2CFA27275116480055941C /* PublicProfileAboutPageViewController.swift in Sources */,
@@ -4696,6 +4815,7 @@
 				BC3DF865252DDCCC003D3829 /* BiometricsViewController.swift in Sources */,
 				5E991EE72A4AE144006229C0 /* CustomNavigationView.swift in Sources */,
 				F51B331E288AF57900EA15DA /* SessionKeychainHandler.swift in Sources */,
+				5E1DAFFB2D4D023100E13347 /* CustomEmailFieldView.swift in Sources */,
 				5E626CA72A1D6BB400EA9981 /* StewardDetails.swift in Sources */,
 				5EB3EDBF2B04D18600D76B83 /* ResponseGiftingModel.swift in Sources */,
 				5E3ACA532C22EF720031A2A0 /* ArchiveDetailsView.swift in Sources */,
@@ -4717,14 +4837,17 @@
 				5EB569AF2B31E41B00C35543 /* RoundStyledTextFieldView.swift in Sources */,
 				BCFB0C2F25822758001D89E1 /* InputSettingsView.swift in Sources */,
 				BC42EDD925C0192C0031B965 /* InviteViewModel.swift in Sources */,
+				5E24A23B2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift in Sources */,
 				5E218BF925A86C9E00B56625 /* PasswordElementView.swift in Sources */,
 				F5E4BA422670D16F0027D97A /* BaseOperation.swift in Sources */,
 				BC0D35B02553FC2C00786E8C /* ActionDialogStyle.swift in Sources */,
 				06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */,
 				5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */,
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
+				5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
+				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
@@ -4750,6 +4873,7 @@
 				5ED4B02226C130E00077FDDB /* RightSideDrawerTableViewCell.swift in Sources */,
 				BC11C808255953B2008BDEFA /* APIPayload.swift in Sources */,
 				BD96908C25D17E1400E49AB3 /* GetPresignedUrlResponse.swift in Sources */,
+				5E24A22F2CF9E53F003F22AE /* TwoStepVerificationView.swift in Sources */,
 				F5C8D249273205B000707301 /* SearchEndpoint.swift in Sources */,
 				F559F87928F99E3E0015A522 /* FolderNavigationViewModel.swift in Sources */,
 				5ED428892A12D0E1001F88FB /* LegacyPlanningRepository.swift in Sources */,
@@ -4766,10 +4890,14 @@
 				BC5596F125A345ED00BF55DA /* DropdownView.swift in Sources */,
 				5EF15DB22A77E0B600E9A7CA /* CustomSegmentedControl.swift in Sources */,
 				BC42EDCA25C011130031B965 /* InviteVM.swift in Sources */,
+				5EFECC2D2D11C9DC000842BF /* TwoStepConfirmPasswordView.swift in Sources */,
 				5E624DBF29475A34002D6ECB /* FusionAuthRepository.swift in Sources */,
+				5EFECC312D120A25000842BF /* SimpleCustomNavigationView.swift in Sources */,
 				5E187FA22A0CE3A800DCD52F /* LegacyPlanningSteward.swift in Sources */,
 				BC63589E2536D75300EEC48C /* GetRootResponse.swift in Sources */,
 				9229A3AB2A7A7773004DE31D /* PullDownButton.swift in Sources */,
+				5E24A2372CFA0411003F22AE /* WarningBannerView.swift in Sources */,
+				5E24A2392CFA0411003F22AE /* BannerTwoStepVerificationView.swift in Sources */,
 				5E5AB6112A6585110030BF61 /* AddNewTagViewModel.swift in Sources */,
 				BC648784251BA24C009D7DE1 /* Payloads.swift in Sources */,
 				BC04DAC725669B8C009D9C0C /* RelocateFolderPayload.swift in Sources */,
@@ -4785,6 +4913,7 @@
 				92B9886E2A9783F30040941E /* MapView.swift in Sources */,
 				F502C48826D6132F00657D37 /* AssetGridViewController.swift in Sources */,
 				5E3E121C2A41902C00682DE5 /* ArchivesRemoteDataSource.swift in Sources */,
+				5E3CEA9F2D14A4630029353E /* TwoStepConfirmPasswordViewModel.swift in Sources */,
 				5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */,
 				5E048FCF292308720023C929 /* ShareManagementNumberOfUsesCollectionViewCell.swift in Sources */,
 				BC59BAD225C2B8BD005A45D3 /* ActivityFeedViewController.swift in Sources */,
@@ -4797,6 +4926,7 @@
 				92C95C512CCFB445002CE018 /* EventsPayload.swift in Sources */,
 				5EA70D8D2B2C791100175D9C /* CustomListItemView.swift in Sources */,
 				5E8A3E4B24F3AB4300812361 /* BasePageViewController.swift in Sources */,
+				5EF300362D4AC010001FFEE7 /* TwoStepChooseEmailView.swift in Sources */,
 				BC9DB37425516B27004F453B /* FolderInfo.swift in Sources */,
 				5EE068972B9F2F63004055A4 /* DividerSmallBarView.swift in Sources */,
 				5E548E862B29F9F000DD2C59 /* RedeemCodeView.swift in Sources */,
@@ -4805,6 +4935,7 @@
 				BCFB0C2925811757001D89E1 /* ManageLinkViewController.swift in Sources */,
 				924F16372A45CC6200B75D4E /* TextViewModifiers.swift in Sources */,
 				5E3ACA512C21EBB00031A2A0 /* OnboardingCongratulationsView.swift in Sources */,
+				5E018AC12D6CA1FF0023E13A /* ChangeAuthMethodBottomAlertView.swift in Sources */,
 				F58EBC8425DFFB9600D2D383 /* MyFilesViewModel.swift in Sources */,
 				BC752BCC253EBBE100EF7941 /* UploadFilesView.swift in Sources */,
 				5E1582B92C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift in Sources */,
@@ -4814,6 +4945,7 @@
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
+				5E24A2332CF9EA59003F22AE /* TwoStepVerificationViewModel.swift in Sources */,
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,
 				BC11C80225594ABD008BDEFA /* Model.swift in Sources */,
@@ -4823,6 +4955,7 @@
 				F52D2B84292D44D60008D047 /* ShareManagementSharedWithCollectionViewCell.swift in Sources */,
 				F57CE596282BE9D000B06D95 /* DonateViewModel.swift in Sources */,
 				5E7141452AFD25D5003952CD /* GiftingModel.swift in Sources */,
+				5E9F5CEF2D53591600F6213E /* CustomPhoneFieldView.swift in Sources */,
 				BC59BABA25C2B7D6005A45D3 /* ShareDetailsVM.swift in Sources */,
 				F56AA040261F1B930054B6EF /* DeviceEndpoint.swift in Sources */,
 				92430A5E2AF2A1F00098597D /* EmailChipsTextField.swift in Sources */,
@@ -4838,12 +4971,14 @@
 				5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */,
 				5E6673112A79439B001C49CC /* ReplaceFilenameViewModel.swift in Sources */,
 				5E991EE42A4ADDE4006229C0 /* SectionView.swift in Sources */,
+				5EF3003A2D4AC3FE001FFEE7 /* TwoStepChoosePhoneViewModel.swift in Sources */,
 				F58F314F27F32E2D00B89B99 /* DonateViewController.swift in Sources */,
 				BCAEED8425C175AF00A13C0F /* InviteOperation.swift in Sources */,
 				5E9C8E912CC2A9F8004C058F /* RegisterViewModel.swift in Sources */,
 				F5E4BA442670D1940027D97A /* UploadOperation.swift in Sources */,
 				5E2E3D1126D0F6840090EF02 /* ArchivesViewController.swift in Sources */,
 				5EBAFCEA2A1572CD005DB527 /* LegacyPlanningSetUpButton.swift in Sources */,
+				5EF3003C2D4AC773001FFEE7 /* TwoStepChoosePhoneView.swift in Sources */,
 				5ECF1DA52B74FD440086EF21 /* ViewRepresentableContainer.swift in Sources */,
 				F559F88A28FEBCC10015A522 /* FolderContentView.swift in Sources */,
 				5EE9D8C127A0A02A00CE5F9C /* ProfilePageInformationCollectionViewCell.swift in Sources */,
@@ -4856,6 +4991,7 @@
 				5E3A6EE9275F610B00AD6DCC /* FieldNameUI.swift in Sources */,
 				5ED581CB25EFC3A100A5A79E /* FileDetailsBottomCollectionViewCell.swift in Sources */,
 				5EE3E9E02BCD447100A5EFE5 /* OnboardingArchiveNameView.swift in Sources */,
+				5E865D0D2D40E72B005B41B7 /* TwoStepChooseVerificationViewModel.swift in Sources */,
 				BC59BABC25C2B7D6005A45D3 /* FileLargeCollectionViewCell.swift in Sources */,
 				5E03F40C291BD55600DFCE09 /* ShareManagementTitleCollectionViewCell.swift in Sources */,
 				F5BC105C278D991400595F94 /* PublicFilesViewModel.swift in Sources */,
@@ -4901,6 +5037,7 @@
 				F559F87B28F9A0750015A522 /* FolderViewSelectionViewModel.swift in Sources */,
 				BC6358AC2536FCDA00EEC48C /* FolderLinkVO.swift in Sources */,
 				BCA120C925627ADF00ECAD7B /* UIViewExtension.swift in Sources */,
+				5E0950862D6F58EE0002EFC5 /* BannerBottomMessage.swift in Sources */,
 				BC4278C8255D70DF00270B34 /* LocnVO.swift in Sources */,
 				06644A7E24EA6E47003CD359 /* ViewModelInterface.swift in Sources */,
 				F52D2B88292E3CA40008D047 /* ShareManagementHeaderCollectionReusableView.swift in Sources */,
@@ -4913,6 +5050,7 @@
 				BCC1E32F254A1BA000B71866 /* ActionDialogView.swift in Sources */,
 				F5A0CE20270208060005B9F0 /* BaseNotificationPayload.swift in Sources */,
 				5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */,
+				5EFCE3E52CFE022100D7E802 /* TwoFactorMethod.swift in Sources */,
 				BCF9066F2588C1A000DF1B64 /* MemberRoleHeader.swift in Sources */,
 				5EC8C4B826D65006002A7ECC /* ArchivesEndpoint.swift in Sources */,
 				BC59BAB625C2B7D6005A45D3 /* FileVM.swift in Sources */,
@@ -4924,6 +5062,7 @@
 				BCCC76EB255E8BF800903D3C /* URLExtension.swift in Sources */,
 				F50E135728F43368003DF4CC /* FilesRemoteDataSource.swift in Sources */,
 				BC6D3B5A2514F62400390927 /* AuthenticationEndpoint.swift in Sources */,
+				5E328DEB2D59FF0F00EE2307 /* Add2FAFieldView.swift in Sources */,
 				5EBAFCE42A154606005DB527 /* LegacyPlanningLoadingViewController.swift in Sources */,
 				5E548E8A2B2AF3EF00DD2C59 /* DonateStorageView.swift in Sources */,
 				5E7AE8B3291E97DA00F2A41D /* ShareManagementLinkAndShowSettingsCollectionViewCell.swift in Sources */,
@@ -4937,6 +5076,7 @@
 				F529C3A227B3F77B003DB312 /* AuthenticationManager.swift in Sources */,
 				BCEAB27C2580F3C600567E8C /* ShareVO.swift in Sources */,
 				BCE8DA7125652C2A00842ABD /* FileActionManager.swift in Sources */,
+				5E018ABF2D6777BB0023E13A /* DeleteBottomAlertView.swift in Sources */,
 				5ED581C625EFC38D00A5A79E /* FileDetailsMenuCollectionViewCell.swift in Sources */,
 				5ED0856A24E3EBBB00CDB4D3 /* TextStyle.swift in Sources */,
 				924F162F2A45954A00B75D4E /* TagsView.swift in Sources */,
@@ -4954,6 +5094,7 @@
 				5E3E124B2A431F9600682DE5 /* EnvVars.generated.swift in Sources */,
 				5EB620292784B038001B9AFD /* BirthInfoProfileItem.swift in Sources */,
 				5EC043A72924432E00072933 /* ShareManagementEmptyHeaderCollectionReusableView.swift in Sources */,
+				5E24A22B2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				5ECBAFA32A1B640900FACFDF /* ArchiveStewardResponseTriggerType.swift in Sources */,
 				BCE8DA7F256674D300842ABD /* BottomActionSheet.swift in Sources */,
 				BC3DF862252DB8BA003D3829 /* LocalAuthErrors.swift in Sources */,
@@ -4975,6 +5116,7 @@
 				5E8A3E4D24F3ABD500812361 /* PageViewModel.swift in Sources */,
 				BCF4E5D2255C2CB2003505BA /* FileVO.swift in Sources */,
 				F564137A29798DD4002D6423 /* AccountRepository.swift in Sources */,
+				5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
@@ -5011,6 +5153,7 @@
 				5E0AB9E32CAEB43F00C80A94 /* ForgotPasswordViewModel.swift in Sources */,
 				5EDDAE5A2A9E312E00415D9A /* EditDateAndTimeView.swift in Sources */,
 				5EB4C6382BD2F00100561F0F /* CustomBorderTextField.swift in Sources */,
+				5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
 				5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
@@ -5030,8 +5173,10 @@
 				5ED9A7B62BBF3294009BDD70 /* OnboardingSelectArchiveTypeView.swift in Sources */,
 				5EB620252784871B001B9AFD /* EmailProfileItem.swift in Sources */,
 				BC6D3B492514E45F00390927 /* EnvironmentProtocol.swift in Sources */,
+				5E018ABD2D6682FF0023E13A /* RoundButtonUsualBlue50View.swift in Sources */,
 				5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */,
 				BCF4E5D8255C2EB2003505BA /* RecordExifVO.swift in Sources */,
+				5E865D052D3FCF54005B41B7 /* TwoStepBottomNotificationView.swift in Sources */,
 				F58EBC2E25DE963800D2D383 /* SharedFilesViewModel.swift in Sources */,
 				5E1582BB2C5CD6CB00103EA8 /* OnboardingCreateFirstArchiveViewModel.swift in Sources */,
 				BCEAB27F2580F6D700567E8C /* MinArchiveVO.swift in Sources */,
@@ -5278,6 +5423,7 @@
 				F559F89828FEEA020015A522 /* SortOption.swift in Sources */,
 				5E1CCC1C287F04DE00913EEA /* ViewModelInterface.swift in Sources */,
 				5E4739F62A4187AB00A20D85 /* DescriptionProfileItem.swift in Sources */,
+				5E24A22C2CF73845003F22AE /* IDPUserMethodModel.swift in Sources */,
 				F5ADBF43290BC0920007A516 /* UIViewControllerExtension.swift in Sources */,
 				5E4739CE2A410B9600A20D85 /* BaseViewController.swift in Sources */,
 				F51B3326288B0BB300EA15DA /* MinFolderVO.swift in Sources */,
@@ -5463,7 +5609,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5520,7 +5666,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -5549,7 +5695,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5580,7 +5726,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5602,7 +5748,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5623,7 +5769,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5644,7 +5790,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5665,7 +5811,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PermanentUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -5692,7 +5838,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5718,7 +5864,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5744,7 +5890,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5770,7 +5916,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsp.PermanentTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -5802,7 +5948,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5836,7 +5982,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5870,7 +6016,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5904,7 +6050,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5968,7 +6114,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5997,7 +6143,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6055,7 +6201,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -6084,7 +6230,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				OTHER_SWIFT_FLAGS = "-D COCOAPODS -DSTAGING_ENVIRONMENT";
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6112,7 +6258,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6137,7 +6283,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6162,7 +6308,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.PermanentArchive.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -6187,7 +6333,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.2;
+				MARKETING_VERSION = 1.12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.permanent.permanent.staging.PushExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -10,7 +10,7 @@ import Foundation
 struct ProfilePageData {
     static func nameTitle(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Full Name".localized()
             
         case .family, .familyHistory:
@@ -26,7 +26,7 @@ struct ProfilePageData {
     
     static func nickNameTitle(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Nickname".localized()
             
         case .family, .familyHistory:
@@ -39,7 +39,7 @@ struct ProfilePageData {
     
     static func genderTitle(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Gender".localized()
             
         case .family, .familyHistory:
@@ -52,7 +52,7 @@ struct ProfilePageData {
     
     static func birthDateTitle(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Birth Date".localized()
             
         case .family, .organization, .nonProfit, .familyHistory, .community:
@@ -62,7 +62,7 @@ struct ProfilePageData {
     
     static func birthLocationTitle(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Birth Location".localized()
             
         case .family, .organization, .nonProfit, .community, .familyHistory:
@@ -92,7 +92,7 @@ struct ProfilePageData {
     
     static func nameHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Full Name".localized()
             
         case .family, .familyHistory:
@@ -111,7 +111,7 @@ struct ProfilePageData {
     
     static func nickNameHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Nickname".localized()
             
         case .family, .familyHistory:
@@ -124,7 +124,7 @@ struct ProfilePageData {
     
     static func genderHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Gender".localized()
             
         case .family, .organization, .nonProfit, .familyHistory, .community:
@@ -134,14 +134,14 @@ struct ProfilePageData {
     
     static func birthDateHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .family, .organization, .nonProfit, .community, .individual, .familyHistory:
+        case .person, .family, .organization, .nonProfit, .community, .individual, .familyHistory, .other, .unsure:
             return "YYYY-MM-DD"
         }
     }
     
     static func birthLocationHint(archiveType: ArchiveType) -> String {
         switch archiveType {
-        case .person, .family, .organization, .nonProfit, .community, .individual, .familyHistory:
+        case .person, .family, .organization, .nonProfit, .community, .individual, .familyHistory, .other, .unsure:
             return "Choose a location".localized()
         }
     }

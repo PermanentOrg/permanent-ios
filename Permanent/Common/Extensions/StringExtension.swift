@@ -41,4 +41,9 @@ extension String {
         let phoneRegex = "^[0-9+]{0,1}+[0-9]{5,16}$"
         return NSPredicate(format: "SELF MATCHES %@", phoneRegex).evaluate(with: self)
     }
+    
+    var isUSPhoneNumber: Bool {
+        let usPhoneRegex = "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
+        return NSPredicate(format: "SELF MATCHES %@", usPhoneRegex).evaluate(with: self)
+    }
 }

@@ -15,10 +15,11 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     case family, familyHistory
     case community, organization
     case nonProfit
+    case other, unsure
     
     var rawValue: String {
         switch self {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "type.archive.person"
         case .family, .familyHistory:
             return "type.archive.family"
@@ -31,7 +32,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     
     var archiveName: String {
         switch self {
-        case .person, .individual: return "Person".localized()
+        case .person, .individual, .other, .unsure: return "Person".localized()
         case .family, .familyHistory: return "Family".localized()
         case .organization, .community: return "Organization".localized()
         case .nonProfit: return "Nonprofit".localized()
@@ -71,7 +72,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     }
     var personalInformationPublicPageTitle: String {
         switch self {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Person Information".localized()
         case .family, .familyHistory:
             return "Family Information".localized()
@@ -91,7 +92,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     
     var longDescriptionTitle: String {
         switch self {
-        case .person, .individual:
+        case .person, .individual, .other, .unsure:
             return "Tell us about this Person".localized()
             
         case .family, .familyHistory:
@@ -106,7 +107,7 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     }
     var longDescriptionHint: String {
         switch self {
-        case .person, .individual:
+        case .person, .individual, .unsure, .other:
             return "Tell the story of the Person this Archive is for".localized()
             
         case .family, .familyHistory:
@@ -152,6 +153,10 @@ enum ArchiveType: String, CaseIterable, Identifiable {
             return "Organization"
         case .nonProfit:
             return "Nonprofit Organization"
+        case .other:
+            return "Other"
+        case .unsure:
+            return "Unsure"
         }
     }
     
@@ -171,6 +176,10 @@ enum ArchiveType: String, CaseIterable, Identifiable {
             return "Create an archive that captures a community’s life."
         case .nonProfit:
             return "Create an archive that captures an nonprofit organization life."
+        case .other:
+            return "Create an archive about something else."
+        case .unsure:
+            return "I’m not sure what type of archive I want to create."
         }
     }
     
@@ -190,6 +199,10 @@ enum ArchiveType: String, CaseIterable, Identifiable {
             return Image(.onbrdFamilyHist)
         case .community:
             return Image(.onbrdCommunity)
+        case .other:
+            return Image(.onbrdOther)
+        case .unsure:
+            return Image(.onbrdUnsure)
         }
     }
     
@@ -209,6 +222,10 @@ enum ArchiveType: String, CaseIterable, Identifiable {
             return "type:org"
         case .nonProfit:
             return "type:other"
+        case .other:
+            return "type:other"
+        case .unsure:
+            return "type:unsure"
         }
     }
 }

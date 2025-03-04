@@ -57,6 +57,7 @@ struct TextFontStyle {
     static let style48 = TextStyle(UIFont(name: "Usual-Light", size: 56)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style49 = TextStyle(UIFont(name: "Usual-Bold", size: 56)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
     static let style50 = TextStyle(UIFont(name: "Usual-Medium", size: 14)!, TextStyle.calculateSpacing(fontSize: CGFloat(14), lineHeight: CGFloat(19)), NSTextAlignment.natural)
+    static let style51 = TextStyle(UIFont(name: "Usual-Medium", size: 16)!, TextStyle.calculateSpacing(fontSize: CGFloat(16), lineHeight: CGFloat(19)), NSTextAlignment.natural)
 }
 
 struct Constants {
@@ -167,6 +168,7 @@ extension Constants.Keys.StorageKeys {
     static let requestPAAccess = "requestPAAccess"
     static let requestLinkAccess = "requestLinkAccess"
     static let biometricsAuthEnabled = "biometricsAuthOffEnabledKey"
+    static let twoFactorAuthEnabled = "twoFactorAuthEnabledKey"
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let modelVersion = "modelVersion"
     static let minAppVersion = "minAppVersion"

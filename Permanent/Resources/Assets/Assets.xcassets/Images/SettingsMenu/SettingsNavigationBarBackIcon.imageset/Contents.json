@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "SettingsNavigationBarBackIcon.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

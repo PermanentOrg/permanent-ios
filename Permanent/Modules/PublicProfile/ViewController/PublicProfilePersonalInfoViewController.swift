@@ -283,7 +283,7 @@ class PublicProfilePersonalInfoViewController: BaseViewController<PublicProfileP
     func getLocationDetails() -> (latitude: Double, longitude: Double) {
         if let archiveType = viewModel?.archiveType {
             switch archiveType {
-            case .person, .individual:
+            case .person, .individual, .other, .unsure:
                 if let latitude = viewModel?.birthInfoProfileItem?.birthLocation?.latitude,
                     let longitude = viewModel?.birthInfoProfileItem?.birthLocation?.longitude {
                     return (latitude, longitude)
@@ -362,7 +362,7 @@ extension PublicProfilePersonalInfoViewController: PublicProfileLocationSetViewC
     func locationSetViewControllerDidUpdate(_ locationVC: PublicProfileLocationSetViewController) {
         if let archiveType = viewModel?.archiveType {
             switch archiveType {
-            case .person, .individual:
+            case .person, .individual, .other, .unsure:
                 if viewModel?.birthInfoProfileItem == nil {
                     viewModel?.createNewBirthProfileItem(newLocation: locationVC.pickedLocation)
                 } else {

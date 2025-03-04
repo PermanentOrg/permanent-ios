@@ -15,7 +15,7 @@ class SettingsRouter {
         case myArchives
         case invitations
         case activityFeed
-        case security
+        case loginAndSecurity
         case legacyPlanning
         case contactSupport
         case signUp
@@ -64,8 +64,8 @@ class SettingsRouter {
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
-        case .security:
-            let screenView = ViewRepresentableContainer(viewRepresentable: AccountSettingsViewControllerRepresentable(), title: AccountSettingsViewControllerRepresentable().title)
+        case .loginAndSecurity:
+            let screenView = LoginSecurityView(viewModel: StateObject(wrappedValue: LoginSecurityViewModel()))
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen
             self.rootViewController.present(host, animated: true, completion: nil)
