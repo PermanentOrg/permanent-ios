@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-13
+    runs-on: macos-15
     environment: staging
 
     steps:
@@ -21,7 +21,7 @@ jobs:
           bundler-cache: true
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.2'
+          xcode-version: latest
       - name: Run Fastlane Beta
         env:
           CLIENT_ID: ${{ secrets.IOS_FIREBASE_CLIENT_ID }}
