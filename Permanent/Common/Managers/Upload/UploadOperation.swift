@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os.log
 
 enum UploadError: Error {
     case presignedURL
@@ -13,9 +14,13 @@ enum UploadError: Error {
     case registerRecord
 }
 
-class UploadOperation: BaseOperation {
+class UploadOperation: BaseOperation, @unchecked Sendable {
     static let uploadProgressNotification = Notification.Name("UploadOperation.uploadProgressNotification")
     static let uploadFinishedNotification = Notification.Name("UploadOperation.uploadFinishedNotification")
+    static let registerRecordTimingNotification = Notification.Name("UploadOperation.registerRecordTimingNotification")
+    
+    // Logger for upload operations
+    private let logger = Logger(subsystem: "com.permanent.ios", category: "UploadOperation")
     
     let file: FileInfo
     let handler: ((Error?) -> Void)
@@ -125,11 +130,14 @@ class UploadOperation: BaseOperation {
     private func getPresignedUrl(success: @escaping (() -> Void)) {
         guard let resources = try? file.url.resourceValues(forKeys:[.fileSizeKey]),
               let fileSize = resources.fileSize else {
+            logger.error("Failed to get file size for: \(self.file.name, privacy: .public)")
             error = UploadError.presignedURL
             handler(UploadError.presignedURL)
             finish()
             return
         }
+        
+        logger.debug("Getting presigned URL for file: \(self.file.name, privacy: .public), size: \(fileSize, privacy: .public) bytes")
         
         let mimeType = (file.url.mimeType ?? "application/octet-stream")
         let params: GetPresignedUrlParams = GetPresignedUrlParams(file.folder.folderId, file.folder.folderLinkId, mimeType, file.name, fileSize, nil)
@@ -180,6 +188,8 @@ class UploadOperation: BaseOperation {
         contentLength += fileSize
         contentLength += "\r\n--\(boundary)--".data(using: .utf8)!.count
         
+        logger.debug("Preparing to upload file to S3: \(self.file.name, privacy: .public), size: \(fileSize, privacy: .public) bytes")
+        
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -189,41 +199,115 @@ class UploadOperation: BaseOperation {
         createdDT = dateFormatter.string(from: creationDate)
         
         var uploadRequest = URLRequest(url: URL(string: s3Url)!)
-        uploadRequest.timeoutInterval = 86400
+        uploadRequest.timeoutInterval = 86400 // 24 hours timeout for large files
         uploadRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "content-type")
         uploadRequest.addValue("\(contentLength)", forHTTPHeaderField: "Content-Length")
-        
+        uploadRequest.httpMethod = "POST"
+
         let prefixStream = InputStream(data: prefixData)
         let fileStream = InputStream(url: file.url)!
         let postfixStream = InputStream(data: "\r\n--\(boundary)--".data(using: .utf8)!)
         
-        uploadRequest.httpBodyStream = SerialInputStream(inputStreams: [prefixStream, fileStream, postfixStream])
-        uploadRequest.httpMethod = "POST"
-
-        uploadTask = urlSession.uploadTask(with: uploadRequest, from: nil) { [self] data, response, error in
+        // Create a temporary file to hold the complete request body
+        let tempFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let outputStream = OutputStream(url: tempFileURL, append: false)!
+        outputStream.open()
+        
+        // Write prefix data
+        var buffer = [UInt8](repeating: 0, count: 1024)
+        prefixStream.open()
+        while prefixStream.hasBytesAvailable {
+            let bytesRead = prefixStream.read(&buffer, maxLength: buffer.count)
+            if bytesRead > 0 {
+                outputStream.write(buffer, maxLength: bytesRead)
+            } else {
+                break
+            }
+        }
+        prefixStream.close()
+        
+        // Write file data
+        fileStream.open()
+        while fileStream.hasBytesAvailable {
+            let bytesRead = fileStream.read(&buffer, maxLength: buffer.count)
+            if bytesRead > 0 {
+                outputStream.write(buffer, maxLength: bytesRead)
+            } else {
+                break
+            }
+        }
+        fileStream.close()
+        
+        // Write postfix data
+        postfixStream.open()
+        while postfixStream.hasBytesAvailable {
+            let bytesRead = postfixStream.read(&buffer, maxLength: buffer.count)
+            if bytesRead > 0 {
+                outputStream.write(buffer, maxLength: bytesRead)
+            } else {
+                break
+            }
+        }
+        postfixStream.close()
+        
+        outputStream.close()
+        
+        // Now use the correct upload method with the temporary file
+        uploadTask = urlSession.uploadTask(with: uploadRequest, fromFile: tempFileURL) { [self] data, response, error in
+            // Clean up the temporary file
+            try? FileManager.default.removeItem(at: tempFileURL)
+            
             guard isCancelled == false else { return }
             
+            if let error = error {
+                logger.error("S3 upload error: \(error.localizedDescription, privacy: .public) for file: \(self.file.name, privacy: .public)")
+                self.error = UploadError.s3
+                handler(UploadError.s3)
+                finish()
+                return
+            }
+            
             if let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 {
+                logger.info("Successfully uploaded file to S3: \(self.file.name, privacy: .public), status: \(response.statusCode, privacy: .public)")
                 success()
             } else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                logger.error("S3 upload failed with status code: \(statusCode, privacy: .public) for file: \(self.file.name, privacy: .public)")
                 self.error = UploadError.s3
                 handler(UploadError.s3)
                 finish()
             }
         }
         uploadTask?.resume()
+        logger.debug("Started S3 upload task for file: \(self.file.name, privacy: .public)")
     }
     
     private func registerRecord() {
+        let registerStartTime = Date()
         let params = RegisterRecordParams(file.folder.folderId, file.folder.folderLinkId, file.name, createdDT, s3Url, destinationUrl)
+        
+        logger.debug("Starting registerRecord for file: \(self.file.name, privacy: .public)")
         
         let apiOperation = APIOperation(FilesEndpoint.registerRecord(params: params))
         apiOperation.execute(in: APIRequestDispatcher()) { [self] result in
             guard isCancelled == false else { return }
             
+            // Calculate and notify about registerRecord response time
+            let registerTime = Date().timeIntervalSince(registerStartTime)
+            logger.info("registerRecord response time: \(registerTime, privacy: .public) seconds for file: \(self.file.name, privacy: .public)")
+            
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(
+                    name: Self.registerRecordTimingNotification,
+                    object: self,
+                    userInfo: ["registerTime": registerTime]
+                )
+            }
+            
             switch result {
             case .json(let response, _):
                 guard let model: UploadFileMetaResponse = JSONHelper.convertToModel(from: response) else {
+                    logger.error("Failed to convert registerRecord response to model for file: \(self.file.name, privacy: .public)")
                     self.error = UploadError.registerRecord
                     handler(UploadError.registerRecord)
                     finish()
@@ -231,25 +315,28 @@ class UploadOperation: BaseOperation {
                 }
 
                 if model.isSuccessful == true {
+                    logger.info("Successfully registered file: \(self.file.name, privacy: .public)")
                     uploadedFile = model.results?.first?.data?.first?.recordVO
                     handler(nil)
                     finish()
                 } else {
+                    logger.error("Server returned unsuccessful response for registerRecord: \(self.file.name, privacy: .public)")
                     self.error = UploadError.registerRecord
                     handler(UploadError.registerRecord)
                     finish()
                 }
-            case .error(_, _):
+            case .error(let error, _):
+                logger.error("Error during registerRecord: \(error.debugDescription, privacy: .public) for file: \(self.file.name, privacy: .public)")
                 self.error = UploadError.registerRecord
                 handler(UploadError.registerRecord)
                 finish()
             default:
+                logger.error("Unexpected result type from registerRecord for file: \(self.file.name, privacy: .public)")
                 finish()
                 break
             }
         }
     }
-    
 }
 
 // MARK: - Upload request body methods

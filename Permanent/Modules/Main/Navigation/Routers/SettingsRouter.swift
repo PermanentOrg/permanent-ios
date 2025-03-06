@@ -36,7 +36,8 @@ class SettingsRouter {
         switch page {
         case .settings:
             let screenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()), router: router)
-            let host = UIHostingController(rootView: screenView)
+            var host = UIHostingController(rootView: screenView)
+            host.sheetPresentationController?.detents = [.large()]
             self.rootViewController.present(host, animated: true, completion: nil)
         case .account:
             var infoRepresentable: AccountInfoViewControllerRepresentable = AccountInfoViewControllerRepresentable()
