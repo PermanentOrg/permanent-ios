@@ -38,7 +38,6 @@ class AccountSettingsViewController: BaseViewController<SecurityViewModel> {
     // MARK: Actions
     @IBAction func pressedUpdateButton(_ sender: RoundedButton) {
         let viewController = UIViewController.create(withIdentifier: .passwordUpdate, from: .settings) as! PasswordUpdateViewController
-        viewController.viewModel = viewModel
         let navigationController: NavigationController = NavigationController(rootViewController: viewController)
         
         self.present(navigationController, animated: true, completion: nil)

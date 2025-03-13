@@ -11,23 +11,35 @@ struct TwoStepVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: TwoStepVerificationViewModel
     @State var showDeleteAlert: Bool = false
+    @State var showDeleteModal: Bool = false
     @State var changeAuthMethodAlert: Bool = false
+    @State var changeAuthMethodModal: Bool = false
     
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
     }
     var body: some View {
         ZStack {
-            CustomNavigationView {
+            if Constants.Design.isPhone {
+                CustomNavigationView {
+                    ZStack {
+                        backgroundView
+                        contentView
+                    }
+                    .ignoresSafeArea(.all)
+                } leftButton: {
+                    backButton
+                } rightButton: {
+                    EmptyView()
+                }
+            } else {
                 ZStack {
                     backgroundView
                     contentView
+                        .padding(.vertical, 64)
+                        .padding(.horizontal, 128)
                 }
                 .ignoresSafeArea(.all)
-            } leftButton: {
-                backButton
-            } rightButton: {
-                EmptyView()
             }
             BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
@@ -57,8 +69,17 @@ struct TwoStepVerificationView: View {
     
     var contentView: some View {
         ZStack(alignment: .bottom) {
-            VStack(spacing: 24) {
-                bannerTwoStepVerificationView
+            VStack(alignment: .leading, spacing: Constants.Design.isPhone ? 24 : 32) {
+                if Constants.Design.isPhone {
+                    bannerTwoStepVerificationView
+                } else {
+                    Text("Two-step verification")
+                        .font(.custom(FontName.usualMedium.rawValue, fixedSize: 24))
+                        .foregroundColor(.blue900)
+                        .padding(.bottom, 32)
+                    bannerTwoStepVerificationView
+                        .cornerRadius(12)
+                }
                 
                 descriptionView
                 
@@ -70,13 +91,17 @@ struct TwoStepVerificationView: View {
                         if viewModel.isTwoFactorEnabled {
                             viewModel.methodSelectedForDelete = viewModel.twoFactorMethods.first
                             withAnimation {
-                                changeAuthMethodAlert = true
+                                if Constants.Design.isPhone {
+                                    changeAuthMethodAlert = true
+                                } else {
+                                    changeAuthMethodModal = true
+                                }
                             }
                         } else {
                             viewModel.checkVerificationMethod = true
                         }
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, Constants.Design.isPhone ? 24 : 0)
                 }
                 
                 Spacer()
@@ -91,7 +116,7 @@ struct TwoStepVerificationView: View {
                         .foregroundColor(Color(red: 0.26, green: 0.29, blue: 0.43))
                         .multilineTextAlignment(.leading)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, Constants.Design.isPhone ? 24 : 0)
                 .padding(.bottom, 32)
             }
         }
@@ -128,6 +153,14 @@ struct TwoStepVerificationView: View {
         .sheet(isPresented: $viewModel.checkVerificationMethod) {
             TwoStepConfirmationContainerView(viewModel: TwoStepConfirmationContainerViewModel(refreshSecurityView: $viewModel.refreshAccountDataRequired, methodSelectedForDelete: viewModel.changeAuthFlow ? $viewModel.changeMethodConfirmed : $viewModel.deleteMethodConfirmed, twoStepVerificationBottomBannerMessage: $viewModel.bottomBannerMessage, changingAuthFlow: viewModel.changeAuthFlow))
         }
+        .sheet(isPresented: $showDeleteModal) {
+            TwoStepTabletModalAlertView(showErrorMessage: $showDeleteModal, deleteMethodConfirmed: $viewModel.deleteMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete, deleteMessage: true)
+                .presentationDetents([.height(250)])
+        }
+        .sheet(isPresented: $changeAuthMethodModal) {
+            TwoStepTabletModalAlertView(showErrorMessage: $changeAuthMethodModal, deleteMethodConfirmed: $viewModel.changeMethodConfirmed, twoFactorMethod: viewModel.methodSelectedForDelete, deleteMessage: false)
+                .presentationDetents([.height(300)])
+        }
     }
     
     var bannerTwoStepVerificationView: some View {
@@ -140,7 +173,7 @@ struct TwoStepVerificationView: View {
             .multilineTextAlignment(.leading)
             .foregroundColor(.blue900)
             .multilineTextAlignment(.center)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Constants.Design.isPhone ? 24 : 0)
     }
     
     var verificationMethodsView: some View {
@@ -161,7 +194,11 @@ struct TwoStepVerificationView: View {
                                     Button {
                                         viewModel.methodSelectedForDelete = method
                                         withAnimation {
-                                            showDeleteAlert = true
+                                            if Constants.Design.isPhone {
+                                                showDeleteAlert = true
+                                            } else {
+                                                showDeleteModal = true
+                                            }
                                         }
                                     } label: {
                                         Image(.twoStepDeleteIcon)
@@ -190,7 +227,7 @@ struct TwoStepVerificationView: View {
                         )
                 }
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Constants.Design.isPhone ? 24 : 0)
     }
     
     var backButton: some View {
