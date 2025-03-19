@@ -1,8 +1,9 @@
 //
 //  NavigationStateManager.swift
-//  NavigationStackProject
+//  Permanent
 //
-//  Created by Karin Prater on 12.11.22.
+//  Created by Lucian Cerbu on 12.03.2025.
+//
 //
 
 import Foundation
@@ -30,7 +31,6 @@ class NavigationStateManager: ObservableObject {
                 return
             }
             
-            // fetch updated new model data for each id
             self.selectionState = selectionState
         }
     }

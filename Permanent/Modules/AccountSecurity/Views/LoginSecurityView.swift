@@ -157,7 +157,6 @@ struct LoginSecurityView: View {
                         Spacer()
                     }
                     .navigationSplitViewColumnWidth(min: 400, ideal: 400)
-                    //.padding(.top, 10)
                     .onAppear() {
                         viewModel.checkTwoFactorStatus()
                     }
