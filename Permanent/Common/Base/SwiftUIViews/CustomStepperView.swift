@@ -42,6 +42,7 @@ struct CustomStepper : View {
                         Image(.stepperMinus)
                             .renderingMode(.template)
                             .foregroundColor(Color.gray)
+                            .contentShape(Circle())
                     })
                     
                     Button(action: {
@@ -53,6 +54,7 @@ struct CustomStepper : View {
                         Image(.stepperPlus)
                             .renderingMode(.template)
                             .foregroundColor(Color.gray)
+                            .contentShape(Circle())
                     })
                 }
             }

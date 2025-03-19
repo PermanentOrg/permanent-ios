@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TwoStepVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var navigationStateManager: NavigationStateManager
     @StateObject var viewModel: TwoStepVerificationViewModel
     @State var showDeleteAlert: Bool = false
     @State var showDeleteModal: Bool = false
@@ -18,6 +19,7 @@ struct TwoStepVerificationView: View {
     init(isTwoFactorEnabled: Bool = false, twoFactorMethods: [TwoFactorMethod]) {
         self._viewModel = StateObject(wrappedValue: TwoStepVerificationViewModel(isTwoFactorEnabled: isTwoFactorEnabled, twoFactorMethods: twoFactorMethods))
     }
+    
     var body: some View {
         ZStack {
             if Constants.Design.isPhone {
@@ -123,6 +125,7 @@ struct TwoStepVerificationView: View {
         .onChange(of: viewModel.refreshAccountDataRequired, perform: { newValue in
             if newValue {
                 viewModel.refreshAccountData()
+                navigationStateManager.refreshTwoStepData = true
             }
         })
         .onChange(of: viewModel.deleteMethodConfirmed, perform: { newValue in

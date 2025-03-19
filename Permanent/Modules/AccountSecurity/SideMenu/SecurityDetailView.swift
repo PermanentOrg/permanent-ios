@@ -10,19 +10,15 @@ struct SecurityDetailView: View {
     @EnvironmentObject var navigationManager: NavigationStateManager
     
     var body: some View {
-        if let state = navigationManager.selectionState {
-            switch state {
-            case .changePassword:
-                ChangePasswordView()
-            case .twoStepVerification:
-                TwoStepVerificationView(
-                    isTwoFactorEnabled: false,
-                    twoFactorMethods: []
-                )
-            case .biometricAuth:
-                BiometricSettingsView()
-            }
-        } else {
+        switch navigationManager.selectionState {
+        case .changePassword:
+            ChangePasswordView()
+        case .twoStepVerification:
+            TwoStepVerificationView(
+                isTwoFactorEnabled: false,
+                twoFactorMethods: []
+            )
+        default:
             VStack(spacing: 32) {
                 Image(systemName: "shield.fill")
                     .font(.system(size: 50))

@@ -11,12 +11,12 @@ import Combine
 enum SelectionState: Hashable, Codable {
     case changePassword
     case twoStepVerification
-    case biometricAuth
+    case none
 }
 
 class NavigationStateManager: ObservableObject {
-    
-    @Published var selectionState: SelectionState? = nil
+    @Published var selectionState: SelectionState = .none
+    @Published var refreshTwoStepData: Bool = false
     
     
     var data: Data? {
@@ -37,7 +37,7 @@ class NavigationStateManager: ObservableObject {
     
     
     func popToRoot() {
-       selectionState = nil
+        selectionState = .none
     }
     
     func goToChangePassword() {
@@ -48,8 +48,8 @@ class NavigationStateManager: ObservableObject {
         selectionState = .twoStepVerification
     }
     
-    func goToBiometricAuth() {
-        selectionState = .biometricAuth
+    func updateTwoStepData() {
+        refreshTwoStepData = true
     }
     
     var objectWillChangeSequence: AsyncPublisher<Publishers.Buffer<ObservableObjectPublisher>> {
