@@ -1,5 +1,5 @@
 //
-//  LoginViewModel.swift
+//  AuthViewModel.swift
 //  Permanent
 //
 //  Created by Adrian Creteanu on 17/09/2020.

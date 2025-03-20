@@ -3,12 +3,12 @@ name: Deploy Firebase Beta
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "feature/Onboarding-Redesign", "feature/Authentication-Redesign" ]
+    branches: [ "main", "feature/Onboarding-Redesign", "feature/Authentication-Redesign", "feature/2FA-Redesign"]
 
 jobs:
   build:
     name: Build and deploy a beta build to Firebase Distribution
-    runs-on: macos-13
+    runs-on: macos-15
     environment: staging
 
     steps:

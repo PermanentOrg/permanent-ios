@@ -69,6 +69,7 @@ extension Color {
     static var lightRed = Color("LightRed")
     static var error25 = Color(.error25)
     static var error200 = Color(.error200)
+    static var fadeGray = Color(.fadeGray)
     static var error500 = Color(.error500)
     static var barneyPurple = Color(.barneyPurple)
     static var liniarBlue = Color(.liniarBlue)
