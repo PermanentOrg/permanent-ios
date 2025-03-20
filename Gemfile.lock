@@ -292,7 +292,7 @@ PLATFORMS
   x86_64-darwin-19
 
 DEPENDENCIES
-  cocoapods (~> 1.15.2)
+  cocoapods (~> 1.16.2)
   fastlane
   fastlane-plugin-firebase_app_distribution
 
