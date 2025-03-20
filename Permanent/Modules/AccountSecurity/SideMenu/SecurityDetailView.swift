@@ -33,16 +33,8 @@ struct SecurityDetailView: View {
     }
 }
 
-// Placeholder views - you'll need to implement these
 struct ChangePasswordView: View {
     var body: some View {
         ViewRepresentableWithoutTitleContainer(viewRepresentable: PasswordUpdateViewControllerRepresentable())
-    }
-}
-
-struct BiometricSettingsView: View {
-    var body: some View {
-        Text("Biometric Settings View")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
