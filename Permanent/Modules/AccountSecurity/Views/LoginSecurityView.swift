@@ -54,7 +54,6 @@ struct LoginSecurityView: View {
                             titleText: "Change password",
                             descText: "Update your password to keep your account secure."
                         )
-                        .frame(height: 112)
                     }
                     Divider()
                     NavigationLink {
@@ -78,7 +77,6 @@ struct LoginSecurityView: View {
                             badgeText: viewModel.twoFactorBadgeStatus?.text ?? "",
                             badgeColor: viewModel.twoFactorBadgeStatus?.color ?? .clear
                         )
-                        .frame(height: 112)
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
                     }
                     Divider()
