@@ -58,7 +58,7 @@ struct BottomNotificationWithOverlayView: View {
                     )
                     .shadow(color: Color(red: 0.07, green: 0.11, blue: 0.29).opacity(0.12), radius: 16, x: 0, y: 24)
                     Color.clear
-                        .frame(height: Constants.Design.isPhone ? 32 : 64)
+                        .frame(height: 32)
                 }
                 .transition(.move(edge: .bottom))
                 .animation(.easeInOut(duration: 0.3), value: isVisible)

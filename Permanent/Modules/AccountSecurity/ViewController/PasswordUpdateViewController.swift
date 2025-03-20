@@ -17,6 +17,8 @@ class PasswordUpdateViewController: BaseViewController<SecurityViewModel> {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = SecurityViewModel()
+        
         self.navigationController?.presentationController?.delegate = self
     
         initUI()
