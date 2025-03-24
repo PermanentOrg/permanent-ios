@@ -10,6 +10,7 @@ struct LoginSecurityView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: LoginSecurityViewModel
     @State private var navigateToTwoStep = false
+    @StateObject var navigationStateManager = NavigationStateManager()
     
     init(viewModel: StateObject<LoginSecurityViewModel>) {
         self._viewModel = viewModel
@@ -30,6 +31,7 @@ struct LoginSecurityView: View {
             } rightButton: {
                 EmptyView()
             }
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
     
@@ -41,50 +43,130 @@ struct LoginSecurityView: View {
     
     var contentView: some View {
         ZStack(alignment: .bottom) {
-            VStack(spacing: 10) {
-                Button {
-                    viewModel.addStorageIsPresented = true
-                } label: {
+            if Constants.Design.isPhone {
+                VStack(spacing: 10) {
+                    NavigationLink {
+                        ViewRepresentableContainer(viewRepresentable: PasswordUpdateViewControllerRepresentable(), title: PasswordUpdateViewControllerRepresentable().title)
+                            .navigationBarBackButtonHidden(true)
+                    } label: {
+                        CustomListItemView(
+                            image: Image(.securityChangePass),
+                            titleText: "Change password",
+                            descText: "Update your password to keep your account secure."
+                        )
+                    }
+                    Divider()
+                    NavigationLink {
+                        TwoStepVerificationView(
+                            isTwoFactorEnabled: viewModel.isTwoStepVerificationToggleOn,
+                            twoFactorMethods: viewModel.twoFactorMethods
+                        )
+                        .navigationBarBackButtonHidden(true)
+                        .onChange(of: navigationStateManager.refreshTwoStepData) { newValue in
+                            if newValue {
+                                viewModel.checkTwoFactorStatus()
+                                navigationStateManager.refreshTwoStepData = false
+                            }
+                        }
+                    } label: {
+                        CustomListItemView(
+                            image: Image(.securityTwoStepVerify),
+                            titleText: "Two-step verification",
+                            descText: "Enhance account security by requiring a login verification code.",
+                            showBadge: viewModel.twoFactorBadgeStatus != nil,
+                            badgeText: viewModel.twoFactorBadgeStatus?.text ?? "",
+                            badgeColor: viewModel.twoFactorBadgeStatus?.color ?? .clear
+                        )
+                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
+                    }
+                    Divider()
                     CustomListItemView(
-                        image: Image(.securityChangePass),
-                        titleText: "Change password",
-                        descText: "Update your password to keep your account secure."
+                        image: Image(.securityFaceId),
+                        titleText: "Sign in with \(viewModel.getAuthTypeText())",
+                        descText: "This option lets you securely sign in with just a glance.",
+                        showToggle: true,
+                        isToggleOn: $viewModel.isSecurityToggleOn
                     )
+                    Spacer()
                 }
-                Divider()
-                NavigationLink {
-                    TwoStepVerificationView(
-                        isTwoFactorEnabled: viewModel.isTwoStepVerificationToggleOn,
-                        twoFactorMethods: viewModel.twoFactorMethods
-                    )
-                    .navigationBarBackButtonHidden(true)
-                } label: {
-                    CustomListItemView(
-                        image: Image(.securityTwoStepVerify),
-                        titleText: "Two-step verification",
-                        descText: "Enhance account security by requiring a login verification code.",
-                        showBadge: viewModel.twoFactorBadgeStatus != nil,
-                        badgeText: viewModel.twoFactorBadgeStatus?.text ?? "",
-                        badgeColor: viewModel.twoFactorBadgeStatus?.color ?? .clear
-                    )
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
+                .padding(.top, 10)
+                .onAppear() {
+                    viewModel.checkTwoFactorStatus()
                 }
-                Divider()
-                CustomListItemView(
-                    image: Image(.securityFaceId),
-                    titleText: "Sign in with \(viewModel.getAuthTypeText())",
-                    descText: "This option lets you securely sign in with just a glance.",
-                    showToggle: true,
-                    isToggleOn: $viewModel.isSecurityToggleOn
-                )
-                Spacer()
-            }
-            .onAppear() {
-                viewModel.checkTwoFactorStatus()
+            } else {
+                NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
+                    VStack(spacing: 0) {
+                        NavigationLink {
+                            ViewRepresentableWithoutTitleContainer(viewRepresentable: PasswordUpdateViewControllerRepresentable())
+                                .toolbar(.hidden, for: .navigationBar)
+                                .padding(.vertical, Constants.Design.isPhone ? 16 : 64)
+                                .padding(.horizontal, Constants.Design.isPhone ? 24 : 128)
+                                .onAppear {
+                                    navigationStateManager.selectionState = .changePassword
+                                }
+                        } label: {
+                            CustomListItemView(
+                                image: Image(.securityChangePass),
+                                titleText: "Change password",
+                                descText: "Update your password to keep your account secure.",
+                                isSelected: .constant(navigationStateManager.selectionState == .changePassword)
+                            )
+                            .frame(height: 112)
+                        }
+                        Divider()
+                        NavigationLink {
+                            TwoStepVerificationView(
+                                isTwoFactorEnabled: viewModel.isTwoStepVerificationToggleOn,
+                                twoFactorMethods: viewModel.twoFactorMethods
+                            )
+                            .toolbar(.hidden, for: .navigationBar)
+                            .navigationBarBackButtonHidden(true)
+                            .onChange(of: navigationStateManager.refreshTwoStepData) { newValue in
+                                if newValue {
+                                    viewModel.checkTwoFactorStatus()
+                                    navigationStateManager.refreshTwoStepData = false
+                                }
+                            }
+                            .onAppear {
+                                navigationStateManager.selectionState = .twoStepVerification
+                            }
+                        } label: {
+                            CustomListItemView(
+                                image: Image(.securityTwoStepVerify),
+                                titleText: "Two-step verification",
+                                descText: "Enhance account security by requiring a login verification code.",
+                                showBadge: viewModel.twoFactorBadgeStatus != nil,
+                                badgeText: viewModel.twoFactorBadgeStatus?.text ?? "",
+                                badgeColor: viewModel.twoFactorBadgeStatus?.color ?? .clear,
+                                isSelected: .constant(navigationStateManager.selectionState == .twoStepVerification)
+                            )
+                            .frame(height: 112)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: viewModel.twoFactorBadgeStatus)
+                        }
+                        Divider()
+                        CustomListItemView(
+                            image: Image(.securityFaceId),
+                            titleText: "Sign in with \(viewModel.getAuthTypeText())",
+                            descText: "This option lets you securely sign in with just a glance.",
+                            showToggle: true,
+                            isToggleOn: $viewModel.isSecurityToggleOn
+                        )
+                        .frame(height: 112)
+                        Spacer()
+                    }
+                    .navigationSplitViewColumnWidth(min: 400, ideal: 400)
+                    .onAppear() {
+                        viewModel.checkTwoFactorStatus()
+                    }
+                    .toolbar(.hidden, for: .navigationBar)
+                } detail: {
+                    SecurityDetailView()
+                        .toolbar(.hidden, for: .navigationBar)
+                }
+                .environmentObject(navigationStateManager)
             }
         }
         .navigationBarTitle("Login & Security", displayMode: .inline)
-        .padding(.top, 10)
         .onChange(of: viewModel.isSecurityToggleOn) { newValue in
             viewModel.updateBiometricsStatus(isEnabled: newValue)
         }

@@ -11,7 +11,7 @@ struct TwoStepConfirmPasswordView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            VStack(spacing: 32) {
+            VStack(alignment: .leading, spacing: 32) {
                 HStack {
                     Text("Enter your Permanent account") +
                     Text(" password ").bold() +
@@ -37,6 +37,7 @@ struct TwoStepConfirmPasswordView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity)
+            .padding(.top, Constants.Design.isPhone ? 0 : 16)
             .padding(32)
         }
         .navigationBarTitle("Confirm your password", displayMode: .inline)

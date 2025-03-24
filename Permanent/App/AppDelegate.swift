@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         initFirebase()
         initNotifications()
+        configureLogging()
         
         StripeAPI.defaultPublishableKey = stripeServiceInfo.publishableKey
         
@@ -243,6 +244,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         GMSServices.provideAPIKey(googleServiceInfo.apiKey)
         GMSPlacesClient.provideAPIKey(googleServiceInfo.apiKey)
+    }
+    
+    fileprivate func configureLogging() {
+        #if STAGING_ENVIRONMENT
+            NetworkLogger.configuration.logLevel = .debug
+            NetworkLogger.configuration.environmentRestriction = nil // Log in all environments
+            NetworkLogger.configuration.logBodies = true
+            NetworkLogger.enableLogging()
+        #else
+             NetworkLogger.disableLogging()
+        #endif
     }
     
     fileprivate func initNotifications() {
