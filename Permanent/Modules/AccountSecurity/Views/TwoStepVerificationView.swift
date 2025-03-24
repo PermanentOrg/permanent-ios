@@ -125,7 +125,9 @@ struct TwoStepVerificationView: View {
         .onChange(of: viewModel.refreshAccountDataRequired, perform: { newValue in
             if newValue {
                 viewModel.refreshAccountData()
-                navigationStateManager.refreshTwoStepData = true
+                if !Constants.Design.isPhone {
+                    navigationStateManager.refreshTwoStepData = true
+                }
             }
         })
         .onChange(of: viewModel.deleteMethodConfirmed, perform: { newValue in

@@ -62,12 +62,6 @@ struct LoginSecurityView: View {
                             twoFactorMethods: viewModel.twoFactorMethods
                         )
                         .navigationBarBackButtonHidden(true)
-                        .onChange(of: navigationStateManager.refreshTwoStepData) { newValue in
-                            if newValue {
-                                viewModel.checkTwoFactorStatus()
-                                navigationStateManager.refreshTwoStepData = false
-                            }
-                        }
                     } label: {
                         CustomListItemView(
                             image: Image(.securityTwoStepVerify),
