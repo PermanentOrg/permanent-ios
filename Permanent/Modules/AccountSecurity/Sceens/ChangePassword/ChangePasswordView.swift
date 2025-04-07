@@ -6,10 +6,18 @@
 
 import SwiftUI
 
+enum ChangePasswordFocusField: Hashable {
+    case current, new, confirm
+}
+
 struct ChangePasswordView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: ChangePasswordViewModel
     @State private var strength: PasswordStrength = .weak
+    @State var showPassStrength: Bool = false
+    @State var keyboardOpenend: Bool = false
+    @State var showEmptySpace: Bool = true
+    @State var keyboardHeight: CGFloat = 0
     
     init() {
         self._viewModel = StateObject(wrappedValue: ChangePasswordViewModel())
@@ -53,73 +61,137 @@ struct ChangePasswordView: View {
     
     var contentView: some View {
         ZStack(alignment: .bottom) {
-            VStack(alignment: .leading, spacing: 32) {
-                descriptionView
-                Divider()
-                VStack(spacing: 24) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Current password".uppercased())
-                            .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
-                            .font(.custom("Usual", size: 10))
-                            .kerning(1.6)
-                        CustomPasswordFieldView(password: $viewModel.currentPassword) {
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("New password".uppercased())
-                            .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
-                            .font(.custom("Usual", size: 10))
-                            .kerning(1.6)
-                        
-                        VStack(spacing: 8) {
-                            CustomPasswordFieldView(password: $viewModel.newPassword) {
+            GeometryReader { geometry in
+                ScrollViewReader { scrollView in
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 32) {
+                            descriptionView
+                            Divider()
+                            VStack(spacing: 24) {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("Current password".uppercased())
+                                        .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
+                                        .font(.custom("Usual", size: 10))
+                                        .kerning(1.6)
+                                    CustomPasswordFieldWithPreviewView(password: $viewModel.currentPassword, showPasswordPreviewBtn: .constant(false), submitLabel: .done) {
+                                    }
+                                }
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("New password".uppercased())
+                                        .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
+                                        .font(.custom("Usual", size: 10))
+                                        .kerning(1.6)
+                                    
+                                    VStack(spacing: 8) {
+                                        CustomPasswordFieldWithPreviewView(password: $viewModel.newPassword, showPasswordPreviewBtn: .constant(true)) {
+
+                                        }
+                                        if showPassStrength {
+                                            VStack(alignment: .leading, spacing: 8) {
+                                                
+                                                StrengthBar(strength: strength)
+                                                Text("Password strength: \(strength.rawValue)")
+                                                    .foregroundColor(strength.color)
+                                                    .font(.custom("Usual", size: 12))
+                                            }
+                                            .animation(.easeInOut, value: strength)
+                                            .onAppear {
+                                                strength = evaluatePasswordStrength(viewModel.newPassword)
+                                            }
+                                            .onChange(of: viewModel.newPassword, perform: { newValue in
+                                                strength = evaluatePasswordStrength(newValue)
+                                            })
+                                            .padding(.horizontal, 24)
+                                        }
+
+                                    }
+                                    .onChange(of: viewModel.newPassword, perform: { newValue in
+                                        if newValue.count > 7 {
+                                            withAnimation {
+                                                showPassStrength = true
+                                            }
+                                        } else {
+                                            withAnimation {
+                                                showPassStrength = false
+                                            }
+                                        }
+                                    })
+                                }
                                 
-                            }
-                            VStack(alignment: .leading, spacing: 8) {
                                 
-                                StrengthBar(strength: strength)
-                                Text("Password strength: \(strength.rawValue)")
-                                    .foregroundColor(strength.color)
-                                    .font(.custom("Usual", size: 12))
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("Re-type new password".uppercased())
+                                        .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
+                                        .font(.custom("Usual", size: 10))
+                                        .kerning(1.6)
+                                    CustomPasswordFieldWithPreviewView(password: $viewModel.confirmPassword, showPasswordPreviewBtn: .constant(true)) {
+                                    }
+                                }
+                                RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: "Change Password" ) {
+                                }
+                                Spacer()
+                                if !showEmptySpace {
+                                    Spacer()
+                                        .frame(height: keyboardHeight - 64 > 0 ? keyboardHeight - 64 : keyboardHeight)
+                                }
                             }
-                            .animation(.easeInOut, value: strength)
-                            .onAppear {
-                                strength = evaluatePasswordStrength(viewModel.newPassword)
-                            }
-                            .onChange(of: viewModel.newPassword, perform: { newValue in
-                                strength = evaluatePasswordStrength(newValue)
-                            })
-                            .padding(.horizontal, 24)
                         }
                     }
-                    
-                    
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Re-type new password".uppercased())
-                            .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
-                            .font(.custom("Usual", size: 10))
-                            .kerning(1.6)
-                        CustomPasswordFieldView(password: $viewModel.confirmPassword) {
+                    .frame(height: geometry.size.height)
+                    .onAppear {
+                        UIScrollView.appearance().bounces = false
+                    }
+                    .onDisappear {
+                        UIScrollView.appearance().bounces = true
+                    }
+                }
+            }
+            
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
+            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardHeight = keyboardSize.size.height
+                if keyboardHeight > 120 {
+                    if !keyboardOpenend {
+                        keyboardOpenend = true
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            showEmptySpace = false
                         }
                     }
-                    
-                    
-                    RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: "Change Password" ) {
-                    }
-                    Spacer()
                 }
             }
         }
-        .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
-            if newValue != .none {
-                if viewModel.showError == false {
-                    viewModel.displayBannerWithAutoClose()
+                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
+                    if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                        keyboardHeight = 0
+                        if keyboardSize.height > 120 {
+                            if keyboardOpenend {
+                                keyboardOpenend = false
+                                withAnimation(.bouncy(duration: 0.3)) {
+                                    showEmptySpace = true
+                                }
+                            }
+                        }
+                    }
                 }
-            } else {
-                viewModel.showBottomBanner = false
-            }
-        })
-        .navigationBarTitle("Change password", displayMode: .inline)
+                .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
+                    if newValue != .none {
+                        if viewModel.showError == false {
+                            viewModel.displayBannerWithAutoClose()
+                        }
+                    } else {
+                        viewModel.showBottomBanner = false
+                    }
+                })
+                .onTapGesture {
+                    withAnimation {
+                        showEmptySpace = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                }
+                .navigationBarTitle("Change password", displayMode: .inline)
     }
     
     func evaluatePasswordStrength(_ password: String) -> PasswordStrength {
@@ -127,21 +199,18 @@ struct ChangePasswordView: View {
             return .weak
         }
         
-        let lengthCriteria = password.count >= 8
-        let numberCriteria = password.rangeOfCharacter(from: .decimalDigits) != nil
-        let uppercaseCriteria = password.rangeOfCharacter(from: .uppercaseLetters) != nil
-        let specialCharacterCriteria = password.rangeOfCharacter(from: CharacterSet.punctuationCharacters) != nil
+        let strengthLevels: [(regex: String, strength: PasswordStrength)] = [
+            ("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\"|{}:;<>,.?/~`]).{10,}$", .strong),
+            ("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\"|{}:;<>,.?/~`]).{8,}$", .medium),
+            ("^(?=.*[a-zA-Z])(?=.*\\d).{6,}$", .weak)
+        ]
         
-        let score = [lengthCriteria, numberCriteria, uppercaseCriteria, specialCharacterCriteria].filter { $0 }.count
-        
-        switch score {
-        case 0...1:
-            return .weak
-        case 2...3:
-            return .medium
-        default:
-            return .strong
+        for (regex, strength) in strengthLevels {
+            if NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: password) {
+                return strength
+            }
         }
+        return .weak
     }
     
     var descriptionView: some View {

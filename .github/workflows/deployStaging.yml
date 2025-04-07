@@ -3,7 +3,7 @@ name: Deploy Firebase Beta
 on:
   workflow_dispatch:
   push:
-    branches: [ "main","development","feature/PasswordChange-Redesign", "feature/Authentication-Redesign", "feature/2FA-Redesign"]
+    branches: [ "main","development","feature/PasswordChange-Redesign"]
 
 jobs:
   build:
