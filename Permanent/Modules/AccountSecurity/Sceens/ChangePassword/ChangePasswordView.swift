@@ -50,6 +50,7 @@ struct ChangePasswordView: View {
             }
             BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
+                .padding(.bottom, -32)
         }
     }
     
@@ -96,10 +97,10 @@ struct ChangePasswordView: View {
                                             }
                                             .animation(.easeInOut, value: strength)
                                             .onAppear {
-                                                strength = evaluatePasswordStrength(viewModel.newPassword)
+                                                strength = viewModel.evaluatePasswordStrength(viewModel.newPassword)
                                             }
                                             .onChange(of: viewModel.newPassword, perform: { newValue in
-                                                strength = evaluatePasswordStrength(newValue)
+                                                strength = viewModel.evaluatePasswordStrength(newValue)
                                             })
                                             .padding(.horizontal, 24)
                                         }
@@ -128,6 +129,8 @@ struct ChangePasswordView: View {
                                     }
                                 }
                                 RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: "Change Password" ) {
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    viewModel.verifyPasswordFields()
                                 }
                                 Spacer()
                                 if !showEmptySpace {
@@ -192,25 +195,6 @@ struct ChangePasswordView: View {
                     }
                 }
                 .navigationBarTitle("Change password", displayMode: .inline)
-    }
-    
-    func evaluatePasswordStrength(_ password: String) -> PasswordStrength {
-        if password.isEmpty {
-            return .weak
-        }
-        
-        let strengthLevels: [(regex: String, strength: PasswordStrength)] = [
-            ("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\"|{}:;<>,.?/~`]).{10,}$", .strong),
-            ("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\"|{}:;<>,.?/~`]).{8,}$", .medium),
-            ("^(?=.*[a-zA-Z])(?=.*\\d).{6,}$", .weak)
-        ]
-        
-        for (regex, strength) in strengthLevels {
-            if NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: password) {
-                return strength
-            }
-        }
-        return .weak
     }
     
     var descriptionView: some View {
@@ -285,23 +269,6 @@ struct ChangePasswordView: View {
                 .fill(color)
                 .frame(height: height)
                 .frame(maxWidth: maxWidth)
-        }
-    }
-    
-    enum PasswordStrength: String {
-        case weak = "weak"
-        case medium = "medium"
-        case strong = "strong"
-        
-        var color: Color {
-            switch self {
-            case .weak:
-                return Color(red: 0.94, green: 0.27, blue: 0.22)
-            case .medium:
-                return Color(red: 0.97, green: 0.56, blue: 0.03)
-            case .strong:
-                return Color(red: 0.07, green: 0.72, blue: 0.42)
-            }
         }
     }
 }
