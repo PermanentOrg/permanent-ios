@@ -8,6 +8,8 @@
 enum BannerBottomMessage {
     case invalidData
     case invalidPassword
+    case passwordTooShort
+    case passwordMismatch
     case incorrectEmail
     case invalidPhoneNumber
     case emptyPinCode
@@ -38,6 +40,10 @@ enum BannerBottomMessage {
             return "Invalid email entered."
         case .invalidPhoneNumber:
             return "Incorrect phone number."
+        case .passwordMismatch:
+            return "The passwords don’t match!"
+        case.passwordTooShort:
+            return "The passwords are too short!"
         case .emptyPinCode:
             return "The 4-digit code is incorrect."
         case .invalidPinCode:
@@ -74,7 +80,7 @@ enum BannerBottomMessage {
         case .successResendCode, .successCodeSend, .successPasswordConfirmed,
              .successEmailAdded, .successSmsAdded, .successEmailDeleted, .successSmsDeleted, .none:
             return false
-        case .invalidData, .invalidPassword, .incorrectEmail,
+        case .invalidData, .invalidPassword, .passwordMismatch, .passwordTooShort, .incorrectEmail,
              .invalidPhoneNumber, .emptyPinCode, .invalidPinCode, .invalidEmail,
              .resentCodeError, .codeExpiredError, .error, .generalError:
             return true
