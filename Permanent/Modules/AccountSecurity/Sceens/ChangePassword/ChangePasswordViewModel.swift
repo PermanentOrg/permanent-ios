@@ -8,28 +8,29 @@ import SwiftUI
 class ChangePasswordViewModel: ObservableObject {
     @Published var showBottomBanner: Bool = false
     @Published var bottomBannerMessage: BannerBottomMessage = .none
-    @Published var showError: Bool = false
+    @Published var showBanner: Bool = false
     @Published var currentPassword: String = ""
     @Published var newPassword: String = ""
     @Published var confirmPassword: String = ""
+    @Published var isLoading: Bool = false
     
     func verifyPasswordFields() {
         guard currentPassword.count > 7 else {
-            showError = true
+            showBanner = true
             bottomBannerMessage = .passwordTooShort
             displayBannerWithAutoClose()
             return
         }
         
         guard newPassword.count > 7 else {
-            showError = true
+            showBanner = true
             bottomBannerMessage = .passwordTooShort
             displayBannerWithAutoClose()
             return
         }
         
         guard newPassword == confirmPassword else {
-            showError = true
+            showBanner = true
             bottomBannerMessage = .passwordMismatch
             displayBannerWithAutoClose()
             return
@@ -39,8 +40,63 @@ class ChangePasswordViewModel: ObservableObject {
     }
     
     func changePassword() {
+        guard
+            let accountId: Int = AuthenticationManager.shared.session?.account.accountID
+        else {
+            showBanner = true
+            bottomBannerMessage = .generalError
+            displayBannerWithAutoClose()
+            return
+        }
         
+        let data = ChangePasswordCredentials(password: newPassword, passwordVerify: confirmPassword, passwordOld: currentPassword)
+        let changePasswordOperation = APIOperation(AccountEndpoint.changePassword(accountId: accountId, passwordDetails: data))
+        isLoading = true
+        changePasswordOperation.execute(in: APIRequestDispatcher()) {[weak self] result in
+            self?.isLoading = false
+            switch result {
+            case .json(let response, _):
+                guard
+                    let model: APIResults<NoDataModel> = JSONHelper.decoding(
+                        from: response,
+                        with: APIResults<NoDataModel>.decoder
+                    )
+                else {
+                    self?.showBanner = true
+                    self?.bottomBannerMessage = .generalError
+                    self?.displayBannerWithAutoClose()
+                    return
+                }
+                guard
+                    model.isSuccessful
+                else {
+                    let message = model.results.first?.message.first
+                    let passwordChangeError = PasswordChangeError(rawValue: message ?? .errorUnknown)
+
+                    let errorMessage: String = passwordChangeError?.description ?? .errorMessage
+                    self?.showBanner = true
+                    self?.bottomBannerMessage = BannerBottomMessage.custom(message: errorMessage, isErrorMessage: true)
+                    self?.displayBannerWithAutoClose()
+                    return
+                }
+                self?.showBanner = true
+                self?.bottomBannerMessage = BannerBottomMessage.custom(message: "Password updated.", isErrorMessage: false)
+                self?.displayBannerWithAutoClose()
+                self?.currentPassword = ""
+                self?.newPassword = ""
+                self?.confirmPassword = ""
+            case .error:
+                self?.showBanner = true
+                self?.bottomBannerMessage = .generalError
+                self?.displayBannerWithAutoClose()
+                return
+                
+            default:
+                break
+            }
+        }
     }
+
     
     func displayBanner() {
         if showBottomBanner {

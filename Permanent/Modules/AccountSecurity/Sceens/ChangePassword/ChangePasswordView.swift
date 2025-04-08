@@ -30,7 +30,7 @@ struct ChangePasswordView: View {
                     ZStack {
                         backgroundView
                         contentView
-                            .padding(.vertical, 32)
+                            .padding(.bottom, 32)
                             .padding(.horizontal, 32)
                     }
                     .ignoresSafeArea(.all)
@@ -67,6 +67,7 @@ struct ChangePasswordView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 32) {
                             descriptionView
+                                .padding(.top, 32)
                             Divider()
                             VStack(spacing: 24) {
                                 VStack(alignment: .leading, spacing: 16) {
@@ -128,7 +129,7 @@ struct ChangePasswordView: View {
                                     CustomPasswordFieldWithPreviewView(password: $viewModel.confirmPassword, showPasswordPreviewBtn: .constant(true)) {
                                     }
                                 }
-                                RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: "Change Password" ) {
+                                RoundButtonUsualFontView(isDisabled: false, isLoading: viewModel.isLoading, text: "Change Password" ) {
                                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                     viewModel.verifyPasswordFields()
                                 }
@@ -149,7 +150,6 @@ struct ChangePasswordView: View {
                     }
                 }
             }
-            
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -179,7 +179,7 @@ struct ChangePasswordView: View {
                 }
                 .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
                     if newValue != .none {
-                        if viewModel.showError == false {
+                        if viewModel.showBanner == false {
                             viewModel.displayBannerWithAutoClose()
                         }
                     } else {
