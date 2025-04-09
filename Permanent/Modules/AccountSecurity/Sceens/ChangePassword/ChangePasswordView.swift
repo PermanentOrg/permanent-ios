@@ -18,6 +18,7 @@ struct ChangePasswordView: View {
     @State var keyboardOpenend: Bool = false
     @State var showEmptySpace: Bool = true
     @State var keyboardHeight: CGFloat = 0
+    @FocusState private var focusedField: ChangePasswordFocusField?
     
     init() {
         self._viewModel = StateObject(wrappedValue: ChangePasswordViewModel())
@@ -30,7 +31,7 @@ struct ChangePasswordView: View {
                     ZStack {
                         backgroundView
                         contentView
-                            .padding(.vertical, 32)
+                            .padding(.bottom, 32)
                             .padding(.horizontal, 32)
                     }
                     .ignoresSafeArea(.all)
@@ -48,7 +49,7 @@ struct ChangePasswordView: View {
                 }
                 .ignoresSafeArea(.all)
             }
-            BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
+            BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, showRightButton: false, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
                 .padding(.bottom, -32)
         }
@@ -67,6 +68,8 @@ struct ChangePasswordView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 32) {
                             descriptionView
+                                .padding(.top, 32)
+                                .id(ChangePasswordFocusField.current)
                             Divider()
                             VStack(spacing: 24) {
                                 VStack(alignment: .leading, spacing: 16) {
@@ -74,19 +77,23 @@ struct ChangePasswordView: View {
                                         .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
                                         .font(.custom("Usual", size: 10))
                                         .kerning(1.6)
-                                    CustomPasswordFieldWithPreviewView(password: $viewModel.currentPassword, showPasswordPreviewBtn: .constant(false), submitLabel: .done) {
+                                    CustomPasswordFieldWithPreviewView(password: $viewModel.currentPassword, showPasswordPreviewBtn: .constant(false), submitLabel: .next) {
+                                        focusedField = .new
                                     }
+                                    .focused($focusedField, equals: .current)
                                 }
                                 VStack(alignment: .leading, spacing: 16) {
                                     Text("New password".uppercased())
                                         .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
                                         .font(.custom("Usual", size: 10))
                                         .kerning(1.6)
+                                        .id(ChangePasswordFocusField.new)
                                     
                                     VStack(spacing: 8) {
-                                        CustomPasswordFieldWithPreviewView(password: $viewModel.newPassword, showPasswordPreviewBtn: .constant(true)) {
-
+                                        CustomPasswordFieldWithPreviewView(password: $viewModel.newPassword, showPasswordPreviewBtn: .constant(true), submitLabel: .next) {
+                                            focusedField = .confirm
                                         }
+                                        .focused($focusedField, equals: .new)
                                         if showPassStrength {
                                             VStack(alignment: .leading, spacing: 8) {
                                                 
@@ -125,16 +132,31 @@ struct ChangePasswordView: View {
                                         .foregroundColor(Color(red: 0.35, green: 0.37, blue: 0.5))
                                         .font(.custom("Usual", size: 10))
                                         .kerning(1.6)
-                                    CustomPasswordFieldWithPreviewView(password: $viewModel.confirmPassword, showPasswordPreviewBtn: .constant(true)) {
+                                        .id(ChangePasswordFocusField.confirm)
+                                    CustomPasswordFieldWithPreviewView(password: $viewModel.confirmPassword, showPasswordPreviewBtn: .constant(true), submitLabel: .done) {
+                                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    }
+                                    .focused($focusedField, equals: .confirm)
+                                    .onChange(of: viewModel.confirmPassword) { _ in
+                                        if focusedField == .confirm {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                withAnimation {
+                                                    scrollView.scrollTo("changePasswordButton", anchor: .center)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                                RoundButtonUsualFontView(isDisabled: false, isLoading: false, text: "Change Password" ) {
+                                RoundButtonUsualFontView(isDisabled: false, isLoading: viewModel.isLoading, text: "Change Password" ) {
                                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                     viewModel.verifyPasswordFields()
                                 }
+                                
                                 Spacer()
+                                
                                 if !showEmptySpace {
                                     Spacer()
+                                        .id("changePasswordButton")
                                         .frame(height: keyboardHeight - 64 > 0 ? keyboardHeight - 64 : keyboardHeight)
                                 }
                             }
@@ -149,7 +171,6 @@ struct ChangePasswordView: View {
                     }
                 }
             }
-            
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -159,6 +180,13 @@ struct ChangePasswordView: View {
                         keyboardOpenend = true
                         withAnimation(.bouncy(duration: 0.3)) {
                             showEmptySpace = false
+                        }
+                        
+                        if focusedField == .confirm {
+                                withAnimation {
+                                    focusedField = .confirm // Re-trigger the focus to ensure scroll happens
+                            
+                            }
                         }
                     }
                 }
@@ -179,7 +207,7 @@ struct ChangePasswordView: View {
                 }
                 .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
                     if newValue != .none {
-                        if viewModel.showError == false {
+                        if viewModel.showBanner == false {
                             viewModel.displayBannerWithAutoClose()
                         }
                     } else {

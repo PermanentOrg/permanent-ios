@@ -5,7 +5,7 @@
 //  Created by Lucian Cerbu on 26.02.2025.
 
 
-enum BannerBottomMessage {
+enum BannerBottomMessage: Equatable {
     case invalidData
     case invalidPassword
     case passwordTooShort
@@ -27,6 +27,7 @@ enum BannerBottomMessage {
     case error
     case generalError
     case none
+    case custom(message: String, isErrorMessage: Bool)
     
     var text: String {
         switch self {
@@ -41,9 +42,9 @@ enum BannerBottomMessage {
         case .invalidPhoneNumber:
             return "Incorrect phone number."
         case .passwordMismatch:
-            return "The passwords don’t match!"
+            return "Passwords do not match."
         case.passwordTooShort:
-            return "The passwords are too short!"
+            return "Your password must be at least 8 characters."
         case .emptyPinCode:
             return "The 4-digit code is incorrect."
         case .invalidPinCode:
@@ -72,6 +73,8 @@ enum BannerBottomMessage {
             return "Something went wrong."
         case .none:
             return ""
+        case .custom(let message, _):
+            return message
         }
     }
     
@@ -84,6 +87,8 @@ enum BannerBottomMessage {
              .invalidPhoneNumber, .emptyPinCode, .invalidPinCode, .invalidEmail,
              .resentCodeError, .codeExpiredError, .error, .generalError:
             return true
+        case .custom(_, let isErrorMessage):
+            return isErrorMessage
         }
     }
 } 
