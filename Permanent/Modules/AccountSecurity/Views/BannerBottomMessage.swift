@@ -42,9 +42,9 @@ enum BannerBottomMessage: Equatable {
         case .invalidPhoneNumber:
             return "Incorrect phone number."
         case .passwordMismatch:
-            return "The passwords don't match!"
+            return "Passwords do not match."
         case.passwordTooShort:
-            return "The passwords are too short!"
+            return "Your password must be at least 8 characters."
         case .emptyPinCode:
             return "The 4-digit code is incorrect."
         case .invalidPinCode:

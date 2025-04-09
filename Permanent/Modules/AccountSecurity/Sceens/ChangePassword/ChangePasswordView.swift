@@ -49,7 +49,7 @@ struct ChangePasswordView: View {
                 }
                 .ignoresSafeArea(.all)
             }
-            BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, isVisible: $viewModel.showBottomBanner)
+            BottomNotificationWithOverlayView(message: viewModel.bottomBannerMessage, showRightButton: false, isVisible: $viewModel.showBottomBanner)
                 .padding(.horizontal, 32)
                 .padding(.bottom, -32)
         }
