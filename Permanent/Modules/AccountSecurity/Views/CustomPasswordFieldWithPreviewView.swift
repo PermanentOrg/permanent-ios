@@ -11,7 +11,7 @@ struct CustomPasswordFieldWithPreviewView: View {
     var onSubmit: () -> Void
     var submitLabel: SubmitLabel
     
-    init(password: Binding<String>, showPasswordPreviewBtn: Binding<Bool>, submitLabel: SubmitLabel = .done , onSubmit: @escaping () -> Void) {
+    init(password: Binding<String>, showPasswordPreviewBtn: Binding<Bool>, submitLabel: SubmitLabel = .done, onSubmit: @escaping () -> Void) {
         self._password = password
         self._showPasswordPreviewBtn = showPasswordPreviewBtn
         self.onSubmit = onSubmit
