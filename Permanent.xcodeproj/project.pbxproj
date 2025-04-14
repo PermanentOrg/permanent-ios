@@ -2213,7 +2213,7 @@
 			path = PublicProfile;
 			sourceTree = "<group>";
 		};
-		5E2F72132D92F604009F02D3 /* Sceens */ = {
+		5E2F72132D92F604009F02D3 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
 				5E2F72142D92F611009F02D3 /* SideMenu */,
@@ -2221,7 +2221,7 @@
 				5E2F72172D933300009F02D3 /* ChangePassword */,
 				5E2F72162D9332CC009F02D3 /* TwoStepVerification */,
 			);
-			path = Sceens;
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		5E2F72142D92F611009F02D3 /* SideMenu */ = {
@@ -2884,7 +2884,7 @@
 		5E4739C42A41022600A20D85 /* AccountSecurity */ = {
 			isa = PBXGroup;
 			children = (
-				5E2F72132D92F604009F02D3 /* Sceens */,
+				5E2F72132D92F604009F02D3 /* Screens */,
 				5EFCE3E42CFE022100D7E802 /* Models */,
 				5E218BF225A869B100B56625 /* Views */,
 				5E3E12282A41DAC300682DE5 /* ViewController */,
