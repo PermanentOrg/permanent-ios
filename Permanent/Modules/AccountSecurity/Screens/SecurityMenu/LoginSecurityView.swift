@@ -93,8 +93,6 @@ struct LoginSecurityView: View {
                         NavigationLink {
                             ChangePasswordView()
                                 .toolbar(.hidden, for: .navigationBar)
-                                .padding(.vertical, Constants.Design.isPhone ? 16 : 64)
-                                .padding(.horizontal, Constants.Design.isPhone ? 24 : 128)
                                 .onAppear {
                                     navigationStateManager.selectionState = .changePassword
                                 }
@@ -106,6 +104,7 @@ struct LoginSecurityView: View {
                                 isSelected: .constant(navigationStateManager.selectionState == .changePassword)
                             )
                             .frame(height: 112)
+                            .layoutPriority(1)
                         }
                         Divider()
                         NavigationLink {
