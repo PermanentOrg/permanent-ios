@@ -184,6 +184,11 @@ struct ChangePasswordView: View {
                     }
                 }
             }
+            .onTapGesture {
+                withAnimation {
+                    showEmptySpace = true
+                }
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { event in
             if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -208,37 +213,29 @@ struct ChangePasswordView: View {
                 }
             }
         }
-                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
-                    if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                        keyboardHeight = 0
-                        if keyboardSize.height > 120 {
-                            if keyboardOpenend {
-                                keyboardOpenend = false
-                                withAnimation(.bouncy(duration: 0.3)) {
-                                    showEmptySpace = true
-                                }
-                            }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)) { event in
+            if let keyboardSize = event.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardHeight = 0
+                if keyboardSize.height > 120 {
+                    if keyboardOpenend {
+                        keyboardOpenend = false
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            showEmptySpace = true
                         }
                     }
                 }
-                .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
-                    if newValue != .none {
-                        if viewModel.showBanner == false {
-                            viewModel.displayBannerWithAutoClose()
-                        }
-                    } else {
-                        viewModel.showBottomBanner = false
-                    }
-                })
-                .onTapGesture {
-                    withAnimation {
-                        showEmptySpace = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }
+            }
+        }
+        .onChange(of: viewModel.bottomBannerMessage, perform: { newValue in
+            if newValue != .none {
+                if viewModel.showBanner == false {
+                    viewModel.displayBannerWithAutoClose()
                 }
-                .navigationBarTitle("Change password", displayMode: .inline)
+            } else {
+                viewModel.showBottomBanner = false
+            }
+        })
+        .navigationBarTitle("Change password", displayMode: .inline)
     }
     
     var descriptionView: some View {
