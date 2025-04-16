@@ -32,9 +32,3 @@ struct SecurityDetailView: View {
         }
     }
 }
-
-struct ChangePasswordView: View {
-    var body: some View {
-        ViewRepresentableWithoutTitleContainer(viewRepresentable: PasswordUpdateViewControllerRepresentable())
-    }
-}
