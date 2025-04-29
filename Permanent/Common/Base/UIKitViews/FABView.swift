@@ -32,7 +32,7 @@ class FABView: UIView {
                         self.memberChecklistBanner.alpha = 1
                         self.arrowView.alpha = 1
                     } completion: { _ in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                             UIView.animate(withDuration: 0.3, options: .curveEaseInOut) {
                                 self.memberChecklistBanner.alpha = 0
                                 self.arrowView.alpha = 0
