@@ -284,6 +284,7 @@
 		5E71E5F12C9C60D600B7A315 /* Login2FAFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */; };
 		5E744F9127E36EAA00A47D27 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9027E36EAA00A47D27 /* RCValues.swift */; };
 		5E744F9327E38DB900A47D27 /* LoadingScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */; };
+		5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E75AFE02DBFC0160074159F /* ChecklistItem.swift */; };
 		5E781EA82787006B0007E397 /* ProfileItemOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E781EA72787006B0007E397 /* ProfileItemOperation.swift */; };
 		5E7A87F72C99C83D00228EB4 /* AuthImageForRightSidePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A87F62C99C83700228EB4 /* AuthImageForRightSidePageView.swift */; };
 		5E7A87F92C99C84C00228EB4 /* AuthTextForRightSidePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7A87F82C99C84A00228EB4 /* AuthTextForRightSidePageView.swift */; };
@@ -1225,6 +1226,7 @@
 		5E71E5F02C9C60B700B7A315 /* Login2FAFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login2FAFieldView.swift; sourceTree = "<group>"; };
 		5E744F9027E36EAA00A47D27 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
 		5E744F9227E38DB900A47D27 /* LoadingScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenViewController.swift; sourceTree = "<group>"; };
+		5E75AFE02DBFC0160074159F /* ChecklistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistItem.swift; sourceTree = "<group>"; };
 		5E781EA72787006B0007E397 /* ProfileItemOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileItemOperation.swift; sourceTree = "<group>"; };
 		5E7A87F62C99C83700228EB4 /* AuthImageForRightSidePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthImageForRightSidePageView.swift; sourceTree = "<group>"; };
 		5E7A87F82C99C84A00228EB4 /* AuthTextForRightSidePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextForRightSidePageView.swift; sourceTree = "<group>"; };
@@ -4065,6 +4067,7 @@
 		BCD414E62580BFCB0019548F /* Enums */ = {
 			isa = PBXGroup;
 			children = (
+				5E75AFE02DBFC0160074159F /* ChecklistItem.swift */,
 				5EE7C14F2CA36D1500445E4E /* AuthLoginResponse.swift */,
 				5EC20FCE2CA58FE000CCE8EF /* AuthBannerMessage.swift */,
 				BCD414E72580BFFE0019548F /* ShareLinkOption.swift */,
@@ -5227,6 +5230,7 @@
 				5E865D0B2D40E709005B41B7 /* TwoStepChooseVerificationView.swift in Sources */,
 				5EA94A122B3486B000AD67F5 /* BottomInvalidAlertMessageView.swift in Sources */,
 				5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */,
+				5E75AFE12DBFC0250074159F /* ChecklistItem.swift in Sources */,
 				5ED3B3BC29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift in Sources */,
 				5E559EC829BF438200F129BF /* IntExtension.swift in Sources */,
 				5EAF8AEB2D82165900824909 /* TwoStepTabletModalAlertView.swift in Sources */,

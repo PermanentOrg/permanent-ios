@@ -9,8 +9,14 @@ import UIKit
 
 class FABView: UIView {
     fileprivate var plusImageView: UIImageView!
+    fileprivate var checklistImageView: UIImageView!
     
     weak var delegate: FABViewDelegate?
+    var showsChecklistButton: Bool = false {
+        didSet {
+            checklistImageView.isHidden = !showsChecklistButton
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -31,16 +37,35 @@ class FABView: UIView {
         
         plusImageView = UIImageView(image: UIImage(named: "plus"))
         plusImageView.contentMode = .scaleAspectFit
+        plusImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        checklistImageView = UIImageView(image: UIImage(named: "mainChecklistButton"))
+        checklistImageView.contentMode = .scaleAspectFit
+        checklistImageView.translatesAutoresizingMaskIntoConstraints = false
+        checklistImageView.isHidden = true
         
         addSubview(plusImageView)
+        addSubview(checklistImageView)
+        
         NSLayoutConstraint.activate([
             plusImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             plusImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             plusImageView.widthAnchor.constraint(equalTo: widthAnchor),
-            plusImageView.heightAnchor.constraint(equalTo: heightAnchor)
+            plusImageView.heightAnchor.constraint(equalTo: heightAnchor),
+            
+            checklistImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            checklistImageView.topAnchor.constraint(equalTo: plusImageView.bottomAnchor, constant: 12),
+            checklistImageView.widthAnchor.constraint(equalTo: widthAnchor),
+            checklistImageView.heightAnchor.constraint(equalTo: heightAnchor)
         ])
         
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(fabAction)))
+        let plusTapGesture = UITapGestureRecognizer(target: self, action: #selector(fabAction))
+        plusImageView.isUserInteractionEnabled = true
+        plusImageView.addGestureRecognizer(plusTapGesture)
+        
+        let checklistTapGesture = UITapGestureRecognizer(target: self, action: #selector(checklistAction))
+        checklistImageView.isUserInteractionEnabled = true
+        checklistImageView.addGestureRecognizer(checklistTapGesture)
     }
     
     override func layoutSubviews() {
@@ -59,8 +84,14 @@ class FABView: UIView {
     func fabAction() {
         delegate?.didTap()
     }
+    
+    @objc
+    func checklistAction() {
+        delegate?.didTapChecklist()
+    }
 }
 
 protocol FABViewDelegate: AnyObject {
     func didTap()
+    func didTapChecklist()
 }

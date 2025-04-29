@@ -437,12 +437,12 @@
                                 </subviews>
                             </stackView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="346" y="734" width="48" height="48"/>
+                                <rect key="frame" x="330" y="738" width="64" height="64"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="48" id="8yF-SS-9Dh"/>
-                                    <constraint firstAttribute="height" constant="48" id="jj4-Ph-fiH"/>
+                                    <constraint firstAttribute="width" constant="64" id="8yF-SS-9Dh"/>
+                                    <constraint firstAttribute="height" constant="64" id="jj4-Ph-fiH"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -459,7 +459,7 @@
                             <constraint firstItem="KdU-71-7p0" firstAttribute="bottom" secondItem="wyV-hy-Lxu" secondAttribute="bottom" id="avG-lf-JYk"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="KdU-71-7p0" secondAttribute="trailing" id="cHh-x6-bLd"/>
                             <constraint firstItem="KdU-71-7p0" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="bottom" id="e2z-ca-Mfy"/>
-                            <constraint firstItem="JPq-vy-INN" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" constant="20" id="g29-iD-sGE"/>
+                            <constraint firstItem="JPq-vy-INN" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" id="g29-iD-sGE"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>
                             <constraint firstItem="JPq-vy-INN" firstAttribute="trailing" secondItem="GQx-lf-zDn" secondAttribute="trailing" constant="20" id="rCv-Ls-yfj"/>
@@ -469,6 +469,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="backButton" destination="1dv-wK-LXr" id="0v8-JD-0Yp"/>
+                        <outlet property="bottomButtonHeightConstraint" destination="g29-iD-sGE" id="nMn-dP-qvi"/>
                         <outlet property="collectionView" destination="JPq-vy-INN" id="fkm-hs-ZhW"/>
                         <outlet property="directoryLabel" destination="9Rh-mn-0jT" id="lZu-1c-m9z"/>
                         <outlet property="fabView" destination="GQx-lf-zDn" id="GPc-B0-0Xt"/>
