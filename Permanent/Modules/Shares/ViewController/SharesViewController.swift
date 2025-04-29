@@ -16,6 +16,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var switchViewButton: UIButton!
     private let refreshControl = UIRefreshControl()
+    @IBOutlet weak var bottomButtonHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var fileActionBottomView: BottomActionSheet!
     @IBOutlet var fabView: FABView!
@@ -347,6 +348,14 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
     
     fileprivate func updateFAB() {
         let currentFolderPermissions = viewModel?.currentFolder?.permissions
+        
+        viewModel?.showMemberChecklist({ [weak self]  showChecklist in
+            self?.fabView.showsChecklistButton = showChecklist ?? false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self?.bottomButtonHeightConstraint.constant = showChecklist ?? false ? 64 : 0
+                self?.view.layoutIfNeeded()
+            })
+        })
 
         if currentFolderPermissions?.contains(.create) == true && currentFolderPermissions?.contains(.upload) == true {
             fabView.isHidden = false
@@ -1299,6 +1308,9 @@ extension SharesViewController: FABViewDelegate {
         } else {
             return
         }
+    }
+    
+    func didTapChecklist() {
     }
 }
 

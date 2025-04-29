@@ -85,12 +85,12 @@
                                 <gestureRecognizers/>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvX-vX-KAP" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="346" y="734" width="48" height="48"/>
+                                <rect key="frame" x="330" y="738" width="64" height="64"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="48" id="aKB-cx-1Xq"/>
-                                    <constraint firstAttribute="height" constant="48" id="fep-Kh-irg"/>
+                                    <constraint firstAttribute="width" constant="64" id="aKB-cx-1Xq"/>
+                                    <constraint firstAttribute="height" constant="64" id="fep-Kh-irg"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -104,7 +104,7 @@
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GgD-GW-QOd" secondAttribute="trailing" constant="20" id="OS0-i1-gLj"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="Gmj-3H-vgN" secondAttribute="trailing" id="UKm-jQ-BTV"/>
                             <constraint firstItem="rQx-Kj-4rK" firstAttribute="height" secondItem="GgD-GW-QOd" secondAttribute="height" id="dgN-el-Xff"/>
-                            <constraint firstItem="IoJ-oA-nYL" firstAttribute="bottom" secondItem="vvX-vX-KAP" secondAttribute="bottom" constant="20" id="ehn-yw-NKA"/>
+                            <constraint firstItem="IoJ-oA-nYL" firstAttribute="bottom" secondItem="vvX-vX-KAP" secondAttribute="bottom" id="ehn-yw-NKA"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="trailing" secondItem="rQx-Kj-4rK" secondAttribute="trailing" constant="20" id="jHS-fJ-Y64"/>
                             <constraint firstItem="olD-lK-dv0" firstAttribute="leading" secondItem="Gmj-3H-vgN" secondAttribute="leading" id="kVq-6l-V7P"/>
                             <constraint firstItem="IoJ-oA-nYL" firstAttribute="trailing" secondItem="vvX-vX-KAP" secondAttribute="trailing" constant="20" id="ngh-yt-lHC"/>
@@ -114,6 +114,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
+                        <outlet property="bottomButtonsConstrainHeight" destination="ehn-yw-NKA" id="WHd-Fg-PPm"/>
                         <outlet property="collectionView" destination="IoJ-oA-nYL" id="L4v-ef-4UL"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
                         <outlet property="fabView" destination="vvX-vX-KAP" id="gMk-W1-ppL"/>

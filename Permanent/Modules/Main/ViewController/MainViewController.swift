@@ -18,6 +18,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     @IBOutlet var fabView: FABView!
     @IBOutlet var fileActionBottomView: BottomActionSheet!
     @IBOutlet weak var switchViewButton: UIButton!
+    @IBOutlet weak var bottomButtonsConstrainHeight: NSLayoutConstraint!
     
     private var isGridView = false
     
@@ -185,6 +186,15 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
+
+        viewModel?.showMemberChecklist({ [weak self]  showChecklist in
+            self?.fabView.showsChecklistButton = showChecklist ?? false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 64 : 0
+                self?.view.layoutIfNeeded()
+            })
+        })
+
         fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
         
         viewModel?.trackOpenFiles()
@@ -1074,6 +1084,9 @@ extension MainViewController: FABViewDelegate {
         } else {
             return
         }
+    }
+    
+    func didTapChecklist() {
     }
 }
 

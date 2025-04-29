@@ -76,6 +76,7 @@ class TagManagementViewController: BaseViewController<ManageTagsViewModel> {
         searchTags.backgroundColor = .white
         
         addButton.delegate = self
+        addButton.showsChecklistButton = false
         searchTags.delegate = self
     }
     
@@ -109,6 +110,9 @@ extension TagManagementViewController: FABViewDelegate {
         tagsOptions.modalPresentationStyle = .custom
         tagsOptions.transitioningDelegate = tagsOptions
         self.present(tagsOptions, animated: true)
+    }
+    
+    func didTapChecklist() {
     }
 }
 
