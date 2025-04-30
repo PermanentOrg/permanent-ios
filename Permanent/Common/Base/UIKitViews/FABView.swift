@@ -46,7 +46,6 @@ class FABView: UIView {
                     }
                 }
             } else {
-                // Hide immediately
                 memberChecklistBanner.isHidden = true
                 arrowView.isHidden = true
             }
