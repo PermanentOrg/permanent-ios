@@ -172,6 +172,7 @@ extension Constants.Keys.StorageKeys {
     static let fcmPushTokenKey = "fcmPushTokenKey"
     static let modelVersion = "modelVersion"
     static let minAppVersion = "minAppVersion"
+    static let memberChecklistWasShown = "memberChecklistWasShown"
 }
 
 extension Constants.API.Locations {

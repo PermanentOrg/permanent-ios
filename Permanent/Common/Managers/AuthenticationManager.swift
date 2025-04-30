@@ -186,6 +186,7 @@ class AuthenticationManager {
 
         session = nil
         keychainHandler.clearSession()
+        UserDefaults.standard.set(false, forKey: Constants.Keys.StorageKeys.memberChecklistWasShown)
         
         Messaging.messaging().deleteFCMToken(forSenderID: googleServiceInfo.gcmSenderId) { _ in }
     }
