@@ -190,7 +190,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.showMemberChecklist({ [weak self]  showChecklist in
             self?.fabView.showsChecklistButton = showChecklist ?? false
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 64 : 0
+                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
                 self?.view.layoutIfNeeded()
             })
         })
@@ -1087,6 +1087,19 @@ extension MainViewController: FABViewDelegate {
     }
     
     func didTapChecklist() {
+        // Get checklist items
+        
+        let checklistView = UIHostingController(rootView:
+            ChecklistBottomMenu()
+                .edgesIgnoringSafeArea(.all)
+        )
+        
+        checklistView.modalPresentationStyle = .formSheet
+        checklistView.view.backgroundColor = .clear
+        checklistView.sheetPresentationController?.detents = [.large()]
+        
+        
+        present(checklistView, animated: true)
     }
 }
 

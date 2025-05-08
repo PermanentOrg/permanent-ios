@@ -5,6 +5,7 @@
 //  Created by Adrian Creteanu on 14.12.2020.
 //
 
+import SwiftUI
 import UIKit
 import Photos
 import MobileCoreServices
@@ -352,7 +353,7 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
         viewModel?.showMemberChecklist({ [weak self]  showChecklist in
             self?.fabView.showsChecklistButton = showChecklist ?? false
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-                self?.bottomButtonHeightConstraint.constant = showChecklist ?? false ? 64 : 0
+                self?.bottomButtonHeightConstraint.constant = showChecklist ?? false ? 140 : 64
                 self?.view.layoutIfNeeded()
             })
         })
@@ -1311,6 +1312,17 @@ extension SharesViewController: FABViewDelegate {
     }
     
     func didTapChecklist() {
+        let checklistView = UIHostingController(rootView:
+            ChecklistBottomMenu()
+                .edgesIgnoringSafeArea(.all)
+        )
+        
+        checklistView.modalPresentationStyle = .formSheet
+        checklistView.view.backgroundColor = .clear
+        checklistView.sheetPresentationController?.detents = [.large()]
+        
+        
+        present(checklistView, animated: true)
     }
 }
 

@@ -223,6 +223,7 @@
 		5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */; };
 		5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */; };
 		5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */; };
+		5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */; };
 		5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */; };
 		5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */; };
 		5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */; };
@@ -1165,6 +1166,7 @@
 		5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageOnlinePresenceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMilestonesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageMilestonesCollectionViewCell.xib; sourceTree = "<group>"; };
+		5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistBottomMenu.swift; sourceTree = "<group>"; };
 		5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityView.swift; sourceTree = "<group>"; };
 		5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityViewModel.swift; sourceTree = "<group>"; };
 		5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagView.swift; sourceTree = "<group>"; };
@@ -2735,6 +2737,7 @@
 		5E4739A52A40F19E00A20D85 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5E5979CA2DC8CEAF00694BDA /* Screens */,
 				5E4739A92A40F1F800A20D85 /* Navigation */,
 				5E4739A62A40F1B300A20D85 /* ViewController */,
 				5E3E12482A41F50A00682DE5 /* ViewModel */,
@@ -3057,6 +3060,14 @@
 				F58F314E27F32E2D00B89B99 /* DonateViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5E5979CA2DC8CEAF00694BDA /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */,
+			);
+			path = Screens;
 			sourceTree = "<group>";
 		};
 		5E5EF854273B23A3004F7EBC /* ViewController */ = {
@@ -4835,6 +4846,7 @@
 				5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				5ED3B3AC29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
+				5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenu.swift in Sources */,
 				9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,

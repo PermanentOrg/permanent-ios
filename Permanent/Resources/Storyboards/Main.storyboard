@@ -85,12 +85,12 @@
                                 <gestureRecognizers/>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvX-vX-KAP" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="330" y="738" width="64" height="64"/>
+                                <rect key="frame" x="330" y="662" width="64" height="140"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="64" id="aKB-cx-1Xq"/>
-                                    <constraint firstAttribute="height" constant="64" id="fep-Kh-irg"/>
+                                    <constraint firstAttribute="height" constant="140" id="fep-Kh-irg"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -114,7 +114,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="backButton" destination="pwt-jE-HrX" id="ufF-TV-9ZW"/>
-                        <outlet property="bottomButtonsConstrainHeight" destination="ehn-yw-NKA" id="WHd-Fg-PPm"/>
+                        <outlet property="bottomButtonsConstrainHeight" destination="fep-Kh-irg" id="O33-9J-ncr"/>
                         <outlet property="collectionView" destination="IoJ-oA-nYL" id="L4v-ef-4UL"/>
                         <outlet property="directoryLabel" destination="lqW-eP-52i" id="OPZ-oM-C1m"/>
                         <outlet property="fabView" destination="vvX-vX-KAP" id="gMk-W1-ppL"/>
