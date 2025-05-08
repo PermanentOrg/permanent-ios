@@ -19,6 +19,7 @@ struct ChecklistBottomMenu: View {
         ChecklistItem(type: .archiveProfile, completed: false),
         ChecklistItem(type: .publishContent, completed: false)
     ]
+    @State private var redraw = UUID()
     
     private var completionPercentage: Int {
         let completedCount = items.filter { $0.completed }.count
@@ -79,6 +80,10 @@ struct ChecklistBottomMenu: View {
                                 .fontWeight(.medium)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
+                        ProgressView(value: Float(completionPercentage) / 100)
+                            .progressViewStyle(CustomBarProgressGradientStyle(colorScheme: .solidGreenWithWhiteBar, height: 8, cornerRadius: 3))
+                            .frame(height: 8)
+                            .id(redraw)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 24)

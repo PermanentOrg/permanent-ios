@@ -151,4 +151,13 @@ extension Gradient {
                                                       startPoint: UnitPoint(x: 0, y: 0),
                                                       endPoint: UnitPoint(x: 1, y: 1)
     )
+    
+    static var greenGradient = LinearGradient(gradient:
+                                                        Gradient(colors: [
+                                                            Color.success500,
+                                                            Color.success500
+                                                        ]),
+                                                     startPoint: .topLeading,
+                                              endPoint: .bottomTrailing
+    )
 }
