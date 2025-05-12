@@ -60,7 +60,12 @@ extension EventsEndpoint: RequestProtocol {
     
     var customURL: String? {
         let endpointPath = APIEnvironment.defaultEnv.apiServer
-        return "\(endpointPath)api/v2/event"
+        switch self {
+        case .sendEvent:
+            return "\(endpointPath)api/v2/event"
+        case .checklist:
+            return "\(endpointPath)api/v2/event/checklist"
+        }
     }
 }
 

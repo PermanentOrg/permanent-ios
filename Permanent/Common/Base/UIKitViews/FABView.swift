@@ -65,7 +65,7 @@ class FABView: UIView {
     }
     
     private func commonInit() {
-        backgroundColor = .backgroundPrimary
+        backgroundColor = .clear
         clipsToBounds = true
         layer.masksToBounds = false
         

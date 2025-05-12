@@ -223,7 +223,12 @@
 		5E56FDCC274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */; };
 		5E56FDCF2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */; };
 		5E56FDD02744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */; };
-		5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */; };
+		5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift */; };
+		5E5979CE2DCCE63400694BDA /* ChecklistOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979CD2DCCE63400694BDA /* ChecklistOptionsView.swift */; };
+		5E5979D02DCCE64500694BDA /* ChecklistDisableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979CF2DCCE64500694BDA /* ChecklistDisableView.swift */; };
+		5E5979D22DCCE65100694BDA /* ChecklistErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979D12DCCE65100694BDA /* ChecklistErrorView.swift */; };
+		5E5979D42DCCE6C000694BDA /* ChecklistLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979D32DCCE6C000694BDA /* ChecklistLoadingView.swift */; };
+		5E5979D72DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5979D62DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift */; };
 		5E59B9B82C9AED930089A824 /* AuthVerifyIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */; };
 		5E59B9BA2C9AEDC30089A824 /* AuthVerifyIdentityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */; };
 		5E5AB60A2A5C414E0030BF61 /* AddNewTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */; };
@@ -1166,7 +1171,12 @@
 		5E56FDCA274426F300BC3BE0 /* ProfilePageOnlinePresenceCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageOnlinePresenceCollectionViewCell.xib; sourceTree = "<group>"; };
 		5E56FDCD2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePageMilestonesCollectionViewCell.swift; sourceTree = "<group>"; };
 		5E56FDCE2744271400BC3BE0 /* ProfilePageMilestonesCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfilePageMilestonesCollectionViewCell.xib; sourceTree = "<group>"; };
-		5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistBottomMenu.swift; sourceTree = "<group>"; };
+		5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistBottomMenuView.swift; sourceTree = "<group>"; };
+		5E5979CD2DCCE63400694BDA /* ChecklistOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistOptionsView.swift; sourceTree = "<group>"; };
+		5E5979CF2DCCE64500694BDA /* ChecklistDisableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistDisableView.swift; sourceTree = "<group>"; };
+		5E5979D12DCCE65100694BDA /* ChecklistErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistErrorView.swift; sourceTree = "<group>"; };
+		5E5979D32DCCE6C000694BDA /* ChecklistLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistLoadingView.swift; sourceTree = "<group>"; };
+		5E5979D62DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistBottomMenuViewModel.swift; sourceTree = "<group>"; };
 		5E59B9B72C9AED930089A824 /* AuthVerifyIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityView.swift; sourceTree = "<group>"; };
 		5E59B9B92C9AEDBA0089A824 /* AuthVerifyIdentityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVerifyIdentityViewModel.swift; sourceTree = "<group>"; };
 		5E5AB6092A5C414E0030BF61 /* AddNewTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTagView.swift; sourceTree = "<group>"; };
@@ -2639,6 +2649,7 @@
 		5E3E12482A41F50A00682DE5 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				5E5979D62DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift */,
 				F5BC105B278D991400595F94 /* PublicFilesViewModel.swift */,
 				F509D6FD2742E2FA007E4594 /* SearchFilesViewModel.swift */,
 			);
@@ -2737,7 +2748,7 @@
 		5E4739A52A40F19E00A20D85 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				5E5979CA2DC8CEAF00694BDA /* Screens */,
+				5E5979CA2DC8CEAF00694BDA /* Views */,
 				5E4739A92A40F1F800A20D85 /* Navigation */,
 				5E4739A62A40F1B300A20D85 /* ViewController */,
 				5E3E12482A41F50A00682DE5 /* ViewModel */,
@@ -3062,12 +3073,16 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
-		5E5979CA2DC8CEAF00694BDA /* Screens */ = {
+		5E5979CA2DC8CEAF00694BDA /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenu.swift */,
+				5E5979CB2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift */,
+				5E5979CD2DCCE63400694BDA /* ChecklistOptionsView.swift */,
+				5E5979CF2DCCE64500694BDA /* ChecklistDisableView.swift */,
+				5E5979D12DCCE65100694BDA /* ChecklistErrorView.swift */,
+				5E5979D32DCCE6C000694BDA /* ChecklistLoadingView.swift */,
 			);
-			path = Screens;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		5E5EF854273B23A3004F7EBC /* ViewController */ = {
@@ -4753,6 +4768,7 @@
 				5E62F7C927F79FF40046F6C8 /* PopularArchive.swift in Sources */,
 				5E2E3D1826D3C9FD0090EF02 /* LeftSideHeaderTableViewCell.swift in Sources */,
 				BC6AF9AC25933FAB00483BBA /* MembersEndpoint.swift in Sources */,
+				5E5979D72DCCEC7000694BDA /* ChecklistBottomMenuViewModel.swift in Sources */,
 				5EF0B6E727F43CFA000CBAF6 /* PublicGalleryViewController.swift in Sources */,
 				5E2CFA25274EEB570055941C /* ProfileItemVO.swift in Sources */,
 				5E181B852AF14EE8002DE69A /* CustomBarProgressStyle.swift in Sources */,
@@ -4766,10 +4782,12 @@
 				BC6358BF2537414300EEC48C /* MinFolderVO.swift in Sources */,
 				5E051C042B69A74F00274657 /* SettingsScreenView.swift in Sources */,
 				F56FA7D32795C41700184175 /* PublicProfilePicturesViewModel.swift in Sources */,
+				5E5979CE2DCCE63400694BDA /* ChecklistOptionsView.swift in Sources */,
 				BCE3C94925384C6700EC3A66 /* UIImageViewExtension.swift in Sources */,
 				5E66730F2A793D9B001C49CC /* ReplaceFilenameView.swift in Sources */,
 				92C73E422A13BE0C000EF633 /* LegacyArchiveCompletedCell.swift in Sources */,
 				F59B0C8E28DB21060038E474 /* ShareViewController.swift in Sources */,
+				5E5979D42DCCE6C000694BDA /* ChecklistLoadingView.swift in Sources */,
 				5E3A060529E7439A00A6C531 /* SaveDestinationBrowserViewModel.swift in Sources */,
 				F559F88528F9D91D0015A522 /* FileBrowserViewModel.swift in Sources */,
 				92C73E442A13BE1D000EF633 /* LegacyArchiveCreateCell.swift in Sources */,
@@ -4846,7 +4864,7 @@
 				5ECBAF9D2A1B5EEE00FACFDF /* ArchiveSteward.swift in Sources */,
 				5E46217225C17C5A007642BE /* AccountInfoViewController.swift in Sources */,
 				5ED3B3AC29F7E008000CFF48 /* LegacyPlanningStewardViewController.swift in Sources */,
-				5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenu.swift in Sources */,
+				5E5979CC2DC8CEBD00694BDA /* ChecklistBottomMenuView.swift in Sources */,
 				9220ACC92A1CAA72003797C9 /* SequenceExtension.swift in Sources */,
 				BC6358AF2536FD1700EEC48C /* TimezoneVO.swift in Sources */,
 				BCE8DA7525652F4400842ABD /* FileAction.swift in Sources */,
@@ -4926,6 +4944,7 @@
 				06819AA824EC20CB003D0EB0 /* PETextField.swift in Sources */,
 				5E86DE94272852EA009A0A18 /* PasswordUpdateViewController.swift in Sources */,
 				5E3A060329E73B1F00A6C531 /* WorkspaceSegmentedControlView.swift in Sources */,
+				5E5979D02DCCE64500694BDA /* ChecklistDisableView.swift in Sources */,
 				5E865D072D403AC7005B41B7 /* TwoStepConfirmationContainerView.swift in Sources */,
 				06644A8024EA6F47003CD359 /* BaseViewController.swift in Sources */,
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
@@ -5030,6 +5049,7 @@
 				BC326AAF2526195E00A69597 /* APIErrors.swift in Sources */,
 				BC566CE72546FDE7000249E1 /* RecordVO.swift in Sources */,
 				BC83FDFC2559893200AEE10C /* FolderVOPayload.swift in Sources */,
+				5E5979D22DCCE65100694BDA /* ChecklistErrorView.swift in Sources */,
 				5E24A2332CF9EA59003F22AE /* TwoStepVerificationViewModel.swift in Sources */,
 				5E5DFA6C27463602000D9924 /* ProfilePageHeaderCollectionViewCell.swift in Sources */,
 				BC8E7947257A787D008ED0F5 /* LinkTextField.swift in Sources */,

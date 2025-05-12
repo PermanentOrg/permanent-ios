@@ -363,7 +363,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Qju-dd-gQn">
-                                <rect key="frame" x="20" y="68" width="374" height="246"/>
+                                <rect key="frame" x="20" y="68" width="374" height="280"/>
                                 <segments>
                                     <segment title="First"/>
                                     <segment title="Second"/>
@@ -373,7 +373,7 @@
                                 </connections>
                             </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eVQ-eX-BfZ">
-                                <rect key="frame" x="20" y="328" width="92.5" height="30"/>
+                                <rect key="frame" x="20" y="362" width="92.5" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1dv-wK-LXr" userLabel="Back Button">
                                         <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -398,7 +398,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BuB-Gr-iVF">
-                                <rect key="frame" x="364" y="328" width="30" height="30"/>
+                                <rect key="frame" x="364" y="362" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="BuB-Gr-iVF" secondAttribute="height" id="ZHy-Hh-X6J"/>
                                 </constraints>
@@ -409,7 +409,7 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="KdU-71-7p0">
-                                <rect key="frame" x="0.0" y="358" width="414" height="504"/>
+                                <rect key="frame" x="0.0" y="392" width="414" height="504"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="JPq-vy-INN">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="444"/>
@@ -437,12 +437,12 @@
                                 </subviews>
                             </stackView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GQx-lf-zDn" userLabel="FAB View" customClass="FABView" customModule="Permanent" customModuleProvider="target">
-                                <rect key="frame" x="330" y="662" width="64" height="140"/>
+                                <rect key="frame" x="330" y="752" width="64" height="64"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="plusButton"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="64" id="8yF-SS-9Dh"/>
-                                    <constraint firstAttribute="height" constant="140" id="jj4-Ph-fiH"/>
+                                    <constraint firstAttribute="height" constant="64" id="jj4-Ph-fiH"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -456,10 +456,10 @@
                             <constraint firstItem="BuB-Gr-iVF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="eVQ-eX-BfZ" secondAttribute="trailing" constant="20" id="EyC-4d-9eP"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" constant="20" id="U8I-T1-Gbb"/>
                             <constraint firstItem="KdU-71-7p0" firstAttribute="leading" secondItem="wyV-hy-Lxu" secondAttribute="leading" id="UVt-H4-XLT"/>
-                            <constraint firstItem="KdU-71-7p0" firstAttribute="bottom" secondItem="wyV-hy-Lxu" secondAttribute="bottom" id="avG-lf-JYk"/>
+                            <constraint firstItem="KdU-71-7p0" firstAttribute="bottom" secondItem="V7M-ol-T4T" secondAttribute="bottom" id="avG-lf-JYk"/>
                             <constraint firstItem="wyV-hy-Lxu" firstAttribute="trailing" secondItem="KdU-71-7p0" secondAttribute="trailing" id="cHh-x6-bLd"/>
                             <constraint firstItem="KdU-71-7p0" firstAttribute="top" secondItem="eVQ-eX-BfZ" secondAttribute="bottom" id="e2z-ca-Mfy"/>
-                            <constraint firstItem="JPq-vy-INN" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" id="g29-iD-sGE"/>
+                            <constraint firstItem="JPq-vy-INN" firstAttribute="bottom" secondItem="GQx-lf-zDn" secondAttribute="bottom" constant="20" id="g29-iD-sGE"/>
                             <constraint firstItem="Qju-dd-gQn" firstAttribute="top" secondItem="wyV-hy-Lxu" secondAttribute="top" constant="20" id="iQi-FG-JDt"/>
                             <constraint firstItem="eVQ-eX-BfZ" firstAttribute="top" secondItem="Qju-dd-gQn" secondAttribute="bottom" constant="15" id="ph4-va-LCA"/>
                             <constraint firstItem="JPq-vy-INN" firstAttribute="trailing" secondItem="GQx-lf-zDn" secondAttribute="trailing" constant="20" id="rCv-Ls-yfj"/>

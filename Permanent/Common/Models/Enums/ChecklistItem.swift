@@ -58,7 +58,7 @@ struct ChecklistItem: Codable {
     let id: String
     let title: String
     let completed: Bool
-    let imageName: String
+    let imageName: String?
     
     var type: ChecklistItemType? {
         return ChecklistItemType(rawValue: id)
@@ -71,10 +71,22 @@ struct ChecklistItem: Codable {
         self.completed = completed
     }
     
-    init(id: String, title: String, completed: Bool, imageName: String) {
+    init(id: String, title: String, completed: Bool, imageName: String? = nil) {
         self.id = id
         self.title = title
         self.completed = completed
-        self.imageName = imageName
+        self.imageName = imageName ?? ChecklistItemType(rawValue: id)?.imageName
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        completed = try container.decode(Bool.self, forKey: .completed)
+        imageName = try container.decodeIfPresent(String.self, forKey: .imageName) ?? ChecklistItemType(rawValue: id)?.imageName
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case id, title, completed, imageName
     }
 }
