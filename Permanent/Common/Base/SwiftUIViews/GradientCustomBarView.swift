@@ -40,6 +40,12 @@ struct GradientProgressBarView: View {
                     .frame(height: 12)
                     .padding(.horizontal)
                     .id(redraw)
+            case .solidGreenWithWhiteBar:
+                ProgressView(value: sizeRatio)
+                    .progressViewStyle(CustomBarProgressGradientStyle(colorScheme: .lightWithGradientBar, height: 8, cornerRadius: 3))
+                    .frame(height: 12)
+                    .padding(.horizontal)
+                    .id(redraw)
             }
         }
         .onChange(of: sizeRatio, perform: { newValue in
@@ -59,6 +65,7 @@ struct GradientProgressBarView: View {
 enum ColorSchemeForProgressBar {
     case lightWithGradientBar
     case gradientWithWhiteBar
+    case solidGreenWithWhiteBar
 
     var backgroundColor: LinearGradient {
         switch self {
@@ -66,6 +73,8 @@ enum ColorSchemeForProgressBar {
             return Gradient.whiteGradient
         case .gradientWithWhiteBar:
             return Gradient.purpleYellowGradient
+        case .solidGreenWithWhiteBar:
+            return Gradient.whiteGradient
         }
     }
     var barColor: LinearGradient {
@@ -74,6 +83,8 @@ enum ColorSchemeForProgressBar {
             return Gradient.purpleYellowGradient
         case .gradientWithWhiteBar:
             return Gradient.whiteGradient
+        case .solidGreenWithWhiteBar:
+            return Gradient.greenGradient
         }
     }
     
@@ -83,6 +94,8 @@ enum ColorSchemeForProgressBar {
             return Color.black
         case .gradientWithWhiteBar:
             return Color.white
+        case .solidGreenWithWhiteBar:
+            return Color.black
         }
     }
     
@@ -92,6 +105,8 @@ enum ColorSchemeForProgressBar {
             return Color.middleGray
         case .gradientWithWhiteBar:
             return Color.white
+        case .solidGreenWithWhiteBar:
+            return Color.middleGray
         }
     }
     
@@ -101,6 +116,8 @@ enum ColorSchemeForProgressBar {
             return 60
         case .gradientWithWhiteBar:
             return 72
+        case .solidGreenWithWhiteBar:
+            return 60
         }
     }
 }

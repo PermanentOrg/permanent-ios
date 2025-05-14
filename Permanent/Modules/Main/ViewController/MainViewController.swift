@@ -190,7 +190,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         viewModel?.showMemberChecklist({ [weak self]  showChecklist in
             self?.fabView.showsChecklistButton = showChecklist ?? false
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 64 : 0
+                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
                 self?.view.layoutIfNeeded()
             })
         })
@@ -209,7 +209,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         
         collectionView.refreshControl = refreshControl
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 60, right: 6)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 140, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
@@ -1087,6 +1087,21 @@ extension MainViewController: FABViewDelegate {
     }
     
     func didTapChecklist() {
+        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel()), dismissAction: { [weak self] in
+            self?.fabView.showsChecklistButton = false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { [weak self] in
+                self?.bottomButtonsConstrainHeight.constant = 64
+                self?.view.layoutIfNeeded()
+            })
+        })
+            .edgesIgnoringSafeArea(.all)
+        )
+        
+        checklistView.modalPresentationStyle = .formSheet
+        checklistView.view.backgroundColor = .clear
+        checklistView.sheetPresentationController?.detents = [.large()]
+        
+        present(checklistView, animated: true)
     }
 }
 
