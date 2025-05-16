@@ -13,7 +13,7 @@ struct ChecklistErrorView: View {
             VStack(spacing: 16) {
                 Image(.memberChecklistError)
                     .renderingMode(.template)
-                    .frame(width: 48, height: 48)
+                    .frame(width: 40, height: 40)
                     .foregroundColor(.error500)
                 
                 Text("Something went wrong!")
@@ -26,7 +26,7 @@ struct ChecklistErrorView: View {
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue600)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
+                    .lineSpacing(8)
                     .frame(maxWidth: .infinity, alignment: .top)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

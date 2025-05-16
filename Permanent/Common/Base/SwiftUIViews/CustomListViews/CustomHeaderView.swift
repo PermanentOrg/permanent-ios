@@ -11,14 +11,16 @@ struct CustomHeaderView: View {
     var titleText: String
     var descText: String
     var fontType: FontType = .openSans
+    var showFinishSetUpAccount: Bool = false
+    var onFinishSetUpAccount: (() -> Void)
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         ZStack {
             Color.blue25
-                .frame(maxWidth: .infinity, maxHeight: 88)
+                .frame(maxWidth: .infinity, maxHeight: showFinishSetUpAccount ? 161 : 88)
                 .edgesIgnoringSafeArea(.all)
-            VStack {
+            VStack(alignment: .leading, spacing: 24) {
                 HStack(alignment: .center, spacing: 10) {
                     WebImage(url: url)
                         .resizable()
@@ -41,7 +43,38 @@ struct CustomHeaderView: View {
                     }
                 }
                 .padding(.horizontal)
+                if showFinishSetUpAccount {
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
+                        .background(Color(red: 0.91, green: 0.91, blue: 0.93))
+                        .padding(.horizontal)
+                    Button {
+                        onFinishSetUpAccount()
+                    } label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(.memberChecklistShowList)
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundColor(.blue900)
+                                .scaledToFill()
+                                .frame(width: 24, height: 24)
+                                .clipShape(.circle)
+                                .padding(.horizontal, 8)
+                            Text("Let’s finish setting up your account")
+                                .font(
+                                    .custom(
+                                        "Usual-Regular",
+                                        fixedSize: 14)
+                                )
+                                .foregroundColor(.blue900)
+                                .multilineTextAlignment(.leading)
+                        }
+                        .padding(.horizontal)
+                    }
+                }
             }
+            .frame(maxHeight: showFinishSetUpAccount ? 161 : 88)
         }
     }
 }

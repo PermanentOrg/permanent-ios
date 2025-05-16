@@ -12,6 +12,7 @@ enum ChecklistViewState {
     case loading
     case content
     case dontShowAgain
+    case congrats
     case error
 }
 
@@ -75,8 +76,9 @@ struct ChecklistBottomMenuView: View {
                             items: viewModel.items,
                             completionPercentage: viewModel.completionPercentage,
                             redraw: redraw,
+                            showsChecklistButton: viewModel.showsChecklistButton,
                             onDisableChecklist: {
-                                viewModel.viewState = .dontShowAgain
+                                viewModel.changeChecklistContent(.dontShowAgain)
                             }
                         )
                     case .dontShowAgain:
@@ -86,11 +88,19 @@ struct ChecklistBottomMenuView: View {
                                     self.dismissAction()
                                     presentationMode.wrappedValue.dismiss()
                                 } else {
-                                    viewModel.viewState = .error
+                                    viewModel.changeChecklistContent(.error)
                                 }
                             }
                         } onCancel: {
-                            viewModel.viewState = .content
+                            if viewModel.listCompleted {
+                                viewModel.changeChecklistContent(.congrats)
+                            } else {
+                                viewModel.changeChecklistContent(.content)
+                            }
+                        }
+                    case .congrats:
+                        ChecklistCongratsView {
+                            viewModel.changeChecklistContent(.dontShowAgain)
                         }
 
                     case .error:
@@ -107,7 +117,7 @@ struct ChecklistBottomMenuView: View {
 
 struct ChecklistBottomMenu_Previews: PreviewProvider {
     static var previews: some View {
-        ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel()), dismissAction: {
+        ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel(showsChecklistButton: false)), dismissAction: {
             
         })
     }

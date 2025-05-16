@@ -9,6 +9,7 @@ struct ChecklistOptionsView: View {
     let items: [ChecklistItem]
     let completionPercentage: Int
     let redraw: UUID
+    let showsChecklistButton: Bool
     let onDisableChecklist: () -> Void
     
     var body: some View {
@@ -49,33 +50,34 @@ struct ChecklistOptionsView: View {
         .onDisappear {
             UIScrollView.appearance().bounces = true
         }
-        
-        VStack(spacing: 0) {
-            Divider()
-                .background(Color(red: 0.89, green: 0.89, blue: 0.93))
-                .padding(.horizontal, 0)
-            HStack(spacing: 24) {
-                Image(.memberchecklistDontShowAgain)
-                    .renderingMode(.template)
-                    .frame(width: 24, height: 24, alignment: .center)
-                    .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
-                
-                Text("Don't show me this again")
-                    .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
-                    .font(.custom("Usual-Regular", size: 14))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 32)
-            .frame(height: 80)
-            .background(Color.white)
-            .onTapGesture {
-                withAnimation {
-                    onDisableChecklist()
+        if showsChecklistButton {
+            VStack(spacing: 0) {
+                Divider()
+                    .background(Color(red: 0.89, green: 0.89, blue: 0.93))
+                    .padding(.horizontal, 0)
+                HStack(spacing: 24) {
+                    Image(.memberchecklistDontShowAgain)
+                        .renderingMode(.template)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
+                    
+                    Text("Don't show me this again")
+                        .foregroundColor(Color(red: 0.07, green: 0.11, blue: 0.29))
+                        .font(.custom("Usual-Regular", size: 14))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 32)
+                .frame(height: 80)
+                .background(Color.white)
+                .onTapGesture {
+                    withAnimation {
+                        onDisableChecklist()
+                    }
                 }
             }
+            .padding(.bottom, 10)
         }
-        .padding(.bottom, 10)
     }
 }
 

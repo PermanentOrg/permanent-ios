@@ -19,10 +19,12 @@ class SettingsRouter {
         case legacyPlanning
         case contactSupport
         case signUp
+        case memberChecklist
     }
     
     var rootViewController: RootNavigationController
     var currentPage: Page = .settings
+    static let showMemberChecklistNotifName = NSNotification.Name("SettingsRouter.showMemberChecklistNotifName")
     
     init(rootViewController: RootNavigationController) {
         self.rootViewController = rootViewController
@@ -84,6 +86,8 @@ class SettingsRouter {
             UploadManager.shared.cancelAll()
             
             AppDelegate.shared.rootViewController.setRoot(named: .signUp, from: .authentication)
+        case .memberChecklist:
+            NotificationCenter.default.post(name: Self.showMemberChecklistNotifName, object: nil, userInfo: nil)
         }
     }
 }
