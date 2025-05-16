@@ -142,6 +142,10 @@ class SharesViewController: BaseViewController<SharedFilesViewModel> {
                 self?.dismissFloatingActionIsland()
             }
         }
+        
+        NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
+            self?.didTapChecklist()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -1312,7 +1316,7 @@ extension SharesViewController: FABViewDelegate {
     }
     
     func didTapChecklist() {
-        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel()), dismissAction: { [weak self] in
+        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel(showsChecklistButton: self.fabView.showsChecklistButton)), dismissAction: { [weak self] in
             self?.fabView.showsChecklistButton = false
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.bottomButtonHeightConstraint.constant = 64

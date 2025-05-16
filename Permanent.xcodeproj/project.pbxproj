@@ -278,6 +278,7 @@
 		5E68F2D926A9A2CD00CC936E /* TestURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2D826A9A2CD00CC936E /* TestURLs.swift */; };
 		5E68F2DB26A9A32400CC936E /* ResponseURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */; };
 		5E6AD37528A1A85A005ADF7E /* PhotoLibraryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */; };
+		5E6C22272DD62DB10078A875 /* ChecklistCongratsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6C22262DD62DB00078A875 /* ChecklistCongratsView.swift */; };
 		5E6CCEDC2B71145E00D192FF /* SettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEDB2B71145E00D192FF /* SettingsRouter.swift */; };
 		5E6CCEDF2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */; };
 		5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */; };
@@ -1226,6 +1227,7 @@
 		5E68F2D826A9A2CD00CC936E /* TestURLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestURLs.swift; sourceTree = "<group>"; };
 		5E68F2DA26A9A32400CC936E /* ResponseURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseURLProtocol.swift; sourceTree = "<group>"; };
 		5E6AD37428A1A85A005ADF7E /* PhotoLibraryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPage.swift; sourceTree = "<group>"; };
+		5E6C22262DD62DB00078A875 /* ChecklistCongratsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCongratsView.swift; sourceTree = "<group>"; };
 		5E6CCEDB2B71145E00D192FF /* SettingsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRouter.swift; sourceTree = "<group>"; };
 		5E6CCEDE2B72BA0200D192FF /* AccountInfoViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewControllerRepresentable.swift; sourceTree = "<group>"; };
 		5E6CCEE62B72D24000D192FF /* ArchivesViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesViewControllerRepresentable.swift; sourceTree = "<group>"; };
@@ -3081,6 +3083,7 @@
 				5E5979CF2DCCE64500694BDA /* ChecklistDisableView.swift */,
 				5E5979D12DCCE65100694BDA /* ChecklistErrorView.swift */,
 				5E5979D32DCCE6C000694BDA /* ChecklistLoadingView.swift */,
+				5E6C22262DD62DB00078A875 /* ChecklistCongratsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -5249,6 +5252,7 @@
 				5E624DC32947BECE002D6ECB /* FusionLoginResponse.swift in Sources */,
 				5E7A87F72C99C83D00228EB4 /* AuthImageForRightSidePageView.swift in Sources */,
 				BC62D57D254180D300E84DA9 /* FileInfo.swift in Sources */,
+				5E6C22272DD62DB10078A875 /* ChecklistCongratsView.swift in Sources */,
 				BC0D99C5256DB18500D29041 /* DrawerTableViewCell.swift in Sources */,
 				5EE3E11125A72ED0009BACA8 /* AccountSettingsViewController.swift in Sources */,
 				BC59BAB525C2B7D6005A45D3 /* SharePreviewViewModel.swift in Sources */,

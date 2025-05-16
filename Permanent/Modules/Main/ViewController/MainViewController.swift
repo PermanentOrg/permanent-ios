@@ -138,6 +138,10 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
             self?.navigationToShareFolderLink()
         }
         
+        NotificationCenter.default.addObserver(forName: SettingsRouter.showMemberChecklistNotifName, object: nil, queue: nil) { [weak self] _ in
+            self?.didTapChecklist()
+        }
+        
         showBanner()
     }
 
@@ -186,14 +190,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         overlayView.backgroundColor = .overlay
         overlayView.alpha = 0
         
-
-        viewModel?.showMemberChecklist({ [weak self]  showChecklist in
-            self?.fabView.showsChecklistButton = showChecklist ?? false
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
-                self?.view.layoutIfNeeded()
-            })
-        })
+        showMemberChecklistButton()
 
         fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
         
@@ -325,6 +322,16 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         }
 
         collectionView?.reloadData()
+    }
+    
+    func showMemberChecklistButton() {
+        viewModel?.showMemberChecklist({ [weak self] showChecklist in
+            self?.fabView.showsChecklistButton = showChecklist ?? false
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self?.bottomButtonsConstrainHeight.constant = showChecklist ?? false ? 140 : 64
+                self?.view.layoutIfNeeded()
+            })
+        })
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
@@ -1087,7 +1094,7 @@ extension MainViewController: FABViewDelegate {
     }
     
     func didTapChecklist() {
-        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel()), dismissAction: { [weak self] in
+        let checklistView = UIHostingController(rootView: ChecklistBottomMenuView(viewModel: StateObject(wrappedValue: ChecklistBottomMenuViewModel(showsChecklistButton: self.fabView.showsChecklistButton)), dismissAction: { [weak self] in
             self?.fabView.showsChecklistButton = false
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.bottomButtonsConstrainHeight.constant = 64

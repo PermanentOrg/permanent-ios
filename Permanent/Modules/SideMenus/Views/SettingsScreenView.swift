@@ -48,7 +48,12 @@ struct SettingsScreenView: View {
     var contentView: some View {
             ZStack(alignment: .bottom) {
                 VStack(alignment: .leading) {
-                    CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual)
+                    VStack {
+                        CustomHeaderView(url: viewModel.selectedArchiveThumbnailURL, titleText: viewModel.accountFullName, descText: viewModel.accountEmail, fontType: .usual, showFinishSetUpAccount: viewModel.showFinishSetUpAccount) {
+                            settingsRouter.navigate(to: .memberChecklist, router: settingsRouter)
+                        }
+                    }
+
                     GradientProgressBarView(value: viewModel.spaceUsedReadable, maxValue: viewModel.spaceTotalReadable, sizeRatio: viewModel.spaceRatio, colorScheme: .lightWithGradientBar, fontType: .usual)
                         .padding(.horizontal, 5)
                     Group {

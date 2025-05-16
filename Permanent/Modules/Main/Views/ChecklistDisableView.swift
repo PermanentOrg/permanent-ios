@@ -14,14 +14,14 @@ struct ChecklistDisableView: View {
             VStack(spacing: 24) {
                 Image(.memberChecklistDisableIcon)
                     .renderingMode(.template)
-                    .frame(width: 48, height: 48)
+                    .frame(width: 40, height: 40)
                     .foregroundColor(.blue400)
                 
                 Text("You will no longer receive account setup progress reminders. Are you sure you want to hide this checklist?")
                     .font(.custom("Usual-Regular", size: 14))
                     .foregroundColor(.blue700)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
+                    .lineSpacing(8)
                     .frame(maxWidth: .infinity, alignment: .top)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

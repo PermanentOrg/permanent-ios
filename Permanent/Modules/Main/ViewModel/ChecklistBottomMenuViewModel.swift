@@ -16,18 +16,21 @@ class ChecklistBottomMenuViewModel: ObservableObject {
     @Published var showError: Bool = false
     @Published var items: [ChecklistItem] = []
     @Published var viewState: ChecklistViewState = .loading
+    @Published var listCompleted: Bool = false
+    @Published var showsChecklistButton: Bool
     
     var completionPercentage: Int {
         let completedCount = items.filter { $0.completed }.count
         return items.isEmpty ? 0 : Int((Double(completedCount) / Double(items.count)) * 100)
     }
     
-    init() {
+    init(showsChecklistButton: Bool) {
+        self.showsChecklistButton = showsChecklistButton
         getMemberChecklist()
     }
     
     func getMemberChecklist() {
-        viewState = .loading
+        changeChecklistContent(.loading)
         let getMemberChecklistOperation = APIOperation(EventsEndpoint.checklist)
         getMemberChecklistOperation.execute(in: APIRequestDispatcher()) { [weak self] result in
             guard let self = self else { return }
@@ -37,22 +40,29 @@ class ChecklistBottomMenuViewModel: ObservableObject {
                 guard
                     let model: ChecklistResponse = JSONHelper.convertToModel(from: response)
                 else {
-                    self.viewState = .error
+                    self.changeChecklistContent(.error)
                     return
                 }
-                DispatchQueue.main.async {
+                if !model.checklistItems.isEmpty {
                     self.items = model.checklistItems
-                    self.viewState = .content
+                    if  model.checklistItems.count(where: {$0.completed == false}) > 0 {
+                        self.changeChecklistContent(.content)
+                    } else {
+                        self.listCompleted = true
+                        self.changeChecklistContent(.congrats)
+                    }
+                } else {
+                    self.changeChecklistContent(.error)
                 }
-                
+
             default:
-                self.viewState = .error
+                changeChecklistContent(.error)
             }
         }
     }
     
     func setHideChecklist(_ isSuccesfull: @escaping ((Bool) -> Void)) {
-        viewState = .loading
+        changeChecklistContent(.loading)
         guard let account = AuthenticationManager.shared.session?.account else {
             isSuccesfull(false)
             return
@@ -75,6 +85,12 @@ class ChecklistBottomMenuViewModel: ObservableObject {
             default:
                 isSuccesfull(false)
             }
+        }
+    }
+    
+    func changeChecklistContent(_ to: ChecklistViewState) {
+        withAnimation {
+            viewState = to
         }
     }
 }
