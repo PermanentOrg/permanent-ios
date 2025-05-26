@@ -75,7 +75,6 @@ struct ChecklistBottomMenuView: View {
                         ChecklistOptionsView(
                             items: viewModel.items,
                             completionPercentage: viewModel.completionPercentage,
-                            redraw: redraw,
                             showsChecklistButton: viewModel.showsChecklistButton,
                             onDisableChecklist: {
                                 viewModel.changeChecklistContent(.dontShowAgain)
