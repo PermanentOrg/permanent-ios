@@ -299,6 +299,11 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardLabel.font = TextFontStyle.style44.font
         addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
         addLegacyStewardButton.tintColor = .darkBlue
+        
+        // Add tap gesture recognizer to the label
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addLegacyPersonButtonAction(_:)))
+        addLegacyStewardLabel.isUserInteractionEnabled = true
+        addLegacyStewardLabel.addGestureRecognizer(tapGesture)
     }
     
     private func addedLegacyStewardSetup() {
