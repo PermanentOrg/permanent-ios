@@ -33,11 +33,11 @@ class ChecklistOptionsViewModel: ObservableObject {
         case .archiveSteward:
             ChecklistCoordinator.shared.presentArchiveSteward()
         case .archiveProfile:
-            break
+            ChecklistCoordinator.shared.presentArchiveProfile()
         case .firstUpload:
-            break
+            ChecklistCoordinator.shared.presentSupportForUploadFile()
         case .publishContent:
-            break
+            ChecklistCoordinator.shared.presentSupportForPublishFiles()
         }
     }
 } 
