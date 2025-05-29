@@ -59,4 +59,31 @@ class ChecklistCoordinator {
             presentViewController(archiveLegacyPlanningVC)
         }
     }
-} 
+    
+    func presentArchiveProfile() {
+        if let archiveProfileVC = UIViewController.create(withIdentifier: .publicArchive, from: .profile) as? PublicArchiveViewController,
+           let archiveData = AuthenticationManager.shared.session?.selectedArchive {
+            archiveProfileVC.archiveData = archiveData
+            archiveProfileVC.isViewingPublicProfile = true
+            presentViewController(archiveProfileVC)
+        }
+    }
+    
+    func presentSupportForUploadFile() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.rootViewController?.dismiss(animated: true) {
+                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/upload-your-first-file")!)
+            }
+        }
+    }
+    
+    func presentSupportForPublishFiles() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.rootViewController?.dismiss(animated: true) {
+                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/how-to-publish")!)
+            }
+        }
+    }
+}
