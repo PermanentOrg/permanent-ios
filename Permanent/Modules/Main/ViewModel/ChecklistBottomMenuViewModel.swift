@@ -44,7 +44,8 @@ class ChecklistBottomMenuViewModel: ObservableObject {
                     return
                 }
                 if !model.checklistItems.isEmpty {
-                    self.items = model.checklistItems
+                    self.items = model.checklistItems.sorted { $0.completed && !$1.completed }
+                    
                     if  model.checklistItems.count(where: {$0.completed == false}) > 0 {
                         self.changeChecklistContent(.content)
                     } else {

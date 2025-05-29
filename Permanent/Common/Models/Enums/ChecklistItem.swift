@@ -22,15 +22,15 @@ enum ChecklistItemType: String, Codable {
         case .storageRedeemed:
             return "Redeem free storage"
         case .legacyContact:
-            return "Assign a Legacy Contact"
+            return "Assign a legacy Contact"
         case .archiveSteward:
-            return "Assign an Archive Steward"
+            return "Assign an archive steward"
         case .archiveProfile:
             return "Update Archive Profile"
         case .firstUpload:
             return "Upload first file"
         case .publishContent:
-            return "Publish your archive"
+            return "Publish a file"
         }
     }
     
