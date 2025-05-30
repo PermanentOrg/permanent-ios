@@ -73,7 +73,7 @@ class ChecklistCoordinator {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             window.rootViewController?.dismiss(animated: true) {
-                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/upload-your-first-file")!)
+                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/uploading-files-mobile-apps")!)
             }
         }
     }
@@ -82,7 +82,7 @@ class ChecklistCoordinator {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             window.rootViewController?.dismiss(animated: true) {
-                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/how-to-publish")!)
+                UIApplication.shared.open(URL(string: "https://permanent.zohodesk.com/portal/en/kb/articles/how-to-publish-a-file-or-folder-mobile")!)
             }
         }
     }
