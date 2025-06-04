@@ -18,6 +18,9 @@ class PublicProfilePageViewModel: ViewModelInterface {
     
     var profileItems = [ProfileItemModel]()
     
+    var archiveNameProfileItem: ArchiveNameProfileItem? {
+        return profileItems.first(where: {$0 is ArchiveNameProfileItem}) as? ArchiveNameProfileItem
+    }
     var blurbProfileItem: BlurbProfileItem? {
         return profileItems.first(where: {$0 is BlurbProfileItem}) as? BlurbProfileItem
     }
@@ -82,13 +85,14 @@ class PublicProfilePageViewModel: ViewModelInterface {
         }
         
         var aboutCells = [ProfileCellType]()
+
         if blurbProfileItem?.shortDescription?.isNotEmpty ?? false {
             aboutCells.append(.blurb)
         }
         if descriptionProfileItem?.longDescription?.isNotEmpty ?? false {
             aboutCells.append(.longDescription)
         }
-        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
+        profileViewData[.about] = isEditDataEnabled ? [ProfileCellType.archiveName,  ProfileCellType.blurb, ProfileCellType.longDescription] : aboutCells
         
         var informationCells = [ProfileCellType]()
         if basicProfileItem?.fullName?.isNotEmpty ?? false {
@@ -267,6 +271,15 @@ class PublicProfilePageViewModel: ViewModelInterface {
         newBlurbItem.profileItemId = profileItemId
         
         modifyPublicProfileItem(newBlurbItem, operationType, completionBlock)
+    }
+    
+    func renameArchiveNameProfileItem(profileItemId: Int? = nil, newValue: String, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+        let newArchiveNameItem = ArchiveNameProfileItem()
+        newArchiveNameItem.archiveName = newValue
+        newArchiveNameItem.archiveId = archiveData.archiveID
+        newArchiveNameItem.profileItemId = profileItemId
+        
+        modifyPublicProfileItem(newArchiveNameItem, .update, completionBlock)
     }
     
     func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {

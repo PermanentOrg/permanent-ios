@@ -38,10 +38,19 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     var isPickingProfilePicture: Bool = false
     var isViewingPublicProfile: Bool = false
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         viewModel = PublicProfilePicturesViewModel()
+        
+        // Listen for archive name changes to update title
+        NotificationCenter.default.addObserver(forName: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, queue: .main) { [weak self] _ in
+            self?.handleArchiveNameUpdate()
+        }
         
         if archiveData == nil {
             showSpinner()
@@ -202,6 +211,68 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     
     @objc func closeButtonAction(_ sender: Any) {
         dismiss(animated: true)
+    }
+    
+    func handleArchiveNameUpdate() {
+        if let updatedArchiveName = AuthenticationManager.shared.session?.selectedArchive?.fullName {
+            let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: updatedArchiveName)
+            self.title = newTitle
+            
+            // Update local archiveData to keep it in sync
+            if let updatedArchive = AuthenticationManager.shared.session?.selectedArchive {
+                self.archiveData = updatedArchive
+                self.viewModel?.archiveData = updatedArchive
+                
+                // Update child view controllers with new archive data
+                self.profilePageVC?.archiveData = updatedArchive
+                self.profilePageVC?.viewModel?.archiveData = updatedArchive
+                self.archiveVC?.archiveData = updatedArchive
+                
+                // Refresh the profile page data to prevent collection view crashes
+                DispatchQueue.main.async { [weak self] in
+                    if let profilePageVC = self?.profilePageVC, profilePageVC.isViewLoaded {
+                        profilePageVC.handleArchiveChange(newArchiveData: updatedArchive)
+                    }
+                    
+                    // Scroll both views to top for new archive content
+                    self?.scrollChildViewsToTop()
+                }
+                
+                // Update header view (banner and profile photos) for new archive
+                updateHeaderForNewArchive(updatedArchive)
+            }
+        }
+    }
+    
+    private func updateHeaderForNewArchive(_ newArchiveData: ArchiveVOData) {
+        // Update profile photo from new archive data
+        if let archiveThumb200 = newArchiveData.thumbURL200 {
+            profilePhotoImageView.sd_setImage(with: URL(string: archiveThumb200))
+        } else {
+            profilePhotoImageView.image = UIColor.lightGray.imageWithColor(width: 48, height: 48)
+        }
+        
+        // Refresh banner image for new archive
+        viewModel?.getPublicRoot(then: { [weak self] status in
+            if status == .success, let bannerURL = self?.viewModel?.bannerURL {
+                self?.profileBannerImageView.sd_setImage(with: bannerURL)
+            }
+        })
+    }
+    
+    private func scrollChildViewsToTop() {
+        // Scroll profile page to top
+        if let profilePageVC = profilePageVC, profilePageVC.isViewLoaded {
+            profilePageVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        // Scroll archive file browser to top
+        if let archiveVC = archiveVC, archiveVC.isViewLoaded {
+            archiveVC.collectionView.setContentOffset(.zero, animated: false)
+        }
+        
+        // Also reset the header scroll position
+        headerViewTopConstraint.constant = 0
     }
 }
 

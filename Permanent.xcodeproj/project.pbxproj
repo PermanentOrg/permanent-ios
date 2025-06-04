@@ -66,6 +66,8 @@
 		5E0B1BD42B961CE800B10BB5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */; };
 		5E0E3C2E2886DBCA001C7F10 /* ShareExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */; };
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
+		5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
+		5E10173C2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
 		5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B42C5BA3C300103EA8 /* OnboardingContainerViewModel.swift */; };
 		5E1582B72C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B62C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift */; };
 		5E1582B92C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B82C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift */; };
@@ -1073,6 +1075,7 @@
 		5E0ADB8C279052A500F39E7E /* PublicProfileLocationSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicProfileLocationSetViewController.swift; sourceTree = "<group>"; };
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
+		5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveNameProfileItem.swift; sourceTree = "<group>"; };
 		5E1582B42C5BA3C300103EA8 /* OnboardingContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerViewModel.swift; sourceTree = "<group>"; };
 		5E1582B62C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingArchiveNameViewModel.swift; sourceTree = "<group>"; };
 		5E1582B82C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInvitedWelcomeViewModel.swift; sourceTree = "<group>"; };
@@ -2219,6 +2222,7 @@
 		5E2CFA23274EEB040055941C /* PublicProfile */ = {
 			isa = PBXGroup;
 			children = (
+				5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */,
 				5E2CFA24274EEB570055941C /* ProfileItemVO.swift */,
 				5EB6201E278445B6001B9AFD /* BlurbProfileItem.swift */,
 				5EB6202027844A46001B9AFD /* DescriptionProfileItem.swift */,
@@ -5236,6 +5240,7 @@
 				5E865D092D4045A7005B41B7 /* TwoStepConfirmationContainerViewModel.swift in Sources */,
 				BC76DAEB25C075E70041DCC3 /* ViewController.swift in Sources */,
 				F53D0A1C25FB71960080579F /* FileDetailsDateCollectionViewCell.swift in Sources */,
+				5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */,
 				5E2E3D1B26D517E10090EF02 /* ArchiveType.swift in Sources */,
 				5E6CCEE72B72D24000D192FF /* ArchivesViewControllerRepresentable.swift in Sources */,
 				5E181B7F2AF0640E002DE69A /* GiftStorageView.swift in Sources */,
@@ -5505,6 +5510,7 @@
 				5E4739F82A4187B300A20D85 /* EmailProfileItem.swift in Sources */,
 				F559F8B5290164000015A522 /* ShareFileBrowserViewController.swift in Sources */,
 				5E4739EF2A41874200A20D85 /* APIErrors.swift in Sources */,
+				5E10173C2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */,
 				5E4739FE2A4187D100A20D85 /* FieldNameUI.swift in Sources */,
 				5E83CC49286C601C00A5775B /* StringExtension.swift in Sources */,
 				F559F89528FEE99E0015A522 /* APIError.swift in Sources */,

@@ -22,6 +22,7 @@ enum ProfileCellType {
     case establishedLocation
     case milestone
     case archiveGallery
+    case archiveName
 }
 
 enum ProfileSection: Int {
@@ -63,8 +64,13 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initCollectionView()
         
         NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: nil) { [weak self] notification in
-            self?.refreshProfileViewData()
+            if let archiveData = self?.archiveData {
+                self?.getAllByArchiveNbr(archiveData)
+            }
             self?.collectionView.reloadData()
+            
+            // Update AuthenticationManager session when archive name changes
+            self?.handleArchiveNameChange()
         }
     }
     
@@ -142,6 +148,14 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
             if error == nil {
                 refreshProfileViewData()
                 
+                // Update title after data is refreshed
+                DispatchQueue.main.async { [weak self] in
+                    if let archiveName = self?.viewModel?.archiveNameProfileItem?.archiveName {
+                        let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
+                        self?.title = newTitle
+                    }
+                }
+                
                 collectionView.reloadData()
             } else {
                 showAlert(title: .error, message: .errorMessage)
@@ -151,6 +165,83 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     
     func refreshProfileViewData() {
         profileViewData = viewModel?.getProfileViewData() ?? [:]
+    }
+    
+    func handleArchiveNameChange() {
+        if let updatedArchiveName = self.viewModel?.archiveNameProfileItem?.archiveName,
+           let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
+           currentArchive.fullName != updatedArchiveName {
+            
+            // Create updated archive data
+            let updatedArchive = createUpdatedArchive(from: currentArchive, withNewName: updatedArchiveName)
+            
+            // Update the session
+            AuthenticationManager.shared.session?.selectedArchive = updatedArchive
+            AuthenticationManager.shared.saveSession()
+            
+            // Update local archive data
+            self.archiveData = updatedArchive
+            self.viewModel?.archiveData = updatedArchive
+            
+            // Post notification to update other parts of the app (like side menu)
+            NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
+        }
+    }
+    
+    private func createUpdatedArchive(from currentArchive: ArchiveVOData, withNewName newName: String) -> ArchiveVOData {
+        return ArchiveVOData(
+            childFolderVOS: currentArchive.childFolderVOS,
+            folderSizeVOS: currentArchive.folderSizeVOS,
+            recordVOS: currentArchive.recordVOS,
+            accessRole: currentArchive.accessRole,
+            fullName: newName,
+            spaceTotal: currentArchive.spaceTotal,
+            spaceLeft: currentArchive.spaceLeft,
+            fileTotal: currentArchive.fileTotal,
+            fileLeft: currentArchive.fileLeft,
+            relationType: currentArchive.relationType,
+            homeCity: currentArchive.homeCity,
+            homeState: currentArchive.homeState,
+            homeCountry: currentArchive.homeCountry,
+            itemVOS: currentArchive.itemVOS,
+            birthDay: currentArchive.birthDay,
+            company: currentArchive.company,
+            archiveVODescription: currentArchive.archiveVODescription,
+            archiveID: currentArchive.archiveID,
+            publicDT: currentArchive.publicDT,
+            archiveNbr: currentArchive.archiveNbr,
+            view: currentArchive.view,
+            viewProperty: currentArchive.viewProperty,
+            archiveVOPublic: currentArchive.archiveVOPublic,
+            vaultKey: currentArchive.vaultKey,
+            thumbArchiveNbr: currentArchive.thumbArchiveNbr,
+            type: currentArchive.type,
+            thumbStatus: currentArchive.thumbStatus,
+            imageRatio: currentArchive.imageRatio,
+            thumbURL200: currentArchive.thumbURL200,
+            thumbURL500: currentArchive.thumbURL500,
+            thumbURL1000: currentArchive.thumbURL1000,
+            thumbURL2000: currentArchive.thumbURL2000,
+            thumbDT: currentArchive.thumbDT,
+            createdDT: currentArchive.createdDT,
+            updatedDT: currentArchive.updatedDT,
+            status: currentArchive.status
+        )
+    }
+    
+    func handleArchiveChange(newArchiveData: ArchiveVOData) {
+        // Update the archive data
+        self.archiveData = newArchiveData
+        self.viewModel?.archiveData = newArchiveData
+        
+        // Clear existing profile view data to prevent inconsistencies
+        self.profileViewData.removeAll()
+        
+        // Reset button states for new archive
+        initButtonStates()
+        
+        // Refresh with new archive data
+        getAllByArchiveNbr(newArchiveData)
     }
 }
 
@@ -162,7 +253,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         
         switch currentSection {
         case .about:
-            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, 1)
+            return (readMoreIsEnabled[.about] ?? false) ? profileViewData[.about]!.count : min(profileViewData[.about]!.count, viewModel?.isEditDataEnabled ?? true ? 2 : 1)
             
         case .onlinePresenceEmail:
             let rowCount = profileViewData[currentSection]?.count ?? 0
@@ -217,20 +308,31 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 })
             }
             returnedCell = cell
+        case .archiveName:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
+            let title = "Name"
+            let text = viewModel?.archiveNameProfileItem?.archiveName ?? ""
+            
+            cell.configure(title, text)
+
+            returnedCell = cell
+            
             
         case .blurb:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let shortDescriptionValue = viewModel?.blurbProfileItem?.shortDescription
+            let title = "About"
+            let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             
-            cell.configure(shortDescriptionValue ?? viewModel?.archiveType.shortDescriptionHint)
+            cell.configure(title, text)
 
             returnedCell = cell
             
         case .longDescription:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let longDescriptionValue = viewModel?.descriptionProfileItem?.longDescription
+            let title = "Purpose"
+            let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
             
-            cell.configure(longDescriptionValue ?? viewModel?.archiveType.longDescriptionHint)
+            cell.configure(title, text)
 
             returnedCell = cell
             
@@ -323,7 +425,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
                 headerCell.configure(titleLabel: "Archive", buttonText: "Share")
                 
             case .about:
-                headerCell.configure(titleLabel: "About".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
+                headerCell.configure(titleLabel: "Archive Information".localized(), buttonText: "Edit".localized(), buttonIsHidden: !isEditDataEnabled)
                 
                 headerCell.buttonAction = { [weak self] in
                     let profileAboutVC = UIViewController.create(withIdentifier: .profileAboutPage, from: .profile) as! PublicProfileAboutPageViewController
@@ -439,13 +541,20 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
         case .profileVisibility:
             return CGSize(width: UIScreen.main.bounds.width, height: 80)
             
+        case .archiveName:
+            let title = "Name"
+            let text = viewModel?.archiveData.fullName ?? ""
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
+            
         case .blurb:
+            let title = "About"
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
-            return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
             
         case .longDescription:
+            let title = "Purpose"
             let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
-            return ProfilePageAboutCollectionViewCell.size(withText: text, collectionView: collectionView)
+            return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
 
         case .fullName, .nickName, .gender, .birthDate, .birthLocation, .establishedDate, .establishedLocation:
             return ProfilePageInformationCollectionViewCell.size(collectionView: collectionView)
