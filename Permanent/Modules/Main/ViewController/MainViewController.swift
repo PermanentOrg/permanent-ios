@@ -224,6 +224,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
         collectionView.refreshControl = refreshControl
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
@@ -382,6 +383,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         // Reset collection view properties that might affect pull-to-refresh
         collectionView.alwaysBounceVertical = true
         collectionView.isScrollEnabled = true
+        collectionView.showsVerticalScrollIndicator = false
         
         // Force collection view layout update
         collectionView.setNeedsLayout()
