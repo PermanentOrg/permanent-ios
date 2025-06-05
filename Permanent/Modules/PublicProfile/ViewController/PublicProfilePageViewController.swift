@@ -168,23 +168,44 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     func handleArchiveNameChange() {
-        if let updatedArchiveName = self.viewModel?.archiveNameProfileItem?.archiveName,
-           let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
-           currentArchive.fullName != updatedArchiveName {
+        guard let updatedArchiveName = self.viewModel?.archiveNameProfileItem?.archiveName,
+              let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
+              let localArchiveData = self.archiveData else {
+            return
+        }
+        
+        // Check if we're editing the currently selected archive
+        let isEditingSelectedArchive = currentArchive.archiveID == localArchiveData.archiveID
+        
+        if isEditingSelectedArchive {
+            // Refresh session data from server to get latest changes
+            AuthenticationManager.shared.syncSession { [weak self] status in
+                switch status {
+                case .success:
+                    // Update local data to match refreshed session
+                    if let updatedArchive = AuthenticationManager.shared.session?.selectedArchive {
+                        self?.archiveData = updatedArchive
+                        self?.viewModel?.archiveData = updatedArchive
+                    }
+                    
+                    // Post notification to update other parts of the app (like side menu)
+                    NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
+                    
+                case .error:
+                    // Handle error if needed
+                    break
+                }
+            }
+        } else if localArchiveData.fullName != updatedArchiveName {
+            // Just update local data for non-selected archives
+            let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
+            self.archiveData = updatedLocalArchive
+            self.viewModel?.archiveData = updatedLocalArchive
             
-            // Create updated archive data
-            let updatedArchive = createUpdatedArchive(from: currentArchive, withNewName: updatedArchiveName)
-            
-            // Update the session
-            AuthenticationManager.shared.session?.selectedArchive = updatedArchive
-            AuthenticationManager.shared.saveSession()
-            
-            // Update local archive data
-            self.archiveData = updatedArchive
-            self.viewModel?.archiveData = updatedArchive
-            
-            // Post notification to update other parts of the app (like side menu)
-            NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
+            // Notify parent for UI updates only
+            if let parentVC = self.parent as? PublicArchiveViewController {
+                parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
+            }
         }
     }
     
@@ -233,6 +254,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         // Update the archive data
         self.archiveData = newArchiveData
         self.viewModel?.archiveData = newArchiveData
+        
+        // Recalculate edit permissions for the new archive
+        if let isEditDataEnabled = viewModel?.isEditDataEnabled {
+            self.isEditDataEnabled = isEditDataEnabled
+        }
         
         // Clear existing profile view data to prevent inconsistencies
         self.profileViewData.removeAll()
@@ -663,7 +689,9 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Always try to pass scroll to parent first, let parent decide if it should handle it
         if delegate?.childVC(self, didScrollToOffset: scrollView.contentOffset) ?? false {
+            // Parent handled the scroll, reset our offset
             scrollView.contentOffset = .zero
         }
     }

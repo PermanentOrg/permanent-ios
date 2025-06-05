@@ -132,8 +132,24 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                         viewModel?.renameArchiveNameProfileItem(profileItemId: viewModel?.archiveNameProfileItem?.profileItemId ,newValue: archiveNameTextField, { result, error, itemId in
                             if result {
                                 self.viewModel?.archiveNameProfileItem?.profileItemId = itemId
-                                AuthenticationManager.shared.reloadSession { _ in
+                                
+                                // Check if we're editing the currently selected archive
+                                if let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
+                                   let localArchiveData = self.viewModel?.archiveData,
+                                   currentArchive.archiveID == localArchiveData.archiveID {
                                     
+                                    // Refresh session data from server to get latest changes
+                                    AuthenticationManager.shared.syncSession { status in
+                                        switch status {
+                                        case .success:
+                                            // Post notification to update other parts of the app (like side menu)
+                                            NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
+                                            
+                                        case .error:
+                                            // Handle error if needed
+                                            break
+                                        }
+                                    }
                                 }
                             } else {
                                 self.showErrorAlert(message: .errorMessage)

@@ -123,9 +123,28 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         NotificationCenter.default.addObserver(forName: ArchivesViewModel.didChangeArchiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let _ = self?.viewModel?.removeCurrentFolderFromHierarchy() else { return }
+            
+            // Reset collection view scroll position and refresh control state
+            self?.resetCollectionViewState()
+            
+            // Update FAB view visibility based on new archive permissions
+            self?.updateFABViewVisibility()
+            
+            // Refresh member checklist button as permissions might have changed
+            self?.showMemberChecklistButton()
+            
+            // Update navigation title with new archive name
+            self?.navigationItem.title = self?.viewModel?.rootFolderName
+            
+            // Refresh workspace to new archive's root
             self?.getRootFolder()
             self?.backButton.isHidden = true
             self?.directoryLabel.text = self?.viewModel?.rootFolderName
+            
+            // Additional delayed reset to ensure refresh control works after data loading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self?.resetCollectionViewState()
+            }
         }
         
         NotificationCenter.default.addObserver(forName: UploadManager.didRefreshQueueNotification, object: nil, queue: nil) { [weak self] notif in
@@ -192,7 +211,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         
         showMemberChecklistButton()
 
-        fabView.isHidden = viewModel!.archivePermissions.contains(.create) == false || viewModel!.archivePermissions.contains(.upload) == false || viewModel!.isPickingImage
+        updateFABViewVisibility()
         
         viewModel?.trackOpenFiles()
     }
@@ -332,6 +351,45 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
                 self?.view.layoutIfNeeded()
             })
         })
+    }
+    
+    func updateFABViewVisibility() {
+        // Update FAB view visibility based on current archive permissions
+        guard let viewModel = viewModel else { return }
+        
+        let hasCreatePermission = viewModel.archivePermissions.contains(.create)
+        let hasUploadPermission = viewModel.archivePermissions.contains(.upload)
+        let shouldShowFAB = hasCreatePermission && hasUploadPermission && !viewModel.isPickingImage
+        
+        fabView.isHidden = !shouldShowFAB
+    }
+    
+    func resetCollectionViewState() {
+        // Reset collection view scroll position to top
+        collectionView.setContentOffset(.zero, animated: false)
+        
+        // End any ongoing refresh control animation
+        if refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
+        
+        // Completely re-establish refresh control connection
+        collectionView.refreshControl = nil
+        collectionView.refreshControl = refreshControl
+        
+        // Ensure refresh control is enabled and ready
+        refreshControl.isEnabled = true
+        
+        // Reset collection view properties that might affect pull-to-refresh
+        collectionView.alwaysBounceVertical = true
+        collectionView.isScrollEnabled = true
+        
+        // Force collection view layout update
+        collectionView.setNeedsLayout()
+        collectionView.layoutIfNeeded()
+        
+        // Re-establish content insets to ensure proper scroll behavior
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 140, right: 6)
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
@@ -623,6 +681,11 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
     private func onFilesFetchCompletion(_ status: RequestStatus) {
         DispatchQueue.main.async {
             self.hideSpinner()
+            
+            // Ensure refresh control is properly ended
+            if self.refreshControl.isRefreshing {
+                self.refreshControl.endRefreshing()
+            }
         }
         
         viewModel?.refreshUploadQueue()

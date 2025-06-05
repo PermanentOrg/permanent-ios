@@ -33,16 +33,13 @@
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
-                <constraint firstItem="eLD-02-WZY" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="20" id="PQX-dR-GcP"/>
                 <constraint firstAttribute="bottom" secondItem="YZW-dm-O0w" secondAttribute="bottom" constant="10" id="VH2-BK-s3l"/>
                 <constraint firstItem="YZW-dm-O0w" firstAttribute="trailing" secondItem="eLD-02-WZY" secondAttribute="trailing" id="YNk-v3-bAx"/>
                 <constraint firstItem="eLD-02-WZY" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="YTD-XI-CGW"/>
                 <constraint firstItem="YZW-dm-O0w" firstAttribute="top" secondItem="eLD-02-WZY" secondAttribute="bottom" constant="5" id="cn1-ZD-x8f"/>
                 <constraint firstItem="YZW-dm-O0w" firstAttribute="leading" secondItem="eLD-02-WZY" secondAttribute="leading" id="ky1-ST-rlo"/>
                 <constraint firstItem="eLD-02-WZY" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="lDu-t0-gIy"/>
-                <constraint firstItem="eLD-02-WZY" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="20" id="mow-D6-clW"/>
                 <constraint firstAttribute="trailing" secondItem="eLD-02-WZY" secondAttribute="trailing" constant="20" id="plb-6B-D8Q"/>
-                <constraint firstAttribute="trailing" secondItem="eLD-02-WZY" secondAttribute="trailing" constant="20" id="qRg-B7-Paa"/>
             </constraints>
             <size key="customSize" width="365" height="146"/>
             <connections>
