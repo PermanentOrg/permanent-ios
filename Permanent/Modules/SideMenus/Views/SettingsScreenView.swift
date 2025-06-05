@@ -98,11 +98,11 @@ struct SettingsScreenView: View {
                             }
                         }
                         .onAppear {
-                            UIScrollView.appearance().bounces = false
+                            ScrollViewAppearanceManager.shared.pushScrollViewBounce(enabled: false, identifier: "SettingsScreen")
                             viewModel.trackEvents()
                         }
                         .onDisappear {
-                            UIScrollView.appearance().bounces = true
+                            ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "SettingsScreen")
                         }
                         Divider()
                             .padding(.horizontal, -40)

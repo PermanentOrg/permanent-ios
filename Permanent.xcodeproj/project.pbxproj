@@ -68,6 +68,8 @@
 		5E0E3C302886EB69001C7F10 /* ShareExtensionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1CCC18287EE4B800913EEA /* ShareExtensionViewModel.swift */; };
 		5E10173B2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
 		5E10173C2DF0A3E80097A649 /* ArchiveNameProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */; };
+		5E1017412DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */; };
+		5E1017422DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */; };
 		5E1582B52C5BA3C300103EA8 /* OnboardingContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B42C5BA3C300103EA8 /* OnboardingContainerViewModel.swift */; };
 		5E1582B72C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B62C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift */; };
 		5E1582B92C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1582B82C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift */; };
@@ -1076,6 +1078,7 @@
 		5E0B1BD32B961CE800B10BB5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		5E0E3C2D2886DBCA001C7F10 /* ShareExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareExtensionTests.swift; sourceTree = "<group>"; };
 		5E10173A2DF0A3E80097A649 /* ArchiveNameProfileItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveNameProfileItem.swift; sourceTree = "<group>"; };
+		5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewAppearanceManager.swift; sourceTree = "<group>"; };
 		5E1582B42C5BA3C300103EA8 /* OnboardingContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerViewModel.swift; sourceTree = "<group>"; };
 		5E1582B62C5CD63500103EA8 /* OnboardingArchiveNameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingArchiveNameViewModel.swift; sourceTree = "<group>"; };
 		5E1582B82C5CD66500103EA8 /* OnboardingInvitedWelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInvitedWelcomeViewModel.swift; sourceTree = "<group>"; };
@@ -3863,6 +3866,7 @@
 		BC4526E6251CACD500E24A51 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5E1017402DF1A6B80097A649 /* ScrollViewAppearanceManager.swift */,
 				92430A8D2B10A55E0098597D /* Events */,
 				BC4526E7251CACDF00E24A51 /* CodableHelper.swift */,
 				BC1C7B38254861E7008E9A0D /* DateUtils.swift */,
@@ -5349,6 +5353,7 @@
 				5E8A3E5124F3AFCE00812361 /* PageViewModelDelegateInterface.swift in Sources */,
 				5E7C852029A39F84000DF3CA /* FABTagsManagementActionSheet.swift in Sources */,
 				BC8945132524BE1100FA8D7A /* AccountEndpoint.swift in Sources */,
+				5E1017422DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */,
 				F59C3B8129C3260100337E45 /* ArchivesRepository.swift in Sources */,
 				924F16352A45CBD800B75D4E /* TextExtension.swift in Sources */,
 				BCF906642587B0C200DF1B64 /* MembersViewController.swift in Sources */,
@@ -5435,6 +5440,7 @@
 				925FF46B2D00668C000B44D4 /* EventsPayload.swift in Sources */,
 				5E1CCC23287F052400913EEA /* UIViewExtension.swift in Sources */,
 				5ED4B9D02876E03B00CF044B /* FolderVO.swift in Sources */,
+				5E1017412DF1A6B80097A649 /* ScrollViewAppearanceManager.swift in Sources */,
 				F559F8A928FF02650015A522 /* APINetworkSession.swift in Sources */,
 				F5ADBF38290BBD110007A516 /* AccountEndpoint.swift in Sources */,
 				5ED4B9C22875378000CF044B /* TextStyle.swift in Sources */,

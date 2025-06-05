@@ -31,6 +31,9 @@ class SettingsRouter {
     }
     
     func navigate(to page: Page, router: SettingsRouter) {
+        // Reset scroll view appearance before dismissing current screen
+        ScrollViewAppearanceManager.shared.reset()
+        
         if page != .settings {
             self.rootViewController.dismiss(animated: true)
         }
@@ -38,11 +41,11 @@ class SettingsRouter {
         switch page {
         case .settings:
             let screenView = SettingsScreenView(viewModel: StateObject(wrappedValue: SettingsScreenViewModel()), router: router)
-            var host = UIHostingController(rootView: screenView)
+            let host = UIHostingController(rootView: screenView)
             host.sheetPresentationController?.detents = [.large()]
             self.rootViewController.present(host, animated: true, completion: nil)
         case .account:
-            var infoRepresentable: AccountInfoViewControllerRepresentable = AccountInfoViewControllerRepresentable()
+            let infoRepresentable: AccountInfoViewControllerRepresentable = AccountInfoViewControllerRepresentable()
             let screenView = ViewRepresentableContainer(viewRepresentable: infoRepresentable, title: AccountInfoViewControllerRepresentable().title)
             let host = UIHostingController(rootView: screenView)
             host.modalPresentationStyle = .fullScreen

@@ -223,9 +223,8 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.register(UINib(nibName: "FileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "FileCell")
         collectionView.register(UINib(nibName: "FileCollectionViewGridCell", bundle: nil), forCellWithReuseIdentifier: "FileGridCell")
         collectionView.register(FileCollectionViewHeaderCell.nib(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FileCollectionViewHeaderCell.identifier)
-        
         collectionView.refreshControl = refreshControl
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 140, right: 6)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width - 40, right: 6)
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = 6
         flowLayout.minimumLineSpacing = 0
@@ -389,7 +388,7 @@ class MainViewController: BaseViewController<MyFilesViewModel> {
         collectionView.layoutIfNeeded()
         
         // Re-establish content insets to ensure proper scroll behavior
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: 140, right: 6)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 6, bottom: UIScreen.main.bounds.width, right: 6)
     }
     
     fileprivate func setupBottomActionSheetForMultipleFiles() {
