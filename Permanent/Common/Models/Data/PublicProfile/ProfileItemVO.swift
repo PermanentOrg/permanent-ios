@@ -16,11 +16,12 @@ struct ProfileItemVO: Model {
     
     enum ItemCodingKeys: String, CodingKey {
         case fieldNameUI
+        case type
     }
     
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Self.CodingKeys)
-        let profileItemContainer = try container.nestedContainer(keyedBy: Self.ItemCodingKeys, forKey: .profileItemVO)
+        let container = try decoder.container(keyedBy: Self.CodingKeys.self)
+        let profileItemContainer = try container.nestedContainer(keyedBy: Self.ItemCodingKeys.self, forKey: .profileItemVO)
         let fieldNameUI = try profileItemContainer.decode(String?.self, forKey: .fieldNameUI)
         
         switch fieldNameUI {
@@ -28,7 +29,12 @@ struct ProfileItemVO: Model {
             profileItemVO = try container.decode(BlurbProfileItem?.self, forKey: .profileItemVO)
             
         case FieldNameUI.basic.rawValue:
-            profileItemVO = try container.decode(BasicProfileItem?.self, forKey: .profileItemVO)
+            let type = try profileItemContainer.decode(String?.self, forKey: .type)
+            if type == "type.profile_item.basic" {
+                profileItemVO = try container.decode(ArchiveNameProfileItem?.self, forKey: .profileItemVO)
+            } else {
+                profileItemVO = try container.decode(BasicProfileItem?.self, forKey: .profileItemVO)
+            }
             
         case FieldNameUI.description.rawValue:
             profileItemVO = try container.decode(DescriptionProfileItem?.self, forKey: .profileItemVO)

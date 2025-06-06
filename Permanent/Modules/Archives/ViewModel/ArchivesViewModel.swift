@@ -145,6 +145,18 @@ class ArchivesViewModel: ViewModelInterface {
     func setCurrentArchive(_ archive: ArchiveVOData) {
         PermSession.currentSession?.selectedArchive = archive
         
+        // Save the session to persist the archive selection
+        if let session = PermSession.currentSession {
+            do {
+                try SessionKeychainHandler().saveSession(session)
+            } catch {
+                print("Failed to save session after archive change")
+            }
+        }
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: ArchivesViewModel.didChangeArchiveNotification, object: nil)
+        
         UploadManager.shared.timer?.fire()
     }
     

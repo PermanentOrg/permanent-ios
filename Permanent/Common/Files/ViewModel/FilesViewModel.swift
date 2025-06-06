@@ -609,7 +609,7 @@ class FilesViewModel: NSObject, ViewModelInterface {
                 }
                 
                 if let archive = model.results[0].data?[0].archiveVO {
-                    AuthenticationManager.shared.session?.selectedArchive = archive
+                    AuthenticationManager.shared.updateSelectedArchive(archive)
                     
                     completion(true)
                 } else {

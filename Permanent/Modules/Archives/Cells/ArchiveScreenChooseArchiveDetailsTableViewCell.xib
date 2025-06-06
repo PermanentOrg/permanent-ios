@@ -72,7 +72,7 @@
                             <constraint firstItem="tHz-8X-Jhr" firstAttribute="leading" secondItem="SYv-es-Q6N" secondAttribute="leading" constant="15" id="3T9-ln-STr"/>
                             <constraint firstItem="ZV3-xF-Yyr" firstAttribute="centerY" secondItem="SYv-es-Q6N" secondAttribute="centerY" id="ByJ-u7-Hz1"/>
                             <constraint firstItem="IxC-2L-RBF" firstAttribute="height" secondItem="tHz-8X-Jhr" secondAttribute="height" multiplier="0.25" id="D16-fQ-BhV"/>
-                            <constraint firstAttribute="height" constant="80" id="K78-FK-Huh"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="80" priority="750" id="K78-FK-Huh"/>
                             <constraint firstItem="IxC-2L-RBF" firstAttribute="top" secondItem="tHz-8X-Jhr" secondAttribute="top" constant="2" id="fMY-uR-cfk"/>
                             <constraint firstItem="ZV3-xF-Yyr" firstAttribute="leading" secondItem="tHz-8X-Jhr" secondAttribute="trailing" constant="10" id="pAG-An-nKi"/>
                             <constraint firstItem="Mug-XK-ORg" firstAttribute="centerY" secondItem="SYv-es-Q6N" secondAttribute="centerY" id="uhs-cY-ROb"/>

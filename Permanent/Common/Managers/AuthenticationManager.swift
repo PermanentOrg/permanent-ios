@@ -48,13 +48,21 @@ class AuthenticationManager {
             let selectedArchive = session.selectedArchive {
             self.session = session
             
-            changeArchive(selectedArchive) { result in
+            // Try to change to the saved archive on the server
+            changeArchive(selectedArchive) { [weak self] result in
                 switch result {
                 case .success(_):
+                    // Server successfully changed to the archive, keep the selectedArchive
+                    self?.session?.selectedArchive = selectedArchive
+                    self?.saveSession()
                     completion(true)
                     
                 case .failure(_):
-                    completion(false)
+                    // Server call failed, but still keep the session with the saved selectedArchive
+                    // This ensures the user's last selected archive is preserved even if offline
+                    self?.session?.selectedArchive = selectedArchive
+                    self?.saveSession()
+                    completion(true)
                 }
             }
         } else {
@@ -247,9 +255,25 @@ class AuthenticationManager {
             return
         }
 
-        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { result in
-            completionBlock(result)
+        archivesRepository.changeArchive(archiveId: archiveId, archiveNbr: archiveNbr) { [weak self] result in
+            switch result {
+            case .success(_):
+                // Update session and save when server confirms the change
+                self?.updateSelectedArchive(archive)
+                completionBlock(.success(true))
+                
+            case .failure(let error):
+                completionBlock(.failure(error))
+            }
         }
+    }
+    
+    func updateSelectedArchive(_ archive: ArchiveVOData) {
+        session?.selectedArchive = archive
+        saveSession()
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil)
     }
 
 }

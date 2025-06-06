@@ -23,7 +23,6 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             NSAttributedString.Key.font: TextFontStyle.style51.font
         ]
         UINavigationBar.appearance().isTranslucent = false
-        UIScrollView.appearance().bounces = false
         
         if #available(iOS 15, *) {
             let navigationBarAppearance = UINavigationBarAppearance()
@@ -83,14 +82,18 @@ struct CustomNavigationView<Content: View, LeftButton: View, RightButton: View>:
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationViewStyle(StackNavigationViewStyle())
-        }.onAppear {
+        }
+        .onAppear {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .portrait
+            ScrollViewAppearanceManager.shared.pushScrollViewBounce(enabled: false, identifier: "CustomNavigationView")
             #endif
-        }.onDisappear {
+        }
+        .onDisappear {
             #if !canImport(ShareExtension)
             AppDelegate.orientationLock = .all
+            ScrollViewAppearanceManager.shared.popScrollViewBounce(identifier: "CustomNavigationView")
             #endif
         }
         .edgesIgnoringSafeArea(.all)

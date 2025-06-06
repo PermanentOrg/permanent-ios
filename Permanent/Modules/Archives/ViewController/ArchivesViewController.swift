@@ -97,9 +97,9 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
     
     // MARK: - Actions
     @IBAction func createNewArchiveAction(_ sender: Any) {
-        var archiveTypes = ArchiveType.allCases.map{$0.archiveName}
+        var archiveTypes = ArchiveType.allCases.map{$0.archiveTypeName}
         
-        if let removeItemIdx = archiveTypes.firstIndex(of: ArchiveType.nonProfit.archiveName) {
+        if let removeItemIdx = archiveTypes.firstIndex(of: ArchiveType.nonProfit.archiveTypeName) {
             archiveTypes.remove(at: removeItemIdx)
         }
         
