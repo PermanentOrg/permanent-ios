@@ -42,10 +42,12 @@ class ChecklistCoordinator {
     }
     
     func presentLegacyContact() {
-        if let legacyPlanningStewardVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController {
-            legacyPlanningStewardVC.viewModel = LegacyPlanningViewModel()
-            legacyPlanningStewardVC.viewModel?.stewardType = .account
-            presentViewController(legacyPlanningStewardVC)
+        if let legacyPlanningLoadingVC = UIViewController.create(withIdentifier: .legacyPlanningLoading, from: .legacyPlanning) as? LegacyPlanningLoadingViewController {
+            legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            legacyPlanningLoadingVC.viewModel?.account = AuthenticationManager.shared.session?.account
+            let customNavController = NavigationController(rootViewController: legacyPlanningLoadingVC)
+            customNavController.modalPresentationStyle = .fullScreen
+            presentViewController(legacyPlanningLoadingVC)
         }
     }
     
