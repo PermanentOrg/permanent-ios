@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/swift
 # Edit at https://www.toptal.com/developers/gitignore?templates=swift
 
@@ -93,3 +92,6 @@ env-vars.sh
 
 .idea/
 *.DS_Store
+
+# Build configuration files
+buildServer.json

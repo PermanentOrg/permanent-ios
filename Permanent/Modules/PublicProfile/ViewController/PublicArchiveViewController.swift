@@ -48,7 +48,7 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
         viewModel = PublicProfilePicturesViewModel()
         
         // Listen for archive name changes to update title
-        NotificationCenter.default.addObserver(forName: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, queue: .main) { [weak self] _ in
+        NotificationCenter.default.addObserver(forName: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, queue: .main) { [weak self] notification in
             self?.handleArchiveNameUpdate()
         }
         
@@ -245,32 +245,44 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     func handleArchiveNameUpdate() {
         // Called when user switches their selected archive (full archive change)
         // This triggers a complete refresh with scroll to top
-        if let updatedArchiveName = AuthenticationManager.shared.session?.selectedArchive?.fullName {
-            let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: updatedArchiveName)
+        
+        guard let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
+              let currentArchive = self.archiveData else {
+            return
+        }
+        
+        // Only switch archives if the session archive ID is actually different from current
+        // This prevents unwanted switches when session sync returns stale/wrong data
+        if sessionArchive.archiveID != currentArchive.archiveID {
+            let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sessionArchive.fullName ?? "")
             self.title = newTitle
             
             // Update local archiveData to keep it in sync
-            if let updatedArchive = AuthenticationManager.shared.session?.selectedArchive {
-                self.archiveData = updatedArchive
-                self.viewModel?.archiveData = updatedArchive
-                
-                // Update child view controllers with new archive data
-                self.profilePageVC?.archiveData = updatedArchive
-                self.profilePageVC?.viewModel?.archiveData = updatedArchive
-                self.archiveVC?.archiveData = updatedArchive
-                
-                // Refresh the profile page data to prevent collection view crashes
-                DispatchQueue.main.async { [weak self] in
-                    if let profilePageVC = self?.profilePageVC, profilePageVC.isViewLoaded {
-                        profilePageVC.handleArchiveChange(newArchiveData: updatedArchive)
-                    }
-                    
-                    // Scroll both views to top for new archive content
-                    self?.scrollChildViewsToTop()
+            self.archiveData = sessionArchive
+            self.viewModel?.archiveData = sessionArchive
+            
+            // Update child view controllers with new archive data
+            self.profilePageVC?.archiveData = sessionArchive
+            self.profilePageVC?.viewModel?.archiveData = sessionArchive
+            self.archiveVC?.archiveData = sessionArchive
+            
+            // Refresh the profile page data to prevent collection view crashes
+            DispatchQueue.main.async { [weak self] in
+                if let profilePageVC = self?.profilePageVC, profilePageVC.isViewLoaded {
+                    profilePageVC.handleArchiveChange(newArchiveData: sessionArchive)
                 }
                 
-                // Update header view (banner and profile photos) for new archive
-                updateHeaderForNewArchive(updatedArchive)
+                // Scroll both views to top for new archive content
+                self?.scrollChildViewsToTop()
+            }
+            
+            // Update header view (banner and profile photos) for new archive
+            updateHeaderForNewArchive(sessionArchive)
+        } else {
+            // If it's the same archive but the name changed, just update the title locally
+            if sessionArchive.fullName != currentArchive.fullName {
+                let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: sessionArchive.fullName ?? "")
+                self.title = newTitle
             }
         }
     }
@@ -309,7 +321,6 @@ class PublicArchiveViewController: BaseViewController<PublicProfilePicturesViewM
     func handleLocalArchiveDataUpdate(_ updatedArchive: ArchiveVOData) {
         // Called when current archive's profile data is updated (local changes only)
         // Updates UI without scrolling or session changes
-        
         // Update title with new archive name
         let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: updatedArchive.fullName ?? "")
         self.title = newTitle

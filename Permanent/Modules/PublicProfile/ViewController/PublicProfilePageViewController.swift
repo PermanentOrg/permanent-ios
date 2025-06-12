@@ -49,11 +49,31 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     var readMoreAction: ButtonAction?
     var isEditDataEnabled = false
     
+    private var isHandlingArchiveNameChange = false
+    private var sessionSyncWorkItem: DispatchWorkItem?
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        // CRITICAL: Sync with session's selectedArchive if it exists and is different
+        // This handles the case where app was closed/reopened and session was restored from keychain
+        // but the passed archiveData is stale/wrong
+        if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
+            if let currentArchiveID = archiveData?.archiveID,
+               let sessionArchiveID = sessionArchive.archiveID,
+               currentArchiveID != sessionArchiveID {
+                
+                // Update to use the restored session archive
+                self.archiveData = sessionArchive
+            } else if archiveData == nil || archiveData?.archiveID == nil || archiveData?.archiveID == -1 {
+                
+                // Restore from session archive
+                self.archiveData = sessionArchive
+            }
+        }
+        
         viewModel = PublicProfilePageViewModel(archiveData)
         
         viewModel?.trackPageViewEvent()
@@ -63,19 +83,53 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         initButtonStates()
         initCollectionView()
         
-        NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: nil) { [weak self] notification in
-            if let archiveData = self?.archiveData {
-                self?.getAllByArchiveNbr(archiveData)
+        NotificationCenter.default.addObserver(forName: PublicProfilePageViewModel.profileItemsUpdatedNotificationName, object: nil, queue: .main) { [weak self] notification in
+
+            // Safety check: if archiveData is missing, try to restore it from session
+            if self?.archiveData == nil || self?.archiveData?.archiveID == nil {
+                if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive {
+                    self?.archiveData = sessionArchive
+                    self?.viewModel?.archiveData = sessionArchive
+                }
             }
-            self?.collectionView.reloadData()
             
-            // Update AuthenticationManager session when archive name changes
-            self?.handleArchiveNameChange()
+            // Only handle archive name changes if we're not already processing one
+            if !(self?.isHandlingArchiveNameChange ?? false) {
+                self?.handleArchiveNameChange()
+            }
+            
+            // IMPORTANT: We need to fetch fresh data from server, not just refresh local view data
+            // The view model might have stale data after other screens make changes
+            if let currentArchiveData = self?.archiveData {
+                self?.getAllByArchiveNbr(currentArchiveData)
+            } else {
+                self?.refreshProfileViewData()
+                self?.collectionView.reloadData()
+            }
+        }
+        
+        // Add observer for when session sync completes after app restart
+        // This ensures we refresh profile data with the latest information
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("SessionSyncCompleted"), object: nil, queue: .main) { [weak self] _ in
+            
+            // Check if our current archive data matches the session after sync
+            if let sessionArchive = AuthenticationManager.shared.session?.selectedArchive,
+               let currentArchive = self?.archiveData,
+               sessionArchive.archiveID == currentArchive.archiveID {
+                
+                // Update local archive data to match session
+                self?.archiveData = sessionArchive
+                self?.viewModel?.archiveData = sessionArchive
+                
+                // Refresh profile data to get latest information from server
+                self?.getAllByArchiveNbr(sessionArchive)
+            }
         }
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        sessionSyncWorkItem?.cancel()
     }
     
     func initUI() {
@@ -142,6 +196,9 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     func getAllByArchiveNbr(_ archive: ArchiveVOData) {
         showSpinner()
         
+        // Clear existing data to prevent race conditions
+        profileViewData.removeAll()
+        
         viewModel?.getAllByArchiveNbr(archive, { [self] error in
             hideSpinner()
             
@@ -150,13 +207,15 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
                 
                 // Update title after data is refreshed
                 DispatchQueue.main.async { [weak self] in
-                    if let archiveName = self?.viewModel?.archiveNameProfileItem?.archiveName {
+                    if let archiveName = self?.viewModel?.basicProfileItem?.archiveName {
                         let newTitle = "The <ARCHIVE_NAME> Archive".localized().replacingOccurrences(of: "<ARCHIVE_NAME>", with: archiveName)
                         self?.title = newTitle
                     }
                 }
                 
-                collectionView.reloadData()
+                DispatchQueue.main.async { [weak self] in
+                    self?.collectionView.reloadData()
+                }
             } else {
                 showAlert(title: .error, message: .errorMessage)
             }
@@ -168,7 +227,11 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
     }
     
     func handleArchiveNameChange() {
-        guard let updatedArchiveName = self.viewModel?.archiveNameProfileItem?.archiveName,
+        // Set flag to prevent infinite loops
+        isHandlingArchiveNameChange = true
+        defer { isHandlingArchiveNameChange = false }
+        
+        guard let updatedArchiveName = self.viewModel?.basicProfileItem?.archiveName,
               let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
               let localArchiveData = self.archiveData else {
             return
@@ -178,30 +241,38 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
         let isEditingSelectedArchive = currentArchive.archiveID == localArchiveData.archiveID
         
         if isEditingSelectedArchive {
-            // Refresh session data from server to get latest changes
-            AuthenticationManager.shared.syncSession { [weak self] status in
-                switch status {
-                case .success:
-                    // Update local data to match refreshed session
-                    if let updatedArchive = AuthenticationManager.shared.session?.selectedArchive {
-                        self?.archiveData = updatedArchive
-                        self?.viewModel?.archiveData = updatedArchive
-                    }
-                    
-                    // Post notification to update other parts of the app (like side menu)
-                    NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
-                    
-                case .error:
-                    // Handle error if needed
-                    break
-                }
-            }
-        } else if localArchiveData.fullName != updatedArchiveName {
-            // Just update local data for non-selected archives
+            
+            // First update local data immediately to prevent race conditions
             let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
             self.archiveData = updatedLocalArchive
             self.viewModel?.archiveData = updatedLocalArchive
             
+            // Also update the session's selectedArchive to keep it in sync with local changes
+            // This ensures the title and other UI elements show the updated name
+            AuthenticationManager.shared.session?.selectedArchive = updatedLocalArchive
+
+            // CRITICAL: Save the session to keychain to persist the archive name change
+            AuthenticationManager.shared.saveSession()
+
+            // Notify parent view controller to update title and other UI elements
+            if let parentVC = self.parent as? PublicArchiveViewController {
+                parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
+    
+            }
+            
+            // Don't post delayed notification as it causes unwanted side effects
+            // The archives list should refresh naturally when users navigate back to it
+            // All the important UI elements (title, local data) are already updated correctly
+            // Skip session sync during profile editing to prevent unwanted archive switches
+            // The session sync is returning incorrect archive data and causing the app to switch archives
+
+        } else if localArchiveData.fullName != updatedArchiveName {
+
+            // Just update local data for non-selected archives
+            let updatedLocalArchive = createUpdatedArchive(from: localArchiveData, withNewName: updatedArchiveName)
+            self.archiveData = updatedLocalArchive
+            self.viewModel?.archiveData = updatedLocalArchive
+
             // Notify parent for UI updates only
             if let parentVC = self.parent as? PublicArchiveViewController {
                 parentVC.handleLocalArchiveDataUpdate(updatedLocalArchive)
@@ -275,6 +346,9 @@ class PublicProfilePageViewController: BaseViewController<PublicProfilePageViewM
 extension PublicProfilePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        guard section < sections.count else {
+            return 0
+        }
         let currentSection = sections[section]
         
         switch currentSection {
@@ -304,7 +378,12 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return UICollectionViewCell()
+        }
+        let currentCellType = sectionData[indexPath.row]
 
         let returnedCell: UICollectionViewCell
         
@@ -337,7 +416,7 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
         case .archiveName:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
             let title = "Name"
-            let text = viewModel?.archiveNameProfileItem?.archiveName ?? ""
+            let text = viewModel?.basicProfileItem?.archiveName ?? ""
             
             cell.configure(title, text)
 
@@ -438,6 +517,9 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
     // swiftlint:disable:next cyclomatic_complexity
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
+        guard indexPath.section < sections.count else {
+            return UICollectionReusableView()
+        }
         let currentSectionType = sections[indexPath.section]
         
         switch kind {
@@ -561,7 +643,12 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
 extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return CGSize(width: UIScreen.main.bounds.width, height: 80)
+        }
+        let currentCellType = sectionData[indexPath.row]
         
         switch currentCellType {
         case .profileVisibility:
@@ -569,7 +656,7 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             
         case .archiveName:
             let title = "Name"
-            let text = viewModel?.archiveData.fullName ?? ""
+            let text = viewModel?.basicProfileItem?.archiveName ?? ""
             return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
             
         case .blurb:
@@ -604,7 +691,12 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let sections = Array(profileViewData.keys).sorted(by: { $0.rawValue < $1.rawValue })
-        let currentCellType = profileViewData[sections[indexPath.section]]![indexPath.row]
+        guard indexPath.section < sections.count,
+              let sectionData = profileViewData[sections[indexPath.section]],
+              indexPath.row < sectionData.count else {
+            return
+        }
+        let currentCellType = sectionData[indexPath.row]
         
         guard let viewModel = viewModel else { return }
         
