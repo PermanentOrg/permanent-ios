@@ -93,7 +93,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
         shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint
         
-        if let archiveName = viewModel?.archiveNameProfileItem?.archiveName {
+        if let archiveName = viewModel?.basicProfileItem?.archiveName {
             archiveNameTextField.text = archiveName
         }
         
@@ -137,19 +137,9 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
                                 if let currentArchive = AuthenticationManager.shared.session?.selectedArchive,
                                    let localArchiveData = self.viewModel?.archiveData,
                                    currentArchive.archiveID == localArchiveData.archiveID {
-                                    
-                                    // Refresh session data from server to get latest changes
-                                    AuthenticationManager.shared.syncSession { status in
-                                        switch status {
-                                        case .success:
-                                            // Post notification to update other parts of the app (like side menu)
-                                            NotificationCenter.default.post(name: Notification.Name("ArchivesViewModel.didChangeArchiveNotification"), object: nil, userInfo: nil)
-                                            
-                                        case .error:
-                                            // Handle error if needed
-                                            break
-                                        }
-                                    }
+                
+                                    // Skip session sync and notification posting to prevent unwanted archive switching
+                                    // The main profile page (PublicProfilePageViewController) handles this correctly
                                 }
                             } else {
                                 self.showErrorAlert(message: .errorMessage)

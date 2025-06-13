@@ -8,6 +8,15 @@
 import Foundation
 
 class BasicProfileItem: ProfileItemModel {   
+    var archiveName: String? {
+        get {
+            return string1
+        }
+        set {
+            string1 = newValue
+        }
+    }
+    
     var fullName: String? {
         get {
             return string2
@@ -28,7 +37,7 @@ class BasicProfileItem: ProfileItemModel {
     
     init() {
         super.init(fieldNameUI: FieldNameUI.basic.rawValue)
-        self.type = "type.widget.string"
+        self.type = "type.profile_item.basic"
     }
     
     required init(from decoder: Decoder) throws {

@@ -29,12 +29,7 @@ struct ProfileItemVO: Model {
             profileItemVO = try container.decode(BlurbProfileItem?.self, forKey: .profileItemVO)
             
         case FieldNameUI.basic.rawValue:
-            let type = try profileItemContainer.decode(String?.self, forKey: .type)
-            if type == "type.profile_item.basic" {
-                profileItemVO = try container.decode(ArchiveNameProfileItem?.self, forKey: .profileItemVO)
-            } else {
-                profileItemVO = try container.decode(BasicProfileItem?.self, forKey: .profileItemVO)
-            }
+            profileItemVO = try container.decode(BasicProfileItem?.self, forKey: .profileItemVO)
             
         case FieldNameUI.description.rawValue:
             profileItemVO = try container.decode(DescriptionProfileItem?.self, forKey: .profileItemVO)

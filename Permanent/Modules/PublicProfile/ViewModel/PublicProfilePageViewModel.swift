@@ -18,8 +18,8 @@ class PublicProfilePageViewModel: ViewModelInterface {
     
     var profileItems = [ProfileItemModel]()
     
-    var archiveNameProfileItem: ArchiveNameProfileItem? {
-        return profileItems.first(where: {$0 is ArchiveNameProfileItem}) as? ArchiveNameProfileItem
+    var archiveNameProfileItem: BasicProfileItem? {
+        return profileItems.first(where: {$0 is BasicProfileItem && ($0 as! BasicProfileItem).archiveName != nil}) as? BasicProfileItem
     }
     var blurbProfileItem: BlurbProfileItem? {
         return profileItems.first(where: {$0 is BlurbProfileItem}) as? BlurbProfileItem
@@ -203,6 +203,7 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyPublicProfileItem(_ profileItemModel: ProfileItemModel, _ operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+
         let apiOperation: APIOperation
         
         switch operationType {
@@ -274,12 +275,22 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func renameArchiveNameProfileItem(profileItemId: Int? = nil, newValue: String, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
-        let newArchiveNameItem = ArchiveNameProfileItem()
-        newArchiveNameItem.archiveName = newValue
-        newArchiveNameItem.archiveId = archiveData.archiveID
-        newArchiveNameItem.profileItemId = profileItemId
+        // Use BasicProfileItem with archive name, preserving existing full name and nickname
+        let newBasicItem = BasicProfileItem()
+        newBasicItem.archiveName = newValue
+        newBasicItem.fullName = basicProfileItem?.fullName
+        newBasicItem.nickname = basicProfileItem?.nickname
+        newBasicItem.archiveId = archiveData.archiveID
+        newBasicItem.profileItemId = profileItemId ?? basicProfileItem?.profileItemId
         
-        modifyPublicProfileItem(newArchiveNameItem, .update, completionBlock)
+        // Basic item is always public
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        
+        newBasicItem.publicDT = dateFormatter.string(from: Date())
+        
+        modifyPublicProfileItem(newBasicItem, .update, completionBlock)
     }
     
     func modifyDescriptionProfileItem(profileItemId: Int? = nil, newValue: String, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
@@ -299,7 +310,10 @@ class PublicProfilePageViewModel: ViewModelInterface {
     }
     
     func modifyBasicProfileItem(profileItemId: Int? = nil, newValueFullname: String? = nil, newValueNickName: String? = nil, operationType: ProfileItemOperation, _ completionBlock: @escaping ((Bool, Error?, Int?) -> Void)) {
+
         let newProfileItem = BasicProfileItem()
+        // Preserve existing archive name when updating full name/nickname
+        newProfileItem.archiveName = basicProfileItem?.archiveName
         newProfileItem.fullName = newValueFullname
         newProfileItem.nickname = newValueNickName
         newProfileItem.archiveId = archiveData.archiveID
