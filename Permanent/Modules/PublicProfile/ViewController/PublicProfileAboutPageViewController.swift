@@ -89,7 +89,7 @@ class PublicProfileAboutPageViewController: BaseViewController<PublicProfilePage
         longAboutDescriptionTitleLabel.textColor = .middleGray
         longAboutDescriptionTitleLabel.font = TextFontStyle.style12.font
         
-        archiveNameLabel.text = "Archive Name"
+        archiveNameLabel.text = "Archive name:"
         shortAboutDescriptionTitleLabel.text = "\(viewModel?.archiveType.shortDescriptionTitle ?? "") (<COUNT>/200)".localized().replacingOccurrences(of: "<COUNT>", with: "\(viewModel?.blurbProfileItem?.shortDescription?.count ?? 0)")
         shortDescriptionEmptyLabel.text = viewModel?.archiveType.shortDescriptionHint
         

@@ -84,26 +84,15 @@ enum ArchiveType: String, CaseIterable, Identifiable {
     }
     
     var shortDescriptionTitle: String {
-        return "What is this Archive for?".localized()
+        return "About this archive:".localized()
     }
     var shortDescriptionHint: String {
         return "Add a description about this Archive".localized()
     }
     
     var longDescriptionTitle: String {
-        switch self {
-        case .person, .individual, .other, .unsure:
-            return "Tell us the purpose of this Archive".localized()
-            
-        case .family, .familyHistory:
-            return "Tell us the purpose of this Archive".localized()
-            
-        case .organization, .community:
-            return "Tell us the purpose of this Archive".localized()
-            
-        case .nonProfit:
-            return "Tell us the purpose of this Archive".localized()
-        }
+        return "Archive purpose:".localized()
+
     }
     var longDescriptionHint: String {
         switch self {
