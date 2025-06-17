@@ -24,9 +24,15 @@ class ProfilePageAboutCollectionViewCell: UICollectionViewCell {
         contentLabel.font = TextFontStyle.style13.font
     }
     
-    func configure(_ title: String?, _ text: String?) {
+    func configure(_ title: String?, _ text: String?, hasNoContent: Bool = false) {
         titleLabel.text = title
         contentLabel.text = text
+        
+        if hasNoContent {
+            contentLabel.textColor = .darkGray
+        } else {
+            contentLabel.textColor = .black
+        }
     }
     
     static func nib() -> UINib {

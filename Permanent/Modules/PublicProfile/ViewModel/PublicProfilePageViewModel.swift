@@ -447,32 +447,21 @@ class PublicProfilePageViewModel: ViewModelInterface {
             return
         }
         
-        if textFieldHaveNewValue.0 || textFieldHaveNewValue.1,
-           textFieldIsEmpty == (true, true) {
-            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, operationType: .delete, { result, error, itemId in
-                if result {
-                    self.basicProfileItem?.profileItemId = nil
-                    completion(true)
-                    return
-                } else {
-                    completion(false)
-                    return
+        // Always use update operation for basic profile item since it contains the archive name
+        // and cannot be deleted. Even if both full name and nickname are empty, we should
+        // update with empty values rather than attempting to delete.
+        modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
+            if result {
+                if self.basicProfileItem?.profileItemId == nil {
+                    self.basicProfileItem?.profileItemId = itemId
                 }
-            })
-        } else {
-            modifyBasicProfileItem(profileItemId: basicProfileItem?.profileItemId, newValueFullname: fullNameNewValue, newValueNickName: nicknameNewValue, operationType: .update, { result, error, itemId in
-                if result {
-                    if self.basicProfileItem?.profileItemId == nil {
-                        self.basicProfileItem?.profileItemId = itemId
-                    }
-                    completion(true)
-                    return
-                } else {
-                    completion(false)
-                    return
-                }
-            })
-        }
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        })
     }
     
     func updateGenderProfileItem(genderNewValue: String?, _ completion: @escaping (Bool) -> Void ) {

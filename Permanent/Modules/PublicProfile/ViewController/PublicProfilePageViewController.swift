@@ -415,29 +415,28 @@ extension PublicProfilePageViewController: UICollectionViewDataSource {
             returnedCell = cell
         case .archiveName:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let title = "Name"
+            let title = "Archive name"
             let text = viewModel?.basicProfileItem?.archiveName ?? ""
             
             cell.configure(title, text)
 
             returnedCell = cell
-            
-            
+        
         case .blurb:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let title = "About"
+            let title = "About this archive"
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             
-            cell.configure(title, text)
+            cell.configure(title, text, hasNoContent: text == viewModel?.archiveType.shortDescriptionHint)
 
             returnedCell = cell
             
         case .longDescription:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePageAboutCollectionViewCell.identifier, for: indexPath) as! ProfilePageAboutCollectionViewCell
-            let title = "Purpose"
+            let title = "Archive purpose"
             let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
             
-            cell.configure(title, text)
+            cell.configure(title, text, hasNoContent: text == viewModel?.archiveType.longDescriptionHint)
 
             returnedCell = cell
             
@@ -655,17 +654,17 @@ extension PublicProfilePageViewController: UICollectionViewDelegateFlowLayout {
             return CGSize(width: UIScreen.main.bounds.width, height: 80)
             
         case .archiveName:
-            let title = "Name"
+            let title = "Archive name"
             let text = viewModel?.basicProfileItem?.archiveName ?? ""
             return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
             
         case .blurb:
-            let title = "About"
+            let title = "About this archive"
             let text = viewModel?.blurbProfileItem?.shortDescription ?? (viewModel?.archiveType.shortDescriptionHint)!
             return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
             
         case .longDescription:
-            let title = "Purpose"
+            let title = "Archive purpose"
             let text = viewModel?.descriptionProfileItem?.longDescription ?? (viewModel?.archiveType.longDescriptionHint)!
             return ProfilePageAboutCollectionViewCell.size(withTitle: title, withText: text, collectionView: collectionView)
 
