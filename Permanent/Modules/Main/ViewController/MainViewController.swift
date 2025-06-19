@@ -1148,12 +1148,14 @@ extension MainViewController: FABViewDelegate {
             return
         }
 
-        ///To Do: for iPad another presentation mode for this menu should be implemented
+        actionSheet.delegate = self
+        
         if Constants.Design.currentPlatform == .phone {
-            actionSheet.delegate = self
             navigationController?.display(viewController: actionSheet, modally: true)
         } else {
-            return
+            // iPad presentation - use formSheet or pageSheet
+            actionSheet.modalPresentationStyle = .formSheet
+            present(actionSheet, animated: true)
         }
     }
     
@@ -1392,6 +1394,14 @@ extension MainViewController: FABActionSheetDelegate {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addActions([cameraAction, photoLibraryAction, browseAction, cancelAction])
         
+        // Configure for iPad
+        if let popover = actionSheet.popoverPresentationController {
+            // Present from the FAB view
+            popover.sourceView = fabView
+            popover.sourceRect = CGRect(x: fabView.bounds.midX, y: fabView.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = [.up, .down]
+        }
+        
         present(actionSheet, animated: true, completion: nil)
         viewModel?.trackEvent(action: RecordEventAction.initiateUpload)
     }
@@ -1438,7 +1448,13 @@ extension MainViewController: FABActionSheetDelegate {
     }
     
     func openFileBrowser() {
-        let docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
+        let docPicker: UIDocumentPickerViewController
+        
+        if #available(iOS 14.0, *) {
+            docPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item, .content], asCopy: true)
+        } else {
+            docPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String, kUTTypeContent as String], in: .import)
+        }
         
         docPicker.delegate = self
         docPicker.allowsMultipleSelection = true
