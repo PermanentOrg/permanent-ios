@@ -39,5 +39,34 @@ class EmptyFolderView: UIView {
         
         emptyFolderLabel.font = TextFontStyle.style8.font
         emptyFolderLabel.textColor = .textPrimary
+        
+        // Adjust image size for iPad to max 30% of screen width
+        adjustImageSizeForDevice()
+    }
+    
+    private func adjustImageSizeForDevice() {
+        guard !Constants.Design.isPhone else { return }
+        
+        // On iPad, limit image to 30% of screen width
+        let maxImageWidth = UIScreen.main.bounds.width * 0.3
+        
+        // Remove existing leading/trailing constraints from XIB
+        emptyImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Find and remove the existing leading/trailing constraints
+        if let containerView = emptyImageView.superview {
+            let constraintsToRemove = containerView.constraints.filter { constraint in
+                (constraint.firstItem === emptyImageView && (constraint.firstAttribute == .leading || constraint.firstAttribute == .trailing)) ||
+                (constraint.secondItem === emptyImageView && (constraint.secondAttribute == .leading || constraint.secondAttribute == .trailing))
+            }
+            containerView.removeConstraints(constraintsToRemove)
+            
+            // Add new constraints for iPad
+            NSLayoutConstraint.activate([
+                emptyImageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                emptyImageView.widthAnchor.constraint(lessThanOrEqualToConstant: maxImageWidth),
+                emptyImageView.widthAnchor.constraint(lessThanOrEqualTo: containerView.widthAnchor, multiplier: 0.6) // Fallback constraint
+            ])
+        }
     }
 }
