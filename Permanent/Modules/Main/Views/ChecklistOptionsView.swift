@@ -38,7 +38,7 @@ struct ChecklistOptionsView: View {
         .padding(.top, 24)
         
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 32) {
+            VStack(alignment: .leading, spacing: Constants.Design.isPhone ? 32 : 24) {
                 ForEach(viewModel.items, id: \.id) { item in
                     Button {
                         viewModel.handleItemTap(item)
@@ -50,13 +50,7 @@ struct ChecklistOptionsView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 32)
-            .padding(.bottom, 80)
-        }
-        .onAppear {
-            UIScrollView.appearance().bounces = false
-        }
-        .onDisappear {
-            UIScrollView.appearance().bounces = true
+            .padding(.bottom, 24)
         }
         if viewModel.showsChecklistButton {
             VStack(spacing: 0) {

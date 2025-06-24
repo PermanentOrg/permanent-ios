@@ -17,7 +17,14 @@ class ChecklistCoordinator {
            let window = windowScene.windows.first {
             window.rootViewController?.dismiss(animated: true) {
                 let navControl = NavigationController(rootViewController: viewController)
-                navControl.modalPresentationStyle = .fullScreen
+                if Constants.Design.isPhone {
+                    navControl.modalPresentationStyle = .fullScreen
+                } else {
+                    
+                    navControl.modalPresentationStyle = .formSheet
+                    navControl.sheetPresentationController?.detents = [.large()]
+                }
+                
                 window.rootViewController?.present(navControl, animated: true)
             }
         }
@@ -28,7 +35,13 @@ class ChecklistCoordinator {
            let window = windowScene.windows.first {
             window.rootViewController?.dismiss(animated: true) {
                 let hostingController = UIHostingController(rootView: view)
-                hostingController.modalPresentationStyle = .fullScreen
+                if Constants.Design.isPhone {
+                    hostingController.modalPresentationStyle = .fullScreen
+                } else {
+                    hostingController.modalPresentationStyle = .formSheet
+                    hostingController.sheetPresentationController?.detents = [.large()]
+                }
+                
                 window.rootViewController?.present(hostingController, animated: true)
             }
         }
@@ -67,7 +80,15 @@ class ChecklistCoordinator {
            let archiveData = AuthenticationManager.shared.session?.selectedArchive {
             archiveProfileVC.archiveData = archiveData
             archiveProfileVC.isViewingPublicProfile = true
-            presentViewController(archiveProfileVC)
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                window.rootViewController?.dismiss(animated: true) {
+                    let navControl = NavigationController(rootViewController: archiveProfileVC)
+                    navControl.modalPresentationStyle = .fullScreen
+                    window.rootViewController?.present(navControl, animated: true)
+                }
+            }
         }
     }
     

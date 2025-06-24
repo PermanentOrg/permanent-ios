@@ -73,19 +73,19 @@ struct StorageView: View {
                 Button {
                     viewModel.addStorageIsPresented = true
                 } label: {
-                    CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.")
+                    CustomListItemView(image: Image(.storagePlus), titleText: "Add storage", descText: "Increase your space easily by adding more storage.", showRectangle: false)
                 }
                 Divider()
                 Button {
                     viewModel.giftStorageIsPresented = true
                 } label: {
-                    CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.")
+                    CustomListItemView(image: Image(.storageGift), titleText: "Gift storage", descText: "Share storage with others by gifting it to friends or collaborators.", showRectangle: false)
                 }
                 Divider()
                 Button {
                     viewModel.redeemStorageIspresented = true
                 } label: {
-                    CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.", showBadge: true)
+                    CustomListItemView(image: Image(.storageRedeem), titleText: "Redeem code", descText: "Enter codes to unlock special storage benefits just for you.", showBadge: true, showRectangle: false)
                 }
                 Spacer()
             }
