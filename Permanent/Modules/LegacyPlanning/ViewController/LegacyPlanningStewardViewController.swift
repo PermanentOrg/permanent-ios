@@ -426,6 +426,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             trustedStewardVC.viewModel = viewModel
             let navControl = NavigationController(rootViewController: trustedStewardVC)
             navControl.modalPresentationStyle = .fullScreen
+            if !Constants.Design.isPhone {
+                navControl.modalPresentationStyle = .formSheet
+            }
             self.present(navControl, animated: true, completion: nil)
         }
     }
