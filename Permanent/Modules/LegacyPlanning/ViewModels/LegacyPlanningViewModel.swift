@@ -12,11 +12,13 @@ class LegacyPlanningViewModel: ViewModelInterface {
     var stewardWasUpdated: ((Bool) -> Void)?
     var showError: ((APIError) -> Void)?
     var stewardWasSaved: ((Bool) -> Void)?
+    var accountStewardStatusUpdated: ((Bool) -> Void)?
     
     var selectedArchive: ArchiveVOData?
     var selectedSteward: LegacyPlanningSteward?
     var account: AccountVOData?
     var stewardType: LegacyPlanningSteward.StewardType?
+    var hasAccountSteward: Bool = false
     
     let legacyPlanningRepository: LegacyPlanningRepository
     
@@ -204,6 +206,19 @@ class LegacyPlanningViewModel: ViewModelInterface {
                                                        entityId: entityId) else { return }
         let updateAccountOperation = APIOperation(EventsEndpoint.sendEvent(eventsPayload: payload))
         updateAccountOperation.execute(in: APIRequestDispatcher()) {_ in}
+    }
+    
+    func checkAccountStewardExists() {
+        getLegacyPlanningAccount { [weak self] result in
+            switch result {
+            case .success(let hasAccountSteward):
+                self?.hasAccountSteward = hasAccountSteward ?? false
+                self?.accountStewardStatusUpdated?(self?.hasAccountSteward ?? false)
+            case .failure(_):
+                self?.hasAccountSteward = false
+                self?.accountStewardStatusUpdated?(false)
+            }
+        }
     }
 }
 

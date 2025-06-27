@@ -343,7 +343,11 @@ class ArchivesViewController: BaseViewController<ArchivesViewModel> {
             archiveLegacyPlanningVC.viewModel?.account = viewModel?.account
             archiveLegacyPlanningVC.viewModel?.stewardType = .archive
             let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-            navControl.modalPresentationStyle = .fullScreen
+            if Constants.Design.isPhone {
+                navControl.modalPresentationStyle = .fullScreen
+            } else {
+                navControl.modalPresentationStyle = .formSheet
+            }
             self.present(navControl, animated: true, completion: nil)
         }
     }
