@@ -346,12 +346,10 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
         addLegacyStewardButton.tintColor = .darkBlue
         
-        // Add tap gesture recognizer to the label
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addLegacyPersonButtonAction(_:)))
         addLegacyStewardLabel.isUserInteractionEnabled = true
         addLegacyStewardLabel.addGestureRecognizer(tapGesture)
         
-        // Setup requirement info label for archive steward
         if viewModel?.stewardType == .archive {
             print("button disabled.")
         }
@@ -444,8 +442,6 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
 
         separatorView.layer.backgroundColor = UIColor.middleGray.cgColor
         separatorView.layer.cornerRadius = 2
-        
-        //alertLegacyStewardSeparatorView.alpha = 0.08
 
         alertLegacyStewardSeparatorView.layer.backgroundColor = UIColor(red: 0.998, green: 0.874, blue: 0.536, alpha: 1).cgColor
         alertLegacyStewardSeparatorView.layer.cornerRadius = 2
