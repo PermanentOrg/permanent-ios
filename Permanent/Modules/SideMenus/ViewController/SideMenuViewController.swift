@@ -275,13 +275,22 @@ extension SideMenuViewController: UITableViewDataSource, UITableViewDelegate {
             AppDelegate.shared.rootViewController.changeDrawerRoot(viewController: newRootVC)
             
         case .legacyPlanning:
+            // Close the drawer first
+            if let drawerVC = AppDelegate.shared.rootViewController.current as? DrawerViewController {
+                drawerVC.toggleMenu()
+            }
+            
             if let archiveLegacyPlanningVC = UIViewController.create(withIdentifier: .legacyPlanningSteward, from: .legacyPlanning) as? LegacyPlanningStewardViewController, let archiveData = AuthenticationManager.shared.session?.selectedArchive {
                 archiveLegacyPlanningVC.viewModel = LegacyPlanningViewModel()
                 archiveLegacyPlanningVC.selectedArchive = archiveData
                 archiveLegacyPlanningVC.viewModel?.account = AuthenticationManager.shared.session?.account
                 archiveLegacyPlanningVC.viewModel?.stewardType = .archive
                 let navControl = NavigationController(rootViewController: archiveLegacyPlanningVC)
-                navControl.modalPresentationStyle = .fullScreen
+                if Constants.Design.isPhone {
+                    navControl.modalPresentationStyle = .fullScreen
+                } else {
+                    navControl.modalPresentationStyle = .formSheet
+                }
                 self.present(navControl, animated: true, completion: nil)
             }
             

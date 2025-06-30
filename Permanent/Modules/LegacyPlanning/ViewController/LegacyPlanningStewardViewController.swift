@@ -33,6 +33,11 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     @IBOutlet weak var addedLegacyStewardStatusView: UIView!
     @IBOutlet weak var addedLegacyStewardStatusLabel: UILabel!
     @IBOutlet weak var addedLegacyStewardDeleteButton: UIButton!
+    @IBOutlet weak var alertAccountStewardView: UIView!
+    @IBOutlet weak var alertLegacyStewardImageView: UIImageView!
+    @IBOutlet weak var alertLegacyStewardLabel: UILabel!
+    @IBOutlet weak var alertLegacyStewardSeparatorView: UIView!
+    @IBOutlet weak var alertLegacyStewardGoToButton: LegacyPlanningSimpleGoToButton!
     var selectedArchive: ArchiveVOData?
     
     private let overlayView = UIView()
@@ -66,7 +71,16 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             self?.updateTrustedSteward()
         }
         
+        viewModel?.accountStewardStatusUpdated = { [weak self] hasAccountSteward in
+            self?.updateArchiveStewardButtonState(hasAccountSteward: hasAccountSteward)
+        }
+        
         viewModel?.getSteward()
+        
+        // Check account steward status for archive steward type
+        if viewModel?.stewardType == .archive {
+            viewModel?.checkAccountStewardExists()
+        }
         
         setupUI()
         styleNavBar()
@@ -106,10 +120,15 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardSetup()
         addedLegacyStewardSetup()
         customizeSeparatorView()
+        alertLegacyStewardGoToButtonSetup(text: "Designate a Legacy Contact")
         
         if viewModel?.stewardType == .archive {
-            topArchiveDetailsView.isHidden = false
-            topArchiveDetailsHeightConstraint.constant = 88
+            // Initially hide the archive details until we know the account steward status
+            topArchiveDetailsView.isHidden = true
+            topArchiveDetailsHeightConstraint.constant = 0
+            alertAccountStewardView.isHidden = true
+            saveArchiveLegacyButton.isHidden = true
+
             if let imageThumbnail = viewModel?.selectedArchive?.thumbURL500 {
                 archiveThumbnailImage.sd_setImage(with: URL(string: imageThumbnail))
             }
@@ -121,7 +140,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             saveArchiveLegacyButtonSetup(text: "Go to Legacy Plan".localized())
             trustedStewardTitleLabelSetup(text: "A trusted archive steward".localized())
             trustedStewardDescriptionLabelSetup(text: "The Archive steward will receive a note when your Legacy Plan is activated.".localized())
+            alertLegacyPlanningSetup(text: "Before you can add an Archive Steward for this archive below, designate a Legacy Contact first.")
         } else {
+            alertAccountStewardView.isHidden = true
             topArchiveDetailsView.isHidden = true
             topArchiveDetailsHeightConstraint.constant = 0
             
@@ -264,13 +285,31 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         )
     }
     
+    private func alertLegacyPlanningSetup(text: String) {
+        alertAccountStewardView.layer.cornerRadius = 4
+        alertAccountStewardView.layer.backgroundColor = UIColor(red: 0.998, green: 0.939, blue: 0.779, alpha: 1).cgColor
+        alertLegacyStewardImageView.image = UIImage(named: "LegacyPlanningWarning")
+        
+        alertLegacyStewardLabel.textColor = .darkBlue
+        alertLegacyStewardLabel.font = TextFontStyle.style34.font
+        
+        alertLegacyStewardLabel.textAlignment = .left
+        alertLegacyStewardLabel.lineBreakMode = .byWordWrapping
+        alertLegacyStewardLabel.numberOfLines = 0
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.36
+        
+        alertLegacyStewardLabel.text = text
+    }
+    
     private func trustedStewardDescriptionLabelSetup(text: String) {
         trustedStewardDescriptionLabel.textColor = .black
         trustedStewardDescriptionLabel.font = TextFontStyle.style39.font
         trustedStewardDescriptionLabel.lineBreakMode = .byWordWrapping
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.36
+        paragraphStyle.lineHeightMultiple = 1.10
         
         trustedStewardDescriptionLabel.textAlignment = .left
         trustedStewardDescriptionLabel.attributedText = NSMutableAttributedString(
@@ -280,13 +319,20 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
             ]
         )
     }
-
+    
     private func saveArchiveLegacyButtonSetup(text: String) {
         saveArchiveLegacyButton.layer.cornerRadius = 8
         saveArchiveLegacyButton.clipsToBounds = true
         saveArchiveLegacyButton.rightSideImage.image = UIImage(named: "legacyPlanRightArrow")
         saveArchiveLegacyButton.leftSideLabel.text = text
         saveArchiveLegacyButton.isSelectable = true
+    }
+
+    private func alertLegacyStewardGoToButtonSetup(text: String) {
+        alertLegacyStewardGoToButton.layer.cornerRadius = 8
+        alertLegacyStewardGoToButton.clipsToBounds = true
+        alertLegacyStewardGoToButton.textLabel.text = text
+        alertLegacyStewardGoToButton.isSelectable = true
     }
     
     private func addLegacyStewardSetup() {
@@ -300,10 +346,13 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
         addLegacyStewardButton.setImage(UIImage(named: "addLegacyPerson")?.withRenderingMode(.alwaysTemplate), for: .normal)
         addLegacyStewardButton.tintColor = .darkBlue
         
-        // Add tap gesture recognizer to the label
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addLegacyPersonButtonAction(_:)))
         addLegacyStewardLabel.isUserInteractionEnabled = true
         addLegacyStewardLabel.addGestureRecognizer(tapGesture)
+        
+        if viewModel?.stewardType == .archive {
+            print("button disabled.")
+        }
     }
     
     private func addedLegacyStewardSetup() {
@@ -393,6 +442,9 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
 
         separatorView.layer.backgroundColor = UIColor.middleGray.cgColor
         separatorView.layer.cornerRadius = 2
+
+        alertLegacyStewardSeparatorView.layer.backgroundColor = UIColor(red: 0.998, green: 0.874, blue: 0.536, alpha: 1).cgColor
+        alertLegacyStewardSeparatorView.layer.cornerRadius = 2
     }
     
     @objc func backButtonTapped() {
@@ -419,6 +471,23 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
     }
     
     @IBAction func deleteAddedLegacyPersonButtonAction(_ sender: Any) {
+
+    }
+    
+    @IBAction func designateLegacyContact(_ sender: Any) {
+        let presentingVC = self.presentingViewController
+        dismiss(animated: true) { [weak self] in
+            let legacyPlanningLoadingVC = LegacyPlanningLoadingViewController()
+            legacyPlanningLoadingVC.viewModel = LegacyPlanningViewModel()
+            legacyPlanningLoadingVC.viewModel?.account = self?.viewModel?.account
+            let host = NavigationController(rootViewController: legacyPlanningLoadingVC)
+            host.modalPresentationStyle = .fullScreen
+            if !Constants.Design.isPhone {
+                host.modalPresentationStyle = .formSheet
+            }
+            
+            presentingVC?.present(host, animated: true, completion: nil)
+        }
     }
     
     func navigateToAdd() {
@@ -430,6 +499,41 @@ class LegacyPlanningStewardViewController: BaseViewController<LegacyPlanningView
                 navControl.modalPresentationStyle = .formSheet
             }
             self.present(navControl, animated: true, completion: nil)
+        }
+    }
+    
+    private func updateArchiveStewardButtonState(hasAccountSteward: Bool) {
+        guard viewModel?.stewardType == .archive else { return }
+        
+        // Update button and label state
+        let isEnabled = hasAccountSteward
+        addLegacyStewardButton.isEnabled = isEnabled
+        addLegacyStewardLabel.isUserInteractionEnabled = isEnabled
+        
+        // Update visual appearance and show/hide info label
+        if isEnabled {
+            addLegacyStewardLabel.textColor = .darkBlue
+            addLegacyStewardButton.tintColor = .darkBlue
+            addLegacyStewardLabel.alpha = 1.0
+            addLegacyStewardButton.alpha = 1.0
+        } else {
+            addLegacyStewardLabel.textColor = .middleGray
+            addLegacyStewardButton.tintColor = .middleGray
+            addLegacyStewardLabel.alpha = 0.6
+            addLegacyStewardButton.alpha = 0.6
+        }
+        
+        // Update visibility of archive details and alert views based on account steward status
+        if hasAccountSteward {
+            topArchiveDetailsView.isHidden = false
+            topArchiveDetailsHeightConstraint.constant = 88
+            alertAccountStewardView.isHidden = true
+            saveArchiveLegacyButton.isHidden = false
+        } else {
+            topArchiveDetailsView.isHidden = true
+            topArchiveDetailsHeightConstraint.constant = 0
+            alertAccountStewardView.isHidden = false
+            saveArchiveLegacyButton.isHidden = true
         }
     }
 }

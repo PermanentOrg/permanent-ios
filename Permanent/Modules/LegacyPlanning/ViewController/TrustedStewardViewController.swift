@@ -58,6 +58,8 @@ class TrustedStewardViewController: BaseViewController<LegacyPlanningViewModel> 
             }
         }
         
+        viewModel?.selectedSteward = nil
+        
         setupUI()
         loadSteward()
     }

@@ -126,6 +126,8 @@
 		5E24A2392CFA0411003F22AE /* BannerTwoStepVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A2342CFA0411003F22AE /* BannerTwoStepVerificationView.swift */; };
 		5E24A23B2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E24A23A2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift */; };
 		5E29C1D525AEF22D00C2A230 /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */; };
+		5E29FA562E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */; };
+		5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */; };
 		5E2A61C72DE0F3EE00B5EA2D /* ChecklistCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A61C62DE0F3EE00B5EA2D /* ChecklistCoordinator.swift */; };
 		5E2A61C92DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A61C82DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift */; };
 		5E2C5D1B24D98EE100E2B95F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2C5D1A24D98EE100E2B95F /* AppDelegate.swift */; };
@@ -1118,6 +1120,7 @@
 		5E24A2362CFA0411003F22AE /* WarningBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningBannerView.swift; sourceTree = "<group>"; };
 		5E24A23A2CFA1F1A003F22AE /* RoundButtonUsualFontView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButtonUsualFontView.swift; sourceTree = "<group>"; };
 		5E29C1D425AEF22D00C2A230 /* SecurityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityViewModel.swift; sourceTree = "<group>"; };
+		5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPlanningSimpleGoToButton.swift; sourceTree = "<group>"; };
 		5E2A61C62DE0F3EE00B5EA2D /* ChecklistCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistCoordinator.swift; sourceTree = "<group>"; };
 		5E2A61C82DE0F41000B5EA2D /* ChecklistOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistOptionsViewModel.swift; sourceTree = "<group>"; };
 		5E2C5D1724D98EE100E2B95F /* Permanent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Permanent.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2315,6 +2318,7 @@
 		5E3E12252A41D5FA00682DE5 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
+				5E29FA552E0D52A000BF28B2 /* LegacyPlanningSimpleGoToButton.swift */,
 				5ED3B3BB29FAB2BE000CFF48 /* LegacyPlanningSaveButton.swift */,
 				5EBAFCE92A1572CD005DB527 /* LegacyPlanningSetUpButton.swift */,
 			);
@@ -4968,6 +4972,7 @@
 				92E3FB512A17681A00E9E5A6 /* LegacyPlanningStatusViewController.swift in Sources */,
 				5E7D2F6E2D6F404700E0E2C3 /* BottomNotificationWithOverlayView.swift in Sources */,
 				5E6673172A7A3A78001C49CC /* AppendFilenameViewModel.swift in Sources */,
+				5E29FA572E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
 				BC59BAEA25C2CC8E005A45D3 /* NotificationType.swift in Sources */,
 				5E086BE82BED2572007B1AF3 /* OnboardingPath.swift in Sources */,
 				F5853D2026E9FA5A0050E377 /* Permission.swift in Sources */,
@@ -5529,6 +5534,7 @@
 				9220ACCA2A1CAE4A003797C9 /* SequenceExtension.swift in Sources */,
 				F559F8A528FEEC1E0015A522 /* NetworkLogger.swift in Sources */,
 				5ED4B9CA2876DFD100CF044B /* AccessRole.swift in Sources */,
+				5E29FA562E0D52AC00BF28B2 /* LegacyPlanningSimpleGoToButton.swift in Sources */,
 				F5ADBF3F290BBFA70007A516 /* ArchiveScreenSectionTitleTableViewCell.swift in Sources */,
 				5ED4B9D62876E0C400CF044B /* AttachmentRecordVO.swift in Sources */,
 				92E3FB5F2A176A5B00E9E5A6 /* LegacyAccountStatusCell.swift in Sources */,
